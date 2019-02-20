@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.data.model.Config;
 import com.synopsys.integration.util.Stringable;
 
 public class AlertPagedModel<M extends Config> extends Stringable {

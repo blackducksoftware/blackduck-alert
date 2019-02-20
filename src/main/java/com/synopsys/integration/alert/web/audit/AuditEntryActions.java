@@ -45,21 +45,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.data.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
+import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
+import com.synopsys.integration.alert.database.api.JobConfigReader;
+import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.channel.JobConfigReader;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.web.exception.AlertJobMissingException;
-import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
+import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
-import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -93,7 +94,7 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder, final boolean onlyShowSentNotifications) {
-        final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
+        final Page<AlertNotificationWrapper> auditPage = queryForNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
         final List<AuditEntryModel> auditEntries = createRestModels(auditPage.getContent(), sortField, sortOrder);
         final AlertPagedModel<AuditEntryModel> pagedRestModel = new AlertPagedModel<>(auditPage.getTotalPages(), auditPage.getNumber(), auditEntries.size(), auditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
@@ -102,7 +103,7 @@ public class AuditEntryActions {
 
     public Optional<AuditEntryModel> get(final Long id) {
         if (id != null) {
-            final Optional<NotificationContent> notificationContent = notificationManager.findById(id);
+            final Optional<AlertNotificationWrapper> notificationContent = notificationManager.findById(id);
             return notificationContent.map(this::createRestModel);
         }
         return Optional.empty();
@@ -131,9 +132,9 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationId, final UUID commonConfigId) throws IntegrationException {
-        final NotificationContent notificationContent = notificationManager
-                                                            .findById(notificationId)
-                                                            .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
+        final AlertNotificationWrapper notificationContent = notificationManager
+                                                                 .findById(notificationId)
+                                                                 .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
         final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
             final CommonDistributionConfiguration commonDistributionConfig = jobConfigReader.getPopulatedJobConfig(commonConfigId).orElseThrow(() -> {
@@ -162,9 +163,9 @@ public class AuditEntryActions {
         return get();
     }
 
-    private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageNumber, final Integer pageSize, final boolean onlyShowSentNotifications) {
+    private Page<AlertNotificationWrapper> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageNumber, final Integer pageSize, final boolean onlyShowSentNotifications) {
         final PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
-        final Page<NotificationContent> auditPage;
+        final Page<AlertNotificationWrapper> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
             auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
         } else {
@@ -173,7 +174,7 @@ public class AuditEntryActions {
         return auditPage;
     }
 
-    private List<AuditEntryModel> createRestModels(final List<NotificationContent> notificationContentEntries, final String sortField, final String sortOrder) {
+    private List<AuditEntryModel> createRestModels(final List<AlertNotificationWrapper> notificationContentEntries, final String sortField, final String sortOrder) {
         final List<AuditEntryModel> auditEntryModels = notificationContentEntries.stream().map(this::createRestModel).collect(Collectors.toList());
         if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent") || sortField.equalsIgnoreCase("overallStatus")) {
             // We do this sorting here because lastSent is not a field in the NotificationContent entity and overallStatus is not stored in the database
@@ -202,7 +203,7 @@ public class AuditEntryActions {
         return auditEntryModels;
     }
 
-    private AuditEntryModel createRestModel(final NotificationContent notificationContentEntry) {
+    private AuditEntryModel createRestModel(final AlertNotificationWrapper notificationContentEntry) {
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByNotificationId(notificationContentEntry.getId());
         final List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
         final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
@@ -248,7 +249,7 @@ public class AuditEntryActions {
             jobAuditModels.add(new JobAuditModel(id, configId, distributionConfigName, eventType, auditJobStatusModel, errorMessage, errorStackTrace));
         }
         final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
-        final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notificationContentEntry);
+        final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity((NotificationContent) notificationContentEntry);
 
         String overallStatusDisplayName = null;
         if (null != overallStatus) {
@@ -262,7 +263,6 @@ public class AuditEntryActions {
         if (null == overallStatus || currentStatus == AuditEntryStatus.FAILURE || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
             newOverallStatus = currentStatus;
         }
-
         return newOverallStatus;
     }
 }

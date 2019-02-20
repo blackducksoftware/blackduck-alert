@@ -28,17 +28,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.MessageContentCollector;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {
-    public static final String KEY_FILTER_BY_PROJECT = "channel.common.filter.by.project";
-    public static final String KEY_PROJECT_NAME_PATTERN = "channel.common.project.name.pattern";
-    public static final String KEY_CONFIGURED_PROJECT = "channel.common.configured.project";
-
     public static final String KEY_BLACKDUCK_URL = "blackduck.url";
     public static final String KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
     public static final String KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";

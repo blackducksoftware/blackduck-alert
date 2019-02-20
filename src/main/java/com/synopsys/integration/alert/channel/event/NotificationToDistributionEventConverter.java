@@ -32,12 +32,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.data.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 

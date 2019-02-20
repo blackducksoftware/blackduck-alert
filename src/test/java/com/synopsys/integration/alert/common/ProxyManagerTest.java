@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationModel;

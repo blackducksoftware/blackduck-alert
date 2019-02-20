@@ -14,14 +14,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.ProxyManager;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
-import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;

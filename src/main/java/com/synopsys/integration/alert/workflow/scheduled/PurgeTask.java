@@ -34,10 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
-import com.synopsys.integration.alert.workflow.NotificationManager;
 
 @Component
 public class PurgeTask extends ScheduledTask {
@@ -75,7 +76,7 @@ public class PurgeTask extends ScheduledTask {
         try {
             final Date date = createDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
-            final List<NotificationContent> notifications = notificationManager.findByCreatedAtBefore(date);
+            final List<AlertNotificationWrapper> notifications = notificationManager.findByCreatedAtBefore(date);
 
             if (notifications == null || notifications.isEmpty()) {
                 logger.info("No notifications found to purge");

@@ -29,14 +29,14 @@ import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.synopsys.integration.alert.common.descriptor.MessageContentCollector;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
-import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
     public static final String CATEGORY_TYPE = "policy";

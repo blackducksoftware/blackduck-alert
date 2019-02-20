@@ -37,7 +37,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")

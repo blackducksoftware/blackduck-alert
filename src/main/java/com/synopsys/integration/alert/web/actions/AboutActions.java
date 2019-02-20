@@ -28,7 +28,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.AboutReader;
+import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.web.model.AboutModel;
 
 @Component

@@ -18,24 +18,24 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.common.ProxyManager;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.data.FieldAccessor;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.data.model.FieldModel;
+import com.synopsys.integration.alert.common.data.model.FieldValueModel;
+import com.synopsys.integration.alert.common.data.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.audit.AuditUtility;
+import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -180,7 +180,7 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void testConfigITTest() throws Exception {
         final TestProperties properties = new TestProperties();
 
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();

@@ -16,15 +16,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.DescriptorMocker;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
+import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)

@@ -34,7 +34,7 @@ public class BlackDuckDataControllerTest {
     public void testGetHubProjects() {
         final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
         Mockito.when(blackDuckDataActions.getBlackDuckProjects()).thenReturn(Collections.emptyList());
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, blackDuckDataActions, contentConverter);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -45,7 +45,7 @@ public class BlackDuckDataControllerTest {
     public void testGetHubProjectsThrowException() {
         final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
         Mockito.when(blackDuckDataActions.getBlackDuckProjects()).thenThrow(new IllegalStateException("ErrorMessage"));
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, blackDuckDataActions, contentConverter);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());

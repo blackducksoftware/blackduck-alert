@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.web.audit;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.data.model.Config;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class AuditEntryModel extends Config {

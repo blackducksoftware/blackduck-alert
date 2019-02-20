@@ -44,15 +44,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.data.FieldAccessor;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.audit.AuditUtility;
+import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -69,7 +69,7 @@ public class HipChatChannel extends RestDistributionChannel {
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility,
+    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final AuditEntryAccessor auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, auditUtility, channelRestConnectionFactory);
     }

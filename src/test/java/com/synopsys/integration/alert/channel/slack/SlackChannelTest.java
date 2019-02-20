@@ -33,21 +33,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.channel.ChannelTest;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ProxyManager;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.data.FieldAccessor;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.audit.AuditUtility;
+import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -63,7 +63,7 @@ public class SlackChannelTest extends ChannelTest {
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -90,7 +90,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testGetApiUrl() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         assertEquals(SlackChannel.SLACK_API, channel.getApiUrl(event));
@@ -100,7 +100,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingWebhook() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
@@ -123,7 +123,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingChannelName() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
@@ -149,7 +149,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingContent() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -172,7 +172,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestSingleCategory() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -199,7 +199,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestSingleCategoryWithItemUrl() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -226,7 +226,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMultipleCategory() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -255,7 +255,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMultipleCategoryWithItemUrls() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));

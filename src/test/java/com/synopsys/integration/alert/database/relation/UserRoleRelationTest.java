@@ -4,7 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.database.relation.key.UserRoleRelationPK;
+import com.synopsys.integration.alert.database.user.UserRoleRelation;
+import com.synopsys.integration.alert.database.user.UserRoleRelationPK;
 
 public class UserRoleRelationTest {
 

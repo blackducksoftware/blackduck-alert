@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.database.relation;
 
 import javax.persistence.MappedSuperclass;
 
-import com.synopsys.integration.alert.database.entity.BaseEntity;
+import com.synopsys.integration.alert.database.BaseEntity;
 
 @MappedSuperclass
 public abstract class DatabaseRelation extends BaseEntity {

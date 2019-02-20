@@ -13,6 +13,8 @@ package com.synopsys.integration.alert.database.entity;
 
 import org.json.JSONException;
 
+import com.synopsys.integration.alert.database.BaseEntity;
+
 public interface BaseEntityTest<B extends BaseEntity> {
     public void testEmptyEntity() throws JSONException;
 

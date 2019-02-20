@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;

@@ -27,6 +27,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.DatabaseEntity;
+
 @Entity
 @Table(schema = "alert", name = "settings_key")
 public class SettingsKeyEntity extends DatabaseEntity {

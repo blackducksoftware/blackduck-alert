@@ -33,10 +33,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.TypeConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.common.data.model.Config;
+import com.synopsys.integration.alert.database.DatabaseEntity;
+import com.synopsys.integration.alert.database.notification.NotificationContent;
 
 @Component
 public class NotificationContentConverter extends TypeConverter {

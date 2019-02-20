@@ -1,4 +1,6 @@
 dependencies {
+    implementation project(':alert-common')
+    
     runtimeOnly 'com.h2database:h2'
     api 'org.liquibase:liquibase-core'
     api 'org.springframework.boot:spring-boot-starter-data-jpa'

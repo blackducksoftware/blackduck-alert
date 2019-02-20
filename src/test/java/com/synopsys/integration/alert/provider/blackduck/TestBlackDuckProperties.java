@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.ProxyManager;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationModel;

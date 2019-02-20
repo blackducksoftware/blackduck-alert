@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.ProxyManager;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.user.UserAccessor;
+import com.synopsys.integration.alert.database.api.SystemStatusUtility;
+import com.synopsys.integration.alert.database.api.UserAccessor;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
-import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;

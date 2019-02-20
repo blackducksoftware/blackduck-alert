@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.data.model.UserModel;
 import com.synopsys.integration.alert.database.user.UserEntity;
+import com.synopsys.integration.alert.database.user.UserRole;
 
 public class UserModelTest {
 
@@ -47,7 +48,7 @@ public class UserModelTest {
         final boolean passwordExpired = true;
         final boolean enabled = false;
         final UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail, expired, locked, passwordExpired, enabled);
-        final UserModel userModel = UserModel.of(entity, expectedRoles);
+        final UserModel userModel = UserModel.of(entity.getUserName(), entity.getPassword(), entity.getEmailAddress(), expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());

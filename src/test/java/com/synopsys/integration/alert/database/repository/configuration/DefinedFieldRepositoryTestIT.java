@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
-import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.configuration.DescriptorFieldRelation;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
