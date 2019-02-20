@@ -42,6 +42,10 @@ allprojects {
 
     dependencies {
         implementation 'com.blackducksoftware.integration:blackduck-common:41.2.0'
+        
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
+        testImplementation 'org.springframework.security:spring-security-test'
     }
 }
 
@@ -109,11 +113,6 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
-
-    // Test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
-    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 bootJar {

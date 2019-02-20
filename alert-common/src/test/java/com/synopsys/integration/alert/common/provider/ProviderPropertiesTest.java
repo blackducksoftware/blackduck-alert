@@ -1,9 +1,10 @@
-package com.synopsys.integration.alert.provider;
+package com.synopsys.integration.alert.common.provider;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -11,13 +12,17 @@ import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
 
 public class ProviderPropertiesTest {
     private static final String PROVIDER_NAME = "provider_name";
 
     private final BaseConfigurationAccessor configurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-    private final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
+    private ConfigurationModel configurationModel;
+
+    @BeforeEach
+    public void init() {
+        configurationModel = Mockito.mock(ConfigurationModel.class);
+    }
 
     @Test
     public void getGlobalConfigTest() throws AlertDatabaseConstraintException {

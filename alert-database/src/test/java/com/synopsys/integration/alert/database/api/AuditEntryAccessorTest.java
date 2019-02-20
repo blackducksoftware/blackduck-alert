@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.audit;
+package com.synopsys.integration.alert.database.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -21,7 +21,10 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
+import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
+import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
 public class AuditEntryAccessorTest {
 
