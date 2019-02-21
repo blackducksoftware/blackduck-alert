@@ -21,36 +21,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.configuration.key;
+package com.synopsys.integration.alert.database.settings;
 
-import java.io.Serializable;
+import java.util.Optional;
 
-public class DescriptorFieldRelationPK implements Serializable {
-    private Long descriptorId;
-    private Long fieldId;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    public DescriptorFieldRelationPK() {
-        // JPA requires default constructor definitions
-    }
+public interface SettingsKeyRepository extends JpaRepository<SettingsKeyEntity, Long> {
 
-    public DescriptorFieldRelationPK(final Long descriptorId, final Long fieldId) {
-        this.descriptorId = descriptorId;
-        this.fieldId = fieldId;
-    }
-
-    public Long getDescriptorId() {
-        return descriptorId;
-    }
-
-    public void setDescriptorId(final Long descriptorId) {
-        this.descriptorId = descriptorId;
-    }
-
-    public Long getFieldId() {
-        return fieldId;
-    }
-
-    public void setFieldId(final Long fieldId) {
-        this.fieldId = fieldId;
-    }
+    Optional<SettingsKeyEntity> findByKey(String key);
 }

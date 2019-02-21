@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -32,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.data.BaseSettingsKeyAccessor;
 import com.synopsys.integration.alert.common.data.model.SettingsKeyModel;
-import com.synopsys.integration.alert.database.entity.SettingsKeyEntity;
-import com.synopsys.integration.alert.database.entity.SettingsKeyRepository;
+import com.synopsys.integration.alert.database.settings.SettingsKeyEntity;
+import com.synopsys.integration.alert.database.settings.SettingsKeyRepository;
 
 @Component
 @Transactional

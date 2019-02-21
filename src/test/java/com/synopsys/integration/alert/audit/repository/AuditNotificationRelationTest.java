@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.entity.RelationTest;
+import com.synopsys.integration.alert.database.settings.RelationTest;
 
 public class AuditNotificationRelationTest extends RelationTest<AuditNotificationRelation> {
 

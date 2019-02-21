@@ -21,13 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity;
-
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface SettingsKeyRepository extends JpaRepository<SettingsKeyEntity, Long> {
-
-    Optional<SettingsKeyEntity> findByKey(String key);
-}
+//module com.synopsys.integration.alert.main {
+//    requires com.synopsys.integration.alert.common;
+//    requires com.synopsys.integration.alert.database;
+//}

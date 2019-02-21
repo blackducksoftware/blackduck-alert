@@ -21,36 +21,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.configuration.key;
+package com.synopsys.integration.alert.database.settings;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class DescriptorFieldRelationPK implements Serializable {
-    private Long descriptorId;
-    private Long fieldId;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-    public DescriptorFieldRelationPK() {
+@Entity
+@Table(schema = "alert", name = "settings_key")
+public class SettingsKeyEntity extends DatabaseEntity {
+
+    @Column
+    private String key;
+
+    @Column
+    private String value;
+
+    public SettingsKeyEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorFieldRelationPK(final Long descriptorId, final Long fieldId) {
-        this.descriptorId = descriptorId;
-        this.fieldId = fieldId;
+    public SettingsKeyEntity(final String key, final String value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
+    public String getKey() {
+        return key;
     }
 
-    public void setDescriptorId(final Long descriptorId) {
-        this.descriptorId = descriptorId;
-    }
-
-    public Long getFieldId() {
-        return fieldId;
-    }
-
-    public void setFieldId(final Long fieldId) {
-        this.fieldId = fieldId;
+    public String getValue() {
+        return value;
     }
 }
