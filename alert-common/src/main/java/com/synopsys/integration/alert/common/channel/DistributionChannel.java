@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.data.AuditUtility;
+import com.synopsys.integration.alert.common.data.BaseAuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
@@ -37,11 +37,11 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class DistributionChannel extends MessageReceiver {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
-    private final AuditUtility auditUtility;
+    private final BaseAuditUtility auditUtility;
     private final AlertProperties alertProperties;
     private final String distributionType;
 
-    public DistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
+    public DistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final BaseAuditUtility auditUtility) {
         super(gson);
         this.distributionType = distributionType;
         this.alertProperties = alertProperties;

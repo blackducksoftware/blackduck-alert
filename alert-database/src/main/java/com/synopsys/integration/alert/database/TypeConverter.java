@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,40 +21,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.database;
 
-import java.util.List;
-
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.data.model.Config;
-import com.synopsys.integration.util.Stringable;
 
-public class AlertPagedModel<M extends Config> extends Stringable {
+public abstract class TypeConverter {
+    private final ContentConverter contentConverter;
 
-    private final int totalPages;
-    private final int currentPage;
-    private final int pageSize;
-    private final List<M> content;
-
-    public AlertPagedModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
-        this.totalPages = totalPages;
-        this.currentPage = currentPage;
-        this.pageSize = pageSize;
-        this.content = content;
+    public TypeConverter(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
     }
 
-    public int getTotalPages() {
-        return totalPages;
+    public abstract Config getConfigFromJson(final String json);
+
+    public abstract DatabaseEntity populateEntityFromConfig(Config config);
+
+    public abstract Config populateConfigFromEntity(DatabaseEntity entity);
+
+    public ContentConverter getContentConverter() {
+        return contentConverter;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
+    public void addIdToEntityPK(final String id, final DatabaseEntity entity) {
+        final Long longId = contentConverter.getLongValue(id);
+        entity.setId(longId);
     }
 
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public List<M> getContent() {
-        return content;
-    }
 }

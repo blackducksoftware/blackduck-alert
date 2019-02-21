@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
+import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
@@ -176,7 +176,7 @@ public class EmailGlobalDescriptorActionApiTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testConfigITTest() throws Exception {
         final TestProperties properties = new TestProperties();
-        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
 
