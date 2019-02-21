@@ -21,38 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import com.synopsys.integration.alert.database.DatabaseEntity;
-
-@Entity
-@Table(schema = "alert", name = "settings_key")
-public class SettingsKeyEntity extends DatabaseEntity {
-
-    @Column
-    private String key;
-
-    @Column
-    private String value;
-
-    public SettingsKeyEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public SettingsKeyEntity(final String key, final String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-}
+//module com.synopsys.integration.alert.database {
+//    requires transitive com.synopsys.integration.alert.common;
+//    exports com.synopsys.integration.alert.database.api;
+//}

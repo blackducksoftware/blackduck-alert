@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.entity.repository;
+package com.synopsys.integration.alert.database.settings.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

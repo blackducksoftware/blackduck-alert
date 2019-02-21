@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.database.entity;
+package com.synopsys.integration.alert.database.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
