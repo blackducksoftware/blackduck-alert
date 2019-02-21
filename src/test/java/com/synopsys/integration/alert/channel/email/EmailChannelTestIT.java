@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
+import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
@@ -45,7 +45,7 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
-        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);

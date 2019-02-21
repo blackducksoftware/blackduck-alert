@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.database.notification;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.TypeConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.data.model.Config;
+import com.synopsys.integration.alert.common.data.model.NotificationConfig;
 import com.synopsys.integration.alert.database.DatabaseEntity;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.database.TypeConverter;
 
 @Component
 public class NotificationContentConverter extends TypeConverter {

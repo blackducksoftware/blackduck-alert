@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,12 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.audit;
+package com.synopsys.integration.alert.common.data.model;
 
 import java.util.List;
-
-import com.synopsys.integration.alert.common.data.model.Config;
-import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class AuditEntryModel extends Config {
     private NotificationConfig notification;

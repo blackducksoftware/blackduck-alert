@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
+import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.RestConstants;
@@ -50,7 +50,7 @@ public abstract class RestDistributionChannel extends DistributionChannel {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
-    public RestDistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final AuditEntryAccessor auditUtility,
+    public RestDistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final AuditEntryUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(distributionType, gson, alertProperties, auditUtility);
         this.channelRestConnectionFactory = channelRestConnectionFactory;

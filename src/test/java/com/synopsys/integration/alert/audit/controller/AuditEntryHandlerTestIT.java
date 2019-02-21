@@ -35,9 +35,12 @@ import com.google.gson.JsonArray;
 import com.jayway.jsonpath.JsonPath;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.data.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.data.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.data.model.NotificationConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -54,9 +57,6 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
-import com.synopsys.integration.alert.web.audit.AuditEntryModel;
-import com.synopsys.integration.alert.web.model.AlertPagedModel;
-import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
