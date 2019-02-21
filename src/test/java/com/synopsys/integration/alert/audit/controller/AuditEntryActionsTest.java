@@ -58,9 +58,14 @@ public class AuditEntryActionsTest {
 
     @Test
     public void testGetNull() {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any())).thenReturn(Optional.empty());
+
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         Mockito.when(notificationManager.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(null, notificationManager, null, null, null);
+
+        final AuditEntryUtility auditEntryUtility = new AuditEntryUtility(auditEntryRepository, null, null, notificationManager, null);
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryUtility, notificationManager, null, null, null);
 
         final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(1L);
         assertTrue(auditEntryModel.isEmpty());
@@ -70,7 +75,9 @@ public class AuditEntryActionsTest {
     public void testGetAuditInfoForJobNull() {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any())).thenReturn(Optional.empty());
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(null, null, null, null, null);
+
+        final AuditEntryUtility auditEntryUtility = new AuditEntryUtility(auditEntryRepository, null, null, null, null);
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryUtility, null, null, null, null);
 
         final Optional<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(UUID.randomUUID());
         assertTrue(jobAuditModel.isEmpty());
