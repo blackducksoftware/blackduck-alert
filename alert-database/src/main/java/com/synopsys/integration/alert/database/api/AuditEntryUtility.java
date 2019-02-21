@@ -93,21 +93,7 @@ public class AuditEntryUtility implements BaseAuditUtility {
     @Transactional
     public Optional<AuditJobStatusModel> findFirstByJobId(final UUID jobId) {
         final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
-        return auditEntryEntity.map(value -> {
-            String timeCreated = null;
-            if (null != value.getTimeCreated()) {
-                timeCreated = notificationContentConverter.getContentConverter().getStringValue(value.getTimeCreated());
-            }
-            String timeLastSent = null;
-            if (null != value.getTimeLastSent()) {
-                timeLastSent = notificationContentConverter.getContentConverter().getStringValue(value.getTimeLastSent());
-            }
-            String status = null;
-            if (null != value.getStatus()) {
-                status = value.getStatus();
-            }
-            return new AuditJobStatusModel(timeCreated, timeLastSent, status);
-        });
+        return auditEntryEntity.map(this::convertToJobStatusModel);
     }
 
     @Override
@@ -293,6 +279,22 @@ public class AuditEntryUtility implements BaseAuditUtility {
             auditEntryModels.sort(comparator);
         }
         return auditEntryModels;
+    }
+
+    private AuditJobStatusModel convertToJobStatusModel(final AuditEntryEntity auditEntryEntity) {
+        String timeCreated = null;
+        if (null != auditEntryEntity.getTimeCreated()) {
+            timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
+        }
+        String timeLastSent = null;
+        if (null != auditEntryEntity.getTimeLastSent()) {
+            timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
+        }
+        String status = null;
+        if (null != auditEntryEntity.getStatus()) {
+            status = auditEntryEntity.getStatus();
+        }
+        return new AuditJobStatusModel(timeCreated, timeLastSent, status);
     }
 
     private Page<AlertNotificationWrapper> getPageOfNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageNumber, final Integer pageSize, final boolean onlyShowSentNotifications) {
