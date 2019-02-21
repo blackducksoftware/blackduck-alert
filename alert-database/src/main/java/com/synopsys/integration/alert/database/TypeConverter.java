@@ -21,11 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.database;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.data.model.Config;
-import com.synopsys.integration.alert.database.DatabaseEntity;
 
 public abstract class TypeConverter {
     private final ContentConverter contentConverter;

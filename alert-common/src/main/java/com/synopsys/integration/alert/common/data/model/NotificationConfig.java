@@ -21,9 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
-
-import com.synopsys.integration.alert.common.data.model.Config;
+package com.synopsys.integration.alert.common.data.model;
 
 public class NotificationConfig extends Config {
     private String createdAt;
