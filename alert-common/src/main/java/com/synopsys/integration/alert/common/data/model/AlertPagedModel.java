@@ -21,33 +21,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.audit;
+package com.synopsys.integration.alert.common.data.model;
 
-import com.synopsys.integration.alert.common.data.model.MaskedModel;
+import java.util.List;
 
-public class AuditJobStatusModel extends MaskedModel {
-    private String timeAuditCreated;
-    private String timeLastSent;
-    private String status;
+import com.synopsys.integration.util.Stringable;
 
-    public AuditJobStatusModel() {
+public class AlertPagedModel<M extends Config> extends Stringable {
+
+    private final int totalPages;
+    private final int currentPage;
+    private final int pageSize;
+    private final List<M> content;
+
+    public AlertPagedModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
+        this.pageSize = pageSize;
+        this.content = content;
     }
 
-    public AuditJobStatusModel(final String timeAuditCreated, final String timeLastSent, final String status) {
-        this.timeAuditCreated = timeAuditCreated;
-        this.timeLastSent = timeLastSent;
-        this.status = status;
+    public int getTotalPages() {
+        return totalPages;
     }
 
-    public String getTimeAuditCreated() {
-        return timeAuditCreated;
+    public int getCurrentPage() {
+        return currentPage;
     }
 
-    public String getTimeLastSent() {
-        return timeLastSent;
+    public int getPageSize() {
+        return pageSize;
     }
 
-    public String getStatus() {
-        return status;
+    public List<M> getContent() {
+        return content;
     }
 }

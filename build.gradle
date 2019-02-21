@@ -64,37 +64,37 @@ subprojects {
         }
     }
 
-//    afterEvaluate {
-//        compileJava {
-//            inputs.property("moduleName", moduleName)
-//            doFirst {
-//                options.compilerArgs = ['--module-path', classpath.asPath,]
-//                classpath = files()
-//            }
-//        }
-//
-//        compileTestJava {
-//            inputs.property("moduleName", moduleName)
-//            doFirst {
-//                options.compilerArgs = ['--module-path', classpath.asPath,
-//                                        '--add-modules', 'junit',
-//                                        '--add-reads', "$moduleName=junit",
-//                                        '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,]
-//                classpath = files()
-//            }
-//        }
-//
-//        test {
-//            inputs.property("moduleName", moduleName)
-//            doFirst {
-//                jvmArgs = ['--module-path', classpath.asPath,
-//                           '--add-modules', 'ALL-MODULE-PATH',
-//                           '--add-reads', "$moduleName=junit",
-//                           '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,]
-//                classpath = files()
-//            }
-//        }
-//    }
+    //    afterEvaluate {
+    //        compileJava {
+    //            inputs.property("moduleName", moduleName)
+    //            doFirst {
+    //                options.compilerArgs = ['--module-path', classpath.asPath,]
+    //                classpath = files()
+    //            }
+    //        }
+    //
+    //        compileTestJava {
+    //            inputs.property("moduleName", moduleName)
+    //            doFirst {
+    //                options.compilerArgs = ['--module-path', classpath.asPath,
+    //                                        '--add-modules', 'junit',
+    //                                        '--add-reads', "$moduleName=junit",
+    //                                        '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,]
+    //                classpath = files()
+    //            }
+    //        }
+    //
+    //        test {
+    //            inputs.property("moduleName", moduleName)
+    //            doFirst {
+    //                jvmArgs = ['--module-path', classpath.asPath,
+    //                           '--add-modules', 'ALL-MODULE-PATH',
+    //                           '--add-reads', "$moduleName=junit",
+    //                           '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,]
+    //                classpath = files()
+    //            }
+    //        }
+    //    }
 }
 
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.

@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.data.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
+import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -180,7 +180,7 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void testConfigITTest() throws Exception {
         final TestProperties properties = new TestProperties();
 
-        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();

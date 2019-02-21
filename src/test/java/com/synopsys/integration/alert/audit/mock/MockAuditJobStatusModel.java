@@ -8,8 +8,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.common.data.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.web.audit.AuditJobStatusModel;
 
 public class MockAuditJobStatusModel {
     private final Gson gson = new Gson();

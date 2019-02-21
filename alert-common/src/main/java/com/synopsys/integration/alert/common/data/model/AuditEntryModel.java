@@ -21,40 +21,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.data.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.data.model.Config;
-import com.synopsys.integration.util.Stringable;
+public class AuditEntryModel extends Config {
+    private NotificationConfig notification;
+    private List<JobAuditModel> jobs;
+    private String overallStatus;
+    private String lastSent;
 
-public class AlertPagedModel<M extends Config> extends Stringable {
-
-    private final int totalPages;
-    private final int currentPage;
-    private final int pageSize;
-    private final List<M> content;
-
-    public AlertPagedModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
-        this.totalPages = totalPages;
-        this.currentPage = currentPage;
-        this.pageSize = pageSize;
-        this.content = content;
+    public AuditEntryModel() {
     }
 
-    public int getTotalPages() {
-        return totalPages;
+    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobAuditModel> jobs, final String overallStatus, final String lastSent) {
+        super(id);
+        this.notification = notification;
+        this.jobs = jobs;
+        this.overallStatus = overallStatus;
+        this.lastSent = lastSent;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
+    public NotificationConfig getNotification() {
+        return notification;
     }
 
-    public int getPageSize() {
-        return pageSize;
+    public List<JobAuditModel> getJobs() {
+        return jobs;
     }
 
-    public List<M> getContent() {
-        return content;
+    public String getOverallStatus() {
+        return overallStatus;
+    }
+
+    public String getLastSent() {
+        return lastSent;
     }
 }
