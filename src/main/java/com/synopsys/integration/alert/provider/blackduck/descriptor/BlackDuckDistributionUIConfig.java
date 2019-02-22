@@ -33,14 +33,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
@@ -52,12 +53,12 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final ConfigField filterByProject = CheckboxConfigField.createRequired(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
-        final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);
+        final ConfigField filterByProject = CheckboxConfigField.createRequired(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, "Filter by project");
+        final ConfigField projectNamePattern = TextInputConfigField.create(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = SelectConfigField.createEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
+        final ConfigField configuredProject = SelectConfigField.createEmpty(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
         return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 
@@ -75,8 +76,8 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     private Collection<String> validateConfiguredProject(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
-        final boolean filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
-        final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
+        final boolean filterByProject = fieldModel.getField(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
+        final String projectNamePattern = fieldModel.getField(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
         final boolean missingProject = (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern);
         if (filterByProject && missingProject) {
             return List.of("You must select at least one project.");

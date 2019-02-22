@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 
 public abstract class RestModelTest<R extends Config> {

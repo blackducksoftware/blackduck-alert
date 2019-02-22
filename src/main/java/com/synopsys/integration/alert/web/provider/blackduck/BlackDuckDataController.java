@@ -45,8 +45,8 @@ public class BlackDuckDataController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckDataController.class);
 
     private final ResponseFactory responseFactory;
-    private BlackDuckDataActions blackDuckDataActions;
-    private ContentConverter contentConverter;
+    private final BlackDuckDataActions blackDuckDataActions;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public BlackDuckDataController(final ResponseFactory responseFactory, final BlackDuckDataActions blackDuckDataActions, final ContentConverter contentConverter) {

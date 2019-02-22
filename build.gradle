@@ -5,6 +5,7 @@ buildscript {
     }
     repositories {
         jcenter()
+        mavenLocal()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 
@@ -20,71 +21,69 @@ plugins {
     id 'application'
     id 'com.moowork.node' version '1.2.0'
     id 'com.jfrog.artifactory' version '4.8.1'
-
 }
-
-project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
-project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 
 // Copied from src/test/java - com.synopsys.integration.alert.TestTags
 project.ext.junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
+project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
+project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
+
+project.ext.moduleName = 'com.synopsys.integration.alert.main'
+mainClassName = 'com.synopsys.integration.alert.Application'
 version = '4.1.0-SNAPSHOT'
 
-apply plugin: 'maven-publish'
+apply plugin: 'idea'
 apply plugin: 'com.blackducksoftware.integration.solution'
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.bmuschko.docker-remote-api'
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencies {
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
+        testImplementation 'org.springframework.security:spring-security-test'
+    }
+}
+
+subprojects {
+    version = rootProject.version
+    apply plugin: 'com.blackducksoftware.integration.simple'
+
+    license {
+        header rootProject.file('LICENSE')
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+        }
+    }
+}
 
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
 jacoco {
     toolVersion = "0.8.2"
 }
 
-
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import groovy.json.JsonOutput
-
-mainClassName = 'com.synopsys.integration.alert.Application'
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
-    }
-}
-
 dependencies {
-    implementation('com.blackducksoftware.integration:blackduck-common:41.2.0') {
-        exclude group: 'lodash.escape'
-        exclude group: 'dom4j:dom4j'
-        exclude group: 'com.google.guava'
-        exclude group: 'org.apache.pdfbox:pdfbox'
-    }
+    implementation project(':alert-common')
+    implementation project(':alert-database')
 
     implementation 'com.synopsys.integration:polaris-common:0.4.1'
 
-    // Spring boot
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.ldap:spring-ldap-core'
-
-    // Spring web security
+    // Spring
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework:spring-webmvc'
     implementation 'org.springframework.security:spring-security-web'
-    implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-ldap'
-
-    // Database
-    runtimeOnly 'com.h2database:h2'
-    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 
     // Email
-    implementation 'com.sun.mail:javax.mail:1.6.2'
+    runtimeOnly 'com.sun.mail:javax.mail:1.6.2'
     implementation 'javax.mail:javax.mail-api:1.6.2'
 
     // Templates
@@ -94,19 +93,10 @@ dependencies {
 
     // Message Queue
     implementation 'org.apache.activemq:activemq-broker'
-    implementation 'org.apache.activemq:activemq-kahadb-store'
-    implementation 'javax.interceptor:javax.interceptor-api:1.2.2'
-    implementation 'org.springframework.boot:spring-boot-starter-activemq'
 
     // XML
-    implementation 'javax.xml.bind:jaxb-api'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
-
-    // Test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
-    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 bootJar {
@@ -124,6 +114,8 @@ distributions {
 }
 
 // run alert locally
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import groovy.json.JsonOutput
 
 // disable the test task when running the alert server to speed up startup time.
 gradle.taskGraph.whenReady { graph ->

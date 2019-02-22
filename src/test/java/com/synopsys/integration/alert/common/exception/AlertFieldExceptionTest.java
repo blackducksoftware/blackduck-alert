@@ -19,8 +19,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.web.exception.AlertFieldException;
-
 public class AlertFieldExceptionTest {
 
     @Test

@@ -28,7 +28,7 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 // TODO exclude for now: @Component

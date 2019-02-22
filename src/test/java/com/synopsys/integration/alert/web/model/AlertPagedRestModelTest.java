@@ -9,7 +9,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.web.audit.AuditEntryModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 
 public class AlertPagedRestModelTest {
 

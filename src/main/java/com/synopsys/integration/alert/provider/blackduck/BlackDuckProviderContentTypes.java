@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import static com.synopsys.integration.alert.common.field.JsonField.createJsonPath;
-import static com.synopsys.integration.alert.common.field.JsonField.createLongField;
-import static com.synopsys.integration.alert.common.field.JsonField.createObjectField;
-import static com.synopsys.integration.alert.common.field.JsonField.createStringField;
+import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createJsonPath;
+import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createLongField;
+import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createObjectField;
+import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createStringField;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,12 +34,12 @@ import java.util.List;
 
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
-import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.notification.content.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
-import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.component.VulnerabilitySourceQualifiedId;
 
 public class BlackDuckProviderContentTypes {
     //common fields

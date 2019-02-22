@@ -35,22 +35,22 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
-import com.synopsys.integration.alert.web.model.configuration.JobFieldModel;
 
 @Transactional
 public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
@@ -235,7 +235,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
         final Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
-            formatType, BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, filterByProject, BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, projectNames);
+            formatType, CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, filterByProject, CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, projectNames);
         final FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
 
         return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
@@ -265,7 +265,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                 frequencyField = configurationModel.getField(ChannelDistributionUIConfig.KEY_FREQUENCY);
             }
             if (filterByProjectField.isEmpty()) {
-                filterByProjectField = configurationModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT);
+                filterByProjectField = configurationModel.getField(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT);
             }
         }
 

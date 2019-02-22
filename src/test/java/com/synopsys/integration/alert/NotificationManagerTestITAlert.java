@@ -21,29 +21,30 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
-import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
-import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
+import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.workflow.NotificationManager;
 
 @Transactional
 public class NotificationManagerTestITAlert extends AlertIntegrationTest {
@@ -71,7 +72,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Autowired
     private NotificationManager notificationManager;
 
-    public void assertNotificationModel(final NotificationContent notification, final NotificationContent savedNotification) {
+    public void assertNotificationModel(final AlertNotificationWrapper notification, final AlertNotificationWrapper savedNotification) {
         assertEquals(notification.getCreatedAt(), savedNotification.getCreatedAt());
         assertEquals(notification.getProvider(), savedNotification.getProvider());
         assertEquals(notification.getNotificationType(), savedNotification.getNotificationType());
@@ -101,7 +102,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Test
     public void testFindAllEmpty() {
         final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<NotificationContent> all = notificationManager.findAll(pageRequest, false);
+        Page<AlertNotificationWrapper> all = notificationManager.findAll(pageRequest, false);
         assertTrue(all.isEmpty());
 
         all = notificationManager.findAll(pageRequest, true);
@@ -114,7 +115,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         notificationContent = notificationContentRepository.save(notificationContent);
 
         final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<NotificationContent> all = notificationManager.findAll(pageRequest, false);
+        Page<AlertNotificationWrapper> all = notificationManager.findAll(pageRequest, false);
         assertFalse(all.isEmpty());
 
         all = notificationManager.findAll(pageRequest, true);
@@ -130,7 +131,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Test
     public void testFindAllWithSearchEmpty() {
         final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<NotificationContent> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
+        Page<AlertNotificationWrapper> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
         assertTrue(all.isEmpty());
 
         all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, true);
@@ -143,7 +144,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         notificationContent = notificationContentRepository.save(notificationContent);
 
         final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<NotificationContent> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
+        Page<AlertNotificationWrapper> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
         // Search term should not match anything in the saved notifications
         assertTrue(all.isEmpty());
 
@@ -192,36 +193,36 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         auditNotificationRepository.save(auditNotificationRelation);
 
         final PageRequest pageRequest = PageRequest.of(0, 10);
-        final Page<NotificationContent> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
+        final Page<AlertNotificationWrapper> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
         // Search term should match the channel name
         assertFalse(all.isEmpty());
     }
 
     @Test
     public void testSave() {
-        final NotificationContent notificationContent = createNotificationContent();
-        final NotificationContent savedModel = notificationManager.saveNotification(notificationContent);
+        final AlertNotificationWrapper notificationContent = createNotificationContent();
+        final AlertNotificationWrapper savedModel = notificationManager.saveNotification(notificationContent);
         assertNotNull(savedModel.getId());
         assertNotificationModel(notificationContent, savedModel);
     }
 
     @Test
     public void testFindByIds() {
-        final NotificationContent notification = createNotificationContent();
-        final NotificationContent savedModel = notificationManager.saveNotification(notification);
+        final AlertNotificationWrapper notification = createNotificationContent();
+        final AlertNotificationWrapper savedModel = notificationManager.saveNotification(notification);
         final List<Long> notificationIds = Arrays.asList(savedModel.getId());
-        final List<NotificationContent> notificationList = notificationManager.findByIds(notificationIds);
+        final List<AlertNotificationWrapper> notificationList = notificationManager.findByIds(notificationIds);
 
         assertEquals(1, notificationList.size());
     }
 
     @Test
     public void testFindByIdsInvalidIds() {
-        NotificationContent model = createNotificationContent();
+        AlertNotificationWrapper model = createNotificationContent();
         model = notificationManager.saveNotification(model);
 
         final List<Long> notificationIds = Arrays.asList(model.getId() + 10, model.getId() + 20, model.getId() + 30);
-        final List<NotificationContent> notificationModelList = notificationManager.findByIds(notificationIds);
+        final List<AlertNotificationWrapper> notificationModelList = notificationManager.findByIds(notificationIds);
         assertTrue(notificationModelList.isEmpty());
     }
 
@@ -231,19 +232,19 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         final Date startDate = createDate(time.minusHours(1));
         final Date endDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(3));
-        NotificationContent entity = createNotificationContent(createdAt);
+        AlertNotificationWrapper entity = createNotificationContent(createdAt);
         notificationManager.saveNotification(entity);
         createdAt = createDate(time.plusMinutes(1));
-        final NotificationContent entityToFind1 = createNotificationContent(createdAt);
+        final AlertNotificationWrapper entityToFind1 = createNotificationContent(createdAt);
         createdAt = createDate(time.plusMinutes(5));
-        final NotificationContent entityToFind2 = createNotificationContent(createdAt);
+        final AlertNotificationWrapper entityToFind2 = createNotificationContent(createdAt);
         createdAt = createDate(time.plusHours(3));
         entity = createNotificationContent(createdAt);
         notificationManager.saveNotification(entity);
         notificationManager.saveNotification(entityToFind1);
         notificationManager.saveNotification(entityToFind2);
 
-        final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
         assertEquals(2, foundList.size());
         assertNotificationModel(entityToFind1, foundList.get(0));
@@ -263,7 +264,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         entity = createNotificationContent(createdAtLater);
         notificationManager.saveNotification(entity);
 
-        final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
         assertTrue(foundList.isEmpty());
     }
@@ -279,7 +280,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         entity = createNotificationContent(createdAtLaterThanSearch);
         notificationManager.saveNotification(entity);
 
-        List<NotificationContent> foundList = notificationManager.findByCreatedAtBefore(searchDate);
+        List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBefore(searchDate);
 
         assertEquals(1, foundList.size());
 
@@ -292,13 +293,13 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     public void findByCreatedAtBeforeDayOffset() {
         final LocalDateTime time = LocalDateTime.now();
         final Date createdAt = createDate(time.minusDays(5));
-        NotificationContent entity = createNotificationContent(createdAt);
+        AlertNotificationWrapper entity = createNotificationContent(createdAt);
         notificationManager.saveNotification(entity);
         final Date createdAtLaterThanSearch = createDate(time.plusDays(3));
         entity = createNotificationContent(createdAtLaterThanSearch);
         notificationManager.saveNotification(entity);
 
-        List<NotificationContent> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
+        List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
 
         assertEquals(1, foundList.size());
 
@@ -324,7 +325,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         notificationManager.saveNotification(entityToFind1);
         notificationManager.saveNotification(entityToFind2);
 
-        final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
         assertEquals(4, notificationContentRepository.count());
 
         notificationManager.deleteNotificationList(foundList);
@@ -334,8 +335,8 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testDeleteNotification() {
-        final NotificationContent notificationEntity = createNotificationContent();
-        final NotificationContent savedModel = notificationManager.saveNotification(notificationEntity);
+        final AlertNotificationWrapper notificationEntity = createNotificationContent();
+        final AlertNotificationWrapper savedModel = notificationManager.saveNotification(notificationEntity);
 
         assertEquals(1, notificationContentRepository.count());
 

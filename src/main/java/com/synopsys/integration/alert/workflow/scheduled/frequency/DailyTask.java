@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.workflow.NotificationManager;
+import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 
 @Component

@@ -40,8 +40,8 @@ public class AboutController extends BaseController {
     public static final String ERROR_ABOUT_MODEL_NOT_FOUND = "Could not find the About model.";
 
     private final AboutActions aboutActions;
-    private ResponseFactory responseFactory;
-    private ContentConverter contentConverter;
+    private final ResponseFactory responseFactory;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public AboutController(final AboutActions aboutActions, final ResponseFactory responseFactory, final ContentConverter contentConverter) {
