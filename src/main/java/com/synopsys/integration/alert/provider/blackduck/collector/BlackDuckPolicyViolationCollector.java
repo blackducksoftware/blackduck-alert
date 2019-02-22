@@ -48,8 +48,8 @@ import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonF
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.notification.content.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 @Component
 @Scope("prototype")
@@ -77,8 +77,8 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Map<String, SortedSet<LinkableItem>> policyItemMap = mapPolicyToComponents(componentVersionStatuses);
 
         for (final PolicyInfo policyItem : policyItems) {
-            final String policyUrl = policyItem.policy;
-            final String policyName = policyItem.policyName;
+            final String policyUrl = policyItem.getPolicy();
+            final String policyName = policyItem.getPolicyName();
             final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
             if (policyItemMap.containsKey(policyUrl)) {
                 final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
@@ -107,7 +107,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Map<String, SortedSet<LinkableItem>> policyItemMap = new TreeMap<>();
 
         for (final ComponentVersionStatus versionStatus : componentVersionStatuses) {
-            for (final String policyUrl : versionStatus.policies) {
+            for (final String policyUrl : versionStatus.getPolicies()) {
                 final SortedSet<LinkableItem> componentItems;
                 if (policyItemMap.containsKey(policyUrl)) {
                     componentItems = policyItemMap.get(policyUrl);
@@ -116,12 +116,12 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                     policyItemMap.put(policyUrl, componentItems);
                 }
 
-                if (StringUtils.isNotBlank(versionStatus.componentName)) {
-                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.componentName, versionStatus.component));
+                if (StringUtils.isNotBlank(versionStatus.getComponentName())) {
+                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.getComponentName(), versionStatus.getComponentName()));
                 }
 
-                if (StringUtils.isNotBlank(versionStatus.componentVersionName)) {
-                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, versionStatus.componentVersionName, versionStatus.componentVersion));
+                if (StringUtils.isNotBlank(versionStatus.getComponentVersionName())) {
+                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, versionStatus.getComponentVersionName(), versionStatus.getComponentVersion()));
                 }
             }
         }

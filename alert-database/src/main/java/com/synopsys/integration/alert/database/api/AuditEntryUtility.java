@@ -139,7 +139,7 @@ public class AuditEntryUtility implements BaseAuditUtility {
         for (final Long auditEntryId : auditEntryIds) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
-                if (!auditEntryEntityOptional.isPresent()) {
+                if (auditEntryEntityOptional.isEmpty()) {
                     logger.error("Could not find the audit entry {} to set the success status.", auditEntryId);
                 }
                 final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
@@ -160,7 +160,7 @@ public class AuditEntryUtility implements BaseAuditUtility {
         for (final Long auditEntryId : auditEntryIds) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
-                if (!auditEntryEntityOptional.isPresent()) {
+                if (auditEntryEntityOptional.isEmpty()) {
                     logger.error("Could not find the audit entry {} to set the failure status. Error: {}", auditEntryId, errorMessage);
                 }
                 final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
@@ -260,7 +260,7 @@ public class AuditEntryUtility implements BaseAuditUtility {
             if (StringUtils.isNotBlank(sortOrder) && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
                 ascendingOrder = true;
             }
-            Comparator comparator;
+            Comparator<AuditEntryModel> comparator;
             if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent")) {
                 final Function<AuditEntryModel, Date> function = auditEntryModel -> {
                     Date date = null;

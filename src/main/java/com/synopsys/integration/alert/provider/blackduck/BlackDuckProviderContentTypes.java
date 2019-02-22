@@ -37,9 +37,9 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.notification.content.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
-import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.component.VulnerabilitySourceQualifiedId;
 
 public class BlackDuckProviderContentTypes {
     //common fields

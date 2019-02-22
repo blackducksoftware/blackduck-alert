@@ -31,8 +31,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.DatabaseRelation;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
-import com.synopsys.integration.alert.database.relation.DatabaseRelation;
 
 @Entity
 @IdClass(AuditNotificationRelationPK.class)

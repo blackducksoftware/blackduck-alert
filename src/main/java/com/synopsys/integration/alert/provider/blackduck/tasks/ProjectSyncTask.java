@@ -54,7 +54,7 @@ import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ProjectService;
+import com.synopsys.integration.blackduck.service.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
@@ -86,12 +86,12 @@ public class ProjectSyncTask extends ScheduledTask {
                 final BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
                 final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
-                final ProjectService projectService = blackDuckServicesFactory.createProjectService();
+                final ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 final Map<BlackDuckProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
                 final List<BlackDuckProjectEntity> blackDuckProjectEntities = updateProjectDB(currentDataMap.keySet());
 
-                final Map<Long, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjectEntities, projectService);
+                final Map<Long, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjectEntities, projectUsersService);
                 final Set<String> emailAddresses = new HashSet<>();
                 projectToEmailAddresses.forEach((projectId, emails) -> emailAddresses.addAll(emails));
 
@@ -139,7 +139,7 @@ public class ProjectSyncTask extends ScheduledTask {
         return blackDuckProjectRepositoryAccessor.deleteAndSaveAll(blackDuckProjectEntities);
     }
 
-    private Map<Long, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final List<BlackDuckProjectEntity> blackDuckProjectEntities, final ProjectService projectService) {
+    private Map<Long, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final List<BlackDuckProjectEntity> blackDuckProjectEntities, final ProjectUsersService projectUsersService) {
         final Map<Long, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
         currentDataMap.entrySet()
             .parallelStream()
@@ -154,7 +154,7 @@ public class ProjectSyncTask extends ScheduledTask {
                     if (optionalBlackDuckProjectEntity.isPresent()) {
                         final BlackDuckProjectEntity projectEntity = optionalBlackDuckProjectEntity.get();
 
-                        final Set<String> projectUserEmailAddresses = projectService.getAllActiveUsersForProject(projectView)
+                        final Set<String> projectUserEmailAddresses = projectUsersService.getAllActiveUsersForProject(projectView)
                                                                           .stream()
                                                                           .map(UserView::getEmail)
                                                                           .filter(StringUtils::isNotBlank)

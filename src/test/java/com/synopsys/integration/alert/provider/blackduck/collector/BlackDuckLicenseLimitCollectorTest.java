@@ -17,9 +17,9 @@ import com.synopsys.integration.alert.common.workflow.processor.DigestMessageCon
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.blackduck.api.enumeration.LicenseLimitType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.notification.content.LicenseLimitNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;
 
 public class BlackDuckLicenseLimitCollectorTest {
     private final Gson gson = new Gson();
@@ -39,12 +39,12 @@ public class BlackDuckLicenseLimitCollectorTest {
 
     private NotificationContent getNotificationContent() {
         final LicenseLimitNotificationContent content = new LicenseLimitNotificationContent();
-        content.licenseViolationType = LicenseLimitType.MANAGED_CODEBASE_BYTES_NEW;
-        content.marketingPageUrl = "https://google.com";
-        content.message = "Unit test message";
-        content.usedCodeSize = 81L;
-        content.hardLimit = 100L;
-        content.softLimit = 80L;
+        content.setLicenseViolationType(LicenseLimitType.MANAGED_CODEBASE_BYTES_NEW);
+        content.setMarketingPageUrl("https://google.com");
+        content.setMessage("Unit test message");
+        content.setUsedCodeSize(81L);
+        content.setHardLimit(100L);
+        content.setSoftLimit(80L);
 
         final String notification = String.format("{\"content\":%s}", gson.toJson(content));
         final NotificationContent notificationContent = new NotificationContent(new Date(), BlackDuckProvider.COMPONENT_NAME, new Date(), NotificationType.LICENSE_LIMIT.name(), notification);

@@ -29,8 +29,8 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.DatabaseRelation;
 import com.synopsys.integration.alert.database.configuration.key.DescriptorFieldRelationPK;
-import com.synopsys.integration.alert.database.relation.DatabaseRelation;
 
 @Entity
 @IdClass(DescriptorFieldRelationPK.class)

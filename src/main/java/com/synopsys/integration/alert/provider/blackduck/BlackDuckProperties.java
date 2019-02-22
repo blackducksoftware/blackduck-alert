@@ -48,6 +48,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.util.IntEnvironmentVariables;
 
 @Component
 public class BlackDuckProperties extends ProviderProperties {
@@ -97,7 +98,7 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckHttpClient blackDuckHttpClient, final IntLogger logger) {
-        return new BlackDuckServicesFactory(gson, BlackDuckServicesFactory.createDefaultObjectMapper(), blackDuckHttpClient, logger);
+        return new BlackDuckServicesFactory(new IntEnvironmentVariables(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), blackDuckHttpClient, logger);
     }
 
     public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(final Logger logger) {

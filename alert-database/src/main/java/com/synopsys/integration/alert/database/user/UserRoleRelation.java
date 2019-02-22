@@ -29,7 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.relation.DatabaseRelation;
+import com.synopsys.integration.alert.database.DatabaseRelation;
 
 @Entity
 @IdClass(UserRoleRelationPK.class)
