@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryRestModel;
-import com.synopsys.integration.alert.common.data.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.RestModelTest;
 
 public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {

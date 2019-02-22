@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.data.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.data.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.database.user.UserRole;
 
 public class UserModelTest {

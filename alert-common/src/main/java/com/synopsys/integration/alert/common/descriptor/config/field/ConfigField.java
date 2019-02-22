@@ -29,8 +29,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.data.model.FieldModel;
-import com.synopsys.integration.alert.common.data.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.util.Stringable;
 

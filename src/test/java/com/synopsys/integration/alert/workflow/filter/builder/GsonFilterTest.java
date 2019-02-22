@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
-import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.builder.AndFieldFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.builder.JsonFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.builder.OrFieldFilterBuilder;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonFieldFilterBuilder;
 

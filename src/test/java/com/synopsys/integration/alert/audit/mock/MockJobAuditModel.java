@@ -3,8 +3,8 @@ package com.synopsys.integration.alert.audit.mock;
 import java.util.Date;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.data.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.data.model.JobAuditModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 

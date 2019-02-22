@@ -34,12 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.data.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.data.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorTypeEntity;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;

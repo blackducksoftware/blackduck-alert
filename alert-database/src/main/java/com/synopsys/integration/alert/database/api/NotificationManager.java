@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;

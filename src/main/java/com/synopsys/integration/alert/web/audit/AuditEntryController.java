@@ -37,9 +37,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.data.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.data.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.data.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.controller.BaseController;

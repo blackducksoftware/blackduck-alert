@@ -35,12 +35,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.data.model.FieldModel;
-import com.synopsys.integration.alert.common.data.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.model.DateRange;
+import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessage;

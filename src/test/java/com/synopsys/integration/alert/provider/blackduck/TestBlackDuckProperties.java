@@ -18,10 +18,10 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
-import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;

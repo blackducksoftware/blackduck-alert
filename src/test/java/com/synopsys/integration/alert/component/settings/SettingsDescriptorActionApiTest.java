@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.data.model.FieldModel;
-import com.synopsys.integration.alert.common.data.model.FieldValueModel;
-import com.synopsys.integration.alert.common.data.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;

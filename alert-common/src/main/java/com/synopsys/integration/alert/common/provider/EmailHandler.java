@@ -23,8 +23,8 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import com.synopsys.integration.alert.common.data.FieldAccessor;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public abstract class EmailHandler {
     public abstract FieldAccessor updateFieldAccessor(final AggregateMessageContent content, final FieldAccessor originalAccessor);

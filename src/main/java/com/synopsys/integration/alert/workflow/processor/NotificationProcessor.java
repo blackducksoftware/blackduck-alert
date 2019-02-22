@@ -30,11 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.data.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 
 @Component
 public class NotificationProcessor {

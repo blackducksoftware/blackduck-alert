@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.data.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.data.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
 
 public class MockDescriptorAccessor implements BaseDescriptorAccessor {
 

@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;

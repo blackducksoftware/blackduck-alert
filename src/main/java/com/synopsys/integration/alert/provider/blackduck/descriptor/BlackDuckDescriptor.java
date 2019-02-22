@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 

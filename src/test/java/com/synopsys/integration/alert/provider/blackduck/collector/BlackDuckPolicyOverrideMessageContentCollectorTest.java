@@ -18,9 +18,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonFieldAccessor;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;

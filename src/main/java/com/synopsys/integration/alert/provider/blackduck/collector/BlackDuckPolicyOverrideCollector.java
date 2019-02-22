@@ -33,13 +33,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.field.JsonField;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonFieldAccessor;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 

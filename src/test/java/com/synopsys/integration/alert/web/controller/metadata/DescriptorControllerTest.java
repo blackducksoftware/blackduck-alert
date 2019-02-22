@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;

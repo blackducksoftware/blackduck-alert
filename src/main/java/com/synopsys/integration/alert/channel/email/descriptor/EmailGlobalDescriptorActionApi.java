@@ -37,14 +37,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
-import com.synopsys.integration.alert.common.data.FieldAccessor;
-import com.synopsys.integration.alert.common.data.model.TestConfigModel;
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.CategoryKey;
-import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component

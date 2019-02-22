@@ -27,7 +27,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;

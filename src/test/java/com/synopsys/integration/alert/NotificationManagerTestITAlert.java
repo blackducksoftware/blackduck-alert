@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.NotificationManager;

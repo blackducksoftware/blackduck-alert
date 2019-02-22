@@ -36,17 +36,17 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.data.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.filter.builder.AndFieldFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.builder.DefaultFilterBuilders;
 import com.synopsys.integration.alert.common.workflow.filter.builder.JsonFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.builder.OrFieldFilterBuilder;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
 
 @Component

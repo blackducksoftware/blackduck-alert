@@ -26,7 +26,7 @@ package com.synopsys.integration.alert.common.workflow.processor;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 
 public abstract class MessageContentProcessor {
     private final FormatType formatType;

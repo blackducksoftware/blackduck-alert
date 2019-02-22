@@ -40,17 +40,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jayway.jsonpath.TypeRef;
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.field.JsonField;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.common.model.MessageContentKey;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentKey;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonFieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 
 public abstract class MessageContentCollector {

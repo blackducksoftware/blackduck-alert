@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.data.model.FieldValueModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class FieldModelUtil {
 

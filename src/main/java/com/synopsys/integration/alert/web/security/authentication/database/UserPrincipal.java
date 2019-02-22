@@ -28,7 +28,7 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.synopsys.integration.alert.common.data.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
 
 public class UserPrincipal implements UserDetails {
     private final UserModel userModel;

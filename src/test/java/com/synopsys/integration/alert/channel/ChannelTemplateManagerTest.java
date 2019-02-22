@@ -13,12 +13,12 @@ import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.data.FieldAccessor;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.ContentEvent;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.rest.RestConstants;
 
