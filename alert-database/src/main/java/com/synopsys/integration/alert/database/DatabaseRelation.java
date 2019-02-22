@@ -21,7 +21,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-//module com.synopsys.integration.alert.database {
-//    requires transitive com.synopsys.integration.alert.common;
-//    exports com.synopsys.integration.alert.database.api;
-//}
+package com.synopsys.integration.alert.database;
+
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
+public abstract class DatabaseRelation extends BaseEntity {
+    public DatabaseRelation() {
+        super();
+    }
+}

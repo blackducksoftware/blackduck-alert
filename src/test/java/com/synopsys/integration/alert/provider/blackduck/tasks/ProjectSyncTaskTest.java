@@ -22,7 +22,7 @@ import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ProjectService;
+import com.synopsys.integration.blackduck.service.ProjectUsersService;
 
 public class ProjectSyncTaskTest {
 
@@ -52,8 +52,8 @@ public class ProjectSyncTaskTest {
         final BlackDuckService hubService = Mockito.mock(BlackDuckService.class);
         Mockito.when(BlackDuckServicesFactory.createBlackDuckService()).thenReturn(hubService);
 
-        final ProjectService projectService = Mockito.mock(ProjectService.class);
-        Mockito.when(BlackDuckServicesFactory.createProjectService()).thenReturn(projectService);
+        final ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
+        Mockito.when(BlackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
         final ProjectView projectView = createProjectView("project", "description1", "projectUrl1");
         final ProjectView projectView2 = createProjectView("project2", "description2", "projectUrl2");
@@ -66,9 +66,9 @@ public class ProjectSyncTaskTest {
         final UserView user3 = createUserView(email3, true);
         final UserView user4 = createUserView(email4, true);
 
-        Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
-        Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
-        Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
         final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
             userProjectRelationRepositoryAccessor);
@@ -80,8 +80,8 @@ public class ProjectSyncTaskTest {
 
         Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2));
 
-        Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
-        Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
 
         Mockito.when(hubService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(Collections.emptyList());
         projectSyncTask.run();

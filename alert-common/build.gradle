@@ -1,8 +1,9 @@
 ext.moduleName = 'com.synopsys.integration.alert.common'
 
 dependencies {
-    api 'org.springframework.boot:spring-boot-starter'
-    api 'org.springframework.boot:spring-boot-starter-web'
-    api 'org.springframework.security:spring-security-config'
+    api 'com.blackducksoftware.integration:blackduck-common:42.0.1-SNAPSHOT'
+
     api 'org.springframework.boot:spring-boot-starter-activemq'
+    api 'org.springframework.security:spring-security-config'
+    api 'org.springframework.boot:spring-boot-starter-web'
 }

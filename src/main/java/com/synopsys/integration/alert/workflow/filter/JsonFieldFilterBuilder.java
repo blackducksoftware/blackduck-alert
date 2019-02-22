@@ -49,7 +49,7 @@ public class JsonFieldFilterBuilder implements JsonFilterBuilder {
         return notification -> {
             final List<String> contentValues = jsonExtractor.getValuesFromJson(jsonField, notification.getContent());
             for (final String contentValue : contentValues) {
-                if (StringUtils.isNotBlank(contentValue) && contentValue.matches(value)) {
+                if (StringUtils.isNotBlank(contentValue) && (contentValue.equals(value.trim()) || contentValue.matches(value))) {
                     return true;
                 }
             }

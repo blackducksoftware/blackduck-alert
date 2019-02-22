@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.database.relation.DatabaseRelation;
+import com.synopsys.integration.alert.database.DatabaseRelation;
 
 public abstract class RelationTest<R extends DatabaseRelation> implements BaseEntityTest<R> {
     @Override
