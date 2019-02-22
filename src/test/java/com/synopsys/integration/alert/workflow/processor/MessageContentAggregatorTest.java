@@ -20,19 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.database.channel.JobConfigReader;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.database.api.JobConfigReader;
+import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -49,12 +49,12 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testNoJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
-        final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
-        final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
+        final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
         final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(jobConfigReader, providerDescriptors, notificationFilter);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
@@ -65,12 +65,12 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
-        final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
-        final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
+        final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
         final List<String> projects = List.of("example", "alert-test-project", "alert-test-project-2");
         final List<String> notificationTypes = List.of(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
@@ -91,12 +91,12 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testJobProcessingFrequencyMismatch() throws Exception {
         final FrequencyType frequencyType = FrequencyType.DAILY;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
-        final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
-        final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
+        final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
         final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
         Mockito.doReturn(List.of()).when(spiedReader).getPopulatedJobConfigs();
@@ -112,12 +112,12 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final String unknownProvider = "unknown_provider";
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
-        final NotificationContent vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
 
-        final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
+        final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
         final List<String> projects = List.of("bad-project");
         final List<String> notificationTypes = List.of(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
@@ -138,12 +138,12 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final String unknownProvider = "unknown_provider";
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
-        final NotificationContent vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
 
-        final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
+        final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
         final List<String> projects = List.of("bad-project");
         final List<String> notificationTypes = List.of(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
@@ -184,9 +184,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         fieldModelMap.put(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationTypeModel);
         fieldModelMap.put(ChannelDistributionUIConfig.KEY_FREQUENCY, frequencyTypeModel);
         fieldModelMap.put(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatTypeModel);
-        fieldModelMap.put(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, filterByProjectModel);
-        fieldModelMap.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, projectNamePatternModel);
-        fieldModelMap.put(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, configuredProjectsModel);
+        fieldModelMap.put(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, filterByProjectModel);
+        fieldModelMap.put(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, projectNamePatternModel);
+        fieldModelMap.put(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, configuredProjectsModel);
 
         Mockito.when(nameModel.getFieldValue()).thenReturn(Optional.of("Unit Test Job"));
         Mockito.when(channelModel.getFieldValue()).thenReturn(Optional.of(HipChatChannel.COMPONENT_NAME));
@@ -208,7 +208,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         return FileUtils.readFileToString(jsonFile, Charset.defaultCharset());
     }
 
-    private NotificationContent createNotification(final String providerName, final String notificationContent, final NotificationType type) {
+    private AlertNotificationWrapper createNotification(final String providerName, final String notificationContent, final NotificationType type) {
         return new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
     }
 }

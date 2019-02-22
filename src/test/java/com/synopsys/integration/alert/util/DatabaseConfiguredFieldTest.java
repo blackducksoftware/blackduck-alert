@@ -12,18 +12,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.DescriptorMocker;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
@@ -52,7 +51,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         fieldValueRepository.deleteAllInBatch();
     }
 
-    public ConfigurationJobModel addJob(String descriptorName, String providerName, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
+    public ConfigurationJobModel addJob(final String descriptorName, final String providerName, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
         final Set<ConfigurationFieldModel> fieldModels = fieldsValues
                                                              .entrySet()
                                                              .stream()
@@ -96,8 +95,8 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
             if (configurationAccessor.getConfigurationById(longId).isPresent()) {
                 configurationAccessor.deleteConfiguration(longId);
             }
-        } catch (NumberFormatException e) {
-            UUID uuid = UUID.fromString(id);
+        } catch (final NumberFormatException e) {
+            final UUID uuid = UUID.fromString(id);
             if (configurationAccessor.getJobById(uuid).isPresent()) {
                 configurationAccessor.deleteJob(uuid);
             }

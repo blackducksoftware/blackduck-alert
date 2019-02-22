@@ -26,17 +26,17 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.channel.ChannelTest;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.common.ProxyManager;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.audit.AuditUtility;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -53,7 +53,7 @@ public class HipChatChannelTest extends ChannelTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     @Disabled("Hip Chat public api is currently end of life; need an on premise installation to test")
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -100,7 +100,7 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void createRequestThrowsExceptionForTemplateTest() throws Exception {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, auditUtility, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -131,7 +131,7 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void testEmptyContent() throws Exception {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, null);
 
@@ -153,7 +153,7 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void testChunkedRequestList() throws Exception {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, null);
 

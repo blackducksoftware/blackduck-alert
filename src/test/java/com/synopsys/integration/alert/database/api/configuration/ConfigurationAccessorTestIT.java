@@ -20,28 +20,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.DescriptorMocker;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
-import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
+import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
+import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Transactional
 public class ConfigurationAccessorTestIT extends AlertIntegrationTest {

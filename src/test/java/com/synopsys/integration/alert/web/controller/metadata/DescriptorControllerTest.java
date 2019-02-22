@@ -10,13 +10,13 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 public class DescriptorControllerTest {
     private final Set<Descriptor> descriptors = createComprehensiveSetOfDescriptors();

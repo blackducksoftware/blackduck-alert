@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelationPK;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 
 public class AuditNotificationRelationPKTest {
 

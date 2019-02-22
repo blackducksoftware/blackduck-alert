@@ -39,16 +39,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelation;
+import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
 
 @Component
 public class BlackDuckEmailHandler extends EmailHandler {

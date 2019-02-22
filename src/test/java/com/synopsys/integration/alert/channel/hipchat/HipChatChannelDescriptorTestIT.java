@@ -18,27 +18,27 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.DateRange;
-import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;
 
 public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
@@ -131,7 +131,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
-        Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
+        final Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
         return passedFieldNames.containsAll(fieldNames);
     }
 
@@ -159,7 +159,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public void testInvalidTextRoomID() {
         final Map<String, String> invalidValuesMap = new HashMap<>();
         invalidValuesMap.putAll(Map.of(HipChatDescriptor.KEY_ROOM_ID, "abcdefg"));
-        int invalidLength = invalidValuesMap.size();
+        final int invalidLength = invalidValuesMap.size();
         invalidValuesMap.putAll(createValidCommonDistributionFieldMap());
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
         final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);

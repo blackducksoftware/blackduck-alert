@@ -16,6 +16,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.database.api.UserAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class UserAccessorTestIT extends AlertIntegrationTest {

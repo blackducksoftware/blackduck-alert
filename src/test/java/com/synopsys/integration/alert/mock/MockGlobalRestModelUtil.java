@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.rest.model.Config;
 
 public abstract class MockGlobalRestModelUtil<GR extends Config> implements MockUtils {
     private final Gson gson = new Gson();

@@ -9,10 +9,12 @@ bin/
 .idea
 out/
 *.iml
+*.ipr
+*.iws
 
 # build tool
 .gradle/
-/build/
+**/build/*
 
 classes/
 /log/

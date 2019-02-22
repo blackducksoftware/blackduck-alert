@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
 
 public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepositoryAccessor {
     private final Map<Long, BlackDuckProjectEntity> blackDuckProjectEntityMap = new HashMap<>();

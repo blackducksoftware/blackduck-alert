@@ -14,7 +14,7 @@ package com.synopsys.integration.alert.mock.entity;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.mock.MockUtils;
 
 public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUtils {

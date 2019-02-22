@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public class EmailProperties {
     // property keys

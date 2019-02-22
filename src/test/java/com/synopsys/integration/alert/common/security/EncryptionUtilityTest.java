@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 public class EncryptionUtilityTest {
     private static final String TEST_PASSWORD = "testPassword";

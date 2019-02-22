@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
-import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.field.JsonField;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
-import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 public class JsonExtractorTest {
     private final Gson gson = new Gson();

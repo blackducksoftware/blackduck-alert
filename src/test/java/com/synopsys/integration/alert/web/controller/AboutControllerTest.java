@@ -27,7 +27,7 @@ public class AboutControllerTest {
         final boolean initialized = true;
         final String startupTime = "startup time is now";
 
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
 
@@ -35,7 +35,7 @@ public class AboutControllerTest {
         final AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
         final ResponseEntity<String> response = controller.about();
 
-        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
+        final ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -50,7 +50,7 @@ public class AboutControllerTest {
 
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
 
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
@@ -59,7 +59,7 @@ public class AboutControllerTest {
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
 
         final ResponseEntity<String> response = aboutController.about();
-        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
+        final ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -69,14 +69,14 @@ public class AboutControllerTest {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
         final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
 
         final ResponseEntity<String> response = aboutController.about();
-        ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
+        final ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
