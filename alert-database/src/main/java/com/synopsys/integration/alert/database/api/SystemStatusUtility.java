@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.model.DateRange;
+import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.database.system.SystemStatus;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 

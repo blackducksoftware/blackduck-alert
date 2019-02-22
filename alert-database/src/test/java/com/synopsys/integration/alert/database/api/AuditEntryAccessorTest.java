@@ -17,10 +17,10 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.CategoryKey;
-import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;

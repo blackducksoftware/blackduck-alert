@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.field.JsonField;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {

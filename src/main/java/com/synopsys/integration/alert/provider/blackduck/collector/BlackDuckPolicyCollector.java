@@ -30,12 +30,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.CategoryKey;
-import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 
 public abstract class BlackDuckPolicyCollector extends MessageContentCollector {

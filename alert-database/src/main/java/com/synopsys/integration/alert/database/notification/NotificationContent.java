@@ -34,7 +34,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 

@@ -12,13 +12,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
-import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.data.model.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.data.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

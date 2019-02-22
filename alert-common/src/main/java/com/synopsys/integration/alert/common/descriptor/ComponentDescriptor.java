@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 

@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 
 public class TopicEvent extends AlertEvent {
 

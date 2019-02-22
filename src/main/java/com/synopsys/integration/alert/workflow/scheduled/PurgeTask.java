@@ -34,8 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;

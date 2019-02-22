@@ -31,11 +31,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.data.FieldAccessor;
-import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public abstract class ProviderProperties {
     private final Logger logger = LoggerFactory.getLogger(getClass());

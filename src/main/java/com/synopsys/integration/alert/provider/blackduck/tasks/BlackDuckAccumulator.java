@@ -43,9 +43,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.model.DateRange;
-import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;

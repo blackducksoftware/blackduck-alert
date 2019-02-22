@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.model.DateRange;
-import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.rest.RestConstants;

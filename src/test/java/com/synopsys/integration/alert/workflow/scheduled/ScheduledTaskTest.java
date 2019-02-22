@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public class ScheduledTaskTest {
     private TaskScheduler taskScheduler;

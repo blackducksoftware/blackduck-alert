@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.model.DateRange;
+import com.synopsys.integration.alert.common.message.model.DateRange;
 
 @Component
 public class SystemMessageUtility {

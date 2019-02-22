@@ -26,7 +26,7 @@ package com.synopsys.integration.alert.common.workflow.filter.builder;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 
 public abstract class BinaryOperatorFieldFilterBuilder implements JsonFilterBuilder {
     private final JsonFilterBuilder leftFilterBuilder;

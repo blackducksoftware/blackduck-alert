@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.ProxyManager;
-import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.workflow.TaskManager;
+import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;

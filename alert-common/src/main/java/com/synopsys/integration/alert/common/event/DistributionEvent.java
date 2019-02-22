@@ -29,8 +29,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.data.FieldAccessor;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public class DistributionEvent extends ContentEvent {
     private final FieldAccessor fieldAccessor;

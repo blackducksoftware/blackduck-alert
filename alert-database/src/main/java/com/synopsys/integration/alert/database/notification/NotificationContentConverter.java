@@ -34,8 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.data.model.Config;
-import com.synopsys.integration.alert.common.data.model.NotificationConfig;
+import com.synopsys.integration.alert.common.rest.model.Config;
+import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.TypeConverter;
 

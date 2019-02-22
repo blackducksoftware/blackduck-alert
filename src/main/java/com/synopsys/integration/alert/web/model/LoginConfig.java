@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.web.model;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
-import com.synopsys.integration.alert.common.data.model.Config;
+import com.synopsys.integration.alert.common.rest.model.Config;
 
 public class LoginConfig extends Config {
     private String blackDuckUsername;

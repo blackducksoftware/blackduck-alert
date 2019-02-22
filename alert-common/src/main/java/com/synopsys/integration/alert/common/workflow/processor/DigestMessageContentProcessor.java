@@ -37,10 +37,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.CategoryKey;
-import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 @Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {

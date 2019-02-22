@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.data.model.Config;
+import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
 
 public abstract class GlobalRestModelTest<GR extends Config> {

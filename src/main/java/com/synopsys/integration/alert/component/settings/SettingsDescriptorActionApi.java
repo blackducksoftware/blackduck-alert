@@ -33,10 +33,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.data.model.FieldModel;
-import com.synopsys.integration.alert.common.data.model.FieldValueModel;
-import com.synopsys.integration.alert.common.data.model.UserModel;
-import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.UserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;

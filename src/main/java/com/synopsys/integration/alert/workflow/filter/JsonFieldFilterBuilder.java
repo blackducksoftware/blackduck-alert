@@ -28,10 +28,10 @@ import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.field.JsonField;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.filter.builder.JsonFilterBuilder;
-import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 
 public class JsonFieldFilterBuilder implements JsonFilterBuilder {
     private final JsonExtractor jsonExtractor;

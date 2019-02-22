@@ -26,8 +26,8 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.function.BiFunction;
 
-import com.synopsys.integration.alert.common.data.model.FieldModel;
-import com.synopsys.integration.alert.common.data.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public interface ConfigValidationFunction extends BiFunction<FieldValueModel, FieldModel, Collection<String>> {
 }

@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.web.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.synopsys.integration.alert.common.data.model.NotificationConfig;
+import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.mock.model.MockNotificationRestModel;
 
 public class NotificationRestModelTest extends RestModelTest<NotificationConfig> {

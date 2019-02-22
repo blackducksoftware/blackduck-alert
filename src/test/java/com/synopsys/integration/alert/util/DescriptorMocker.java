@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.DatabaseEntity;

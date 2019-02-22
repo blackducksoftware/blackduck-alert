@@ -37,7 +37,7 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 @Component
 public class EncryptionUtility {

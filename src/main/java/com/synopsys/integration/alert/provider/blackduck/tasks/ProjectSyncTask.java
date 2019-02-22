@@ -39,7 +39,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;

@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.data.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;

@@ -48,10 +48,10 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.data.FieldAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.AuditEntryUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
