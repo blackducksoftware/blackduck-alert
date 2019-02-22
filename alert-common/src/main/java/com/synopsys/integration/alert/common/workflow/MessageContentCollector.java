@@ -118,16 +118,11 @@ public abstract class MessageContentCollector {
     protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
         final Optional<CategoryItem> foundItem = categoryItems
                                                      .stream()
-                                                     .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()))
+                                                     .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()) && item.getOperation().equals(newItem.getOperation()))
                                                      .findFirst();
         if (foundItem.isPresent()) {
             final CategoryItem categoryItem = foundItem.get();
-            if (categoryItem.getOperation().equals(newItem.getOperation())) {
-                categoryItem.getItems().addAll(newItem.getItems());
-            } else {
-                // operation is different treat like another category item
-                categoryItems.add(newItem);
-            }
+            categoryItem.getItems().addAll(newItem.getItems());
         } else {
             categoryItems.add(newItem);
         }
