@@ -626,7 +626,7 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_USERSET_KEY}
-                            label="SMTP User Set"
+                            label="SMTP Use RSET"
                             name={JAVAMAIL_USERSET_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_USERSET_KEY)}
                             onChange={this.handleChange}

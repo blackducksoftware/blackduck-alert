@@ -50,8 +50,7 @@ public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
         final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, keyItems);
 
         for (final LinkableItem item : applicableItems) {
-            final SortedSet<LinkableItem> linkableItems;
-            linkableItems = createLinkableItemSet(policyItem, item);
+            final SortedSet<LinkableItem> linkableItems = createLinkableItemSet(policyItem, item);
             addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
         }
     }
