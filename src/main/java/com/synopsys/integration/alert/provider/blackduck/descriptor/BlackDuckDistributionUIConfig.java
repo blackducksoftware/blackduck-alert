@@ -44,10 +44,10 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
-public class AlertSerializableModel extends ProviderDistributionUIConfig {
+public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
 
     @Autowired
-    public AlertSerializableModel(final BlackDuckProvider provider) {
+    public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
         super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON, provider);
     }
 
