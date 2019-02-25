@@ -28,9 +28,9 @@ import java.util.List;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class DescriptorMetadata extends Stringable {
+public class DescriptorMetadata extends AlertSerializableModel {
     private final String label;
     private final String urlName;
     private final String name;

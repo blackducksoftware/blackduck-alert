@@ -27,9 +27,9 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LinkableItem extends Stringable implements Comparable<LinkableItem> {
+public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
     private final String name;
     private final String value;
     private final String url;

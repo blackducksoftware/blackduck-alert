@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
-public class TestConfigModel {
+public class TestConfigModel extends AlertSerializableModel {
     private final String destination;
     private final FieldAccessor fieldAccessor;
     private String configId;

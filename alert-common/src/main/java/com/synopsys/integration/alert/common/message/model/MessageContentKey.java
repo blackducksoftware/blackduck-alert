@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class MessageContentKey extends Stringable {
+public final class MessageContentKey extends AlertSerializableModel {
     private final String key;
 
     private MessageContentKey(final String key) {

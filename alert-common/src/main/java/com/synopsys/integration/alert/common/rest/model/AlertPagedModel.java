@@ -25,10 +25,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-import com.synopsys.integration.util.Stringable;
-
-public class AlertPagedModel<M extends Config> extends Stringable {
-
+public class AlertPagedModel<M extends Config> extends AlertSerializableModel {
     private final int totalPages;
     private final int currentPage;
     private final int pageSize;
