@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,41 +50,43 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
-import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.persistence.accessor.BaseAuditUtility;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
+import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
-import com.synopsys.integration.alert.database.notification.NotificationContentConverter;
 
 @Component
 public class AuditEntryUtility implements BaseAuditUtility {
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+
     private static final Logger logger = LoggerFactory.getLogger(AuditEntryUtility.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final JobConfigReader jobConfigReader;
     private final NotificationManager notificationManager;
-    private final NotificationContentConverter notificationContentConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public AuditEntryUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JobConfigReader jobConfigReader,
-        final NotificationManager notificationManager, final NotificationContentConverter notificationContentConverter) {
+        final NotificationManager notificationManager, final ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.jobConfigReader = jobConfigReader;
         this.notificationManager = notificationManager;
-        this.notificationContentConverter = notificationContentConverter;
+        this.contentConverter = contentConverter;
     }
 
     @Override
@@ -201,12 +206,12 @@ public class AuditEntryUtility implements BaseAuditUtility {
 
             if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.before(auditEntryEntity.getTimeLastSent()))) {
                 lastSentDate = auditEntryEntity.getTimeLastSent();
-                lastSent = notificationContentConverter.getContentConverter().getStringValue(lastSentDate);
+                lastSent = contentConverter.getStringValue(lastSentDate);
             }
-            final String id = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getId());
-            final String configId = notificationContentConverter.getContentConverter().getStringValue(commonConfigId);
-            final String timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
-            final String timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
+            final String id = contentConverter.getStringValue(auditEntryEntity.getId());
+            final String configId = contentConverter.getStringValue(commonConfigId);
+            final String timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
+            final String timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
 
             AuditEntryStatus status = null;
             if (auditEntryEntity.getStatus() != null) {
@@ -232,8 +237,8 @@ public class AuditEntryUtility implements BaseAuditUtility {
             final AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(timeCreated, timeLastSent, statusDisplayName);
             jobAuditModels.add(new JobAuditModel(id, configId, distributionConfigName, eventType, auditJobStatusModel, errorMessage, errorStackTrace));
         }
-        final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
-        final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity((NotificationContent) notificationContentEntry);
+        final String id = contentConverter.getStringValue(notificationContentEntry.getId());
+        final NotificationConfig notificationConfig = populateConfigFromEntity((NotificationContent) notificationContentEntry);
 
         String overallStatusDisplayName = null;
         if (null != overallStatus) {
@@ -265,7 +270,7 @@ public class AuditEntryUtility implements BaseAuditUtility {
                 final Function<AuditEntryModel, Date> function = auditEntryModel -> {
                     Date date = null;
                     if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
-                        date = notificationContentConverter.parseDateString(auditEntryModel.getLastSent());
+                        date = parseDateString(auditEntryModel.getLastSent());
                     }
                     return date;
                 };
@@ -284,11 +289,11 @@ public class AuditEntryUtility implements BaseAuditUtility {
     private AuditJobStatusModel convertToJobStatusModel(final AuditEntryEntity auditEntryEntity) {
         String timeCreated = null;
         if (null != auditEntryEntity.getTimeCreated()) {
-            timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
+            timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
         }
         String timeLastSent = null;
         if (null != auditEntryEntity.getTimeLastSent()) {
-            timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
+            timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
         }
         String status = null;
         if (null != auditEntryEntity.getStatus()) {
@@ -306,6 +311,26 @@ public class AuditEntryUtility implements BaseAuditUtility {
             auditPage = notificationManager.findAll(pageRequest, onlyShowSentNotifications);
         }
         return auditPage;
+    }
+
+    private NotificationConfig populateConfigFromEntity(final NotificationContent notificationContent) {
+        final NotificationContent notificationEntity = notificationContent;
+        final String id = contentConverter.getStringValue(notificationEntity.getId());
+        final String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
+        final String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());
+        return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
+    }
+
+    private Date parseDateString(final String dateString) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = null;
+        try {
+            date = sdf.parse(dateString);
+        } catch (final ParseException e) {
+            logger.error(e.toString());
+        }
+        return date;
     }
 
 }
