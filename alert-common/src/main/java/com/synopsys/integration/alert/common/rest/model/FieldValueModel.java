@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class FieldValueModel {
+public class FieldValueModel extends AlertSerializableModel {
     private Collection<String> values;
     private boolean isSet;
 

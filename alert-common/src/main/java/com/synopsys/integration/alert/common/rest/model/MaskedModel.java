@@ -32,9 +32,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 import com.synopsys.integration.alert.common.annotation.SensitiveFieldFinder;
-import com.synopsys.integration.util.Stringable;
 
-public abstract class MaskedModel extends Stringable {
+public abstract class MaskedModel extends AlertSerializableModel {
     @Override
     public String toString() {
         final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {

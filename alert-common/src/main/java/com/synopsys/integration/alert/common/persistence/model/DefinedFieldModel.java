@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class DefinedFieldModel extends Stringable {
+public class DefinedFieldModel extends AlertSerializableModel {
     private final String key;
     private final Collection<ConfigContextEnum> contexts;
     private final Boolean sensitive;

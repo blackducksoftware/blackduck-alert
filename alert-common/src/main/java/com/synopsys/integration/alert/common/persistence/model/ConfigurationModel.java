@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class ConfigurationModel extends Stringable {
+public final class ConfigurationModel extends AlertSerializableModel {
     private final Long descriptorId;
     private final Long configurationId;
     private final ConfigContextEnum context;

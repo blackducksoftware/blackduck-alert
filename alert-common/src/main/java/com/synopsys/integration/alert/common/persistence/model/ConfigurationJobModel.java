@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class ConfigurationJobModel extends Stringable {
+public class ConfigurationJobModel extends AlertSerializableModel {
     private final UUID jobId;
     private final Set<ConfigurationModel> configurations;
 
