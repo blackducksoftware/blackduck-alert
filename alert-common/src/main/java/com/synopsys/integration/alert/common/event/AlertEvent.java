@@ -25,7 +25,9 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.UUID;
 
-public class AlertEvent {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class AlertEvent extends AlertSerializableModel {
     private final String eventId;
     private final String destination;
 

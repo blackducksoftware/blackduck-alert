@@ -76,7 +76,7 @@ public class BlackDuckDescriptorTest {
         final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
         final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
         Mockito.when(topicCollectorFactory.createTopicCollectors()).thenReturn(expectedCollectorSet);
-        final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(provider);
+        final AlertSerializableModel blackDuckDistributionUIConfig = new AlertSerializableModel(provider);
         final BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig();
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, blackDuckProviderUIConfig, null, blackDuckDistributionUIConfig, provider, topicCollectorFactory);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);

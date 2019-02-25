@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class SettingsKeyModel extends Stringable {
+public class SettingsKeyModel extends AlertSerializableModel {
     private final Long id;
     private final String key;
     private final String value;

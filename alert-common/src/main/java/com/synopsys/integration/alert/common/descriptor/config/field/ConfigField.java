@@ -29,12 +29,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.util.Stringable;
 
-public class ConfigField extends Stringable {
+public class ConfigField extends AlertSerializableModel {
     public static final String REQUIRED_FIELD_MISSING = "Required field missing";
     public static final int MAX_FIELD_LENGTH = 511;
     public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);

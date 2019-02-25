@@ -26,8 +26,9 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class UIConfig {
+public abstract class UIConfig extends AlertSerializableModel {
     private final String label;
     private final String urlName;
     private final String fontAwesomeIcon;

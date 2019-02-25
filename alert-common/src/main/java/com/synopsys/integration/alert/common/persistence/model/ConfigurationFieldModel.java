@@ -31,9 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class ConfigurationFieldModel extends Stringable {
+public class ConfigurationFieldModel extends AlertSerializableModel {
     private final String fieldKey;
     private final Boolean isSensitive;
     private Collection<String> fieldValues;
