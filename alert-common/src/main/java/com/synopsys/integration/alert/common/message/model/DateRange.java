@@ -28,9 +28,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.rest.RestConstants;
 
-public class DateRange {
+public class DateRange extends AlertSerializableModel {
     private final Date start;
     private final Date end;
 

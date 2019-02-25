@@ -30,9 +30,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.synopsys.integration.util.Stringable;
-
-public class UserModel extends Stringable {
+public class UserModel extends AlertSerializableModel {
     public static final String ROLE_PREFIX = "ROLE_";
     private final String name;
     private final String password;

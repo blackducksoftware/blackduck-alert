@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class CategoryItem extends Stringable {
+public class CategoryItem extends AlertSerializableModel {
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
     private final SortedSet<LinkableItem> items;

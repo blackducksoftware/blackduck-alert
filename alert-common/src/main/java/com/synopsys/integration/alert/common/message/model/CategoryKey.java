@@ -26,9 +26,9 @@ package com.synopsys.integration.alert.common.message.model;
 import java.util.Arrays;
 import java.util.List;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class CategoryKey extends Stringable {
+public final class CategoryKey extends AlertSerializableModel {
     private final String type;
     private final String key;
 

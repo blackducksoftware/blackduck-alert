@@ -23,34 +23,9 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.Set;
+import java.io.Serializable;
 
-public class JobFieldModel extends AlertSerializableModel {
-    private String jobId;
-    private Set<FieldModel> fieldModels;
+import com.synopsys.integration.util.Stringable;
 
-    public JobFieldModel() {
-        this(null, null);
-    }
-
-    public JobFieldModel(final String jobId, final Set<FieldModel> fieldModels) {
-        this.jobId = jobId;
-        this.fieldModels = fieldModels;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(final String jobId) {
-        this.jobId = jobId;
-    }
-
-    public Set<FieldModel> getFieldModels() {
-        return fieldModels;
-    }
-
-    public void setFieldModels(final Set<FieldModel> fieldModels) {
-        this.fieldModels = fieldModels;
-    }
+public abstract class AlertSerializableModel extends Stringable implements Serializable {
 }

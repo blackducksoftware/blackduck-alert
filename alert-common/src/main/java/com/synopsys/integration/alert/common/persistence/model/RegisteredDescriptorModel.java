@@ -24,9 +24,9 @@
 package com.synopsys.integration.alert.common.persistence.model;
 
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class RegisteredDescriptorModel extends Stringable {
+public final class RegisteredDescriptorModel extends AlertSerializableModel {
     private final Long id;
     private final String name;
     private final DescriptorType type;
