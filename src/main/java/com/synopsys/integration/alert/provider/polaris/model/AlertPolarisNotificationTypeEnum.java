@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * blackduck-alert
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,37 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.provider.polaris.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import com.synopsys.integration.alert.database.DatabaseEntity;
-
-@Entity
-@Table(schema = "alert", name = "blackduck_user")
-public class BlackDuckUserEntity extends DatabaseEntity {
-    @Column(name = "email_address")
-    private String emailAddress;
-
-    @Column(name = "opt_out")
-    private Boolean optOut;
-
-    public BlackDuckUserEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public BlackDuckUserEntity(final String emailAddress, final Boolean optOut) {
-        this.emailAddress = emailAddress;
-        this.optOut = optOut;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public Boolean getOptOut() {
-        return optOut;
-    }
+public enum AlertPolarisNotificationTypeEnum {
+    ISSUE_CREATED,
+    ISSUE_CLOSED
 }

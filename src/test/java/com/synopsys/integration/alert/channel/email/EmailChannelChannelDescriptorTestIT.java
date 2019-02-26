@@ -17,9 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -30,13 +27,16 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.BlackDuckUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserProjectRelation;
+import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -51,7 +51,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Autowired
     private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     @Autowired
-    private UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    private BlackDuckUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     @Autowired
     private EmailDescriptor emailDescriptor;
 
@@ -63,15 +63,15 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         final DatabaseEntity project4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
         final DatabaseEntity project5 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
 
-        final DatabaseEntity user1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
-        final DatabaseEntity user2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
-        final DatabaseEntity user3 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
+        final DatabaseEntity user1 = blackDuckUserRepositoryAccessor.saveEntity(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
+        final DatabaseEntity user2 = blackDuckUserRepositoryAccessor.saveEntity(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
+        final DatabaseEntity user3 = blackDuckUserRepositoryAccessor.saveEntity(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
 
-        final UserProjectRelation userProjectRelation1 = new UserProjectRelation(user1.getId(), project1.getId());
-        final UserProjectRelation userProjectRelation2 = new UserProjectRelation(user1.getId(), project2.getId());
-        final UserProjectRelation userProjectRelation3 = new UserProjectRelation(user2.getId(), project3.getId());
-        final UserProjectRelation userProjectRelation4 = new UserProjectRelation(user3.getId(), project4.getId());
-        final UserProjectRelation userProjectRelation5 = new UserProjectRelation(user3.getId(), project5.getId());
+        final BlackDuckUserProjectRelation userProjectRelation1 = new BlackDuckUserProjectRelation(user1.getId(), project1.getId());
+        final BlackDuckUserProjectRelation userProjectRelation2 = new BlackDuckUserProjectRelation(user1.getId(), project2.getId());
+        final BlackDuckUserProjectRelation userProjectRelation3 = new BlackDuckUserProjectRelation(user2.getId(), project3.getId());
+        final BlackDuckUserProjectRelation userProjectRelation4 = new BlackDuckUserProjectRelation(user3.getId(), project4.getId());
+        final BlackDuckUserProjectRelation userProjectRelation5 = new BlackDuckUserProjectRelation(user3.getId(), project5.getId());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4, userProjectRelation5)));
 
         final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
