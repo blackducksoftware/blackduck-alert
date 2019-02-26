@@ -2,18 +2,50 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="gkillough" id="1551202634344-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <column name="NAME" type="VARCHAR(255)" value="provider_polaris"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('PROVIDER')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gkillough" id="1551202634344-2">
         <renameTable
                 schemaName="ALERT"
                 oldTableName="BLACKDUCK_USER"
-                newTableName="PROVIDER_USER"
+                newTableName="PROVIDER_USERS"
+        />
+        <renameTable
+                schemaName="ALERT"
+                oldTableName="BLACKDUCK_PROJECT"
+                newTableName="PROVIDER_PROJECTS"
+        />
+        <renameTable
+                schemaName="ALERT"
+                oldTableName="BLACKDUCK_USER_PROJECT_RELATION"
+                newTableName="PROVIDER_USER_PROJECT_RELATION"
         />
     </changeSet>
-    <changeSet author="gkillough" id="1551202634344-2">
-        <addColumn
+    <changeSet author="gkillough" id="1551202634344-3">
+        <renameColumn
                 schemaName="ALERT"
-                tableName="PROVIDER_USER"
-        >
-            <column name="PROVIDER" value="provider_blackduck"/>
+                tableName="PROVIDER_USER_PROJECT_RELATION"
+                oldColumnName="BLACKDUCK_USER_ID"
+                newColumnName="PROVIDER_USER_ID"
+        />
+        <renameColumn
+                schemaName="ALERT"
+                tableName="PROVIDER_USER_PROJECT_RELATION"
+                oldColumnName="BLACKDUCK_PROJECT_ID"
+                newColumnName="PROVIDER_PROJECT_ID"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1551202634344-4">
+        <addColumn schemaName="ALERT" tableName="PROVIDER_PROJECTS">
+            <column name="PROVIDER" value="provider_blackduck" type="varchar(255)"/>
+        </addColumn>
+        <addColumn schemaName="ALERT" tableName="PROVIDER_USERS">
+            <column name="PROVIDER" value="provider_blackduck" type="varchar(255)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

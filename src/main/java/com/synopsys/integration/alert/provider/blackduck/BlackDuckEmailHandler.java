@@ -43,24 +43,24 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserProjectRelation;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 
 @Component
 public class BlackDuckEmailHandler extends EmailHandler {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckEmailHandler.class);
 
-    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
-    private final BlackDuckUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    private final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final ProviderUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
 
     @Autowired
-    public BlackDuckEmailHandler(final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
-        final BlackDuckUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
+    public BlackDuckEmailHandler(final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
+        final ProviderUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
@@ -80,7 +80,7 @@ public class BlackDuckEmailHandler extends EmailHandler {
         return new FieldAccessor(fieldMap);
     }
 
-    public Set<String> getBlackDuckEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, final boolean projectOwnerOnly) {
+    public Set<String> getBlackDuckEmailAddressesForProject(final ProviderProjectEntity blackDuckProjectEntity, final boolean projectOwnerOnly) {
         if (null == blackDuckProjectEntity) {
             return Collections.emptySet();
         }
@@ -91,10 +91,10 @@ public class BlackDuckEmailHandler extends EmailHandler {
                 emailAddresses.add(blackDuckProjectEntity.getProjectOwnerEmail());
             }
         } else {
-            final List<BlackDuckUserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
+            final List<ProviderUserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByProviderProjectId(blackDuckProjectEntity.getId());
             emailAddresses = userProjectRelations
                                  .stream()
-                                 .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
+                                 .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getProviderUserId()))
                                  .flatMap(Optional::stream)
                                  .map(ProviderUserEntity::getEmailAddress)
                                  .filter(StringUtils::isNotBlank)
@@ -107,7 +107,7 @@ public class BlackDuckEmailHandler extends EmailHandler {
         if (null != emailAddresses && !emailAddresses.isEmpty()) {
             return emailAddresses;
         }
-        final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
+        final ProviderProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
         emailAddresses = getBlackDuckEmailAddressesForProject(projectEntity, projectOwnerOnly);
         if (emailAddresses.isEmpty()) {
             logger.error("Could not find any email addresses for project: {}", projectName);

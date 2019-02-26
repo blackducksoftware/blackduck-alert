@@ -34,9 +34,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.AuditEntryUtility;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -180,7 +180,7 @@ public class EmailGlobalDescriptorActionApiTest {
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
 
-        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(BlackDuckUserProjectRelationRepositoryAccessor.class), Mockito.mock(
+        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(ProviderProjectRepositoryAccessor.class), Mockito.mock(ProviderUserProjectRelationRepositoryAccessor.class), Mockito.mock(
             BlackDuckUserRepositoryAccessor.class));
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);

@@ -27,9 +27,9 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.AuditEntryUtility;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
@@ -51,7 +51,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(BlackDuckUserProjectRelationRepositoryAccessor.class), Mockito.mock(
+        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(ProviderProjectRepositoryAccessor.class), Mockito.mock(ProviderUserProjectRelationRepositoryAccessor.class), Mockito.mock(
             BlackDuckUserRepositoryAccessor.class));
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);

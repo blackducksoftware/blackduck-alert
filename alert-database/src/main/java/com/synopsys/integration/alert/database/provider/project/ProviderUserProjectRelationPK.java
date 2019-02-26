@@ -21,15 +21,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.project;
 
-import java.util.List;
+import java.io.Serializable;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class ProviderUserProjectRelationPK implements Serializable {
+    private static final long serialVersionUID = 2978750766498759769L;
+    private Long providerUserId;
+    private Long providerProjectId;
 
-public interface BlackDuckUserProjectRelationRepository extends JpaRepository<BlackDuckUserProjectRelation, BlackDuckUserProjectRelationPK> {
-    List<BlackDuckUserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId);
+    public ProviderUserProjectRelationPK() {
+        // JPA requires default constructor definitions
+    }
 
-    List<BlackDuckUserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId);
+    public Long getProviderUserId() {
+        return providerUserId;
+    }
 
+    public void setProviderUserId(final Long providerUserId) {
+        this.providerUserId = providerUserId;
+    }
+
+    public Long getProviderProjectId() {
+        return providerProjectId;
+    }
+
+    public void setProviderProjectId(final Long providerProjectId) {
+        this.providerProjectId = providerProjectId;
+    }
 }

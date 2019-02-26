@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.project;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,32 +32,32 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.DatabaseRelation;
 
 @Entity
-@IdClass(BlackDuckUserProjectRelationPK.class)
-@Table(schema = "alert", name = "blackduck_user_project_relation")
-public class BlackDuckUserProjectRelation extends DatabaseRelation {
+@IdClass(ProviderUserProjectRelationPK.class)
+@Table(schema = "alert", name = "provider_user_project_relation")
+public class ProviderUserProjectRelation extends DatabaseRelation {
     @Id
-    @Column(name = "blackduck_user_id")
-    private Long blackDuckUserId;
+    @Column(name = "provider_user_id")
+    private Long providerUserId;
 
     @Id
-    @Column(name = "blackduck_project_id")
-    private Long blackDuckProjectId;
+    @Column(name = "provider_project_id")
+    private Long providerProjectId;
 
-    public BlackDuckUserProjectRelation() {
+    public ProviderUserProjectRelation() {
         // JPA requires default constructor definitions
     }
 
-    public BlackDuckUserProjectRelation(final Long blackDuckUserId, final Long blackDuckProjectId) {
+    public ProviderUserProjectRelation(final Long providerUserId, final Long providerProjectId) {
         super();
-        this.blackDuckUserId = blackDuckUserId;
-        this.blackDuckProjectId = blackDuckProjectId;
+        this.providerUserId = providerUserId;
+        this.providerProjectId = providerProjectId;
     }
 
-    public Long getBlackDuckUserId() {
-        return blackDuckUserId;
+    public Long getProviderUserId() {
+        return providerUserId;
     }
 
-    public Long getBlackDuckProjectId() {
-        return blackDuckProjectId;
+    public Long getProviderProjectId() {
+        return providerProjectId;
     }
 }

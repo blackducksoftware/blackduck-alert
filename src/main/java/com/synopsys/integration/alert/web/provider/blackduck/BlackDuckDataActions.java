@@ -32,25 +32,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 
 @Component
 public class BlackDuckDataActions {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataActions.class);
-    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public BlackDuckDataActions(final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
+    public BlackDuckDataActions(final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
     public List<BlackDuckProject> getBlackDuckProjects() {
-        final List<BlackDuckProjectEntity> blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities();
-        if (!blackDuckProjectEntities.isEmpty()) {
+        final List<ProviderProjectEntity> providerProjectEntities = blackDuckProjectRepositoryAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        if (!providerProjectEntities.isEmpty()) {
             final List<BlackDuckProject> projects = new ArrayList<>();
-            for (final BlackDuckProjectEntity blackDuckProjectEntity : blackDuckProjectEntities) {
+            for (final ProviderProjectEntity blackDuckProjectEntity : providerProjectEntities) {
                 final BlackDuckProject project = new BlackDuckProject(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
                 projects.add(project);
             }

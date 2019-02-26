@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 
-public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepositoryAccessor {
-    private final Map<Long, BlackDuckProjectEntity> blackDuckProjectEntityMap = new HashMap<>();
+public class MockBlackDuckProjectRepositoryAccessor extends ProviderProjectRepositoryAccessor {
+    private final Map<Long, ProviderProjectEntity> blackDuckProjectEntityMap = new HashMap<>();
     private Long count = 1L;
 
     public MockBlackDuckProjectRepositoryAccessor() {
@@ -18,25 +19,34 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
     }
 
     @Override
-    public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
-        final BlackDuckProjectEntity newEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
-        if (null == blackDuckProjectEntity.getId()) {
+    public ProviderProjectEntity saveEntity(final ProviderProjectEntity providerProjectEntity) {
+        final ProviderProjectEntity newEntity = new ProviderProjectEntity(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(), providerProjectEntity.getProjectOwnerEmail(),
+            providerProjectEntity.getProvider());
+        if (null == providerProjectEntity.getId()) {
             newEntity.setId(count);
             count++;
         } else {
-            newEntity.setId(blackDuckProjectEntity.getId());
+            newEntity.setId(providerProjectEntity.getId());
         }
         blackDuckProjectEntityMap.put(newEntity.getId(), newEntity);
         return newEntity;
     }
 
     @Override
-    public List<BlackDuckProjectEntity> readEntities() {
+    public List<ProviderProjectEntity> readEntities() {
         return new ArrayList<>(blackDuckProjectEntityMap.values());
     }
 
     @Override
-    public Optional<BlackDuckProjectEntity> readEntity(final long id) {
+    public List<ProviderProjectEntity> findByProviderName(final String providerName) {
+        return blackDuckProjectEntityMap.values()
+                   .stream()
+                   .filter(entity -> providerName.equals(entity.getProvider()))
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<ProviderProjectEntity> readEntity(final long id) {
         return Optional.ofNullable(blackDuckProjectEntityMap.get(Long.valueOf(id)));
     }
 
@@ -46,9 +56,9 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
     }
 
     @Override
-    public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
+    public List<ProviderProjectEntity> deleteAndSaveAll(final Iterable<ProviderProjectEntity> blackDuckProjectEntities) {
         blackDuckProjectEntityMap.clear();
-        final List<BlackDuckProjectEntity> blackDuckProjectEntitiesSaved = new ArrayList<>();
+        final List<ProviderProjectEntity> blackDuckProjectEntitiesSaved = new ArrayList<>();
         blackDuckProjectEntities.forEach(blackDuckProjectEntity -> {
             blackDuckProjectEntitiesSaved.add(saveEntity(blackDuckProjectEntity));
         });
@@ -56,12 +66,12 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
     }
 
     @Override
-    public BlackDuckProjectEntity findByName(final String name) {
-        final Optional<BlackDuckProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntityMap.entrySet()
-                                                                                    .stream()
-                                                                                    .map(entry -> entry.getValue())
-                                                                                    .filter(blackDuckProjectEntity -> name.equals(blackDuckProjectEntity.getName()))
-                                                                                    .findFirst();
+    public ProviderProjectEntity findByName(final String name) {
+        final Optional<ProviderProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntityMap.entrySet()
+                                                                                   .stream()
+                                                                                   .map(entry -> entry.getValue())
+                                                                                   .filter(blackDuckProjectEntity -> name.equals(blackDuckProjectEntity.getName()))
+                                                                                   .findFirst();
         return optionalBlackDuckProjectEntity.orElse(null);
     }
 

@@ -31,11 +31,11 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.DatabaseEntity;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserProjectRelation;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -47,31 +47,31 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     @Autowired
-    private BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     @Autowired
     private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     @Autowired
-    private BlackDuckUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    private ProviderUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     @Autowired
     private EmailDescriptor emailDescriptor;
 
     @BeforeEach
     public void testSetup() throws Exception {
-        final DatabaseEntity project1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(UNIT_TEST_PROJECT_NAME, "", "", ""));
-        final DatabaseEntity project2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("TestProject2", "", "", ""));
-        final DatabaseEntity project3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", "", ""));
-        final DatabaseEntity project4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
-        final DatabaseEntity project5 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
+        final DatabaseEntity project1 = blackDuckProjectRepositoryAccessor.saveEntity(new ProviderProjectEntity(UNIT_TEST_PROJECT_NAME, "", "", "", ""));
+        final DatabaseEntity project2 = blackDuckProjectRepositoryAccessor.saveEntity(new ProviderProjectEntity("TestProject2", "", "", "", ""));
+        final DatabaseEntity project3 = blackDuckProjectRepositoryAccessor.saveEntity(new ProviderProjectEntity("Project three", "", "", "", ""));
+        final DatabaseEntity project4 = blackDuckProjectRepositoryAccessor.saveEntity(new ProviderProjectEntity("Project four", "", "", "", ""));
+        final DatabaseEntity project5 = blackDuckProjectRepositoryAccessor.saveEntity(new ProviderProjectEntity("Project UnitTest five", "", "", "", "noreply@blackducksoftware.com"));
 
         final DatabaseEntity user1 = blackDuckUserRepositoryAccessor.saveEntity(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
         final DatabaseEntity user2 = blackDuckUserRepositoryAccessor.saveEntity(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
         final DatabaseEntity user3 = blackDuckUserRepositoryAccessor.saveEntity(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
 
-        final BlackDuckUserProjectRelation userProjectRelation1 = new BlackDuckUserProjectRelation(user1.getId(), project1.getId());
-        final BlackDuckUserProjectRelation userProjectRelation2 = new BlackDuckUserProjectRelation(user1.getId(), project2.getId());
-        final BlackDuckUserProjectRelation userProjectRelation3 = new BlackDuckUserProjectRelation(user2.getId(), project3.getId());
-        final BlackDuckUserProjectRelation userProjectRelation4 = new BlackDuckUserProjectRelation(user3.getId(), project4.getId());
-        final BlackDuckUserProjectRelation userProjectRelation5 = new BlackDuckUserProjectRelation(user3.getId(), project5.getId());
+        final ProviderUserProjectRelation userProjectRelation1 = new ProviderUserProjectRelation(user1.getId(), project1.getId());
+        final ProviderUserProjectRelation userProjectRelation2 = new ProviderUserProjectRelation(user1.getId(), project2.getId());
+        final ProviderUserProjectRelation userProjectRelation3 = new ProviderUserProjectRelation(user2.getId(), project3.getId());
+        final ProviderUserProjectRelation userProjectRelation4 = new ProviderUserProjectRelation(user3.getId(), project4.getId());
+        final ProviderUserProjectRelation userProjectRelation5 = new ProviderUserProjectRelation(user3.getId(), project5.getId());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4, userProjectRelation5)));
 
         final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;

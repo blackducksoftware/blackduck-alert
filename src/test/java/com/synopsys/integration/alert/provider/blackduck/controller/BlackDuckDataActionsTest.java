@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
@@ -16,7 +17,7 @@ public class BlackDuckDataActionsTest {
 
     @Test
     public void testGetHubProjectsNoProjects() throws Exception {
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
+        final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
 
         final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(blackDuckProjectRepositoryAccessor);
         final List<BlackDuckProject> blackDuckProjects = blackDuckDataActions.getBlackDuckProjects();
@@ -25,14 +26,15 @@ public class BlackDuckDataActionsTest {
 
     @Test
     public void testGetHubProjects() throws Exception {
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
+        final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
 
         final String projectName = "projectName";
         final String description = "Description";
         final String href = "href";
         final String projectOwnerEmail = "projectOwner";
+        final String provider = BlackDuckProvider.COMPONENT_NAME;
 
-        blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(projectName, description, href, projectOwnerEmail));
+        blackDuckProjectRepositoryAccessor.saveEntity(new ProviderProjectEntity(projectName, description, href, projectOwnerEmail, provider));
 
         final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(blackDuckProjectRepositoryAccessor);
         final List<BlackDuckProject> blackDuckProjects = blackDuckDataActions.getBlackDuckProjects();
