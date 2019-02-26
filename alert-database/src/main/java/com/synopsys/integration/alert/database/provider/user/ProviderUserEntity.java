@@ -30,7 +30,7 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "alert", name = "provider_user")
+@Table(schema = "alert", name = "provider_users")
 public class ProviderUserEntity extends DatabaseEntity {
     @Column(name = "email_address")
     private String emailAddress;

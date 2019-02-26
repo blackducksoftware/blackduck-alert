@@ -44,11 +44,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -82,7 +82,7 @@ public class JobConfigController extends BaseController {
         }
 
         if (models.isEmpty()) {
-            return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
+            // return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
         }
 
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));

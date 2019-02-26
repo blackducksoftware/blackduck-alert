@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.project;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,8 +30,8 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "alert", name = "blackduck_project")
-public class BlackDuckProjectEntity extends DatabaseEntity {
+@Table(schema = "alert", name = "provider_projects")
+public class ProviderProjectEntity extends DatabaseEntity {
     @Column(name = "name")
     private String name;
 
@@ -44,15 +44,19 @@ public class BlackDuckProjectEntity extends DatabaseEntity {
     @Column(name = "project_owner_email")
     private String projectOwnerEmail;
 
-    public BlackDuckProjectEntity() {
+    @Column(name = "provider")
+    private String provider;
+
+    public ProviderProjectEntity() {
         // JPA requires default constructor definitions
     }
 
-    public BlackDuckProjectEntity(final String name, final String description, final String href, final String projectOwnerEmail) {
+    public ProviderProjectEntity(final String name, final String description, final String href, final String projectOwnerEmail, final String provider) {
         this.name = name;
         this.description = description;
         this.href = href;
         this.projectOwnerEmail = projectOwnerEmail;
+        this.provider = provider;
     }
 
     public String getName() {
@@ -69,5 +73,9 @@ public class BlackDuckProjectEntity extends DatabaseEntity {
 
     public String getProjectOwnerEmail() {
         return projectOwnerEmail;
+    }
+
+    public String getProvider() {
+        return provider;
     }
 }
