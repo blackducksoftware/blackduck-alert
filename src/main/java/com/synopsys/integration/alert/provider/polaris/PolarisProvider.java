@@ -26,28 +26,44 @@ package com.synopsys.integration.alert.provider.polaris;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 
 @Component(PolarisProvider.COMPONENT_NAME)
 public class PolarisProvider extends Provider {
     public static final String COMPONENT_NAME = "provider_polaris";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public PolarisProvider() {
+    private final TaskManager taskManager;
+    private final PolarisProjectSyncTask projectSyncTask;
+
+    @Autowired
+    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask) {
         super(PolarisProvider.COMPONENT_NAME, null);
+        this.taskManager = taskManager;
+        this.projectSyncTask = projectSyncTask;
     }
 
     @Override
     public void initialize() {
-        // FIXME schedule Polaris tasks
+        logger.info("Initializing Polaris provider...");
+        taskManager.registerTask(projectSyncTask);
+        taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
     }
 
     @Override
     public void destroy() {
-        // FIXME unschedule Polaris tasks
+        logger.info("Destroying Polaris provider...");
+        taskManager.unregisterTask(projectSyncTask.getTaskName());
     }
 
     @Override

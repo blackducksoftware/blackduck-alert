@@ -24,7 +24,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectUsersService;
 
-public class ProjectSyncTaskTest {
+public class BlackDuckProjectSyncTaskTest {
 
     @Test
     public void testRun() throws Exception {
@@ -70,7 +70,7 @@ public class ProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
-        final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
+        final BlackDuckProjectSyncTask projectSyncTask = new BlackDuckProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
             userProjectRelationRepositoryAccessor);
         projectSyncTask.run();
 

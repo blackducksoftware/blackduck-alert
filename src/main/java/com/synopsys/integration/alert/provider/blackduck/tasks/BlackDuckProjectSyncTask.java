@@ -59,16 +59,16 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class ProjectSyncTask extends ScheduledTask {
+public class BlackDuckProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-sync-project-task";
-    private final Logger logger = LoggerFactory.getLogger(ProjectSyncTask.class);
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
-    public ProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
+    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
