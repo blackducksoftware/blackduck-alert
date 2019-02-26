@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckProviderTest {
@@ -21,9 +21,9 @@ public class BlackDuckProviderTest {
     @Test
     public void testInitialize() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         Mockito.when(accumulatorTask.getTaskName()).thenReturn(BlackDuckAccumulator.TASK_NAME);
-        Mockito.when(projectSyncTask.getTaskName()).thenReturn(ProjectSyncTask.TASK_NAME);
+        Mockito.when(projectSyncTask.getTaskName()).thenReturn(BlackDuckProjectSyncTask.TASK_NAME);
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         provider.initialize();
@@ -33,9 +33,9 @@ public class BlackDuckProviderTest {
     @Test
     public void testDestroy() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         Mockito.when(accumulatorTask.getTaskName()).thenReturn(BlackDuckAccumulator.TASK_NAME);
-        Mockito.when(projectSyncTask.getTaskName()).thenReturn(ProjectSyncTask.TASK_NAME);
+        Mockito.when(projectSyncTask.getTaskName()).thenReturn(BlackDuckProjectSyncTask.TASK_NAME);
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         provider.destroy();
@@ -45,7 +45,7 @@ public class BlackDuckProviderTest {
     @Test
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
@@ -61,7 +61,7 @@ public class BlackDuckProviderTest {
     @Test
     public void testGetSupportedFormatTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         final Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
