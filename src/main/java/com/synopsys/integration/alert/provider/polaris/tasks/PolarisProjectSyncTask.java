@@ -23,6 +23,13 @@
  */
 package com.synopsys.integration.alert.provider.polaris.tasks;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -31,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.polaris.common.api.ProjectV0;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
 @Component
@@ -51,9 +59,37 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         try {
             final AccessTokenPolarisHttpClient polarisHttpClient = polarisProperties.createPolarisHttpClient(logger);
             // TODO get projects and store them, tracking deltas
+
+            final List<ProjectV0> polarisProjectsFromServer = List.of(); // FIXME get this from the server
+            final List<ProjectV0> polarisStoredProjects = List.of(); // FIXME get this from the database
+            final Map<String, ProjectV0> storedProjectsMap = polarisStoredProjects
+                                                                 .stream()
+                                                                 .collect(Collectors.toMap(ProjectV0::getId, Function.identity()));
+
+            final Set<ProjectV0> projectsToNotifyOn = new HashSet<>();
+            for (final ProjectV0 projectFromServer : polarisProjectsFromServer) {
+                if (!storedProjectsMap.containsKey(projectFromServer.getId())) {
+                    projectsToNotifyOn.add(projectFromServer);
+                }
+            }
+            storeNewProjects(projectsToNotifyOn);
+            generateNotificationsForIssues(projectsToNotifyOn);
+            cleanUpOldProjects(polarisProjectsFromServer);
         } catch (final IntegrationException e) {
             logger.error("Could not create Polaris connection", e);
         }
         logger.info("### Finished {}...", getTaskName());
+    }
+
+    private void storeNewProjects(final Set<ProjectV0> newProjects) {
+        // FIXME implement
+    }
+
+    private void generateNotificationsForIssues(final Set<ProjectV0> projects) {
+        // FIXME implement
+    }
+
+    private void cleanUpOldProjects(final List<ProjectV0> projectsFromServer) {
+        // FIXME implement
     }
 }

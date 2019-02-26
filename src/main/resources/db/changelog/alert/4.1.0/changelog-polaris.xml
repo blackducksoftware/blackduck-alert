@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gkillough" id="1551202634344-1">
+        <renameTable
+                schemaName="ALERT"
+                oldTableName="BLACKDUCK_USER"
+                newTableName="PROVIDER_USER"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1551202634344-2">
+        <addColumn
+                schemaName="ALERT"
+                tableName="PROVIDER_USER"
+        >
+            <column name="PROVIDER" value="provider_blackduck"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

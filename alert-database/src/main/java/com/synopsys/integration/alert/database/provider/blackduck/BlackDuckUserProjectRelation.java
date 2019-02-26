@@ -32,9 +32,9 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.DatabaseRelation;
 
 @Entity
-@IdClass(UserProjectRelationPK.class)
+@IdClass(BlackDuckUserProjectRelationPK.class)
 @Table(schema = "alert", name = "blackduck_user_project_relation")
-public class UserProjectRelation extends DatabaseRelation {
+public class BlackDuckUserProjectRelation extends DatabaseRelation {
     @Id
     @Column(name = "blackduck_user_id")
     private Long blackDuckUserId;
@@ -43,11 +43,11 @@ public class UserProjectRelation extends DatabaseRelation {
     @Column(name = "blackduck_project_id")
     private Long blackDuckProjectId;
 
-    public UserProjectRelation() {
+    public BlackDuckUserProjectRelation() {
         // JPA requires default constructor definitions
     }
 
-    public UserProjectRelation(final Long blackDuckUserId, final Long blackDuckProjectId) {
+    public BlackDuckUserProjectRelation(final Long blackDuckUserId, final Long blackDuckProjectId) {
         super();
         this.blackDuckUserId = blackDuckUserId;
         this.blackDuckProjectId = blackDuckProjectId;

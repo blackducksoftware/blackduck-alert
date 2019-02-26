@@ -39,28 +39,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
 import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.BlackDuckUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserProjectRelation;
+import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 
 @Component
 public class BlackDuckEmailHandler extends EmailHandler {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckEmailHandler.class);
 
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
-    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    private final BlackDuckUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
 
     @Autowired
     public BlackDuckEmailHandler(final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
-        final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
+        final BlackDuckUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
@@ -91,12 +91,12 @@ public class BlackDuckEmailHandler extends EmailHandler {
                 emailAddresses.add(blackDuckProjectEntity.getProjectOwnerEmail());
             }
         } else {
-            final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
+            final List<BlackDuckUserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
             emailAddresses = userProjectRelations
                                  .stream()
                                  .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
                                  .flatMap(Optional::stream)
-                                 .map(BlackDuckUserEntity::getEmailAddress)
+                                 .map(ProviderUserEntity::getEmailAddress)
                                  .filter(StringUtils::isNotBlank)
                                  .collect(Collectors.toSet());
         }

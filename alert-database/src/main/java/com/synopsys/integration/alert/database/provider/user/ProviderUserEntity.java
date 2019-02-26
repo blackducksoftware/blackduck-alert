@@ -21,32 +21,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.user;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class UserProjectRelationPK implements Serializable {
-    private static final long serialVersionUID = 2978750766498759769L;
-    private Long blackDuckUserId;
-    private Long blackDuckProjectId;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-    public UserProjectRelationPK() {
+@Entity
+@Table(schema = "alert", name = "provider_user")
+public class ProviderUserEntity extends DatabaseEntity {
+    @Column(name = "email_address")
+    private String emailAddress;
+
+    @Column(name = "opt_out")
+    private Boolean optOut;
+
+    @Column(name = "provider")
+    private String provider;
+
+    public ProviderUserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public Long getBlackDuckUserId() {
-        return blackDuckUserId;
+    public ProviderUserEntity(final String emailAddress, final Boolean optOut, final String provider) {
+        this.emailAddress = emailAddress;
+        this.optOut = optOut;
+        this.provider = provider;
     }
 
-    public void setBlackDuckUserId(final Long blackDuckUserId) {
-        this.blackDuckUserId = blackDuckUserId;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public Long getBlackDuckProjectId() {
-        return blackDuckProjectId;
+    public Boolean getOptOut() {
+        return optOut;
     }
 
-    public void setBlackDuckProjectId(final Long blackDuckProjectId) {
-        this.blackDuckProjectId = blackDuckProjectId;
+    public String getProvider() {
+        return provider;
     }
 }

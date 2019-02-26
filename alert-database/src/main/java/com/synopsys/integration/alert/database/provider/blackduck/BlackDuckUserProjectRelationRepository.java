@@ -27,9 +27,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserProjectRelationRepository extends JpaRepository<UserProjectRelation, UserProjectRelationPK> {
-    public List<UserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId);
+public interface BlackDuckUserProjectRelationRepository extends JpaRepository<BlackDuckUserProjectRelation, BlackDuckUserProjectRelationPK> {
+    List<BlackDuckUserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId);
 
-    public List<UserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId);
+    List<BlackDuckUserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId);
 
 }
