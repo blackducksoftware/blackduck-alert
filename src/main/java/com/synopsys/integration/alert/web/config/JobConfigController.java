@@ -81,10 +81,6 @@ public class JobConfigController extends BaseController {
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database.");
         }
 
-        if (models.isEmpty()) {
-            // return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
-        }
-
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
     }
 
