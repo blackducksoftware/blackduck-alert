@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
@@ -45,20 +47,23 @@ public class BlackDuckDataController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckDataController.class);
 
     private final ResponseFactory responseFactory;
-    private final BlackDuckDataActions blackDuckDataActions;
+    private final ProviderDataAccessor providerDataAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public BlackDuckDataController(final ResponseFactory responseFactory, final BlackDuckDataActions blackDuckDataActions, final ContentConverter contentConverter) {
+    public BlackDuckDataController(final ResponseFactory responseFactory, final ProviderDataAccessor providerDataAccessor, final ContentConverter contentConverter) {
         this.responseFactory = responseFactory;
-        this.blackDuckDataActions = blackDuckDataActions;
+        this.providerDataAccessor = providerDataAccessor;
         this.contentConverter = contentConverter;
     }
 
     @GetMapping(value = "/projects")
     public ResponseEntity<String> getProjects() {
         try {
-            final List<ProviderProject> projects = blackDuckDataActions.getBlackDuckProjects();
+            final List<ProviderProject> projects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+            if (projects.isEmpty()) {
+                logger.info("No BlackDuck projects found in the database.");
+            }
             final String usersJson = contentConverter.getJsonString(projects);
             return responseFactory.createOkContentResponse(usersJson);
         } catch (final Exception e) {
