@@ -32,4 +32,6 @@ public interface ProviderUserProjectRelationRepository extends JpaRepository<Pro
 
     List<ProviderUserProjectRelation> findByProviderProjectId(final Long providerProjectId);
 
+    void deleteAllByProviderProjectId(final Long providerProjectId);
+
 }

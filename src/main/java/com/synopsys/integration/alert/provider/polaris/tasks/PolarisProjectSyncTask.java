@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.provider.polaris.tasks;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -38,14 +37,15 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisIssueNotificationContentModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.polaris.common.api.ProjectV0;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
 @Component
@@ -54,12 +54,15 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
+    private final ProviderDataAccessor projectRepositoryAccessor;
     private final NotificationManager notificationManager;
     private final Gson gson;
 
-    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final NotificationManager notificationManager, final Gson gson) {
+    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final ProviderDataAccessor projectRepositoryAccessor, final NotificationManager notificationManager,
+        final Gson gson) {
         super(taskScheduler, TASK_NAME);
         this.polarisProperties = polarisProperties;
+        this.projectRepositoryAccessor = projectRepositoryAccessor;
         this.notificationManager = notificationManager;
         this.gson = gson;
     }
@@ -69,10 +72,10 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         logger.info("### Starting {}...", getTaskName());
         try {
             final AccessTokenPolarisHttpClient polarisHttpClient = polarisProperties.createPolarisHttpClient(logger);
-            final Map<String, ProjectV0> remoteProjectsMap = getProjectsFromServer(polarisHttpClient);
-            final Map<String, ProjectV0> storedProjectsMap = getProjectsFromDatabase();
-            final Set<ProjectV0> newProjects = collectMissingProjects(storedProjectsMap, remoteProjectsMap.values());
-            final Set<ProjectV0> updatedStoredProjects = storeNewProjects(storedProjectsMap, newProjects);
+            final Map<String, ProviderProject> remoteProjectsMap = getProjectsFromServer(polarisHttpClient);
+            final Map<String, ProviderProject> storedProjectsMap = getProjectsFromDatabase();
+            final Set<ProviderProject> newProjects = collectMissingProjects(storedProjectsMap, remoteProjectsMap.values());
+            final Set<ProviderProject> updatedStoredProjects = storeNewProjects(storedProjectsMap, newProjects);
 
             cleanUpOldProjects(updatedStoredProjects, remoteProjectsMap);
             generateNotificationsForIssues(updatedStoredProjects);
@@ -82,30 +85,27 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         logger.info("### Finished {}...", getTaskName());
     }
 
-    private Map<String, ProjectV0> getProjectsFromServer(final AccessTokenPolarisHttpClient polarisHttpClient) {
+    private Map<String, ProviderProject> getProjectsFromServer(final AccessTokenPolarisHttpClient polarisHttpClient) {
         // FIXME implement
         return Map.of();
     }
 
-    private Map<String, ProjectV0> getProjectsFromDatabase() {
-        final List<ProjectV0> storedProjects = List.of();
-        // FIXME implement
-        return storedProjects
+    private Map<String, ProviderProject> getProjectsFromDatabase() {
+        return projectRepositoryAccessor.findByProviderName(PolarisProvider.COMPONENT_NAME)
                    .stream()
-                   .collect(Collectors.toMap(ProjectV0::getId, Function.identity()));
+                   .collect(Collectors.toMap(ProviderProject::getHref, Function.identity()));
     }
 
-    private Set<ProjectV0> storeNewProjects(final Map<String, ProjectV0> oldStoredProjects, final Set<ProjectV0> newProjects) {
+    private Set<ProviderProject> storeNewProjects(final Map<String, ProviderProject> oldStoredProjects, final Set<ProviderProject> newProjects) {
+        newProjects.forEach(project -> projectRepositoryAccessor.saveProject(PolarisProvider.COMPONENT_NAME, project));
 
-        // FIXME store newProjects
-
-        newProjects.forEach(newProject -> oldStoredProjects.put(newProject.getId(), newProject));
+        newProjects.forEach(newProject -> oldStoredProjects.put(newProject.getHref(), newProject));
         return new HashSet<>(oldStoredProjects.values());
     }
 
-    private void generateNotificationsForIssues(final Set<ProjectV0> projects) {
+    private void generateNotificationsForIssues(final Set<ProviderProject> projects) {
         final Date providerCreationDate = new Date();
-        for (final ProjectV0 project : projects) {
+        for (final ProviderProject project : projects) {
             final Collection<AlertPolarisIssueNotificationContentModel> notifications = createNotificationsForProject(project);
             for (final AlertPolarisIssueNotificationContentModel notification : notifications) {
                 final String notificationContent = gson.toJson(notification);
@@ -115,20 +115,23 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         }
     }
 
-    private Collection<AlertPolarisIssueNotificationContentModel> createNotificationsForProject(final ProjectV0 project) {
+    private Collection<AlertPolarisIssueNotificationContentModel> createNotificationsForProject(final ProviderProject project) {
         // FIXME implement
         return Set.of();
     }
 
-    private void cleanUpOldProjects(final Set<ProjectV0> localProjects, final Map<String, ProjectV0> remoteProjectsMap) {
-        final Set<ProjectV0> deletionCandidates = collectMissingProjects(remoteProjectsMap, localProjects);
-        // FIXME delete the candidates
+    private void cleanUpOldProjects(final Set<ProviderProject> localProjects, final Map<String, ProviderProject> remoteProjectsMap) {
+        final Set<ProviderProject> deletionCandidates = collectMissingProjects(remoteProjectsMap, localProjects);
+        deletionCandidates
+            .stream()
+            .map(ProviderProject::getHref)
+            .forEach(projectRepositoryAccessor::deleteByHref);
     }
 
-    private Set<ProjectV0> collectMissingProjects(final Map<String, ProjectV0> baseProjectMap, final Collection<ProjectV0> missingProjectCandidates) {
+    private Set<ProviderProject> collectMissingProjects(final Map<String, ProviderProject> baseProjectMap, final Collection<ProviderProject> missingProjectCandidates) {
         return missingProjectCandidates
                    .stream()
-                   .filter(project -> !baseProjectMap.containsKey(project.getId()))
+                   .filter(project -> !baseProjectMap.containsKey(project.getHref()))
                    .collect(Collectors.toSet());
     }
 }

@@ -31,9 +31,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.DatabaseEntity;
-import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
@@ -47,9 +47,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     @Autowired
-    private ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private ProviderDataAccessor blackDuckProjectRepositoryAccessor;
     @Autowired
-    private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     @Autowired
     private ProviderUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     @Autowired

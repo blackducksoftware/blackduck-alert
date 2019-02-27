@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.web.provider.blackduck;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -32,34 +30,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 
 @Component
 public class BlackDuckDataActions {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataActions.class);
-    private final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final ProviderDataAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public BlackDuckDataActions(final ProviderProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
+    public BlackDuckDataActions(final ProviderDataAccessor blackDuckProjectRepositoryAccessor) {
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
-    public List<BlackDuckProject> getBlackDuckProjects() {
-        final List<ProviderProjectEntity> providerProjectEntities = blackDuckProjectRepositoryAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
-        if (!providerProjectEntities.isEmpty()) {
-            final List<BlackDuckProject> projects = new ArrayList<>();
-            for (final ProviderProjectEntity blackDuckProjectEntity : providerProjectEntities) {
-                final BlackDuckProject project = new BlackDuckProject(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
-                projects.add(project);
-            }
-            return projects;
-        } else {
+    public List<ProviderProject> getBlackDuckProjects() {
+        final List<ProviderProject> providerProject = blackDuckProjectRepositoryAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        if (providerProject.isEmpty()) {
             logger.info("No BlackDuck projects found in the database.");
         }
-        return Collections.emptyList();
+        return providerProject;
     }
 
 }
