@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 public class PurgeTask extends ScheduledTask {
     public static final String TASK_NAME = "purge-task";
     public static final String CRON_FORMAT = "0 0 0 1/%s * ?";
+    public static final int DEFAULT_FREQUENCY = 3;
     private static final int DEFAULT_DAY_OFFSET = 1;
     private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
     private final NotificationManager notificationManager;

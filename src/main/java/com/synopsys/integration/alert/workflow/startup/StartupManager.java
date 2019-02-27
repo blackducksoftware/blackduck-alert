@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,8 +154,8 @@ public class StartupManager {
             logger.error("Error connecting to DB", e);
             schedulingConfigs = Collections.emptyList();
         }
-        final String defaultDailyHourOfDay = "0";
-        final String defaultPurgeFrequencyInDays = "3";
+        final String defaultDailyHourOfDay = String.valueOf(DailyTask.DEFAULT_HOUR_OF_DAY);
+        final String defaultPurgeFrequencyInDays = String.valueOf(PurgeTask.DEFAULT_FREQUENCY);
         String dailyHourOfDay = defaultDailyHourOfDay;
         String purgeDataFrequencyDays = defaultPurgeFrequencyInDays;
 
@@ -227,7 +228,7 @@ public class StartupManager {
                 final ConfigurationModel globalSchedulingConfig = configurationModel.get(0);
                 final SchedulingConfiguration schedulingConfiguration = new SchedulingConfiguration(globalSchedulingConfig);
                 final String purgeDataFrequencyDays = schedulingConfiguration.getDataFrequencyDays();
-                purgeTask.setDayOffset(Integer.valueOf(purgeDataFrequencyDays));
+                purgeTask.setDayOffset(NumberUtils.toInt(purgeDataFrequencyDays, PurgeTask.DEFAULT_FREQUENCY));
                 purgeTask.run();
                 purgeTask.resetDayOffset();
                 return Boolean.TRUE;
