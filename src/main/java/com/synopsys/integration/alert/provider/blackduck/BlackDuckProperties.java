@@ -35,10 +35,10 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -146,6 +146,14 @@ public class BlackDuckProperties extends ProviderProperties {
             return Optional.of(createBlackDuckServerConfig(logger, timeout, apiKey));
         }
         return Optional.empty();
+    }
+
+    public Optional<BlackDuckServerConfig> createBlackDuckServerConfigSafely(final IntLogger logger) {
+        try {
+            return createBlackDuckServerConfig(logger);
+        } catch (final AlertException e) {
+            return Optional.empty();
+        }
     }
 
     public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckApiToken) throws AlertException {
