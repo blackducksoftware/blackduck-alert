@@ -24,6 +24,6 @@
 package com.synopsys.integration.alert.provider.polaris.model;
 
 public enum AlertPolarisNotificationTypeEnum {
-    ISSUE_CREATED,
-    ISSUE_CLOSED
+    ISSUE_COUNT_INCREASED,
+    ISSUE_COUNT_DECREASED
 }
