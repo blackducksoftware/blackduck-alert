@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
@@ -36,23 +35,13 @@ public class MockBlackDuckUserRepositoryAccessor extends ProviderUserRepositoryA
     }
 
     @Override
-    public Optional<ProviderUserEntity> readEntity(final long id) {
-        return Optional.ofNullable(blackDuckUserEntityMap.get(Long.valueOf(id)));
-    }
-
-    @Override
-    public void deleteEntity(final long id) {
-        blackDuckUserEntityMap.remove(Long.valueOf(id));
-    }
-
-    @Override
     public List<ProviderUserEntity> deleteAndSaveAll(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
         userEntitiesToDelete.forEach(blackDuckUserEntity -> {
             blackDuckUserEntityMap.remove(blackDuckUserEntity.getId());
         });
         final List<ProviderUserEntity> blackDuckUserEntitiesSaved = new ArrayList<>();
         userEntitiesToAdd.forEach(blackDuckUserEntity -> {
-            blackDuckUserEntitiesSaved.add((ProviderUserEntity) saveEntity(blackDuckUserEntity));
+            blackDuckUserEntitiesSaved.add(saveEntity(blackDuckUserEntity));
         });
         return blackDuckUserEntitiesSaved;
     }
