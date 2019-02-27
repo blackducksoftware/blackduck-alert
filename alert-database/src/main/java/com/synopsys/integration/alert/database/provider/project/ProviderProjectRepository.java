@@ -24,11 +24,18 @@
 package com.synopsys.integration.alert.database.provider.project;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProviderProjectRepository extends JpaRepository<ProviderProjectEntity, Long> {
-    ProviderProjectEntity findByName(final String name);
+    Optional<ProviderProjectEntity> findFirstByName(final String name);
+
+    Optional<ProviderProjectEntity> findFirstByHref(final String href);
 
     List<ProviderProjectEntity> findByProvider(final String provider);
+
+    void deleteAllByProvider(final String provider);
+
+    void deleteByHref(final String href);
 }

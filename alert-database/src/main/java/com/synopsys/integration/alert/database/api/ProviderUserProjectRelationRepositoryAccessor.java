@@ -53,11 +53,6 @@ public class ProviderUserProjectRelationRepositoryAccessor {
         return providerUserProjectRelationRepository.findByProviderProjectId(providerProjectId);
     }
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderUserProjectRelation> findByProviderUserId(final Long providerUserId) {
-        return providerUserProjectRelationRepository.findByProviderUserId(providerUserId);
-    }
-
     @Transactional
     public List<ProviderUserProjectRelation> deleteAndSaveAll(final Set<ProviderUserProjectRelation> userProjectRelations) {
         providerUserProjectRelationRepository.deleteAllInBatch();

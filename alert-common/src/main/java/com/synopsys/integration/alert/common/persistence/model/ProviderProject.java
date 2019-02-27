@@ -21,17 +21,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.model;
+package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class BlackDuckProject extends Stringable {
+public class ProviderProject extends AlertSerializableModel {
     private final String name;
     private final String description;
     private final String href;
     private final String projectOwnerEmail;
 
-    public BlackDuckProject(final String name, final String description, final String href, String projectOwnerEmail) {
+    public ProviderProject(final String name, final String description, final String href, final String projectOwnerEmail) {
         this.name = name;
         this.description = description;
         this.href = href;

@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.database.api.ProviderProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 
-public class MockBlackDuckProjectRepositoryAccessor extends ProviderProjectRepositoryAccessor {
+public class MockBlackDuckProjectRepositoryAccessor extends ProviderDataAccessor {
     private final Map<Long, ProviderProjectEntity> blackDuckProjectEntityMap = new HashMap<>();
     private Long count = 1L;
 

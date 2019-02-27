@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 
-public class MockBlackDuckUserRepositoryAccessor extends BlackDuckUserRepositoryAccessor {
+public class MockBlackDuckUserRepositoryAccessor extends ProviderUserRepositoryAccessor {
     private final Map<Long, ProviderUserEntity> blackDuckUserEntityMap = new HashMap<>();
     private Long count = 1L;
 

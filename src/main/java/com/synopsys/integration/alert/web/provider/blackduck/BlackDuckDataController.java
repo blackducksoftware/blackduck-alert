@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
@@ -58,7 +58,7 @@ public class BlackDuckDataController extends BaseController {
     @GetMapping(value = "/projects")
     public ResponseEntity<String> getProjects() {
         try {
-            final List<BlackDuckProject> projects = blackDuckDataActions.getBlackDuckProjects();
+            final List<ProviderProject> projects = blackDuckDataActions.getBlackDuckProjects();
             final String usersJson = contentConverter.getJsonString(projects);
             return responseFactory.createOkContentResponse(usersJson);
         } catch (final Exception e) {

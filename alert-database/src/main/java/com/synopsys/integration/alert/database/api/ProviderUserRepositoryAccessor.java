@@ -33,11 +33,11 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 
 @Component
-public class BlackDuckUserRepositoryAccessor extends RepositoryAccessor<ProviderUserEntity> {
+public class ProviderUserRepositoryAccessor extends RepositoryAccessor<ProviderUserEntity> {
     private final ProviderUserRepository blackDuckUserRepository;
 
     @Autowired
-    public BlackDuckUserRepositoryAccessor(final ProviderUserRepository blackDuckUserRepository) {
+    public ProviderUserRepositoryAccessor(final ProviderUserRepository blackDuckUserRepository) {
         super(blackDuckUserRepository);
         this.blackDuckUserRepository = blackDuckUserRepository;
     }

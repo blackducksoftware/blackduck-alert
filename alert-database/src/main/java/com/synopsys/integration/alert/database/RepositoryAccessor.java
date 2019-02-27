@@ -45,11 +45,11 @@ public abstract class RepositoryAccessor<D extends DatabaseEntity> {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<D> readEntity(final long id) {
+    public Optional<D> readEntity(final Long id) {
         return repository.findById(id);
     }
 
-    public void deleteEntity(final long id) {
+    public void deleteEntity(final Long id) {
         repository.deleteById(id);
     }
 

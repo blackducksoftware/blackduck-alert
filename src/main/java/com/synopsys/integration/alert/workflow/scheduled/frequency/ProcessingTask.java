@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.workflow.scheduled.frequency;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +92,7 @@ public abstract class ProcessingTask extends ScheduledTask {
             final List<AlertNotificationWrapper> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);
-                return Collections.emptyList();
+                return List.of();
             } else {
                 logger.info("{} Notifications Found: {}", taskName, entityList.size());
                 return entityList;
@@ -101,13 +100,13 @@ public abstract class ProcessingTask extends ScheduledTask {
         } catch (final Exception ex) {
             logger.error("Error reading Digest Notification Data", ex);
         }
-        return Collections.emptyList();
+        return List.of();
     }
 
     public List<DistributionEvent> process(final List<AlertNotificationWrapper> notificationList) {
         logger.info("Notifications to Process: {}", notificationList.size());
         if (notificationList.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         } else {
             return notificationProcessor.processNotifications(getDigestType(), notificationList);
         }
