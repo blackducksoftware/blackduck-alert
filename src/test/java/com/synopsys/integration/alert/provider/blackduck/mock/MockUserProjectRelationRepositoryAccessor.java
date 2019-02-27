@@ -27,11 +27,6 @@ public class MockUserProjectRelationRepositoryAccessor extends ProviderUserProje
     }
 
     @Override
-    public List<ProviderUserProjectRelation> findByProviderUserId(final Long providerUserId) {
-        return userProjectRelations.stream().filter(userProjectRelation -> userProjectRelation.getProviderUserId().equals(providerUserId)).collect(Collectors.toList());
-    }
-
-    @Override
     public List<ProviderUserProjectRelation> deleteAndSaveAll(final Set<ProviderUserProjectRelation> newUserProjectRelations) {
         userProjectRelations.clear();
         userProjectRelations.addAll(newUserProjectRelations);

@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -47,16 +46,14 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 @Component
 @Transactional
 // TODO update tests for this class
-public class ProviderDataAccessor extends RepositoryAccessor<ProviderProjectEntity> {
+public class ProviderDataAccessor {
     private static final int MAX_DESCRIPTION_LENGTH = 250;
     private final ProviderProjectRepository providerProjectRepository;
     private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
     private final ProviderUserRepository providerUserRepository;
 
     @Autowired
-    public ProviderDataAccessor(final ProviderProjectRepository providerProjectRepository,
-        final ProviderUserProjectRelationRepository providerUserProjectRelationRepository, final ProviderUserRepository providerUserRepository) {
-        super(providerProjectRepository);
+    public ProviderDataAccessor(final ProviderProjectRepository providerProjectRepository, final ProviderUserProjectRelationRepository providerUserProjectRelationRepository, final ProviderUserRepository providerUserRepository) {
         this.providerProjectRepository = providerProjectRepository;
         this.providerUserProjectRelationRepository = providerUserProjectRelationRepository;
         this.providerUserRepository = providerUserRepository;
@@ -79,7 +76,7 @@ public class ProviderDataAccessor extends RepositoryAccessor<ProviderProjectEnti
         final String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
         final ProviderProjectEntity trimmedBlackDuckProjectEntity = new ProviderProjectEntity(
             providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
-        return convertToModel(super.saveEntity(trimmedBlackDuckProjectEntity));
+        return convertToModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
     }
 
     public List<com.synopsys.integration.alert.common.persistence.model.ProviderProject> deleteAndSaveAll(final String providerName, final Collection<com.synopsys.integration.alert.common.persistence.model.ProviderProject> providerProjects) {
@@ -114,13 +111,14 @@ public class ProviderDataAccessor extends RepositoryAccessor<ProviderProjectEnti
         return Set.of();
     }
 
-    public void createProjectToEmailRelation(final String href, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
-        final Long projectId = providerProjectRepository.findFirstByHref(href)
-                                   .map(ProviderProjectEntity::getId)
+    public void mapUsersToProjectByEmail(final String href, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+        final ProviderProjectEntity project = providerProjectRepository.findFirstByHref(href)
                                    .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + href));
+        final Long projectId = project.getId();
+
         providerUserProjectRelationRepository.deleteAllByProviderProjectId(projectId);
         for (final String emailAddress : emailAddresses) {
-            providerUserRepository.findByEmailAddress(emailAddress)
+            providerUserRepository.findByEmailAddressAndProvider(emailAddress, project.getProvider())
                 .stream()
                 .map(ProviderUserEntity::getId)
                 .forEach(userId -> providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(userId, projectId)));

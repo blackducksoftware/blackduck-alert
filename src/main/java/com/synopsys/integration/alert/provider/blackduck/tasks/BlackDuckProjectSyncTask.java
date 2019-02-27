@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
-import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
@@ -66,16 +65,14 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     private final BlackDuckProperties blackDuckProperties;
     private final ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final ProviderDataAccessor blackDuckProjectRepositoryAccessor;
-    private final ProviderUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
     public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final ProviderDataAccessor blackDuckProjectRepositoryAccessor, final ProviderUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
+        final ProviderDataAccessor blackDuckProjectRepositoryAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
-        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
@@ -207,7 +204,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
         for (final Map.Entry<String, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
-                blackDuckProjectRepositoryAccessor.createProjectToEmailRelation(projectToEmail.getKey(), projectToEmail.getValue());
+                blackDuckProjectRepositoryAccessor.mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Problem mapping users to projects", e);
             }
