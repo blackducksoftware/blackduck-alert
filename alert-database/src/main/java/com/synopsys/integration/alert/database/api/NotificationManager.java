@@ -121,8 +121,8 @@ public class NotificationManager {
     }
 
     public void deleteNotification(final AlertNotificationWrapper notification) {
-        notificationContentRepository.deleteById(notification.getId());
         deleteAuditEntries(notification.getId());
+        notificationContentRepository.deleteById(notification.getId());
     }
 
     public PageRequest getPageRequestForNotifications(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
