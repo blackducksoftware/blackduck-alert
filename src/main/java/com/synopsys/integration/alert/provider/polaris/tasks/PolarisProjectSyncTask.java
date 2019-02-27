@@ -25,7 +25,9 @@ package com.synopsys.integration.alert.provider.polaris.tasks;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -37,14 +39,18 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.database.api.PolarisIssueAccessor;
 import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisIssueNotificationContentModel;
+import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
@@ -55,14 +61,16 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
     private final ProviderDataAccessor projectRepositoryAccessor;
+    private final PolarisIssueAccessor polarisIssueAccessor;
     private final NotificationManager notificationManager;
     private final Gson gson;
 
-    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final ProviderDataAccessor projectRepositoryAccessor, final NotificationManager notificationManager,
-        final Gson gson) {
+    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final ProviderDataAccessor projectRepositoryAccessor, final PolarisIssueAccessor polarisIssueAccessor,
+        final NotificationManager notificationManager, final Gson gson) {
         super(taskScheduler, TASK_NAME);
         this.polarisProperties = polarisProperties;
         this.projectRepositoryAccessor = projectRepositoryAccessor;
+        this.polarisIssueAccessor = polarisIssueAccessor;
         this.notificationManager = notificationManager;
         this.gson = gson;
     }
@@ -78,7 +86,8 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             final Set<ProviderProject> updatedStoredProjects = storeNewProjects(storedProjectsMap, newProjects);
 
             cleanUpOldProjects(updatedStoredProjects, remoteProjectsMap);
-            generateNotificationsForIssues(updatedStoredProjects);
+            final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap = updateIssuesForProjects(polarisHttpClient, updatedStoredProjects);
+            generateNotificationsForProjectIssues(projectIssuesMap);
         } catch (final IntegrationException e) {
             logger.error("Could not create Polaris connection", e);
         }
@@ -103,10 +112,10 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         return new HashSet<>(oldStoredProjects.values());
     }
 
-    private void generateNotificationsForIssues(final Set<ProviderProject> projects) {
+    private void generateNotificationsForProjectIssues(final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap) {
         final Date providerCreationDate = new Date();
-        for (final ProviderProject project : projects) {
-            final Collection<AlertPolarisIssueNotificationContentModel> notifications = createNotificationsForProject(project);
+        for (final Map.Entry<ProviderProject, Set<PolarisIssueModel>> projectIssueEntry : projectIssuesMap.entrySet()) {
+            final Collection<AlertPolarisIssueNotificationContentModel> notifications = createNotificationsForProject(projectIssueEntry.getKey(), projectIssueEntry.getValue());
             for (final AlertPolarisIssueNotificationContentModel notification : notifications) {
                 final String notificationContent = gson.toJson(notification);
                 final NotificationContent notificationEntity = new NotificationContent(providerCreationDate, PolarisProvider.COMPONENT_NAME, providerCreationDate, notification.getNotificationType().name(), notificationContent);
@@ -115,9 +124,44 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         }
     }
 
-    private Collection<AlertPolarisIssueNotificationContentModel> createNotificationsForProject(final ProviderProject project) {
-        // FIXME implement
-        return Set.of();
+    private Collection<AlertPolarisIssueNotificationContentModel> createNotificationsForProject(final ProviderProject project, final Set<PolarisIssueModel> issues) {
+        final Set<AlertPolarisIssueNotificationContentModel> notifications = new HashSet<>();
+        for (final PolarisIssueModel issue : issues) {
+            AlertPolarisNotificationTypeEnum notificationType = null;
+            if (issue.isIssueCountIncreasing()) {
+                notificationType = AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED;
+            } else if (issue.isIssueCountDecreasing()) {
+                notificationType = AlertPolarisNotificationTypeEnum.ISSUE_COUNT_DECREASED;
+            }
+
+            if (notificationType != null) {
+                final AlertPolarisIssueNotificationContentModel newNotification = new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getHref(), issue.getIssueType(), issue.getCurrentIssueCount());
+                notifications.add(newNotification);
+            }
+        }
+        return notifications;
+    }
+
+    private Map<ProviderProject, Set<PolarisIssueModel>> updateIssuesForProjects(final AccessTokenPolarisHttpClient polarisHttpClient, final Set<ProviderProject> projects) {
+        final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap = new HashMap<>();
+        for (final ProviderProject project : projects) {
+            final String projectHref = project.getHref();
+            final Set<PolarisIssueModel> projectIssues = new HashSet<>();
+            projectIssuesMap.put(project, projectIssues);
+
+            // FIXME implement
+            final List<PolarisIssueModel> issuesForProjectFromServer = List.of(); // TODO get this from the server
+
+            for (final PolarisIssueModel issueFromServer : issuesForProjectFromServer) {
+                try {
+                    final PolarisIssueModel actionableIssue = polarisIssueAccessor.updateIssueType(projectHref, issueFromServer.getIssueType(), issueFromServer.getCurrentIssueCount());
+                    projectIssues.add(actionableIssue);
+                } catch (final AlertDatabaseConstraintException e) {
+                    logger.error("Problem updating issue type", e);
+                }
+            }
+        }
+        return projectIssuesMap;
     }
 
     private void cleanUpOldProjects(final Set<ProviderProject> localProjects, final Map<String, ProviderProject> remoteProjectsMap) {

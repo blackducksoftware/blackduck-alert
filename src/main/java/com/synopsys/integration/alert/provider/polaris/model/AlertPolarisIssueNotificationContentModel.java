@@ -23,67 +23,44 @@
  */
 package com.synopsys.integration.alert.provider.polaris.model;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.EnumUtils;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class AlertPolarisIssueNotificationContentModel extends AlertSerializableModel {
     private final String notificationType;
-    private final String description;
-    private final String localEffect;
-    private final String owner;
-    private final String dismissalStatus;
-    private final String issueStatus;
-    private final String link;
+    private final String projectName;
+    private final String projectLink;
+    private final String issueType;
+    private final Integer count;
+    // TODO packages?
 
-    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String description, final String localEffect, final String owner, final String dismissalStatus, final String issueStatus,
-        final String link) {
+    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String projectLink, final String issueType, final Integer count) {
         this.notificationType = notificationType.name();
-        this.description = description;
-        this.localEffect = localEffect;
-        this.owner = owner;
-        this.dismissalStatus = dismissalStatus;
-        this.issueStatus = issueStatus;
-        this.link = link;
-    }
-
-    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String description, final String localEffect, final String owner, final String dismissalStatus, final String issueStatus) {
-        this.notificationType = notificationType.name();
-        this.description = description;
-        this.localEffect = localEffect;
-        this.owner = owner;
-        this.dismissalStatus = dismissalStatus;
-        this.issueStatus = issueStatus;
-        this.link = null;
+        this.projectName = projectName;
+        this.projectLink = projectLink;
+        this.issueType = issueType;
+        this.count = count;
     }
 
     public AlertPolarisNotificationTypeEnum getNotificationType() {
         return EnumUtils.getEnum(AlertPolarisNotificationTypeEnum.class, notificationType);
     }
 
-    public String getDescription() {
-        return description;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public String getLocalEffect() {
-        return localEffect;
+    public String getProjectLink() {
+        return projectLink;
     }
 
-    public Optional<String> getLink() {
-        return Optional.ofNullable(link);
+    public String getIssueType() {
+        return issueType;
     }
 
-    public String getOwner() {
-        return owner;
+    public Integer getCount() {
+        return count;
     }
 
-    public String getDismissalStatus() {
-        return dismissalStatus;
-    }
-
-    public String getIssueStatus() {
-        return issueStatus;
-    }
 }
