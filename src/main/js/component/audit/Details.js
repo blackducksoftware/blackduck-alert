@@ -65,7 +65,9 @@ class Details extends Component {
                 name: entry.name,
                 eventType: entry.eventType,
                 timeLastSent: entry.auditJobStatusModel.timeLastSent,
-                status: entry.auditJobStatusModel.status
+                status: entry.auditJobStatusModel.status,
+                errorMessage: entry.errorMessage,
+                errorStackTrace: entry.errorStackTrace
             };
             return result;
         });
