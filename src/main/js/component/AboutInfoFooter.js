@@ -151,7 +151,7 @@ class AboutInfoFooter extends React.Component {
             <div className="footer">
                 <span className="synopsysLogoSpan">
                     <img
-                        class="synopsysFooterLogo"
+                        className="synopsysFooterLogo"
                         src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/blacklogo/synopsys_blk.png"
                         alt={projectUrl}
                         href={projectUrl}
