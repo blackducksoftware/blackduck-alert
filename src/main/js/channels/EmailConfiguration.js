@@ -175,7 +175,8 @@ class EmailConfiguration extends React.Component {
 
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
-                        label="SMTP Host"
+                        label='SMTP Host'
+                        description='The host name of the SMTP email server.'
                         name={JAVAMAIL_HOST_KEY}
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_HOST_KEY)}
                         onChange={this.handleChange}
@@ -185,7 +186,8 @@ class EmailConfiguration extends React.Component {
 
                     <TextInput
                         id={JAVAMAIL_FROM_KEY}
-                        label="SMTP From"
+                        label='SMTP From'
+                        description='The email address to use as the return address.'
                         name={JAVAMAIL_FROM_KEY}
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_FROM_KEY)}
                         onChange={this.handleChange}
@@ -195,7 +197,8 @@ class EmailConfiguration extends React.Component {
 
                     <CheckboxInput
                         id={JAVAMAIL_AUTH_KEY}
-                        label="SMTP Auth"
+                        label='SMTP Auth'
+                        description='Select this if your SMTP server requires authentication, then fill in the SMTP User and SMTP Password.'
                         name={JAVAMAIL_AUTH_KEY}
                         isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_KEY)}
                         onChange={this.handleChange}
@@ -205,7 +208,8 @@ class EmailConfiguration extends React.Component {
 
                     <TextInput
                         id={JAVAMAIL_USER_KEY}
-                        label="SMTP User"
+                        label='SMTP User'
+                        description='The username to authenticate with the SMTP server.'
                         name={JAVAMAIL_USER_KEY}
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_USER_KEY)}
                         onChange={this.handleChange}
@@ -215,7 +219,8 @@ class EmailConfiguration extends React.Component {
 
                     <PasswordInput
                         id={JAVAMAIL_PASSWORD_KEY}
-                        label="SMTP Password"
+                        label='SMTP Password'
+                        description='The password to authenticate with the SMTP server.'
                         name={JAVAMAIL_PASSWORD_KEY}
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PASSWORD_KEY)}
                         isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, JAVAMAIL_PASSWORD_KEY)}
@@ -223,10 +228,11 @@ class EmailConfiguration extends React.Component {
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_PASSWORD_KEY]}
                     />
-                    <CollapsiblePane title="Advanced Settings">
+                    <CollapsiblePane title='Advanced Settings'>
                         <NumberInput
                             id={JAVAMAIL_PORT_KEY}
-                            label="SMTP Port"
+                            label='SMTP Port'
+                            description='The SMTP server port to connect to.'
                             name={JAVAMAIL_PORT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PORT_KEY)}
                             onChange={this.handleChange}
@@ -236,7 +242,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
-                            label="SMTP Connection Timeout"
+                            label='SMTP Connection Timeout'
+                            description='Socket connection timeout value in milliseconds.'
                             name={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             onChange={this.handleChange}
@@ -246,7 +253,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_TIMEOUT_KEY}
-                            label="SMTP Timeout"
+                            label='SMTP Timeout'
+                            description='Socket read timeout value in milliseconds.'
                             name={JAVAMAIL_TIMEOUT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
                             onChange={this.handleChange}
@@ -256,7 +264,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_WRITETIMEOUT_KEY}
-                            label="SMTP Write Timeout"
+                            label='SMTP Write Timeout'
+                            description='Socket write timeout value in milliseconds.'
                             name={JAVAMAIL_WRITETIMEOUT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
                             onChange={this.handleChange}
@@ -266,7 +275,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_LOCALHOST_KEY}
-                            label="SMTP Localhost"
+                            label='SMTP Localhost'
+                            description='Local host name used in the SMTP HELO or EHLO command.'
                             name={JAVAMAIL_LOCALHOST_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_KEY)}
                             onChange={this.handleChange}
@@ -276,7 +286,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_LOCALHOST_ADDRESS_KEY}
-                            label="SMTP Local Address"
+                            label='SMTP Local Address'
+                            description='Local address (host name) to bind to when creating the SMTP socket.'
                             name={JAVAMAIL_LOCALHOST_ADDRESS_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
                             onChange={this.handleChange}
@@ -286,7 +297,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_LOCALHOST_PORT_KEY}
-                            label="SMTP Local Port"
+                            label='SMTP Local Port'
+                            description='Local port number to bind to when creating the SMTP socket.'
                             name={JAVAMAIL_LOCALHOST_PORT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             onChange={this.handleChange}
@@ -296,7 +308,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_EHLO_KEY}
-                            label="SMTP Ehlo"
+                            label='SMTP Ehlo'
+                            description='If false, do not attempt to sign on with the EHLO command.'
                             name={JAVAMAIL_EHLO_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_EHLO_KEY)}
                             onChange={this.handleChange}
@@ -306,7 +319,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_AUTH_MECHANISMS_KEY}
-                            label="SMTP Auth Mechanisms"
+                            label='SMTP Auth Mechanisms'
+                            description='If set, lists the authentication mechanisms to consider, and the order in which to consider them. Only mechanisms supported by the server and supported by the current implementation will be used.'
                             name={JAVAMAIL_AUTH_MECHANISMS_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_MECHANISMS_KEY)}
                             onChange={this.handleChange}
@@ -316,7 +330,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_LOGIN_DISABLE_KEY}
-                            label="SMTP Auth Login Disable"
+                            label='SMTP Auth Login Disable'
+                            description='If true, prevents use of the AUTH LOGIN command.'
                             name={JAVAMAIL_AUTH_LOGIN_DISABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
                             onChange={this.handleChange}
@@ -326,7 +341,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY}
-                            label="SMTP Auth Plain Disable"
+                            label='SMTP Auth Plain Disable'
+                            description='If true, prevents use of the AUTH PLAIN command.'
                             name={JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
                             onChange={this.handleChange}
@@ -336,7 +352,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY}
-                            label="SMTP Auth Digest MD5 Disable"
+                            label='SMTP Auth Digest MD5 Disable'
+                            description='If true, prevents use of the AUTH DIGEST-MD5 command.'
                             name={JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
                             onChange={this.handleChange}
@@ -346,7 +363,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_NTLM_DISABLE_KEY}
-                            label="SMTP Auth NTLM Disable"
+                            label='SMTP Auth NTLM Disable'
+                            description='If true, prevents use of the AUTH NTLM command.'
                             name={JAVAMAIL_AUTH_NTLM_DISABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
                             onChange={this.handleChange}
@@ -356,7 +374,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_AUTH_NTLM_DOMAIN_KEY}
-                            label="SMTP Auth NTLM Domain"
+                            label='SMTP Auth NTLM Domain'
+                            description='The NTLM authentication domain.'
                             name={JAVAMAIL_AUTH_NTLM_DOMAIN_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
                             onChange={this.handleChange}
@@ -366,7 +385,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
-                            label="SMTP Auth NTLM Flags"
+                            label='SMTP Auth NTLM Flags'
+                            description='NTLM protocol-specific flags.'
                             name={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             onChange={this.handleChange}
@@ -376,7 +396,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY}
-                            label="SMTP Auth XOAuth2 Disable"
+                            label='SMTP Auth XOAuth2 Disable'
+                            description='If true, prevents use of the AUTHENTICATE XOAUTH2 command.'
                             name={JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
                             onChange={this.handleChange}
@@ -386,7 +407,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SUBMITTER_KEY}
-                            label="SMTP Submitter"
+                            label='SMTP Submitter'
+                            description='The submitter to use in the AUTH tag in the MAIL FROM command. Typically used by a mail relay to pass along information about the original submitter of the message'
                             name={JAVAMAIL_SUBMITTER_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SUBMITTER_KEY)}
                             onChange={this.handleChange}
@@ -396,7 +418,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_DSN_NOTIFY_KEY}
-                            label="SMTP DNS Notify"
+                            label='SMTP DNS Notify'
+                            description='The NOTIFY option to the RCPT command.'
                             name={JAVAMAIL_DSN_NOTIFY_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_NOTIFY_KEY)}
                             onChange={this.handleChange}
@@ -406,7 +429,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_DSN_RET_KEY}
-                            label="SMTP DNS Ret"
+                            label='SMTP DNS Ret'
+                            description='The RET option to the MAIL command.'
                             name={JAVAMAIL_DSN_RET_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_RET_KEY)}
                             onChange={this.handleChange}
@@ -416,7 +440,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_ALLOW_8_BITMIME_KEY}
-                            label="SMTP Allow 8-bit Mime"
+                            label='SMTP Allow 8-bit Mime'
+                            description='If set to true, and the server supports the 8BITMIME extension, text parts of messages that use the "quoted-printable" or "base64" encodings are converted to use "8bit" encoding'
                             name={JAVAMAIL_ALLOW_8_BITMIME_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
                             onChange={this.handleChange}
@@ -426,7 +451,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_SEND_PARTIAL_KEY}
-                            label="SMTP Send Partial"
+                            label='SMTP Send Partial'
+                            description='If set to true, and a message has some valid and some invalid addresses, send the message anyway, reporting the partial failure with a SendFailedException.'
                             name={JAVAMAIL_SEND_PARTIAL_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SEND_PARTIAL_KEY)}
                             onChange={this.handleChange}
@@ -436,7 +462,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_SASL_ENABLE_KEY}
-                            label="SMTP SASL Enable"
+                            label='SMTP SASL Enable'
+                            description='If set to true, attempt to use the javax.security.sasl package to choose an authentication mechanism for login.'
                             name={JAVAMAIL_SASL_ENABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_ENABLE_KEY)}
                             onChange={this.handleChange}
@@ -446,7 +473,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SASL_MECHANISMS_KEY}
-                            label="SMTP SASL Mechanisms"
+                            label='SMTP SASL Mechanisms'
+                            description='A space or comma separated list of SASL mechanism names to try to use.'
                             name={JAVAMAIL_SASL_MECHANISMS_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_MECHANISMS_KEY)}
                             onChange={this.handleChange}
@@ -456,7 +484,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SASL_AUTHORIZATION_ID_KEY}
-                            label="SMTP SASL Authorization ID"
+                            label='SMTP SASL Authorization ID'
+                            description='The authorization ID to use in the SASL authentication. If not set, the authentication ID (user name) is used.'
                             name={JAVAMAIL_SASL_AUTHORIZATION_ID_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
                             onChange={this.handleChange}
@@ -466,7 +495,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SASL_REALM_KEY}
-                            label="SMTP SASL Realm"
+                            label='SMTP SASL Realm'
+                            description='The realm to use with DIGEST-MD5 authentication.'
                             name={JAVAMAIL_SASL_REALM_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_REALM_KEY)}
                             onChange={this.handleChange}
@@ -476,7 +506,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY}
-                            label="SMTP SASL Use Canonical Hostname"
+                            label='SMTP SASL Use Canonical Hostname'
+                            description='If set to true, the canonical host name returned by InetAddress.getCanonicalHostName is passed to the SASL mechanism, instead of the host name used to connect.'
                             name={JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
                             onChange={this.handleChange}
@@ -486,7 +517,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_QUITWAIT_KEY}
-                            label="SMTP QuitWait"
+                            label='SMTP QuitWait'
+                            description='If set to false, the QUIT command is sent and the connection is immediately closed.'
                             name={JAVAMAIL_QUITWAIT_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_QUITWAIT_KEY)}
                             onChange={this.handleChange}
@@ -496,7 +528,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_REPORT_SUCCESS_KEY}
-                            label="SMTP Report Success"
+                            label='SMTP Report Success'
+                            description='If set to true, causes the transport to include an SMTPAddressSucceededException for each address that is successful.'
                             name={JAVAMAIL_REPORT_SUCCESS_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_REPORT_SUCCESS_KEY)}
                             onChange={this.handleChange}
@@ -506,7 +539,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_SSL_ENABLE_KEY}
-                            label="SMTP SSL Enable"
+                            label='SMTP SSL Enable'
+                            description='If set to true, use SSL to connect and use the SSL port by default.'
                             name={JAVAMAIL_SSL_ENABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_ENABLE_KEY)}
                             onChange={this.handleChange}
@@ -516,7 +550,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY}
-                            label="SMTP SSL Check Server Identity"
+                            label='SMTP SSL Check Server Identity'
+                            description='If set to true, check the server identity as specified by RFC 2595.'
                             name={JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
                             onChange={this.handleChange}
@@ -526,7 +561,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SSL_TRUST_KEY}
-                            label="SMTP SSL Trust"
+                            label='SMTP SSL Trust'
+                            description='If set, and a socket factory hasnt been specified, enables use of a MailSSLSocketFactory. If set to "*", all hosts are trusted.'
                             name={JAVAMAIL_SSL_TRUST_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_TRUST_KEY)}
                             onChange={this.handleChange}
@@ -536,7 +572,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SSL_PROTOCOLS_KEY}
-                            label="SMTP SSL Protocols"
+                            label='SMTP SSL Protocols'
+                            description='Specifies the SSL protocols that will be enabled for SSL connections.'
                             name={JAVAMAIL_SSL_PROTOCOLS_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_PROTOCOLS_KEY)}
                             onChange={this.handleChange}
@@ -546,7 +583,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SSL_CIPHERSUITES_KEY}
-                            label="SMTP SSL Cipher Suites"
+                            label='SMTP SSL Cipher Suites'
+                            description='Specifies the SSL cipher suites that will be enabled for SSL connections.'
                             name={JAVAMAIL_SSL_CIPHERSUITES_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
                             onChange={this.handleChange}
@@ -556,7 +594,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_STARTTLS_ENABLE_KEY}
-                            label="SMTP Start TLS Enabled"
+                            label='SMTP Start TLS Enabled'
+                            description='If true, enables the use of the STARTTLS command (if supported by the server) to switch the connection to a TLS-protected connection before issuing any login commands. If the server does not support STARTTLS, the connection continues without the use of TLS.'
                             name={JAVAMAIL_STARTTLS_ENABLE_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_ENABLE_KEY)}
                             onChange={this.handleChange}
@@ -566,7 +605,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_STARTTLS_REQUIRED_KEY}
-                            label="SMTP Start TLS Required"
+                            label='SMTP Start TLS Required'
+                            description='If true, requires the use of the STARTTLS command. If the server doesnt support the STARTTLS command, or the command fails, the connect method will fail.'
                             name={JAVAMAIL_STARTTLS_REQUIRED_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
                             onChange={this.handleChange}
@@ -576,7 +616,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_PROXY_HOST_KEY}
-                            label="SMTP Proxy Host"
+                            label='SMTP Proxy Host'
+                            description='Specifies the host name of an HTTP web proxy server that will be used for connections to the mail server.'
                             name={JAVAMAIL_PROXY_HOST_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_HOST_KEY)}
                             onChange={this.handleChange}
@@ -586,7 +627,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_PROXY_PORT_KEY}
-                            label="SMTP Proxy Port"
+                            label='SMTP Proxy Port'
+                            description='Specifies the port number for the HTTP web proxy server.'
                             name={JAVAMAIL_PROXY_PORT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
                             onChange={this.handleChange}
@@ -596,7 +638,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_SOCKS_HOST_KEY}
-                            label="SMTP Socks Host"
+                            label='SMTP Socks Host'
+                            description='Specifies the host name of a SOCKS5 proxy server that will be used for connections to the mail server.'
                             name={JAVAMAIL_SOCKS_HOST_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_HOST_KEY)}
                             onChange={this.handleChange}
@@ -606,7 +649,8 @@ class EmailConfiguration extends React.Component {
 
                         <NumberInput
                             id={JAVAMAIL_SOCKS_PORT_KEY}
-                            label="SMTP Socks Port"
+                            label='SMTP Socks Port'
+                            description='Specifies the port number for the SOCKS5 proxy server.'
                             name={JAVAMAIL_SOCKS_PORT_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
                             onChange={this.handleChange}
@@ -616,7 +660,8 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             id={JAVAMAIL_MAILEXTENSION_KEY}
-                            label="SMTP Mail Extension"
+                            label='SMTP Mail Extension'
+                            description='Extension string to append to the MAIL command. The extension string can be used to specify standard SMTP service extensions as well as vendor-specific extensions.'
                             name={JAVAMAIL_MAILEXTENSION_KEY}
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_MAILEXTENSION_KEY)}
                             onChange={this.handleChange}
@@ -626,7 +671,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_USERSET_KEY}
-                            label="SMTP Use RSET"
+                            label='SMTP Use RSET'
+                            description='If set to true, use the RSET command instead of the NOOP command in the isConnected method.'
                             name={JAVAMAIL_USERSET_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_USERSET_KEY)}
                             onChange={this.handleChange}
@@ -636,7 +682,8 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             id={JAVAMAIL_NOOP_STRICT_KEY}
-                            label="SMTP NoOp Strict"
+                            label='SMTP NoOp Strict'
+                            description='If set to true, insist on a 250 response code from the NOOP command to indicate success.'
                             name={JAVAMAIL_NOOP_STRICT_KEY}
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_NOOP_STRICT_KEY)}
                             onChange={this.handleChange}
