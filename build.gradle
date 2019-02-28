@@ -74,7 +74,7 @@ dependencies {
     implementation project(':alert-database')
 
     implementation 'com.synopsys.integration:polaris-common:0.4.1'
-    // implementation 'com.synopsys.integration:polaris-common-api:0.0.1-SNAPSHOT'
+    implementation 'com.synopsys.integration:polaris-common-api:0.0.1'
 
     // Spring
     runtimeOnly 'org.springframework.boot:spring-boot-starter-thymeleaf'
