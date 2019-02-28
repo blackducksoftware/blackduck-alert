@@ -6,7 +6,7 @@ import TextInput from 'field/input/TextInput';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import { saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -371,7 +371,7 @@ class BaseJobConfiguration extends Component {
             <div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Format</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-9">
+                    <div className="d-inline-flex flex-column p-2 col-sm-8">
                         <Select
                             id={KEY_FORMAT_TYPE}
                             className="typeAheadField"
@@ -390,7 +390,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Notification Types</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-9">
+                    <div className="d-inline-flex flex-column p-2 col-sm-8">
                         <Select
                             id={KEY_NOTIFICATION_TYPES}
                             className="typeAheadField"
@@ -444,7 +444,7 @@ class BaseJobConfiguration extends Component {
                 />
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Frequency</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-9">
+                    <div className="d-inline-flex flex-column p-2 col-sm-8">
                         <Select
                             id={KEY_FREQUENCY}
                             className="typeAheadField"
@@ -463,7 +463,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Provider</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-9">
+                    <div className="d-inline-flex flex-column p-2 col-sm-8">
                         <Select
                             id={KEY_PROVIDER_NAME}
                             className="typeAheadField"

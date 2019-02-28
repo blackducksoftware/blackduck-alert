@@ -116,7 +116,7 @@ class HipChatJobConfiguration extends Component {
                 />
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Color</label>
-                    <div className="d-inline-flex p-2 col-sm-9">
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id={KEY_COLOR}
                             className="typeAheadField"

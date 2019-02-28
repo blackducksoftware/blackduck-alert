@@ -289,7 +289,7 @@ class SettingsConfigurationForm extends Component {
                                 errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_PASSWORD]}
                             />
                             <label className="col-sm-3 col-form-label text-right">Authentication Type</label>
-                            <div className="d-inline-flex flex-column p-2 col-sm-9">
+                            <div className="d-inline-flex flex-column p-2 col-sm-8">
                                 <Select
                                     id={KEY_LDAP_AUTHENTICATION_TYPE}
                                     className="typeAheadField"
@@ -301,7 +301,7 @@ class SettingsConfigurationForm extends Component {
                             </div>
                             <label className="fieldError">{this.props.fieldErrors[KEY_LDAP_AUTHENTICATION_TYPE]}</label>
                             <label className="col-sm-3 col-form-label text-right">Referral</label>
-                            <div className="d-inline-flex flex-column p-2 col-sm-9">
+                            <div className="d-inline-flex flex-column p-2 col-sm-8">
                                 <Select
                                     id={KEY_LDAP_REFERRAL}
                                     className="typeAheadField"

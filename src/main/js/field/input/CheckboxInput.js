@@ -8,7 +8,7 @@ const CheckboxInput = (props) => {
     } = props;
     return (
         <div className="form-group">
-            <div className="offset-sm-3 col-sm-9">
+            <div className="offset-sm-3 col-sm-8">
                 <div className="form-check">
                     <label className={className}>
                         <input
@@ -27,7 +27,7 @@ const CheckboxInput = (props) => {
                 </div>
             </div>
             {errorName && errorValue &&
-            <div className="offset-sm-3 col-sm-9">
+            <div className="offset-sm-3 col-sm-8">
                 <p className="fieldError" name={errorName}>{errorValue}</p>;
             </div>
             }
