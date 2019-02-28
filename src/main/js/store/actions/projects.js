@@ -2,7 +2,8 @@ import { PROJECTS_FETCH_ERROR, PROJECTS_FETCHED, PROJECTS_FETCHING } from 'store
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
-const PROJECTS_URL = '/alert/api/blackduck/projects';
+const PROVIDER_PROJECTS_URL_PREFIX = '/alert/api/provider/';
+const PROVIDER_PROJECTS_URL_SUFFIX = '/projects';
 
 /**
  * Triggers Config Fetching reducer
@@ -36,24 +37,32 @@ function projectsError(message) {
     };
 }
 
-export function getProjects() {
+export function getProjects(providerName) {
     return (dispatch) => {
         dispatch(fetchingProjects());
-        fetch(PROJECTS_URL, {
+        const requestUrl = `${PROVIDER_PROJECTS_URL_PREFIX}${providerName}${PROVIDER_PROJECTS_URL_SUFFIX}`;
+        fetch(requestUrl, {
             credentials: 'same-origin'
-        }).then((response) => {
-            response.json().then((json) => {
-                if (!response.ok) {
-                    dispatch(projectsError(json.message));
-                    dispatch(verifyLoginByStatus(response.status));
-                } else {
-                    const projects = json.map(({ name, description, url }) => ({ name, description, url }));
-                    dispatch(projectsFetched(projects));
-                }
+        })
+            .then((response) => {
+                response.json()
+                    .then((json) => {
+                        if (!response.ok) {
+                            dispatch(projectsError(json.message));
+                            dispatch(verifyLoginByStatus(response.status));
+                        } else {
+                            const projects = json.map(({ name, description, url }) => ({
+                                name,
+                                description,
+                                url
+                            }));
+                            dispatch(projectsFetched(projects));
+                        }
+                    });
+            })
+            .catch((error) => {
+                dispatch(projectsError(`Unable to connect to Server: ${error}`));
+                console.error(error);
             });
-        }).catch((error) => {
-            dispatch(projectsError(`Unable to connect to Server: ${error}`));
-            console.error(error);
-        });
     };
 }

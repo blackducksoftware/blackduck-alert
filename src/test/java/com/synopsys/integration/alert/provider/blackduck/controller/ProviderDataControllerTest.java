@@ -25,16 +25,16 @@ import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataController;
+import com.synopsys.integration.alert.web.provider.ProviderDataController;
 
-public class BlackDuckDataControllerTest {
+public class ProviderDataControllerTest {
     private final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
     @Test
     public void testGetHubProjects() {
         final ProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
         final ResponseFactory responseFactory = new ResponseFactory();
-        final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, providerDataAccessor, contentConverter);
+        final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("[]", responseEntity.getBody());
@@ -45,7 +45,7 @@ public class BlackDuckDataControllerTest {
         final ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
         Mockito.when(providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME)).thenThrow(new IllegalStateException("ErrorMessage"));
         final ResponseFactory responseFactory = new ResponseFactory();
-        final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, providerDataAccessor, contentConverter);
+        final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertEquals("{\"message\":\"ErrorMessage\"}", responseEntity.getBody());
