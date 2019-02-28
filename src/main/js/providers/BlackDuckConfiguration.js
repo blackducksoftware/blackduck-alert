@@ -101,6 +101,7 @@ class BlackDuckConfiguration
                         <TextInput
                             id={KEY_BLACKDUCK_URL}
                             label="Url"
+                            description="The URL of the Black Duck server."
                             name={KEY_BLACKDUCK_URL}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
                             onChange={this.handleChange}
@@ -110,6 +111,7 @@ class BlackDuckConfiguration
                         <PasswordInput
                             id={KEY_BLACKDUCK_API_KEY}
                             label="API Token"
+                            description="The API token used to retrieve data from the Black Duck server. The API token should be for a super user."
                             name={KEY_BLACKDUCK_API_KEY}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_API_KEY)}
                             isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
@@ -120,6 +122,7 @@ class BlackDuckConfiguration
                         <NumberInput
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
+                            description="The timeout in seconds for all connections to the Black Duck server. Default = 300"
                             name={KEY_BLACKDUCK_TIMEOUT}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}

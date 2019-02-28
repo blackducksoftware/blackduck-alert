@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 class LabeledField extends Component {
     render(inputDiv) {
@@ -9,7 +11,18 @@ class LabeledField extends Component {
                 <label className="col-sm-3 col-form-label text-right">{this.props.label}</label>
                 {this.props.description &&
                 <div className="d-inline-flex">
-                    <span className="fa fa-question-circle" tabIndex="0" data-delay='{"show": 300, "hide": 100}' data-toggle="tooltip" title={this.props.description} />
+                    <OverlayTrigger
+                        key='top'
+                        placement='top'
+                        delay={{ show: 200, hide: 100 }}
+                        overlay={
+                            <Tooltip id='description-tooltip'>
+                                {this.props.description}
+                            </Tooltip>
+                        }
+                    >
+                        <span className="fa fa-question-circle" />
+                    </OverlayTrigger>
                 </div>
                 }
                 {field}
