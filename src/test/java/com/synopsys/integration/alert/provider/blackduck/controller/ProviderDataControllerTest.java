@@ -35,7 +35,7 @@ public class ProviderDataControllerTest {
         final ProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
         final ResponseFactory responseFactory = new ResponseFactory();
         final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
-        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
+        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BlackDuckProvider.COMPONENT_NAME);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("[]", responseEntity.getBody());
     }
@@ -46,7 +46,7 @@ public class ProviderDataControllerTest {
         Mockito.when(providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME)).thenThrow(new IllegalStateException("ErrorMessage"));
         final ResponseFactory responseFactory = new ResponseFactory();
         final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
-        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
+        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BlackDuckProvider.COMPONENT_NAME);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertEquals("{\"message\":\"ErrorMessage\"}", responseEntity.getBody());
     }

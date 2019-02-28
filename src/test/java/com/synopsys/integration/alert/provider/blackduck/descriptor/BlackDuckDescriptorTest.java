@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
@@ -37,7 +38,8 @@ public class BlackDuckDescriptorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
+        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, null);
         final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
         expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
@@ -55,7 +57,8 @@ public class BlackDuckDescriptorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
+        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
         final BlackDuckTopicCollectorFactory topicCollectorFactory = Mockito.mock(BlackDuckTopicCollectorFactory.class);
         final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
         final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
@@ -71,7 +74,8 @@ public class BlackDuckDescriptorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
+        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
         final BlackDuckTopicCollectorFactory topicCollectorFactory = Mockito.mock(BlackDuckTopicCollectorFactory.class);
         final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
         final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
