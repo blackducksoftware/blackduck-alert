@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.provider.blackduck;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
+import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component(value = BlackDuckProvider.COMPONENT_NAME)
 public class BlackDuckProvider extends Provider {
@@ -50,13 +53,16 @@ public class BlackDuckProvider extends Provider {
     private final BlackDuckAccumulator accumulatorTask;
     private final BlackDuckProjectSyncTask projectSyncTask;
     private final TaskManager taskManager;
+    private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler, final TaskManager taskManager) {
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler, final TaskManager taskManager,
+        final BlackDuckProperties blackDuckProperties) {
         super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.taskManager = taskManager;
+        this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
@@ -64,8 +70,12 @@ public class BlackDuckProvider extends Provider {
         logger.info("Initializing Black Duck provider...");
         taskManager.registerTask(accumulatorTask);
         taskManager.registerTask(projectSyncTask);
-        taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, accumulatorTask.getTaskName());
-        taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
+
+        final Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfigSafely(new Slf4jIntLogger(logger));
+        blackDuckServerConfig.ifPresent(globalConfig -> {
+            taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, accumulatorTask.getTaskName());
+            taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
+        });
     }
 
     @Override
