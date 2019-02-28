@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -32,12 +33,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
@@ -56,11 +60,13 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
     private final SystemValidator systemValidator;
+    private final TaskManager taskManager;
 
     @Autowired
-    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator) {
+    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator, final TaskManager taskManager) {
         this.blackDuckProperties = blackDuckProperties;
         this.systemValidator = systemValidator;
+        this.taskManager = taskManager;
     }
 
     @Override
@@ -108,7 +114,14 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
-        systemValidator.validate();
+        final boolean valid = systemValidator.validate();
+        if (valid) {
+            final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+            if (nextRunTime.isEmpty()) {
+                taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
+                taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, ProjectSyncTask.TASK_NAME);
+            }
+        }
         return super.saveConfig(fieldModel);
     }
 }
