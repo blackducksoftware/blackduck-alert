@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <changeSet author="gkillough" id="1551202634344-1">
+    <changeSet author="gkillough" id="1551366126977-1">
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
@@ -9,43 +9,25 @@
             <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('PROVIDER')"/>
         </insert>
     </changeSet>
-    <changeSet author="gkillough" id="1551202634344-2">
-        <renameTable
-                schemaName="ALERT"
-                oldTableName="BLACKDUCK_USER"
-                newTableName="PROVIDER_USERS"
+    <changeSet author="gkillough" id="1551366126977-2">
+        <createTable schemaName="ALERT" tableName="POLARIS_ISSUES">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="POLARIS_ISSUES_KEY"/>
+            </column>
+            <column name="ISSUE_TYPE" type="VARCHAR(255)"/>
+            <column name="PREVIOUS_COUNT" type="BIGINT(19)"/>
+            <column name="CURRENT_COUNT" type="BIGINT(19)"/>
+            <column name="PROJECT_ID" type="BIGINT(19)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="POLARIS_ISSUES"
+                baseColumnNames="PROJECT_ID"
+                constraintName="FK_ISSUE_PROJECT"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PROVIDER_PROJECTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
         />
-        <renameTable
-                schemaName="ALERT"
-                oldTableName="BLACKDUCK_PROJECT"
-                newTableName="PROVIDER_PROJECTS"
-        />
-        <renameTable
-                schemaName="ALERT"
-                oldTableName="BLACKDUCK_USER_PROJECT_RELATION"
-                newTableName="PROVIDER_USER_PROJECT_RELATION"
-        />
-    </changeSet>
-    <changeSet author="gkillough" id="1551202634344-3">
-        <renameColumn
-                schemaName="ALERT"
-                tableName="PROVIDER_USER_PROJECT_RELATION"
-                oldColumnName="BLACKDUCK_USER_ID"
-                newColumnName="PROVIDER_USER_ID"
-        />
-        <renameColumn
-                schemaName="ALERT"
-                tableName="PROVIDER_USER_PROJECT_RELATION"
-                oldColumnName="BLACKDUCK_PROJECT_ID"
-                newColumnName="PROVIDER_PROJECT_ID"
-        />
-    </changeSet>
-    <changeSet author="gkillough" id="1551202634344-4">
-        <addColumn schemaName="ALERT" tableName="PROVIDER_PROJECTS">
-            <column name="PROVIDER" value="provider_blackduck" type="varchar(255)"/>
-        </addColumn>
-        <addColumn schemaName="ALERT" tableName="PROVIDER_USERS">
-            <column name="PROVIDER" value="provider_blackduck" type="varchar(255)"/>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>
