@@ -122,7 +122,7 @@ class BlackDuckConfiguration
                         <NumberInput
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
-                            description="The timeout in seconds for all connections to the Black Duck server. Default = 300"
+                            description="The timeout in seconds for all connections to the Black Duck server. Default= 300"
                             name={KEY_BLACKDUCK_TIMEOUT}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
