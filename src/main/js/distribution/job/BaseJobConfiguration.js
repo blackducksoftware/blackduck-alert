@@ -391,6 +391,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {this.props.childContent}
                 <ProjectConfiguration
+                    providerName={FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME)}
                     includeAllProjects={includeAllProjects}
                     handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER, true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
