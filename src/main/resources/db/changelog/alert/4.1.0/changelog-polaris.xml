@@ -10,6 +10,17 @@
         </insert>
     </changeSet>
     <changeSet author="gkillough" id="1551366126977-2">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('polaris.url', FALSE, 'provider_polaris', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('polaris.access.token', TRUE, 'provider_polaris', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('polaris.timeout', FALSE, 'provider_polaris', 'GLOBAL');
+        </sql>
+    </changeSet>
+    <changeSet author="gkillough" id="1551366126977-3">
         <createTable schemaName="ALERT" tableName="POLARIS_ISSUES">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="POLARIS_ISSUES_KEY"/>
