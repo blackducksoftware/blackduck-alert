@@ -72,6 +72,7 @@ class EmailJobConfiguration extends Component {
                 <TextInput
                     id={KEY_SUBJECT_LINE}
                     label="Subject Line"
+                    description='The subject line to use in the emails sent for this distribution job.'
                     name={KEY_SUBJECT_LINE}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_SUBJECT_LINE, '')}
                     onChange={this.handleChange}
@@ -81,6 +82,7 @@ class EmailJobConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_PROJECT_OWNER_ONLY}
                     label="Project Owner Only"
+                    description='If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.'
                     name={KEY_PROJECT_OWNER_ONLY}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_PROJECT_OWNER_ONLY)}
                     onChange={this.handleChange}

@@ -11,7 +11,7 @@ import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import SelectInput from "../../component/SchedulingConfiguration";
+import SelectInput from 'field/input/SelectInput';
 
 const { Option, SingleValue } = components;
 
@@ -355,7 +355,7 @@ class BaseJobConfiguration extends Component {
                     onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.PROVIDER)}
                     id={KEY_FORMAT_TYPE}
                     className="typeAheadField"
-                    description='Select the format of the message that will be created'
+                    description='Select the format of the message that will be created.'
                     options={formatOptions}
                     isSearchable={false}
                     removeSelected={true}

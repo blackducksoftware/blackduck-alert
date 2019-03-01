@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+
 
 import { getSchedulingConfig, updateSchedulingConfig } from 'store/actions/schedulingConfig';
 
@@ -11,7 +14,6 @@ import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
-import OverlayTrigger from "../field/input/SelectInput";
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -146,11 +148,6 @@ class SchedulingConfiguration extends React.Component {
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div className="form-group">
                         <label className="col-sm-4 col-form-label text-right">Collecting Provider data in</label>
-                        <div className="d-inline-flex p-2 col-sm-4">
-                            <p className="form-control-static accumulator-countdown">
-                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ACCUMULATOR_NEXT_RUN)} seconds &nbsp;&nbsp;
-                            </p>
-                        </div>
                         <div className="d-inline-flex checkboxDescription">
                             <OverlayTrigger
                                 key='top'
@@ -164,6 +161,11 @@ class SchedulingConfiguration extends React.Component {
                             >
                                 <span className="fa fa-question-circle" />
                             </OverlayTrigger>
+                        </div>
+                        <div className="d-inline-flex p-2 col-sm-4">
+                            <p className="form-control-static accumulator-countdown">
+                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ACCUMULATOR_NEXT_RUN)} seconds &nbsp;&nbsp;
+                            </p>
                         </div>
                     </div>
 
@@ -212,7 +214,7 @@ class SchedulingConfiguration extends React.Component {
                         onChange={this.handlePurgeChanged}
                         id={KEY_PURGE_DATA_FREQUENCY_DAYS}
                         className="accumulatorTypeAheadField"
-                        description='Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value.'
+                        description='Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.'
                         options={purgeOptions}
                         isSearchable={true}
                         placeholder='Choose the frequency'
@@ -223,11 +225,6 @@ class SchedulingConfiguration extends React.Component {
 
                     <div className="form-group">
                         <label className="col-sm-4 col-form-label text-right">Purge Cron Next Run</label>
-                        <div className="d-inline-flex p-2 col-sm-4">
-                            <p className="form-control-static">
-                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_NEXT_RUN)}
-                            </p>
-                        </div>
                         <div className="d-inline-flex checkboxDescription">
                             <OverlayTrigger
                                 key='top'
@@ -241,6 +238,11 @@ class SchedulingConfiguration extends React.Component {
                             >
                                 <span className="fa fa-question-circle" />
                             </OverlayTrigger>
+                        </div>
+                        <div className="d-inline-flex p-2 col-sm-4">
+                            <p className="form-control-static">
+                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_NEXT_RUN)}
+                            </p>
                         </div>
                     </div>
                     <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
