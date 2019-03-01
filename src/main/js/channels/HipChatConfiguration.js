@@ -80,7 +80,8 @@ class HipChatConfiguration extends React.Component {
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <PasswordInput
                         id={KEY_API_KEY}
-                        label="Api Key"
+                        label="API Key"
+                        description='The API key of the user you want to use to authenticate with the HipChat server.'
                         name={KEY_API_KEY}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_API_KEY)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
@@ -92,6 +93,7 @@ class HipChatConfiguration extends React.Component {
                         <TextInput
                             id={KEY_HOST_SERVER}
                             label="HipChat Host Server Url"
+                            description='The URL for your HipChat server.'
                             name={KEY_HOST_SERVER}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
                             onChange={this.handleChange}
