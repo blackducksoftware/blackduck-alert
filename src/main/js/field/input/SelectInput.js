@@ -80,6 +80,7 @@ SelectInput.defaultProps = {
     id: 'id',
     errorName: '',
     errorValue: '',
+    className: '',
     description: null,
     options: [],
     isSearchable: true,
