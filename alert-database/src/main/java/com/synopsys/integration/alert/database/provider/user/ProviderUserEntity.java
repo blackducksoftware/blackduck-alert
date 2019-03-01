@@ -21,43 +21,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.DatabaseRelation;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@IdClass(UserProjectRelationPK.class)
-@Table(schema = "alert", name = "blackduck_user_project_relation")
-public class UserProjectRelation extends DatabaseRelation {
-    @Id
-    @Column(name = "blackduck_user_id")
-    private Long blackDuckUserId;
+@Table(schema = "alert", name = "provider_users")
+public class ProviderUserEntity extends DatabaseEntity {
+    @Column(name = "email_address")
+    private String emailAddress;
 
-    @Id
-    @Column(name = "blackduck_project_id")
-    private Long blackDuckProjectId;
+    @Column(name = "opt_out")
+    private Boolean optOut;
 
-    public UserProjectRelation() {
+    @Column(name = "provider")
+    private String provider;
+
+    public ProviderUserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public UserProjectRelation(final Long blackDuckUserId, final Long blackDuckProjectId) {
-        super();
-        this.blackDuckUserId = blackDuckUserId;
-        this.blackDuckProjectId = blackDuckProjectId;
+    public ProviderUserEntity(final String emailAddress, final Boolean optOut, final String provider) {
+        this.emailAddress = emailAddress;
+        this.optOut = optOut;
+        this.provider = provider;
     }
 
-    public Long getBlackDuckUserId() {
-        return blackDuckUserId;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public Long getBlackDuckProjectId() {
-        return blackDuckProjectId;
+    public Boolean getOptOut() {
+        return optOut;
+    }
+
+    public String getProvider() {
+        return provider;
     }
 }

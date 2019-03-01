@@ -21,44 +21,54 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.provider.blackduck;
+package com.synopsys.integration.alert.web.provider;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
 @RestController
-@RequestMapping(BaseController.BASE_PATH + "/blackduck")
-public class BlackDuckDataController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckDataController.class);
+@RequestMapping(BaseController.BASE_PATH + "/provider")
+public class ProviderDataController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(ProviderDataController.class);
 
     private final ResponseFactory responseFactory;
-    private final BlackDuckDataActions blackDuckDataActions;
+    private final ProviderDataAccessor providerDataAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public BlackDuckDataController(final ResponseFactory responseFactory, final BlackDuckDataActions blackDuckDataActions, final ContentConverter contentConverter) {
+    public ProviderDataController(final ResponseFactory responseFactory, final ProviderDataAccessor providerDataAccessor, final ContentConverter contentConverter) {
         this.responseFactory = responseFactory;
-        this.blackDuckDataActions = blackDuckDataActions;
+        this.providerDataAccessor = providerDataAccessor;
         this.contentConverter = contentConverter;
     }
 
-    @GetMapping(value = "/projects")
-    public ResponseEntity<String> getProjects() {
+    @GetMapping(value = "{provider}/projects")
+    public ResponseEntity<String> getProjects(@PathVariable(name = "provider") final String provider) {
+        if (StringUtils.isBlank(provider)) {
+            logger.debug("Received provider project data request with a blank provider");
+            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "The specified provider must not be blank");
+        }
         try {
-            final List<BlackDuckProject> projects = blackDuckDataActions.getBlackDuckProjects();
+            final List<ProviderProject> projects = providerDataAccessor.findByProviderName(provider);
+            if (projects.isEmpty()) {
+                logger.info("No projects found in the database for the provider: {}", provider);
+            }
             final String usersJson = contentConverter.getJsonString(projects);
             return responseFactory.createOkContentResponse(usersJson);
         } catch (final Exception e) {

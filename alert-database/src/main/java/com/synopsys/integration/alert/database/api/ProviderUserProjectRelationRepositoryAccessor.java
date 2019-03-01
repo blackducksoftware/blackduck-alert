@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.api;
 
 import java.util.List;
 import java.util.Set;
@@ -31,33 +31,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelationRepository;
+
 @Component
-public class UserProjectRelationRepositoryAccessor {
-    private final UserProjectRelationRepository userProjectRelationRepository;
+public class ProviderUserProjectRelationRepositoryAccessor {
+    private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
 
     @Autowired
-    public UserProjectRelationRepositoryAccessor(final UserProjectRelationRepository userProjectRelationRepository) {
-        this.userProjectRelationRepository = userProjectRelationRepository;
+    public ProviderUserProjectRelationRepositoryAccessor(final ProviderUserProjectRelationRepository providerUserProjectRelationRepository) {
+        this.providerUserProjectRelationRepository = providerUserProjectRelationRepository;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<UserProjectRelation> readEntities() {
-        return userProjectRelationRepository.findAll();
+    public List<ProviderUserProjectRelation> readEntities() {
+        return providerUserProjectRelationRepository.findAll();
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<UserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId) {
-        return userProjectRelationRepository.findByBlackDuckProjectId(blackDuckProjectId);
-    }
-
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<UserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId) {
-        return userProjectRelationRepository.findByBlackDuckUserId(blackDuckUserId);
+    public List<ProviderUserProjectRelation> findByProviderProjectId(final Long providerProjectId) {
+        return providerUserProjectRelationRepository.findByProviderProjectId(providerProjectId);
     }
 
     @Transactional
-    public List<UserProjectRelation> deleteAndSaveAll(final Set<UserProjectRelation> userProjectRelations) {
-        userProjectRelationRepository.deleteAllInBatch();
-        return userProjectRelationRepository.saveAll(userProjectRelations);
+    public List<ProviderUserProjectRelation> deleteAndSaveAll(final Set<ProviderUserProjectRelation> userProjectRelations) {
+        providerUserProjectRelationRepository.deleteAllInBatch();
+        return providerUserProjectRelationRepository.saveAll(userProjectRelations);
     }
 }

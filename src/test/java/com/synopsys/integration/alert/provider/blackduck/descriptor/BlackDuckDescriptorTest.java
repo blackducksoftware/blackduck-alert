@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckDescriptorTest {
@@ -36,7 +36,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
@@ -55,7 +55,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testCreateTopicCollectors() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
@@ -72,7 +72,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetDefinedFields() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProjectSyncTask projectSyncTask = Mockito.mock(BlackDuckProjectSyncTask.class);
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
