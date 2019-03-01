@@ -99,7 +99,7 @@ class HipChatJobConfiguration extends Component {
                 <TextInput
                     id={KEY_ROOM_ID}
                     label="Room Id"
-                    description="The ID of the room to receive Alerts."
+                    description="The API ID of the room to receive Alerts."
                     name={KEY_ROOM_ID}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
                     onChange={this.handleChange}
