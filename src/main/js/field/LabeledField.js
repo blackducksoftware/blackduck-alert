@@ -12,11 +12,11 @@ class LabeledField extends Component {
                 {this.props.description &&
                 <div className="d-inline-flex">
                     <OverlayTrigger
-                        key='top'
-                        placement='top'
+                        key="top"
+                        placement="top"
                         delay={{ show: 200, hide: 100 }}
                         overlay={
-                            <Tooltip id='description-tooltip'>
+                            <Tooltip id="description-tooltip">
                                 {this.props.description}
                             </Tooltip>
                         }
