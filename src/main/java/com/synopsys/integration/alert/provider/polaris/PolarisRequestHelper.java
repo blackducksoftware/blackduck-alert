@@ -40,6 +40,7 @@ import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
+// FIXME move this logic into polaris-common
 public class PolarisRequestHelper {
     public static final String API_MIME_TYPE = "application/vnd.api+json";
     public static final String PAGE_OFFSET_PARAM_NAME = "page[offset]";
@@ -53,6 +54,8 @@ public class PolarisRequestHelper {
     public static final String PROJECT_API_SPEC = COMMON_API_SPEC + "/projects";
     public static final String BRANCHES_API_SPEC = COMMON_API_SPEC + "/branches";
 
+    // TODO the query api is currently inaccessible via access token
+    //  this must change before new functionality can be added
     public static final String QUERY_API_SPEC = "/api/query/v0";
     public static final String ISSUES_API_SPEC = QUERY_API_SPEC + "/issues";
 
