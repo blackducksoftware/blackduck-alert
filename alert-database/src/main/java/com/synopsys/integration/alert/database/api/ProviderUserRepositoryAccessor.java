@@ -29,20 +29,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserRepository;
+import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
+import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 
 @Component
-public class BlackDuckUserRepositoryAccessor extends RepositoryAccessor<BlackDuckUserEntity> {
-    private final BlackDuckUserRepository blackDuckUserRepository;
+public class ProviderUserRepositoryAccessor extends RepositoryAccessor<ProviderUserEntity> {
+    private final ProviderUserRepository blackDuckUserRepository;
 
     @Autowired
-    public BlackDuckUserRepositoryAccessor(final BlackDuckUserRepository blackDuckUserRepository) {
+    public ProviderUserRepositoryAccessor(final ProviderUserRepository blackDuckUserRepository) {
         super(blackDuckUserRepository);
         this.blackDuckUserRepository = blackDuckUserRepository;
     }
 
-    public List<BlackDuckUserEntity> deleteAndSaveAll(final Iterable<BlackDuckUserEntity> userEntitiesToDelete, final Iterable<BlackDuckUserEntity> userEntitiesToAdd) {
+    public List<ProviderUserEntity> deleteAndSaveAll(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
         blackDuckUserRepository.deleteAll(userEntitiesToDelete);
         return blackDuckUserRepository.saveAll(userEntitiesToAdd);
     }

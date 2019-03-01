@@ -21,10 +21,6 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -33,10 +29,12 @@ import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.AuditEntryUtility;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -180,8 +178,7 @@ public class EmailGlobalDescriptorActionApiTest {
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
 
-        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class), Mockito.mock(
-            BlackDuckUserRepositoryAccessor.class));
+        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(ProviderDataAccessor.class));
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 

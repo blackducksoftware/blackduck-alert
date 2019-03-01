@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * blackduck-alert
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,32 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.provider.polaris.model;
 
-import java.io.Serializable;
-
-public class UserProjectRelationPK implements Serializable {
-    private static final long serialVersionUID = 2978750766498759769L;
-    private Long blackDuckUserId;
-    private Long blackDuckProjectId;
-
-    public UserProjectRelationPK() {
-        // JPA requires default constructor definitions
-    }
-
-    public Long getBlackDuckUserId() {
-        return blackDuckUserId;
-    }
-
-    public void setBlackDuckUserId(final Long blackDuckUserId) {
-        this.blackDuckUserId = blackDuckUserId;
-    }
-
-    public Long getBlackDuckProjectId() {
-        return blackDuckProjectId;
-    }
-
-    public void setBlackDuckProjectId(final Long blackDuckProjectId) {
-        this.blackDuckProjectId = blackDuckProjectId;
-    }
+public enum AlertPolarisNotificationTypeEnum {
+    ISSUE_COUNT_INCREASED,
+    ISSUE_COUNT_DECREASED
 }

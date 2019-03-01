@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,18 +21,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris.descriptor;
+package com.synopsys.integration.alert.database.provider.project;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Component
-public class PolarisDistributionDescriptorActionApi extends DescriptorActionApi {
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        // FIXME implement
-    }
+public interface ProviderUserProjectRelationRepository extends JpaRepository<ProviderUserProjectRelation, ProviderUserProjectRelationPK> {
+    List<ProviderUserProjectRelation> findByProviderUserId(final Long providerUserId);
+
+    List<ProviderUserProjectRelation> findByProviderProjectId(final Long providerProjectId);
+
+    void deleteAllByProviderProjectId(final Long providerProjectId);
+
 }

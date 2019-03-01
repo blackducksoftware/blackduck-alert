@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,34 +21,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.common.persistence.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.alert.database.DatabaseEntity;
+public class ProviderProject extends AlertSerializableModel {
+    private final String name;
+    private final String description;
+    private final String href;
+    private final String projectOwnerEmail;
 
-@Entity
-@Table(schema = "alert", name = "blackduck_project")
-public class BlackDuckProjectEntity extends DatabaseEntity {
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "href")
-    private String href;
-
-    @Column(name = "project_owner_email")
-    private String projectOwnerEmail;
-
-    public BlackDuckProjectEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public BlackDuckProjectEntity(final String name, final String description, final String href, final String projectOwnerEmail) {
+    public ProviderProject(final String name, final String description, final String href, final String projectOwnerEmail) {
         this.name = name;
         this.description = description;
         this.href = href;

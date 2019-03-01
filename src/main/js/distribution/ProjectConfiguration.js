@@ -15,7 +15,8 @@ function assignClassName(row, rowIdx) {
 
 function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ?
-        <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> :
+        <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw"
+                                                     aria-hidden="true" />{cell}</span> :
         cell;
 
     if (cell) {
@@ -42,16 +43,27 @@ class ProjectConfiguration extends Component {
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
+            projectData: this.createProjectList(),
             includeAllProjects: this.props.includeAllProjects,
             configuredProjects: this.props.configuredProjects
         };
     }
 
     componentWillMount() {
-        this.props.getProjects();
+        this.props.getProjects(this.props.providerName);
     }
 
     componentDidUpdate(prevProps) {
+        if (this.props.providerName !== prevProps.providerName) {
+            this.props.getProjects(this.props.providerName);
+        }
+
+        if (!this.props.fetching && prevProps.fetching) {
+            this.setState({
+                projectData: this.createProjectList()
+            });
+        }
+
         if (this.props.includeAllProjects !== prevProps.includeAllProjects) {
             this.setState({
                 includeAllProjects: this.props.includeAllProjects
@@ -74,7 +86,10 @@ class ProjectConfiguration extends Component {
             this.setState({
                 configuredProjects: selected
             });
-            this.props.handleProjectChanged(selected.map(project => Object.assign({}, { label: project, value: project })));
+            this.props.handleProjectChanged(selected.map(project => Object.assign({}, {
+                label: project,
+                value: project
+            })));
         } else {
             this.setState({
                 configuredProjects: []
@@ -89,11 +104,14 @@ class ProjectConfiguration extends Component {
         this.setState({
             configuredProjects: selected
         });
-        this.props.handleProjectChanged(selected.map(project => Object.assign({}, { label: project, value: project })));
+        this.props.handleProjectChanged(selected.map(project => Object.assign({}, {
+            label: project,
+            value: project
+        })));
     }
 
     handleChange(event) {
-        const { target } = event
+        const { target } = event;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({ includeAllProjects: value });
         this.props.handleChange(event);
@@ -115,7 +133,11 @@ class ProjectConfiguration extends Component {
 
     createProjectList() {
         const { projects, configuredProjects } = this.props;
-        const projectData = projects.map(({ name, description }) => ({ name, description: description || '', missing: false }));
+        const projectData = projects.map(({ name, description }) => ({
+            name,
+            description: description || '',
+            missing: false
+        }));
 
         configuredProjects.forEach((project) => {
             const projectFound = projectData.find(p => project === p.name);
@@ -131,8 +153,6 @@ class ProjectConfiguration extends Component {
     }
 
     render() {
-        const projectData = this.createProjectList();
-
         const projectTableOptions = {
             noDataText: 'No projects found',
             clearSearch: true,
@@ -163,7 +183,7 @@ class ProjectConfiguration extends Component {
                 />
                 <BootstrapTable
                     version="4"
-                    data={projectData}
+                    data={this.state.projectData}
                     containerClass="table"
                     hover
                     condensed
@@ -174,12 +194,17 @@ class ProjectConfiguration extends Component {
                     headerContainerClass="scrollable"
                     bodyContainerClass="projectTableScrollableBody"
                 >
-                    <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
-                    <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell"
+                                       dataFormat={assignDataFormat}>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell"
+                                       dataFormat={assignDataFormat}>Description</TableHeaderColumn>
+                    <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing
+                        Project</TableHeaderColumn>
                 </BootstrapTable>
 
-                {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" /></div>}
+                {this.props.fetching &&
+                <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
+                </div>}
 
                 {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}
             </div>);
@@ -196,7 +221,8 @@ class ProjectConfiguration extends Component {
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FILTER_BY_PROJECT)}
                     errorValue={this.props.fieldErrors[KEY_FILTER_BY_PROJECT]}
                 />
-                {this.props.fieldErrors[KEY_CONFIGURED_PROJECT] && <label className="fieldError" name="projectTableErrors">{this.props.fieldErrors[KEY_CONFIGURED_PROJECT]}</label>}
+                {this.props.fieldErrors[KEY_CONFIGURED_PROJECT] && <label className="fieldError"
+                                                                          name="projectTableErrors">{this.props.fieldErrors[KEY_CONFIGURED_PROJECT]}</label>}
                 {projectSelectionDiv}
             </div>
         );
@@ -214,6 +240,7 @@ ProjectConfiguration.defaultProps = {
 };
 
 ProjectConfiguration.propTypes = {
+    providerName: PropTypes.string.isRequired,
     includeAllProjects: PropTypes.bool.isRequired,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
     projectNamePattern: PropTypes.string,
@@ -234,7 +261,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getProjects: () => dispatch(getProjects())
+    getProjects: providerName => dispatch(getProjects(providerName))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectConfiguration);

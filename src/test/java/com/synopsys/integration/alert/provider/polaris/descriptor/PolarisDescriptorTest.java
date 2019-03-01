@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 public class PolarisDescriptorTest {
-    private final PolarisProvider polarisProvider = new PolarisProvider();
+    private final PolarisProvider polarisProvider = new PolarisProvider(null, null);
 
     @Disabled
     @Test

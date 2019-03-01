@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,21 +21,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.model;
+package com.synopsys.integration.alert.database.provider.project;
 
-import com.synopsys.integration.util.Stringable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class BlackDuckProject extends Stringable {
-    private final String name;
-    private final String description;
-    private final String href;
-    private final String projectOwnerEmail;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-    public BlackDuckProject(final String name, final String description, final String href, String projectOwnerEmail) {
+@Entity
+@Table(schema = "alert", name = "provider_projects")
+public class ProviderProjectEntity extends DatabaseEntity {
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "href")
+    private String href;
+
+    @Column(name = "project_owner_email")
+    private String projectOwnerEmail;
+
+    @Column(name = "provider")
+    private String provider;
+
+    public ProviderProjectEntity() {
+        // JPA requires default constructor definitions
+    }
+
+    public ProviderProjectEntity(final String name, final String description, final String href, final String projectOwnerEmail, final String provider) {
         this.name = name;
         this.description = description;
         this.href = href;
         this.projectOwnerEmail = projectOwnerEmail;
+        this.provider = provider;
     }
 
     public String getName() {
@@ -52,5 +73,9 @@ public class BlackDuckProject extends Stringable {
 
     public String getProjectOwnerEmail() {
         return projectOwnerEmail;
+    }
+
+    public String getProvider() {
+        return provider;
     }
 }

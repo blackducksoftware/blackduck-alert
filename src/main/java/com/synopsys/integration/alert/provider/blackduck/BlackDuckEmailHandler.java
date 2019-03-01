@@ -23,10 +23,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,31 +36,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 
 @Component
 public class BlackDuckEmailHandler extends EmailHandler {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckEmailHandler.class);
 
-    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
-    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
-    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckEmailHandler(final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
-        final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
-        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
-        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
-        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
+    public BlackDuckEmailHandler(final ProviderDataAccessor providerDataAccessor) {
+        this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
@@ -80,37 +68,31 @@ public class BlackDuckEmailHandler extends EmailHandler {
         return new FieldAccessor(fieldMap);
     }
 
-    public Set<String> getBlackDuckEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, final boolean projectOwnerOnly) {
-        if (null == blackDuckProjectEntity) {
-            return Collections.emptySet();
-        }
+    public Set<String> getEmailAddressesForProject(final ProviderProject project, final Boolean projectOwnerOnly) {
         final Set<String> emailAddresses;
         if (projectOwnerOnly) {
-            emailAddresses = new HashSet<>();
-            if (StringUtils.isNotBlank(blackDuckProjectEntity.getProjectOwnerEmail())) {
-                emailAddresses.add(blackDuckProjectEntity.getProjectOwnerEmail());
+            final String projectOwnerEmail = project.getProjectOwnerEmail();
+            if (StringUtils.isNotBlank(projectOwnerEmail)) {
+                emailAddresses = Set.of(projectOwnerEmail);
+            } else {
+                emailAddresses = Set.of();
             }
         } else {
-            final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
-            emailAddresses = userProjectRelations
-                                 .stream()
-                                 .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
-                                 .flatMap(Optional::stream)
-                                 .map(BlackDuckUserEntity::getEmailAddress)
-                                 .filter(StringUtils::isNotBlank)
-                                 .collect(Collectors.toSet());
+            emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(project.getHref());
+        }
+        if (emailAddresses.isEmpty()) {
+            logger.error("Could not find any email addresses for project: {}", project.getName());
         }
         return emailAddresses;
     }
 
-    private Set<String> populateBlackDuckEmails(Set<String> emailAddresses, final String projectName, final boolean projectOwnerOnly) {
+    private Set<String> populateBlackDuckEmails(final Set<String> emailAddresses, final String projectName, final boolean projectOwnerOnly) {
         if (null != emailAddresses && !emailAddresses.isEmpty()) {
             return emailAddresses;
         }
-        final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
-        emailAddresses = getBlackDuckEmailAddressesForProject(projectEntity, projectOwnerOnly);
-        if (emailAddresses.isEmpty()) {
-            logger.error("Could not find any email addresses for project: {}", projectName);
+        final Optional<ProviderProject> optionalProject = providerDataAccessor.findByName(projectName); // FIXME use href
+        if (optionalProject.isPresent()) {
+            return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
         return emailAddresses;
     }

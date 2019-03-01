@@ -100,7 +100,6 @@ public class StartupManager {
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
-        // FIXME move any descriptor logic to the build.gradle
         systemStatusUtility.startupOccurred();
         initializeChannelPropertyManagers();
         validate();
