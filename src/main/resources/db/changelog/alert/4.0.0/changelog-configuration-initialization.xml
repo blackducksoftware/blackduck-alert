@@ -429,7 +429,7 @@
             CALL DEFINE_FIELD('settings.user.default.admin.email', FALSE, 'component_settings', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('settings.user.default.admin.password', FALSE, 'component_settings', 'GLOBAL');
+            CALL DEFINE_FIELD('settings.user.default.admin.password', TRUE, 'component_settings', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('settings.encryption.password', FALSE, 'component_settings', 'GLOBAL');
