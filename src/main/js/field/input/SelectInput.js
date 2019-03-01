@@ -7,10 +7,9 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 const SelectInput = (props) => {
     const { errorName, errorValue } = props;
     const {
-        label, onChange, id, className, description, options, isSearchable, placeholder, value
+        label, onChange, id, className, description, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components
     } = props;
     return (
-
         <div className="form-group">
             <label className="col-sm-4 col-form-label text-right">{label}</label>
             {description &&
@@ -35,9 +34,12 @@ const SelectInput = (props) => {
                     className={className}
                     onChange={onChange}
                     isSearchable={isSearchable}
+                    removeSelected={removeSelected}
                     options={options}
                     placeholder={placeholder}
                     value={value}
+                    isMulti={hasMultipleValues}
+                    components={components}
                 />
             </div>
             {errorName && errorValue &&
@@ -59,8 +61,11 @@ SelectInput.propTypes = {
     description: PropTypes.string,
     options: PropTypes.array,
     isSearchable: PropTypes.bool,
+    removeSelected: PropTypes.bool,
     placeholder: PropTypes.string,
-    value: PropTypes.object
+    value: PropTypes.object,
+    hasMultipleValues: PropTypes.bool,
+    components: PropTypes.object
 };
 
 SelectInput.defaultProps = {
@@ -70,8 +75,11 @@ SelectInput.defaultProps = {
     description: null,
     options: [],
     isSearchable: true,
+    removeSelected: false,
     placeholder: 'Choose a value',
-    value: { label: '-- none --', value: '' }
+    value: { label: '-- none --', value: '' },
+    hasMultipleValues: false,
+    components: {}
 };
 
 export default SelectInput;

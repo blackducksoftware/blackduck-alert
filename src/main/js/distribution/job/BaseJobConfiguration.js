@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Select, { components } from 'react-select';
+import { components } from 'react-select';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
@@ -11,6 +11,7 @@ import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import SelectInput from "../../component/SchedulingConfiguration";
 
 const { Option, SingleValue } = components;
 
@@ -369,46 +370,37 @@ class BaseJobConfiguration extends Component {
         const includeAllProjects = !filterByProject
         return (
             <div>
-                <div className="form-group">
-                    <label className="col-sm-3 col-form-label text-right">Format</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-8">
-                        <Select
-                            id={KEY_FORMAT_TYPE}
-                            className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.PROVIDER)}
-                            removeSelected
-                            options={formatOptions}
-                            placeholder="Choose the format for the job"
-                            value={selectedFormatType}
-                        />
-                        {this.props.fieldErrors[KEY_FORMAT_TYPE] &&
-                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_FORMAT_TYPE)}>
-                            {this.props.fieldErrors[KEY_FORMAT_TYPE]}
-                        </label>
-                        }
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-3 col-form-label text-right">Notification Types</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-8">
-                        <Select
-                            id={KEY_NOTIFICATION_TYPES}
-                            className="typeAheadField"
-                            onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.PROVIDER)}
-                            isSearchable
-                            isMulti
-                            removeSelected
-                            options={notificationOptions}
-                            placeholder="Choose the notification types"
-                            value={selectedNotifications}
-                        />
-                        {this.props.fieldErrors[KEY_NOTIFICATION_TYPES] &&
-                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFICATION_TYPES)}>
-                            {this.props.fieldErrors[KEY_NOTIFICATION_TYPES]}
-                        </label>
-                        }
-                    </div>
-                </div>
+                <SelectInput
+                    label='Format'
+                    onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.PROVIDER)}
+                    id={KEY_FORMAT_TYPE}
+                    className="typeAheadField"
+                    description='Select the format of the message that will be created'
+                    options={formatOptions}
+                    isSearchable={false}
+                    removeSelected={true}
+                    placeholder='Choose the format for the job'
+                    value={selectedFormatType}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FORMAT_TYPE)}
+                    errorValue={this.props.fieldErrors[KEY_FORMAT_TYPE]}
+                />
+
+                <SelectInput
+                    label='Notification Types'
+                    onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.PROVIDER)}
+                    id={KEY_NOTIFICATION_TYPES}
+                    className="typeAheadField"
+                    description='Select one or more of the notification types. Only these notification types will be included for this distribution job.'
+                    options={notificationOptions}
+                    isSearchable={true}
+                    removeSelected={true}
+                    hasMultipleValues={true}
+                    placeholder='Choose the notification types'
+                    value={selectedNotifications}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFICATION_TYPES)}
+                    errorValue={this.props.fieldErrors[KEY_NOTIFICATION_TYPES]}
+                />
+
                 {this.props.childContent}
                 <ProjectConfiguration
                     includeAllProjects={includeAllProjects}
@@ -435,52 +427,42 @@ class BaseJobConfiguration extends Component {
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput
                     id={KEY_NAME}
-                    label="Job Name"
+                    label='Job Name'
+                    description='The name of the distribution job. Must be unique.'
                     name={KEY_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_NAME, '')}
                     onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
                 />
-                <div className="form-group">
-                    <label className="col-sm-3 col-form-label text-right">Frequency</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-8">
-                        <Select
-                            id={KEY_FREQUENCY}
-                            className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_FREQUENCY, FIELD_MODEL_KEY.COMMON)}
-                            isSearchable
-                            options={frequencyOptions}
-                            placeholder="Choose the frequency"
-                            value={selectedFrequencyOption}
-                        />
-                        {this.props.fieldErrors[KEY_FREQUENCY] &&
-                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_FREQUENCY)}>
-                            {this.props.fieldErrors[KEY_FREQUENCY]}
-                        </label>
-                        }
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-3 col-form-label text-right">Provider</label>
-                    <div className="d-inline-flex flex-column p-2 col-sm-8">
-                        <Select
-                            id={KEY_PROVIDER_NAME}
-                            className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME, FIELD_MODEL_KEY.COMMON)}
-                            isSearchable
-                            options={providers}
-                            placeholder="Choose the provider"
-                            value={selectedProviderOption}
-                            components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
-                        />
-                        {this.props.fieldErrors[KEY_PROVIDER_NAME] &&
-                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_PROVIDER_NAME)}>
-                            {this.props.fieldErrors[KEY_PROVIDER_NAME]}
-                        </label>
-                        }
-                    </div>
-                </div>
+                <SelectInput
+                    label='Frequency'
+                    onChange={this.createSingleSelectHandler(KEY_FREQUENCY, FIELD_MODEL_KEY.COMMON)}
+                    id={KEY_FREQUENCY}
+                    className="typeAheadField"
+                    description='Select how frequent this job should check for notifications to send.'
+                    options={frequencyOptions}
+                    isSearchable={true}
+                    placeholder='Choose the frequency'
+                    value={selectedFrequencyOption}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FREQUENCY)}
+                    errorValue={this.props.fieldErrors[KEY_FREQUENCY]}
+                />
+
+                <SelectInput
+                    label='Provider'
+                    onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME, FIELD_MODEL_KEY.COMMON)}
+                    id={KEY_PROVIDER_NAME}
+                    className="typeAheadField"
+                    description='Select the provider. Only notifications for that provider will be processed in this distribution job.'
+                    options={providers}
+                    isSearchable={true}
+                    placeholder='Choose the provider'
+                    value={selectedProviderOption}
+                    components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROVIDER_NAME)}
+                    errorValue={this.props.fieldErrors[KEY_PROVIDER_NAME]}
+                />
                 {selectedProviderOption && this.renderDistributionForm(selectedProviderOption.value)}
             </form>
         );
