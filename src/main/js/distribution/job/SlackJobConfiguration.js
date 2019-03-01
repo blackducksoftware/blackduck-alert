@@ -72,7 +72,7 @@ class SlackJobConfiguration extends Component {
                 <TextInput
                     id={KEY_WEBHOOK}
                     label="Webhook"
-                    description='The Slack URL to receive alerts.'
+                    description="The Slack URL to receive alerts."
                     name={KEY_WEBHOOK}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_WEBHOOK, '')}
                     onChange={this.handleChange}
@@ -82,7 +82,7 @@ class SlackJobConfiguration extends Component {
                 <TextInput
                     id={KEY_CHANNEL_NAME}
                     label="Channel Name"
-                    description='The name of the Slack channel.'
+                    description="The name of the Slack channel."
                     name={KEY_CHANNEL_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_NAME, '')}
                     onChange={this.handleChange}
@@ -92,7 +92,7 @@ class SlackJobConfiguration extends Component {
                 <TextInput
                     id={KEY_CHANNEL_USERNAME}
                     label="Channel Username"
-                    description='The username to show as the message sender in the Slack channel.'
+                    description="The username to show as the message sender in the Slack channel."
                     name={KEY_CHANNEL_USERNAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_USERNAME, '')}
                     onChange={this.handleChange}

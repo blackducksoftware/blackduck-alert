@@ -9,17 +9,23 @@ const SelectInput = (props) => {
     const {
         label, onChange, id, className, description, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components
     } = props;
+
+    const { labelSpacingClass, selectSpacingClass } = props;
+
+    const labelClasses = `${labelSpacingClass} col-form-label text-right`;
+    const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
+
     return (
         <div className="form-group">
-            <label className="col-sm-4 col-form-label text-right">{label}</label>
+            <label className={labelClasses}>{label}</label>
             {description &&
-            <div className="d-inline-flex checkboxDescription">
+            <div className="d-inline-flex">
                 <OverlayTrigger
-                    key='top'
-                    placement='top'
+                    key="top"
+                    placement="top"
                     delay={{ show: 200, hide: 100 }}
                     overlay={
-                        <Tooltip id='description-tooltip'>
+                        <Tooltip id="description-tooltip">
                             {description}
                         </Tooltip>
                     }
@@ -28,7 +34,7 @@ const SelectInput = (props) => {
                 </OverlayTrigger>
             </div>
             }
-            <div className="d-inline-flex p-2 col-sm-4">
+            <div className={selectClasses}>
                 <Select
                     id={id}
                     className={className}
@@ -65,7 +71,9 @@ SelectInput.propTypes = {
     placeholder: PropTypes.string,
     value: PropTypes.object,
     hasMultipleValues: PropTypes.bool,
-    components: PropTypes.object
+    components: PropTypes.object,
+    labelSpacingClass: PropTypes.string,
+    selectSpacingClass: PropTypes.string
 };
 
 SelectInput.defaultProps = {
@@ -77,9 +85,11 @@ SelectInput.defaultProps = {
     isSearchable: true,
     removeSelected: false,
     placeholder: 'Choose a value',
-    value: { label: '-- none --', value: '' },
+    value: null,
     hasMultipleValues: false,
-    components: {}
+    components: {},
+    labelSpacingClass: 'col-sm-4',
+    selectSpacingClass: 'col-sm-4'
 };
 
 export default SelectInput;

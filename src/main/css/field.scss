@@ -17,6 +17,10 @@ small {
   color: $synopsys-color-light-gray;
 }
 
+#description-tooltip {
+  pointer-events: none;
+}
+
 #description-tooltip > .tooltip-inner {
   background-color: $synopsys-color-subhead-copy;
 }
