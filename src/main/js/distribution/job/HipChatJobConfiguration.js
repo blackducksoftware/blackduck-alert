@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Select from 'react-select';
 import TextInput from 'field/input/TextInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { getDistributionJob } from 'store/actions/distributionConfigs';
@@ -9,6 +8,7 @@ import { getDistributionJob } from 'store/actions/distributionConfigs';
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import SelectInput from 'field/input/SelectInput';
 
 const KEY_ROOM_ID = 'channel.hipchat.room.id';
 const KEY_NOTIFY = 'channel.hipchat.notify';
@@ -99,6 +99,7 @@ class HipChatJobConfiguration extends Component {
                 <TextInput
                     id={KEY_ROOM_ID}
                     label="Room Id"
+                    description='The ID of the room to receive Alerts.'
                     name={KEY_ROOM_ID}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
                     onChange={this.handleChange}
@@ -108,26 +109,24 @@ class HipChatJobConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_NOTIFY}
                     label="Notify"
+                    description='If true, this will add to the count of new messages in the HipChat room.'
                     name={KEY_NOTIFY}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
                     onChange={this.handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFY)}
                     errorValue={this.props.fieldErrors[KEY_NOTIFY]}
                 />
-                <div className="form-group">
-                    <label className="col-sm-3 col-form-label text-right">Color</label>
-                    <div className="d-inline-flex p-2 col-sm-8">
-                        <Select
-                            id={KEY_COLOR}
-                            className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_COLOR)}
-                            isSearchable
-                            options={colorOptions}
-                            placeholder="Choose the message color"
-                            value={selectedColorOption}
-                        />
-                    </div>
-                </div>
+                <SelectInput
+                    label='Color'
+                    onChange={this.createSingleSelectHandler(KEY_COLOR)}
+                    id={KEY_COLOR}
+                    className="typeAheadField"
+                    description='The text color to display the Alert messages in.'
+                    options={colorOptions}
+                    isSearchable={true}
+                    placeholder='Choose the message color'
+                    value={selectedColorOption}
+                />
             </div>
         );
         return (<BaseJobConfiguration
