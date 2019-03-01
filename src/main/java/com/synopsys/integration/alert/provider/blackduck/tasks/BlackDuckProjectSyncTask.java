@@ -38,16 +38,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckProjectEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
+import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -59,22 +59,20 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class ProjectSyncTask extends ScheduledTask {
+public class BlackDuckProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-sync-project-task";
-    private final Logger logger = LoggerFactory.getLogger(ProjectSyncTask.class);
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
-    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
-    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    private final ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private final ProviderDataAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public ProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
+    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor,
+        final ProviderDataAccessor blackDuckProjectRepositoryAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
-        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
@@ -88,17 +86,15 @@ public class ProjectSyncTask extends ScheduledTask {
                 final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
                 final ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
-                final Map<BlackDuckProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
-                final List<BlackDuckProjectEntity> blackDuckProjectEntities = updateProjectDB(currentDataMap.keySet());
+                final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
+                final List<ProviderProject> blackDuckProjects = updateProjectDB(currentDataMap.keySet());
 
-                final Map<Long, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjectEntities, projectUsersService);
+                final Map<String, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjects, projectUsersService);
                 final Set<String> emailAddresses = new HashSet<>();
                 projectToEmailAddresses.forEach((projectId, emails) -> emailAddresses.addAll(emails));
 
                 updateUserDB(emailAddresses);
-                final List<BlackDuckUserEntity> blackDuckUserEntities = blackDuckUserRepositoryAccessor.readEntities();
-
-                updateUserProjectRelations(projectToEmailAddresses, blackDuckUserEntities);
+                updateUserProjectRelations(projectToEmailAddresses);
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
@@ -108,8 +104,8 @@ public class ProjectSyncTask extends ScheduledTask {
         logger.info("### Finished {}...", getTaskName());
     }
 
-    public Map<BlackDuckProject, ProjectView> getCurrentData(final List<ProjectView> projectViews, final BlackDuckService blackDuckService) {
-        final Map<BlackDuckProject, ProjectView> projectMap = new ConcurrentHashMap<>();
+    public Map<ProviderProject, ProjectView> getCurrentData(final List<ProjectView> projectViews, final BlackDuckService blackDuckService) {
+        final Map<ProviderProject, ProjectView> projectMap = new ConcurrentHashMap<>();
         projectViews
             .parallelStream()
             .forEach(projectView -> {
@@ -122,37 +118,30 @@ public class ProjectSyncTask extends ScheduledTask {
                         logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
                     }
                 }
-                projectMap.put(new BlackDuckProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref(), projectOwnerEmail), projectView);
+                projectMap.put(new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref(), projectOwnerEmail), projectView);
             });
         return projectMap;
     }
 
-    public List<BlackDuckProjectEntity> updateProjectDB(final Set<BlackDuckProject> currentProjects) {
-        final List<BlackDuckProjectEntity> blackDuckProjectEntities = currentProjects
-                                                                          .stream()
-                                                                          .map(blackDuckProject -> new BlackDuckProjectEntity(blackDuckProject.getName(),
-                                                                              blackDuckProject.getDescription(),
-                                                                              blackDuckProject.getHref(),
-                                                                              blackDuckProject.getProjectOwnerEmail()))
-                                                                          .collect(Collectors.toList());
-        logger.info("{} projects", blackDuckProjectEntities.size());
-        return blackDuckProjectRepositoryAccessor.deleteAndSaveAll(blackDuckProjectEntities);
+    public List<ProviderProject> updateProjectDB(final Set<ProviderProject> currentProjects) {
+        logger.info("{} projects", currentProjects.size());
+        return blackDuckProjectRepositoryAccessor.deleteAndSaveAll(BlackDuckProvider.COMPONENT_NAME, currentProjects);
     }
 
-    private Map<Long, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final List<BlackDuckProjectEntity> blackDuckProjectEntities, final ProjectUsersService projectUsersService) {
-        final Map<Long, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
+    private Map<String, Set<String>> getEmailsPerProject(final Map<ProviderProject, ProjectView> currentDataMap, final List<ProviderProject> blackDuckProjects, final ProjectUsersService projectUsersService) {
+        final Map<String, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
         currentDataMap.entrySet()
             .parallelStream()
             .forEach(entry -> {
                 try {
-                    final BlackDuckProject blackDuckProject = entry.getKey();
+                    final ProviderProject blackDuckProject = entry.getKey();
                     final ProjectView projectView = entry.getValue();
-                    final Optional<BlackDuckProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntities
-                                                                                                .stream()
-                                                                                                .filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(blackDuckProject.getName()))
-                                                                                                .findFirst();
-                    if (optionalBlackDuckProjectEntity.isPresent()) {
-                        final BlackDuckProjectEntity projectEntity = optionalBlackDuckProjectEntity.get();
+                    final Optional<ProviderProject> optionalBlackDuckProject = blackDuckProjects
+                                                                                               .stream()
+                                                                                               .filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(blackDuckProject.getName()))
+                                                                                               .findFirst();
+                    if (optionalBlackDuckProject.isPresent()) {
+                        final ProviderProject projectEntity = optionalBlackDuckProject.get();
 
                         final Set<String> projectUserEmailAddresses = projectUsersService.getAllActiveUsersForProject(projectView)
                                                                           .stream()
@@ -162,7 +151,7 @@ public class ProjectSyncTask extends ScheduledTask {
                         if (StringUtils.isNotBlank(projectEntity.getProjectOwnerEmail())) {
                             projectUserEmailAddresses.add(projectEntity.getProjectOwnerEmail());
                         }
-                        projectToEmailAddresses.put(projectEntity.getId(), projectUserEmailAddresses);
+                        projectToEmailAddresses.put(projectEntity.getHref(), projectUserEmailAddresses);
                     }
                 } catch (final IntegrationException e) {
                     // We do this to break out of the stream
@@ -176,10 +165,10 @@ public class ProjectSyncTask extends ScheduledTask {
         final Set<String> emailsToAdd = new HashSet<>();
         final Set<String> emailsToRemove = new HashSet<>();
 
-        final List<BlackDuckUserEntity> blackDuckUserEntities = blackDuckUserRepositoryAccessor.readEntities();
+        final List<ProviderUserEntity> blackDuckUserEntities = blackDuckUserRepositoryAccessor.readEntities();
         final Set<String> storedEmails = blackDuckUserEntities
                                              .stream()
-                                             .map(BlackDuckUserEntity::getEmailAddress)
+                                             .map(ProviderUserEntity::getEmailAddress)
                                              .collect(Collectors.toSet());
 
         storedEmails.forEach(storedData -> {
@@ -199,26 +188,28 @@ public class ProjectSyncTask extends ScheduledTask {
         logger.info("Adding {} emails", emailsToAdd.size());
         logger.info("Removing {} emails", emailsToRemove.size());
 
-        final List<BlackDuckUserEntity> blackDuckUsersToRemove = blackDuckUserEntities
-                                                                     .stream()
-                                                                     .filter(blackDuckUserEntity -> emailsToRemove.contains(blackDuckUserEntity.getEmailAddress()))
-                                                                     .collect(Collectors.toList());
+        final List<ProviderUserEntity> blackDuckUsersToRemove = blackDuckUserEntities
+                                                                    .stream()
+                                                                    .filter(blackDuckUserEntity -> emailsToRemove.contains(blackDuckUserEntity.getEmailAddress()))
+                                                                    .collect(Collectors.toList());
 
-        final List<BlackDuckUserEntity> blackDuckUserEntityList = emailsToAdd
-                                                                      .stream()
-                                                                      .map(email -> new BlackDuckUserEntity(email, false))
-                                                                      .collect(Collectors.toList());
+        final List<ProviderUserEntity> blackDuckUserEntityList = emailsToAdd
+                                                                     .stream()
+                                                                     .map(email -> new ProviderUserEntity(email, false, BlackDuckProvider.COMPONENT_NAME))
+                                                                     .collect(Collectors.toList());
         blackDuckUserRepositoryAccessor.deleteAndSaveAll(blackDuckUsersToRemove, blackDuckUserEntityList);
     }
 
-    private void updateUserProjectRelations(final Map<Long, Set<String>> projectToEmailAddresses, final List<BlackDuckUserEntity> blackDuckUserEntities) {
-        final Map<String, Long> emailToUserId = blackDuckUserEntities
-                                                    .stream()
-                                                    .collect(Collectors.toMap(BlackDuckUserEntity::getEmailAddress, BlackDuckUserEntity::getId));
-        final Set<UserProjectRelation> userProjectRelations = new HashSet<>();
-        projectToEmailAddresses.forEach((projectId, emails) -> emails.forEach(email -> userProjectRelations.add(new UserProjectRelation(emailToUserId.get(email), projectId))));
+    private void updateUserProjectRelations(final Map<String, Set<String>> projectToEmailAddresses) {
+        final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
+        for (final Map.Entry<String, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
+            try {
+                blackDuckProjectRepositoryAccessor.mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
+            } catch (final AlertDatabaseConstraintException e) {
+                logger.error("Problem mapping users to projects", e);
+            }
+        }
         logger.info("User to project relationships {}", userProjectRelations.size());
-        userProjectRelationRepositoryAccessor.deleteAndSaveAll(userProjectRelations);
     }
 
 }

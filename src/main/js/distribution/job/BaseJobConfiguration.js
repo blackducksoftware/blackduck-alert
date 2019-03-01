@@ -6,7 +6,7 @@ import TextInput from 'field/input/TextInput';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import { saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -81,13 +81,11 @@ class BaseJobConfiguration extends Component {
         this.renderDistributionForm = this.renderDistributionForm.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
-        this.updateChannelModel = this.updateChannelModel.bind(this);
         this.updateProviderModel = this.updateProviderModel.bind(this);
 
-        let channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
-        let providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
+        const channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
 
-        channelModel = this.updateChannelModel(channelModel);
+        let providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
         providerModel = this.updateProviderModel(FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME), providerModel);
 
         this.state = {
@@ -124,7 +122,6 @@ class BaseJobConfiguration extends Component {
                 providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
             }
 
-            channelModel = this.updateChannelModel(channelModel);
             providerModel = this.updateProviderModel(FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME), providerModel);
 
             this.setState({
@@ -165,23 +162,6 @@ class BaseJobConfiguration extends Component {
             return options.filter(option => FieldModelUtilities.getFieldModelValues(fieldModel, fieldKey).indexOf(option.value) !== -1);
         }
         return null;
-    }
-
-    updateChannelModel(currentChannelModel) {
-        let channelModel = currentChannelModel;
-        const providers = this.createProviderOptions();
-        const frequencyOptions = this.createFrequencyOptions();
-        const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
-
-        if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
-            channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME, selectedProviderOption.value);
-        }
-
-        const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
-        if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
-            channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_FREQUENCY, selectedFrequencyOption);
-        }
-        return channelModel;
     }
 
     updateProviderModel(selectedProvider, currentProviderModel) {
@@ -411,6 +391,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {this.props.childContent}
                 <ProjectConfiguration
+                    providerName={FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME)}
                     includeAllProjects={includeAllProjects}
                     handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER, true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
