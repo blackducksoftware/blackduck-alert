@@ -56,9 +56,10 @@ public class BlackDuckEmailHandler extends EmailHandler {
 
     @Override
     public FieldAccessor updateFieldAccessor(final AggregateMessageContent content, final FieldAccessor originalAccessor) {
-        Set<String> emailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
+        final Set<String> emailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
-        emailAddresses = populateBlackDuckEmails(emailAddresses, content.getValue(), projectOwnerOnly);
+        final Set<String> blackDuckEmailAddresses = collectBlackDuckEmailsFromProject(content.getValue(), projectOwnerOnly);
+        emailAddresses.addAll(blackDuckEmailAddresses);
 
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(originalAccessor.getFields());
@@ -86,14 +87,11 @@ public class BlackDuckEmailHandler extends EmailHandler {
         return emailAddresses;
     }
 
-    private Set<String> populateBlackDuckEmails(final Set<String> emailAddresses, final String projectName, final boolean projectOwnerOnly) {
-        if (null != emailAddresses && !emailAddresses.isEmpty()) {
-            return emailAddresses;
-        }
+    private Set<String> collectBlackDuckEmailsFromProject(final String projectName, final boolean projectOwnerOnly) {
         final Optional<ProviderProject> optionalProject = providerDataAccessor.findByName(projectName); // FIXME use href
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
-        return emailAddresses;
+        return Set.of();
     }
 }
