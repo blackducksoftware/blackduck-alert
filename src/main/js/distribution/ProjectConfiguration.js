@@ -14,10 +14,7 @@ function assignClassName(row, rowIdx) {
 }
 
 function assignDataFormat(cell, row) {
-    const cellContent = (row.missing) ?
-        <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw"
-                                                     aria-hidden="true" />{cell}</span> :
-        cell;
+    const cellContent = (row.missing) ? <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> : cell;
 
     if (cell) {
         return <div title={cell}> {cellContent} </div>;
@@ -175,7 +172,7 @@ class ProjectConfiguration extends Component {
                 <TextInput
                     id={KEY_PROJECT_NAME_PATTERN}
                     label="Project Name Pattern"
-                    description='The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.'
+                    description="The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table."
                     name={KEY_PROJECT_NAME_PATTERN}
                     value={this.props.projectNamePattern}
                     onChange={this.props.handleChange}
@@ -212,7 +209,7 @@ class ProjectConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_FILTER_BY_PROJECT}
                     label="Include all projects"
-                    description='If true, all projects will be included. Any notifications matching the configured notification types will be processed.'
+                    description="If true, all projects will be included. Any notifications matching the configured notification types will be processed."
                     name={KEY_FILTER_BY_PROJECT}
                     isChecked={this.state.includeAllProjects}
                     onChange={this.handleChange}
@@ -220,8 +217,11 @@ class ProjectConfiguration extends Component {
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FILTER_BY_PROJECT)}
                     errorValue={this.props.fieldErrors[KEY_FILTER_BY_PROJECT]}
                 />
-                {this.props.fieldErrors[KEY_CONFIGURED_PROJECT] && <label className="fieldError"
-                                                                          name="projectTableErrors">{this.props.fieldErrors[KEY_CONFIGURED_PROJECT]}</label>}
+                {this.props.fieldErrors[KEY_CONFIGURED_PROJECT] && <label
+                    className="fieldError"
+                    name="projectTableErrors"
+                >{this.props.fieldErrors[KEY_CONFIGURED_PROJECT]}
+                </label>}
                 {projectSelectionDiv}
             </div>
         );

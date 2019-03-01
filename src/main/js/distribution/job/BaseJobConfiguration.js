@@ -347,35 +347,39 @@ class BaseJobConfiguration extends Component {
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerFieldModel, KEY_FORMAT_TYPE);
         const selectedNotifications = this.getSelectedValues(notificationOptions, providerFieldModel, KEY_NOTIFICATION_TYPES);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT);
-        const includeAllProjects = !filterByProject
+        const includeAllProjects = !filterByProject;
         return (
             <div>
                 <SelectInput
-                    label='Format'
+                    label="Format"
                     onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.PROVIDER)}
                     id={KEY_FORMAT_TYPE}
                     className="typeAheadField"
-                    description='Select the format of the message that will be created.'
+                    labelSpacingClass="col-sm-3"
+                    selectSpacingClass="col-sm-8"
+                    description="Select the format of the message that will be created."
                     options={formatOptions}
                     isSearchable={false}
-                    removeSelected={true}
-                    placeholder='Choose the format for the job'
+                    removeSelected
+                    placeholder="Choose the format for the job"
                     value={selectedFormatType}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FORMAT_TYPE)}
                     errorValue={this.props.fieldErrors[KEY_FORMAT_TYPE]}
                 />
 
                 <SelectInput
-                    label='Notification Types'
+                    label="Notification Types"
                     onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.PROVIDER)}
                     id={KEY_NOTIFICATION_TYPES}
                     className="typeAheadField"
-                    description='Select one or more of the notification types. Only these notification types will be included for this distribution job.'
+                    labelSpacingClass="col-sm-3"
+                    selectSpacingClass="col-sm-8"
+                    description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
                     options={notificationOptions}
-                    isSearchable={true}
-                    removeSelected={true}
-                    hasMultipleValues={true}
-                    placeholder='Choose the notification types'
+                    isSearchable
+                    removeSelected
+                    hasMultipleValues
+                    placeholder="Choose the notification types"
                     value={selectedNotifications}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFICATION_TYPES)}
                     errorValue={this.props.fieldErrors[KEY_NOTIFICATION_TYPES]}
@@ -408,8 +412,8 @@ class BaseJobConfiguration extends Component {
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput
                     id={KEY_NAME}
-                    label='Job Name'
-                    description='The name of the distribution job. Must be unique.'
+                    label="Job Name"
+                    description="The name of the distribution job. Must be unique."
                     name={KEY_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_NAME, '')}
                     onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
@@ -417,28 +421,32 @@ class BaseJobConfiguration extends Component {
                     errorValue={this.props.fieldErrors[KEY_NAME]}
                 />
                 <SelectInput
-                    label='Frequency'
+                    label="Frequency"
                     onChange={this.createSingleSelectHandler(KEY_FREQUENCY, FIELD_MODEL_KEY.COMMON)}
                     id={KEY_FREQUENCY}
                     className="typeAheadField"
-                    description='Select how frequent this job should check for notifications to send.'
+                    labelSpacingClass="col-sm-3"
+                    selectSpacingClass="col-sm-8"
+                    description="Select how frequent this job should check for notifications to send."
                     options={frequencyOptions}
-                    isSearchable={true}
-                    placeholder='Choose the frequency'
+                    isSearchable
+                    placeholder="Choose the frequency"
                     value={selectedFrequencyOption}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FREQUENCY)}
                     errorValue={this.props.fieldErrors[KEY_FREQUENCY]}
                 />
 
                 <SelectInput
-                    label='Provider'
+                    label="Provider"
                     onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME, FIELD_MODEL_KEY.COMMON)}
                     id={KEY_PROVIDER_NAME}
                     className="typeAheadField"
-                    description='Select the provider. Only notifications for that provider will be processed in this distribution job.'
+                    labelSpacingClass="col-sm-3"
+                    selectSpacingClass="col-sm-8"
+                    description="Select the provider. Only notifications for that provider will be processed in this distribution job."
                     options={providers}
-                    isSearchable={true}
-                    placeholder='Choose the provider'
+                    isSearchable
+                    placeholder="Choose the provider"
                     value={selectedProviderOption}
                     components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROVIDER_NAME)}

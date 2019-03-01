@@ -3,7 +3,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import TextInput from 'field/input/TextInput';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Select from 'react-select';
+import SelectInput from 'field/input/SelectInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -149,6 +149,7 @@ class SettingsConfigurationForm extends Component {
                         <TextInput
                             id={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
                             label="Email Address"
+                            description="The email address of the Alert system administrator. Used in case a password reset is needed."
                             name={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
                             onChange={this.handleChange}
@@ -158,6 +159,7 @@ class SettingsConfigurationForm extends Component {
                         <PasswordInput
                             id={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
                             label="Password"
+                            description='The password of the Alert system administrator. Used when logging in as the "sysadmin" user.'
                             name={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                             isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
@@ -173,6 +175,7 @@ class SettingsConfigurationForm extends Component {
                         <PasswordInput
                             id={KEY_ENCRYPTION_PASSWORD}
                             label="Password"
+                            description="The password used when encrypting sensitive fields."
                             name={KEY_ENCRYPTION_PASSWORD}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ENCRYPTION_PASSWORD)}
                             isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_PASSWORD)}
@@ -183,6 +186,7 @@ class SettingsConfigurationForm extends Component {
                         <PasswordInput
                             id={KEY_ENCRYPTION_GLOBAL_SALT}
                             label="Salt"
+                            description="The salt used when encrypting sensitive fields."
                             name={KEY_ENCRYPTION_GLOBAL_SALT}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
                             isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
@@ -197,6 +201,7 @@ class SettingsConfigurationForm extends Component {
                         <CheckboxInput
                             id={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
                             label="Startup Environment Variable Override"
+                            description="If true, the Alert environment variables will override the stored configurations."
                             name={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
                             isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
                             onChange={this.handleChange}
@@ -211,6 +216,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_PROXY_HOST}
                                 label="Host Name"
+                                description="The host name of the proxy server to use."
                                 name={KEY_PROXY_HOST}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_HOST)}
                                 onChange={this.handleChange}
@@ -220,6 +226,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_PROXY_PORT}
                                 label="Port"
+                                description="The port of the proxy server to use."
                                 name={KEY_PROXY_PORT}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_PORT)}
                                 onChange={this.handleChange}
@@ -229,6 +236,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_PROXY_USERNAME}
                                 label="Username"
+                                description="If the proxy server requires authentication, the username to authentication with the proxy server."
                                 name={KEY_PROXY_USERNAME}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_USERNAME)}
                                 onChange={this.handleChange}
@@ -238,6 +246,7 @@ class SettingsConfigurationForm extends Component {
                             <PasswordInput
                                 id={KEY_PROXY_PASSWORD}
                                 label="Password"
+                                description="If the proxy server requires authentication, the password to authentication with the proxy server."
                                 name={KEY_PROXY_PASSWORD}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_PASSWORD)}
                                 isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_PROXY_PASSWORD)}
@@ -254,6 +263,7 @@ class SettingsConfigurationForm extends Component {
                             <CheckboxInput
                                 id={KEY_LDAP_ENABLED}
                                 label="Enabled"
+                                description="If true, Alert with attempt to authenticate using the LDAP configuration."
                                 name={KEY_LDAP_ENABLED}
                                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_LDAP_ENABLED)}
                                 onChange={this.handleChange}
@@ -263,6 +273,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_SERVER}
                                 label="Server"
+                                description="The URL of the LDAP server."
                                 name={KEY_LDAP_SERVER}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_SERVER)}
                                 onChange={this.handleChange}
@@ -272,6 +283,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_MANAGER_DN}
                                 label="Manager DN"
+                                description="The distinguished name of the LDAP manager."
                                 name={KEY_LDAP_MANAGER_DN}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_DN)}
                                 onChange={this.handleChange}
@@ -281,6 +293,7 @@ class SettingsConfigurationForm extends Component {
                             <PasswordInput
                                 id={KEY_LDAP_MANAGER_PASSWORD}
                                 label="Manager Password"
+                                description="The password of the LDAP manager."
                                 name={KEY_LDAP_MANAGER_PASSWORD}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
                                 isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
@@ -288,33 +301,39 @@ class SettingsConfigurationForm extends Component {
                                 errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
                                 errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_PASSWORD]}
                             />
-                            <label className="col-sm-3 col-form-label text-right">Authentication Type</label>
-                            <div className="d-inline-flex flex-column p-2 col-sm-8">
-                                <Select
-                                    id={KEY_LDAP_AUTHENTICATION_TYPE}
-                                    className="typeAheadField"
-                                    onChange={this.createSingleSelectHandler(KEY_LDAP_AUTHENTICATION_TYPE)}
-                                    options={this.getAuthenticationTypes()}
-                                    placeholder="Choose authentication type"
-                                    value={selectedAuthenticationOption}
-                                />
-                            </div>
-                            <label className="fieldError">{this.props.fieldErrors[KEY_LDAP_AUTHENTICATION_TYPE]}</label>
-                            <label className="col-sm-3 col-form-label text-right">Referral</label>
-                            <div className="d-inline-flex flex-column p-2 col-sm-8">
-                                <Select
-                                    id={KEY_LDAP_REFERRAL}
-                                    className="typeAheadField"
-                                    onChange={this.createSingleSelectHandler(KEY_LDAP_REFERRAL)}
-                                    options={this.getReferralOptions()}
-                                    placeholder="Choose referral type"
-                                    value={selectedReferralOption}
-                                />
-                            </div>
-                            <label className="fieldError">{this.props.fieldErrors[KEY_LDAP_REFERRAL]}</label>
+                            <SelectInput
+                                label="Authentication Type"
+                                onChange={this.createSingleSelectHandler(KEY_LDAP_AUTHENTICATION_TYPE)}
+                                id={KEY_LDAP_AUTHENTICATION_TYPE}
+                                className="typeAheadField"
+                                labelSpacingClass="col-sm-3"
+                                selectSpacingClass="col-sm-8"
+                                description="The type of authentication required to connect to the LDAP server."
+                                options={this.getAuthenticationTypes()}
+                                placeholder="Choose authentication type"
+                                value={selectedAuthenticationOption}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_AUTHENTICATION_TYPE]}
+                            />
+
+                            <SelectInput
+                                label="Referral"
+                                onChange={this.createSingleSelectHandler(KEY_LDAP_REFERRAL)}
+                                id={KEY_LDAP_REFERRAL}
+                                className="typeAheadField"
+                                labelSpacingClass="col-sm-3"
+                                selectSpacingClass="col-sm-8"
+                                description="Set the method to handle referrals."
+                                options={this.getReferralOptions()}
+                                placeholder="Choose referral type"
+                                value={selectedReferralOption}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_REFERRAL]}
+                            />
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_BASE}
                                 label="User Search Base"
+                                description="The part of the LDAP directory in which user searches should be done."
                                 name={KEY_LDAP_USER_SEARCH_BASE}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_BASE)}
                                 onChange={this.handleChange}
@@ -324,6 +343,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_FILTER}
                                 label="User Search Filter"
+                                description="The filter used to search for user membership."
                                 name={KEY_LDAP_USER_SEARCH_FILTER}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_FILTER)}
                                 onChange={this.handleChange}
@@ -333,6 +353,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_USER_DN_PATTERNS}
                                 label="User DN Patterns"
+                                description="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
                                 name={KEY_LDAP_USER_DN_PATTERNS}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_DN_PATTERNS)}
                                 onChange={this.handleChange}
@@ -342,6 +363,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_USER_ATTRIBUTES}
                                 label="User Attributes"
+                                description="User attributes to retrieve for users."
                                 name={KEY_LDAP_USER_ATTRIBUTES}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_ATTRIBUTES)}
                                 onChange={this.handleChange}
@@ -351,6 +373,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_GROUP_SEARCH_BASE}
                                 label="Group Search Base"
+                                description="The part of the LDAP directory in which group searches should be done."
                                 name={KEY_LDAP_GROUP_SEARCH_BASE}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_BASE)}
                                 onChange={this.handleChange}
@@ -360,6 +383,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_GROUP_SEARCH_FILTER}
                                 label="Group Search Filter"
+                                description="The filter used to search for group membership."
                                 name={KEY_LDAP_GROUP_SEARCH_FILTER}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_FILTER)}
                                 onChange={this.handleChange}
@@ -369,6 +393,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
                                 label="Group Role Attribute"
+                                description="The ID of the attribute which contains the role name for a group."
                                 name={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                 onChange={this.handleChange}
@@ -378,6 +403,7 @@ class SettingsConfigurationForm extends Component {
                             <TextInput
                                 id={KEY_LDAP_ROLE_PREFIX}
                                 label="Role Prefix"
+                                description="The prefix which will be prepended to the user roles."
                                 name={KEY_LDAP_ROLE_PREFIX}
                                 value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_ROLE_PREFIX)}
                                 onChange={this.handleChange}

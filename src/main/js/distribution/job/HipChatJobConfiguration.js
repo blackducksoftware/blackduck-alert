@@ -99,7 +99,7 @@ class HipChatJobConfiguration extends Component {
                 <TextInput
                     id={KEY_ROOM_ID}
                     label="Room Id"
-                    description='The ID of the room to receive Alerts.'
+                    description="The ID of the room to receive Alerts."
                     name={KEY_ROOM_ID}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
                     onChange={this.handleChange}
@@ -109,7 +109,7 @@ class HipChatJobConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_NOTIFY}
                     label="Notify"
-                    description='If true, this will add to the count of new messages in the HipChat room.'
+                    description="If true, this will add to the count of new messages in the HipChat room."
                     name={KEY_NOTIFY}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
                     onChange={this.handleChange}
@@ -117,14 +117,16 @@ class HipChatJobConfiguration extends Component {
                     errorValue={this.props.fieldErrors[KEY_NOTIFY]}
                 />
                 <SelectInput
-                    label='Color'
+                    label="Color"
                     onChange={this.createSingleSelectHandler(KEY_COLOR)}
                     id={KEY_COLOR}
                     className="typeAheadField"
-                    description='The text color to display the Alert messages in.'
+                    labelSpacingClass="col-sm-3"
+                    selectSpacingClass="col-sm-8"
+                    description="The text color to display the Alert messages in."
                     options={colorOptions}
-                    isSearchable={true}
-                    placeholder='Choose the message color'
+                    isSearchable
+                    placeholder="Choose the message color"
                     value={selectedColorOption}
                 />
             </div>
