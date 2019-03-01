@@ -28,5 +28,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity, Long> {
+    List<ProviderUserEntity> findByProvider(final String provider);
+
     List<ProviderUserEntity> findByEmailAddressAndProvider(final String emailAddress, final String provider);
 }
