@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Select from 'react-select';
+
 
 import { getSchedulingConfig, updateSchedulingConfig } from 'store/actions/schedulingConfig';
 
@@ -10,6 +10,8 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import SelectInput from 'field/input/SelectInput';
+import OverlayTrigger from "../field/input/SelectInput";
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -143,35 +145,44 @@ class SchedulingConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div className="form-group">
-                        <label className="col-sm-4 col-form-label text-right">Collecting Black Duck notifications in</label>
+                        <label className="col-sm-4 col-form-label text-right">Collecting Provider data in</label>
                         <div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static accumulator-countdown">
                                 {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ACCUMULATOR_NEXT_RUN)} seconds &nbsp;&nbsp;
                             </p>
                         </div>
+                        <div className="d-inline-flex checkboxDescription">
+                            <OverlayTrigger
+                                key='top'
+                                placement='top'
+                                delay={{ show: 200, hide: 100 }}
+                                overlay={
+                                    <Tooltip id='description-tooltip'>
+                                        {'By default, Alert collects data every 60 seconds. This value indicates the number of seconds until the next time Alert pulls data from the Providers.'}
+                                    </Tooltip>
+                                }
+                            >
+                                <span className="fa fa-question-circle" />
+                            </OverlayTrigger>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label className="col-sm-4 col-form-label text-right">Daily Digest Run Time</label>
-                        <div className="d-inline-flex p-2 col-sm-4">
-                            <Select
-                                id={KEY_DAILY_DIGEST_HOUR_OF_DAY}
-                                className="accumulatorTypeAheadField"
-                                onChange={this.handleDailyDigestChanged}
-                                isSearchable
-                                options={dailyDigestOptions}
-                                placeholder="Choose the hour of day"
-                                value={dailyDigestOptions.find((option) => {
-                                    const runHour = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_HOUR_OF_DAY);
-                                    return option.value === runHour;
-                                })}
-                            />
-                        </div>
-                        {fieldErrors && fieldErrors.dailyDigestHourOfDay &&
-                        <div className="offset-sm-3 col-sm-8">
-                            <p className="fieldError">{fieldErrors.dailyDigestHourOfDay}</p>
-                        </div>}
-                    </div>
+                    <SelectInput
+                        label='Daily Digest Run Time'
+                        onChange={this.handleDailyDigestChanged}
+                        id={KEY_DAILY_DIGEST_HOUR_OF_DAY}
+                        className="accumulatorTypeAheadField"
+                        description='Select the hour of the day to run the the daily digest distribution jobs.'
+                        options={dailyDigestOptions}
+                        isSearchable={true}
+                        placeholder='Choose the hour of day'
+                        value={dailyDigestOptions.find((option) => {
+                            const runHour = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_HOUR_OF_DAY);
+                            return option.value === runHour;
+                        })}
+                        errorName='Daily Digest errors'
+                        errorValue={fieldErrors.dailyDigestHourOfDay}
+                    />
 
                     <div className="form-group">
                         <label className="col-sm-4 col-form-label text-right">Daily Digest Cron Next Run</label>
@@ -180,26 +191,35 @@ class SchedulingConfiguration extends React.Component {
                                 {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_NEXT_RUN)}
                             </p>
                         </div>
+                        <div className="d-inline-flex checkboxDescription">
+                            <OverlayTrigger
+                                key='top'
+                                placement='top'
+                                delay={{ show: 200, hide: 100 }}
+                                overlay={
+                                    <Tooltip id='description-tooltip'>
+                                        {'This is the next time daily digest distribution jobs will run.'}
+                                    </Tooltip>
+                                }
+                            >
+                                <span className="fa fa-question-circle" />
+                            </OverlayTrigger>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label className="col-sm-4 col-form-label text-right">Notification Purge Frequency</label>
-                        <div className="d-inline-flex p-2 col-sm-4">
-                            <Select
-                                id={KEY_PURGE_DATA_FREQUENCY_DAYS}
-                                className="accumulatorTypeAheadField"
-                                onChange={this.handlePurgeChanged}
-                                isSearchable
-                                options={purgeOptions}
-                                placeholder="Choose the frequency"
-                                value={purgeOptions.find(option => option.value === FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_FREQUENCY_DAYS))}
-                            />
-                        </div>
-                        {fieldErrors && fieldErrors.purgeDataFrequencyDays &&
-                        <div className="offset-sm-3 col-sm-8">
-                            <p className="fieldError">{fieldErrors.purgeDataFrequencyDays}</p>
-                        </div>}
-                    </div>
+                    <SelectInput
+                        label='Data Purge Frequency'
+                        onChange={this.handlePurgeChanged}
+                        id={KEY_PURGE_DATA_FREQUENCY_DAYS}
+                        className="accumulatorTypeAheadField"
+                        description='Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value.'
+                        options={purgeOptions}
+                        isSearchable={true}
+                        placeholder='Choose the frequency'
+                        value={purgeOptions.find(option => option.value === FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_FREQUENCY_DAYS))}
+                        errorName='Purge errors'
+                        errorValue={fieldErrors.purgeDataFrequencyDays}
+                    />
 
                     <div className="form-group">
                         <label className="col-sm-4 col-form-label text-right">Purge Cron Next Run</label>
@@ -207,6 +227,20 @@ class SchedulingConfiguration extends React.Component {
                             <p className="form-control-static">
                                 {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_NEXT_RUN)}
                             </p>
+                        </div>
+                        <div className="d-inline-flex checkboxDescription">
+                            <OverlayTrigger
+                                key='top'
+                                placement='top'
+                                delay={{ show: 200, hide: 100 }}
+                                overlay={
+                                    <Tooltip id='description-tooltip'>
+                                        {'This is the next time Alert will purge provider data.'}
+                                    </Tooltip>
+                                }
+                            >
+                                <span className="fa fa-question-circle" />
+                            </OverlayTrigger>
                         </div>
                     </div>
                     <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
