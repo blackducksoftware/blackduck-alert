@@ -21,15 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.project;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserProjectRelationRepository extends JpaRepository<UserProjectRelation, UserProjectRelationPK> {
-    public List<UserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId);
+public interface ProviderProjectRepository extends JpaRepository<ProviderProjectEntity, Long> {
+    Optional<ProviderProjectEntity> findFirstByName(final String name);
 
-    public List<UserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId);
+    Optional<ProviderProjectEntity> findFirstByHref(final String href);
 
+    List<ProviderProjectEntity> findByProvider(final String provider);
+
+    void deleteAllByProvider(final String provider);
+
+    void deleteByHref(final String href);
 }

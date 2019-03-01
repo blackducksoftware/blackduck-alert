@@ -6,33 +6,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.api.ProviderUserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 
-public class MockUserProjectRelationRepositoryAccessor extends UserProjectRelationRepositoryAccessor {
-    private final Set<UserProjectRelation> userProjectRelations = new HashSet<>();
+public class MockUserProjectRelationRepositoryAccessor extends ProviderUserProjectRelationRepositoryAccessor {
+    private final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
 
     public MockUserProjectRelationRepositoryAccessor() {
         super(null);
     }
 
     @Override
-    public List<UserProjectRelation> readEntities() {
+    public List<ProviderUserProjectRelation> readEntities() {
         return new ArrayList<>(userProjectRelations);
     }
 
     @Override
-    public List<UserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId) {
-        return userProjectRelations.stream().filter(userProjectRelation -> userProjectRelation.getBlackDuckProjectId().equals(blackDuckProjectId)).collect(Collectors.toList());
+    public List<ProviderUserProjectRelation> findByProviderProjectId(final Long providerProjectId) {
+        return userProjectRelations.stream().filter(userProjectRelation -> userProjectRelation.getProviderProjectId().equals(providerProjectId)).collect(Collectors.toList());
     }
 
     @Override
-    public List<UserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId) {
-        return userProjectRelations.stream().filter(userProjectRelation -> userProjectRelation.getBlackDuckUserId().equals(blackDuckUserId)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<UserProjectRelation> deleteAndSaveAll(final Set<UserProjectRelation> newUserProjectRelations) {
+    public List<ProviderUserProjectRelation> deleteAndSaveAll(final Set<ProviderUserProjectRelation> newUserProjectRelations) {
         userProjectRelations.clear();
         userProjectRelations.addAll(newUserProjectRelations);
         return new ArrayList<>(userProjectRelations);

@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import com.synopsys.integration.alert.database.api.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.BlackDuckUserEntity;
+import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 
-public class MockBlackDuckUserRepositoryAccessor extends BlackDuckUserRepositoryAccessor {
-    private final Map<Long, BlackDuckUserEntity> blackDuckUserEntityMap = new HashMap<>();
+public class MockBlackDuckUserRepositoryAccessor extends ProviderUserRepositoryAccessor {
+    private final Map<Long, ProviderUserEntity> blackDuckUserEntityMap = new HashMap<>();
     private Long count = 1L;
 
     public MockBlackDuckUserRepositoryAccessor() {
@@ -18,8 +17,8 @@ public class MockBlackDuckUserRepositoryAccessor extends BlackDuckUserRepository
     }
 
     @Override
-    public BlackDuckUserEntity saveEntity(final BlackDuckUserEntity blackDuckUserEntity) {
-        final BlackDuckUserEntity newEntity = new BlackDuckUserEntity(blackDuckUserEntity.getEmailAddress(), blackDuckUserEntity.getOptOut());
+    public ProviderUserEntity saveEntity(final ProviderUserEntity blackDuckUserEntity) {
+        final ProviderUserEntity newEntity = new ProviderUserEntity(blackDuckUserEntity.getEmailAddress(), blackDuckUserEntity.getOptOut(), blackDuckUserEntity.getProvider());
         if (null == blackDuckUserEntity.getId()) {
             newEntity.setId(count);
             count++;
@@ -31,28 +30,18 @@ public class MockBlackDuckUserRepositoryAccessor extends BlackDuckUserRepository
     }
 
     @Override
-    public List<BlackDuckUserEntity> readEntities() {
+    public List<ProviderUserEntity> readEntities() {
         return new ArrayList<>(blackDuckUserEntityMap.values());
     }
 
     @Override
-    public Optional<BlackDuckUserEntity> readEntity(final long id) {
-        return Optional.ofNullable(blackDuckUserEntityMap.get(Long.valueOf(id)));
-    }
-
-    @Override
-    public void deleteEntity(final long id) {
-        blackDuckUserEntityMap.remove(Long.valueOf(id));
-    }
-
-    @Override
-    public List<BlackDuckUserEntity> deleteAndSaveAll(final Iterable<BlackDuckUserEntity> userEntitiesToDelete, final Iterable<BlackDuckUserEntity> userEntitiesToAdd) {
+    public List<ProviderUserEntity> deleteAndSaveAll(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
         userEntitiesToDelete.forEach(blackDuckUserEntity -> {
             blackDuckUserEntityMap.remove(blackDuckUserEntity.getId());
         });
-        final List<BlackDuckUserEntity> blackDuckUserEntitiesSaved = new ArrayList<>();
+        final List<ProviderUserEntity> blackDuckUserEntitiesSaved = new ArrayList<>();
         userEntitiesToAdd.forEach(blackDuckUserEntity -> {
-            blackDuckUserEntitiesSaved.add((BlackDuckUserEntity) saveEntity(blackDuckUserEntity));
+            blackDuckUserEntitiesSaved.add(saveEntity(blackDuckUserEntity));
         });
         return blackDuckUserEntitiesSaved;
     }

@@ -27,6 +27,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
@@ -41,7 +43,7 @@ import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
-// TODO exclude for now: @Component
+@Component
 public class PolarisProperties extends ProviderProperties {
     public static final Integer DEFAULT_TIMEOUT = 300;
     private final AlertProperties alertProperties;
@@ -49,7 +51,7 @@ public class PolarisProperties extends ProviderProperties {
     private final Gson gson;
     private final AuthenticationSupport authenticationSupport;
 
-    // TODO exclude for now: @Autowired
+    @Autowired
     public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson, final AuthenticationSupport authenticationSupport) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;

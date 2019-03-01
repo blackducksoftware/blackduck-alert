@@ -12,9 +12,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.blackduck.api.core.BlackDuckPathMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
@@ -24,26 +24,19 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectUsersService;
 
-public class ProjectSyncTaskTest {
+public class BlackDuckProjectSyncTaskTest {
 
     @Test
     public void testRun() throws Exception {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
 
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
-        final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
-        final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
+        final MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
 
         final String email1 = "user1@email.com";
         final String email2 = "user2@email.com";
         final String email3 = "user3@email.com";
         final String email4 = "user4@email.com";
-
-        final String group1 = "group";
-        final String group2 = "group_two";
-
-        final String groupURL1 = "groupURL1";
-        final String groupURL2 = "groupURL2";
 
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckHttpClient.class)));
         final BlackDuckServicesFactory BlackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
@@ -70,13 +63,11 @@ public class ProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
-        final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
-            userProjectRelationRepositoryAccessor);
+        final BlackDuckProjectSyncTask projectSyncTask = new BlackDuckProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, providerDataAccessor);
         projectSyncTask.run();
 
         assertEquals(4, blackDuckUserRepositoryAccessor.readEntities().size());
-        assertEquals(3, blackDuckProjectRepositoryAccessor.readEntities().size());
-        assertEquals(6, userProjectRelationRepositoryAccessor.readEntities().size());
+        assertEquals(3, providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME).size());
 
         Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2));
 
@@ -87,8 +78,7 @@ public class ProjectSyncTaskTest {
         projectSyncTask.run();
 
         assertEquals(3, blackDuckUserRepositoryAccessor.readEntities().size());
-        assertEquals(2, blackDuckProjectRepositoryAccessor.readEntities().size());
-        assertEquals(3, userProjectRelationRepositoryAccessor.readEntities().size());
+        assertEquals(2, providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME).size());
     }
 
     public UserView createUserView(final String email, final Boolean active) {

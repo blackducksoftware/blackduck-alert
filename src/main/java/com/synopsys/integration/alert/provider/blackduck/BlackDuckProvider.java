@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
@@ -51,12 +51,12 @@ public class BlackDuckProvider extends Provider {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
 
     private final BlackDuckAccumulator accumulatorTask;
-    private final ProjectSyncTask projectSyncTask;
+    private final BlackDuckProjectSyncTask projectSyncTask;
     private final TaskManager taskManager;
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler, final TaskManager taskManager,
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler, final TaskManager taskManager,
         final BlackDuckProperties blackDuckProperties) {
         super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;
@@ -67,7 +67,7 @@ public class BlackDuckProvider extends Provider {
 
     @Override
     public void initialize() {
-        logger.info("Initializing provider...");
+        logger.info("Initializing Black Duck provider...");
         taskManager.registerTask(accumulatorTask);
         taskManager.registerTask(projectSyncTask);
 
@@ -80,7 +80,7 @@ public class BlackDuckProvider extends Provider {
 
     @Override
     public void destroy() {
-        logger.info("Destroying provider...");
+        logger.info("Destroying Black Duck provider...");
         taskManager.unregisterTask(accumulatorTask.getTaskName());
         taskManager.unregisterTask(projectSyncTask.getTaskName());
     }
