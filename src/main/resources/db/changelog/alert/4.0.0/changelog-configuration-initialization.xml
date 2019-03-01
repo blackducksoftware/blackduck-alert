@@ -437,6 +437,9 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('settings.encryption.global.salt', FALSE, 'component_settings', 'GLOBAL');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.startup.environment.variable.override', FALSE, 'component_settings', 'GLOBAL');
+        </sql>
     </changeSet>
 
 </databaseChangeLog>
