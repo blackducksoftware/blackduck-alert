@@ -26,6 +26,11 @@ const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
 const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
 const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
 
+const fieldDescriptions = {
+    [KEY_PROJECT_NAME_PATTERN]: 'The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.',
+    [KEY_FILTER_BY_PROJECT]: 'If true, all projects will be included. Any notifications matching the configured notification types will be processed.'
+};
+
 const fieldNames = [
     KEY_FILTER_BY_PROJECT,
     KEY_PROJECT_NAME_PATTERN,
@@ -172,7 +177,7 @@ class ProjectConfiguration extends Component {
                 <TextInput
                     id={KEY_PROJECT_NAME_PATTERN}
                     label="Project Name Pattern"
-                    description="The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROJECT_NAME_PATTERN)}
                     name={KEY_PROJECT_NAME_PATTERN}
                     value={this.props.projectNamePattern}
                     onChange={this.props.handleChange}
@@ -209,7 +214,7 @@ class ProjectConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_FILTER_BY_PROJECT}
                     label="Include all projects"
-                    description="If true, all projects will be included. Any notifications matching the configured notification types will be processed."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_FILTER_BY_PROJECT)}
                     name={KEY_FILTER_BY_PROJECT}
                     isChecked={this.state.includeAllProjects}
                     onChange={this.handleChange}

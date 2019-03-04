@@ -40,6 +40,14 @@ const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
 const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
 const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
 
+const fieldDescriptions = {
+    [KEY_FORMAT_TYPE]: 'Select the format of the message that will be created.',
+    [KEY_NOTIFICATION_TYPES]: 'Select one or more of the notification types. Only these notification types will be included for this distribution job.',
+    [KEY_NAME]: 'The name of the distribution job. Must be unique.',
+    [KEY_FREQUENCY]: 'Select how frequent this job should check for notifications to send.',
+    [KEY_PROVIDER_NAME]: 'Select the provider. Only notifications for that provider will be processed in this distribution job.'
+};
+
 const fieldNames = [
     KEY_NAME,
     KEY_CHANNEL_NAME,
@@ -357,7 +365,7 @@ class BaseJobConfiguration extends Component {
                     className="typeAheadField"
                     labelSpacingClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
-                    description="Select the format of the message that will be created."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_FORMAT_TYPE)}
                     options={formatOptions}
                     isSearchable={false}
                     removeSelected
@@ -374,7 +382,7 @@ class BaseJobConfiguration extends Component {
                     className="typeAheadField"
                     labelSpacingClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
-                    description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_NOTIFICATION_TYPES)}
                     options={notificationOptions}
                     isSearchable
                     removeSelected
@@ -413,7 +421,7 @@ class BaseJobConfiguration extends Component {
                 <TextInput
                     id={KEY_NAME}
                     label="Job Name"
-                    description="The name of the distribution job. Must be unique."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_NAME)}
                     name={KEY_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_NAME, '')}
                     onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
@@ -427,7 +435,7 @@ class BaseJobConfiguration extends Component {
                     className="typeAheadField"
                     labelSpacingClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
-                    description="Select how frequent this job should check for notifications to send."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_FREQUENCY)}
                     options={frequencyOptions}
                     isSearchable
                     placeholder="Choose the frequency"
@@ -443,7 +451,7 @@ class BaseJobConfiguration extends Component {
                     className="typeAheadField"
                     labelSpacingClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
-                    description="Select the provider. Only notifications for that provider will be processed in this distribution job."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROVIDER_NAME)}
                     options={providers}
                     isSearchable
                     placeholder="Choose the provider"

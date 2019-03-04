@@ -22,6 +22,14 @@ const KEY_DAILY_DIGEST_NEXT_RUN = 'scheduling.daily.processor.next.run';
 const KEY_PURGE_DATA_NEXT_RUN = 'scheduling.purge.data.next.run';
 
 
+const fieldDescriptions = {
+    [KEY_DAILY_DIGEST_HOUR_OF_DAY]: 'Select the hour of the day to run the the daily digest distribution jobs.',
+    [KEY_PURGE_DATA_FREQUENCY_DAYS]: 'Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.',
+    [KEY_ACCUMULATOR_NEXT_RUN]: 'By default, Alert collects data every 60 seconds. This value indicates the number of seconds until the next time Alert pulls data from the Providers.',
+    [KEY_DAILY_DIGEST_NEXT_RUN]: 'This is the next time daily digest distribution jobs will run.',
+    [KEY_PURGE_DATA_NEXT_RUN]: 'This is the next time Alert will purge provider data.'
+};
+
 const fieldNames = [KEY_ACCUMULATOR_NEXT_RUN, KEY_DAILY_DIGEST_HOUR_OF_DAY, KEY_DAILY_DIGEST_NEXT_RUN, KEY_PURGE_DATA_FREQUENCY_DAYS, KEY_PURGE_DATA_NEXT_RUN];
 
 class SchedulingConfiguration extends React.Component {
@@ -155,7 +163,7 @@ class SchedulingConfiguration extends React.Component {
                                 delay={{ show: 200, hide: 100 }}
                                 overlay={
                                     <Tooltip id="description-tooltip">
-                                        {'By default, Alert collects data every 60 seconds. This value indicates the number of seconds until the next time Alert pulls data from the Providers.'}
+                                        {FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ACCUMULATOR_NEXT_RUN)}
                                     </Tooltip>
                                 }
                             >
@@ -174,7 +182,7 @@ class SchedulingConfiguration extends React.Component {
                         onChange={this.handleDailyDigestChanged}
                         id={KEY_DAILY_DIGEST_HOUR_OF_DAY}
                         className="accumulatorTypeAheadField"
-                        description="Select the hour of the day to run the the daily digest distribution jobs."
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DAILY_DIGEST_HOUR_OF_DAY)}
                         options={dailyDigestOptions}
                         isSearchable
                         placeholder="Choose the hour of day"
@@ -195,7 +203,7 @@ class SchedulingConfiguration extends React.Component {
                                 delay={{ show: 200, hide: 100 }}
                                 overlay={
                                     <Tooltip id="description-tooltip">
-                                        {'This is the next time daily digest distribution jobs will run.'}
+                                        {FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DAILY_DIGEST_NEXT_RUN)}
                                     </Tooltip>
                                 }
                             >
@@ -214,7 +222,7 @@ class SchedulingConfiguration extends React.Component {
                         onChange={this.handlePurgeChanged}
                         id={KEY_PURGE_DATA_FREQUENCY_DAYS}
                         className="accumulatorTypeAheadField"
-                        description="Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted."
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PURGE_DATA_FREQUENCY_DAYS)}
                         options={purgeOptions}
                         isSearchable
                         placeholder="Choose the frequency"
@@ -232,7 +240,7 @@ class SchedulingConfiguration extends React.Component {
                                 delay={{ show: 200, hide: 100 }}
                                 overlay={
                                     <Tooltip id="description-tooltip">
-                                        {'This is the next time Alert will purge provider data.'}
+                                        {FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PURGE_DATA_NEXT_RUN)}
                                     </Tooltip>
                                 }
                             >
