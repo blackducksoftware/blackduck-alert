@@ -10,7 +10,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const ID_KEY = 'id';
@@ -170,7 +170,7 @@ class EmailConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL)
+            currentEmailConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL)
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -183,7 +183,7 @@ class EmailConfiguration extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentEmailConfig, fieldNames);
+            const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentEmailConfig, fieldNames);
             this.setState({
                 currentEmailConfig: newState
             });
@@ -192,7 +192,7 @@ class EmailConfiguration extends React.Component {
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentEmailConfig, target.name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentEmailConfig, target.name, value);
         this.setState({
             currentEmailConfig: newState
         });
@@ -226,518 +226,518 @@ class EmailConfiguration extends React.Component {
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
-                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_HOST_KEY)}
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_HOST_KEY)}
                         name={JAVAMAIL_HOST_KEY}
-                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_HOST_KEY)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_HOST_KEY)}
                         onChange={this.handleChange}
-                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_HOST_KEY)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_HOST_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_HOST_KEY]}
                     />
 
                     <TextInput
                         id={JAVAMAIL_FROM_KEY}
                         label="SMTP From"
-                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_FROM_KEY)}
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_FROM_KEY)}
                         name={JAVAMAIL_FROM_KEY}
-                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_FROM_KEY)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_FROM_KEY)}
                         onChange={this.handleChange}
-                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_FROM_KEY)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_FROM_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_FROM_KEY]}
                     />
 
                     <CheckboxInput
                         id={JAVAMAIL_AUTH_KEY}
                         label="SMTP Auth"
-                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_KEY)}
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_KEY)}
                         name={JAVAMAIL_AUTH_KEY}
-                        isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_KEY)}
+                        isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_KEY)}
                         onChange={this.handleChange}
-                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_KEY)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_KEY]}
                     />
 
                     <TextInput
                         id={JAVAMAIL_USER_KEY}
                         label="SMTP User"
-                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_USER_KEY)}
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_USER_KEY)}
                         name={JAVAMAIL_USER_KEY}
-                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_USER_KEY)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_USER_KEY)}
                         onChange={this.handleChange}
-                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USER_KEY)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_USER_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_USER_KEY]}
                     />
 
                     <PasswordInput
                         id={JAVAMAIL_PASSWORD_KEY}
                         label="SMTP Password"
-                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_PASSWORD_KEY)}
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_PASSWORD_KEY)}
                         name={JAVAMAIL_PASSWORD_KEY}
-                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PASSWORD_KEY)}
-                        isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, JAVAMAIL_PASSWORD_KEY)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_PASSWORD_KEY)}
+                        isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, JAVAMAIL_PASSWORD_KEY)}
                         onChange={this.handleChange}
-                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_PASSWORD_KEY]}
                     />
                     <CollapsiblePane title="Advanced Settings">
                         <NumberInput
                             id={JAVAMAIL_PORT_KEY}
                             label="SMTP Port"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_PORT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_PORT_KEY)}
                             name={JAVAMAIL_PORT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_PORT_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
                             label="SMTP Connection Timeout"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             name={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_CONNECTION_TIMEOUT_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_TIMEOUT_KEY}
                             label="SMTP Timeout"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_TIMEOUT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_TIMEOUT_KEY)}
                             name={JAVAMAIL_TIMEOUT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_TIMEOUT_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_WRITETIMEOUT_KEY}
                             label="SMTP Write Timeout"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_WRITETIMEOUT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_WRITETIMEOUT_KEY)}
                             name={JAVAMAIL_WRITETIMEOUT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_WRITETIMEOUT_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_LOCALHOST_KEY}
                             label="SMTP Localhost"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_KEY)}
                             name={JAVAMAIL_LOCALHOST_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_LOCALHOST_ADDRESS_KEY}
                             label="SMTP Local Address"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
                             name={JAVAMAIL_LOCALHOST_ADDRESS_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_ADDRESS_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_LOCALHOST_PORT_KEY}
                             label="SMTP Local Port"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_PORT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             name={JAVAMAIL_LOCALHOST_PORT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_PORT_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_EHLO_KEY}
                             label="SMTP Ehlo"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_EHLO_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_EHLO_KEY)}
                             name={JAVAMAIL_EHLO_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_EHLO_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_EHLO_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_EHLO_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_EHLO_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_EHLO_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_AUTH_MECHANISMS_KEY}
                             label="SMTP Auth Mechanisms"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_MECHANISMS_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_MECHANISMS_KEY)}
                             name={JAVAMAIL_AUTH_MECHANISMS_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_MECHANISMS_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_MECHANISMS_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_MECHANISMS_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_MECHANISMS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_MECHANISMS_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_LOGIN_DISABLE_KEY}
                             label="SMTP Auth Login Disable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
                             name={JAVAMAIL_AUTH_LOGIN_DISABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_LOGIN_DISABLE_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY}
                             label="SMTP Auth Plain Disable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
                             name={JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY}
                             label="SMTP Auth Digest MD5 Disable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
                             name={JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_NTLM_DISABLE_KEY}
                             label="SMTP Auth NTLM Disable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
                             name={JAVAMAIL_AUTH_NTLM_DISABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_DISABLE_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_AUTH_NTLM_DOMAIN_KEY}
                             label="SMTP Auth NTLM Domain"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
                             name={JAVAMAIL_AUTH_NTLM_DOMAIN_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_DOMAIN_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
                             label="SMTP Auth NTLM Flags"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             name={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_FLAGS_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY}
                             label="SMTP Auth XOAuth2 Disable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
                             name={JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SUBMITTER_KEY}
                             label="SMTP Submitter"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SUBMITTER_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SUBMITTER_KEY)}
                             name={JAVAMAIL_SUBMITTER_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SUBMITTER_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SUBMITTER_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SUBMITTER_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SUBMITTER_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SUBMITTER_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_DSN_NOTIFY_KEY}
                             label="SMTP DNS Notify"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_DSN_NOTIFY_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_DSN_NOTIFY_KEY)}
                             name={JAVAMAIL_DSN_NOTIFY_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_NOTIFY_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_NOTIFY_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_NOTIFY_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_DSN_NOTIFY_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_DSN_NOTIFY_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_DSN_RET_KEY}
                             label="SMTP DNS Ret"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_DSN_RET_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_DSN_RET_KEY)}
                             name={JAVAMAIL_DSN_RET_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_RET_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_RET_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_RET_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_DSN_RET_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_DSN_RET_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_ALLOW_8_BITMIME_KEY}
                             label="SMTP Allow 8-bit Mime"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
                             name={JAVAMAIL_ALLOW_8_BITMIME_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_ALLOW_8_BITMIME_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_ALLOW_8_BITMIME_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_ALLOW_8_BITMIME_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_SEND_PARTIAL_KEY}
                             label="SMTP Send Partial"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SEND_PARTIAL_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SEND_PARTIAL_KEY)}
                             name={JAVAMAIL_SEND_PARTIAL_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SEND_PARTIAL_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SEND_PARTIAL_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SEND_PARTIAL_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SEND_PARTIAL_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SEND_PARTIAL_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_SASL_ENABLE_KEY}
                             label="SMTP SASL Enable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_ENABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_ENABLE_KEY)}
                             name={JAVAMAIL_SASL_ENABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_ENABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_ENABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_ENABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SASL_ENABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SASL_ENABLE_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SASL_MECHANISMS_KEY}
                             label="SMTP SASL Mechanisms"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_MECHANISMS_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_MECHANISMS_KEY)}
                             name={JAVAMAIL_SASL_MECHANISMS_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_MECHANISMS_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_MECHANISMS_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_MECHANISMS_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SASL_MECHANISMS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SASL_MECHANISMS_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SASL_AUTHORIZATION_ID_KEY}
                             label="SMTP SASL Authorization ID"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
                             name={JAVAMAIL_SASL_AUTHORIZATION_ID_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SASL_AUTHORIZATION_ID_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SASL_REALM_KEY}
                             label="SMTP SASL Realm"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_REALM_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_REALM_KEY)}
                             name={JAVAMAIL_SASL_REALM_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_REALM_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_REALM_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_REALM_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SASL_REALM_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SASL_REALM_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY}
                             label="SMTP SASL Use Canonical Hostname"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
                             name={JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_QUITWAIT_KEY}
                             label="SMTP QuitWait"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_QUITWAIT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_QUITWAIT_KEY)}
                             name={JAVAMAIL_QUITWAIT_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_QUITWAIT_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_QUITWAIT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_QUITWAIT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_QUITWAIT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_QUITWAIT_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_REPORT_SUCCESS_KEY}
                             label="SMTP Report Success"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_REPORT_SUCCESS_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_REPORT_SUCCESS_KEY)}
                             name={JAVAMAIL_REPORT_SUCCESS_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_REPORT_SUCCESS_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_REPORT_SUCCESS_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_REPORT_SUCCESS_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_REPORT_SUCCESS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_REPORT_SUCCESS_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_SSL_ENABLE_KEY}
                             label="SMTP SSL Enable"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_ENABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_ENABLE_KEY)}
                             name={JAVAMAIL_SSL_ENABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_ENABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_ENABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_ENABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SSL_ENABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SSL_ENABLE_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY}
                             label="SMTP SSL Check Server Identity"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
                             name={JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SSL_TRUST_KEY}
                             label="SMTP SSL Trust"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_TRUST_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_TRUST_KEY)}
                             name={JAVAMAIL_SSL_TRUST_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_TRUST_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_TRUST_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_TRUST_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SSL_TRUST_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SSL_TRUST_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SSL_PROTOCOLS_KEY}
                             label="SMTP SSL Protocols"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_PROTOCOLS_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_PROTOCOLS_KEY)}
                             name={JAVAMAIL_SSL_PROTOCOLS_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_PROTOCOLS_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_PROTOCOLS_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_PROTOCOLS_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SSL_PROTOCOLS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SSL_PROTOCOLS_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SSL_CIPHERSUITES_KEY}
                             label="SMTP SSL Cipher Suites"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
                             name={JAVAMAIL_SSL_CIPHERSUITES_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CIPHERSUITES_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SSL_CIPHERSUITES_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SSL_CIPHERSUITES_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_STARTTLS_ENABLE_KEY}
                             label="SMTP Start TLS Enabled"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_STARTTLS_ENABLE_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_STARTTLS_ENABLE_KEY)}
                             name={JAVAMAIL_STARTTLS_ENABLE_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_ENABLE_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_ENABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_ENABLE_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_STARTTLS_ENABLE_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_STARTTLS_ENABLE_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_STARTTLS_REQUIRED_KEY}
                             label="SMTP Start TLS Required"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
                             name={JAVAMAIL_STARTTLS_REQUIRED_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_REQUIRED_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_STARTTLS_REQUIRED_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_STARTTLS_REQUIRED_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_PROXY_HOST_KEY}
                             label="SMTP Proxy Host"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_PROXY_HOST_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_PROXY_HOST_KEY)}
                             name={JAVAMAIL_PROXY_HOST_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_HOST_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_HOST_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_HOST_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_PROXY_HOST_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_PROXY_HOST_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_PROXY_PORT_KEY}
                             label="SMTP Proxy Port"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_PROXY_PORT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_PROXY_PORT_KEY)}
                             name={JAVAMAIL_PROXY_PORT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_PROXY_PORT_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_SOCKS_HOST_KEY}
                             label="SMTP Socks Host"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SOCKS_HOST_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SOCKS_HOST_KEY)}
                             name={JAVAMAIL_SOCKS_HOST_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_HOST_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_HOST_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_HOST_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SOCKS_HOST_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SOCKS_HOST_KEY]}
                         />
 
                         <NumberInput
                             id={JAVAMAIL_SOCKS_PORT_KEY}
                             label="SMTP Socks Port"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_SOCKS_PORT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SOCKS_PORT_KEY)}
                             name={JAVAMAIL_SOCKS_PORT_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SOCKS_PORT_KEY]}
                         />
 
                         <TextInput
                             id={JAVAMAIL_MAILEXTENSION_KEY}
                             label="SMTP Mail Extension"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_MAILEXTENSION_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_MAILEXTENSION_KEY)}
                             name={JAVAMAIL_MAILEXTENSION_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_MAILEXTENSION_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_MAILEXTENSION_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_MAILEXTENSION_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_MAILEXTENSION_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_MAILEXTENSION_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_USERSET_KEY}
                             label="SMTP Use RSET"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_USERSET_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_USERSET_KEY)}
                             name={JAVAMAIL_USERSET_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_USERSET_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_USERSET_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USERSET_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_USERSET_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_USERSET_KEY]}
                         />
 
                         <CheckboxInput
                             id={JAVAMAIL_NOOP_STRICT_KEY}
                             label="SMTP NoOp Strict"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, JAVAMAIL_NOOP_STRICT_KEY)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_NOOP_STRICT_KEY)}
                             name={JAVAMAIL_NOOP_STRICT_KEY}
-                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_NOOP_STRICT_KEY)}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, JAVAMAIL_NOOP_STRICT_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_NOOP_STRICT_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_NOOP_STRICT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_NOOP_STRICT_KEY]}
                         />
                     </CollapsiblePane>
