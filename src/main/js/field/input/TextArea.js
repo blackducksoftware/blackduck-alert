@@ -31,5 +31,5 @@ TextArea.defaultProps = {
     readOnly: false,
     inputClass: 'textInput',
     value: null,
-    sizeClass: 'col-sm-9'
+    sizeClass: 'col-sm-8'
 };

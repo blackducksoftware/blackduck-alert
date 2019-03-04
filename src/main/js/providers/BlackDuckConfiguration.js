@@ -14,6 +14,11 @@ const KEY_BLACKDUCK_URL = 'blackduck.url';
 const KEY_BLACKDUCK_API_KEY = 'blackduck.api.key';
 const KEY_BLACKDUCK_TIMEOUT = 'blackduck.timeout';
 
+const fieldDescriptions = {
+    [KEY_BLACKDUCK_URL]: 'The URL of the Black Duck server.',
+    [KEY_BLACKDUCK_API_KEY]: 'The API token used to retrieve data from the Black Duck server. The API token should be for a super user.',
+    [KEY_BLACKDUCK_TIMEOUT]: 'The timeout in seconds for all connections to the Black Duck server. Default: 300.'
+};
 
 const fieldNames = [
     KEY_BLACKDUCK_URL,
@@ -101,6 +106,7 @@ class BlackDuckConfiguration
                         <TextInput
                             id={KEY_BLACKDUCK_URL}
                             label="Url"
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_BLACKDUCK_URL)}
                             name={KEY_BLACKDUCK_URL}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
                             onChange={this.handleChange}
@@ -110,6 +116,7 @@ class BlackDuckConfiguration
                         <PasswordInput
                             id={KEY_BLACKDUCK_API_KEY}
                             label="API Token"
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_BLACKDUCK_API_KEY)}
                             name={KEY_BLACKDUCK_API_KEY}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_API_KEY)}
                             isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
@@ -120,6 +127,7 @@ class BlackDuckConfiguration
                         <NumberInput
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_BLACKDUCK_TIMEOUT)}
                             name={KEY_BLACKDUCK_TIMEOUT}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
