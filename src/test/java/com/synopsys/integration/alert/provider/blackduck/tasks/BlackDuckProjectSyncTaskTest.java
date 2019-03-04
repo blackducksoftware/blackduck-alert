@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.blackduck.api.core.BlackDuckPathMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
@@ -29,8 +28,6 @@ public class BlackDuckProjectSyncTaskTest {
     @Test
     public void testRun() throws Exception {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-
-        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
 
         final String email1 = "user1@email.com";
@@ -63,10 +60,9 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
-        final BlackDuckProjectSyncTask projectSyncTask = new BlackDuckProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, providerDataAccessor);
+        final BlackDuckProjectSyncTask projectSyncTask = new BlackDuckProjectSyncTask(null, blackDuckProperties, providerDataAccessor);
         projectSyncTask.run();
 
-        assertEquals(4, blackDuckUserRepositoryAccessor.readEntities().size());
         assertEquals(3, providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME).size());
 
         Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2));
@@ -77,7 +73,6 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(hubService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(Collections.emptyList());
         projectSyncTask.run();
 
-        assertEquals(3, blackDuckUserRepositoryAccessor.readEntities().size());
         assertEquals(2, providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME).size());
     }
 
