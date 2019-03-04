@@ -17,6 +17,18 @@ small {
   color: $synopsys-color-light-gray;
 }
 
+#description-tooltip {
+  pointer-events: none;
+}
+
+#description-tooltip > .tooltip-inner {
+  background-color: $synopsys-color-subhead-copy;
+}
+
+.checkbox {
+  vertical-align: middle;
+}
+
 .textInput {
   width: 100%;
 }

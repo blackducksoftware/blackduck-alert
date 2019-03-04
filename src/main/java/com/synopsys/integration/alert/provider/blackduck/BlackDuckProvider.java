@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
@@ -73,8 +74,8 @@ public class BlackDuckProvider extends Provider {
 
         final Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfigSafely(new Slf4jIntLogger(logger));
         blackDuckServerConfig.ifPresent(globalConfig -> {
-            taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, accumulatorTask.getTaskName());
-            taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
+            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, accumulatorTask.getTaskName());
+            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, projectSyncTask.getTaskName());
         });
     }
 
