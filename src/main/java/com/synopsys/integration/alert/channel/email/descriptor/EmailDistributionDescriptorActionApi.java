@@ -65,6 +65,9 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     @Override
     public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws AlertFieldException {
         final Set<String> emailAddresses = new HashSet<>();
+        if (StringUtils.isNotBlank(destination)) {
+            emailAddresses.add(destination);
+        }
 
         final Boolean filterByProject = fieldAccessor.getString(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT)
                                             .map(Boolean::parseBoolean)
@@ -75,7 +78,8 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         if (isBlackduckProvider) {
             final Set<ProviderProject> blackDuckProjects = retrieveBlackDuckProjects(fieldAccessor, filterByProject);
             if (null != blackDuckProjects) {
-                addEmailAddresses(blackDuckProjects, fieldAccessor, emailAddresses);
+                final Set<String> blackDuckEmailAddresses = addEmailAddresses(blackDuckProjects, fieldAccessor);
+                emailAddresses.addAll(blackDuckEmailAddresses);
             }
         }
 
@@ -115,9 +119,11 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
                    .collect(Collectors.toSet());
     }
 
-    private void addEmailAddresses(final Set<ProviderProject> blackDuckProjects, final FieldAccessor fieldAccessor, final Set<String> emailAddresses) throws AlertFieldException {
+    private Set<String> addEmailAddresses(final Set<ProviderProject> blackDuckProjects, final FieldAccessor fieldAccessor) throws AlertFieldException {
         final Optional<String> projectOwnerOnlyOptional = fieldAccessor.getString(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
         final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
+
+        final Set<String> emailAddresses = new HashSet<>();
         final Set<String> projectsWithoutEmails = new HashSet<>();
         for (final ProviderProject project : blackDuckProjects) {
             final Set<String> emailsForProject = blackDuckEmailHandler.getEmailAddressesForProject(project, projectOwnerOnly);
@@ -138,6 +144,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
             fieldErrors.put(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, errorMessage);
             throw new AlertFieldException(fieldErrors);
         }
+        return emailAddresses;
     }
 
 }
