@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.database.provider.project.ProviderProjectR
 
 @Component
 @Transactional
-// TODO test this class
 public class PolarisIssueAccessor {
     private final PolarisIssueRepository polarisIssueRepository;
     private final ProviderProjectRepository providerProjectRepository;
@@ -75,7 +74,7 @@ public class PolarisIssueAccessor {
         if (StringUtils.isBlank(issueType)) {
             throw new AlertDatabaseConstraintException("The field issueType cannot be blank");
         }
-        if (null != newCount) {
+        if (null == newCount) {
             throw new AlertDatabaseConstraintException("The field newCount cannot be null");
         }
 

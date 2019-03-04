@@ -61,7 +61,7 @@ public final class MockProviderDataAccessor extends ProviderDataAccessor {
     }
 
     @Override
-    public Optional<ProviderProject> findByName(final String name) {
+    public Optional<ProviderProject> findFirstByName(final String name) {
         return providerProjectMap.values()
                    .stream()
                    .flatMap(Collection::stream)
