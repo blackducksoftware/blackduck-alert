@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
+import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
@@ -44,10 +49,12 @@ import com.synopsys.integration.rest.request.Response;
 public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
+    private final TaskManager taskManager;
 
     @Autowired
-    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties) {
+    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties, final TaskManager taskManager) {
         this.polarisProperties = polarisProperties;
+        this.taskManager = taskManager;
     }
 
     @Override
@@ -72,5 +79,15 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
         } catch (final IOException ioException) {
             throw new AlertException(ioException);
         }
+    }
+
+    @Override
+    public FieldModel saveConfig(final FieldModel fieldModel) {
+        final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
+        final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+        if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
+            taskManager.scheduleCronTask(PolarisProjectSyncTask.DEFAULT_CRON_EXPRESSION, PolarisProjectSyncTask.TASK_NAME);
+        }
+        return super.saveConfig(fieldModel);
     }
 }
