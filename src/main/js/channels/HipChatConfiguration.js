@@ -86,7 +86,7 @@ class HipChatConfiguration extends React.Component {
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"
-                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, KEY_API_KEY)}
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_API_KEY)}
                         name={KEY_API_KEY}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_API_KEY)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
@@ -98,7 +98,7 @@ class HipChatConfiguration extends React.Component {
                         <TextInput
                             id={KEY_HOST_SERVER}
                             label="HipChat Host Server Url"
-                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, KEY_HOST_SERVER)}
+                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_HOST_SERVER)}
                             name={KEY_HOST_SERVER}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
                             onChange={this.handleChange}
