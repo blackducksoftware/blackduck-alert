@@ -62,7 +62,7 @@ class AboutInfo extends React.Component {
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Supported Providers</label>
-                            <div className="d-inline-flex p-2 col-sm-9">
+                            <div className="d-inline-flex p-2 col-sm-8">
                                 <div className="form-control-static">
                                     {providerTable}
                                 </div>
@@ -72,7 +72,7 @@ class AboutInfo extends React.Component {
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Supported Distribution Channels</label>
-                            <div className="d-inline-flex p-2 col-sm-9">
+                            <div className="d-inline-flex p-2 col-sm-8">
                                 <div className="form-control-static">
                                     {channelTable}
                                 </div>
