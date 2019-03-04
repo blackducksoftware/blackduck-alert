@@ -5,6 +5,7 @@ import NumberInput from 'field/input/NumberInput';
 import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
+import ConfigurationDescription from 'component/common/ConfigurationDescription';
 
 import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -25,6 +26,9 @@ const fieldNames = [
     KEY_BLACKDUCK_TIMEOUT,
     KEY_BLACKDUCK_API_KEY
 ];
+
+const configurationDescription = 'This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.';
+const documentationLink = 'https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/622882/Black+Duck+Alert#BlackDuckAlert-Providers';
 
 class BlackDuckConfiguration
     extends React.Component {
@@ -101,6 +105,7 @@ class BlackDuckConfiguration
                     {actionMessage}
                 </div>}
 
+                <ConfigurationDescription description={configurationDescription} documentationLink={documentationLink} />
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
                         <TextInput

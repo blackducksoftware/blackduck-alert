@@ -6,6 +6,7 @@ import NumberInput from 'field/input/NumberInput';
 import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
+import ConfigurationDescription from 'component/common/ConfigurationDescription';
 
 import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
@@ -165,6 +166,9 @@ const fieldNames = [
     JAVAMAIL_PASSWORD_KEY
 ];
 
+const configurationDescription = 'This page allows you to configure the email server that Alert will send emails to.';
+const documentationLink = 'https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/622882/Black+Duck+Alert#BlackDuckAlert-Configuringemail';
+
 class EmailConfiguration extends React.Component {
     constructor(props) {
         super(props);
@@ -214,15 +218,17 @@ class EmailConfiguration extends React.Component {
                     <span className="fa fa-envelope" />
                     Email
                 </h1>
+                {errorMessage && <div className="alert alert-danger">
+                    {errorMessage}
+                </div>}
+
+                {actionMessage && <div className="alert alert-success">
+                    {actionMessage}
+                </div>}
+
+
+                <ConfigurationDescription description={configurationDescription} documentationLink={documentationLink} />
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
-                    {errorMessage && <div className="alert alert-danger">
-                        {errorMessage}
-                    </div>}
-
-                    {actionMessage && <div className="alert alert-success">
-                        {actionMessage}
-                    </div>}
-
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
