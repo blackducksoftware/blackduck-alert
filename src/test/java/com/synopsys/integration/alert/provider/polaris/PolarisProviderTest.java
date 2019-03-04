@@ -8,6 +8,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -17,11 +18,15 @@ public class PolarisProviderTest {
     @Test
     public void initializeTest() {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
-        Mockito.when(taskManager.unregisterTask(Mockito.anyString())).thenReturn(Optional.empty());
         final PolarisProjectSyncTask polarisProjectSyncTask = Mockito.mock(PolarisProjectSyncTask.class);
+        final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
+
+        Mockito.when(taskManager.unregisterTask(Mockito.anyString())).thenReturn(Optional.empty());
         Mockito.when(polarisProjectSyncTask.getTaskName()).thenReturn("task");
         Mockito.doNothing().when(polarisProjectSyncTask).run();
-        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask);
+        Mockito.when(polarisProperties.createPolarisHttpClientSafely((Logger) Mockito.any())).thenReturn(Optional.empty());
+
+        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, polarisProperties);
         polarisProvider.initialize();
     }
 
@@ -30,7 +35,7 @@ public class PolarisProviderTest {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
         Mockito.when(taskManager.unregisterTask(Mockito.anyString())).thenReturn(Optional.empty());
         final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(null, null, null, null, null, null);
-        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask);
+        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, null);
         polarisProvider.destroy();
     }
 
