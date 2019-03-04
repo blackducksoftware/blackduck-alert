@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.polaris;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
+import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
 @Component(PolarisProvider.COMPONENT_NAME)
 public class PolarisProvider extends Provider {
@@ -45,19 +47,24 @@ public class PolarisProvider extends Provider {
 
     private final TaskManager taskManager;
     private final PolarisProjectSyncTask projectSyncTask;
+    private final PolarisProperties polarisProperties;
 
     @Autowired
-    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask) {
+    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask, final PolarisProperties polarisProperties) {
         super(PolarisProvider.COMPONENT_NAME, null);
         this.taskManager = taskManager;
         this.projectSyncTask = projectSyncTask;
+        this.polarisProperties = polarisProperties;
     }
 
     @Override
     public void initialize() {
         logger.info("Initializing Polaris provider...");
         taskManager.registerTask(projectSyncTask);
-        taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
+        final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
+        polarisHttpClient.ifPresent(client -> {
+            taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
+        });
     }
 
     @Override
