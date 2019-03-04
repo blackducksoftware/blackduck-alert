@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -45,7 +46,6 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 
 @Component
 @Transactional
-// TODO update tests for this class
 public class ProviderDataAccessor {
     private static final int MAX_DESCRIPTION_LENGTH = 250;
     private final ProviderProjectRepository providerProjectRepository;
@@ -60,26 +60,26 @@ public class ProviderDataAccessor {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<com.synopsys.integration.alert.common.persistence.model.ProviderProject> findByName(final String name) {
+    public Optional<ProviderProject> findByName(final String name) {
         return providerProjectRepository.findFirstByName(name).map(this::convertToModel);
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<com.synopsys.integration.alert.common.persistence.model.ProviderProject> findByProviderName(final String providerName) {
+    public List<ProviderProject> findByProviderName(final String providerName) {
         return providerProjectRepository.findByProvider(providerName)
                    .stream()
                    .map(this::convertToModel)
                    .collect(Collectors.toList());
     }
 
-    public com.synopsys.integration.alert.common.persistence.model.ProviderProject saveProject(final String providerName, final com.synopsys.integration.alert.common.persistence.model.ProviderProject providerProject) {
+    public ProviderProject saveProject(final String providerName, final ProviderProject providerProject) {
         final String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
         final ProviderProjectEntity trimmedBlackDuckProjectEntity = new ProviderProjectEntity(
             providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
         return convertToModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
     }
 
-    public List<com.synopsys.integration.alert.common.persistence.model.ProviderProject> deleteAndSaveAll(final String providerName, final Collection<com.synopsys.integration.alert.common.persistence.model.ProviderProject> providerProjects) {
+    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
         providerProjectRepository.deleteAllByProvider(providerName);
         final Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
                                                                             .stream()
@@ -100,20 +100,20 @@ public class ProviderDataAccessor {
         final Optional<Long> projectId = providerProjectRepository.findFirstByHref(href).map(ProviderProjectEntity::getId);
         if (projectId.isPresent()) {
             final Set<Long> userIds = providerUserProjectRelationRepository.findByProviderProjectId(projectId.get())
-                .stream()
-                .map(ProviderUserProjectRelation::getProviderUserId)
-                .collect(Collectors.toSet());
+                                          .stream()
+                                          .map(ProviderUserProjectRelation::getProviderUserId)
+                                          .collect(Collectors.toSet());
             return providerUserRepository.findAllById(userIds)
-                .stream()
-                .map(ProviderUserEntity::getEmailAddress)
-                .collect(Collectors.toSet());
+                       .stream()
+                       .map(ProviderUserEntity::getEmailAddress)
+                       .collect(Collectors.toSet());
         }
         return Set.of();
     }
 
     public void mapUsersToProjectByEmail(final String href, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
         final ProviderProjectEntity project = providerProjectRepository.findFirstByHref(href)
-                                   .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + href));
+                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + href));
         final Long projectId = project.getId();
 
         providerUserProjectRelationRepository.deleteAllByProviderProjectId(projectId);
@@ -125,11 +125,22 @@ public class ProviderDataAccessor {
         }
     }
 
-    private com.synopsys.integration.alert.common.persistence.model.ProviderProject convertToModel(final ProviderProjectEntity providerProjectEntity) {
-        return new com.synopsys.integration.alert.common.persistence.model.ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(), providerProjectEntity.getProjectOwnerEmail());
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<ProviderUserEntity> getAllUsers(final String providerName) {
+        return providerUserRepository.findByProvider(providerName);
     }
 
-    private ProviderProjectEntity convertToEntity(final String providerName, final com.synopsys.integration.alert.common.persistence.model.ProviderProject providerProject) {
+    public List<ProviderUserEntity> deleteAndSaveAllUsers(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
+        providerUserRepository.deleteAll(userEntitiesToDelete);
+        return providerUserRepository.saveAll(userEntitiesToAdd);
+    }
+
+    private ProviderProject convertToModel(final ProviderProjectEntity providerProjectEntity) {
+        return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
+            providerProjectEntity.getProjectOwnerEmail());
+    }
+
+    private ProviderProjectEntity convertToEntity(final String providerName, final ProviderProject providerProject) {
         return new ProviderProjectEntity(providerProject.getName(), providerProject.getDescription(), providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
     }
 

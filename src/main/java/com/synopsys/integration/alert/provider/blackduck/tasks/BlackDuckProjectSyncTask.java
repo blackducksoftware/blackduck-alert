@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
-import com.synopsys.integration.alert.database.api.ProviderUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -63,16 +62,13 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-sync-project-task";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
-    private final ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    private final ProviderDataAccessor blackDuckProjectRepositoryAccessor;
+    private final ProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired
-    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final ProviderDataAccessor blackDuckProjectRepositoryAccessor) {
+    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderDataAccessor blackDuckDataAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
-        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
-        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
+        this.blackDuckDataAccessor = blackDuckDataAccessor;
     }
 
     @Override
@@ -125,7 +121,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
 
     public List<ProviderProject> updateProjectDB(final Set<ProviderProject> currentProjects) {
         logger.info("{} projects", currentProjects.size());
-        return blackDuckProjectRepositoryAccessor.deleteAndSaveAll(BlackDuckProvider.COMPONENT_NAME, currentProjects);
+        return blackDuckDataAccessor.deleteAndSaveAllProjects(BlackDuckProvider.COMPONENT_NAME, currentProjects);
     }
 
     private Map<String, Set<String>> getEmailsPerProject(final Map<ProviderProject, ProjectView> currentDataMap, final List<ProviderProject> blackDuckProjects, final ProjectUsersService projectUsersService) {
@@ -137,9 +133,9 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                     final ProviderProject blackDuckProject = entry.getKey();
                     final ProjectView projectView = entry.getValue();
                     final Optional<ProviderProject> optionalBlackDuckProject = blackDuckProjects
-                                                                                               .stream()
-                                                                                               .filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(blackDuckProject.getName()))
-                                                                                               .findFirst();
+                                                                                   .stream()
+                                                                                   .filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(blackDuckProject.getName()))
+                                                                                   .findFirst();
                     if (optionalBlackDuckProject.isPresent()) {
                         final ProviderProject projectEntity = optionalBlackDuckProject.get();
 
@@ -165,7 +161,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         final Set<String> emailsToAdd = new HashSet<>();
         final Set<String> emailsToRemove = new HashSet<>();
 
-        final List<ProviderUserEntity> blackDuckUserEntities = blackDuckUserRepositoryAccessor.readEntities();
+        final List<ProviderUserEntity> blackDuckUserEntities = blackDuckDataAccessor.getAllUsers(BlackDuckProvider.COMPONENT_NAME);
         final Set<String> storedEmails = blackDuckUserEntities
                                              .stream()
                                              .map(ProviderUserEntity::getEmailAddress)
@@ -197,14 +193,14 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                                                                      .stream()
                                                                      .map(email -> new ProviderUserEntity(email, false, BlackDuckProvider.COMPONENT_NAME))
                                                                      .collect(Collectors.toList());
-        blackDuckUserRepositoryAccessor.deleteAndSaveAll(blackDuckUsersToRemove, blackDuckUserEntityList);
+        blackDuckDataAccessor.deleteAndSaveAllUsers(blackDuckUsersToRemove, blackDuckUserEntityList);
     }
 
     private void updateUserProjectRelations(final Map<String, Set<String>> projectToEmailAddresses) {
         final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
         for (final Map.Entry<String, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
-                blackDuckProjectRepositoryAccessor.mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
+                blackDuckDataAccessor.mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Problem mapping users to projects", e);
             }
