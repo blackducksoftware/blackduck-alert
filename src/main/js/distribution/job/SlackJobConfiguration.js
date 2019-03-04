@@ -12,6 +12,12 @@ const KEY_WEBHOOK = 'channel.slack.webhook';
 const KEY_CHANNEL_NAME = 'channel.slack.channel.name';
 const KEY_CHANNEL_USERNAME = 'channel.slack.channel.username';
 
+const fieldDescriptions = {
+    [KEY_WEBHOOK]: 'The Slack URL to receive alerts.',
+    [KEY_CHANNEL_NAME]: 'The name of the Slack channel.',
+    [KEY_CHANNEL_USERNAME]: 'The username to show as the message sender in the Slack channel.'
+};
+
 const fieldNames = [
     KEY_WEBHOOK,
     KEY_CHANNEL_NAME,
@@ -72,7 +78,7 @@ class SlackJobConfiguration extends Component {
                 <TextInput
                     id={KEY_WEBHOOK}
                     label="Webhook"
-                    description="The Slack URL to receive alerts."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_WEBHOOK)}
                     name={KEY_WEBHOOK}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_WEBHOOK, '')}
                     onChange={this.handleChange}
@@ -82,7 +88,7 @@ class SlackJobConfiguration extends Component {
                 <TextInput
                     id={KEY_CHANNEL_NAME}
                     label="Channel Name"
-                    description="The name of the Slack channel."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_CHANNEL_NAME)}
                     name={KEY_CHANNEL_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_NAME, '')}
                     onChange={this.handleChange}
@@ -92,7 +98,7 @@ class SlackJobConfiguration extends Component {
                 <TextInput
                     id={KEY_CHANNEL_USERNAME}
                     label="Channel Username"
-                    description="The username to show as the message sender in the Slack channel."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_CHANNEL_USERNAME)}
                     name={KEY_CHANNEL_USERNAME}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_USERNAME, '')}
                     onChange={this.handleChange}

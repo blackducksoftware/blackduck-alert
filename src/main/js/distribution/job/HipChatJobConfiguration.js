@@ -14,6 +14,12 @@ const KEY_ROOM_ID = 'channel.hipchat.room.id';
 const KEY_NOTIFY = 'channel.hipchat.notify';
 const KEY_COLOR = 'channel.hipchat.color';
 
+const fieldDescriptions = {
+    [KEY_ROOM_ID]: 'The API ID of the room to receive Alerts.',
+    [KEY_NOTIFY]: 'If true, this will add to the count of new messages in the HipChat room.',
+    [KEY_COLOR]: 'The text color to display the Alert messages in.'
+};
+
 const fieldNames = [
     KEY_ROOM_ID,
     KEY_NOTIFY,
@@ -99,7 +105,7 @@ class HipChatJobConfiguration extends Component {
                 <TextInput
                     id={KEY_ROOM_ID}
                     label="Room Id"
-                    description="The API ID of the room to receive Alerts."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ROOM_ID)}
                     name={KEY_ROOM_ID}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
                     onChange={this.handleChange}
@@ -109,7 +115,7 @@ class HipChatJobConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_NOTIFY}
                     label="Notify"
-                    description="If true, this will add to the count of new messages in the HipChat room."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_NOTIFY)}
                     name={KEY_NOTIFY}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
                     onChange={this.handleChange}
@@ -123,7 +129,7 @@ class HipChatJobConfiguration extends Component {
                     className="typeAheadField"
                     labelSpacingClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
-                    description="The text color to display the Alert messages in."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_COLOR)}
                     options={colorOptions}
                     isSearchable
                     placeholder="Choose the message color"

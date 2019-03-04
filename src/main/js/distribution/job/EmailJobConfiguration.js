@@ -12,6 +12,11 @@ const KEY_SUBJECT_LINE = 'email.subject.line';
 const KEY_PROJECT_OWNER_ONLY = 'project.owner.only';
 const KEY_EMAIL_ADDRESSES = 'email.addresses';
 
+const fieldDescriptions = {
+    [KEY_SUBJECT_LINE]: 'The subject line to use in the emails sent for this distribution job.',
+    [KEY_PROJECT_OWNER_ONLY]: 'If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.'
+};
+
 const fieldNames = [
     KEY_SUBJECT_LINE,
     KEY_PROJECT_OWNER_ONLY,
@@ -72,7 +77,7 @@ class EmailJobConfiguration extends Component {
                 <TextInput
                     id={KEY_SUBJECT_LINE}
                     label="Subject Line"
-                    description="The subject line to use in the emails sent for this distribution job."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SUBJECT_LINE)}
                     name={KEY_SUBJECT_LINE}
                     value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_SUBJECT_LINE, '')}
                     onChange={this.handleChange}
@@ -82,7 +87,7 @@ class EmailJobConfiguration extends Component {
                 <CheckboxInput
                     id={KEY_PROJECT_OWNER_ONLY}
                     label="Project Owner Only"
-                    description="If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email."
+                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROJECT_OWNER_ONLY)}
                     name={KEY_PROJECT_OWNER_ONLY}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_PROJECT_OWNER_ONLY)}
                     onChange={this.handleChange}

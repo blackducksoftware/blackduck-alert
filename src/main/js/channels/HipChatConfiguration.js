@@ -14,6 +14,11 @@ const ID_KEY = 'id';
 const KEY_API_KEY = 'channel.hipchat.api.key';
 const KEY_HOST_SERVER = 'channel.hipchat.host.server';
 
+const fieldDescriptions = {
+    [KEY_API_KEY]: 'The API key of the user you want to use to authenticate with the HipChat server.',
+    [KEY_HOST_SERVER]: 'The URL for your HipChat server.'
+};
+
 const fieldNames = [
     ID_KEY,
     KEY_API_KEY,
@@ -81,7 +86,7 @@ class HipChatConfiguration extends React.Component {
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"
-                        description="The API key of the user you want to use to authenticate with the HipChat server."
+                        description={FieldModelUtil.getFieldDescription(fieldDescriptions, KEY_API_KEY)}
                         name={KEY_API_KEY}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_API_KEY)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
@@ -93,7 +98,7 @@ class HipChatConfiguration extends React.Component {
                         <TextInput
                             id={KEY_HOST_SERVER}
                             label="HipChat Host Server Url"
-                            description="The URL for your HipChat server."
+                            description={FieldModelUtil.getFieldDescription(fieldDescriptions, KEY_HOST_SERVER)}
                             name={KEY_HOST_SERVER}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
                             onChange={this.handleChange}
