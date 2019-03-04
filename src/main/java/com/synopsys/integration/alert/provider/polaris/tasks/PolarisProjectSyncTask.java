@@ -49,7 +49,6 @@ import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.database.api.PolarisIssueAccessor;
 import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.PolarisRequestHelper;
@@ -64,7 +63,6 @@ import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient
 @Component
 public class PolarisProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "polaris-project-sync-task";
-    public static final String DEFAULT_CRON_EXPRESSION = BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;

@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
@@ -118,8 +119,8 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {
-                taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
-                taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
+                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
+                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
             }
         }
         return super.saveConfig(fieldModel);
