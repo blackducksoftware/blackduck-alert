@@ -26,11 +26,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -39,6 +34,12 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
@@ -191,11 +192,15 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testDistributionConfig() {
-        final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
+        final Optional<DescriptorActionApi> descriptorActionApiOptional = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
+
+        final String destination = createTestConfigDestination();
         try {
-            assertTrue(descriptorActionApi.isPresent());
-            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
+            assertTrue(descriptorActionApiOptional.isPresent());
+            final DescriptorActionApi descriptorActionApi = descriptorActionApiOptional.get();
+            final TestConfigModel testConfigModel = descriptorActionApi.createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, destination);
+            descriptorActionApi.testConfig(testConfigModel);
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
