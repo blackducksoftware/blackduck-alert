@@ -60,7 +60,7 @@ public class ProviderDataAccessor {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<ProviderProject> findByName(final String name) {
+    public Optional<ProviderProject> findFirstByName(final String name) {
         return providerProjectRepository.findFirstByName(name).map(this::convertToModel);
     }
 
@@ -111,11 +111,11 @@ public class ProviderDataAccessor {
         return Set.of();
     }
 
+    // FIXME improve this method name to better describe what it does (i.e. deleting users)
     public void mapUsersToProjectByEmail(final String href, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
         final ProviderProjectEntity project = providerProjectRepository.findFirstByHref(href)
                                                   .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + href));
         final Long projectId = project.getId();
-
         providerUserProjectRelationRepository.deleteAllByProviderProjectId(projectId);
         for (final String emailAddress : emailAddresses) {
             providerUserRepository.findByEmailAddressAndProvider(emailAddress, project.getProvider())
@@ -130,6 +130,7 @@ public class ProviderDataAccessor {
         return providerUserRepository.findByProvider(providerName);
     }
 
+    // FIXME create a wrapper for ProviderUserEntity
     public List<ProviderUserEntity> deleteAndSaveAllUsers(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
         providerUserRepository.deleteAll(userEntitiesToDelete);
         return providerUserRepository.saveAll(userEntitiesToAdd);
