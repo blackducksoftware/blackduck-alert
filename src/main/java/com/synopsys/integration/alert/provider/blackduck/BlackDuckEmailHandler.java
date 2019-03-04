@@ -88,7 +88,7 @@ public class BlackDuckEmailHandler extends EmailHandler {
     }
 
     private Set<String> collectBlackDuckEmailsFromProject(final String projectName, final boolean projectOwnerOnly) {
-        final Optional<ProviderProject> optionalProject = providerDataAccessor.findByName(projectName); // FIXME use href
+        final Optional<ProviderProject> optionalProject = providerDataAccessor.findFirstByName(projectName); // FIXME use href
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
