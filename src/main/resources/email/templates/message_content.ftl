@@ -16,8 +16,6 @@
 </div>
 <div style="border: 1px solid #979797;"></div>
 <br />
-<br />
-<br />
 <#macro printLink linkableItem>
     <#assign url = linkableItem.getUrl()/>
     <#if url.isPresent()>

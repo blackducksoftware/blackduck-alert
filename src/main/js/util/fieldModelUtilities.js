@@ -1,3 +1,10 @@
+export function getFieldDescription(fieldDescriptions, key) {
+    if (fieldDescriptions.hasOwnProperty(key)) {
+        return fieldDescriptions[key];
+    }
+    return undefined;
+}
+
 export function getFieldModelSingleValue(fieldModel, key) {
     if (fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];

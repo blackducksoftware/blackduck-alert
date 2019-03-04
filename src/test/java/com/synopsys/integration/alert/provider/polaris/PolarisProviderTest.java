@@ -42,7 +42,7 @@ public class PolarisProviderTest {
 
     @Test
     public void getSupportedFormatTypes() {
-        final PolarisProvider polarisProvider = new PolarisProvider(null, null);
+        final PolarisProvider polarisProvider = new PolarisProvider(null, null, null);
         final Set<FormatType> formatTypes = polarisProvider.getSupportedFormatTypes();
 
         assertTrue(formatTypes.contains(FormatType.DEFAULT));

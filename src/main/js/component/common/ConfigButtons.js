@@ -6,7 +6,7 @@ import GeneralButton from 'field/input/GeneralButton';
 
 const ConfigButtons = props => (
     <div className="form-group">
-        <div className="d-inline-flex offset-sm-3 col-sm-9">
+        <div className="d-inline-flex offset-sm-3 col-sm-8">
             <div className="progressContainer">
                 <div className="progressIcon">
                     {props.performingAction &&

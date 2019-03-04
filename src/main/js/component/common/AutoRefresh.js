@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateRefresh } from 'store/actions/refresh';
+import CheckboxInput from 'field/input/CheckboxInput';
 
 class AutoRefresh extends Component {
     constructor(props) {
@@ -10,7 +11,7 @@ class AutoRefresh extends Component {
     }
 
     handleAutoRefreshChange({ target }) {
-        const { name, checked } = target;
+        const { checked } = target;
         if (checked) {
             this.props.startAutoReload();
         } else {
@@ -21,7 +22,15 @@ class AutoRefresh extends Component {
 
     render() {
         return (
-            <label className="refreshCheckbox"><input name="autoRefresh" type="checkbox" checked={this.props.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
+            <CheckboxInput
+                id="autoRefresh-id"
+                className="refreshCheckbox"
+                labelSpacingClass=""
+                label="Enable Auto-Refresh"
+                name="autoRefresh"
+                isChecked={this.props.autoRefresh}
+                onChange={this.handleAutoRefreshChange}
+            />
         );
     }
 }
