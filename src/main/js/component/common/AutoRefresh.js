@@ -24,10 +24,10 @@ class AutoRefresh extends Component {
         return (
             <CheckboxInput
                 id="autoRefresh-id"
-                className="refreshCheckbox"
-                labelSpacingClass=""
                 label="Enable Auto-Refresh"
                 name="autoRefresh"
+                showDescriptionPlaceHolder={false}
+                labelClass=""
                 isChecked={this.props.autoRefresh}
                 onChange={this.handleAutoRefreshChange}
             />
