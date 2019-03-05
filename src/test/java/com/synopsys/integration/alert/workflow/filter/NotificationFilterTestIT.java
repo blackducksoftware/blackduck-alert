@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
@@ -62,7 +62,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     private DescriptorMocker descriptorMocker;
 
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private DefaultConfigurationAccessor configurationAccessor;
 
     private NotificationFilter defaultNotificationFilter;
 

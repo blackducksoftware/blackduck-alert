@@ -34,12 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorTypeEntity;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
@@ -50,14 +50,14 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 
 @Component
 @Transactional
-public class DescriptorAccessor implements BaseDescriptorAccessor {
+public class DefaultDescriptorAccessor implements DescriptorAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final ConfigContextRepository configContextRepository;
     private final DescriptorTypeRepository descriptorTypeRepository;
 
     @Autowired
-    public DescriptorAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository, final ConfigContextRepository configContextRepository,
+    public DefaultDescriptorAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository, final ConfigContextRepository configContextRepository,
         final DescriptorTypeRepository descriptorTypeRepository) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.definedFieldRepository = definedFieldRepository;

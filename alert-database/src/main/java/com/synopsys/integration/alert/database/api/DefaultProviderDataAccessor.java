@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
@@ -48,14 +48,14 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 
 @Component
 @Transactional
-public class ProviderDataAccessor implements BaseProviderDataAccessor {
+public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     private static final int MAX_DESCRIPTION_LENGTH = 250;
     private final ProviderProjectRepository providerProjectRepository;
     private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
     private final ProviderUserRepository providerUserRepository;
 
     @Autowired
-    public ProviderDataAccessor(final ProviderProjectRepository providerProjectRepository, final ProviderUserProjectRelationRepository providerUserProjectRelationRepository, final ProviderUserRepository providerUserRepository) {
+    public DefaultProviderDataAccessor(final ProviderProjectRepository providerProjectRepository, final ProviderUserProjectRelationRepository providerUserProjectRelationRepository, final ProviderUserRepository providerUserRepository) {
         this.providerProjectRepository = providerProjectRepository;
         this.providerUserProjectRelationRepository = providerUserProjectRelationRepository;
         this.providerUserRepository = providerUserRepository;

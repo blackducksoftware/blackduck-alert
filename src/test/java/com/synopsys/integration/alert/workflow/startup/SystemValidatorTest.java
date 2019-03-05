@@ -13,8 +13,8 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
-import com.synopsys.integration.alert.database.api.UserAccessor;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
@@ -49,7 +49,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         final SystemValidator spiedSystemValidator = Mockito.spy(systemValidator);
@@ -65,7 +65,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
@@ -81,7 +81,7 @@ public class SystemValidatorTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
@@ -98,7 +98,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateProviders();
@@ -112,7 +112,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         testGlobalProperties.setBlackDuckUrl(null);
@@ -128,7 +128,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
@@ -147,7 +147,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, spiedGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateBlackDuckProvider();
@@ -163,7 +163,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
@@ -181,7 +181,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateBlackDuckProvider();
@@ -215,7 +215,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause:"));

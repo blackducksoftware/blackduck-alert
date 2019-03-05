@@ -12,14 +12,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
@@ -28,11 +28,11 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     private final List<Descriptor> descriptors = new LinkedList<>();
     @Autowired
-    private BaseDescriptorAccessor descriptorAccessor;
+    private DescriptorAccessor descriptorAccessor;
     @Autowired
     private DescriptorMocker descriptorMocker;
     @Autowired
-    private BaseConfigurationAccessor configurationAccessor;
+    private ConfigurationAccessor configurationAccessor;
 
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
@@ -103,11 +103,11 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         }
     }
 
-    public BaseDescriptorAccessor getDescriptorAccessor() {
+    public DescriptorAccessor getDescriptorAccessor() {
         return descriptorAccessor;
     }
 
-    public BaseConfigurationAccessor getConfigurationAccessor() {
+    public ConfigurationAccessor getConfigurationAccessor() {
         return configurationAccessor;
     }
 

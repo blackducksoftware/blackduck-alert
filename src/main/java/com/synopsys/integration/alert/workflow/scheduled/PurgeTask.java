@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 
@@ -47,12 +47,12 @@ public class PurgeTask extends ScheduledTask {
     public static final int DEFAULT_FREQUENCY = 3;
     private static final int DEFAULT_DAY_OFFSET = 1;
     private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
-    private final NotificationManager notificationManager;
+    private final DefaultNotificationManager notificationManager;
     private final SystemMessageUtility systemMessageUtility;
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final SystemMessageUtility systemMessageUtility) {
+    public PurgeTask(final TaskScheduler taskScheduler, final DefaultNotificationManager notificationManager, final SystemMessageUtility systemMessageUtility) {
         super(taskScheduler, TASK_NAME);
         this.notificationManager = notificationManager;
         this.systemMessageUtility = systemMessageUtility;

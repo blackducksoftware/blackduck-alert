@@ -41,8 +41,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -54,12 +54,12 @@ public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final Environment environment;
     private final DescriptorMap descriptorMap;
-    private final BaseDescriptorAccessor descriptorAccessor;
-    private final BaseConfigurationAccessor fieldConfigurationAccessor;
+    private final DescriptorAccessor descriptorAccessor;
+    private final ConfigurationAccessor fieldConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor fieldConfigurationAccessor,
+    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor fieldConfigurationAccessor,
         final ConfigurationFieldModelConverter modelConverter) {
         this.descriptorMap = descriptorMap;
         this.environment = environment;

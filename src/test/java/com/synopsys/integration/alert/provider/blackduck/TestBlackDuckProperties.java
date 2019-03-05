@@ -18,10 +18,10 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -40,14 +40,14 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     private boolean apiKeySet;
 
     public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
-        this(new Gson(), alertProperties, Mockito.mock(BaseConfigurationAccessor.class), Mockito.mock(ProxyManager.class));
+        this(new Gson(), alertProperties, Mockito.mock(ConfigurationAccessor.class), Mockito.mock(ProxyManager.class));
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager) {
+    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager) {
         this(gson, alertProperties, baseConfigurationAccessor, proxyManager, 400, true);
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager, final Integer blackDuckTimeout,
+    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager, final Integer blackDuckTimeout,
         final boolean trustCertificates) {
         super(gson, alertProperties, baseConfigurationAccessor, proxyManager);
         this.blackDuckTimeout = blackDuckTimeout;

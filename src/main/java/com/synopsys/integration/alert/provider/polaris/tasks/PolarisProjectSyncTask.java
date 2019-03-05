@@ -42,13 +42,13 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseNotificationManager;
-import com.synopsys.integration.alert.common.persistence.accessor.BasePolarisIssueAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.PolarisIssueAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
@@ -67,13 +67,13 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
-    private final BaseProviderDataAccessor projectRepositoryAccessor;
-    private final BasePolarisIssueAccessor polarisIssueAccessor;
-    private final BaseNotificationManager notificationManager;
+    private final ProviderDataAccessor projectRepositoryAccessor;
+    private final PolarisIssueAccessor polarisIssueAccessor;
+    private final NotificationManager notificationManager;
     private final Gson gson;
 
-    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final BaseProviderDataAccessor projectRepositoryAccessor, final BasePolarisIssueAccessor polarisIssueAccessor,
-        final NotificationManager notificationManager, final Gson gson) {
+    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final ProviderDataAccessor projectRepositoryAccessor, final PolarisIssueAccessor polarisIssueAccessor,
+        final DefaultNotificationManager notificationManager, final Gson gson) {
         super(taskScheduler, TASK_NAME);
         this.polarisProperties = polarisProperties;
         this.projectRepositoryAccessor = projectRepositoryAccessor;

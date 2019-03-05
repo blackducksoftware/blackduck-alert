@@ -32,24 +32,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 
 @Component
 public class NotificationToDistributionEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToDistributionEventConverter.class);
     private final DescriptorMap descriptorMap;
-    private final BaseConfigurationAccessor configurationAccessor;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public NotificationToDistributionEventConverter(final DescriptorMap descriptorMap, final BaseConfigurationAccessor configurationAccessor) {
+    public NotificationToDistributionEventConverter(final DescriptorMap descriptorMap, final ConfigurationAccessor configurationAccessor) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
     }

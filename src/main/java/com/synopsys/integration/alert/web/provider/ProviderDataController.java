@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
@@ -48,11 +48,11 @@ public class ProviderDataController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(ProviderDataController.class);
 
     private final ResponseFactory responseFactory;
-    private final ProviderDataAccessor providerDataAccessor;
+    private final DefaultProviderDataAccessor providerDataAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public ProviderDataController(final ResponseFactory responseFactory, final ProviderDataAccessor providerDataAccessor, final ContentConverter contentConverter) {
+    public ProviderDataController(final ResponseFactory responseFactory, final DefaultProviderDataAccessor providerDataAccessor, final ContentConverter contentConverter) {
         this.responseFactory = responseFactory;
         this.providerDataAccessor = providerDataAccessor;
         this.contentConverter = contentConverter;

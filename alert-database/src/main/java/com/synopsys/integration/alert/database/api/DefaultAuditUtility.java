@@ -54,7 +54,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseAuditUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -69,19 +69,19 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 
 @Component
-public class AuditEntryUtility implements BaseAuditUtility {
+public class DefaultAuditUtility implements AuditUtility {
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    private static final Logger logger = LoggerFactory.getLogger(AuditEntryUtility.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final JobConfigReader jobConfigReader;
-    private final NotificationManager notificationManager;
+    private final DefaultNotificationManager notificationManager;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public AuditEntryUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JobConfigReader jobConfigReader,
-        final NotificationManager notificationManager, final ContentConverter contentConverter) {
+    public DefaultAuditUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JobConfigReader jobConfigReader,
+        final DefaultNotificationManager notificationManager, final ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.jobConfigReader = jobConfigReader;

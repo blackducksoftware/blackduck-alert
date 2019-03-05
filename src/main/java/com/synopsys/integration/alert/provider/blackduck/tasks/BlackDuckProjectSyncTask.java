@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
@@ -62,10 +62,10 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-sync-project-task";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
-    private final BaseProviderDataAccessor blackDuckDataAccessor;
+    private final ProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired
-    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BaseProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderDataAccessor blackDuckDataAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckDataAccessor = blackDuckDataAccessor;

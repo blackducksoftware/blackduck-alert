@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -35,7 +35,7 @@ public class PolarisPropertiesTest {
     private static final Integer POLARIS_TIMEOUT = 100;
     private static final String POLARIS_ACCESS_TOKEN = "access_token";
 
-    private final BaseConfigurationAccessor configurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+    private final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
     private final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
     private final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
     private final Gson gson = new Gson();

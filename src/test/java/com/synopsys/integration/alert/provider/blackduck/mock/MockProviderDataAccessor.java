@@ -12,11 +12,11 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
-public final class MockProviderDataAccessor extends ProviderDataAccessor {
+public final class MockProviderDataAccessor extends DefaultProviderDataAccessor {
     private final Map<String, Set<ProviderProject>> providerProjectMap;
     private final Set<ProviderUserModel> users;
     private Set<String> expectedEmailAddresses = Set.of();

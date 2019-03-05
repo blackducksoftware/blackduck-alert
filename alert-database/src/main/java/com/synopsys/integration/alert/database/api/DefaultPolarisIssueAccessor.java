@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BasePolarisIssueAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.PolarisIssueAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 import com.synopsys.integration.alert.database.provider.polaris.issue.PolarisIssueEntity;
 import com.synopsys.integration.alert.database.provider.polaris.issue.PolarisIssueRepository;
@@ -43,12 +43,12 @@ import com.synopsys.integration.alert.database.provider.project.ProviderProjectR
 
 @Component
 @Transactional
-public class PolarisIssueAccessor implements BasePolarisIssueAccessor {
+public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
     private final PolarisIssueRepository polarisIssueRepository;
     private final ProviderProjectRepository providerProjectRepository;
 
     @Autowired
-    public PolarisIssueAccessor(final PolarisIssueRepository polarisIssueRepository, final ProviderProjectRepository providerProjectRepository) {
+    public DefaultPolarisIssueAccessor(final PolarisIssueRepository polarisIssueRepository, final ProviderProjectRepository providerProjectRepository) {
         this.polarisIssueRepository = polarisIssueRepository;
         this.providerProjectRepository = providerProjectRepository;
     }

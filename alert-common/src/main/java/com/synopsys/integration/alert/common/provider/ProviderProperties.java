@@ -31,18 +31,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 public abstract class ProviderProperties {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String providerName;
-    protected final BaseConfigurationAccessor configurationAccessor;
+    protected final ConfigurationAccessor configurationAccessor;
 
-    public ProviderProperties(final String providerName, final BaseConfigurationAccessor configurationAccessor) {
+    public ProviderProperties(final String providerName, final ConfigurationAccessor configurationAccessor) {
         this.providerName = providerName;
         this.configurationAccessor = configurationAccessor;
     }

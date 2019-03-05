@@ -30,17 +30,17 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseSettingsKeyAccessor;
 import com.synopsys.integration.alert.database.settings.SettingsKeyEntity;
 import com.synopsys.integration.alert.database.settings.SettingsKeyRepository;
 
 @Component
 @Transactional
-public class SettingsKeyAccessor implements BaseSettingsKeyAccessor {
+public class DefaultSettingsKeyAccessor implements SettingsKeyAccessor {
     private final SettingsKeyRepository settingsKeyRepository;
 
-    public SettingsKeyAccessor(final SettingsKeyRepository settingsKeyRepository) {
+    public DefaultSettingsKeyAccessor(final SettingsKeyRepository settingsKeyRepository) {
         this.settingsKeyRepository = settingsKeyRepository;
     }
 
