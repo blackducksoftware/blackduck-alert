@@ -11,14 +11,14 @@ import java.util.Set;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
-import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 public final class MockProviderDataAccessor extends ProviderDataAccessor {
     private final Map<String, Set<ProviderProject>> providerProjectMap;
-    private final Set<ProviderUserEntity> users;
+    private final Set<ProviderUserModel> users;
     private Set<String> expectedEmailAddresses = Set.of();
 
     public MockProviderDataAccessor() {
@@ -79,16 +79,16 @@ public final class MockProviderDataAccessor extends ProviderDataAccessor {
     }
 
     @Override
-    public List<ProviderUserEntity> getAllUsers(final String providerName) {
+    public List<ProviderUserModel> getAllUsers(final String providerName) {
         return new ArrayList<>(users);
     }
 
     @Override
-    public List<ProviderUserEntity> deleteAndSaveAllUsers(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
-        for (final ProviderUserEntity user : userEntitiesToDelete) {
+    public List<ProviderUserModel> deleteAndSaveAllUsers(final String providerName, final Collection<ProviderUserModel> userEntitiesToDelete, final Collection<ProviderUserModel> userEntitiesToAdd) {
+        for (final ProviderUserModel user : userEntitiesToDelete) {
             users.remove(user);
         }
-        for (final ProviderUserEntity user : userEntitiesToAdd) {
+        for (final ProviderUserModel user : userEntitiesToAdd) {
             users.add(user);
         }
         return new ArrayList<>(users);

@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,16 +21,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.user;
+package com.synopsys.integration.alert.common.persistence.model;
 
-import java.util.List;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class ProviderUserModel extends AlertSerializableModel {
+    private String emailAddress;
+    private Boolean optOut;
 
-public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity, Long> {
-    List<ProviderUserEntity> findByProvider(final String provider);
+    public ProviderUserModel(final String emailAddress, final Boolean optOut) {
+        this.emailAddress = emailAddress;
+        this.optOut = optOut;
+    }
 
-    List<ProviderUserEntity> findByEmailAddressAndProvider(final String emailAddress, final String provider);
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 
-    void deleteByProviderAndEmailAddress(final String provider, final String emailAddress);
+    public Boolean getOptOut() {
+        return optOut;
+    }
+    
 }
