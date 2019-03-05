@@ -17,13 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.rest.model.UserModel;
-import com.synopsys.integration.alert.database.api.UserAccessor;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Autowired
-    private UserAccessor userAccessor;
+    private DefaultUserAccessor userAccessor;
 
     @Test
     public void testGetUsers() {
@@ -49,7 +49,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetUserByUserName() {
-        final Optional<UserModel> user = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
+        final Optional<UserModel> user = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
         assertTrue(user.isPresent());
     }
 

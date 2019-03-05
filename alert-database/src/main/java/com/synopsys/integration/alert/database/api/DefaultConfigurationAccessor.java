@@ -40,15 +40,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -67,7 +67,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 
 @Component
 @Transactional
-public class ConfigurationAccessor implements BaseConfigurationAccessor {
+public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     private static final String NULL_JOB_ID = "The job id cannot be null";
     private static final String NULL_CONFIG_ID = "The config id cannot be null";
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
@@ -80,7 +80,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     private final EncryptionUtility encryptionUtility;
 
     @Autowired
-    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorTypeRepository descriptorTypeRepository, final DefinedFieldRepository definedFieldRepository,
+    public DefaultConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorTypeRepository descriptorTypeRepository, final DefinedFieldRepository definedFieldRepository,
         final DescriptorConfigRepository descriptorConfigsRepository, final ConfigGroupRepository configGroupRepository, final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository,
         final EncryptionUtility encryptionUtility) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;

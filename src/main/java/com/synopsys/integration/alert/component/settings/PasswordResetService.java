@@ -37,15 +37,15 @@ import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.UserAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
 public class PasswordResetService {
@@ -54,11 +54,11 @@ public class PasswordResetService {
     private static final String SUBJECT_LINE = "Alert - Password Reset";
 
     private final AlertProperties alertProperties;
-    private final UserAccessor userAccessor;
-    private final BaseConfigurationAccessor configurationAccessor;
+    private final DefaultUserAccessor userAccessor;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public PasswordResetService(final AlertProperties alertProperties, final UserAccessor userAccessor, final BaseConfigurationAccessor configurationAccessor) {
+    public PasswordResetService(final AlertProperties alertProperties, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor) {
         this.alertProperties = alertProperties;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;

@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -25,7 +24,8 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.rest.RestConstants;
@@ -45,7 +45,7 @@ public class ProcessingTaskTest {
         eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", FormatType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }
 
-    public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
+    public ProcessingTask createTask(final TaskScheduler taskScheduler, final DefaultNotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
         return new ProcessingTask(taskScheduler, taskName, notificationManager, notificationProcessor, channelTemplateManager) {
 
             @Override
@@ -83,7 +83,7 @@ public class ProcessingTaskTest {
     @Test
     public void testRun() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(Date.class), Mockito.any(Date.class))).thenReturn(modelList);
@@ -101,7 +101,7 @@ public class ProcessingTaskTest {
     @Test
     public void testRead() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         Mockito.when(notificationProcessor.processNotifications(FrequencyType.DAILY, modelList)).thenReturn(eventList);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
@@ -117,7 +117,7 @@ public class ProcessingTaskTest {
     @Test
     public void testReadEmptyList() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         Mockito.when(notificationProcessor.processNotifications(FrequencyType.DAILY, modelList)).thenReturn(eventList);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
@@ -133,7 +133,7 @@ public class ProcessingTaskTest {
     @Test
     public void testReadException() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         Mockito.when(notificationProcessor.processNotifications(FrequencyType.DAILY, modelList)).thenReturn(eventList);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
@@ -149,7 +149,7 @@ public class ProcessingTaskTest {
     @Test
     public void testProcess() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         Mockito.when(notificationProcessor.processNotifications(FrequencyType.DAILY, modelList)).thenReturn(eventList);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
@@ -164,7 +164,7 @@ public class ProcessingTaskTest {
     @Test
     public void testProcessEmptyList() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final ProcessingTask processingTask = Mockito.spy(createTask(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager));
