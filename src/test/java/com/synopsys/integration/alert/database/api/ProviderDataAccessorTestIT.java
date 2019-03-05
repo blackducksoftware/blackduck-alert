@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -214,7 +215,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.save(newUser3);
 
         final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderUserEntity> allProviderUsers = providerDataAccessor.getAllUsers(providerName);
+        final List<ProviderUserModel> allProviderUsers = providerDataAccessor.getAllUsers(providerName);
         assertEquals(3, allProviderUsers.size());
     }
 
@@ -224,23 +225,30 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final String newUserEmail1 = "newEmail1@gmail.com";
         final String newUserEmail2 = "newEmail2@gmail.com";
         final String newUserEmail3 = "newEmail3@gmail.com";
-        final String newUserEmail4 = "newEmail4@gmail.com";
-        final String newUserEmail5 = "newEmail5@gmail.com";
-        final String newUserEmail6 = "newEmail6@gmail.com";
         final ProviderUserEntity newUser1 = new ProviderUserEntity(newUserEmail1, false, providerName);
         final ProviderUserEntity newUser2 = new ProviderUserEntity(newUserEmail2, false, providerName);
         final ProviderUserEntity newUser3 = new ProviderUserEntity(newUserEmail3, false, providerName);
-        final ProviderUserEntity newUser4 = new ProviderUserEntity(newUserEmail4, false, providerName);
-        final ProviderUserEntity newUser5 = new ProviderUserEntity(newUserEmail5, false, providerName);
-        final ProviderUserEntity newUser6 = new ProviderUserEntity(newUserEmail6, false, providerName);
-
-        final List<ProviderUserEntity> oldUsers = List.of(newUser1, newUser2, newUser3);
-        final List<ProviderUserEntity> newUsers = List.of(newUser4, newUser5, newUser6);
-        providerUserRepository.saveAll(oldUsers);
+        providerUserRepository.save(newUser1);
+        providerUserRepository.save(newUser2);
+        providerUserRepository.save(newUser3);
         assertEquals(3, providerUserRepository.findAll().size());
 
+        final List<ProviderUserModel> oldUsers = List.of(
+            new ProviderUserModel(newUser1.getEmailAddress(), newUser1.getOptOut()),
+            new ProviderUserModel(newUser2.getEmailAddress(), newUser2.getOptOut()),
+            new ProviderUserModel(newUser3.getEmailAddress(), newUser3.getOptOut())
+        );
+
+        final String newUserEmail4 = "newEmail4@gmail.com";
+        final String newUserEmail5 = "newEmail5@gmail.com";
+        final String newUserEmail6 = "newEmail6@gmail.com";
+        final ProviderUserModel newUser4 = new ProviderUserModel(newUserEmail4, false);
+        final ProviderUserModel newUser5 = new ProviderUserModel(newUserEmail5, false);
+        final ProviderUserModel newUser6 = new ProviderUserModel(newUserEmail6, false);
+        final List<ProviderUserModel> newUsers = List.of(newUser4, newUser5, newUser6);
+
         final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderUserEntity> savedUsers = providerDataAccessor.deleteAndSaveAllUsers(oldUsers, newUsers);
+        final List<ProviderUserModel> savedUsers = providerDataAccessor.deleteAndSaveAllUsers(providerName, oldUsers, newUsers);
         assertEquals(3, savedUsers.size());
         assertEquals(3, providerUserRepository.findAll().size());
     }

@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -61,14 +62,14 @@ public class ProviderDataAccessor {
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Optional<ProviderProject> findFirstByName(final String name) {
-        return providerProjectRepository.findFirstByName(name).map(this::convertToModel);
+        return providerProjectRepository.findFirstByName(name).map(this::convertToProjectModel);
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> findByProviderName(final String providerName) {
         return providerProjectRepository.findByProvider(providerName)
                    .stream()
-                   .map(this::convertToModel)
+                   .map(this::convertToProjectModel)
                    .collect(Collectors.toList());
     }
 
@@ -76,19 +77,19 @@ public class ProviderDataAccessor {
         final String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
         final ProviderProjectEntity trimmedBlackDuckProjectEntity = new ProviderProjectEntity(
             providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
-        return convertToModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
+        return convertToProjectModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
     }
 
     public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
         providerProjectRepository.deleteAllByProvider(providerName);
         final Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
                                                                             .stream()
-                                                                            .map(project -> convertToEntity(providerName, project))
+                                                                            .map(project -> convertToProjectEntity(providerName, project))
                                                                             .collect(Collectors.toSet());
         final List<ProviderProjectEntity> savedEntities = providerProjectRepository.saveAll(providerProjectEntities);
         return savedEntities
                    .stream()
-                   .map(this::convertToModel)
+                   .map(this::convertToProjectModel)
                    .collect(Collectors.toList());
     }
 
@@ -126,23 +127,37 @@ public class ProviderDataAccessor {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderUserEntity> getAllUsers(final String providerName) {
-        return providerUserRepository.findByProvider(providerName);
+    public List<ProviderUserModel> getAllUsers(final String providerName) {
+        return providerUserRepository.findByProvider(providerName)
+                   .stream()
+                   .map(this::convertToUserModel)
+                   .collect(Collectors.toList());
     }
 
-    // FIXME create a wrapper for ProviderUserEntity
-    public List<ProviderUserEntity> deleteAndSaveAllUsers(final Iterable<ProviderUserEntity> userEntitiesToDelete, final Iterable<ProviderUserEntity> userEntitiesToAdd) {
-        providerUserRepository.deleteAll(userEntitiesToDelete);
-        return providerUserRepository.saveAll(userEntitiesToAdd);
+    public List<ProviderUserModel> deleteAndSaveAllUsers(final String providerName, final Collection<ProviderUserModel> usersToDelete, final Collection<ProviderUserModel> usersToAdd) {
+        usersToDelete.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerName, user.getEmailAddress()));
+        usersToAdd
+            .stream()
+            .map(user -> convertToUserEntity(providerName, user))
+            .forEach(providerUserRepository::save);
+        return List.copyOf(usersToAdd);
     }
 
-    private ProviderProject convertToModel(final ProviderProjectEntity providerProjectEntity) {
+    private ProviderProject convertToProjectModel(final ProviderProjectEntity providerProjectEntity) {
         return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
             providerProjectEntity.getProjectOwnerEmail());
     }
 
-    private ProviderProjectEntity convertToEntity(final String providerName, final ProviderProject providerProject) {
+    private ProviderProjectEntity convertToProjectEntity(final String providerName, final ProviderProject providerProject) {
         return new ProviderProjectEntity(providerProject.getName(), providerProject.getDescription(), providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
+    }
+
+    private ProviderUserModel convertToUserModel(final ProviderUserEntity providerUserEntity) {
+        return new ProviderUserModel(providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
+    }
+
+    private ProviderUserEntity convertToUserEntity(final String providerName, final ProviderUserModel providerUserModel) {
+        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerName);
     }
 
 }
