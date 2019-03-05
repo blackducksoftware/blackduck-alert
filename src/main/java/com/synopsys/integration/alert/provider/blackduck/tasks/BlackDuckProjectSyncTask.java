@@ -200,7 +200,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
         for (final Map.Entry<String, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
-                blackDuckDataAccessor.mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
+                blackDuckDataAccessor.remapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Problem mapping users to projects", e);
             }
