@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -76,7 +76,7 @@ public class StartupManagerTest {
         final TestBlackDuckProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, proxyManager,
             taskManager);
 
@@ -104,7 +104,7 @@ public class StartupManagerTest {
         Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
@@ -133,7 +133,7 @@ public class StartupManagerTest {
         Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         final Map<String, ConfigurationFieldModel> configuredFields = new HashMap<>();
         final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
@@ -174,7 +174,7 @@ public class StartupManagerTest {
         Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))).thenReturn(Optional.empty());
         Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))).thenReturn(Optional.empty());
@@ -207,7 +207,7 @@ public class StartupManagerTest {
         Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
 
         final List<ConfigurationModel> configList = List.of();

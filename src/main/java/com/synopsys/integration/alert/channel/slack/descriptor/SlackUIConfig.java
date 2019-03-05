@@ -31,13 +31,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
 @Component
 public class SlackUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
-    public SlackUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+    public SlackUIConfig(final DescriptorAccessor descriptorAccessor) {
         super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON, descriptorAccessor);
     }
 

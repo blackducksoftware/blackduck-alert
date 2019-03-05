@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 
-public interface BaseNotificationManager {
+public interface NotificationManager {
     AlertNotificationWrapper saveNotification(final AlertNotificationWrapper notification);
 
     List<AlertNotificationWrapper> findByIds(final List<Long> notificationIds);

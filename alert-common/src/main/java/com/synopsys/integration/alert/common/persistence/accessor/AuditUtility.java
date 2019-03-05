@@ -29,14 +29,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public interface BaseAuditUtility {
+public interface AuditUtility {
     Optional<Long> findMatchingAuditId(final Long notificationId, final UUID commonDistributionId);
 
     Optional<AuditJobStatusModel> findFirstByJobId(final UUID jobId);

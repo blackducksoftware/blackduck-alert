@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -28,8 +28,8 @@ public class AlertStartupInitializerTest {
     @Test
     public void testInitializeConfigs() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
-        final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
@@ -51,8 +51,8 @@ public class AlertStartupInitializerTest {
     @Test
     public void testInitializeConfigsEmptyInitializerList() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
-        final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
@@ -69,8 +69,8 @@ public class AlertStartupInitializerTest {
     @Test
     public void testSetRestModelValueCreate() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
-        final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
@@ -93,8 +93,8 @@ public class AlertStartupInitializerTest {
     @Test
     public void testGetSettingsThrowsException() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
-        final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
@@ -114,8 +114,8 @@ public class AlertStartupInitializerTest {
     @Test
     public void testOverwrite() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
-        final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final ConfigurationModel settingsModel = Mockito.mock(ConfigurationModel.class);

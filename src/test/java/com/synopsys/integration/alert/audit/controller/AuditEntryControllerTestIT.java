@@ -21,11 +21,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -50,7 +50,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private AuditNotificationRepository auditNotificationRepository;
     @Autowired
-    private BaseConfigurationAccessor baseConfigurationAccessor;
+    private ConfigurationAccessor baseConfigurationAccessor;
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired

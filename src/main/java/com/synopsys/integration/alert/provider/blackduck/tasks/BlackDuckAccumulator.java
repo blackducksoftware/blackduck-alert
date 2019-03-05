@@ -44,7 +44,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseNotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
@@ -69,12 +69,12 @@ public class BlackDuckAccumulator extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-accumulator-task";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
     private final BlackDuckProperties blackDuckProperties;
-    private final BaseNotificationManager notificationManager;
+    private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
 
     @Autowired
-    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BaseNotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
+    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;

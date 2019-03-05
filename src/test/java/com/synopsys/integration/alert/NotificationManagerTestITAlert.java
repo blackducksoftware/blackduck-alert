@@ -21,10 +21,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -70,7 +70,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     private DefinedFieldRepository definedFieldRepository;
 
     @Autowired
-    private NotificationManager notificationManager;
+    private DefaultNotificationManager notificationManager;
 
     public void assertNotificationModel(final AlertNotificationWrapper notification, final AlertNotificationWrapper savedNotification) {
         assertEquals(notification.getCreatedAt(), savedNotification.getCreatedAt());

@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 
-public interface BaseProviderDataAccessor {
+public interface ProviderDataAccessor {
     Optional<ProviderProject> findFirstByName(final String name);
 
     List<ProviderProject> findByProviderName(final String providerName);

@@ -36,17 +36,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseAuditUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
-import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -55,14 +55,14 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
-    private final BaseAuditUtility auditUtility;
-    private final NotificationManager notificationManager;
+    private final AuditUtility auditUtility;
+    private final DefaultNotificationManager notificationManager;
     private final JobConfigReader jobConfigReader;
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(final BaseAuditUtility auditUtility, final NotificationManager notificationManager, final JobConfigReader jobConfigReader, final ChannelTemplateManager channelTemplateManager,
+    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final JobConfigReader jobConfigReader, final ChannelTemplateManager channelTemplateManager,
         final NotificationProcessor notificationProcessor) {
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;
