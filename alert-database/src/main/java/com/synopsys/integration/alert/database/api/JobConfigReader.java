@@ -32,16 +32,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 
 @Component
 public class JobConfigReader {
-    private final BaseConfigurationAccessor configurationAccessor;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public JobConfigReader(final BaseConfigurationAccessor configurationAccessor) {
+    public JobConfigReader(final ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 

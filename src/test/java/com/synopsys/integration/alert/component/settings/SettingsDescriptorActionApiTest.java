@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.UserAccessor;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 public class SettingsDescriptorActionApiTest {
@@ -32,7 +32,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testTestConfig() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
 
@@ -49,7 +49,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testReadConfig() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         FieldModel fieldModel = Mockito.mock(FieldModel.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
@@ -61,7 +61,7 @@ public class SettingsDescriptorActionApiTest {
         Mockito.when(encryptionUtility.isGlobalSaltSet()).thenReturn(true);
         final UserModel userModel = Mockito.mock(UserModel.class);
         Mockito.when(userModel.getPassword()).thenReturn("valid_test_value");
-        Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER)).thenReturn(Optional.of(userModel));
+        Mockito.when(userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)).thenReturn(Optional.of(userModel));
         final FieldModel modelCreated = actionaApi.readConfig(fieldModel);
         assertFieldsPresent(modelCreated);
     }
@@ -69,7 +69,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testUpdateConfig() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -87,7 +87,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testSaveConfig() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -106,7 +106,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testSaveConfigEncryptionException() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -122,7 +122,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testValidateRequiredFieldsSet() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -141,7 +141,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testValidateFieldsIsSetNoValue() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -160,7 +160,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testValidateRequiredFieldsMissing() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -190,7 +190,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testValidateFieldsIsSetFalseHasValue() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -211,7 +211,7 @@ public class SettingsDescriptorActionApiTest {
     @Test
     public void testLdapEnabled() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());

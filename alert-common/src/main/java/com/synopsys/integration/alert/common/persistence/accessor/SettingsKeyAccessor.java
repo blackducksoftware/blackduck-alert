@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 
-public interface BaseSettingsKeyAccessor {
+public interface SettingsKeyAccessor {
 
     List<SettingsKeyModel> getSettingsKeys();
 

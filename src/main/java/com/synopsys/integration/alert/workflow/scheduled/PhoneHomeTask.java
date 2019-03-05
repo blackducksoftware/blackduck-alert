@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -61,11 +61,11 @@ public class PhoneHomeTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
     private final AboutReader aboutReader;
-    private final ConfigurationAccessor configurationAccessor;
+    private final DefaultConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.aboutReader = aboutReader;

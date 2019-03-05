@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
@@ -30,7 +30,7 @@ public class PhoneHomeTest {
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn(TEST_VERSION);
 
-        final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         final ConfigurationModel config = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(TEST_DESCRIPTOR_NAME)).thenReturn(Arrays.asList(config));
 

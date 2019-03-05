@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
 @Transactional
-public class UserAccessor {
+public class DefaultUserAccessor {
     public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -55,7 +55,7 @@ public class UserAccessor {
     private final PasswordEncoder defaultPasswordEncoder;
 
     @Autowired
-    public UserAccessor(final UserRepository userRepository, final RoleRepository roleRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder) {
+    public DefaultUserAccessor(final UserRepository userRepository, final RoleRepository roleRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;

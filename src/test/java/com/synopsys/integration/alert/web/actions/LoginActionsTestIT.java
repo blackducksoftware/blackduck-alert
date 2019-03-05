@@ -27,9 +27,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
-import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.database.api.UserAccessor;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -44,7 +44,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @Autowired
     private DaoAuthenticationProvider alertDatabaseAuthProvider;
     @Autowired
-    private UserAccessor userAccessor;
+    private DefaultUserAccessor userAccessor;
     @Autowired
     private LdapManager ldapManager;
 

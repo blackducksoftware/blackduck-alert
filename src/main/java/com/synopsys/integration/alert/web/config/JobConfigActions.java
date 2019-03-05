@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -64,13 +64,13 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class JobConfigActions {
     private static final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
-    private final BaseConfigurationAccessor configurationAccessor;
+    private final ConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final ContentConverter contentConverter;
     private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public JobConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ContentConverter contentConverter,
+    public JobConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ContentConverter contentConverter,
         final ConfigurationFieldModelConverter modelConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;

@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionA
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -54,13 +54,13 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class ConfigActions {
     private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
-    private final BaseConfigurationAccessor configurationAccessor;
+    private final ConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter,
+    public ConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter,
         final ContentConverter contentConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;

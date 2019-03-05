@@ -26,13 +26,13 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 
-public interface BaseDescriptorAccessor {
+public interface DescriptorAccessor {
 
     List<RegisteredDescriptorModel> getRegisteredDescriptors() throws AlertDatabaseConstraintException;
 

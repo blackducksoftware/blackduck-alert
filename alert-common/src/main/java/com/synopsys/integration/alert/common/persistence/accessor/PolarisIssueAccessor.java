@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,16 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.user;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 
-public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity, Long> {
-    List<ProviderUserEntity> findByProvider(final String provider);
+public interface PolarisIssueAccessor {
+    List<PolarisIssueModel> getProjectIssues(final String projectHref) throws AlertDatabaseConstraintException;
 
-    List<ProviderUserEntity> findByEmailAddressAndProvider(final String emailAddress, final String provider);
-
-    void deleteByProviderAndEmailAddress(final String provider, final String emailAddress);
+    PolarisIssueModel updateIssueType(final String projectHref, final String issueType, final Integer newCount) throws AlertDatabaseConstraintException;
 }

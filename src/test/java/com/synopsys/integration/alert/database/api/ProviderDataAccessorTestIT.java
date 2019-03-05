@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -42,7 +43,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final ProviderProjectEntity expectedEntity = new ProviderProjectEntity(name, null, null, null, null);
         providerProjectRepository.save(expectedEntity);
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         final Optional<ProviderProject> foundProject = providerDataAccessor.findFirstByName(name);
         assertTrue(foundProject.isPresent(), "Expected to find a project");
         assertEquals(name, foundProject.map(ProviderProject::getName).orElse(null));
@@ -54,7 +55,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final ProviderProjectEntity expectedEntity = new ProviderProjectEntity(null, null, null, null, providerName);
         providerProjectRepository.save(expectedEntity);
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         final List<ProviderProject> foundProjects = providerDataAccessor.findByProviderName(providerName);
         assertEquals(1, foundProjects.size());
     }
@@ -68,7 +69,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final String providerName = "provider name";
         final ProviderProject providerProject = new ProviderProject(name, description, href, projectOwnerEmail);
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         providerDataAccessor.saveProject(providerName, providerProject);
 
         final List<ProviderProjectEntity> foundProjects = providerProjectRepository.findAll();
@@ -103,7 +104,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final ProviderProject newProject2 = new ProviderProject(null, null, newProjectHref2, null);
         final List<ProviderProject> newProjects = List.of(newProject1, newProject2);
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         final List<ProviderProject> savedProjects = providerDataAccessor.deleteAndSaveAllProjects(providerName, newProjects);
         assertEquals(2, savedProjects.size());
     }
@@ -123,7 +124,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerProjectRepository.save(oldEntity3);
         assertEquals(3, providerProjectRepository.findAll().size());
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         providerDataAccessor.deleteByHref(oldProjectHref2);
         final List<ProviderProjectEntity> foundProjects = providerProjectRepository.findAll();
         assertEquals(2, foundProjects.size());
@@ -155,7 +156,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser3.getId(), projectId));
         providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser4.getId(), projectId));
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         final Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(href);
         assertEquals(3, foundEmailAddresses.size());
         assertTrue(foundEmailAddresses.contains(emailAddress1), "Expected email address was missing: " + emailAddress1);
@@ -165,7 +166,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void getEmailAddressesForNonExistentProjectHrefTest() {
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         final Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref("expecting no results");
         assertEquals(0, foundEmailAddresses.size());
     }
@@ -195,8 +196,8 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.save(newUser2);
         providerUserRepository.save(newUser3);
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.mapUsersToProjectByEmail(projectHref, userEmailsToMap);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        providerDataAccessor.remapUsersToProjectByEmail(projectHref, userEmailsToMap);
         assertEquals(3, providerUserProjectRelationRepository.findAll().size());
     }
 
@@ -213,8 +214,8 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.save(newUser2);
         providerUserRepository.save(newUser3);
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderUserEntity> allProviderUsers = providerDataAccessor.getAllUsers(providerName);
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final List<ProviderUserModel> allProviderUsers = providerDataAccessor.getAllUsers(providerName);
         assertEquals(3, allProviderUsers.size());
     }
 
@@ -224,23 +225,30 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final String newUserEmail1 = "newEmail1@gmail.com";
         final String newUserEmail2 = "newEmail2@gmail.com";
         final String newUserEmail3 = "newEmail3@gmail.com";
-        final String newUserEmail4 = "newEmail4@gmail.com";
-        final String newUserEmail5 = "newEmail5@gmail.com";
-        final String newUserEmail6 = "newEmail6@gmail.com";
         final ProviderUserEntity newUser1 = new ProviderUserEntity(newUserEmail1, false, providerName);
         final ProviderUserEntity newUser2 = new ProviderUserEntity(newUserEmail2, false, providerName);
         final ProviderUserEntity newUser3 = new ProviderUserEntity(newUserEmail3, false, providerName);
-        final ProviderUserEntity newUser4 = new ProviderUserEntity(newUserEmail4, false, providerName);
-        final ProviderUserEntity newUser5 = new ProviderUserEntity(newUserEmail5, false, providerName);
-        final ProviderUserEntity newUser6 = new ProviderUserEntity(newUserEmail6, false, providerName);
-
-        final List<ProviderUserEntity> oldUsers = List.of(newUser1, newUser2, newUser3);
-        final List<ProviderUserEntity> newUsers = List.of(newUser4, newUser5, newUser6);
-        providerUserRepository.saveAll(oldUsers);
+        providerUserRepository.save(newUser1);
+        providerUserRepository.save(newUser2);
+        providerUserRepository.save(newUser3);
         assertEquals(3, providerUserRepository.findAll().size());
 
-        final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderUserEntity> savedUsers = providerDataAccessor.deleteAndSaveAllUsers(oldUsers, newUsers);
+        final List<ProviderUserModel> oldUsers = List.of(
+            new ProviderUserModel(newUser1.getEmailAddress(), newUser1.getOptOut()),
+            new ProviderUserModel(newUser2.getEmailAddress(), newUser2.getOptOut()),
+            new ProviderUserModel(newUser3.getEmailAddress(), newUser3.getOptOut())
+        );
+
+        final String newUserEmail4 = "newEmail4@gmail.com";
+        final String newUserEmail5 = "newEmail5@gmail.com";
+        final String newUserEmail6 = "newEmail6@gmail.com";
+        final ProviderUserModel newUser4 = new ProviderUserModel(newUserEmail4, false);
+        final ProviderUserModel newUser5 = new ProviderUserModel(newUserEmail5, false);
+        final ProviderUserModel newUser6 = new ProviderUserModel(newUserEmail6, false);
+        final List<ProviderUserModel> newUsers = List.of(newUser4, newUser5, newUser6);
+
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+        final List<ProviderUserModel> savedUsers = providerDataAccessor.deleteAndSaveAllUsers(providerName, oldUsers, newUsers);
         assertEquals(3, savedUsers.size());
         assertEquals(3, providerUserRepository.findAll().size());
     }

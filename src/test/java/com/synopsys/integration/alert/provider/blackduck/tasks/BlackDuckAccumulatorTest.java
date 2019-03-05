@@ -27,7 +27,7 @@ import org.springframework.scheduling.TaskScheduler;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -47,7 +47,7 @@ public class BlackDuckAccumulatorTest {
     private File testAccumulatorParent;
 
     private TestBlackDuckProperties testBlackDuckProperties;
-    private NotificationManager notificationManager;
+    private DefaultNotificationManager notificationManager;
     private TaskScheduler taskScheduler;
     private FilePersistenceUtil filePersistenceUtil;
 
@@ -61,7 +61,7 @@ public class BlackDuckAccumulatorTest {
         testAlertProperties.setAlertConfigHome(testAccumulatorParent.getCanonicalPath());
         testBlackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
 
-        notificationManager = Mockito.mock(NotificationManager.class);
+        notificationManager = Mockito.mock(DefaultNotificationManager.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
         filePersistenceUtil = new FilePersistenceUtil(testAlertProperties, new Gson());
     }

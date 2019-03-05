@@ -40,11 +40,11 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
-import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -161,10 +161,10 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         final Set<String> emailsToAdd = new HashSet<>();
         final Set<String> emailsToRemove = new HashSet<>();
 
-        final List<ProviderUserEntity> blackDuckUserEntities = blackDuckDataAccessor.getAllUsers(BlackDuckProvider.COMPONENT_NAME);
+        final List<ProviderUserModel> blackDuckUserEntities = blackDuckDataAccessor.getAllUsers(BlackDuckProvider.COMPONENT_NAME);
         final Set<String> storedEmails = blackDuckUserEntities
                                              .stream()
-                                             .map(ProviderUserEntity::getEmailAddress)
+                                             .map(ProviderUserModel::getEmailAddress)
                                              .collect(Collectors.toSet());
 
         storedEmails.forEach(storedData -> {
@@ -184,23 +184,23 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         logger.info("Adding {} emails", emailsToAdd.size());
         logger.info("Removing {} emails", emailsToRemove.size());
 
-        final List<ProviderUserEntity> blackDuckUsersToRemove = blackDuckUserEntities
-                                                                    .stream()
-                                                                    .filter(blackDuckUserEntity -> emailsToRemove.contains(blackDuckUserEntity.getEmailAddress()))
-                                                                    .collect(Collectors.toList());
+        final List<ProviderUserModel> blackDuckUsersToRemove = blackDuckUserEntities
+                                                                   .stream()
+                                                                   .filter(blackDuckUserEntity -> emailsToRemove.contains(blackDuckUserEntity.getEmailAddress()))
+                                                                   .collect(Collectors.toList());
 
-        final List<ProviderUserEntity> blackDuckUserEntityList = emailsToAdd
-                                                                     .stream()
-                                                                     .map(email -> new ProviderUserEntity(email, false, BlackDuckProvider.COMPONENT_NAME))
-                                                                     .collect(Collectors.toList());
-        blackDuckDataAccessor.deleteAndSaveAllUsers(blackDuckUsersToRemove, blackDuckUserEntityList);
+        final List<ProviderUserModel> blackDuckUserEntityList = emailsToAdd
+                                                                    .stream()
+                                                                    .map(email -> new ProviderUserModel(email, false))
+                                                                    .collect(Collectors.toList());
+        blackDuckDataAccessor.deleteAndSaveAllUsers(BlackDuckProvider.COMPONENT_NAME, blackDuckUsersToRemove, blackDuckUserEntityList);
     }
 
     private void updateUserProjectRelations(final Map<String, Set<String>> projectToEmailAddresses) {
         final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
         for (final Map.Entry<String, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
-                blackDuckDataAccessor.mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
+                blackDuckDataAccessor.remapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Problem mapping users to projects", e);
             }
