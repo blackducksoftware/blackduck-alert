@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
@@ -43,7 +43,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     @Autowired
-    private ProviderDataAccessor providerDataAccessor;
+    private DefaultProviderDataAccessor providerDataAccessor;
     @Autowired
     private ProviderUserRepository blackDuckUserRepository;
     @Autowired
@@ -61,11 +61,11 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         final ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
         final ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
 
-        providerDataAccessor.mapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project3.getHref(), Set.of(user2.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
+        providerDataAccessor.remapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
+        providerDataAccessor.remapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
+        providerDataAccessor.remapUsersToProjectByEmail(project3.getHref(), Set.of(user2.getEmailAddress()));
+        providerDataAccessor.remapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
+        providerDataAccessor.remapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
 
         final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);

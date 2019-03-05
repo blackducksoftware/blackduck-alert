@@ -33,13 +33,13 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
 @Component
 public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
-    public HipChatDistributionUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+    public HipChatDistributionUIConfig(final DescriptorAccessor descriptorAccessor) {
         super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON, descriptorAccessor);
     }
 

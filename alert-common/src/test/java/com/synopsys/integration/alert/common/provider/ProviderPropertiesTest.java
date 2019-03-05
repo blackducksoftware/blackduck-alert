@@ -8,15 +8,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 public class ProviderPropertiesTest {
     private static final String PROVIDER_NAME = "provider_name";
 
-    private final BaseConfigurationAccessor configurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+    private final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
     private ConfigurationModel configurationModel;
 
     @BeforeEach

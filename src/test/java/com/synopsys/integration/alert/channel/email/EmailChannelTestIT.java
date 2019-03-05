@@ -26,8 +26,8 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.AuditEntryUtility;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
@@ -43,13 +43,13 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
-        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
+        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(ProviderDataAccessor.class));
+        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(DefaultProviderDataAccessor.class));
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 

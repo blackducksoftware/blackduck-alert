@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.AuditEntryUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.exception.IntegrationException;
@@ -56,7 +56,7 @@ public class EmailChannel extends DistributionChannel {
     private final EmailAddressHandler emailAddressHandler;
 
     @Autowired
-    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryUtility auditUtility, final EmailAddressHandler emailAddressHandler) {
+    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final DefaultAuditUtility auditUtility, final EmailAddressHandler emailAddressHandler) {
         super(EmailChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
         this.emailAddressHandler = emailAddressHandler;

@@ -49,8 +49,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
@@ -61,14 +61,14 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 @Component
 public class FieldModelProcessor {
     private static final Logger logger = LoggerFactory.getLogger(FieldModelProcessor.class);
-    private final BaseDescriptorAccessor descriptorAccessor;
-    private final BaseConfigurationAccessor configurationAccessor;
+    private final DescriptorAccessor descriptorAccessor;
+    private final ConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public FieldModelProcessor(final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
+    public FieldModelProcessor(final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
         final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;

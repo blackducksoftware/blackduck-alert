@@ -42,12 +42,13 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.PolarisIssueAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.NotificationManager;
-import com.synopsys.integration.alert.database.api.PolarisIssueAccessor;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
@@ -72,7 +73,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     private final Gson gson;
 
     public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final ProviderDataAccessor projectRepositoryAccessor, final PolarisIssueAccessor polarisIssueAccessor,
-        final NotificationManager notificationManager, final Gson gson) {
+        final DefaultNotificationManager notificationManager, final Gson gson) {
         super(taskScheduler, TASK_NAME);
         this.polarisProperties = polarisProperties;
         this.projectRepositoryAccessor = projectRepositoryAccessor;

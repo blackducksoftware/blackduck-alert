@@ -45,17 +45,17 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
     private final BlackDuckEmailHandler blackDuckEmailHandler;
-    private final ProviderDataAccessor blackDuckDataAccessor;
+    private final DefaultProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final List<ProviderDescriptor> providerDescriptors, final ProviderDataAccessor blackDuckDataAccessor,
+    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final List<ProviderDescriptor> providerDescriptors, final DefaultProviderDataAccessor blackDuckDataAccessor,
         final BlackDuckEmailHandler blackDuckEmailHandler) {
         super(emailChannel, providerDescriptors);
         this.blackDuckEmailHandler = blackDuckEmailHandler;

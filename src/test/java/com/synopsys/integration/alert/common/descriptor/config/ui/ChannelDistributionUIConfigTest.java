@@ -8,18 +8,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.database.api.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 
 public class ChannelDistributionUIConfigTest {
 
     @Test
     public void createCommonConfigFieldsTest() throws AlertDatabaseConstraintException {
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final DescriptorAccessor descriptorAccessor = Mockito.mock(DefaultDescriptorAccessor.class);
         final RegisteredDescriptorModel registeredDescriptorModel = Mockito.mock(RegisteredDescriptorModel.class);
         Mockito.when(registeredDescriptorModel.getName()).thenReturn("example channel");
         Mockito.when(descriptorAccessor.getRegisteredDescriptorsByType(DescriptorType.CHANNEL)).thenReturn(List.of(registeredDescriptorModel));
