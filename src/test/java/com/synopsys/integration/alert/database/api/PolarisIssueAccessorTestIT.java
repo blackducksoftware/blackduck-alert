@@ -48,7 +48,7 @@ public class PolarisIssueAccessorTestIT extends AlertIntegrationTest {
         final PolarisIssueEntity issueEntity = new PolarisIssueEntity(existingIssueType, previousCount, newCount, savedProjectEntity.getId());
         polarisIssueRepository.save(issueEntity);
 
-        final PolarisIssueAccessor polarisIssueAccessor = new PolarisIssueAccessor(polarisIssueRepository, providerProjectRepository);
+        final DefaultPolarisIssueAccessor polarisIssueAccessor = new DefaultPolarisIssueAccessor(polarisIssueRepository, providerProjectRepository);
         final List<PolarisIssueModel> foundIssues = polarisIssueAccessor.getProjectIssues(href);
         assertEquals(1, foundIssues.size());
         final PolarisIssueModel foundModel = foundIssues.get(0);
@@ -78,7 +78,7 @@ public class PolarisIssueAccessorTestIT extends AlertIntegrationTest {
         final PolarisIssueEntity issueEntity = new PolarisIssueEntity(existingIssueType, 0, startingIssueCount, savedProjectEntity.getId());
         polarisIssueRepository.save(issueEntity);
 
-        final PolarisIssueAccessor polarisIssueAccessor = new PolarisIssueAccessor(polarisIssueRepository, providerProjectRepository);
+        final DefaultPolarisIssueAccessor polarisIssueAccessor = new DefaultPolarisIssueAccessor(polarisIssueRepository, providerProjectRepository);
 
         final String newIssueType = "New issue type";
         final Integer newIssueNewCount = 5;
@@ -96,7 +96,7 @@ public class PolarisIssueAccessorTestIT extends AlertIntegrationTest {
 
     private void getProjectIssuesThrowsExceptionTest(final String projectHref) {
         try {
-            final PolarisIssueAccessor polarisIssueAccessor = new PolarisIssueAccessor(null, null);
+            final DefaultPolarisIssueAccessor polarisIssueAccessor = new DefaultPolarisIssueAccessor(null, null);
             polarisIssueAccessor.getProjectIssues(projectHref);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
@@ -105,7 +105,7 @@ public class PolarisIssueAccessorTestIT extends AlertIntegrationTest {
 
     private void assertUpdateIssueTypeThrowsException(final String projectHref, final String issueType, final Integer newCount) {
         try {
-            final PolarisIssueAccessor polarisIssueAccessor = new PolarisIssueAccessor(null, null);
+            final DefaultPolarisIssueAccessor polarisIssueAccessor = new DefaultPolarisIssueAccessor(null, null);
             polarisIssueAccessor.updateIssueType(projectHref, issueType, newCount);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {

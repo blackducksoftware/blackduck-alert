@@ -18,15 +18,15 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.UserAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -36,7 +36,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordInvalidUserTest() throws AlertException {
         final String invalidUsername = "invalid";
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(invalidUsername))).thenReturn(Optional.empty());
 
         final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null);
@@ -52,7 +52,7 @@ public class PasswordResetServiceTest {
     public void resetPasswordNoUserEmailTest() {
         final String username = "username";
         final UserModel userModel = UserModel.of(username, "", null, Set.of());
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
         final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null);
@@ -68,10 +68,10 @@ public class PasswordResetServiceTest {
     public void resetPasswordNoEmailConfigurationTest() throws AlertDatabaseConstraintException {
         final String username = "username";
         final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
         final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, baseConfigurationAccessor);
@@ -103,14 +103,14 @@ public class PasswordResetServiceTest {
 
         final String username = "username";
         final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);
 
         final ConfigurationModel emailConfig = Mockito.mock(ConfigurationModel.class);
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final TestAlertProperties alertProperties = new TestAlertProperties();
@@ -122,7 +122,7 @@ public class PasswordResetServiceTest {
     public void resetPasswordInvalidEmailConfigTest() throws AlertException {
         final String username = "username";
         final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);
 
@@ -141,7 +141,7 @@ public class PasswordResetServiceTest {
         final ConfigurationModel emailConfig = Mockito.mock(ConfigurationModel.class);
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);

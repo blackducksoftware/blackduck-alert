@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -53,18 +54,19 @@ import com.synopsys.integration.alert.database.notification.NotificationContentR
 
 @Component
 @Transactional
-public class NotificationManager {
+public class DefaultNotificationManager implements NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public NotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
+    public DefaultNotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
+    @Override
     public AlertNotificationWrapper saveNotification(final AlertNotificationWrapper notification) {
         return notificationContentRepository.save((NotificationContent) notification);
     }
@@ -87,26 +89,31 @@ public class NotificationManager {
         }
     }
 
+    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationWrapper> findByIds(final List<Long> notificationIds) {
         return safelyConvertToGenericList(notificationContentRepository.findAllById(notificationIds));
     }
 
+    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Optional<AlertNotificationWrapper> findById(final Long notificationId) {
         return safelyConvertToGenericOptional(notificationContentRepository.findById(notificationId));
     }
 
+    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationWrapper> findByCreatedAtBetween(final Date startDate, final Date endDate) {
         return notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
     }
 
+    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationWrapper> findByCreatedAtBefore(final Date date) {
         return notificationContentRepository.findByCreatedAtBefore(date);
     }
 
+    @Override
     public List<AlertNotificationWrapper> findByCreatedAtBeforeDayOffset(final int dayOffset) {
         ZonedDateTime zonedDate = ZonedDateTime.now();
         zonedDate = zonedDate.minusDays(dayOffset);
@@ -116,10 +123,12 @@ public class NotificationManager {
         return findByCreatedAtBefore(date);
     }
 
+    @Override
     public void deleteNotificationList(final List<AlertNotificationWrapper> notifications) {
         notifications.forEach(this::deleteNotification);
     }
 
+    @Override
     public void deleteNotification(final AlertNotificationWrapper notification) {
         deleteAuditEntries(notification.getId());
         notificationContentRepository.deleteById(notification.getId());

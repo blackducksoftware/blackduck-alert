@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -52,7 +52,7 @@ public class PolarisProperties extends ProviderProperties {
     private final AuthenticationSupport authenticationSupport;
 
     @Autowired
-    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson, final AuthenticationSupport authenticationSupport) {
+    public PolarisProperties(final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson, final AuthenticationSupport authenticationSupport) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;

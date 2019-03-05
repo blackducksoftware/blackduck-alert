@@ -38,14 +38,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
-import com.synopsys.integration.alert.database.api.UserAccessor;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
@@ -60,12 +60,12 @@ public class SystemValidator {
     private final EncryptionUtility encryptionUtility;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
-    private final UserAccessor userAccessor;
+    private final DefaultUserAccessor userAccessor;
     private final ProxyManager proxyManager;
 
     @Autowired
     public SystemValidator(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final EncryptionUtility encryptionUtility, final SystemStatusUtility systemStatusUtility,
-        final SystemMessageUtility systemMessageUtility, final UserAccessor userAccessor, final ProxyManager proxyManager) {
+        final SystemMessageUtility systemMessageUtility, final DefaultUserAccessor userAccessor, final ProxyManager proxyManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.encryptionUtility = encryptionUtility;
@@ -102,7 +102,7 @@ public class SystemValidator {
 
     public boolean validateDefaultAdminEmailSet(final Map<String, String> fieldErrors) {
         final Optional<String> emailAddress = userAccessor
-                                                  .getUser(UserAccessor.DEFAULT_ADMIN_USER)
+                                                  .getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)
                                                   .map(UserModel::getEmailAddress)
                                                   .filter(StringUtils::isNotBlank);
         final boolean valid = emailAddress.isPresent();
@@ -117,7 +117,7 @@ public class SystemValidator {
 
     public boolean validateDefaultAdminPasswordSet(final Map<String, String> fieldErrors) {
         final Optional<String> passwordSet = userAccessor
-                                                 .getUser(UserAccessor.DEFAULT_ADMIN_USER)
+                                                 .getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)
                                                  .map(UserModel::getPassword)
                                                  .filter(StringUtils::isNotBlank);
         final boolean valid = passwordSet.isPresent();

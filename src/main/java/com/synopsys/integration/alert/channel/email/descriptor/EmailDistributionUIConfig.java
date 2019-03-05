@@ -33,13 +33,13 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
-    public EmailDistributionUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+    public EmailDistributionUIConfig(final DescriptorAccessor descriptorAccessor) {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON, descriptorAccessor);
     }
 
