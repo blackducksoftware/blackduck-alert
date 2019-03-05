@@ -197,7 +197,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.save(newUser3);
 
         final ProviderDataAccessor providerDataAccessor = new ProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.mapUsersToProjectByEmail(projectHref, userEmailsToMap);
+        providerDataAccessor.remapUsersToProjectByEmail(projectHref, userEmailsToMap);
         assertEquals(3, providerUserProjectRelationRepository.findAll().size());
     }
 

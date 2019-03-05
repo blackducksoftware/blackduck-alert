@@ -56,7 +56,7 @@ public final class MockProviderDataAccessor extends ProviderDataAccessor {
     }
 
     @Override
-    public void mapUsersToProjectByEmail(final String href, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+    public void remapUsersToProjectByEmail(final String projectHref, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
         // Implement if needed
     }
 
