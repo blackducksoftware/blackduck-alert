@@ -3,10 +3,9 @@ import { getSystemSetup, saveSystemSetup } from 'store/actions/system';
 import connect from 'react-redux/es/connect/connect';
 import SettingsConfigurationForm from 'component/settings/SettingsConfigurationForm';
 import PropTypes from 'prop-types';
-import ConfigurationDescription from 'component/common/ConfigurationDescription';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 const configurationDescription = 'This page allows you to configure the admin settings.';
-const documentationLink = 'https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/622882/Black+Duck+Alert';
 
 class SettingsConfiguration extends Component {
     constructor(props) {
@@ -26,11 +25,7 @@ class SettingsConfiguration extends Component {
     render() {
         return (
             <div>
-                <h1>
-                    <span className="fa fa-cog" />
-                    Settings
-                </h1>
-                <ConfigurationDescription description={configurationDescription} documentationLink={documentationLink} />
+                <ConfigurationLabel fontAwesomeIcon="fa-cog" configurationName="Settings" description={configurationDescription} />
                 <SettingsConfigurationForm
                     fetchingSetupStatus={this.props.fetchingSetupStatus}
                     updateStatus={this.props.updateStatus}

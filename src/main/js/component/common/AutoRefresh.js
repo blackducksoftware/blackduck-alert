@@ -27,7 +27,7 @@ class AutoRefresh extends Component {
                 label="Enable Auto-Refresh"
                 name="autoRefresh"
                 showDescriptionPlaceHolder={false}
-                labelClass=""
+                labelClass="tableCheckbox"
                 isChecked={this.props.autoRefresh}
                 onChange={this.handleAutoRefreshChange}
             />

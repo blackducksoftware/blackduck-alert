@@ -31,14 +31,15 @@ CheckboxInput.propTypes = {
     readOnly: PropTypes.bool,
     name: PropTypes.string,
     isChecked: PropTypes.bool,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func
 };
 
 CheckboxInput.defaultProps = {
     id: 'id',
     isChecked: false,
     readOnly: false,
-    name: 'name'
+    name: 'name',
+    onChange: () => true
 };
 
 

@@ -46,7 +46,7 @@ SelectInput.propTypes = {
 
 SelectInput.defaultProps = {
     id: 'id',
-    value: null,
+    value: undefined,
     placeholder: 'Choose a value',
     options: [],
     components: {},

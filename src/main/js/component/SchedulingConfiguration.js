@@ -13,7 +13,7 @@ import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
-import ConfigurationDescription from 'component/common/ConfigurationDescription';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -33,7 +33,6 @@ const fieldDescriptions = {
 const fieldNames = [KEY_ACCUMULATOR_NEXT_RUN, KEY_DAILY_DIGEST_HOUR_OF_DAY, KEY_DAILY_DIGEST_NEXT_RUN, KEY_PURGE_DATA_FREQUENCY_DAYS, KEY_PURGE_DATA_NEXT_RUN];
 
 const configurationDescription = 'This page shows when the scheduled tasks will run next as well as allow you to configure the frequency of the tasks.';
-const documentationLink = 'https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/622882/Black+Duck+Alert#BlackDuckAlert-Scheduling';
 
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
@@ -144,10 +143,7 @@ class SchedulingConfiguration extends React.Component {
         const { fieldErrors, errorMessage, updateStatus } = this.props;
         return (
             <div>
-                <h1>
-                    <span className="fa fa-clock-o" />
-                    Scheduling
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-clock-o" configurationName="Scheduling" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
@@ -156,7 +152,6 @@ class SchedulingConfiguration extends React.Component {
                     {'Update successful'}
                 </div>}
 
-                <ConfigurationDescription description={configurationDescription} documentationLink={documentationLink} />
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div className="form-group">
                         <label className="col-sm-4 col-form-label text-right">Collecting Provider data in</label>

@@ -9,7 +9,7 @@ import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, u
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import ConfigurationDescription from 'component/common/ConfigurationDescription';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 const ID_KEY = 'id';
 const KEY_API_KEY = 'channel.hipchat.api.key';
@@ -27,7 +27,6 @@ const fieldNames = [
 ];
 
 const configurationDescription = 'This page allows you to configure the HipChat server that Alert will send messages to.';
-const documentationLink = 'https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/622882/Black+Duck+Alert#BlackDuckAlert-ConfiguringHipChat';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
@@ -74,10 +73,7 @@ class HipChatConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <h1>
-                    <span className="fa fa-comments" />
-                    HipChat
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-comments" configurationName="HipChat" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
@@ -86,7 +82,6 @@ class HipChatConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <ConfigurationDescription description={configurationDescription} documentationLink={documentationLink} />
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <PasswordInput
                         id={KEY_API_KEY}

@@ -13,6 +13,7 @@ import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distrib
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 /**
  * Selects className based on field value
@@ -370,13 +371,11 @@ class Index extends Component {
                     jobs={this.state.jobsToDelete}
                     show={this.state.showDeleteModal}
                 />
-                <h1>
-                    <span className="fa fa-truck" />
-                    Distribution
-                    <small className="pull-right">
-                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
-                    </small>
-                </h1>
+
+                <ConfigurationLabel fontAwesomeIcon="fa-truck" configurationName="Distribution" />
+                <div className="pull-right">
+                    <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
+                </div>
                 {content}
             </div>
         );
