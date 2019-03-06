@@ -30,6 +30,10 @@ small {
   display: inline-flex;
 }
 
+.descriptionIcon:hover {
+  cursor: pointer;
+}
+
 .checkbox {
   vertical-align: middle;
 }
