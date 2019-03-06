@@ -185,7 +185,7 @@ class SchedulingConfiguration extends React.Component {
                         label="Daily Digest Run Time"
                         onChange={this.handleDailyDigestChanged}
                         id={KEY_DAILY_DIGEST_HOUR_OF_DAY}
-                        className="accumulatorTypeAheadField"
+                        inputClass="accumulatorTypeAheadField"
                         labelClass="col-sm-4"
                         description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DAILY_DIGEST_HOUR_OF_DAY)}
                         options={dailyDigestOptions}
@@ -226,7 +226,7 @@ class SchedulingConfiguration extends React.Component {
                         label="Data Purge Frequency"
                         onChange={this.handlePurgeChanged}
                         id={KEY_PURGE_DATA_FREQUENCY_DAYS}
-                        className="accumulatorTypeAheadField"
+                        inputClass="accumulatorTypeAheadField"
                         labelClass="col-sm-4"
                         description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PURGE_DATA_FREQUENCY_DAYS)}
                         options={purgeOptions}

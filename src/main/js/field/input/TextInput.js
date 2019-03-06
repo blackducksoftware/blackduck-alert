@@ -1,25 +1,52 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
 
-export default class TextInput extends LabeledField {
+class TextInput extends Component {
     render() {
-        const { isSet, inputClass } = this.props;
+        const { isSet, inputClass, id, readOnly, autoFocus, name, value, onChange } = this.props;
         const placeholderText = (isSet) ? '********' : null;
-        const className = inputClass || 'form-control';
 
-        return (super.render(<div className="d-inline-flex flex-column p-2 col-sm-8">
+        const field = (<div className="d-inline-flex flex-column p-2 col-sm-8">
             <input
-                id={this.props.id}
+                id={id}
                 type="text"
-                readOnly={this.props.readOnly}
-                autoFocus={this.props.autoFocus}
-                className={className}
-                name={this.props.name}
-                value={this.props.value}
-                onChange={this.props.onChange}
+                readOnly={readOnly}
+                autoFocus={autoFocus}
+                className={inputClass}
+                name={name}
+                value={value}
+                onChange={onChange}
                 placeholder={placeholderText}
             />
-            <label className="fieldError">{this.props.errorValue}</label>
-        </div>));
+        </div>);
+
+        return (
+            <LabeledField field={field} {...this.props} />
+        );
     }
 }
+
+TextInput.propTypes = {
+    id: PropTypes.string,
+    isSet: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    autoFocus: PropTypes.bool,
+    inputClass: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired
+};
+
+TextInput.defaultProps = {
+    id: 'id',
+    isSet: false,
+    value: '',
+    readOnly: false,
+    autoFocus: false,
+    inputClass: 'form-control',
+    name: 'name'
+};
+
+
+export default TextInput;

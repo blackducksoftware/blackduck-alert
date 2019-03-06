@@ -1,19 +1,41 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
 
-export default class NumberInput extends LabeledField {
+class NumberInput extends Component {
     render() {
-        const { inputClass, id } = this.props;
-        const className = inputClass || 'form-control';
+        const { readOnly, inputClass, id, name, value, onChange } = this.props;
 
-        let inputDiv = null;
-        if (this.props.readOnly) {
-            inputDiv = <div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" readOnly className={className} name={this.props.name} value={this.props.value} /></div>;
+        let field = null;
+        if (readOnly) {
+            field = (<div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" readOnly className={inputClass} name={name} value={value} /></div>);
         } else {
-            inputDiv = <div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} /></div>;
+            field = (<div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" className={inputClass} name={name} value={value} onChange={onChange} /></div>);
         }
         return (
-            super.render(inputDiv)
+            <LabeledField field={field} {...this.props} />
         );
     }
 }
+
+
+NumberInput.propTypes = {
+    id: PropTypes.string,
+    readOnly: PropTypes.bool,
+    inputClass: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.number,
+    onChange: PropTypes.func
+};
+
+NumberInput.defaultProps = {
+    id: 'id',
+    value: null,
+    readOnly: false,
+    inputClass: 'form-control',
+    name: 'name',
+    onChange: () => true
+};
+
+
+export default NumberInput;

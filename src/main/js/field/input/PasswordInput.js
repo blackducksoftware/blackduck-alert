@@ -1,23 +1,48 @@
-import React from 'react';
-
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
 
-export default class PasswordInput extends LabeledField {
+class PasswordInput extends Component {
     render() {
-        const { isSet, inputClass, id } = this.props;
+        const { readOnly, isSet, inputClass, id, name, value, onChange } = this.props;
 
         const placeholderText = (isSet) ? '***********' : null;
-        const className = inputClass || 'form-control';
 
-        if (this.props.readOnly) {
-            return super.render(<div className="d-inline-flex flex-column p-2 col-sm-8">
-                <input id={id} type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
+        let field = null;
+        if (readOnly) {
+            field = (<div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input id={id} type="password" readOnly className={inputClass} name={name} value={value} placeholder={placeholderText} />
+            </div>);
+        } else {
+            field = (<div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input id={id} type="password" className={inputClass} name={name} value={value} onChange={onChange} placeholder={placeholderText} />
             </div>);
         }
-
-        return super.render(<div className="d-inline-flex flex-column p-2 col-sm-8">
-            <input id={id} type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
-            <label className="fieldError">{this.props.errorValue}</label>
-        </div>);
+        return (
+            <LabeledField field={field} {...this.props} />
+        );
     }
 }
+
+PasswordInput.propTypes = {
+    id: PropTypes.string,
+    isSet: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    inputClass: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.string,
+    onChange: PropTypes.func
+};
+
+PasswordInput.defaultProps = {
+    id: 'id',
+    isSet: false,
+    value: '',
+    readOnly: false,
+    inputClass: 'form-control',
+    name: 'name',
+    onChange: () => true
+};
+
+
+export default PasswordInput;
