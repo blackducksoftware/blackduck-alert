@@ -30,7 +30,7 @@ NumberInput.propTypes = {
 
 NumberInput.defaultProps = {
     id: 'id',
-    value: null,
+    value: undefined,
     readOnly: false,
     inputClass: 'form-control',
     name: 'name',

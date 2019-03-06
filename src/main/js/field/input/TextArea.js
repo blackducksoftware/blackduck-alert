@@ -32,7 +32,7 @@ TextArea.propTypes = {
     sizeClass: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.string,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func
 };
 
 TextArea.defaultProps = {
@@ -41,7 +41,8 @@ TextArea.defaultProps = {
     readOnly: false,
     inputClass: 'textInput',
     sizeClass: 'col-sm-8',
-    name: 'name'
+    name: 'name',
+    onChange: () => true
 };
 
 

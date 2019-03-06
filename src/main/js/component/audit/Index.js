@@ -10,6 +10,7 @@ import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
 import AuditDetails from 'component/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import '../../../css/audit.scss';
 
@@ -313,24 +314,21 @@ class Index extends Component {
 
         return (
             <div>
-                <h1>
-                    <span className="fa fa-history" />
-                    Audit
-                    <small className="pull-right">
-                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
-                    </small>
-                    <small className="pull-right">
-                        <CheckboxInput
-                            id="showSentNotificationsID"
-                            label="Only show sent notifications"
-                            name="onlyShowSentNotifications"
-                            showDescriptionPlaceHolder={false}
-                            labelClass=""
-                            isChecked={this.state.onlyShowSentNotifications}
-                            onChange={this.onOnlyShowSentNotificationsChange}
-                        />
-                    </small>
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-history" configurationName="Audit" />
+                <div className="pull-right">
+                    <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
+                </div>
+                <div className="pull-right">
+                    <CheckboxInput
+                        id="showSentNotificationsID"
+                        label="Only show sent notifications"
+                        name="onlyShowSentNotifications"
+                        showDescriptionPlaceHolder={false}
+                        labelClass="tableCheckbox"
+                        isChecked={this.state.onlyShowSentNotifications}
+                        onChange={this.onOnlyShowSentNotificationsChange}
+                    />
+                </div>
                 <div>
                     <AuditDetails
                         handleClose={this.handleCloseDetails}

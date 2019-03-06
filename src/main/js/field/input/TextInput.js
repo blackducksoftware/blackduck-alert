@@ -35,7 +35,7 @@ TextInput.propTypes = {
     inputClass: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.string,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func
 };
 
 TextInput.defaultProps = {
@@ -45,7 +45,8 @@ TextInput.defaultProps = {
     readOnly: false,
     autoFocus: false,
     inputClass: 'form-control',
-    name: 'name'
+    name: 'name',
+    onChange: () => true
 };
 
 
