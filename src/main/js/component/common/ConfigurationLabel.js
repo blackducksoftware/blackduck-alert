@@ -22,7 +22,7 @@ class ConfigurationLabel extends Component {
             descriptionField = (
                 <div className="d-inline-flex">
                     <span
-                        className="p-2 fa fa-question-circle descriptionIcon"
+                        className="fa fa-question-circle configurationDescriptionIcon"
                         onClick={() => this.setState({ showDescription: !showDescription })}
                         ref={(icon) => {
                             this.target = icon;
