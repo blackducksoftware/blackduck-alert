@@ -1,43 +1,58 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Tooltip from 'react-bootstrap/Tooltip';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Overlay from 'react-bootstrap/Overlay';
 
 class LabeledField extends Component {
-    render(inputDiv) {
-        const field = inputDiv || this.props.field;
+    constructor(props) {
+        super(props);
 
-        const { labelClass } = this.props;
+        this.state = {
+            showDescription: false
+        };
+    }
+
+    render() {
+        const { showDescription } = this.state;
+        const { field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue } = this.props;
+
         const labelClasses = `${labelClass} text-right`;
 
-        let description = null;
-        if (this.props.description) {
-            description = (<div className="d-inline-flex">
-                <OverlayTrigger
-                    key="top"
+        let descriptionField = null;
+        if (description) {
+            descriptionField = (<div className="d-inline-flex">
+                <span
+                    className="fa fa-question-circle descriptionIcon"
+                    onClick={() => this.setState({ showDescription: !showDescription })}
+                    ref={(icon) => {
+                        this.target = icon;
+                    }}
+                />
+                <Overlay
+                    rootClose
                     placement="top"
-                    delay={{ show: 200, hide: 100 }}
-                    overlay={
-                        <Tooltip id="description-tooltip">
-                            {this.props.description}
-                        </Tooltip>
-                    }
+                    show={showDescription}
+                    onHide={() => this.setState({ showDescription: false })}
+                    target={() => this.target}
+                    container={this}
                 >
-                    <span className="fa fa-question-circle" />
-                </OverlayTrigger>
+                    <Tooltip id="description-tooltip">
+                        {description}
+                    </Tooltip>
+                </Overlay>
             </div>);
-        } else if (this.props.showDescriptionPlaceHolder) {
-            description = (<div className="descriptionPlaceHolder" />);
+        } else if (showDescriptionPlaceHolder) {
+            descriptionField = (<div className="descriptionPlaceHolder" />);
         }
 
         return (
             <div className="form-group">
-                <label className={labelClasses}>{this.props.label}</label>
-                {description}
+                <label className={labelClasses}>{label}</label>
+                {descriptionField}
                 {field}
-                {this.props.errorName && this.props.errorValue &&
+                {errorName && errorValue &&
                 <div className="offset-sm-3 col-sm-8">
-                    <p className="fieldError" name={this.props.errorName}>{this.props.errorValue}</p>
+                    <p className="fieldError" name={errorName}>{errorValue}</p>
                 </div>
                 }
             </div>
