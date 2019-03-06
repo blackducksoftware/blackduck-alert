@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -45,10 +45,10 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 @Component
 public class ConfigurationFieldModelConverter {
     private final EncryptionUtility encryptionUtility;
-    private final BaseDescriptorAccessor descriptorAccessor;
+    private final DescriptorAccessor descriptorAccessor;
 
     @Autowired
-    public ConfigurationFieldModelConverter(final EncryptionUtility encryptionUtility, final BaseDescriptorAccessor descriptorAccessor) {
+    public ConfigurationFieldModelConverter(final EncryptionUtility encryptionUtility, final DescriptorAccessor descriptorAccessor) {
         this.encryptionUtility = encryptionUtility;
         this.descriptorAccessor = descriptorAccessor;
     }

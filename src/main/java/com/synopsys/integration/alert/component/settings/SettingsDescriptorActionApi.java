@@ -33,23 +33,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
-import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.UserAccessor;
+import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
 public class SettingsDescriptorActionApi extends NoTestActionApi {
     private static final Logger logger = LoggerFactory.getLogger(SettingsDescriptorActionApi.class);
     private final EncryptionUtility encryptionUtility;
-    private final UserAccessor userAccessor;
+    private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
 
     @Autowired
-    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final UserAccessor userAccessor, final SystemValidator systemValidator) {
+    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
@@ -57,7 +57,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
 
     @Override
     public FieldModel readConfig(final FieldModel fieldModel) {
-        final Optional<UserModel> defaultUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
+        final Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
         final FieldModel newModel = createFieldModelCopy(fieldModel);
         final boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
         newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
@@ -95,7 +95,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         if (optionalPassword.isPresent()) {
             final String password = optionalPassword.flatMap(FieldValueModel::getValue).orElse("");
             if (StringUtils.isNotBlank(password)) {
-                userAccessor.changeUserPassword(UserAccessor.DEFAULT_ADMIN_USER, password);
+                userAccessor.changeUserPassword(DefaultUserAccessor.DEFAULT_ADMIN_USER, password);
             }
         }
     }
@@ -103,7 +103,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private void saveDefaultAdminUserEmail(final FieldModel fieldModel) {
         final Optional<FieldValueModel> optionalEmail = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
         if (optionalEmail.isPresent()) {
-            userAccessor.changeUserEmailAddress(UserAccessor.DEFAULT_ADMIN_USER, optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
+            userAccessor.changeUserEmailAddress(DefaultUserAccessor.DEFAULT_ADMIN_USER, optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
         }
     }
 

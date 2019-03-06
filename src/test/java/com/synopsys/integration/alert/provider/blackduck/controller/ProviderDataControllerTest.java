@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
@@ -32,7 +32,7 @@ public class ProviderDataControllerTest {
 
     @Test
     public void testGetHubProjects() {
-        final ProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
+        final DefaultProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
         final ResponseFactory responseFactory = new ResponseFactory();
         final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BlackDuckProvider.COMPONENT_NAME);
@@ -42,7 +42,7 @@ public class ProviderDataControllerTest {
 
     @Test
     public void testGetHubProjectsThrowException() {
-        final ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
+        final DefaultProviderDataAccessor providerDataAccessor = Mockito.mock(DefaultProviderDataAccessor.class);
         Mockito.when(providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME)).thenThrow(new IllegalStateException("ErrorMessage"));
         final ResponseFactory responseFactory = new ResponseFactory();
         final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);

@@ -36,7 +36,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
@@ -66,7 +66,7 @@ public class BlackDuckProperties extends ProviderProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
+    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
         super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;

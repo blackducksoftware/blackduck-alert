@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.api.NotificationManager;
+import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 
 @Component
@@ -38,7 +38,7 @@ public class OnDemandTask extends ProcessingTask {
     public static final String TASK_NAME = "ondemand-frequency";
 
     @Autowired
-    public OnDemandTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager,
+    public OnDemandTask(final TaskScheduler taskScheduler, final DefaultNotificationManager notificationManager,
         final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
     }

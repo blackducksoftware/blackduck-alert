@@ -9,10 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -21,13 +21,13 @@ public class ProxyManagerTest {
     public static final String PORT = "9999";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    private BaseConfigurationAccessor configurationAccessor;
+    private ConfigurationAccessor configurationAccessor;
     private ConfigurationModel configurationModel;
     private ProxyManager proxyManager;
 
     @BeforeEach
     public void initTest() throws Exception {
-        configurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         configurationModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
         proxyManager = new ProxyManager(configurationAccessor);

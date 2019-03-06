@@ -33,14 +33,14 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_NAME = "channel.common.name";
@@ -48,9 +48,9 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
     public static final String KEY_FREQUENCY = "channel.common.frequency";
     private final Logger logger = LoggerFactory.getLogger(ChannelDistributionUIConfig.class);
-    private final BaseDescriptorAccessor descriptorAccessor;
+    private final DescriptorAccessor descriptorAccessor;
 
-    public ChannelDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final BaseDescriptorAccessor descriptorAccessor) {
+    public ChannelDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final DescriptorAccessor descriptorAccessor) {
         super(label, urlName, fontAwesomeIcon);
         this.descriptorAccessor = descriptorAccessor;
     }

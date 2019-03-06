@@ -10,9 +10,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
-public class MockDescriptorAccessor implements BaseDescriptorAccessor {
+public class MockDescriptorAccessor implements DescriptorAccessor {
 
     private final List<ConfigField> configFields;
 

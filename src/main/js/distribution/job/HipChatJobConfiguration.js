@@ -127,7 +127,7 @@ class HipChatJobConfiguration extends Component {
                     onChange={this.createSingleSelectHandler(KEY_COLOR)}
                     id={KEY_COLOR}
                     className="typeAheadField"
-                    labelSpacingClass="col-sm-3"
+                    labelClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
                     description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_COLOR)}
                     options={colorOptions}

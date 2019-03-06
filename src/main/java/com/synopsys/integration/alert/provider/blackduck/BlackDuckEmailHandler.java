@@ -41,16 +41,16 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
-import com.synopsys.integration.alert.database.api.ProviderDataAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 
 @Component
 public class BlackDuckEmailHandler extends EmailHandler {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckEmailHandler.class);
 
-    private final ProviderDataAccessor providerDataAccessor;
+    private final DefaultProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckEmailHandler(final ProviderDataAccessor providerDataAccessor) {
+    public BlackDuckEmailHandler(final DefaultProviderDataAccessor providerDataAccessor) {
         this.providerDataAccessor = providerDataAccessor;
     }
 

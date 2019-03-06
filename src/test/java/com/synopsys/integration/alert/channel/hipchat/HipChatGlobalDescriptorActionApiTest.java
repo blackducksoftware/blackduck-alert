@@ -23,15 +23,15 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.AuditEntryUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -180,7 +180,7 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void testConfigITTest() throws Exception {
         final TestProperties properties = new TestProperties();
 
-        final AuditEntryUtility auditUtility = Mockito.mock(AuditEntryUtility.class);
+        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
