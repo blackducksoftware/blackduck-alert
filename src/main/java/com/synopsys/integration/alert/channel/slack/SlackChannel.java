@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.AuditEntryUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -69,7 +69,7 @@ public class SlackChannel extends RestDistributionChannel {
     }
 
     @Autowired
-    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final AuditEntryUtility auditUtility,
+    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(COMPONENT_NAME, gson, alertProperties, auditUtility, channelRestConnectionFactory);
     }

@@ -40,8 +40,8 @@ import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.DescriptorAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -57,9 +57,9 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     protected TestProperties properties;
 
     @Autowired
-    protected ConfigurationAccessor configurationAccessor;
+    protected DefaultConfigurationAccessor configurationAccessor;
     @Autowired
-    protected DescriptorAccessor descriptorAccessor;
+    protected DefaultDescriptorAccessor descriptorAccessor;
     @Autowired
     protected RegisteredDescriptorRepository registeredDescriptorRepository;
 

@@ -102,7 +102,7 @@ public class PolarisRequestHelper {
 
     // FIXME create a model for issues
     //    public List<IssueV0> getIssuesForProjectBranch(final String projectId, final String branchId) throws IntegrationException {
-    //        return handlePagedRequest(IssueV0Resources.class, (offset, limit) -> createIssuesGetRequest(offset, limit, projectId, branchId), IssueV0::getData);
+    //        return handlePagedRequest(IssueV0Resources.class, (offset, limit) -> createIssuesGetRequest(offset, limit, projectId, branchId), IssueV0Resources::getData);
     //    }
 
     public Request createIssuesGetRequest(final Integer pageOffset, final Integer pageLimit, final String projectId, final String branchId) {
@@ -135,7 +135,7 @@ public class PolarisRequestHelper {
                     if (data != null) {
                         chunkedResults = data;
                         allResults.addAll(chunkedResults);
-                        offset++;
+                        offset += defaultPageLimit;
                         continue;
                     }
                 }

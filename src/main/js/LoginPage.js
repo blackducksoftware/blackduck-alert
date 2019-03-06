@@ -48,7 +48,6 @@ class LoginPage extends Component {
                                 label="Username"
                                 name="username"
                                 onChange={this.handleChange}
-                                errorName="usernameError"
                                 autoFocus
                             />
 
@@ -57,7 +56,6 @@ class LoginPage extends Component {
                                 label="Password"
                                 name="password"
                                 onChange={this.handleChange}
-                                errorName="passwordError"
                             />
 
                             <div className="row">

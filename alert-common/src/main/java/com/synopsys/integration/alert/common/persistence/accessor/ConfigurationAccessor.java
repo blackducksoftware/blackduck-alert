@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 
-public interface BaseConfigurationAccessor {
+public interface ConfigurationAccessor {
     List<ConfigurationJobModel> getAllJobs();
 
     Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException;

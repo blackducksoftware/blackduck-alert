@@ -35,16 +35,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.database.api.AuditEntryUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 
 @Component
 public class ChannelTemplateManager {
     private final JmsTemplate jmsTemplate;
-    private final AuditEntryUtility auditUtility;
+    private final DefaultAuditUtility auditUtility;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final ContentConverter contentConverter, final AuditEntryUtility auditUtility, final JmsTemplate jmsTemplate) {
+    public ChannelTemplateManager(final ContentConverter contentConverter, final DefaultAuditUtility auditUtility, final JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
         this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
