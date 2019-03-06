@@ -1,21 +1,48 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
 
-export default class TextArea extends LabeledField {
+class TextArea extends Component {
     render() {
         const {
             inputClass, sizeClass, readOnly, name, value, onChange, id
         } = this.props;
-        const className = inputClass || 'textInput';
-        const containerClass = sizeClass || 'col-sm-8';
 
+        let field = null;
         if (readOnly) {
-            return super.render(<div className={containerClass}>
-                <textarea id={id} rows="8" cols="60" readOnly className={className} name={name} value={value} />
+            field = (<div className={sizeClass}>
+                <textarea id={id} rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
+            </div>);
+        } else {
+            field = (<div className={sizeClass}>
+                <textarea id={id} rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
             </div>);
         }
-        return super.render(<div className={containerClass}>
-            <textarea id={id} rows="8" cols="60" className={className} name={name} value={value} onChange={onChange} />
-        </div>);
+
+        return (
+            <LabeledField field={field} {...this.props} />
+        );
     }
 }
+
+TextArea.propTypes = {
+    id: PropTypes.string,
+    readOnly: PropTypes.bool,
+    inputClass: PropTypes.string,
+    sizeClass: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired
+};
+
+TextArea.defaultProps = {
+    id: 'id',
+    value: '',
+    readOnly: false,
+    inputClass: 'textInput',
+    sizeClass: 'col-sm-8',
+    name: 'name'
+};
+
+
+export default TextArea;

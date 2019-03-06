@@ -15,6 +15,11 @@ class LoginPage extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.state = {
+            username: '',
+            password: ''
+        };
     }
 
     handleChange({ target }) {
@@ -49,6 +54,7 @@ class LoginPage extends Component {
                                 name="username"
                                 onChange={this.handleChange}
                                 autoFocus
+                                value={this.state.username}
                             />
 
                             <PasswordInput
@@ -56,6 +62,7 @@ class LoginPage extends Component {
                                 label="Password"
                                 name="password"
                                 onChange={this.handleChange}
+                                value={this.state.password}
                             />
 
                             <div className="row">
