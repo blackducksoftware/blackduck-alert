@@ -54,7 +54,6 @@ import com.synopsys.integration.rest.request.Request;
 @Component(value = SlackChannel.COMPONENT_NAME)
 public class SlackChannel extends RestDistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
-    public static final String SLACK_API = "https://hooks.slack.com";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
     private static final String SLACK_LINE_SEPARATOR = "\n";
@@ -72,11 +71,6 @@ public class SlackChannel extends RestDistributionChannel {
     public SlackChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(COMPONENT_NAME, gson, alertProperties, auditUtility, channelRestConnectionFactory);
-    }
-
-    @Override
-    public String getApiUrl(final DistributionEvent event) {
-        return SLACK_API;
     }
 
     @Override
