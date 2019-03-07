@@ -68,7 +68,9 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
         final Map<String, String> valueMap = new HashMap<>();
         final String apiToken = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY);
+        final String hipChatServerUrl = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_SERVER_URL);
         valueMap.put(HipChatDescriptor.KEY_API_KEY, apiToken);
+        valueMap.put(HipChatDescriptor.KEY_HOST_SERVER, hipChatServerUrl);
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
         return Optional.of(configurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
@@ -131,7 +133,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
-        Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
+        final Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
         return passedFieldNames.containsAll(fieldNames);
     }
 
@@ -159,7 +161,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public void testInvalidTextRoomID() {
         final Map<String, String> invalidValuesMap = new HashMap<>();
         invalidValuesMap.putAll(Map.of(HipChatDescriptor.KEY_ROOM_ID, "abcdefg"));
-        int invalidLength = invalidValuesMap.size();
+        final int invalidLength = invalidValuesMap.size();
         invalidValuesMap.putAll(createValidCommonDistributionFieldMap());
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
         final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
