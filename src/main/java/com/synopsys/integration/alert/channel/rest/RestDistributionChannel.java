@@ -113,8 +113,6 @@ public abstract class RestDistributionChannel extends DistributionChannel {
         return channelRestConnectionFactory;
     }
 
-    public abstract String getApiUrl(DistributionEvent event);
-
     public abstract List<Request> createRequests(final DistributionEvent event) throws IntegrationException;
 
 }

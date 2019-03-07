@@ -68,7 +68,9 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
         final Map<String, String> valueMap = new HashMap<>();
         final String apiToken = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY);
+        final String hipChatServerUrl = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_SERVER_URL);
         valueMap.put(HipChatDescriptor.KEY_API_KEY, apiToken);
+        valueMap.put(HipChatDescriptor.KEY_HOST_SERVER, hipChatServerUrl);
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
         return Optional.of(configurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values()));

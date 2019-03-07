@@ -64,7 +64,6 @@ import freemarker.template.TemplateException;
 @Component(value = HipChatChannel.COMPONENT_NAME)
 public class HipChatChannel extends RestDistributionChannel {
     public static final String COMPONENT_NAME = "channel_hipchat";
-    public static final String HIP_CHAT_API = "https://api.hipchat.com";
     public static final int MESSAGE_SIZE_LIMIT = 8000;
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
@@ -75,20 +74,16 @@ public class HipChatChannel extends RestDistributionChannel {
     }
 
     @Override
-    public String getApiUrl(final DistributionEvent distributionEvent) {
-        final FieldAccessor fieldAccessor = distributionEvent.getFieldAccessor();
-        final Optional<String> hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER);
-        return hostServer.orElse(HIP_CHAT_API);
-    }
-
-    @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
         final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
-        final String hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
+        final Optional<String> hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER);
 
         if (!apiKey.isPresent()) {
-            throw new AlertException("ERROR: Missing global config.");
+            throw new AlertException("ERROR: Missing API key in the global HipChat config.");
+        }
+        if (!hostServer.isPresent()) {
+            throw new AlertException("ERROR: Missing the server URL in the global HipChat config.");
         }
 
         final Optional<Integer> roomId = fieldAccessor.getInteger(HipChatDescriptor.KEY_ROOM_ID);
@@ -100,9 +95,9 @@ public class HipChatChannel extends RestDistributionChannel {
         } else {
             final String htmlMessage = createHtmlMessage(event.getContent());
             if (isChunkedMessageNeeded(htmlMessage)) {
-                return createChunkedRequestList(hostServer, apiKey.get(), roomId.get(), notify, color, event.getProvider(), htmlMessage);
+                return createChunkedRequestList(hostServer.get(), apiKey.get(), roomId.get(), notify, color, event.getProvider(), htmlMessage);
             } else {
-                return Arrays.asList(createRequest(hostServer, apiKey.get(), roomId.get(), notify, color, htmlMessage));
+                return Arrays.asList(createRequest(hostServer.get(), apiKey.get(), roomId.get(), notify, color, htmlMessage));
             }
         }
     }
@@ -110,6 +105,9 @@ public class HipChatChannel extends RestDistributionChannel {
     public void testApiKeyAndApiUrlConnection(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {
         if (StringUtils.isBlank(apiKey)) {
             throw new AlertException("Invalid API key: API key not provided");
+        }
+        if (StringUtils.isBlank(configuredApiUrl)) {
+            throw new AlertException("Invalid server URL: server URL not provided");
         }
         if (intHttpClient == null) {
             throw new AlertException("Connection error: see logs for more information.");

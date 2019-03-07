@@ -21,6 +21,7 @@ public enum TestPropertyKey {
 
     TEST_HIPCHAT_ROOM_ID("hipchat.room.id"),
     TEST_HIPCHAT_API_KEY("hipchat.api.key"),
+    TEST_HIPCHAT_SERVER_URL("hipchat.server.url"),
 
     TEST_SLACK_CHANNEL_NAME("slack.channel.name"),
     TEST_SLACK_USERNAME("slack.username"),

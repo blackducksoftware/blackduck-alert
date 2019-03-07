@@ -50,13 +50,16 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
-        final String configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HipChatChannel.HIP_CHAT_API);
+        final Optional<String> configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER);
         if (!apiKey.isPresent()) {
-            throw new AlertException("ERROR: Missing global config.");
+            throw new AlertException("ERROR: Missing API key in the global HipChat config.");
+        }
+        if (!configuredApiUrl.isPresent()) {
+            throw new AlertException("ERROR: Missing the server URL in the global HipChat config.");
         }
 
         final IntHttpClient intHttpClient = hipChatChannel.getChannelRestConnectionFactory().createIntHttpClient();
-        hipChatChannel.testApiKeyAndApiUrlConnection(intHttpClient, configuredApiUrl, apiKey.get());
+        hipChatChannel.testApiKeyAndApiUrlConnection(intHttpClient, configuredApiUrl.get(), apiKey.get());
         final Integer parsedRoomId;
         try {
             final String testRoomId = testConfig.getDestination().orElse(null);
@@ -66,7 +69,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
         }
 
         final String htmlMessage = "This is a test message sent by Alert.";
-        final Request testRequest = hipChatChannel.createRequest(configuredApiUrl, apiKey.get(), parsedRoomId, Boolean.TRUE, "red", htmlMessage);
+        final Request testRequest = hipChatChannel.createRequest(configuredApiUrl.get(), apiKey.get(), parsedRoomId, Boolean.TRUE, "red", htmlMessage);
         hipChatChannel.sendMessageRequest(intHttpClient, testRequest, "test");
     }
 
