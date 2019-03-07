@@ -165,25 +165,20 @@ public class JobConfigActions {
     }
 
     private void validateJobNameUnique(final FieldModel fieldModel) throws AlertFieldException {
-        final String descriptorName = fieldModel.getDescriptorName();
         final Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getField(ChannelDistributionUIConfig.KEY_NAME);
         String error = "";
         if (jobNameFieldOptional.isPresent()) {
             final String jobName = jobNameFieldOptional.get().getValue().orElse(null);
             if (StringUtils.isNotBlank(jobName)) {
-                try {
-                    final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
-                    final Boolean foundDuplicateName = configurations.stream()
-                                                           .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                           .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                           .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
-                    if (foundDuplicateName) {
-                        error = "A distribution configuration with this name already exists.";
-                    }
-                } catch (final AlertDatabaseConstraintException e) {
-                    logger.error("Could not retrieve distributions of {}", jobName);
+                final List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
+                final Boolean foundDuplicateName = jobs.stream()
+                                                       .flatMap(job -> job.getCopyOfConfigurations().stream())
+                                                       .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
+                                                       .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
+                                                       .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+                if (foundDuplicateName) {
+                    error = "A distribution configuration with this name already exists.";
                 }
-
             } else {
                 error = "Name cannot be blank.";
             }
