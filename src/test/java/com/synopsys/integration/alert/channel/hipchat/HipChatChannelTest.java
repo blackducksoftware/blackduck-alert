@@ -110,6 +110,7 @@ public class HipChatChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_HOST_SERVER, "bogusHostServer");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -143,6 +144,7 @@ public class HipChatChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_COLOR, "random");
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_HOST_SERVER, "bogusHostServer");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -164,6 +166,7 @@ public class HipChatChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_COLOR, "random");
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_HOST_SERVER, "bogusHostServer");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);

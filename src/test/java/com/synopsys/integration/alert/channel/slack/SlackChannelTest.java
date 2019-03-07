@@ -87,16 +87,6 @@ public class SlackChannelTest extends ChannelTest {
     }
 
     @Test
-    public void testGetApiUrl() {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
-        assertEquals(SlackChannel.SLACK_API, channel.getApiUrl(event));
-    }
-
-    @Test
     public void testCreateRequestMissingWebhook() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
