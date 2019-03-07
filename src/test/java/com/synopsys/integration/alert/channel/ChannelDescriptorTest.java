@@ -192,7 +192,10 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testDistributionConfig() {
+        // Hip Chat public api is currently end of life; need an on premise installation to test
+        assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
         final Optional<DescriptorActionApi> descriptorActionApiOptional = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
+
         final FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
 
         final String destination = createTestConfigDestination();
@@ -209,7 +212,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testGlobalConfig() {
-        // hipchat has reached end of life cannot test global configuration
+        // Hip Chat public api is currently end of life; need an on premise installation to test
         assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.GLOBAL);
         assumeTrue(descriptorActionApi.isPresent());
