@@ -104,7 +104,7 @@ public class HipChatGlobalDescriptorActionApiTest {
             hipChatGlobalDescriptorActionApi.testConfig(testConfigModel);
             fail("Should have thrown exception");
         } catch (final AlertException e) {
-            assertTrue(e.getMessage().contains("ERROR: Missing global config."));
+            assertTrue(e.getMessage().contains("ERROR: Missing API key in the global HipChat config."));
         }
     }
 
