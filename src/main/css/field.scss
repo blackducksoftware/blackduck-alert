@@ -23,11 +23,22 @@ small {
 
 #description-tooltip > .tooltip-inner {
   background-color: $synopsys-color-subhead-copy;
+  font-size: $base-font-size;
+  font-weight: $base-font-weight;
+  font-family: 'Roboto', 'Arial', sans-serif;
 }
 
 .descriptionPlaceHolder {
   padding-right: 10px;
   display: inline-flex;
+}
+
+.descriptionIcon:hover, .configurationDescriptionIcon:hover {
+  cursor: pointer;
+}
+
+.configurationDescriptionIcon {
+  padding-left: 6.5px;
 }
 
 .checkbox {

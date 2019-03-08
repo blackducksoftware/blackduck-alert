@@ -117,7 +117,7 @@ class JobAddModal extends Component {
                                 label="Type"
                                 onChange={this.handleTypeChanged}
                                 id="jobAddType"
-                                className="typeAheadField"
+                                inputClass="typeAheadField"
                                 labelClass="col-sm-3"
                                 selectSpacingClass="col-sm-8"
                                 options={jobTypeOptions}

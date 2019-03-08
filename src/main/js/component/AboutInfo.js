@@ -5,6 +5,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ReadOnlyField from 'field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -51,10 +52,7 @@ class AboutInfo extends React.Component {
         const channelTable = this.createDescriptorTable(channelList);
         return (
             <div>
-                <h1>
-                    <span className="fa fa-info" />
-                    About
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-info" configurationName="About" />
                 <div className="form-horizontal">
                     <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />

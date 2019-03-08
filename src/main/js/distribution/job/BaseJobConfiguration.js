@@ -362,7 +362,7 @@ class BaseJobConfiguration extends Component {
                     label="Format"
                     onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.PROVIDER)}
                     id={KEY_FORMAT_TYPE}
-                    className="typeAheadField"
+                    inputClass="typeAheadField"
                     labelClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
                     description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_FORMAT_TYPE)}
@@ -379,7 +379,7 @@ class BaseJobConfiguration extends Component {
                     label="Notification Types"
                     onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.PROVIDER)}
                     id={KEY_NOTIFICATION_TYPES}
-                    className="typeAheadField"
+                    inputClass="typeAheadField"
                     labelClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
                     description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_NOTIFICATION_TYPES)}
@@ -432,7 +432,7 @@ class BaseJobConfiguration extends Component {
                     label="Frequency"
                     onChange={this.createSingleSelectHandler(KEY_FREQUENCY, FIELD_MODEL_KEY.COMMON)}
                     id={KEY_FREQUENCY}
-                    className="typeAheadField"
+                    inputClass="typeAheadField"
                     labelClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
                     description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_FREQUENCY)}
@@ -448,7 +448,7 @@ class BaseJobConfiguration extends Component {
                     label="Provider"
                     onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME, FIELD_MODEL_KEY.COMMON)}
                     id={KEY_PROVIDER_NAME}
-                    className="typeAheadField"
+                    inputClass="typeAheadField"
                     labelClass="col-sm-3"
                     selectSpacingClass="col-sm-8"
                     description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROVIDER_NAME)}
