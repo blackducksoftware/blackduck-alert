@@ -6,6 +6,7 @@ import NumberInput from 'field/input/NumberInput';
 import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
@@ -165,6 +166,8 @@ const fieldNames = [
     JAVAMAIL_PASSWORD_KEY
 ];
 
+const configurationDescription = 'This page allows you to configure the email server that Alert will send emails to.';
+
 class EmailConfiguration extends React.Component {
     constructor(props) {
         super(props);
@@ -210,19 +213,16 @@ class EmailConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <h1>
-                    <span className="fa fa-envelope" />
-                    Email
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-envelope" configurationName="Email" description={configurationDescription} />
+                {errorMessage && <div className="alert alert-danger">
+                    {errorMessage}
+                </div>}
+
+                {actionMessage && <div className="alert alert-success">
+                    {actionMessage}
+                </div>}
+
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
-                    {errorMessage && <div className="alert alert-danger">
-                        {errorMessage}
-                    </div>}
-
-                    {actionMessage && <div className="alert alert-success">
-                        {actionMessage}
-                    </div>}
-
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"

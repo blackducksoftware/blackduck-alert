@@ -1,26 +1,46 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
 
-export default class CheckboxInput extends LabeledField {
+
+class CheckboxInput extends Component {
     render() {
         const {
             name, onChange, readOnly, id, isChecked
         } = this.props;
 
-        const checkboxId = id || 'id';
-        const checkboxReadOnly = readOnly || false;
-        const checkboxIsChecked = isChecked || false;
-
-        return (super.render(<div className="d-inline-flex p-2 checkbox">
+        const field = (<div className="d-inline-flex p-2 checkbox">
             <input
-                id={checkboxId}
+                id={id}
                 type="checkbox"
-                readOnly={checkboxReadOnly}
+                readOnly={readOnly}
                 disabled={readOnly}
                 name={name}
-                checked={checkboxIsChecked}
+                checked={isChecked}
                 onChange={onChange}
             />
-        </div>));
+        </div>);
+        return (
+            <LabeledField field={field} {...this.props} />
+        );
     }
 }
+
+CheckboxInput.propTypes = {
+    id: PropTypes.string,
+    readOnly: PropTypes.bool,
+    name: PropTypes.string,
+    isChecked: PropTypes.bool,
+    onChange: PropTypes.func
+};
+
+CheckboxInput.defaultProps = {
+    id: 'id',
+    isChecked: false,
+    readOnly: false,
+    name: 'name',
+    onChange: () => true
+};
+
+
+export default CheckboxInput;

@@ -332,7 +332,7 @@ class SettingsConfigurationForm extends Component {
                                 label="Authentication Type"
                                 onChange={this.createSingleSelectHandler(KEY_LDAP_AUTHENTICATION_TYPE)}
                                 id={KEY_LDAP_AUTHENTICATION_TYPE}
-                                className="typeAheadField"
+                                inputClass="typeAheadField"
                                 labelClass="col-sm-3"
                                 selectSpacingClass="col-sm-8"
                                 description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_AUTHENTICATION_TYPE)}
@@ -347,7 +347,7 @@ class SettingsConfigurationForm extends Component {
                                 label="Referral"
                                 onChange={this.createSingleSelectHandler(KEY_LDAP_REFERRAL)}
                                 id={KEY_LDAP_REFERRAL}
-                                className="typeAheadField"
+                                inputClass="typeAheadField"
                                 labelClass="col-sm-3"
                                 selectSpacingClass="col-sm-8"
                                 description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_REFERRAL)}

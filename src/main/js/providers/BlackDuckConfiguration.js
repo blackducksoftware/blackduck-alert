@@ -5,6 +5,7 @@ import NumberInput from 'field/input/NumberInput';
 import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -25,6 +26,8 @@ const fieldNames = [
     KEY_BLACKDUCK_TIMEOUT,
     KEY_BLACKDUCK_API_KEY
 ];
+
+const configurationDescription = 'This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.';
 
 class BlackDuckConfiguration
     extends React.Component {
@@ -88,11 +91,7 @@ class BlackDuckConfiguration
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <h1>
-                    <span className="fa fa-laptop" />
-                    Black Duck
-                </h1>
-
+                <ConfigurationLabel fontAwesomeIcon="fa-laptop" configurationName="Black Duck" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}

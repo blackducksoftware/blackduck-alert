@@ -3,6 +3,9 @@ import { getSystemSetup, saveSystemSetup } from 'store/actions/system';
 import connect from 'react-redux/es/connect/connect';
 import SettingsConfigurationForm from 'component/settings/SettingsConfigurationForm';
 import PropTypes from 'prop-types';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
+
+const configurationDescription = 'This page allows you to configure the admin settings.';
 
 class SettingsConfiguration extends Component {
     constructor(props) {
@@ -22,10 +25,7 @@ class SettingsConfiguration extends Component {
     render() {
         return (
             <div>
-                <h1>
-                    <span className="fa fa-cog" />
-                    Settings
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-cog" configurationName="Settings" description={configurationDescription} />
                 <SettingsConfigurationForm
                     fetchingSetupStatus={this.props.fetchingSetupStatus}
                     updateStatus={this.props.updateStatus}

@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
-
 import { getSchedulingConfig, updateSchedulingConfig } from 'store/actions/schedulingConfig';
 
 import ConfigButtons from 'component/common/ConfigButtons';
@@ -14,6 +13,7 @@ import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -31,6 +31,8 @@ const fieldDescriptions = {
 };
 
 const fieldNames = [KEY_ACCUMULATOR_NEXT_RUN, KEY_DAILY_DIGEST_HOUR_OF_DAY, KEY_DAILY_DIGEST_NEXT_RUN, KEY_PURGE_DATA_FREQUENCY_DAYS, KEY_PURGE_DATA_NEXT_RUN];
+
+const configurationDescription = 'This page shows when the scheduled tasks will run next as well as allow you to configure the frequency of the tasks.';
 
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
@@ -141,10 +143,7 @@ class SchedulingConfiguration extends React.Component {
         const { fieldErrors, errorMessage, updateStatus } = this.props;
         return (
             <div>
-                <h1>
-                    <span className="fa fa-clock-o" />
-                    Scheduling
-                </h1>
+                <ConfigurationLabel fontAwesomeIcon="fa-clock-o" configurationName="Scheduling" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
@@ -181,7 +180,7 @@ class SchedulingConfiguration extends React.Component {
                         label="Daily Digest Run Time"
                         onChange={this.handleDailyDigestChanged}
                         id={KEY_DAILY_DIGEST_HOUR_OF_DAY}
-                        className="accumulatorTypeAheadField"
+                        inputClass="accumulatorTypeAheadField"
                         labelClass="col-sm-4"
                         description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DAILY_DIGEST_HOUR_OF_DAY)}
                         options={dailyDigestOptions}
@@ -222,7 +221,7 @@ class SchedulingConfiguration extends React.Component {
                         label="Data Purge Frequency"
                         onChange={this.handlePurgeChanged}
                         id={KEY_PURGE_DATA_FREQUENCY_DAYS}
-                        className="accumulatorTypeAheadField"
+                        inputClass="accumulatorTypeAheadField"
                         labelClass="col-sm-4"
                         description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PURGE_DATA_FREQUENCY_DAYS)}
                         options={purgeOptions}
