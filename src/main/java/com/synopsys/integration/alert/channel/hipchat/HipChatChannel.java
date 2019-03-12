@@ -26,13 +26,9 @@ package com.synopsys.integration.alert.channel.hipchat;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -45,97 +41,51 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
+import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.request.Response;
 
 import freemarker.template.TemplateException;
 
 @Component(value = HipChatChannel.COMPONENT_NAME)
-public class HipChatChannel extends RestDistributionChannel {
+public class HipChatChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final int MESSAGE_SIZE_LIMIT = 8000;
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
+    private final RestChannelUtility restChannelUtility;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility,
-        final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, auditUtility, channelRestConnectionFactory);
+    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
+        super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
+        this.restChannelUtility = restChannelUtility;
     }
 
     @Override
+    public void sendMessage(final DistributionEvent event) throws IntegrationException {
+        final List<Request> requests = createRequests(event);
+        restChannelUtility.sendMessage(requests, event.getDestination());
+    }
+
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
-        final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
-        final Optional<String> hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER);
-
-        if (!apiKey.isPresent()) {
-            throw new AlertException("ERROR: Missing API key in the global HipChat config.");
-        }
-        if (!hostServer.isPresent()) {
-            throw new AlertException("ERROR: Missing the server URL in the global HipChat config.");
-        }
-
-        final Optional<Integer> roomId = fieldAccessor.getInteger(HipChatDescriptor.KEY_ROOM_ID);
+        final String apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY).orElseThrow(() -> new AlertException("ERROR: Missing API key in the global HipChat config."));
+        final String hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElseThrow(() -> new AlertException("ERROR: Missing the server URL in the global HipChat config."));
+        final Integer roomId = fieldAccessor.getInteger(HipChatDescriptor.KEY_ROOM_ID).orElseThrow(() -> new AlertException("Room ID missing"));
         final Boolean notify = fieldAccessor.getBoolean(HipChatDescriptor.KEY_NOTIFY).orElse(false);
         final String color = fieldAccessor.getString(HipChatDescriptor.KEY_COLOR).orElse("Red");
 
-        if (!roomId.isPresent()) {
-            throw new AlertException("Room ID missing");
+        final String htmlMessage = createHtmlMessage(event.getContent());
+        if (isChunkedMessageNeeded(htmlMessage)) {
+            return createChunkedRequestList(hostServer, apiKey, roomId, notify, color, event.getProvider(), htmlMessage);
         } else {
-            final String htmlMessage = createHtmlMessage(event.getContent());
-            if (isChunkedMessageNeeded(htmlMessage)) {
-                return createChunkedRequestList(hostServer.get(), apiKey.get(), roomId.get(), notify, color, event.getProvider(), htmlMessage);
-            } else {
-                return Arrays.asList(createRequest(hostServer.get(), apiKey.get(), roomId.get(), notify, color, htmlMessage));
-            }
-        }
-    }
-
-    public void testApiKeyAndApiUrlConnection(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {
-        if (StringUtils.isBlank(apiKey)) {
-            throw new AlertException("Invalid API key: API key not provided");
-        }
-        if (StringUtils.isBlank(configuredApiUrl)) {
-            throw new AlertException("Invalid server URL: server URL not provided");
-        }
-        if (intHttpClient == null) {
-            throw new AlertException("Connection error: see logs for more information.");
-        }
-        try {
-            sendTestRequest(intHttpClient, configuredApiUrl, apiKey);
-        } catch (final IntegrationException integrationException) {
-            logger.error("Unable to create a response", integrationException);
-            throw new AlertException("Invalid API key: " + integrationException.getMessage());
-        }
-    }
-
-    private void sendTestRequest(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {
-        final String url = configuredApiUrl + "/v2/room/*/notification";
-        final Map<String, Set<String>> queryParameters = new HashMap<>();
-        queryParameters.put("auth_test", new HashSet<>(Collections.singleton("true")));
-
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Authorization", "Bearer " + apiKey);
-        requestHeaders.put("Content-Type", "application/json");
-
-        final Request request = createPostMessageRequest(url, requestHeaders, queryParameters);
-        try (final Response response = sendGenericRequest(intHttpClient, request)) {
-            if (RestConstants.OK_200 > response.getStatusCode() || response.getStatusCode() >= RestConstants.BAD_REQUEST_400) {
-                throw new AlertException("Invalid API key: " + response.getStatusMessage());
-            }
-        } catch (final IOException ioException) {
-            throw new AlertException(ioException.getMessage(), ioException);
+            return Arrays.asList(createRequest(hostServer, apiKey, roomId, notify, color, htmlMessage));
         }
     }
 
@@ -190,7 +140,7 @@ public class HipChatChannel extends RestDistributionChannel {
         requestHeaders.put("Authorization", "Bearer " + apiKey);
         requestHeaders.put("Content-Type", "application/json");
 
-        return createPostMessageRequest(url, requestHeaders, jsonString);
+        return restChannelUtility.createPostMessageRequest(url, requestHeaders, jsonString);
     }
 
     private String createHtmlMessage(final AggregateMessageContent messageContent) throws AlertException {

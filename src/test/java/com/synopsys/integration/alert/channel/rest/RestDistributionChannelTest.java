@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.body.StringBodyContent;
@@ -126,7 +127,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         return builder.build();
     }
 
-    private RestDistributionChannel createMockRestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
+    private DistributionChannel createMockRestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final ChannelRestConnectionFactory channelRestConnectionFactory, final Request request) {
         //        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent>(
         //                gson,
