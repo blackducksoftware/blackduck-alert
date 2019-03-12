@@ -222,7 +222,6 @@ export function saveSystemSetup(setupData) {
         request.then((response) => {
             if (response.ok) {
                 dispatch(systemSetupUpdated());
-                dispatch(getSystemSetup());
             } else {
                 response.json().then((body) => {
                     const jsonErrors = body.errors;

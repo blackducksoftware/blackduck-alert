@@ -20,12 +20,20 @@ class SettingsConfiguration extends Component {
     }
 
     render() {
+        const { errorMessage, actionMessage } = this.props;
         return (
             <div>
                 <h1>
                     <span className="fa fa-cog" />
                     Settings
                 </h1>
+                {errorMessage && <div className="alert alert-danger">
+                    {errorMessage}
+                </div>}
+
+                {actionMessage && <div className="alert alert-success">
+                    {actionMessage}
+                </div>}
                 <SettingsConfigurationForm
                     fetchingSetupStatus={this.props.fetchingSetupStatus}
                     updateStatus={this.props.updateStatus}
@@ -43,6 +51,8 @@ SettingsConfiguration.propTypes = {
     fetchingSetupStatus: PropTypes.string.isRequired,
     getSettings: PropTypes.func.isRequired,
     saveSettings: PropTypes.func.isRequired,
+    errorMessage: PropTypes.string,
+    actionMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     currentSettingsData: PropTypes.object,
     fieldErrors: PropTypes.object
@@ -51,10 +61,14 @@ SettingsConfiguration.propTypes = {
 SettingsConfiguration.defaultProps = {
     fieldErrors: {},
     currentSettingsData: {},
-    updateStatus: ''
+    updateStatus: '',
+    errorMessage: null,
+    actionMessage: null
 };
 
 const mapStateToProps = state => ({
+    errorMessage: state.system.errorMessage,
+    actionMessage: state.system.actionMessage,
     fetchingSetupStatus: state.system.fetchingSetupStatus,
     updateStatus: state.system.updateStatus,
     currentSettingsData: state.system.settingsData,
