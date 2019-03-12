@@ -3,7 +3,9 @@ import {
     EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
     EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_TEST_FAILURE,
     EMAIL_CONFIG_TEST_SUCCESSFUL,
+    EMAIL_CONFIG_TESTING,
     EMAIL_CONFIG_UPDATE_ERROR,
     EMAIL_CONFIG_UPDATED,
     EMAIL_CONFIG_UPDATING,
@@ -13,6 +15,7 @@ import {
 const initialState = {
     fetching: false,
     showTestModal: false,
+    modalTesting: false,
     updateStatus: null,
     actionMessage: null,
     config: {},
@@ -43,20 +46,33 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 actionMessage: null,
                 updateStatus: null,
-                showTestModal: true
+                showTestModal: true,
+                modalTesting: false
             });
 
         case EMAIL_CONFIG_HIDE_TEST_MODAL:
             return Object.assign({}, state, {
                 updateStatus: null,
                 actionMessage: null,
-                showTestModal: false
+                showTestModal: false,
+                modalTesting: false,
+            });
+
+        case EMAIL_CONFIG_TESTING:
+            return Object.assign({}, state, {
+                modalTesting: true
+            });
+
+        case EMAIL_CONFIG_TEST_FAILURE:
+            return Object.assign({}, state, {
+                modalTesting: false
             });
 
         case EMAIL_CONFIG_TEST_SUCCESSFUL:
             return Object.assign({}, state, {
                 actionMessage: 'Test message sent',
                 showTestModal: false,
+                modalTesting: false,
                 error: {
                     message: '',
                     fieldErrors: {}

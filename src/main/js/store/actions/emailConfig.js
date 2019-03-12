@@ -3,7 +3,9 @@ import {
     EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
     EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_TEST_FAILURE,
     EMAIL_CONFIG_TEST_SUCCESSFUL,
+    EMAIL_CONFIG_TESTING,
     EMAIL_CONFIG_UPDATE_ERROR,
     EMAIL_CONFIG_UPDATED,
     EMAIL_CONFIG_UPDATING
@@ -100,6 +102,18 @@ export function emailConfigTestSucceeded() {
     };
 }
 
+export function emailConfigTesting() {
+    return {
+        type: EMAIL_CONFIG_TESTING
+    };
+}
+
+export function emailConfigTestFailure() {
+    return {
+        type: EMAIL_CONFIG_TEST_FAILURE
+    };
+}
+
 export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
@@ -146,6 +160,7 @@ export function updateEmailConfig(config) {
 
 export function sendEmailConfigTest(config, destination) {
     return (dispatch, getState) => {
+        dispatch(emailConfigTesting());
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config, destination);
         request.then((response) => {
@@ -153,6 +168,7 @@ export function sendEmailConfigTest(config, destination) {
             if (response.ok) {
                 dispatch(emailConfigTestSucceeded());
             } else {
+                dispatch(emailConfigTestFailure());
                 handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
