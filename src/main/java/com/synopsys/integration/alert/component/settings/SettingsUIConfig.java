@@ -105,10 +105,10 @@ public class SettingsUIConfig extends UIConfig {
 
     private Collection<String> validateProxyUserName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         Collection<String> result = List.of();
-        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
+        final String proxyPassword = fieldModel.getField(SettingsDescriptor.KEY_PROXY_PWD).flatMap(FieldValueModel::getValue).orElse("");
 
         final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
-        if (fieldHasNoValue && passwordExists) {
+        if (fieldHasNoValue && StringUtils.isNotBlank(proxyPassword)) {
             result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
         }
         return result;

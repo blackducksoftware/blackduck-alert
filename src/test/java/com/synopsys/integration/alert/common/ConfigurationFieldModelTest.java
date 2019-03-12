@@ -88,7 +88,7 @@ public class ConfigurationFieldModelTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), VALUE_FIELD_1);
+        Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), VALUE_FIELD_1, true);
 
         assertTrue(optionalModel.isPresent());
         ConfigurationFieldModel actualModel = optionalModel.get();
@@ -96,7 +96,7 @@ public class ConfigurationFieldModelTest {
         assertFalse(actualModel.isSensitive());
         assertEquals(KEY_FIELD_1, actualModel.getFieldKey());
 
-        optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), VALUE_FIELD_1);
+        optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), VALUE_FIELD_1, true);
 
         assertTrue(optionalModel.isPresent());
         actualModel = optionalModel.get();
@@ -111,7 +111,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        final Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), VALUE_FIELD_1);
+        final Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), VALUE_FIELD_1, true);
         assertTrue(optionalModel.isEmpty());
     }
 
@@ -122,7 +122,7 @@ public class ConfigurationFieldModelTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), List.of(VALUE_FIELD_1, VALUE_FIELD_2));
+        Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), List.of(VALUE_FIELD_1, VALUE_FIELD_2), true);
 
         assertTrue(optionalModel.isPresent());
         ConfigurationFieldModel actualModel = optionalModel.get();
@@ -130,7 +130,7 @@ public class ConfigurationFieldModelTest {
         assertFalse(actualModel.isSensitive());
         assertEquals(KEY_FIELD_1, actualModel.getFieldKey());
 
-        optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), List.of(VALUE_FIELD_1, VALUE_FIELD_2));
+        optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), List.of(VALUE_FIELD_1, VALUE_FIELD_2), true);
 
         assertTrue(optionalModel.isPresent());
         actualModel = optionalModel.get();
@@ -145,7 +145,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        final Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), List.of(VALUE_FIELD_1, VALUE_FIELD_2));
+        final Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), List.of(VALUE_FIELD_1, VALUE_FIELD_2), true);
         assertTrue(optionalModel.isEmpty());
     }
 
