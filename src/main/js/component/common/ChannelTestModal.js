@@ -23,9 +23,6 @@ class ChannelTestModal extends Component {
     handleSendTestMessage(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.setState({
-            spinning: true
-        });
         this.props.sendTestMessage(this.state.destination);
     }
 
@@ -41,7 +38,7 @@ class ChannelTestModal extends Component {
             <Modal.Footer>
                 <button id="testCancel" type="button" className="btn btn-link" onClick={this.props.cancelTestModal}>Cancel</button>
                 <button id="testSend" type="button" className="btn btn-primary" onClick={this.handleSendTestMessage}>Send Test Message</button>
-                {this.state.spinning &&
+                {this.props.modalTesting &&
                 <div className="progressIcon">
                     <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                 </div>
@@ -54,6 +51,7 @@ class ChannelTestModal extends Component {
 ChannelTestModal.propTypes = {
     destinationName: PropTypes.string,
     showTestModal: PropTypes.bool.isRequired,
+    modalTesting: PropTypes.bool.isRequired,
     cancelTestModal: PropTypes.func.isRequired,
     sendTestMessage: PropTypes.func.isRequired
 };
