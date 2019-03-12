@@ -55,7 +55,7 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override");
 
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host", this::validateProxyHost);
-        final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port");
+        final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", this::validateProxyPort);
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyUserName);
         final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, "Proxy Password", this::validateProxyPassword);
 
@@ -91,20 +91,25 @@ public class SettingsUIConfig extends UIConfig {
         return List.of();
     }
 
+    private Collection<String> validateProxyPort(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final boolean hostExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_HOST);
+        final boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
+        final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
+        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
+        final boolean isPortMissing = (hostExists || passwordExists || userNameExists) && !portExists;
+        if (isPortMissing) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PORT_MISSING);
+        }
+        return List.of();
+    }
+
     private Collection<String> validateProxyUserName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         Collection<String> result = List.of();
         final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
-        if (fieldToValidate.hasValues()) {
-            if (passwordExists) {
-                final String userValue = fieldToValidate.getValue().orElse("");
-                if (StringUtils.isBlank(userValue)) {
-                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
-                }
-            }
-        } else {
-            if (passwordExists) {
-                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
-            }
+
+        final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
+        if (fieldHasNoValue && passwordExists) {
+            result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
         }
         return result;
     }
@@ -112,17 +117,10 @@ public class SettingsUIConfig extends UIConfig {
     private Collection<String> validateProxyPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         Collection<String> result = List.of();
         final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
-        if (fieldToValidate.hasValues()) {
-            if (userNameExists) {
-                final String passwordValue = fieldToValidate.getValue().orElse("");
-                if (StringUtils.isBlank(passwordValue)) {
-                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PWD_MISSING);
-                }
-            }
-        } else {
-            if (userNameExists) {
-                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PWD_MISSING);
-            }
+
+        final boolean fieldHasNoValue = !fieldToValidate.isSet() && (!fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse("")));
+        if (fieldHasNoValue && userNameExists) {
+            result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PWD_MISSING);
         }
         return result;
     }
@@ -157,7 +155,7 @@ public class SettingsUIConfig extends UIConfig {
     private Collection<String> validateLDAPPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         if (isLDAPEnabled(fieldModel)) {
             final String managerDN = fieldModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).flatMap(FieldValueModel::getValue).orElse("");
-            final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
+            final boolean fieldHasNoValue = !fieldToValidate.isSet() && (!fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse("")));
             if (fieldHasNoValue && StringUtils.isNotBlank(managerDN)) {
                 return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_PWD_MISSING);
             }

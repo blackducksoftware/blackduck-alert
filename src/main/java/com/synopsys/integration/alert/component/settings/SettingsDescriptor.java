@@ -70,6 +70,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
     public static final String FIELD_ERROR_PROXY_HOST_MISSING = "Proxy Host missing";
+    public static final String FIELD_ERROR_PROXY_PORT_MISSING = "Proxy Port missing";
     public static final String FIELD_ERROR_PROXY_PORT_INVALID = "Proxy Port not a number greater than 1";
     public static final String FIELD_ERROR_PROXY_USER_MISSING = "Proxy Username missing";
     public static final String FIELD_ERROR_PROXY_PWD_MISSING = "Proxy Password missing";

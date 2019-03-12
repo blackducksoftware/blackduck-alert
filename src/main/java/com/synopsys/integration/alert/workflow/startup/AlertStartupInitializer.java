@@ -71,10 +71,10 @@ public class AlertStartupInitializer {
     public void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info("** --------------------------------- **");
         logger.info("Initializing descriptors with environment variables...");
-        boolean overwriteCurrentConfig = isEnvironmentOverrideEnabled();
+        final boolean overwriteCurrentConfig = isEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
         initializeConfiguration(List.of(SettingsDescriptor.SETTINGS_COMPONENT), overwriteCurrentConfig);
-        List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(SettingsDescriptor.SETTINGS_COMPONENT)).sorted().collect(Collectors.toList());
+        final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(SettingsDescriptor.SETTINGS_COMPONENT)).sorted().collect(Collectors.toList());
         initializeConfiguration(descriptorNames, overwriteCurrentConfig);
     }
 
@@ -82,17 +82,17 @@ public class AlertStartupInitializer {
         boolean environmentOverride = false;
         try {
             // determine if the environment variables should overwrite based on the settings configuration.
-            Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
+            final Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
-            boolean overwriteSavedInDB = settingsConfiguration
-                                             .flatMap(configurationModel -> configurationModel.getField(fieldKey))
-                                             .flatMap(field -> field.getFieldValue())
-                                             .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
+            final boolean overwriteSavedInDB = settingsConfiguration
+                                                   .flatMap(configurationModel -> configurationModel.getField(fieldKey))
+                                                   .flatMap(field -> field.getFieldValue())
+                                                   .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
             final String environmentFieldKey = convertKeyToPropery(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
-            Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
+            final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
             environmentOverride = environmentValue.map(envValue -> Boolean.valueOf(envValue)).orElse(overwriteSavedInDB);
-        } catch (AlertDatabaseConstraintException ex) {
+        } catch (final AlertDatabaseConstraintException ex) {
             logger.error("Error checking environment override", ex);
         }
         return environmentOverride;
@@ -115,28 +115,28 @@ public class AlertStartupInitializer {
                 final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor);
                 final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
                 updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
-            } catch (IllegalArgumentException | SecurityException | AlertDatabaseConstraintException ex) {
+            } catch (final IllegalArgumentException | SecurityException | AlertDatabaseConstraintException ex) {
                 logger.error("error initializing descriptor", ex);
             }
         }
     }
 
-    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, List<DefinedFieldModel> fieldsForDescriptor) {
+    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, final List<DefinedFieldModel> fieldsForDescriptor) {
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
             final String key = fieldModel.getKey();
             final String convertedKey = convertKeyToPropery(descriptorName, key);
-            boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
+            final boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
             logger.info("  {}", convertedKey);
             logger.debug("       Environment Variable Found - {}", hasEnvironmentValue);
             getEnvironmentValue(convertedKey)
-                .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value))
+                .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                 .ifPresent(configurationModels::add);
         }
         return configurationModels;
     }
 
-    private void updateConfigurationFields(final String descriptorName, boolean overwriteCurrentConfig, final List<ConfigurationModel> foundConfigurationModels, final Set<ConfigurationFieldModel> configurationModels)
+    private void updateConfigurationFields(final String descriptorName, final boolean overwriteCurrentConfig, final List<ConfigurationModel> foundConfigurationModels, final Set<ConfigurationFieldModel> configurationModels)
         throws AlertDatabaseConstraintException {
         if (!configurationModels.isEmpty()) {
             if (!foundConfigurationModels.isEmpty()) {
@@ -159,7 +159,7 @@ public class AlertStartupInitializer {
     }
 
     private boolean hasEnvironmentValue(final String propertyKey) {
-        String value = System.getProperty(propertyKey);
+        final String value = System.getProperty(propertyKey);
         return StringUtils.isNotBlank(value) || environment.containsProperty(propertyKey);
     }
 
