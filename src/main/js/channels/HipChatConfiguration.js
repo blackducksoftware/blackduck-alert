@@ -116,6 +116,7 @@ class HipChatConfiguration extends React.Component {
                             sendTestMessage={(destination) => {
                                 this.props.testConfig(this.state.currentHipChatConfig, destination);
                             }}
+                            modalTesting={this.props.modalTesting}
                         />
                     </div>
                 </form>
@@ -135,6 +136,7 @@ HipChatConfiguration.propTypes = {
     getConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired,
     showTestModal: PropTypes.bool.isRequired,
+    modalTesting: PropTypes.bool.isRequired,
     updateConfig: PropTypes.func.isRequired
 };
 
@@ -150,6 +152,7 @@ HipChatConfiguration.defaultProps = {
 const mapStateToProps = state => ({
     currentHipChatConfig: state.hipChatConfig.config,
     showTestModal: state.hipChatConfig.showTestModal,
+    modalTesting: state.hipChatConfig.modalTesting,
     updateStatus: state.hipChatConfig.updateStatus,
     actionMessage: state.hipChatConfig.actionMessage,
     errorMessage: state.hipChatConfig.error.message,
