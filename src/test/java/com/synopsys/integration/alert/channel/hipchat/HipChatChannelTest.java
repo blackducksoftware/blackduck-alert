@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -44,7 +45,6 @@ import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.request.Request;
 
 public class HipChatChannelTest extends ChannelTest {
 
@@ -58,7 +58,8 @@ public class HipChatChannelTest extends ChannelTest {
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, auditUtility, restChannelUtility);
 
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName());
         final Boolean notify = false;
@@ -134,7 +135,11 @@ public class HipChatChannelTest extends ChannelTest {
     public void testEmptyContent() throws Exception {
         final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, null);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(null);
+        final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
+        Mockito.doNothing().when(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
+        Mockito.doReturn(null).when(restChannelUtilitySpy).getIntHttpClient();
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, restChannelUtilitySpy);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
@@ -149,15 +154,19 @@ public class HipChatChannelTest extends ChannelTest {
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
 
-        final List<Request> requestList = hipChatChannel.createRequests(event);
-        assertTrue(requestList.size() == 1);
+        hipChatChannel.sendMessage(event);
+        Mockito.verify(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
     }
 
     @Test
     public void testChunkedRequestList() throws Exception {
         final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, null);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(null);
+        final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
+        Mockito.doNothing().when(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
+        Mockito.doReturn(null).when(restChannelUtilitySpy).getIntHttpClient();
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, restChannelUtilitySpy);
 
         final AggregateMessageContent messageContent = createLargeMessageContent();
 
@@ -171,8 +180,8 @@ public class HipChatChannelTest extends ChannelTest {
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
 
-        final List<Request> requestList = hipChatChannel.createRequests(event);
-        assertTrue(requestList.size() >= 3);
+        hipChatChannel.sendMessage(event);
+        Mockito.verify(restChannelUtilitySpy, Mockito.times(3)).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
     }
 
     private AggregateMessageContent createLargeMessageContent() {

@@ -30,13 +30,10 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.RestConstants;
@@ -45,24 +42,21 @@ import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
-// TODO this class should not be part of the hierarchy. It should be used as a helper class to help use rest and all channels should extends DistributionChannel
-public abstract class RestDistributionChannel extends DistributionChannel {
+@Component
+public class RestChannelUtility {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
-    public RestDistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility,
-        final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(distributionType, gson, alertProperties, auditUtility);
+    @Autowired
+    public RestChannelUtility(final ChannelRestConnectionFactory channelRestConnectionFactory) {
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
-    @Override
-    public void sendMessage(final DistributionEvent event) throws IntegrationException {
+    public void sendMessage(final List<Request> requests, final String eventDestination) throws IntegrationException {
         try {
-            final IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient();
-            final List<Request> requests = createRequests(event);
+            final IntHttpClient intHttpClient = getIntHttpClient();
             for (final Request request : requests) {
-                sendMessageRequest(intHttpClient, request, event.getDestination());
+                sendMessageRequest(intHttpClient, request, eventDestination);
             }
         } catch (final Exception ex) {
             throw new AlertException(ex);
@@ -109,10 +103,8 @@ public abstract class RestDistributionChannel extends DistributionChannel {
         }
     }
 
-    public ChannelRestConnectionFactory getChannelRestConnectionFactory() {
-        return channelRestConnectionFactory;
+    public IntHttpClient getIntHttpClient() {
+        return channelRestConnectionFactory.createIntHttpClient();
     }
-
-    public abstract List<Request> createRequests(final DistributionEvent event) throws IntegrationException;
 
 }

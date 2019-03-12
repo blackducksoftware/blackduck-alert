@@ -37,10 +37,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
+import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -52,7 +52,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component(value = SlackChannel.COMPONENT_NAME)
-public class SlackChannel extends RestDistributionChannel {
+public class SlackChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
@@ -67,13 +67,20 @@ public class SlackChannel extends RestDistributionChannel {
         SLACK_CHARACTER_ENCODING_MAP.put(">", "&gt;");
     }
 
+    private final RestChannelUtility restChannelUtility;
+
     @Autowired
-    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility,
-        final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(COMPONENT_NAME, gson, alertProperties, auditUtility, channelRestConnectionFactory);
+    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
+        super(COMPONENT_NAME, gson, alertProperties, auditUtility);
+        this.restChannelUtility = restChannelUtility;
     }
 
     @Override
+    public void sendMessage(final DistributionEvent event) throws IntegrationException {
+        final List<Request> requests = createRequests(event);
+        restChannelUtility.sendMessage(requests, event.getDestination());
+    }
+
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
         final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
@@ -87,7 +94,7 @@ public class SlackChannel extends RestDistributionChannel {
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Content-Type", "application/json");
-            return Arrays.asList(createPostMessageRequest(webhook, requestHeaders, jsonString));
+            return Arrays.asList(restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString));
 
         }
     }
@@ -186,4 +193,5 @@ public class SlackChannel extends RestDistributionChannel {
 
         return json.toString();
     }
+
 }
