@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -68,7 +69,8 @@ public class SlackChannelTest extends ChannelTest {
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
-        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, auditUtility, restChannelUtility);
 
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
@@ -91,7 +93,8 @@ public class SlackChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
@@ -126,7 +129,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(content.getValue()).thenReturn("Value");
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         try {
             channel.createRequests(event);
@@ -150,7 +154,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         try {
             assertTrue(channel.createRequests(event).isEmpty());
@@ -175,7 +180,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -202,7 +208,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -231,7 +238,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -260,7 +268,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -312,7 +321,10 @@ public class SlackChannelTest extends ChannelTest {
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, null, null);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(null);
+        final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
+        Mockito.doNothing().when(restChannelUtilitySpy).sendMessage(Mockito.any(), Mockito.anyString());
+        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, null, restChannelUtilitySpy);
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
@@ -323,11 +335,10 @@ public class SlackChannelTest extends ChannelTest {
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
 
-        final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
-        final List<Request> request = spySlackChannel.createRequests(event);
+        slackChannel.sendMessage(event);
 
-        assertFalse(request.isEmpty());
-        Mockito.verify(spySlackChannel).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+        //        assertFalse(request.isEmpty());
+        Mockito.verify(restChannelUtilitySpy).sendMessage(Mockito.any(), Mockito.anyString());
     }
 
     @Test
@@ -346,6 +357,6 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty());
-        Mockito.verify(spySlackChannel, Mockito.times(0)).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+        Mockito.verify(spySlackChannel, Mockito.times(0)).sendMessage(Mockito.any());
     }
 }
