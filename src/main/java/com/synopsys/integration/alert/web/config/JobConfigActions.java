@@ -117,7 +117,6 @@ public class JobConfigActions {
     }
 
     public JobFieldModel saveJob(final JobFieldModel jobFieldModel) throws AlertFieldException, AlertDatabaseConstraintException {
-        trimJobFieldModelFields(jobFieldModel);
         validateJob(jobFieldModel);
         validateJobNameUnique(jobFieldModel);
         final Set<String> descriptorNames = new HashSet<>();
@@ -139,7 +138,6 @@ public class JobConfigActions {
     }
 
     public JobFieldModel updateJob(final UUID id, final JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {
-        trimJobFieldModelFields(jobFieldModel);
         validateJob(jobFieldModel);
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -190,7 +188,6 @@ public class JobConfigActions {
     }
 
     public String validateJob(final JobFieldModel jobFieldModel) throws AlertFieldException {
-        trimJobFieldModelFields(jobFieldModel);
         final Map<String, String> fieldErrors = new HashMap<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
@@ -258,15 +255,6 @@ public class JobConfigActions {
             constructedFieldModels.add(fieldModelProcessor.convertToFieldModel(configurationModel));
         }
         return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels);
-    }
-
-    private void trimJobFieldModelFields(final JobFieldModel jobFieldModel) {
-        final Set<FieldModel> trimmedFieldModels = new HashSet<>();
-        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            final FieldModel trimmedFieldModel = fieldModelProcessor.trimFieldModelValues(fieldModel);
-            trimmedFieldModels.add(trimmedFieldModel);
-        }
-        jobFieldModel.setFieldModels(trimmedFieldModels);
     }
 
 }
