@@ -125,7 +125,7 @@ class BlackDuckConfiguration
                         />
                         <NumberInput
                             id={KEY_BLACKDUCK_TIMEOUT}
-                            label="Timeout (in seconds)"
+                            label="Timeout"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_BLACKDUCK_TIMEOUT)}
                             name={KEY_BLACKDUCK_TIMEOUT}
                             value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
