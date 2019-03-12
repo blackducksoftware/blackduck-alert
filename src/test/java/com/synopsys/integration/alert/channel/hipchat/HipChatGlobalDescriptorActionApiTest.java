@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -36,8 +38,11 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.request.Request;
+import com.synopsys.integration.rest.request.Response;
 
 public class HipChatGlobalDescriptorActionApiTest {
 
@@ -45,7 +50,8 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigEmptyTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
@@ -59,7 +65,8 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigInvalidTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
         addFieldValueToMap(fields, HipChatDescriptor.KEY_API_KEY, "");
@@ -77,7 +84,8 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigValidTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
         addFieldValueToMap(fields, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -94,7 +102,8 @@ public class HipChatGlobalDescriptorActionApiTest {
     @Test
     public void testConfigWithoutGlobalConfigTest() throws Exception {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
@@ -110,15 +119,14 @@ public class HipChatGlobalDescriptorActionApiTest {
 
     @Test
     public void testConfigInvalidDestinationTest() throws Exception {
-        final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
+        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
         final IntHttpClient intHttpClient = Mockito.mock(IntHttpClient.class);
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
 
-        Mockito.when(restConnectionFactory.createIntHttpClient()).thenReturn(intHttpClient);
-        Mockito.when(hipChatChannel.getChannelRestConnectionFactory()).thenReturn(restConnectionFactory);
+        Mockito.when(restChannelUtility.getIntHttpClient()).thenReturn(intHttpClient);
         ////////////////////////////////////////
 
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -137,15 +145,21 @@ public class HipChatGlobalDescriptorActionApiTest {
 
     @Test
     public void testConfigTest() throws Exception {
-        final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final IntHttpClient intHttpClient = Mockito.mock(IntHttpClient.class);
-        final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
+        final Response response = Mockito.mock(Response.class);
+        Mockito.when(response.getStatusCode()).thenReturn(RestConstants.OK_200);
+        Mockito.when(intHttpClient.execute(Mockito.any(Request.class))).thenReturn(response);
+        Mockito.when(intHttpClient.execute(Mockito.any(HttpUriRequest.class))).thenReturn(response);
+        Mockito.doNothing().when(response).close();
 
+        final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         Mockito.when(restConnectionFactory.createIntHttpClient()).thenReturn(intHttpClient);
-        Mockito.when(hipChatChannel.getChannelRestConnectionFactory()).thenReturn(restConnectionFactory);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(restConnectionFactory);
+        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, restChannelUtility);
+        final HipChatChannel hipChatChannelSpy = Mockito.spy(hipChatChannel);
         ////////////////////////////////////////
 
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannelSpy, restChannelUtility);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -163,7 +177,7 @@ public class HipChatGlobalDescriptorActionApiTest {
         final ArgumentCaptor<String> color = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<String> message = ArgumentCaptor.forClass(String.class);
 
-        Mockito.verify(hipChatChannel).createRequest(hostServer.capture(), apiKey.capture(), roomId.capture(), notify.capture(), color.capture(), message.capture());
+        Mockito.verify(hipChatChannelSpy).createRequest(hostServer.capture(), apiKey.capture(), roomId.capture(), notify.capture(), color.capture(), message.capture());
 
         assertEquals("anything", hostServer.getValue());
         assertEquals("API Token", apiKey.getValue());
@@ -185,12 +199,13 @@ public class HipChatGlobalDescriptorActionApiTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
 
-        final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), testAlertProperties, auditUtility, channelRestConnectionFactory);
+        final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), testAlertProperties, auditUtility, restChannelUtility);
 
         ////////////////////////////////////////
 
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, HipChatDescriptor.KEY_API_KEY, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
