@@ -15,7 +15,7 @@ import {
 const initialState = {
     updateStatus: null,
     actionMessage: null,
-    testing: false,
+    modalTesting: false,
     error: {
         message: '',
         fieldErrors: {}
@@ -29,15 +29,13 @@ const config = (state = initialState, action) => {
         case HIPCHAT_CONFIG_FETCHING:
             return Object.assign({}, state, {
                 actionMessage: null,
-                updateStatus: 'FETCHING',
-                testing: false
+                updateStatus: 'FETCHING'
             });
 
         case HIPCHAT_CONFIG_FETCHED:
             return Object.assign({}, state, {
                 actionMessage: null,
                 updateStatus: 'FETCHED',
-                testing: false,
                 config: action.config
             });
 
@@ -45,7 +43,6 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 actionMessage: null,
                 updateStatus: 'UPDATING',
-                testing: false,
                 error: {
                     message: '',
                     fieldErrors: {}
@@ -56,7 +53,6 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 updateStatus: 'UPDATED',
                 actionMessage: 'Update successful',
-                testing: false,
                 config: action.config,
                 error: {
                     message: '',
@@ -94,14 +90,14 @@ const config = (state = initialState, action) => {
                 updateStatus: null,
                 actionMessage: null,
                 showTestModal: false,
-                testing: true
+                modalTesting: true
             });
 
         case HIPCHAT_CONFIG_TEST_SUCCESS:
             return Object.assign({}, state, {
                 updateStatus: null,
                 actionMessage: 'Test message sent',
-                testing: false,
+                modalTesting: false,
                 error: {
                     message: '',
                     fieldErrors: {}
@@ -112,7 +108,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 updateStatus: null,
                 actionMessage: null,
-                testing: false,
+                modalTesting: false,
                 error: {
                     message: action.message,
                     fieldErrors: action.errors || {}

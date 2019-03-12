@@ -759,6 +759,7 @@ class EmailConfiguration extends React.Component {
                             sendTestMessage={(destination) => {
                                 this.props.sendEmailConfigTest(this.state.currentEmailConfig, destination);
                             }}
+                            modalTesting={this.props.modalTesting}
                         />
                     </div>
                 </form>
@@ -774,6 +775,7 @@ EmailConfiguration.propTypes = {
     sendEmailConfigTest: PropTypes.func.isRequired,
     currentEmailConfig: PropTypes.object,
     showTestModal: PropTypes.bool.isRequired,
+    modalTesting: PropTypes.bool.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
@@ -795,7 +797,8 @@ const mapStateToProps = state => ({
     fieldErrors: state.emailConfig.error.fieldErrors,
     updateStatus: state.emailConfig.updateStatus,
     actionMessage: state.emailConfig.actionMessage,
-    showTestModal: state.emailConfig.showTestModal
+    showTestModal: state.emailConfig.showTestModal,
+    modalTesting: state.emailConfig.modalTesting
 });
 
 const mapDispatchToProps = dispatch => ({
