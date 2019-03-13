@@ -86,7 +86,7 @@ public class AlertStartupInitializer {
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
             final boolean overwriteSavedInDB = settingsConfiguration
                                                    .flatMap(configurationModel -> configurationModel.getField(fieldKey))
-                                                   .flatMap(field -> field.getFieldValue())
+                                                   .flatMap(ConfigurationFieldModel::getFieldValue)
                                                    .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
             final String environmentFieldKey = convertKeyToPropery(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
             final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
