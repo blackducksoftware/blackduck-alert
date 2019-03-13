@@ -91,12 +91,9 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
-        final Optional<FieldValueModel> optionalPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
-        if (optionalPassword.isPresent()) {
-            final String password = optionalPassword.flatMap(FieldValueModel::getValue).orElse("");
-            if (StringUtils.isNotBlank(password)) {
-                userAccessor.changeUserPassword(DefaultUserAccessor.DEFAULT_ADMIN_USER, password);
-            }
+        final String password = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
+        if (StringUtils.isNotBlank(password)) {
+            userAccessor.changeUserPassword(DefaultUserAccessor.DEFAULT_ADMIN_USER, password);
         }
     }
 
