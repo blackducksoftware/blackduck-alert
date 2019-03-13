@@ -125,13 +125,13 @@ public class ConfigActions {
 
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
-        final String descriptorName = fieldModel.getDescriptorName();
-        final String context = fieldModel.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
+        final FieldModel modifiedFieldModel = fieldModelProcessor.performSaveAction(fieldModel);
+        final String descriptorName = modifiedFieldModel.getDescriptorName();
+        final String context = modifiedFieldModel.getContext();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(modifiedFieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
-        return fieldModelProcessor.performSaveAction(combinedModel);
+        return dbSavedModel.fill(modifiedFieldModel);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
@@ -160,11 +160,11 @@ public class ConfigActions {
 
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, fieldModel);
+        final FieldModel updatedFieldModel = fieldModelProcessor.performUpdateAction(fieldModel);
+        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
-        return fieldModelProcessor.performUpdateAction(combinedModel);
+        return dbSavedModel.fill(updatedFieldModel);
     }
 
 }
