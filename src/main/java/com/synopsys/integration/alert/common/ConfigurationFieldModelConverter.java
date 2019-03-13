@@ -59,6 +59,7 @@ public class ConfigurationFieldModelConverter {
         return new FieldAccessor(fields);
     }
 
+    // TODO verify if we need this method or if we can just use the method this calls
     public final Map<String, ConfigurationFieldModel> convertFromFieldModel(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
         return convertToConfigurationFieldModelMap(fieldModel);
     }
