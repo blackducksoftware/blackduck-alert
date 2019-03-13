@@ -20,6 +20,7 @@ class SetupPage extends Component {
     }
 
     render() {
+        const { errorMessage, actionMessage } = this.props;
         return (
             <div className="settingsWrapper">
                 <div className="settingsContainer">
@@ -31,6 +32,8 @@ class SetupPage extends Component {
                             fieldErrors={this.props.fieldErrors}
                             getSettings={this.getSettings}
                             saveSettings={this.saveSettings}
+                            errorMessage={errorMessage}
+                            actionMessage={actionMessage}
                         />
                     </div>
                 </div>
@@ -45,16 +48,22 @@ SetupPage.propTypes = {
     saveSettings: PropTypes.func.isRequired,
     updateStatus: PropTypes.string,
     currentSettingsData: PropTypes.object,
-    fieldErrors: PropTypes.object
+    fieldErrors: PropTypes.object,
+    errorMessage: PropTypes.string,
+    actionMessage: PropTypes.string
 };
 
 SetupPage.defaultProps = {
     fieldErrors: {},
     currentSettingsData: {},
-    updateStatus: ''
+    updateStatus: '',
+    errorMessage: null,
+    actionMessage: null
 };
 
 const mapStateToProps = state => ({
+    errorMessage: state.system.errorMessage,
+    actionMessage: state.system.actionMessage,
     fetchingSetupStatus: state.system.fetchingSetupStatus,
     updateStatus: state.system.updateStatus,
     currentSettingsData: state.system.settingsData,

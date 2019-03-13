@@ -27,13 +27,6 @@ class SettingsConfiguration extends Component {
                     <span className="fa fa-cog" />
                     Settings
                 </h1>
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
-
-                {actionMessage && <div className="alert alert-success">
-                    {actionMessage}
-                </div>}
                 <SettingsConfigurationForm
                     fetchingSetupStatus={this.props.fetchingSetupStatus}
                     updateStatus={this.props.updateStatus}
@@ -41,6 +34,8 @@ class SettingsConfiguration extends Component {
                     fieldErrors={this.props.fieldErrors}
                     getSettings={this.getSettings}
                     saveSettings={this.saveSettings}
+                    errorMessage={errorMessage}
+                    actionMessage={actionMessage}
                 />
             </div>
         );

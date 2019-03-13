@@ -82,7 +82,7 @@ public class ConfigActions {
             final String contextName = context.name();
             final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(contextName, descriptorName);
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
-            List<FieldModel> fieldModelList = new LinkedList<>();
+            final List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
                     final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
@@ -124,20 +124,18 @@ public class ConfigActions {
     }
 
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
-        final FieldModel trimmedFieldMode = fieldModelProcessor.trimFieldModelValues(fieldModel);
-        validateConfig(trimmedFieldMode, new HashMap<>());
-        final String descriptorName = trimmedFieldMode.getDescriptorName();
-        final String context = trimmedFieldMode.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(trimmedFieldMode);
+        validateConfig(fieldModel, new HashMap<>());
+        final String descriptorName = fieldModel.getDescriptorName();
+        final String context = fieldModel.getContext();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        final FieldModel combinedModel = dbSavedModel.fill(trimmedFieldMode);
+        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
         return fieldModelProcessor.performSaveAction(combinedModel);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
-        final FieldModel trimmedFieldMode = fieldModelProcessor.trimFieldModelValues(fieldModel);
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(trimmedFieldMode));
+        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -161,12 +159,11 @@ public class ConfigActions {
     }
 
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
-        final FieldModel trimmedFieldMode = fieldModelProcessor.trimFieldModelValues(fieldModel);
-        validateConfig(trimmedFieldMode, new HashMap<>());
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, trimmedFieldMode);
+        validateConfig(fieldModel, new HashMap<>());
+        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, fieldModel);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-        final FieldModel combinedModel = dbSavedModel.fill(trimmedFieldMode);
+        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
         return fieldModelProcessor.performUpdateAction(combinedModel);
     }
 
