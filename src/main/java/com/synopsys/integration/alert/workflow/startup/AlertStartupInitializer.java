@@ -131,7 +131,7 @@ public class AlertStartupInitializer {
             logger.info("  {}", convertedKey);
             logger.debug("       Environment Variable Found - {}", hasEnvironmentValue);
             getEnvironmentValue(convertedKey)
-                .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value))
+                .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                 .ifPresent(configurationModels::add);
         }
         return configurationModels;

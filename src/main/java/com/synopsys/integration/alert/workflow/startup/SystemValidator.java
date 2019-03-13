@@ -85,8 +85,9 @@ public class SystemValidator {
 
         final boolean defaultUserSettingsValid = validateDefaultUser(fieldErrors);
         final boolean encryptionValid = validateEncryptionProperties(fieldErrors);
+        final boolean proxyValid = validateProxyProperties();
         final boolean providersValid = validateProviders();
-        final boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
+        final boolean valid = defaultUserSettingsValid && encryptionValid && proxyValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         systemStatusUtility.setSystemInitialized(valid);
@@ -153,6 +154,20 @@ public class SystemValidator {
         return valid;
     }
 
+    public boolean validateProxyProperties() {
+        boolean valid = true;
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.PROXY_CONFIGURATION_ERROR);
+        try {
+            proxyManager.createProxyInfo();
+        } catch (final IllegalArgumentException e) {
+            valid = false;
+            logger.error("  -> Proxy Invalid; cause: {}", e.getMessage());
+            logger.debug("  -> Proxy Stack Trace: ", e);
+            systemMessageUtility.addSystemMessage("Proxy invalid: " + e.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.PROXY_CONFIGURATION_ERROR);
+        }
+        return valid;
+    }
+
     public boolean validateProviders() {
         final boolean valid;
         logger.info("Validating configured providers: ");
@@ -163,16 +178,23 @@ public class SystemValidator {
     // TODO add this validation to provider descriptors so we can run this when it's defined (Or delete it entirely as we no longer require a BD setup)
     public boolean validateBlackDuckProvider() {
         logger.info("Validating BlackDuck Provider...");
-        boolean valid = true;
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         try {
             final BlackDuckServerVerifier verifier = new BlackDuckServerVerifier();
-            final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+            ProxyInfo proxyInfo;
+            try {
+                proxyInfo = proxyManager.createProxyInfo();
+            } catch (final IllegalArgumentException e) {
+                proxyInfo = ProxyInfo.NO_PROXY_INFO;
+            }
+
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
                 final String errorMessage = "BlackDuck Provider invalid: URL missing";
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
-                valid = false;
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
@@ -194,13 +216,6 @@ public class SystemValidator {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
             systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
-            valid = false;
-        }
-
-        if (valid) {
-            systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
-            systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
-            systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         }
         return true;
     }

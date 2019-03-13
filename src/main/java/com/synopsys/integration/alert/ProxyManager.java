@@ -62,12 +62,12 @@ public class ProxyManager {
         return Optional.empty();
     }
 
-    public ProxyInfo createProxyInfo() {
+    public ProxyInfo createProxyInfo() throws IllegalArgumentException {
         final Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
-        final Optional<String> alertProxyHost = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyPort = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyUsername = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyPassword = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PWD)).flatMap(ConfigurationFieldModel::getFieldValue);
+        final Optional<String> alertProxyHost = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_HOST);
+        final Optional<String> alertProxyPort = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_PORT);
+        final Optional<String> alertProxyUsername = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_USERNAME);
+        final Optional<String> alertProxyPassword = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_PWD);
 
         final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         if (alertProxyHost.isPresent()) {
@@ -85,5 +85,30 @@ public class ProxyManager {
         }
         proxyBuilder.setCredentials(credentialsBuilder.build());
         return proxyBuilder.build();
+    }
+
+    public Optional<String> getProxyHost() {
+        return getProxySetting(SettingsDescriptor.KEY_PROXY_HOST);
+    }
+
+    public Optional<String> getProxyPort() {
+        return getProxySetting(SettingsDescriptor.KEY_PROXY_PORT);
+    }
+
+    public Optional<String> getProxyUsername() {
+        return getProxySetting(SettingsDescriptor.KEY_PROXY_USERNAME);
+    }
+
+    public Optional<String> getProxyPassword() {
+        return getProxySetting(SettingsDescriptor.KEY_PROXY_PWD);
+    }
+
+    private Optional<String> getProxySetting(final String key) {
+        final Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
+        return getProxySetting(settingsConfiguration, key);
+    }
+
+    private Optional<String> getProxySetting(final Optional<ConfigurationModel> settingsConfiguration, final String key) {
+        return settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(key)).flatMap(ConfigurationFieldModel::getFieldValue);
     }
 }

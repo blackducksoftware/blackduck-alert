@@ -197,16 +197,16 @@ export function saveInitialSystemSetup(setupData) {
                 } else {
                     response.json().then((body) => {
                         const jsonErrors = body.errors;
+                        const errors = {};
                         if (jsonErrors) {
-                            const errors = {};
                             Object.keys(jsonErrors).forEach((key) => {
                                 if (jsonErrors[key]) {
                                     const value = jsonErrors[key];
                                     errors[key] = value;
                                 }
                             });
-                            dispatch(systemSetupUpdateError(body.message, errors));
                         }
+                        dispatch(systemSetupUpdateError(body.message, errors));
                     });
                 }
             })
@@ -222,20 +222,19 @@ export function saveSystemSetup(setupData) {
         request.then((response) => {
             if (response.ok) {
                 dispatch(systemSetupUpdated());
-                dispatch(getSystemSetup());
             } else {
                 response.json().then((body) => {
                     const jsonErrors = body.errors;
+                    const errors = {};
                     if (jsonErrors) {
-                        const errors = {};
                         Object.keys(jsonErrors).forEach((key) => {
                             if (jsonErrors[key]) {
                                 const value = jsonErrors[key];
                                 errors[key] = value;
                             }
                         });
-                        dispatch(systemSetupUpdateError(body.message, errors));
                     }
+                    dispatch(systemSetupUpdateError(body.message, errors));
                 });
             }
         })

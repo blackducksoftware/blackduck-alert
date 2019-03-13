@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,15 +63,23 @@ public class ConfigurationFieldModelConverter {
         return convertToConfigurationFieldModelMap(fieldModel);
     }
 
-    public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final String value) {
+    public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final String value, final boolean isSet) {
         final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
-        configurationModel.ifPresent(model -> model.setFieldValue(value));
+        final boolean actualSetValue = isSet || StringUtils.isNotBlank(value);
+        configurationModel.ifPresent(model -> {
+            model.setFieldValue(value);
+            model.setSet(actualSetValue);
+        });
         return configurationModel;
     }
 
-    public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final Collection<String> values) {
+    public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final Collection<String> values, final boolean isSet) {
         final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
-        configurationModel.ifPresent(model -> model.setFieldValues(values));
+        final boolean actualSetValue = isSet || (values != null && values.stream().anyMatch(StringUtils::isNotBlank));
+        configurationModel.ifPresent(model -> {
+            model.setFieldValues(values);
+            model.setSet(actualSetValue);
+        });
         return configurationModel;
     }
 
@@ -82,7 +91,7 @@ public class ConfigurationFieldModelConverter {
         final Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
         for (final DefinedFieldModel definedField : fieldsForContext) {
             fieldModel.getField(definedField.getKey())
-                .flatMap(fieldValueModel -> convertFromDefinedFieldModel(definedField, fieldValueModel.getValues()))
+                .flatMap(fieldValueModel -> convertFromDefinedFieldModel(definedField, fieldValueModel.getValues(), fieldValueModel.isSet()))
                 .ifPresent(configurationFieldModel -> configurationModels.put(configurationFieldModel.getFieldKey(), configurationFieldModel));
         }
 

@@ -158,6 +158,8 @@ class SettingsConfigurationForm extends Component {
     }
 
     render() {
+        const { errorMessage, actionMessage } = this.props;
+
         const fieldModel = this.state.settingsData;
         const selectedAuthenticationType = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
         const authenticationTypeOptions = this.getAuthenticationTypes();
@@ -169,279 +171,288 @@ class SettingsConfigurationForm extends Component {
 
         const saving = this.props.updateStatus === 'UPDATING' || this.props.updateStatus === 'FETCHING';
         return (
-            <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        <h2>Default System Administrator Configuration</h2>
-                        <TextInput
-                            id={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
-                            label="Email Address"
-                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
-                            name={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
-                            onChange={this.handleChange}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
-                            errorValue={this.props.fieldErrors[KEY_DEFAULT_SYSTEM_ADMIN_EMAIL]}
-                        />
-                        <PasswordInput
-                            id={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
-                            label="Password"
-                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            name={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            onChange={this.handleChange}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            errorValue={this.props.fieldErrors[KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD]}
-                        />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        <h2>Encryption Configuration</h2>
-                        <PasswordInput
-                            id={KEY_ENCRYPTION_PASSWORD}
-                            label="Password"
-                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ENCRYPTION_PASSWORD)}
-                            name={KEY_ENCRYPTION_PASSWORD}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ENCRYPTION_PASSWORD)}
-                            isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_PASSWORD)}
-                            onChange={this.handleChange}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)}
-                            errorValue={this.props.fieldErrors[KEY_ENCRYPTION_PASSWORD]}
-                        />
-                        <PasswordInput
-                            id={KEY_ENCRYPTION_GLOBAL_SALT}
-                            label="Salt"
-                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ENCRYPTION_GLOBAL_SALT)}
-                            name={KEY_ENCRYPTION_GLOBAL_SALT}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
-                            isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
-                            onChange={this.handleChange}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
-                            errorValue={this.props.fieldErrors[KEY_ENCRYPTION_GLOBAL_SALT]}
-                        />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        <CheckboxInput
-                            id={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
-                            label="Startup Environment Variable Override"
-                            description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
-                            name={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
-                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
-                            onChange={this.handleChange}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
-                            errorValue={this.props.fieldErrors[KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE]}
-                        />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        <CollapsiblePane title="Proxy Configuration">
-                            <TextInput
-                                id={KEY_PROXY_HOST}
-                                label="Host Name"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_HOST)}
-                                name={KEY_PROXY_HOST}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_HOST)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_HOST)}
-                                errorValue={this.props.fieldErrors[KEY_PROXY_HOST]}
-                            />
-                            <TextInput
-                                id={KEY_PROXY_PORT}
-                                label="Port"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_PORT)}
-                                name={KEY_PROXY_PORT}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_PORT)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_PORT)}
-                                errorValue={this.props.fieldErrors[KEY_PROXY_PORT]}
-                            />
-                            <TextInput
-                                id={KEY_PROXY_USERNAME}
-                                label="Username"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_USERNAME)}
-                                name={KEY_PROXY_USERNAME}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_USERNAME)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_USERNAME)}
-                                errorValue={this.props.fieldErrors[KEY_PROXY_USERNAME]}
-                            />
-                            <PasswordInput
-                                id={KEY_PROXY_PASSWORD}
-                                label="Password"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_PASSWORD)}
-                                name={KEY_PROXY_PASSWORD}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_PASSWORD)}
-                                isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_PROXY_PASSWORD)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_PASSWORD)}
-                                errorValue={this.props.fieldErrors[KEY_PROXY_PASSWORD]}
-                            />
-                        </CollapsiblePane>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        <CollapsiblePane title="LDAP Configuration">
-                            <CheckboxInput
-                                id={KEY_LDAP_ENABLED}
-                                label="Enabled"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_ENABLED)}
-                                name={KEY_LDAP_ENABLED}
-                                isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_LDAP_ENABLED)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_ENABLED)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_ENABLED]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_SERVER}
-                                label="Server"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_SERVER)}
-                                name={KEY_LDAP_SERVER}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_SERVER)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_SERVER)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_SERVER]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_MANAGER_DN}
-                                label="Manager DN"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_MANAGER_DN)}
-                                name={KEY_LDAP_MANAGER_DN}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_DN)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_DN]}
-                            />
-                            <PasswordInput
-                                id={KEY_LDAP_MANAGER_PASSWORD}
-                                label="Manager Password"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_MANAGER_PASSWORD)}
-                                name={KEY_LDAP_MANAGER_PASSWORD}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
-                                isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_PASSWORD]}
-                            />
-                            <SelectInput
-                                label="Authentication Type"
-                                onChange={this.createSingleSelectHandler(KEY_LDAP_AUTHENTICATION_TYPE)}
-                                id={KEY_LDAP_AUTHENTICATION_TYPE}
-                                inputClass="typeAheadField"
-                                labelClass="col-sm-3"
-                                selectSpacingClass="col-sm-8"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_AUTHENTICATION_TYPE)}
-                                options={this.getAuthenticationTypes()}
-                                placeholder="Choose authentication type"
-                                value={selectedAuthenticationOption}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_AUTHENTICATION_TYPE]}
-                            />
+            <div>
+                {errorMessage && <div className="alert alert-danger">
+                    {errorMessage}
+                </div>}
 
-                            <SelectInput
-                                label="Referral"
-                                onChange={this.createSingleSelectHandler(KEY_LDAP_REFERRAL)}
-                                id={KEY_LDAP_REFERRAL}
-                                inputClass="typeAheadField"
-                                labelClass="col-sm-3"
-                                selectSpacingClass="col-sm-8"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_REFERRAL)}
-                                options={this.getReferralOptions()}
-                                placeholder="Choose referral type"
-                                value={selectedReferralOption}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_REFERRAL]}
-                            />
+                {actionMessage && <div className="alert alert-success">
+                    {actionMessage}
+                </div>}
+                <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
+                    <div className="form-group">
+                        <div className="col-sm-12">
+                            <h2>Default System Administrator Configuration</h2>
                             <TextInput
-                                id={KEY_LDAP_USER_SEARCH_BASE}
-                                label="User Search Base"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_SEARCH_BASE)}
-                                name={KEY_LDAP_USER_SEARCH_BASE}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_BASE)}
+                                id={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
+                                label="Email Address"
+                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
+                                name={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
+                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
                                 onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_SEARCH_BASE]}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
+                                errorValue={this.props.fieldErrors[KEY_DEFAULT_SYSTEM_ADMIN_EMAIL]}
                             />
-                            <TextInput
-                                id={KEY_LDAP_USER_SEARCH_FILTER}
-                                label="User Search Filter"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_SEARCH_FILTER)}
-                                name={KEY_LDAP_USER_SEARCH_FILTER}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_FILTER)}
+                            <PasswordInput
+                                id={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
+                                label="Password"
+                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                                name={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
+                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                                isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                                 onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_SEARCH_FILTER]}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                                errorValue={this.props.fieldErrors[KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD]}
                             />
-                            <TextInput
-                                id={KEY_LDAP_USER_DN_PATTERNS}
-                                label="User DN Patterns"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_DN_PATTERNS)}
-                                name={KEY_LDAP_USER_DN_PATTERNS}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_DN_PATTERNS)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_DN_PATTERNS]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_USER_ATTRIBUTES}
-                                label="User Attributes"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_ATTRIBUTES)}
-                                name={KEY_LDAP_USER_ATTRIBUTES}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_ATTRIBUTES)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_ATTRIBUTES]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_GROUP_SEARCH_BASE}
-                                label="Group Search Base"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_GROUP_SEARCH_BASE)}
-                                name={KEY_LDAP_GROUP_SEARCH_BASE}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_BASE)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_SEARCH_BASE]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_GROUP_SEARCH_FILTER}
-                                label="Group Search Filter"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_GROUP_SEARCH_FILTER)}
-                                name={KEY_LDAP_GROUP_SEARCH_FILTER}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_FILTER)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_SEARCH_FILTER]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
-                                label="Group Role Attribute"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
-                                name={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_ROLE_ATTRIBUTE]}
-                            />
-                            <TextInput
-                                id={KEY_LDAP_ROLE_PREFIX}
-                                label="Role Prefix"
-                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_ROLE_PREFIX)}
-                                name={KEY_LDAP_ROLE_PREFIX}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_ROLE_PREFIX)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_ROLE_PREFIX]}
-                            />
-                        </CollapsiblePane>
+                        </div>
                     </div>
-                </div>
-                <ConfigButtons isFixed={false} includeSave type="submit" performingAction={saving} />
-            </form>
+                    <div className="form-group">
+                        <div className="col-sm-12">
+                            <h2>Encryption Configuration</h2>
+                            <PasswordInput
+                                id={KEY_ENCRYPTION_PASSWORD}
+                                label="Password"
+                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ENCRYPTION_PASSWORD)}
+                                name={KEY_ENCRYPTION_PASSWORD}
+                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ENCRYPTION_PASSWORD)}
+                                isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_PASSWORD)}
+                                onChange={this.handleChange}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)}
+                                errorValue={this.props.fieldErrors[KEY_ENCRYPTION_PASSWORD]}
+                            />
+                            <PasswordInput
+                                id={KEY_ENCRYPTION_GLOBAL_SALT}
+                                label="Salt"
+                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ENCRYPTION_GLOBAL_SALT)}
+                                name={KEY_ENCRYPTION_GLOBAL_SALT}
+                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
+                                isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
+                                onChange={this.handleChange}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
+                                errorValue={this.props.fieldErrors[KEY_ENCRYPTION_GLOBAL_SALT]}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <div className="col-sm-12">
+                            <CheckboxInput
+                                id={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
+                                label="Startup Environment Variable Override"
+                                description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
+                                name={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
+                                isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
+                                onChange={this.handleChange}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
+                                errorValue={this.props.fieldErrors[KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE]}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <div className="col-sm-12">
+                            <CollapsiblePane title="Proxy Configuration">
+                                <TextInput
+                                    id={KEY_PROXY_HOST}
+                                    label="Host Name"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_HOST)}
+                                    name={KEY_PROXY_HOST}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_HOST)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_HOST)}
+                                    errorValue={this.props.fieldErrors[KEY_PROXY_HOST]}
+                                />
+                                <TextInput
+                                    id={KEY_PROXY_PORT}
+                                    label="Port"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_PORT)}
+                                    name={KEY_PROXY_PORT}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_PORT)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_PORT)}
+                                    errorValue={this.props.fieldErrors[KEY_PROXY_PORT]}
+                                />
+                                <TextInput
+                                    id={KEY_PROXY_USERNAME}
+                                    label="Username"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_USERNAME)}
+                                    name={KEY_PROXY_USERNAME}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_USERNAME)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_USERNAME)}
+                                    errorValue={this.props.fieldErrors[KEY_PROXY_USERNAME]}
+                                />
+                                <PasswordInput
+                                    id={KEY_PROXY_PASSWORD}
+                                    label="Password"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROXY_PASSWORD)}
+                                    name={KEY_PROXY_PASSWORD}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PROXY_PASSWORD)}
+                                    isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_PROXY_PASSWORD)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROXY_PASSWORD)}
+                                    errorValue={this.props.fieldErrors[KEY_PROXY_PASSWORD]}
+                                />
+                            </CollapsiblePane>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <div className="col-sm-12">
+                            <CollapsiblePane title="LDAP Configuration">
+                                <CheckboxInput
+                                    id={KEY_LDAP_ENABLED}
+                                    label="Enabled"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_ENABLED)}
+                                    name={KEY_LDAP_ENABLED}
+                                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_LDAP_ENABLED)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_ENABLED)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_ENABLED]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_SERVER}
+                                    label="Server"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_SERVER)}
+                                    name={KEY_LDAP_SERVER}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_SERVER)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_SERVER)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_SERVER]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_MANAGER_DN}
+                                    label="Manager DN"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_MANAGER_DN)}
+                                    name={KEY_LDAP_MANAGER_DN}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_DN)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_DN]}
+                                />
+                                <PasswordInput
+                                    id={KEY_LDAP_MANAGER_PASSWORD}
+                                    label="Manager Password"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_MANAGER_PASSWORD)}
+                                    name={KEY_LDAP_MANAGER_PASSWORD}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
+                                    isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_PASSWORD]}
+                                />
+                                <SelectInput
+                                    label="Authentication Type"
+                                    onChange={this.createSingleSelectHandler(KEY_LDAP_AUTHENTICATION_TYPE)}
+                                    id={KEY_LDAP_AUTHENTICATION_TYPE}
+                                    inputClass="typeAheadField"
+                                    labelClass="col-sm-3"
+                                    selectSpacingClass="col-sm-8"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_AUTHENTICATION_TYPE)}
+                                    options={this.getAuthenticationTypes()}
+                                    placeholder="Choose authentication type"
+                                    value={selectedAuthenticationOption}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_AUTHENTICATION_TYPE]}
+                                />
+
+                                <SelectInput
+                                    label="Referral"
+                                    onChange={this.createSingleSelectHandler(KEY_LDAP_REFERRAL)}
+                                    id={KEY_LDAP_REFERRAL}
+                                    inputClass="typeAheadField"
+                                    labelClass="col-sm-3"
+                                    selectSpacingClass="col-sm-8"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_REFERRAL)}
+                                    options={this.getReferralOptions()}
+                                    placeholder="Choose referral type"
+                                    value={selectedReferralOption}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_REFERRAL]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_USER_SEARCH_BASE}
+                                    label="User Search Base"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_SEARCH_BASE)}
+                                    name={KEY_LDAP_USER_SEARCH_BASE}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_BASE)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_USER_SEARCH_BASE]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_USER_SEARCH_FILTER}
+                                    label="User Search Filter"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_SEARCH_FILTER)}
+                                    name={KEY_LDAP_USER_SEARCH_FILTER}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_FILTER)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_USER_SEARCH_FILTER]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_USER_DN_PATTERNS}
+                                    label="User DN Patterns"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_DN_PATTERNS)}
+                                    name={KEY_LDAP_USER_DN_PATTERNS}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_DN_PATTERNS)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_USER_DN_PATTERNS]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_USER_ATTRIBUTES}
+                                    label="User Attributes"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_USER_ATTRIBUTES)}
+                                    name={KEY_LDAP_USER_ATTRIBUTES}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_ATTRIBUTES)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_USER_ATTRIBUTES]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_GROUP_SEARCH_BASE}
+                                    label="Group Search Base"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_GROUP_SEARCH_BASE)}
+                                    name={KEY_LDAP_GROUP_SEARCH_BASE}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_BASE)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_SEARCH_BASE]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_GROUP_SEARCH_FILTER}
+                                    label="Group Search Filter"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_GROUP_SEARCH_FILTER)}
+                                    name={KEY_LDAP_GROUP_SEARCH_FILTER}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_FILTER)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_SEARCH_FILTER]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
+                                    label="Group Role Attribute"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
+                                    name={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_ROLE_ATTRIBUTE]}
+                                />
+                                <TextInput
+                                    id={KEY_LDAP_ROLE_PREFIX}
+                                    label="Role Prefix"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_ROLE_PREFIX)}
+                                    name={KEY_LDAP_ROLE_PREFIX}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_ROLE_PREFIX)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
+                                    errorValue={this.props.fieldErrors[KEY_LDAP_ROLE_PREFIX]}
+                                />
+                            </CollapsiblePane>
+                        </div>
+                    </div>
+                    <ConfigButtons isFixed={false} includeSave type="submit" performingAction={saving} />
+                </form>
+            </div>
         );
     }
 }
@@ -452,13 +463,17 @@ SettingsConfigurationForm.propTypes = {
     saveSettings: PropTypes.func.isRequired,
     updateStatus: PropTypes.string,
     settingsData: PropTypes.object,
-    fieldErrors: PropTypes.object
+    fieldErrors: PropTypes.object,
+    errorMessage: PropTypes.string,
+    actionMessage: PropTypes.string
 };
 
 SettingsConfigurationForm.defaultProps = {
     fieldErrors: {},
     settingsData: {},
-    updateStatus: ''
+    updateStatus: '',
+    errorMessage: null,
+    actionMessage: null
 };
 
 export default SettingsConfigurationForm;
