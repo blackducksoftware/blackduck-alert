@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,6 +49,9 @@ import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.web.config.FieldModelProcessor;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class AlertStartupInitializer {
@@ -57,15 +61,17 @@ public class AlertStartupInitializer {
     private final BaseDescriptorAccessor descriptorAccessor;
     private final BaseConfigurationAccessor fieldConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
+    private final FieldModelProcessor fieldModelProcessor;
 
     @Autowired
     public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor fieldConfigurationAccessor,
-        final ConfigurationFieldModelConverter modelConverter) {
+        final ConfigurationFieldModelConverter modelConverter, final FieldModelProcessor fieldModelProcessor) {
         this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
         this.modelConverter = modelConverter;
+        this.fieldModelProcessor = fieldModelProcessor;
     }
 
     public void initializeConfigs() throws IllegalArgumentException, SecurityException {
@@ -88,7 +94,7 @@ public class AlertStartupInitializer {
                                                    .flatMap(configurationModel -> configurationModel.getField(fieldKey))
                                                    .flatMap(ConfigurationFieldModel::getFieldValue)
                                                    .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
-            final String environmentFieldKey = convertKeyToPropery(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
+            final String environmentFieldKey = convertKeyToProperty(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
             final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
             environmentOverride = environmentValue.map(envValue -> Boolean.valueOf(envValue)).orElse(overwriteSavedInDB);
@@ -125,7 +131,7 @@ public class AlertStartupInitializer {
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
             final String key = fieldModel.getKey();
-            final String convertedKey = convertKeyToPropery(descriptorName, key);
+            final String convertedKey = convertKeyToProperty(descriptorName, key);
             final boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
             logger.info("  {}", convertedKey);
             logger.debug("       Environment Variable Found - {}", hasEnvironmentValue);
@@ -143,17 +149,32 @@ public class AlertStartupInitializer {
                 if (overwriteCurrentConfig) {
                     final ConfigurationModel configurationModel = foundConfigurationModels.get(0);
                     logger.info("  Overwriting configuration values with environment for descriptor.");
-                    fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), configurationModels);
+                    final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
+                    fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), updatedFields);
                 }
             } else {
                 logger.info("  Writing initial configuration values from environment for descriptor.");
-                fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, configurationModels);
-
+                final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
+                fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
             }
         }
     }
 
-    private String convertKeyToPropery(final String descriptorName, final String key) {
+    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertDatabaseConstraintException {
+        final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
+        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
+        final FieldModel updatedFieldModel = fieldModelProcessor.performUpdateAction(fieldModel);
+        return modelConverter.convertFromFieldModel(updatedFieldModel).values();
+    }
+
+    private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertDatabaseConstraintException {
+        final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
+        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
+        final FieldModel savedFieldModel = fieldModelProcessor.performSaveAction(fieldModel);
+        return modelConverter.convertFromFieldModel(savedFieldModel).values();
+    }
+
+    private String convertKeyToProperty(final String descriptorName, final String key) {
         final String keyUnderscores = key.replace(".", "_");
         return String.join("_", "alert", descriptorName, keyUnderscores).toUpperCase();
     }

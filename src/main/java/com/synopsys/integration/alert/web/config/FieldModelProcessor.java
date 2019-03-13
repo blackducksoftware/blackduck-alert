@@ -85,18 +85,15 @@ public class FieldModelProcessor {
 
     public FieldModel performDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        return descriptorActionApi.map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
+        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
     }
 
     public FieldModel performSaveAction(final FieldModel fieldModel) {
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        return descriptorActionApi.map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
+        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
     }
 
     public FieldModel performUpdateAction(final FieldModel fieldModel) {
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        return descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
+        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
@@ -171,6 +168,17 @@ public class FieldModelProcessor {
         }
 
         return new FieldModel(configId.toString(), descriptorName, configurationModel.getDescriptorContext().name(), fields);
+    }
+
+    public Map<String, FieldValueModel> convertToFieldValuesMap(final Collection<ConfigurationFieldModel> configurationFieldModels) {
+        final Map<String, FieldValueModel> fields = new HashMap<>();
+        for (final ConfigurationFieldModel fieldModel : configurationFieldModels) {
+            final String key = fieldModel.getFieldKey();
+            final Collection<String> values = fieldModel.getFieldValues();
+            final FieldValueModel fieldValueModel = new FieldValueModel(values, fieldModel.isSet());
+            fields.put(key, fieldValueModel);
+        }
+        return fields;
     }
 
     private void populateAndSecureFields(final ConfigurationFieldModel fieldModel, final Map<String, FieldValueModel> fields) {
