@@ -54,6 +54,7 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_FETCHING:
             return Object.assign({}, state, {
                 actionMessage: null,
+                errorMessage: null,
                 resettingPassword: false,
                 fetchingSetupStatus: SYSTEM_SETUP_FETCHING,
                 updateStatus: 'FETCHING'
@@ -61,6 +62,7 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_FETCH_REDIRECTED:
             return Object.assign({}, state, {
                 actionMessage: null,
+                errorMessage: null,
                 resettingPassword: false,
                 fetchingSetupStatus: '',
                 systemInitialized: true,
@@ -70,6 +72,7 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_SHOW_CONFIG:
             return Object.assign({}, state, {
                 actionMessage: null,
+                errorMessage: null,
                 resettingPassword: false,
                 systemInitialized: false,
                 fetchingSetupStatus: SYSTEM_SETUP_FETCHED,
@@ -80,6 +83,7 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_FETCHED:
             return Object.assign({}, state, {
                 actionMessage: null,
+                errorMessage: null,
                 resettingPassword: false,
                 fetchingSetupStatus: SYSTEM_SETUP_FETCHED,
                 updateStatus: 'FETCHED',
@@ -107,6 +111,7 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_UPDATED:
             return Object.assign({}, state, {
                 actionMessage: 'Update successful',
+                errorMessage: null,
                 resettingPassword: false,
                 fetchingSetupStatus: SYSTEM_SETUP_UPDATED,
                 updateStatus: 'UPDATED',
@@ -128,7 +133,7 @@ const config = (state = initialState, action) => {
                 resettingPassword: false,
                 showPasswordResetModal: true,
                 updateStatus: '',
-                errorMessage: '',
+                errorMessage: null,
                 error: {}
             });
         case SYSTEM_SETUP_HIDE_RESET_PASSWORD_MODAL:
@@ -136,14 +141,14 @@ const config = (state = initialState, action) => {
                 resettingPassword: false,
                 showPasswordResetModal: false,
                 updateStatus: '',
-                errorMessage: '',
+                errorMessage: null,
                 error: {}
             });
         case SYSTEM_SETUP_PASSWORD_RESETTING:
             return Object.assign({}, state, {
                 resettingPassword: true,
                 updateStatus: '',
-                errorMessage: '',
+                errorMessage: null,
                 error: {}
             });
         case SERIALIZE:

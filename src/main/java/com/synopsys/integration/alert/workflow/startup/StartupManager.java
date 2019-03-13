@@ -56,7 +56,6 @@ import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class StartupManager {
@@ -121,16 +120,20 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        final Optional<String> proxyHost = proxyManager.getProxyHost();
+        final Optional<String> proxyPort = proxyManager.getProxyPort();
+        final Optional<String> proxyUsername = proxyManager.getProxyUsername();
+        final Optional<String> proxyPassword = proxyManager.getProxyPassword();
 
-        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyInfo.getPassword().orElse(""));
+        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyPassword.orElse(""));
+
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level:           {}", alertProperties.getLoggingLevel().orElse(""));
-        logger.info("Alert Proxy Host:          {}", proxyInfo.getHost().orElse(""));
-        logger.info("Alert Proxy Port:          {}", proxyInfo.getPort());
+        logger.info("Alert Proxy Host:          {}", proxyHost.orElse(""));
+        logger.info("Alert Proxy Port:          {}", proxyPort.orElse(""));
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Alert Proxy User:          {}", proxyInfo.getUsername().orElse(""));
+        logger.info("Alert Proxy User:          {}", proxyUsername.orElse(""));
         logger.info("");
         logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
