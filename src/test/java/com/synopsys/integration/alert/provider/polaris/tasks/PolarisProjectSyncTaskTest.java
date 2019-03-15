@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.provider.polaris.PolarisDataHelper;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 
 public class PolarisProjectSyncTaskTest {
@@ -13,7 +14,7 @@ public class PolarisProjectSyncTaskTest {
         final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
         Mockito.when(polarisProperties.getUrl()).thenReturn(Optional.empty());
 
-        final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(null, polarisProperties, null, null, null, null);
+        final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(null, polarisProperties, null, null, new PolarisDataHelper(), null, null);
         polarisProjectSyncTask.run();
     }
 

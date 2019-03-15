@@ -84,7 +84,7 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
         final Long projectId = providerProjectRepository.findFirstByHref(projectHref)
                                    .map(ProviderProjectEntity::getId)
                                    .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
-        final Optional<PolarisIssueEntity> optionalIssueEntity = polarisIssueRepository.findFirstByIssueType(issueType);
+        final Optional<PolarisIssueEntity> optionalIssueEntity = polarisIssueRepository.findFirstByIssueTypeAndProjectId(issueType, projectId);
 
         final PolarisIssueEntity newIssueEntity;
         if (optionalIssueEntity.isPresent()) {
