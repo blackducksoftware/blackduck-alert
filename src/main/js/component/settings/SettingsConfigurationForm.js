@@ -249,7 +249,10 @@ class SettingsConfigurationForm extends Component {
                     </div>
                     <div className="form-group">
                         <div className="col-sm-12">
-                            <CollapsiblePane title="Proxy Configuration">
+                            <CollapsiblePane
+                                title="Proxy Configuration"
+                                expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_PROXY_HOST, KEY_PROXY_PORT, KEY_PROXY_USERNAME, KEY_PROXY_PASSWORD])}
+                            >
                                 <TextInput
                                     id={KEY_PROXY_HOST}
                                     label="Host Name"
@@ -296,7 +299,12 @@ class SettingsConfigurationForm extends Component {
                     </div>
                     <div className="form-group">
                         <div className="col-sm-12">
-                            <CollapsiblePane title="LDAP Configuration">
+                            <CollapsiblePane
+                                title="LDAP Configuration"
+                                expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_LDAP_ENABLED, KEY_LDAP_SERVER, KEY_LDAP_MANAGER_DN, KEY_LDAP_MANAGER_PASSWORD,
+                                    KEY_LDAP_AUTHENTICATION_TYPE, KEY_LDAP_REFERRAL, KEY_LDAP_USER_SEARCH_BASE, KEY_LDAP_USER_SEARCH_FILTER, KEY_LDAP_USER_DN_PATTERNS, KEY_LDAP_USER_ATTRIBUTES,
+                                    KEY_LDAP_GROUP_SEARCH_BASE, KEY_LDAP_GROUP_SEARCH_FILTER, KEY_LDAP_GROUP_ROLE_ATTRIBUTE, KEY_LDAP_ROLE_PREFIX])}
+                            >
                                 <CheckboxInput
                                     id={KEY_LDAP_ENABLED}
                                     label="Enabled"
