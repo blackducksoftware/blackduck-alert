@@ -78,10 +78,9 @@ public class ProjectSyncTask extends ScheduledTask {
                 final ProjectService projectService = blackDuckServicesFactory.createProjectService();
                 final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 final Map<BlackDuckProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
+
+                final Map<String, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectService);
                 final Set<BlackDuckProject> blackDuckProjects = currentDataMap.keySet();
-
-                final Map<String, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjects, projectService);
-
                 projectSyncDatabase.databaseUpdates(blackDuckProjects, projectToEmailAddresses);
             } else {
                 logger.error("Missing BlackDuck global configuration.");
@@ -113,7 +112,7 @@ public class ProjectSyncTask extends ScheduledTask {
         return projectMap;
     }
 
-    private Map<String, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final Set<BlackDuckProject> blackDuckProjects, final ProjectService projectService) {
+    private Map<String, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final ProjectService projectService) {
         final Map<String, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
         currentDataMap.entrySet()
             .parallelStream()
