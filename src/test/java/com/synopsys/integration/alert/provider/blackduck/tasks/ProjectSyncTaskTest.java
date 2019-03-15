@@ -34,6 +34,8 @@ public class ProjectSyncTaskTest {
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
+        final ProjectSyncDatabase projectSyncDatabase = new ProjectSyncDatabase(blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor, userProjectRelationRepositoryAccessor);
+
         final String email1 = "user1@email.com";
         final String email2 = "user2@email.com";
         final String email3 = "user3@email.com";
@@ -70,8 +72,7 @@ public class ProjectSyncTaskTest {
         Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
         Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
-        final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
-            userProjectRelationRepositoryAccessor);
+        final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, projectSyncDatabase);
         projectSyncTask.run();
 
         assertEquals(4, blackDuckUserRepositoryAccessor.readEntities().size());
