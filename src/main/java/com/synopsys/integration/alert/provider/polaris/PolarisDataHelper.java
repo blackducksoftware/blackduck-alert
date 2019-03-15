@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * blackduck-alert
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,15 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.polaris.issue;
+package com.synopsys.integration.alert.provider.polaris;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.stereotype.Component;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.synopsys.integration.polaris.common.api.generated.common.ProjectV0;
 
-public interface PolarisIssueRepository extends JpaRepository<PolarisIssueEntity, Long> {
-    Optional<PolarisIssueEntity> findFirstByIssueTypeAndProjectId(final String issueType, final Long projectId);
+@Component
+public class PolarisDataHelper {
+    public String getHref(final ProjectV0 project) {
+        return project
+                   .getLinks()
+                   .getSelf()
+                   .getHref();
+    }
 
-    List<PolarisIssueEntity> findByProjectId(final Long projectId);
+    public String getName(final ProjectV0 project) {
+        return project
+                   .getAttributes()
+                   .getName();
+    }
 }
