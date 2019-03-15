@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,11 @@ import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
+import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -178,12 +180,19 @@ public class PolarisGlobalDescriptorActionApiTest {
     }
 
     @Test
-    public void testConfigThrowsIOExceptionTest() throws IOException, IntegrationException {
+    public void testConfigThrowsIOExceptionTest() throws IntegrationException {
         final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
         Mockito.when(accessTokenPolarisHttpClient.attemptAuthentication()).thenThrow(new IntegrationException("Do these exceptions really still happen? Wow!"));
 
+        final PolarisServerConfig mockConfig = Mockito.mock(PolarisServerConfig.class);
+        Mockito.when(mockConfig.createPolarisHttpClient(Mockito.any(IntLogger.class))).thenReturn(accessTokenPolarisHttpClient);
+
+        final PolarisServerConfigBuilder mockBuilder = Mockito.mock(PolarisServerConfigBuilder.class);
+        Mockito.when(mockBuilder.validateAndGetBuilderStatus()).thenReturn(new BuilderStatus());
+        Mockito.when(mockBuilder.build()).thenReturn(mockConfig);
+
         final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
-        Mockito.when(polarisProperties.createPolarisHttpClient(Mockito.any(IntLogger.class))).thenReturn(accessTokenPolarisHttpClient);
+        Mockito.when(polarisProperties.createInitialPolarisServerConfigBuilder(Mockito.any(IntLogger.class))).thenReturn(mockBuilder);
 
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, null);
 
