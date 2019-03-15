@@ -43,6 +43,7 @@ public class PolarisDescriptor extends ProviderDescriptor {
     public static final String POLARIS_ICON = "desktop";
     public static final String POLARIS_LABEL = "Polaris";
     public static final String POLARIS_URL_NAME = "polaris";
+    public static final String POLARIS_DESCRIPTION = "This is the configuration to connect to the Polaris server. Configuring this will cause Alert to start pulling data from Polaris Issues.";
 
     @Autowired
     public PolarisDescriptor(final PolarisGlobalDescriptorActionApi polarisGlobalDescriptorActionApi, final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionDescriptorActionApi polarisDistributionDescriptorActionApi,

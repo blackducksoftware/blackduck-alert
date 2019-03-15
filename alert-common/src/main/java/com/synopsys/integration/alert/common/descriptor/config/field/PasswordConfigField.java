@@ -26,28 +26,28 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class PasswordConfigField extends ConfigField {
-    public PasswordConfigField(final String key, final String label, final boolean required) {
-        super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);
+    public PasswordConfigField(final String key, final String label, final String description, final boolean required) {
+        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);
     }
 
-    public PasswordConfigField(final String key, final String label, final boolean required, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, validationFunction);
+    public PasswordConfigField(final String key, final String label, final String description, final boolean required, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, validationFunction);
     }
 
-    public static PasswordConfigField create(final String key, final String label) {
-        return new PasswordConfigField(key, label, false);
+    public static PasswordConfigField create(final String key, final String label, final String description) {
+        return new PasswordConfigField(key, label, description, false);
     }
 
-    public static PasswordConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new PasswordConfigField(key, label, false, validationFunction);
+    public static PasswordConfigField create(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new PasswordConfigField(key, label, description, false, validationFunction);
     }
 
-    public static PasswordConfigField createRequired(final String key, final String label) {
-        return new PasswordConfigField(key, label, true);
+    public static PasswordConfigField createRequired(final String key, final String label, final String description) {
+        return new PasswordConfigField(key, label, description, true);
     }
 
-    public static PasswordConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new PasswordConfigField(key, label, true, validationFunction);
+    public static PasswordConfigField createRequired(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new PasswordConfigField(key, label, description, true, validationFunction);
     }
 
 }

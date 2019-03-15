@@ -372,7 +372,7 @@ class Index extends Component {
                     show={this.state.showDeleteModal}
                 />
 
-                <ConfigurationLabel fontAwesomeIcon="fa-truck" configurationName="Distribution" />
+                <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
                 </div>

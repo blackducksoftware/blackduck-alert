@@ -19,11 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -35,6 +30,11 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -139,7 +139,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public Map<String, String> createInvalidGlobalFieldMap() {
-        return Map.of(HipChatDescriptor.KEY_API_KEY, "");
+        return Map.of(HipChatDescriptor.KEY_API_KEY, "", HipChatDescriptor.KEY_HOST_SERVER, "");
     }
 
     @Override

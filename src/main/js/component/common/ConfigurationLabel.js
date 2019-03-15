@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import FontAwesome from 'react-fontawesome';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Overlay from 'react-bootstrap/Overlay';
 
@@ -47,9 +48,7 @@ class ConfigurationLabel extends Component {
         return (
             <div className="d-inline-flex col-sm-4">
                 <h1>
-                    {fontAwesomeIcon &&
-                    <span className={iconClasses} />
-                    }
+                    <FontAwesome name={fontAwesomeIcon} fixedWidth />
                     {configurationName}
                     {descriptionField}
                 </h1>

@@ -34,21 +34,23 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private final String label;
     private final String urlName;
     private final String name;
+    private final String description;
     private final DescriptorType type;
     private final ConfigContextEnum context;
     private final String fontAwesomeIcon;
     private final boolean automaticallyGenerateUI;
     private List<ConfigField> fields;
 
-    public DescriptorMetadata(final String label, final String urlName, final String name, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon, final List<ConfigField> fields) {
-        this(label, urlName, name, type, context, fontAwesomeIcon, true, fields);
+    public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final ConfigContextEnum context, final String fontAwesomeIcon, final List<ConfigField> fields, final DescriptorType type) {
+        this(label, urlName, name, description, type, context, fontAwesomeIcon, true, fields);
     }
 
-    public DescriptorMetadata(final String label, final String urlName, final String name, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon, final boolean automaticallyGenerateUI,
-        final List<ConfigField> fields) {
+    public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon,
+        final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
         this.name = name;
+        this.description = description;
         this.type = type;
         this.context = context;
         this.fontAwesomeIcon = fontAwesomeIcon;
@@ -66,6 +68,10 @@ public class DescriptorMetadata extends AlertSerializableModel {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public DescriptorType getType() {

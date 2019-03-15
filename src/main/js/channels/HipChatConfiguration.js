@@ -73,7 +73,7 @@ class HipChatConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-comments" configurationName="HipChat" description={configurationDescription} />
+                <ConfigurationLabel fontAwesomeIcon="comments" configurationName="HipChat" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
