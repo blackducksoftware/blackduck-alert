@@ -223,7 +223,52 @@ class EmailConfiguration extends React.Component {
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)}
                         errorValue={this.props.fieldErrors[JAVAMAIL_PASSWORD_KEY]}
                     />
-                    <CollapsiblePane title="Advanced Settings">
+                    <CollapsiblePane
+                        title="Advanced Settings"
+                        expanded={() => FieldModelUtil.keysHaveValueOrIsSet(fieldModel, [
+                            JAVAMAIL_PORT_KEY,
+                            JAVAMAIL_CONNECTION_TIMEOUT_KEY,
+                            JAVAMAIL_TIMEOUT_KEY,
+                            JAVAMAIL_WRITETIMEOUT_KEY,
+                            JAVAMAIL_LOCALHOST_KEY,
+                            JAVAMAIL_LOCALHOST_ADDRESS_KEY,
+                            JAVAMAIL_LOCALHOST_PORT_KEY,
+                            JAVAMAIL_EHLO_KEY,
+                            JAVAMAIL_AUTH_MECHANISMS_KEY,
+                            JAVAMAIL_AUTH_LOGIN_DISABLE_KEY,
+                            JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY,
+                            JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY,
+                            JAVAMAIL_AUTH_NTLM_DISABLE_KEY,
+                            JAVAMAIL_AUTH_NTLM_DOMAIN_KEY,
+                            JAVAMAIL_AUTH_NTLM_FLAGS_KEY,
+                            JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY,
+                            JAVAMAIL_SUBMITTER_KEY,
+                            JAVAMAIL_DSN_NOTIFY_KEY,
+                            JAVAMAIL_DSN_RET_KEY,
+                            JAVAMAIL_ALLOW_8_BITMIME_KEY,
+                            JAVAMAIL_SEND_PARTIAL_KEY,
+                            JAVAMAIL_SASL_ENABLE_KEY,
+                            JAVAMAIL_SASL_MECHANISMS_KEY,
+                            JAVAMAIL_SASL_AUTHORIZATION_ID_KEY,
+                            JAVAMAIL_SASL_REALM_KEY,
+                            JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY,
+                            JAVAMAIL_QUITWAIT_KEY,
+                            JAVAMAIL_REPORT_SUCCESS_KEY,
+                            JAVAMAIL_SSL_ENABLE_KEY,
+                            JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY,
+                            JAVAMAIL_SSL_TRUST_KEY,
+                            JAVAMAIL_SSL_PROTOCOLS_KEY,
+                            JAVAMAIL_SSL_CIPHERSUITES_KEY,
+                            JAVAMAIL_STARTTLS_ENABLE_KEY,
+                            JAVAMAIL_STARTTLS_REQUIRED_KEY,
+                            JAVAMAIL_PROXY_HOST_KEY,
+                            JAVAMAIL_PROXY_PORT_KEY,
+                            JAVAMAIL_SOCKS_HOST_KEY,
+                            JAVAMAIL_SOCKS_PORT_KEY,
+                            JAVAMAIL_MAILEXTENSION_KEY,
+                            JAVAMAIL_USERSET_KEY,
+                            JAVAMAIL_NOOP_STRICT_KEY])}
+                    >
                         <NumberInput
                             id={JAVAMAIL_PORT_KEY}
                             label="SMTP Port"
