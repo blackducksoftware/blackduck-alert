@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
@@ -98,6 +100,8 @@ public class ProjectSyncTask extends ScheduledTask {
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("There was an issue saving the Black Duck project/user data: " + e.getMessage(), e);
         } catch (final IntegrationException | AlertRuntimeException e) {
             logger.error("Could not retrieve the current data from the BlackDuck server: " + e.getMessage(), e);
         }
@@ -157,15 +161,21 @@ public class ProjectSyncTask extends ScheduledTask {
     }
 
     @Transactional
-    public void databaseUpdates(final Set<BlackDuckProject> blackDuckProjects, final Map<String, Set<String>> projectToEmailAddresses) {
+    public void databaseUpdates(final Set<BlackDuckProject> blackDuckProjects, final Map<String, Set<String>> projectToEmailAddresses) throws AlertDatabaseConstraintException {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = updateProjectDB(blackDuckProjects);
-        final Map<Long, Set<String>> projectIdToEmailAddresses = projectToEmailAddresses.entrySet()
-                                                                     .stream()
-                                                                     .collect(Collectors.toMap(
-                                                                         e -> blackDuckProjectEntities.stream().filter(
-                                                                             projectEntity -> projectEntity.getName().equals(e.getKey())
-                                                                         ).findFirst().get().getId(),
-                                                                         e -> e.getValue()));
+
+        final Map<Long, Set<String>> projectIdToEmailAddresses = new HashMap<>();
+        for (final Map.Entry<String, Set<String>> entry : projectToEmailAddresses.entrySet()) {
+            final String projectName = entry.getKey();
+            final Long key = blackDuckProjectEntities
+                                 .stream()
+                                 .filter(
+                                     projectEntity -> projectEntity.getName().equals(projectName)
+                                 ).findFirst()
+                                 .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("Could not find the project %s", projectName)))
+                                 .getId();
+            projectIdToEmailAddresses.put(key, entry.getValue());
+        }
 
         final Set<String> emailAddresses = new HashSet<>();
         projectToEmailAddresses.forEach((projectName, emails) -> emailAddresses.addAll(emails));
