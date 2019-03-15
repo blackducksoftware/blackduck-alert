@@ -30,6 +30,8 @@ public class ConfigurationFieldModelTest {
     public static final String KEY_FIELD_2 = "field_2";
     public static final String VALUE_FIELD_1 = "value_1";
     public static final String VALUE_FIELD_2 = "value_2";
+    public static final String DESCRIPTION_1 = "description_1";
+    public static final String DESCRIPTION_2 = "description_2";
 
     private FieldModel createFieldModel() {
         final Map<String, FieldValueModel> valueModelMap = Map.of(KEY_FIELD_1, new FieldValueModel(List.of(VALUE_FIELD_1), false),
@@ -38,8 +40,8 @@ public class ConfigurationFieldModelTest {
     }
 
     private List<ConfigField> createConfigFields() {
-        return List.of(TextInputConfigField.create(KEY_FIELD_1, KEY_FIELD_1),
-            PasswordConfigField.create(KEY_FIELD_2, KEY_FIELD_2));
+        return List.of(TextInputConfigField.create(KEY_FIELD_1, KEY_FIELD_1, DESCRIPTION_1),
+            PasswordConfigField.create(KEY_FIELD_2, KEY_FIELD_2, DESCRIPTION_2));
     }
 
     @Test

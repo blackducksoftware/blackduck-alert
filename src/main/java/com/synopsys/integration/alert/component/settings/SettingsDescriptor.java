@@ -34,6 +34,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_LABEL = "Settings";
     public static final String SETTINGS_URL = "settings";
     public static final String SETTINGS_ICON = "cog";
+    public static final String SETTINGS_DESCRIPTION = "This page allows you to configure the admin settings.";
 
     // Values not stored in the database, but keys must be registered
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = "settings.user.default.admin.email";
