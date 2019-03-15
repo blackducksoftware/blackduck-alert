@@ -133,25 +133,18 @@ public class ProjectSyncTask extends ScheduledTask {
             .parallelStream()
             .forEach(entry -> {
                 try {
-                    final BlackDuckProject currentProject = entry.getKey();
+                    final BlackDuckProject blackDuckProject = entry.getKey();
                     final ProjectView projectView = entry.getValue();
-                    final Optional<BlackDuckProject> optionalBlackDuckProjectEntity = blackDuckProjects
-                                                                                          .stream()
-                                                                                          .filter(project -> project.getName().equals(currentProject.getName()))
-                                                                                          .findFirst();
-                    if (optionalBlackDuckProjectEntity.isPresent()) {
-                        final BlackDuckProject blackDuckProject = optionalBlackDuckProjectEntity.get();
-
-                        final Set<String> projectUserEmailAddresses = projectService.getAllActiveUsersForProject(projectView)
-                                                                          .stream()
-                                                                          .filter(userView -> StringUtils.isNotBlank(userView.getEmail()))
-                                                                          .map(userView -> userView.getEmail())
-                                                                          .collect(Collectors.toSet());
-                        if (StringUtils.isNotBlank(blackDuckProject.getProjectOwnerEmail())) {
-                            projectUserEmailAddresses.add(blackDuckProject.getProjectOwnerEmail());
-                        }
-                        projectToEmailAddresses.put(blackDuckProject.getName(), projectUserEmailAddresses);
+                    final Set<String> projectUserEmailAddresses = projectService.getAllActiveUsersForProject(projectView)
+                                                                      .stream()
+                                                                      .filter(userView -> StringUtils.isNotBlank(userView.getEmail()))
+                                                                      .map(userView -> userView.getEmail())
+                                                                      .collect(Collectors.toSet());
+                    if (StringUtils.isNotBlank(blackDuckProject.getProjectOwnerEmail())) {
+                        projectUserEmailAddresses.add(blackDuckProject.getProjectOwnerEmail());
                     }
+                    projectToEmailAddresses.put(blackDuckProject.getName(), projectUserEmailAddresses);
+
                 } catch (final IntegrationException e) {
                     // We do this to break out of the stream
                     throw new AlertRuntimeException(e.getMessage(), e);
