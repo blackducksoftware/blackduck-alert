@@ -198,19 +198,20 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         final Set<ProviderProject> projectsToRemove = new HashSet<>();
         final List<ProviderProject> storedProjects = findByProviderName(providerName);
 
+        final Set<String> currentProjectLinks = currentProjects
+                                                    .stream()
+                                                    .map(ProviderProject::getHref)
+                                                    .collect(Collectors.toSet());
+        final Set<String> storedProjectLinks = storedProjects
+                                                   .stream()
+                                                   .map(ProviderProject::getHref)
+                                                   .collect(Collectors.toSet());
+
         projectsToRemove.addAll(storedProjects);
-        projectsToRemove.removeIf(project -> currentProjects
-                                                 .stream()
-                                                 .filter(current -> current.getHref().equals(project.getHref()))
-                                                 .findFirst()
-                                                 .isPresent());
+        projectsToRemove.removeIf(project -> currentProjectLinks.contains(project.getHref()));
 
         projectsToAdd.addAll(currentProjects);
-        projectsToAdd.removeIf(project -> storedProjects
-                                              .stream()
-                                              .filter(current -> current.getHref().equals(project.getHref()))
-                                              .findFirst()
-                                              .isPresent());
+        projectsToAdd.removeIf(project -> storedProjectLinks.contains(project.getHref()));
 
         logger.info("Adding {} project", projectsToAdd.size());
         logger.info("Removing {} project", projectsToRemove.size());
