@@ -40,7 +40,7 @@ public interface ProviderDataAccessor {
 
     ProviderProject saveProject(final String providerName, final ProviderProject providerProject);
 
-    List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjects);
+    List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjectsToRemove, final Collection<ProviderProject> providerProjectsToAdd);
 
     void deleteByHref(final String projectHref);
 

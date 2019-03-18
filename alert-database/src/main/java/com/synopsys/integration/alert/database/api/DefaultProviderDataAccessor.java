@@ -90,9 +90,10 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
-        providerProjectRepository.deleteAllByProvider(providerName);
-        final Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
+    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjectsToRemove, final Collection<ProviderProject> providerProjectsToAdd) {
+        providerProjectsToRemove.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
+
+        final Iterable<ProviderProjectEntity> providerProjectEntities = providerProjectsToAdd
                                                                             .stream()
                                                                             .map(project -> convertToProjectEntity(providerName, project))
                                                                             .collect(Collectors.toSet());
@@ -183,8 +184,28 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private List<ProviderProject> updateProjectDB(final String providerName, final Set<ProviderProject> currentProjects) {
-        logger.info("{} projects", currentProjects.size());
-        return deleteAndSaveAllProjects(providerName, currentProjects);
+        final Set<ProviderProject> projectsToAdd = new HashSet<>();
+        final Set<ProviderProject> projectsToRemove = new HashSet<>();
+        final List<ProviderProject> storedProjects = findByProviderName(providerName);
+
+        projectsToRemove.addAll(storedProjects);
+        projectsToRemove.removeIf(project -> currentProjects
+                                                 .stream()
+                                                 .filter(current -> current.getHref().equals(project.getHref()))
+                                                 .findFirst()
+                                                 .isEmpty());
+
+        projectsToAdd.addAll(currentProjects);
+        projectsToAdd.removeIf(project -> storedProjects
+                                              .stream()
+                                              .filter(current -> current.getHref().equals(project.getHref()))
+                                              .findFirst()
+                                              .isEmpty());
+
+        logger.info("Adding {} project", projectsToAdd.size());
+        logger.info("Removing {} project", projectsToRemove.size());
+
+        return deleteAndSaveAllProjects(providerName, projectsToRemove, projectsToAdd);
     }
 
     private void updateUserDB(final String providerName, final Set<String> userEmailAddresses) {
