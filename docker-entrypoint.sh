@@ -66,13 +66,25 @@ createSelfSignedServerCertificate() {
 }
 
 createTruststore() {
-    echo "Attempting to copy Java cacerts to create truststore."
-    $certificateManagerDir/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
-    exitCode=$?
-    if [ ! $exitCode -eq 0 ];
+    if [ -f $dockerSecretDir/jssecacerts ];
     then
-        echo "Unable to create truststore (Code: $exitCode)."
-        exit $exitCode
+        echo "Custom jssecacerts file found."
+        echo "Copying file jssecacerts to the certificate location"
+        cp $dockerSecretDir/jssecacerts $securityDir/$APPLICATION_NAME.truststore
+    elif [ -f $dockerSecretDir/cacerts ];
+    then
+        echo "Custom cacerts file found."
+        echo "Copying file cacerts to the certificate location"
+        cp $dockerSecretDir/cacerts $securityDir/$APPLICATION_NAME.truststore
+    else
+        echo "Attempting to copy Java cacerts to create truststore."
+        $certificateManagerDir/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
+        exitCode=$?
+        if [ ! $exitCode -eq 0 ];
+        then
+            echo "Unable to create truststore (Code: $exitCode)."
+            exit $exitCode
+        fi
     fi
 }
 
