@@ -36,9 +36,15 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
-        providerProjectMap.put(providerName, new HashSet<>(providerProjects));
-        return new ArrayList<>(providerProjects);
+    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjectsToRemove, final Collection<ProviderProject> providerProjectsToAdd) {
+        Set<ProviderProject> projects = providerProjectMap.get(providerName);
+        if (null == projects) {
+            projects = new HashSet<>();
+        }
+        projects.removeAll(providerProjectsToRemove);
+        projects.addAll(providerProjectsToAdd);
+        providerProjectMap.put(providerName, projects);
+        return new ArrayList<>(providerProjectsToAdd);
     }
 
     @Override
