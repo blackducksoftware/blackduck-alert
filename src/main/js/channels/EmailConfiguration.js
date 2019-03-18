@@ -280,7 +280,7 @@ class EmailConfiguration extends React.Component {
                     />
                     <CollapsiblePane
                         title="Advanced Settings"
-                        expanded={() => FieldModelUtil.keysHaveValueOrIsSet(fieldModel, [
+                        expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [
                             JAVAMAIL_PORT_KEY,
                             JAVAMAIL_CONNECTION_TIMEOUT_KEY,
                             JAVAMAIL_TIMEOUT_KEY,
