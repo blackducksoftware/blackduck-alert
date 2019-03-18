@@ -23,22 +23,73 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.polaris.common.api.generated.common.BranchV0;
 import com.synopsys.integration.polaris.common.api.generated.common.ProjectV0;
+import com.synopsys.integration.polaris.common.model.QueryIssue;
+import com.synopsys.integration.polaris.common.service.BranchService;
+import com.synopsys.integration.polaris.common.service.ProjectService;
 
 @Component
 public class PolarisDataHelper {
-    public String getHref(final ProjectV0 project) {
+    public String getProjectName(final ProjectV0 project) {
+        return project
+                   .getAttributes()
+                   .getName();
+    }
+
+    public String getProjectHref(final ProjectV0 project) {
         return project
                    .getLinks()
                    .getSelf()
                    .getHref();
     }
 
-    public String getName(final ProjectV0 project) {
-        return project
-                   .getAttributes()
-                   .getName();
+    public Optional<ProjectV0> getProjectByHrefOrName(final Set<ProjectV0> projects, final String href, final String name, final ProjectService projectService) throws IntegrationException {
+        final Optional<ProjectV0> optionalProjectV0 = projects
+                                                          .stream()
+                                                          .filter(p -> href.equals(getProjectHref(p)))
+                                                          .findFirst();
+        if (optionalProjectV0.isPresent()) {
+            return optionalProjectV0;
+        }
+        return projectService.getProjectByName(name);
     }
+
+    public List<String> getBranchesIdsForProject(final Map<ProjectV0, List<BranchV0>> projectToBranchMappings, final ProjectV0 project, final BranchService branchService) throws IntegrationException {
+        if (projectToBranchMappings.containsKey(project)) {
+            return projectToBranchMappings.get(project)
+                       .stream()
+                       .map(BranchV0::getId)
+                       .collect(Collectors.toList());
+        }
+        return branchService.getBranchesForProject(project.getId())
+                   .stream()
+                   .map(BranchV0::getId)
+                   .collect(Collectors.toList());
+    }
+
+    public final Map<String, Integer> mapIssueTypeToCount(final List<QueryIssue> queryIssues) {
+        final Map<String, Integer> issueTypeCounts = new HashMap<>();
+        for (final QueryIssue queryIssue : queryIssues) {
+            // FIXME issue type is not the same as issue key
+            final String issueType = queryIssue.getAttributes().getSubTool();
+            if (!issueTypeCounts.containsKey(issueType)) {
+                issueTypeCounts.put(issueType, 0);
+            }
+            final Integer tempCount = issueTypeCounts.get(issueType);
+            issueTypeCounts.put(issueType, tempCount + 1);
+        }
+        return issueTypeCounts;
+    }
+
 }
