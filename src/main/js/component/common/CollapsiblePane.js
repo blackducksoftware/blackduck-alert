@@ -3,18 +3,30 @@ import PropTypes from 'prop-types';
 
 class CollapsiblePane extends Component {
     constructor(props) {
-        super(props)
-        this.state = { expanded: this.props.expanded }
+        super(props);
+        this.state = { expanded: false };
         this.toggleDisplay = this.toggleDisplay.bind(this);
+        this.selfExpand = false;
     }
 
     toggleDisplay() {
-        this.setState({ expanded: !this.state.expanded })
+        this.selfExpand = true;
+        this.setState({ expanded: !this.state.expanded });
     }
 
     render() {
-        const contentClass = this.state.expanded ? 'shown' : 'hidden';
-        const iconClass = this.state.expanded ? 'fa-minus' : 'fa-plus';
+        let shouldExpand = false;
+        const propsExand = this.props.expanded();
+        if (this.selfExpand) {
+            shouldExpand = this.state.expanded;
+        } else {
+            // We don't want to use setState here because that would trigger an endless re-render but we need the expanded field to be up to date for when the button takes control of the toggling
+            this.state = { expanded: propsExand };
+            shouldExpand = propsExand;
+        }
+
+        const contentClass = shouldExpand ? 'shown' : 'hidden';
+        const iconClass = shouldExpand ? 'fa-minus' : 'fa-plus';
         return (
             <div className="collapsiblePanel">
                 <button
@@ -34,12 +46,12 @@ class CollapsiblePane extends Component {
 
 CollapsiblePane.propTypes = {
     title: PropTypes.string.isRequired,
-    expanded: PropTypes.bool
+    expanded: PropTypes.func
 
 };
 
 CollapsiblePane.defaultProps = {
-    expanded: false
+    expanded: () => false
 };
 
 export default CollapsiblePane;
