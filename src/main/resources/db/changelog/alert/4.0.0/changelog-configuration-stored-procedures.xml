@@ -317,7 +317,7 @@
                                 }
                             } else if ("channel_hipchat".equals(distributionType)) {
                                 try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement().executeQuery(
-                                        "SELECT * FROM ALERT.HIP_CHAT_DISTRIBUTION_CONFIG WHERE HIP_CHAT_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                    "SELECT * FROM ALERT.HIP_CHAT_DISTRIBUTION_CONFIG WHERE HIP_CHAT_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                                     if (hipChatDistribtionConfigs.next()) {
                                         final java.lang.String color = hipChatDistribtionConfigs.getString("COLOR");
                                         final java.lang.Boolean notify = hipChatDistribtionConfigs.getBoolean("NOTIFY");
