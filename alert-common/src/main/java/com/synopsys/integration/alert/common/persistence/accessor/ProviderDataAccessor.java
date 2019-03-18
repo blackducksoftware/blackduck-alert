@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,4 +51,6 @@ public interface ProviderDataAccessor {
     List<ProviderUserModel> getAllUsers(final String providerName);
 
     List<ProviderUserModel> deleteAndSaveAllUsers(final String providerName, final Collection<ProviderUserModel> usersToDelete, final Collection<ProviderUserModel> usersToAdd);
+
+    void updateProjectAndUserData(String providerName, final Map<ProviderProject, Set<String>> projectToUserData);
 }
