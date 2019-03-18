@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -37,6 +38,16 @@ public class CategoryItem extends AlertSerializableModel {
     private final ItemOperation operation;
     private final SortedSet<LinkableItem> items;
     private final Long notificationId;
+
+    private static SortedSet<LinkableItem> singleton(final LinkableItem item) {
+        final SortedSet<LinkableItem> sortedSet = new TreeSet();
+        sortedSet.add(item);
+        return sortedSet;
+    }
+
+    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final Long notificationId, final LinkableItem item) {
+        this(categoryKey, operation, notificationId, singleton(item));
+    }
 
     public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final Long notificationId, final SortedSet<LinkableItem> items) {
         this.categoryKey = categoryKey;

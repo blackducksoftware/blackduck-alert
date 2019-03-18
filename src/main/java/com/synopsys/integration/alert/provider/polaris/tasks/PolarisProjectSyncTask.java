@@ -112,7 +112,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             logger.info("{} remote projects", hrefToRemoteProjectsMap.size());
             final Map<String, ProviderProject> hrefToStoredProjectsMap = getProjectsFromDatabase();
             logger.info("{} local projects", hrefToStoredProjectsMap.size());
-            final Set<ProviderProject> newProjects = collectMissingProjects(hrefToStoredProjectsMap, hrefToRemoteProjectsMap.values());
+            final Set<ProviderProject> newProjects = collectRemoteProjectsNotCurrentlyStored(hrefToStoredProjectsMap, hrefToRemoteProjectsMap.values());
             logger.info("{} new projects", newProjects.size());
 
             final Set<ProviderProject> updatedStoredProjects = storeNewProjects(hrefToStoredProjectsMap, newProjects);
@@ -266,14 +266,14 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     }
 
     private void cleanUpOldProjects(final Set<ProviderProject> localProjects, final Map<String, ProviderProject> remoteProjectsMap) {
-        final Set<ProviderProject> deletionCandidates = collectMissingProjects(remoteProjectsMap, localProjects);
+        final Set<ProviderProject> deletionCandidates = collectRemoteProjectsNotCurrentlyStored(remoteProjectsMap, localProjects);
         deletionCandidates
             .stream()
             .map(ProviderProject::getHref)
             .forEach(projectRepositoryAccessor::deleteByHref);
     }
 
-    private Set<ProviderProject> collectMissingProjects(final Map<String, ProviderProject> baseProjectMap, final Collection<ProviderProject> missingProjectCandidates) {
+    private Set<ProviderProject> collectRemoteProjectsNotCurrentlyStored(final Map<String, ProviderProject> baseProjectMap, final Collection<ProviderProject> missingProjectCandidates) {
         return missingProjectCandidates
                    .stream()
                    .filter(project -> !baseProjectMap.containsKey(project.getHref()))
