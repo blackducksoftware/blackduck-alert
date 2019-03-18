@@ -90,10 +90,13 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjectsToRemove, final Collection<ProviderProject> providerProjectsToAdd) {
-        providerProjectsToRemove.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
+    public void deleteProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
+        providerProjects.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
+    }
 
-        final Iterable<ProviderProjectEntity> providerProjectEntities = providerProjectsToAdd
+    @Override
+    public List<ProviderProject> saveProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
+        final Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
                                                                             .stream()
                                                                             .map(project -> convertToProjectEntity(providerName, project))
                                                                             .collect(Collectors.toSet());
@@ -110,6 +113,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Set<String> getEmailAddressesForProjectHref(final String projectHref) {
         final Optional<Long> projectId = providerProjectRepository.findFirstByHref(projectHref).map(ProviderProjectEntity::getId);
         if (projectId.isPresent()) {
@@ -149,13 +153,19 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public List<ProviderUserModel> deleteAndSaveAllUsers(final String providerName, final Collection<ProviderUserModel> usersToDelete, final Collection<ProviderUserModel> usersToAdd) {
-        usersToDelete.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerName, user.getEmailAddress()));
-        usersToAdd
-            .stream()
-            .map(user -> convertToUserEntity(providerName, user))
-            .forEach(providerUserRepository::save);
-        return List.copyOf(usersToAdd);
+    public void deleteUsers(final String providerName, final Collection<ProviderUserModel> users) {
+        users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerName, user.getEmailAddress()));
+    }
+
+    @Override
+    public List<ProviderUserModel> saveUsers(final String providerName, final Collection<ProviderUserModel> users) {
+        final List<ProviderUserModel> savedUsers = users
+                                                       .stream()
+                                                       .map(user -> convertToUserEntity(providerName, user))
+                                                       .map(providerUserRepository::save)
+                                                       .map(entity -> convertToUserModel(entity))
+                                                       .collect(Collectors.toList());
+        return savedUsers;
     }
 
     private ProviderProject convertToProjectModel(final ProviderProjectEntity providerProjectEntity) {
@@ -204,8 +214,8 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
         logger.info("Adding {} project", projectsToAdd.size());
         logger.info("Removing {} project", projectsToRemove.size());
-
-        return deleteAndSaveAllProjects(providerName, projectsToRemove, projectsToAdd);
+        deleteProjects(providerName, projectsToRemove);
+        return saveProjects(providerName, projectsToAdd);
     }
 
     private void updateUserDB(final String providerName, final Set<String> userEmailAddresses) {
@@ -244,7 +254,8 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                                                                    .stream()
                                                                    .map(email -> new ProviderUserModel(email, false))
                                                                    .collect(Collectors.toList());
-        deleteAndSaveAllUsers(providerName, providerUserEntitiesToRemove, providerUserEntityList);
+        deleteUsers(providerName, providerUserEntitiesToRemove);
+        saveUsers(providerName, providerUserEntityList);
     }
 
     private void updateUserProjectRelations(final Map<ProviderProject, Set<String>> projectToEmailAddresses) {

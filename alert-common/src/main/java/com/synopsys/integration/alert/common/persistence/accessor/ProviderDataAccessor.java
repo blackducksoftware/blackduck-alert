@@ -40,7 +40,9 @@ public interface ProviderDataAccessor {
 
     ProviderProject saveProject(final String providerName, final ProviderProject providerProject);
 
-    List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjectsToRemove, final Collection<ProviderProject> providerProjectsToAdd);
+    List<ProviderProject> saveProjects(final String providerName, final Collection<ProviderProject> providerProjects);
+
+    void deleteProjects(final String providerName, final Collection<ProviderProject> providerProjects);
 
     void deleteByHref(final String projectHref);
 
@@ -50,7 +52,9 @@ public interface ProviderDataAccessor {
 
     List<ProviderUserModel> getAllUsers(final String providerName);
 
-    List<ProviderUserModel> deleteAndSaveAllUsers(final String providerName, final Collection<ProviderUserModel> usersToDelete, final Collection<ProviderUserModel> usersToAdd);
+    List<ProviderUserModel> saveUsers(final String providerName, final Collection<ProviderUserModel> users);
+
+    void deleteUsers(final String providerName, final Collection<ProviderUserModel> users);
 
     void updateProjectAndUserData(String providerName, final Map<ProviderProject, Set<String>> projectToUserData);
 }

@@ -113,7 +113,11 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
                                                            .map(this::convertToProjectModel)
                                                            .collect(Collectors.toList());
 
-        final List<ProviderProject> savedProjects = providerDataAccessor.deleteAndSaveAllProjects(providerName, projectsToDelete, newProjects);
+        providerDataAccessor.deleteProjects(providerName, projectsToDelete);
+        savedEntities = providerProjectRepository.findAll();
+        assertEquals(0, savedEntities.size());
+
+        final List<ProviderProject> savedProjects = providerDataAccessor.saveProjects(providerName, newProjects);
         assertEquals(2, savedProjects.size());
         savedEntities = providerProjectRepository.findAll();
         assertEquals(2, savedEntities.size());
@@ -263,7 +267,11 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final List<ProviderUserModel> newUsers = List.of(newUser4, newUser5, newUser6);
 
         final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderUserModel> savedUsers = providerDataAccessor.deleteAndSaveAllUsers(providerName, oldUsers, newUsers);
+
+        providerDataAccessor.deleteUsers(providerName, oldUsers);
+        assertEquals(0, providerUserRepository.findAll().size());
+
+        final List<ProviderUserModel> savedUsers = providerDataAccessor.saveUsers(providerName, newUsers);
         assertEquals(3, savedUsers.size());
         assertEquals(3, providerUserRepository.findAll().size());
     }
