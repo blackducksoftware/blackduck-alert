@@ -193,14 +193,14 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                                                  .stream()
                                                  .filter(current -> current.getHref().equals(project.getHref()))
                                                  .findFirst()
-                                                 .isEmpty());
+                                                 .isPresent());
 
         projectsToAdd.addAll(currentProjects);
         projectsToAdd.removeIf(project -> storedProjects
                                               .stream()
                                               .filter(current -> current.getHref().equals(project.getHref()))
                                               .findFirst()
-                                              .isEmpty());
+                                              .isPresent());
 
         logger.info("Adding {} project", projectsToAdd.size());
         logger.info("Removing {} project", projectsToRemove.size());
