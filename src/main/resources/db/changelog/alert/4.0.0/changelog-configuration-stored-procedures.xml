@@ -372,8 +372,8 @@
                 schemaName="ALERT"
                 procedureName="INSERT_FIELD_VALUE"
         >
-            CREATE ALIAS INSERT_FIELD_VALUE AS $$
-                java.lang.Void insertFieldValue(final java.sql.Connection connection, final java.lang.String descriptor_name, final java.lang.String fieldKey, final java.lang.String fieldValue) throws java.sql.SQLException {
+            CREATE ALIAS INSERT_GLOBAL_FIELD_VALUE AS $$
+                java.lang.Void insertGlobalFieldValue(final java.sql.Connection connection, final java.lang.String descriptor_name, final java.lang.String fieldKey, final java.lang.String fieldValue) throws java.sql.SQLException {
                     if (fieldValue != null &amp;&amp; !fieldValue.isBlank()) {
                         try (final java.sql.Statement insertIntoFieldValues = connection.createStatement()) {
                             final java.lang.String insertStatement = java.lang.String.format("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('%s'), GET_FIELD_ID_FOR_SOURCE_KEY('%s'), '%s')",
