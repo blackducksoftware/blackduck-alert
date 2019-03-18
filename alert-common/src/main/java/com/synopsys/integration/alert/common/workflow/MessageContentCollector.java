@@ -111,6 +111,10 @@ public abstract class MessageContentCollector {
         return getTypedFields(fields, new TypeRef<Long>() {});
     }
 
+    protected final List<JsonField<Integer>> getIntegerFields(final List<JsonField<?>> fields) {
+        return getTypedFields(fields, new TypeRef<Integer>() {});
+    }
+
     protected final <T> List<JsonField<T>> getFieldsOfType(final List<JsonField<?>> fields, final TypeRef<?> typeRef) {
         return getTypedFields(fields, typeRef);
     }

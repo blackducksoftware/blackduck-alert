@@ -33,6 +33,10 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.util.Stringable;
 
 public class JsonField<T> extends Stringable {
+    public static final String FORMAT_SINGLE_REPLACEMENT = "$.%s";
+    public static final String FORMAT_DOUBLE_REPLACEMENT = "$.%s.%s";
+    public static final String FORMAT_TRIPLE_REPLACEMENT = "$.%s.%s.%s";
+
     public static final String LABEL_URL_SUFFIX = "_url";
 
     private final TypeRef<List<T>> typeRef;
@@ -61,6 +65,10 @@ public class JsonField<T> extends Stringable {
     }
 
     public static JsonField<Long> createLongField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+        return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label);
+    }
+
+    public static JsonField<Integer> createIntegerField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label);
     }
 

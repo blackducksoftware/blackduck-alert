@@ -75,8 +75,7 @@ public class PolarisProvider extends Provider {
 
     @Override
     public Set<ProviderContentType> getProviderContentTypes() {
-        // FIXME create content types for this provider
-        return Set.of();
+        return Set.of(PolarisProviderContentTypes.ISSUE_COUNT_INCREASED, PolarisProviderContentTypes.ISSUE_COUNT_DECREASED);
     }
 
     @Override
