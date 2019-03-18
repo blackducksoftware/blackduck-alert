@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 public class PolarisDescriptorTest {
-    private final PolarisProvider polarisProvider = new PolarisProvider(null, null, null);
+    private final PolarisProvider polarisProvider = new PolarisProvider(null, null, null, null);
 
     @Disabled
     @Test

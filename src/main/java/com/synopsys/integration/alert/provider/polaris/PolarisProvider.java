@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
@@ -50,8 +51,8 @@ public class PolarisProvider extends Provider {
     private final PolarisProperties polarisProperties;
 
     @Autowired
-    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask, final PolarisProperties polarisProperties) {
-        super(PolarisProvider.COMPONENT_NAME, null);
+    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask, final PolarisProperties polarisProperties, final DefaultEmailHandler defaultEmailHandler) {
+        super(PolarisProvider.COMPONENT_NAME, defaultEmailHandler);
         this.taskManager = taskManager;
         this.projectSyncTask = projectSyncTask;
         this.polarisProperties = polarisProperties;
