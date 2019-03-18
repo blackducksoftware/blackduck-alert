@@ -2,55 +2,61 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ConfigButtons from 'component/common/ConfigButtons';
+import FieldsPanel from 'providers/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import { getConfig, testConfig, updateConfig } from 'store/actions/provider';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as FieldMapping from 'util/fieldMapping';
 
 class ProviderConfiguration extends React.Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
-        const fieldModel = FieldModelUtilities.createEmptyFieldModelFromFieldObject(props.descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, props.descriptor.name);
+        const { fields, name } = this.props.descriptor;
+        const fieldKeys = FieldMapping.retrieveKeys(fields);
+        const fieldModel = FieldModelUtilities.createEmptyFieldModelFromFieldObject(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
         this.state = {
             currentConfig: fieldModel,
-            currentDescriptor: props.descriptor
+            currentDescriptor: this.props.descriptor,
+            currentKeys: fieldKeys
         };
     }
 
     componentDidMount() {
         this.props.getConfig();
-    }
-
-    handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
-        this.setState({
-            currentConfig: newState
-        });
+        this.state = {
+            currentConfig: this.props.currentConfig
+        };
     }
 
     handleTest() {
         const fieldModel = this.state.currentConfig;
         this.props.testConfig(fieldModel);
+        this.state = {
+            currentConfig: this.props.currentConfig
+        };
     }
 
     handleSubmit(evt) {
         evt.preventDefault();
         const fieldModel = this.state.currentConfig;
         this.props.updateConfig(fieldModel);
+        this.state = {
+            currentConfig: this.props.currentConfig
+        };
     }
 
     render() {
-        const fieldModel = this.state.currentConfig;
-        const descriptor = this.state.currentDescriptor;
+        const {
+            fontAwesomeIcon, label, description, fields
+        } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon={descriptor.fontAwesomeIcon} configurationName={descriptor.label} description={descriptor.description} />
+                <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
                 {errorMessage && <div className="alert alert-danger"> d
                     {errorMessage}
                 </div>}
@@ -61,7 +67,7 @@ class ProviderConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
-                        {/* <FieldsPanel fieldModel={fieldModel} /> */}
+                        <FieldsPanel currentConfig={this.state.currentConfig} fieldKeys={this.state.currentKeys} descriptorFields={fields} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
@@ -74,8 +80,6 @@ class ProviderConfiguration extends React.Component {
 ProviderConfiguration.propTypes = {
     descriptor: PropTypes.object.isRequired,
     currentConfig: PropTypes.object,
-    fieldErrors: PropTypes.object,
-    updateStatus: PropTypes.string,
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
@@ -87,8 +91,6 @@ ProviderConfiguration.propTypes = {
 ProviderConfiguration.defaultProps = {
     currentConfig: {},
     errorMessage: null,
-    updateStatus: null,
-    fieldErrors: {},
     actionMessage: null
 };
 
@@ -97,8 +99,7 @@ const mapStateToProps = state => ({
     currentConfig: state.provider.config,
     actionMessage: state.provider.actionMessage,
     updateStatus: state.provider.updateStatus,
-    errorMessage: state.provider.error.message,
-    fieldErrors: state.provider.error.fieldErrors
+    errorMessage: state.provider.error.message
 });
 
 // Mapping redux actions -> react props
