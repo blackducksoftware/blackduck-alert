@@ -269,8 +269,8 @@
                                 while (distributionNotificationTypes.next()) {
                                     final java.lang.String notificationTypeName = distributionNotificationTypes.getString("NOTIFICATION_TYPE");
                                     connection.createStatement().executeUpdate(
-                                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), "
-                                    + "GET_FIELD_ID_FOR_SOURCE_KEY('provider.distribution.notification.types'), '" + notificationTypeName + "');");
+                                        "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), "
+                                            + "GET_FIELD_ID_FOR_SOURCE_KEY('provider.distribution.notification.types'), '" + notificationTypeName + "');");
                                 }
                             }
 
@@ -280,14 +280,14 @@
                                 while (projectNamesJoined.next()) {
                                     final java.lang.String projectNameForConfig = projectNamesJoined.getString("PROJECT_NAME");
                                     connection.createStatement().executeUpdate(
-                                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) "
-                                    + "VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.configured.project'), '" + projectNameForConfig + "');");
+                                        "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) "
+                                            + "VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.configured.project'), '" + projectNameForConfig + "');");
                                 }
                             }
 
                             // Create channel config
                             connection.createStatement().executeUpdate(
-                            "INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + distributionType + "') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
+                                "INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + distributionType + "') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
 
                             // Add channel config to job
                             connection.createStatement().executeUpdate("INSERT INTO ALERT.CONFIG_GROUPS (CONFIG_ID, JOB_ID) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG() , '" + jobUUID.toString() + "');");
@@ -305,7 +305,7 @@
                             // Add specific channel fields
                             if ("channel_email".equals(distributionType)) {
                                 try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement().executeQuery(
-                                "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                    "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                                     if (emailDistributionConfigs.next()) {
                                         final java.lang.String subjectLine = emailDistributionConfigs.getString("EMAIL_SUBJECT_LINE");
                                         final java.lang.Boolean projectOwnerOnly = emailDistributionConfigs.getBoolean("PROJECT_OWNER_ONLY");
@@ -317,7 +317,7 @@
                                 }
                             } else if ("channel_hipchat".equals(distributionType)) {
                                 try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement().executeQuery(
-                                "SELECT * FROM ALERT.HIP_CHAT_DISTRIBUTION_CONFIG WHERE HIP_CHAT_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                        "SELECT * FROM ALERT.HIP_CHAT_DISTRIBUTION_CONFIG WHERE HIP_CHAT_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                                     if (hipChatDistribtionConfigs.next()) {
                                         final java.lang.String color = hipChatDistribtionConfigs.getString("COLOR");
                                         final java.lang.Boolean notify = hipChatDistribtionConfigs.getBoolean("NOTIFY");
@@ -332,7 +332,7 @@
                                 }
                             } else if ("channel_slack".equals(distributionType)) {
                                 try (final java.sql.ResultSet slackDistributionConfigs = connection.createStatement().executeQuery(
-                                "SELECT * FROM ALERT.SLACK_DISTRIBUTION_CONFIG WHERE SLACK_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                    "SELECT * FROM ALERT.SLACK_DISTRIBUTION_CONFIG WHERE SLACK_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                                     if (slackDistributionConfigs.next()) {
                                         final java.lang.String webhook = slackDistributionConfigs.getString("WEBHOOK");
                                         final java.lang.String channelName = slackDistributionConfigs.getString("CHANNEL_NAME");
