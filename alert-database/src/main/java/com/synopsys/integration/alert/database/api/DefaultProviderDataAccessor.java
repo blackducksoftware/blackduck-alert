@@ -24,12 +24,16 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
@@ -50,6 +54,7 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 @Transactional
 public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     private static final int MAX_DESCRIPTION_LENGTH = 250;
+    private final Logger logger = LoggerFactory.getLogger(DefaultProviderDataAccessor.class);
     private final ProviderProjectRepository providerProjectRepository;
     private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
     private final ProviderUserRepository providerUserRepository;
@@ -169,4 +174,67 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerName);
     }
 
+    @Override
+    public void updateProjectAndUserData(final String providerName, final Map<ProviderProject, Set<String>> projectToUserData) {
+        updateProjectDB(providerName, projectToUserData.keySet());
+        final Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        updateUserDB(providerName, userData);
+        updateUserProjectRelations(projectToUserData);
+    }
+
+    private List<ProviderProject> updateProjectDB(final String providerName, final Set<ProviderProject> currentProjects) {
+        logger.info("{} projects", currentProjects.size());
+        return deleteAndSaveAllProjects(providerName, currentProjects);
+    }
+
+    private void updateUserDB(final String providerName, final Set<String> userEmailAddresses) {
+        final Set<String> emailsToAdd = new HashSet<>();
+        final Set<String> emailsToRemove = new HashSet<>();
+
+        final List<ProviderUserModel> providerUserEntities = getAllUsers(providerName);
+        final Set<String> storedEmails = providerUserEntities
+                                             .stream()
+                                             .map(ProviderUserModel::getEmailAddress)
+                                             .collect(Collectors.toSet());
+
+        storedEmails.forEach(storedData -> {
+            // If the storedData no longer exists in the current then we need to remove the entry
+            // If any of the fields have changed in the currentData, then the storedData will not be in the currentData so we will need to remove the old entry
+            if (!userEmailAddresses.contains(storedData)) {
+                emailsToRemove.add(storedData);
+            }
+        });
+        userEmailAddresses.forEach(currentData -> {
+            // If the currentData is not found in the stored data then we will need to add a new entry
+            // If any of the fields have changed in the currentData, then it wont be in the stored data so we will need to add a new entry
+            if (!storedEmails.contains(currentData)) {
+                emailsToAdd.add(currentData);
+            }
+        });
+        logger.info("Adding {} emails", emailsToAdd.size());
+        logger.info("Removing {} emails", emailsToRemove.size());
+
+        final List<ProviderUserModel> providerUserEntitiesToRemove = providerUserEntities
+                                                                         .stream()
+                                                                         .filter(userEntity -> emailsToRemove.contains(userEntity.getEmailAddress()))
+                                                                         .collect(Collectors.toList());
+
+        final List<ProviderUserModel> providerUserEntityList = emailsToAdd
+                                                                   .stream()
+                                                                   .map(email -> new ProviderUserModel(email, false))
+                                                                   .collect(Collectors.toList());
+        deleteAndSaveAllUsers(providerName, providerUserEntitiesToRemove, providerUserEntityList);
+    }
+
+    private void updateUserProjectRelations(final Map<ProviderProject, Set<String>> projectToEmailAddresses) {
+        final Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
+        for (final Map.Entry<ProviderProject, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
+            try {
+                remapUsersToProjectByEmail(projectToEmail.getKey().getHref(), projectToEmail.getValue());
+            } catch (final AlertDatabaseConstraintException e) {
+                logger.error("Problem mapping users to projects", e);
+            }
+        }
+        logger.info("User to project relationships {}", userProjectRelations.size());
+    }
 }
