@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -57,7 +58,7 @@ public class BlackDuckProvider extends Provider {
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler, final TaskManager taskManager,
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final DefaultEmailHandler blackDuckEmailHandler, final TaskManager taskManager,
         final BlackDuckProperties blackDuckProperties) {
         super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;

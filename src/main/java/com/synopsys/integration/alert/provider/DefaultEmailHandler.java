@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,19 +38,19 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
-import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 
 @Component
-public class BlackDuckEmailHandler extends EmailHandler {
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckEmailHandler.class);
+public class DefaultEmailHandler extends EmailHandler {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultEmailHandler.class);
 
-    private final DefaultProviderDataAccessor providerDataAccessor;
+    private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckEmailHandler(final DefaultProviderDataAccessor providerDataAccessor) {
+    public DefaultEmailHandler(final ProviderDataAccessor providerDataAccessor) {
         this.providerDataAccessor = providerDataAccessor;
     }
 
@@ -58,8 +58,8 @@ public class BlackDuckEmailHandler extends EmailHandler {
     public FieldAccessor updateFieldAccessor(final AggregateMessageContent content, final FieldAccessor originalAccessor) {
         final Set<String> emailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
-        final Set<String> blackDuckEmailAddresses = collectBlackDuckEmailsFromProject(content.getValue(), projectOwnerOnly);
-        emailAddresses.addAll(blackDuckEmailAddresses);
+        final Set<String> providerEmailAddresses = collectProviderEmailsFromProject(content.getValue(), projectOwnerOnly);
+        emailAddresses.addAll(providerEmailAddresses);
 
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(originalAccessor.getFields());
@@ -87,7 +87,7 @@ public class BlackDuckEmailHandler extends EmailHandler {
         return emailAddresses;
     }
 
-    private Set<String> collectBlackDuckEmailsFromProject(final String projectName, final boolean projectOwnerOnly) {
+    private Set<String> collectProviderEmailsFromProject(final String projectName, final boolean projectOwnerOnly) {
         final Optional<ProviderProject> optionalProject = providerDataAccessor.findFirstByName(projectName); // FIXME use href
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
