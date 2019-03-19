@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,7 +97,8 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerProjectRepository.save(oldEntity1);
         providerProjectRepository.save(oldEntity2);
         providerProjectRepository.save(oldEntity3);
-        assertEquals(3, providerProjectRepository.findAll().size());
+        List<ProviderProjectEntity> savedEntities = providerProjectRepository.findAll();
+        assertEquals(3, savedEntities.size());
 
         final String newProjectHref1 = "newHref1";
         final String newProjectHref2 = "newHref2";
@@ -105,8 +107,25 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final List<ProviderProject> newProjects = List.of(newProject1, newProject2);
 
         final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderProject> savedProjects = providerDataAccessor.deleteAndSaveAllProjects(providerName, newProjects);
+
+        final List<ProviderProject> projectsToDelete = savedEntities
+                                                           .stream()
+                                                           .map(this::convertToProjectModel)
+                                                           .collect(Collectors.toList());
+
+        providerDataAccessor.deleteProjects(providerName, projectsToDelete);
+        savedEntities = providerProjectRepository.findAll();
+        assertEquals(0, savedEntities.size());
+
+        final List<ProviderProject> savedProjects = providerDataAccessor.saveProjects(providerName, newProjects);
         assertEquals(2, savedProjects.size());
+        savedEntities = providerProjectRepository.findAll();
+        assertEquals(2, savedEntities.size());
+    }
+
+    private ProviderProject convertToProjectModel(final ProviderProjectEntity providerProjectEntity) {
+        return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
+            providerProjectEntity.getProjectOwnerEmail());
     }
 
     @Test
@@ -248,7 +267,11 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final List<ProviderUserModel> newUsers = List.of(newUser4, newUser5, newUser6);
 
         final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        final List<ProviderUserModel> savedUsers = providerDataAccessor.deleteAndSaveAllUsers(providerName, oldUsers, newUsers);
+
+        providerDataAccessor.deleteUsers(providerName, oldUsers);
+        assertEquals(0, providerUserRepository.findAll().size());
+
+        final List<ProviderUserModel> savedUsers = providerDataAccessor.saveUsers(providerName, newUsers);
         assertEquals(3, savedUsers.size());
         assertEquals(3, providerUserRepository.findAll().size());
     }

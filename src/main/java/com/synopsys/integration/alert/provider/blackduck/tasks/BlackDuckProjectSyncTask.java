@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -82,8 +81,6 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                 final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
 
                 final Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectUsersService);
-                final Set<String> emailAddresses = new HashSet<>();
-                projectToEmailAddresses.forEach((projectId, emails) -> emailAddresses.addAll(emails));
 
                 blackDuckDataAccessor.updateProjectAndUserData(BlackDuckProvider.COMPONENT_NAME, projectToEmailAddresses);
             } else {
