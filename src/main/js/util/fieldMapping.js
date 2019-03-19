@@ -32,8 +32,7 @@ export function getField(fieldType, props) {
 export function retrieveKeys(descriptorFields) {
     const fieldKeys = [];
     Object.keys(descriptorFields).forEach((key) => {
-        const fieldKey = descriptorFields[key];
-        console.log(`Found key ${fieldKey}`);
+        const fieldKey = descriptorFields[key].key;
         fieldKeys.push(fieldKey);
     });
 
@@ -55,7 +54,6 @@ export function createField(field, value, isSet, fieldError, onChange) {
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
         errorValue: fieldError
     };
-    console.log(`Created mapping ${propMapping}`);
 
     return getField(type, propMapping);
 }

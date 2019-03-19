@@ -26,27 +26,28 @@ class ProviderConfiguration extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getConfig();
-        this.state = {
-            currentConfig: this.props.currentConfig
-        };
+        const fieldModel = this.state.currentConfig;
+        this.props.getConfig(fieldModel.descriptorName);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+            const fieldModel = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentConfig, this.state.currentKeys);
+            this.setState({
+                currentConfig: fieldModel
+            });
+        }
     }
 
     handleTest() {
         const fieldModel = this.state.currentConfig;
         this.props.testConfig(fieldModel);
-        this.state = {
-            currentConfig: this.props.currentConfig
-        };
     }
 
     handleSubmit(evt) {
         evt.preventDefault();
         const fieldModel = this.state.currentConfig;
         this.props.updateConfig(fieldModel);
-        this.state = {
-            currentConfig: this.props.currentConfig
-        };
     }
 
     render() {
@@ -57,7 +58,7 @@ class ProviderConfiguration extends React.Component {
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
-                {errorMessage && <div className="alert alert-danger"> d
+                {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
 
@@ -82,6 +83,7 @@ ProviderConfiguration.propTypes = {
     currentConfig: PropTypes.object,
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
+    updateStatus: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired
@@ -91,7 +93,8 @@ ProviderConfiguration.propTypes = {
 ProviderConfiguration.defaultProps = {
     currentConfig: {},
     errorMessage: null,
-    actionMessage: null
+    actionMessage: null,
+    updateStatus: null
 };
 
 // Mapping redux state -> react props
@@ -104,7 +107,7 @@ const mapStateToProps = state => ({
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
-    getConfig: () => dispatch(getConfig()),
+    getConfig: descriptorName => dispatch(getConfig(descriptorName)),
     updateConfig: config => dispatch(updateConfig(config)),
     testConfig: config => dispatch(testConfig(config))
 });
