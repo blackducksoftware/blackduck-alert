@@ -59,8 +59,7 @@ const fieldNames = [
     KEY_LDAP_USER_ATTRIBUTES,
     KEY_LDAP_GROUP_SEARCH_BASE,
     KEY_LDAP_GROUP_SEARCH_FILTER,
-    KEY_LDAP_GROUP_ROLE_ATTRIBUTE,
-    KEY_LDAP_ROLE_PREFIX
+    KEY_LDAP_GROUP_ROLE_ATTRIBUTE
 ];
 
 class SettingsConfigurationForm extends Component {
@@ -267,7 +266,7 @@ class SettingsConfigurationForm extends Component {
                                 title="LDAP Configuration"
                                 expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_LDAP_ENABLED, KEY_LDAP_SERVER, KEY_LDAP_MANAGER_DN, KEY_LDAP_MANAGER_PASSWORD,
                                     KEY_LDAP_AUTHENTICATION_TYPE, KEY_LDAP_REFERRAL, KEY_LDAP_USER_SEARCH_BASE, KEY_LDAP_USER_SEARCH_FILTER, KEY_LDAP_USER_DN_PATTERNS, KEY_LDAP_USER_ATTRIBUTES,
-                                    KEY_LDAP_GROUP_SEARCH_BASE, KEY_LDAP_GROUP_SEARCH_FILTER, KEY_LDAP_GROUP_ROLE_ATTRIBUTE, KEY_LDAP_ROLE_PREFIX])}
+                                    KEY_LDAP_GROUP_SEARCH_BASE, KEY_LDAP_GROUP_SEARCH_FILTER, KEY_LDAP_GROUP_ROLE_ATTRIBUTE])}
                             >
                                 <CheckboxInput
                                     id={KEY_LDAP_ENABLED}
@@ -392,15 +391,6 @@ class SettingsConfigurationForm extends Component {
                                     onChange={this.handleChange}
                                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                     errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_ROLE_ATTRIBUTE]}
-                                />
-                                <TextInput
-                                    id={KEY_LDAP_ROLE_PREFIX}
-                                    label="Role Prefix"
-                                    name={KEY_LDAP_ROLE_PREFIX}
-                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_ROLE_PREFIX)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
-                                    errorValue={this.props.fieldErrors[KEY_LDAP_ROLE_PREFIX]}
                                 />
                             </CollapsiblePane>
                         </div>
