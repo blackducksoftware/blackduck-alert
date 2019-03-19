@@ -9,7 +9,8 @@ class FieldsPanel extends React.Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            currentConfig: this.props.currentConfig
+            currentConfig: this.props.currentConfig,
+            fieldKeys: this.props.fieldKeys
         };
     }
 
@@ -67,7 +68,7 @@ FieldsPanel.propTypes = {
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
-    updateStatus: state.blackduck.updateStatus,
+    updateStatus: state.provider.updateStatus,
     fieldErrors: state.provider.error.fieldErrors
 });
 
