@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.database.api.user.UserRole;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -70,10 +71,10 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
     public void testGetMessages() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemMessageBaseUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
