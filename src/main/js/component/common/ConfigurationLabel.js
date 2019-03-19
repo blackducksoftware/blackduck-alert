@@ -16,7 +16,6 @@ class ConfigurationLabel extends Component {
     render() {
         const { showDescription } = this.state;
         const { fontAwesomeIcon, configurationName, description } = this.props;
-        const iconClasses = `fa ${fontAwesomeIcon}`;
 
         let descriptionField = null;
         if (description) {
