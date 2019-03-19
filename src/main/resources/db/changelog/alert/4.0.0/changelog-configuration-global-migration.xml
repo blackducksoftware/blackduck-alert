@@ -261,7 +261,7 @@
             <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
         <sql dbms="h2" stripComments="true">
-            CALL INSERT_GLOBAL_FIELD_VALUE('component_settings','settings.startup.environment.variable.override', 'true');
+            CALL SET_LATEST_CONFIG_GLOBAL_FIELD_VALUE('settings.startup.environment.variable.override', 'true');
         </sql>
     </changeSet>
 
