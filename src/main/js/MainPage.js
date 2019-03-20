@@ -15,7 +15,7 @@ import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
 import SettingsConfiguration from 'component/settings/SettingsConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import GlobalConfiguration from './providers/GlobalConfiguration';
+import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 
 
 class MainPage extends Component {
@@ -85,7 +85,8 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    getDescriptors: PropTypes.func.isRequired
 };
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items
