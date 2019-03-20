@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.workflow.startup;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,27 +78,34 @@ public class AlertStartupInitializer {
     public void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info("** --------------------------------- **");
         logger.info("Initializing descriptors with environment variables...");
-        final boolean overwriteCurrentConfig = isEnvironmentOverrideEnabled();
+        final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
         initializeConfiguration(List.of(SettingsDescriptor.SETTINGS_COMPONENT), overwriteCurrentConfig);
         final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(SettingsDescriptor.SETTINGS_COMPONENT)).sorted().collect(Collectors.toList());
         initializeConfiguration(descriptorNames, overwriteCurrentConfig);
     }
 
-    private boolean isEnvironmentOverrideEnabled() {
+    private boolean manageEnvironmentOverrideEnabled() {
         boolean environmentOverride = false;
         try {
             // determine if the environment variables should overwrite based on the settings configuration.
-            final Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
+            Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
-            final boolean overwriteSavedInDB = settingsConfiguration
-                                                   .flatMap(configurationModel -> configurationModel.getField(fieldKey))
-                                                   .flatMap(ConfigurationFieldModel::getFieldValue)
-                                                   .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
+
             final String environmentFieldKey = convertKeyToProperty(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
             final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
-            environmentOverride = environmentValue.map(envValue -> Boolean.valueOf(envValue)).orElse(overwriteSavedInDB);
+            if (environmentValue.isPresent() && settingsConfiguration.isPresent()) {
+                ConfigurationModel foundModel = settingsConfiguration.get();
+                Map<String, ConfigurationFieldModel> fieldModelMap = foundModel.getCopyOfKeyToFieldMap();
+                fieldModelMap.get(fieldKey).setFieldValue(String.valueOf(Boolean.valueOf(environmentValue.get())));
+                settingsConfiguration = Optional.ofNullable(fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), fieldModelMap.values()));
+            }
+
+            environmentOverride = settingsConfiguration
+                                      .flatMap(configurationModel -> configurationModel.getField(fieldKey))
+                                      .flatMap(ConfigurationFieldModel::getFieldValue)
+                                      .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
         } catch (final AlertDatabaseConstraintException ex) {
             logger.error("Error checking environment override", ex);
         }
@@ -146,12 +154,10 @@ public class AlertStartupInitializer {
         throws AlertDatabaseConstraintException {
         if (!configurationModels.isEmpty()) {
             if (!foundConfigurationModels.isEmpty()) {
-                if (overwriteCurrentConfig) {
-                    final ConfigurationModel configurationModel = foundConfigurationModels.get(0);
-                    logger.info("  Overwriting configuration values with environment for descriptor.");
-                    final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
-                    fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), updatedFields);
-                }
+                final ConfigurationModel foundModel = foundConfigurationModels.get(0);
+                logger.info("  Overwriting configuration values with environment for descriptor.");
+                final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel, overwriteCurrentConfig);
+                fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
             } else {
                 logger.info("  Writing initial configuration values from environment for descriptor.");
                 final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
@@ -160,8 +166,20 @@ public class AlertStartupInitializer {
         }
     }
 
-    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertDatabaseConstraintException {
-        final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
+    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels, final ConfigurationModel foundModel, final boolean overwriteCurrentConfig)
+        throws AlertDatabaseConstraintException {
+        final Collection<ConfigurationFieldModel> fieldsToUpdate;
+        if (overwriteCurrentConfig) {
+            fieldsToUpdate = configurationFieldModels;
+        } else {
+            fieldsToUpdate = new LinkedList<>();
+            for (ConfigurationFieldModel fieldModel : configurationFieldModels) {
+                Optional<ConfigurationFieldModel> currentFieldModel = foundModel.getField(fieldModel.getFieldKey());
+                currentFieldModel.ifPresentOrElse(fieldsToUpdate::add, () -> fieldsToUpdate.add(fieldModel));
+            }
+        }
+
+        final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(fieldsToUpdate);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel updatedFieldModel = fieldModelProcessor.performUpdateAction(fieldModel);
         return modelConverter.convertFromFieldModel(updatedFieldModel).values();
