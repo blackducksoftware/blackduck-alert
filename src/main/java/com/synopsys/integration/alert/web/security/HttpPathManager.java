@@ -31,14 +31,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.database.api.user.UserRole;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 @Component
 public class HttpPathManager {
-    private final List<String> allowedPaths;
-    private final List<String> csrfIgnoredPaths;
-    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
-
     private static final String[] DEFAULT_PATHS = {
         "/",
         "/#",
@@ -56,6 +53,9 @@ public class HttpPathManager {
         BaseController.BASE_PATH + "/system/messages/latest",
         BaseController.BASE_PATH + "/system/setup/initial"
     };
+    private final List<String> allowedPaths;
+    private final List<String> csrfIgnoredPaths;
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     @Autowired
     public HttpPathManager(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
@@ -101,7 +101,7 @@ public class HttpPathManager {
     public void completeHttpSecurity(final HttpSecurity http) throws Exception {
         http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(getCsrfIgnoredPaths())
             .and().authorizeRequests().antMatchers(getAllowedPaths()).permitAll()
-            .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+            .and().authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
             .and().logout().logoutSuccessUrl("/");
     }
 }
