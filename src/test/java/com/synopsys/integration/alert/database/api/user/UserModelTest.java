@@ -28,7 +28,7 @@ public class UserModelTest {
         assertEquals(expectedPassword, userModel.getPassword());
         assertEquals(expectedEmail, userModel.getEmailAddress());
         assertEquals(expectedRoles.size(), userModel.getRoles().size());
-        assertTrue(userModel.hasRole(UserRole.ADMIN.name()));
+        assertTrue(userModel.hasRole(UserRole.ALERT_ADMIN.name()));
         assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
         assertFalse(userModel.isExpired());
         assertFalse(userModel.isLocked());

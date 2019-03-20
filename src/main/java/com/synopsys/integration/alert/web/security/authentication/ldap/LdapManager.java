@@ -157,11 +157,12 @@ public class LdapManager {
         final String groupSearchBase = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
         final String groupSearchFilter = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
         final String groupRoleAttribute = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
-        final String rolePrefix = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_ROLE_PREFIX);
         final DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource, groupSearchBase);
         authoritiesPopulator.setGroupSearchFilter(groupSearchFilter);
         authoritiesPopulator.setGroupRoleAttribute(groupRoleAttribute);
-        authoritiesPopulator.setRolePrefix(rolePrefix);
+        // expect the LDAP group name for the role to be ROLE_<ROLE_NAME> where ROLE_NAME defined in UserRoles
+        // Set the prefix to the empty string because the prefix is by default set to ROLE_ we don't want the populator to create ROLE_ROLE_<ROLE_NAME> due to the default prefix
+        authoritiesPopulator.setRolePrefix("");
         return authoritiesPopulator;
     }
 

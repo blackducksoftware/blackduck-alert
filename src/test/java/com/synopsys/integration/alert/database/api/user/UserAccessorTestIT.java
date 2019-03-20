@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class UserAccessorTestIT extends AlertIntegrationTest {
@@ -87,7 +88,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         assertTrue(userModel.getRoles().isEmpty());
 
         final String another_role = "ANOTHER_ROLE";
-        final String admin_role = "ADMIN";
+        final String admin_role = UserRole.ALERT_ADMIN_TEXT;
         final Set<String> roles = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         final UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
         assertEquals(userModel.getName(), updatedModel.getName());
