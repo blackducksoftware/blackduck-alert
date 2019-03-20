@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ConfigButtons from 'component/common/ConfigButtons';
-import FieldsPanel from 'providers/FieldsPanel';
+import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import { getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
