@@ -15,6 +15,7 @@ import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
 import SettingsConfiguration from 'component/settings/SettingsConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 
 
 class MainPage extends Component {
@@ -40,6 +41,8 @@ class MainPage extends Component {
         const routeList = descriptorList.map((component) => {
             if (component.urlName === 'blackduck') {
                 return <Route path={`${uriPrefix}${component.urlName}`} component={BlackDuckConfiguration} />;
+            } else if (component.urlName === 'polaris') {
+                return <Route path={`${uriPrefix}${component.urlName}`} render={() => <GlobalConfiguration descriptor={component} />} />;
             } else if (component.urlName === 'email') {
                 return <Route path={`${uriPrefix}${component.urlName}`} component={EmailConfiguration} />;
             } else if (component.urlName === 'hipchat') {
@@ -82,7 +85,8 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    getDescriptors: PropTypes.func.isRequired
 };
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items

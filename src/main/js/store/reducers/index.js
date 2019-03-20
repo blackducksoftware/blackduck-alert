@@ -14,12 +14,14 @@ import schedulingConfig from 'store/reducers/schedulingConfig';
 import session from 'store/reducers/session';
 import system from 'store/reducers/system';
 import refresh from 'store/reducers/refresh';
+import globalConfiguration from './globalConfiguration';
 
 
 const rootReducer = combineReducers({
     about,
     audit,
     blackduck,
+    globalConfiguration,
     descriptors,
     distributions,
     distributionConfigs,

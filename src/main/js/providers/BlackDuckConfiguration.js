@@ -91,7 +91,7 @@ class BlackDuckConfiguration
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-laptop" configurationName="Black Duck" description={configurationDescription} />
+                <ConfigurationLabel fontAwesomeIcon="laptop" configurationName="Black Duck" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}

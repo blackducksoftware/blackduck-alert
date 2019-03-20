@@ -26,7 +26,7 @@ class SettingsConfiguration extends Component {
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-cog" configurationName="Settings" description={configurationDescription} />
+                <ConfigurationLabel fontAwesomeIcon="cog" configurationName="Settings" description={configurationDescription} />
                 <SettingsConfigurationForm
                     fetchingSetupStatus={this.props.fetchingSetupStatus}
                     updateStatus={this.props.updateStatus}

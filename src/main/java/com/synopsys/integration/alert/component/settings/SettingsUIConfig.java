@@ -30,8 +30,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -39,40 +37,47 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
     public SettingsUIConfig() {
-        super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_URL, SettingsDescriptor.SETTINGS_ICON);
+        super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL, SettingsDescriptor.SETTINGS_ICON);
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField sysAdminEmail = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, "Default System Administrator Email");
-        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, "Default System Administrator Password");
-        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, "Encryption Password");
-        final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, "Encryption Global Salt");
-        final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override");
-
-        final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host", this::validateProxyHost);
-        final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", this::validateProxyPort);
-        final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyUserName);
-        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, "Proxy Password", this::validateProxyPassword);
-
-        final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, "LDAP Enabled");
-        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, "LDAP Server", this::validateLDAPServer);
-        final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, "LDAP Manager DN", this::validateLDAPUsername);
-        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, "LDAP Manager Password", this::validateLDAPPassword);
-        final ConfigField ldapAuthenticationType = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, "LDAP Authentication Type", List.of("simple", "none", "digest"));
-        final ConfigField ldapReferral = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_REFERRAL, "LDAP Referral", List.of("ignore", "follow", "throw"));
-        final ConfigField ldapUserSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE, "LDAP User Search Base");
-        final ConfigField ldapUserSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER, "LDAP User Search Filter");
-        final ConfigField ldapUserDNPatterns = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS, "LDAP User DN Patterns");
-        final ConfigField ldapUserAttributes = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES, "LDAP User Attributes");
-        final ConfigField ldapGroupSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, "LDAP Group Search Base");
-        final ConfigField ldapGroupSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, "LDAP Group Search Filter");
-        final ConfigField ldapGroupRoleAttribute = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, "LDAP Group Role Attribute");
-        final ConfigField ldapRolePrefix = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ROLE_PREFIX, "LDAP Role Prefix");
+        final ConfigField sysAdminEmail = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, "Default System Administrator Email",
+            "The email address of the Alert system administrator. Used in case a password reset is needed.");
+        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, "Default System Administrator Password",
+            "The password of the Alert system administrator. Used when logging in as the \"sysadmin\" user.");
+        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, "Encryption Password", "The password used when encrypting sensitive fields.");
+        final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, "Encryption Global Salt", "The salt used when encrypting sensitive fields.");
+        final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override",
+            "If true, the Alert environment variables will override the stored configurations.");
+        final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host", "The host name of the proxy server to use.", this::validateProxyHost);
+        final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", "The port of the proxy server to use.", this::validateProxyPort);
+        final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", "If the proxy server requires authentication, the username to authentication with the proxy server.",
+            this::validateProxyUserName);
+        final ConfigField proxyPassword = PasswordConfigField
+                                              .create(SettingsDescriptor.KEY_PROXY_PWD, "Proxy Password", "If the proxy server requires authentication, the password to authentication with the proxy server.", this::validateProxyPassword);
+        final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, "LDAP Enabled", "If true, Alert with attempt to authenticate using the LDAP configuration.");
+        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, "LDAP Server", "The URL of the LDAP server.", this::validateLDAPServer);
+        final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, "LDAP Manager DN", "The distinguished name of the LDAP manager.", this::validateLDAPUsername);
+        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, "LDAP Manager Password", "The password of the LDAP manager.", this::validateLDAPPassword);
+        final ConfigField ldapAuthenticationType = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, "LDAP Authentication Type", "The type of authentication required to connect to the LDAP server.",
+            List.of("simple", "none", "digest"));
+        final ConfigField ldapReferral = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_REFERRAL, "LDAP Referral", "Set the method to handle referrals.", List.of("ignore", "follow", "throw"));
+        final ConfigField ldapUserSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE, "LDAP User Search Base", "The part of the LDAP directory in which user searches should be done.");
+        final ConfigField ldapUserSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER, "LDAP User Search Filter", "The filter used to search for user membership.");
+        final ConfigField ldapUserDNPatterns = TextInputConfigField
+                                                   .create(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS, "LDAP User DN Patterns", "The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN.");
+        final ConfigField ldapUserAttributes = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES, "LDAP User Attributes", "User attributes to retrieve for users.");
+        final ConfigField ldapGroupSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, "LDAP Group Search Base", "The part of the LDAP directory in which group searches should be done.");
+        final ConfigField ldapGroupSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, "LDAP Group Search Filter", "The filter used to search for group membership.");
+        final ConfigField ldapGroupRoleAttribute = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, "LDAP Group Role Attribute", "The ID of the attribute which contains the role name for a group.");
+        final ConfigField ldapRolePrefix = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ROLE_PREFIX, "LDAP Role Prefix", "The prefix which will be prepended to the user roles.");
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, ldapRolePrefix);

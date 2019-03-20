@@ -30,11 +30,13 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public abstract class UIConfig extends AlertSerializableModel {
     private final String label;
+    private final String description;
     private final String urlName;
     private final String fontAwesomeIcon;
 
-    public UIConfig(final String label, final String urlName, final String fontAwesomeIcon) {
+    public UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon) {
         this.label = label;
+        this.description = description;
         this.urlName = urlName;
         this.fontAwesomeIcon = fontAwesomeIcon;
     }
@@ -43,6 +45,10 @@ public abstract class UIConfig extends AlertSerializableModel {
 
     public String getLabel() {
         return label;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getUrlName() {

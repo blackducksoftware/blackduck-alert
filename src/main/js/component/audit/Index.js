@@ -314,7 +314,7 @@ class Index extends Component {
 
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-history" configurationName="Audit" />
+                <ConfigurationLabel fontAwesomeIcon="history" configurationName="Audit" />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
                 </div>

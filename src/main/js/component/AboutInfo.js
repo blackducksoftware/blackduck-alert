@@ -52,7 +52,7 @@ class AboutInfo extends React.Component {
         const channelTable = this.createDescriptorTable(channelList);
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-info" configurationName="About" />
+                <ConfigurationLabel fontAwesomeIcon="info" configurationName="About" />
                 <div className="form-horizontal">
                     <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />

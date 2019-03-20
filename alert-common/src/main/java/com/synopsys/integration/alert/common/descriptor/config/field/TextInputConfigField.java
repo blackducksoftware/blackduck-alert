@@ -27,44 +27,44 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class TextInputConfigField extends ConfigField {
-    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group) {
-        super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group);
+    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group) {
+        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group);
     }
 
-    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
+    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
     }
 
-    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive) {
-        super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive);
+    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
+        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive);
     }
 
-    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
+    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
     }
 
-    public static TextInputConfigField create(final String key, final String label) {
-        return new TextInputConfigField(key, label, false, false);
+    public static TextInputConfigField create(final String key, final String label, final String description) {
+        return new TextInputConfigField(key, label, description, false, false);
     }
 
-    public static TextInputConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new TextInputConfigField(key, label, false, false, validationFunction);
+    public static TextInputConfigField create(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new TextInputConfigField(key, label, description, false, false, validationFunction);
     }
 
-    public static TextInputConfigField createGrouped(final String key, final String label, final FieldGroup group) {
-        return new TextInputConfigField(key, label, false, false, group);
+    public static TextInputConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group) {
+        return new TextInputConfigField(key, label, description, false, false, group);
     }
 
-    public static TextInputConfigField createGrouped(final String key, final String label, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        return new TextInputConfigField(key, label, false, false, group, validationFunction);
+    public static TextInputConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        return new TextInputConfigField(key, label, description, false, false, group, validationFunction);
     }
 
-    public static TextInputConfigField createRequired(final String key, final String label) {
-        return new TextInputConfigField(key, label, true, false);
+    public static TextInputConfigField createRequired(final String key, final String label, final String description) {
+        return new TextInputConfigField(key, label, description, true, false);
     }
 
-    public static TextInputConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new TextInputConfigField(key, label, true, false, validationFunction);
+    public static TextInputConfigField createRequired(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new TextInputConfigField(key, label, description, true, false, validationFunction);
     }
 
 }
