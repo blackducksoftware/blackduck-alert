@@ -114,9 +114,11 @@ public class HipChatChannel extends RestDistributionChannel {
         }
         try {
             sendTestRequest(intHttpClient, configuredApiUrl, apiKey);
+        } catch (final AlertException alertException) {
+            throw alertException;
         } catch (final IntegrationException integrationException) {
             logger.error("Unable to create a response", integrationException);
-            throw new AlertException("Invalid API key: " + integrationException.getMessage());
+            throw new AlertException("Invalid configuration: " + integrationException.getMessage());
         }
     }
 
@@ -131,8 +133,8 @@ public class HipChatChannel extends RestDistributionChannel {
 
         final Request request = createPostMessageRequest(url, requestHeaders, queryParameters);
         try (final Response response = sendGenericRequest(intHttpClient, request)) {
-            if (RestConstants.OK_200 > response.getStatusCode() || response.getStatusCode() >= RestConstants.BAD_REQUEST_400) {
-                throw new AlertException("Invalid API key: " + response.getStatusMessage());
+            if (RestConstants.OK_200 > response.getStatusCode() || response.getStatusCode() >= RestConstants.MULT_CHOICE_300) {
+                throw new AlertException(String.format("Invalid configuration: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
             }
         } catch (final IOException ioException) {
             throw new AlertException(ioException.getMessage(), ioException);
