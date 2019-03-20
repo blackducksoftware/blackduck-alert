@@ -12,7 +12,7 @@ const initialState = {
     config: {}
 };
 
-const provider = (state = initialState, action) => {
+const globalConfiguration = (state = initialState, action) => {
     switch (action.type) {
         case CONFIG_FETCHING:
             return Object.assign({}, state, {
@@ -28,7 +28,11 @@ const provider = (state = initialState, action) => {
                 updateStatus: 'FETCHED',
                 testing: false,
                 actionMessage: null,
-                config: action.config
+                config: action.config,
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
             });
 
         case CONFIG_UPDATE_ERROR:
@@ -104,4 +108,4 @@ const provider = (state = initialState, action) => {
     }
 };
 
-export default provider;
+export default globalConfiguration;

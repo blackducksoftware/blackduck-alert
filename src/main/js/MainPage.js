@@ -15,7 +15,7 @@ import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
 import SettingsConfiguration from 'component/settings/SettingsConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import ProviderConfiguration from './providers/ProviderConfiguration';
+import GlobalConfiguration from './providers/GlobalConfiguration';
 
 
 class MainPage extends Component {
@@ -42,7 +42,7 @@ class MainPage extends Component {
             if (component.urlName === 'blackduck') {
                 return <Route path={`${uriPrefix}${component.urlName}`} component={BlackDuckConfiguration} />;
             } else if (component.urlName === 'polaris') {
-                return <Route path={`${uriPrefix}${component.urlName}`} render={() => <ProviderConfiguration descriptor={component} />} />;
+                return <Route path={`${uriPrefix}${component.urlName}`} render={() => <GlobalConfiguration descriptor={component} />} />;
             } else if (component.urlName === 'email') {
                 return <Route path={`${uriPrefix}${component.urlName}`} component={EmailConfiguration} />;
             } else if (component.urlName === 'hipchat') {

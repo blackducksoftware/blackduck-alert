@@ -28,7 +28,11 @@ const blackduck = (state = initialState, action) => {
                 updateStatus: 'FETCHED',
                 testing: false,
                 actionMessage: null,
-                config: action.config
+                config: action.config,
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
             });
 
         case CONFIG_UPDATE_ERROR:

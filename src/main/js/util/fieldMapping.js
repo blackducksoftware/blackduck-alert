@@ -8,25 +8,47 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
+export function buildTextInput(props) {
+    return <TextInput {...props} />;
+}
+
+export function buildTextArea(props) {
+    return <TextArea {...props} />;
+}
+
+export function buildSelectInput(props) {
+    return <SelectInput {...props} />;
+}
+
+export function buildPasswordInput(props) {
+    return <PasswordInput {...props} />;
+}
+
+export function buildNumberInput(props) {
+    return <NumberInput {...props} />;
+}
+
+export function buildCheckboxInput(props) {
+    return <CheckboxInput {...props} />;
+}
+
+export function buildReadOnlyField(props) {
+    return <ReadOnlyField {...props} />;
+}
+
+export const FIELDS = {
+    TextInput: buildTextInput,
+    TextArea: buildTextArea,
+    Select: buildSelectInput,
+    PasswordInput: buildPasswordInput,
+    NumberInput: buildNumberInput,
+    CheckboxInput: buildCheckboxInput,
+    ReadOnlyField: buildReadOnlyField
+};
+
 export function getField(fieldType, props) {
-    switch (fieldType) {
-        case 'Select':
-            return <SelectInput {...props} />;
-        case 'TextInput':
-            return <TextInput {...props} />;
-        case 'TextArea':
-            return <TextArea {...props} />;
-        case 'PasswordInput':
-            return <PasswordInput {...props} />;
-        case 'NumberInput':
-            return <NumberInput {...props} />;
-        case 'CheckboxInput':
-            return <CheckboxInput {...props} />;
-        case 'ReadOnlyField':
-            return <ReadOnlyField {...props} />;
-        default:
-            return <TextInput {...props} />;
-    }
+    const field = FIELDS[fieldType];
+    return field(props);
 }
 
 export function retrieveKeys(descriptorFields) {

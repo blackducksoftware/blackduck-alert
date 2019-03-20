@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as FieldMapping from 'util/fieldMapping';
@@ -53,23 +52,12 @@ class FieldsPanel extends React.Component {
     }
 }
 
-FieldsPanel.defaultProps = {
-    updateStatus: null,
-    fieldErrors: {}
-};
-
 FieldsPanel.propTypes = {
     fieldKeys: PropTypes.array.isRequired,
     descriptorFields: PropTypes.array.isRequired,
     currentConfig: PropTypes.object.isRequired,
-    updateStatus: PropTypes.string,
-    fieldErrors: PropTypes.object
+    updateStatus: PropTypes.string.isRequired,
+    fieldErrors: PropTypes.object.isRequired
 };
 
-// Mapping redux state -> react props
-const mapStateToProps = state => ({
-    updateStatus: state.provider.updateStatus,
-    fieldErrors: state.provider.error.fieldErrors
-});
-
-export default connect(mapStateToProps, null)(FieldsPanel);
+export default FieldsPanel;
