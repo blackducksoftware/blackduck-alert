@@ -31,19 +31,18 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class HipChatGlobalUIConfig extends UIConfig {
 
     public HipChatGlobalUIConfig() {
-        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON);
+        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_DESCRIPTION, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON);
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key");
-        final ConfigField hostServer = TextInputConfigField.createGrouped(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", FieldGroup.ADVANCED);
+        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key", "The API key of the user you want to use to authenticate with the HipChat server.");
+        final ConfigField hostServer = TextInputConfigField.createRequired(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", "The URL for your HipChat server.");
         return List.of(apiKey, hostServer);
     }
 }

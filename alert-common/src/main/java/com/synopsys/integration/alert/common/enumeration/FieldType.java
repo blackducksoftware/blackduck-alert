@@ -26,15 +26,15 @@ package com.synopsys.integration.alert.common.enumeration;
 public enum FieldType {
     SELECT("Select"),
     TEXT_INPUT("TextInput"),
-    TEXT_AREA("TestArea"),
+    TEXT_AREA("TextArea"),
     PASSWORD_INPUT("PasswordInput"),
     NUMBER_INPUT("NumberInput"),
     CHECKBOX_INPUT("CheckboxInput"),
     READ_ONLY("ReadOnlyField");
 
-    private String fieldTypeName;
+    private final String fieldTypeName;
 
-    private FieldType(final String fieldTypeName) {
+    FieldType(final String fieldTypeName) {
         this.fieldTypeName = fieldTypeName;
     }
 

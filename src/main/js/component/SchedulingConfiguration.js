@@ -143,7 +143,7 @@ class SchedulingConfiguration extends React.Component {
         const { fieldErrors, errorMessage, updateStatus } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-clock-o" configurationName="Scheduling" description={configurationDescription} />
+                <ConfigurationLabel fontAwesomeIcon="clock-o" configurationName="Scheduling" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}

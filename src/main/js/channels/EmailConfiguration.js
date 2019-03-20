@@ -213,7 +213,7 @@ class EmailConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-envelope" configurationName="Email" description={configurationDescription} />
+                <ConfigurationLabel fontAwesomeIcon="envelope" configurationName="Email" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
