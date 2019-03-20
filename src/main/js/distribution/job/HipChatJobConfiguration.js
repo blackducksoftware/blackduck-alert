@@ -55,8 +55,7 @@ class HipChatJobConfiguration extends Component {
                     const channelModel = jobConfig.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
                     this.setState({
                         jobConfig,
-                        currentConfig: channelModel,
-                        colorOptions: nextProps.colorOptions
+                        currentConfig: channelModel
                     });
                 }
             }
