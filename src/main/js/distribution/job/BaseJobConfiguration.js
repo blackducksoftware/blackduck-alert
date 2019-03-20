@@ -44,7 +44,7 @@ const fieldDescriptions = {
     [KEY_FORMAT_TYPE]: 'Select the format of the message that will be created.',
     [KEY_NOTIFICATION_TYPES]: 'Select one or more of the notification types. Only these notification types will be included for this distribution job.',
     [KEY_NAME]: 'The name of the distribution job. Must be unique.',
-    [KEY_FREQUENCY]: 'Select how frequent this job should check for notifications to send.',
+    [KEY_FREQUENCY]: 'Select how frequently this job should check for notifications to send.',
     [KEY_PROVIDER_NAME]: 'Select the provider. Only notifications for that provider will be processed in this distribution job.'
 };
 

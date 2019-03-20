@@ -5,12 +5,12 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import FieldsPanel from 'providers/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { getConfig, testConfig, updateConfig } from 'store/actions/provider';
+import { getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 
-class ProviderConfiguration extends React.Component {
+class GlobalConfiguration extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -68,7 +68,7 @@ class ProviderConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
-                        <FieldsPanel currentConfig={this.state.currentConfig} fieldKeys={this.state.currentKeys} descriptorFields={fields} />
+                        <FieldsPanel currentConfig={this.state.currentConfig} fieldKeys={this.state.currentKeys} descriptorFields={fields} updateStatus={this.props.updateStatus} fieldErrors={this.props.fieldErrors} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
@@ -78,9 +78,10 @@ class ProviderConfiguration extends React.Component {
 }
 
 // Used for compile/validation of properties
-ProviderConfiguration.propTypes = {
+GlobalConfiguration.propTypes = {
     descriptor: PropTypes.object.isRequired,
     currentConfig: PropTypes.object,
+    fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
     updateStatus: PropTypes.string,
@@ -90,19 +91,21 @@ ProviderConfiguration.propTypes = {
 };
 
 // Default values
-ProviderConfiguration.defaultProps = {
+GlobalConfiguration.defaultProps = {
     currentConfig: {},
     errorMessage: null,
     actionMessage: null,
-    updateStatus: null
+    updateStatus: null,
+    fieldErrors: {}
 };
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
-    currentConfig: state.provider.config,
-    actionMessage: state.provider.actionMessage,
-    updateStatus: state.provider.updateStatus,
-    errorMessage: state.provider.error.message
+    currentConfig: state.globalConfiguration.config,
+    actionMessage: state.globalConfiguration.actionMessage,
+    updateStatus: state.globalConfiguration.updateStatus,
+    errorMessage: state.globalConfiguration.error.message,
+    fieldErrors: state.globalConfiguration.error.fieldErrors
 });
 
 // Mapping redux actions -> react props
@@ -112,4 +115,4 @@ const mapDispatchToProps = dispatch => ({
     testConfig: config => dispatch(testConfig(config))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProviderConfiguration);
+export default connect(mapStateToProps, mapDispatchToProps)(GlobalConfiguration);

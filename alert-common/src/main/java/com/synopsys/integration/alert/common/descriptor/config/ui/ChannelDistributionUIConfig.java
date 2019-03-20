@@ -58,7 +58,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name", "The name of the distribution job. Must be unique.");
-        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", "Select how frequent this job should check for notifications to send.",
+        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", "Select how frequently this job should check for notifications to send.",
             Arrays.stream(FrequencyType.values()).map(FrequencyType::name).collect(Collectors.toList()));
         final ConfigField channelName = SelectConfigField
                                             .createRequired(KEY_CHANNEL_NAME, "Channel Type", "Select the channel. Notifications generated through Alert will be sent through this channel.", getDescriptorNames(DescriptorType.CHANNEL));
