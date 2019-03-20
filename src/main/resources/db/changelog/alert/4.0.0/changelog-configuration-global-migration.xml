@@ -252,4 +252,17 @@
         </sql>
     </changeSet>
 
+    <!-- Global Scheduling Config -->
+    <changeSet author="psantos" id="1548361428926-5">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL SET_LATEST_CONFIG_GLOBAL_FIELD_VALUE('settings.startup.environment.variable.override', 'true');
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

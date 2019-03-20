@@ -24,5 +24,7 @@
 package com.synopsys.integration.alert.database.user;
 
 public enum UserRole {
-    ADMIN
+    ALERT_ADMIN;
+
+    public static final String ALERT_ADMIN_TEXT = "ALERT_ADMIN";
 }
