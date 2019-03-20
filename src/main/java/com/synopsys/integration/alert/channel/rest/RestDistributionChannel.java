@@ -64,6 +64,8 @@ public abstract class RestDistributionChannel extends DistributionChannel {
             for (final Request request : requests) {
                 sendMessageRequest(intHttpClient, request, event.getDestination());
             }
+        } catch (final AlertException alertException) {
+            throw alertException;
         } catch (final Exception ex) {
             throw new AlertException(ex);
         }
