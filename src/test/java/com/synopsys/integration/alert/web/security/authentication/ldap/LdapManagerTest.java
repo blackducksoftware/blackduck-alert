@@ -33,7 +33,6 @@ public class LdapManagerTest {
     public static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
     public static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
     public static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "roleAttribute";
-    public static final String DEFAULT_ROLE_PREFIX = "ROLE_";
 
     private ConfigurationModel createConfigurationModel() {
         final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.GLOBAL);
@@ -51,7 +50,6 @@ public class LdapManagerTest {
         final ConfigurationFieldModel groupSearchBaseField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
         final ConfigurationFieldModel groupSearchFilterField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
         final ConfigurationFieldModel groupRoleAttributeField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
-        final ConfigurationFieldModel rolePrefixField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_ROLE_PREFIX);
 
         enabledField.setFieldValue(DEFAULT_ENABLED);
         serverField.setFieldValue(DEFAULT_SERVER);
@@ -66,7 +64,6 @@ public class LdapManagerTest {
         groupSearchBaseField.setFieldValue(DEFAULT_GROUP_SEARCH_BASE);
         groupSearchFilterField.setFieldValue(DEFAULT_GROUP_SEARCH_FILTER);
         groupRoleAttributeField.setFieldValue(DEFAULT_GROUP_ROLE_ATTRIBUTE);
-        rolePrefixField.setFieldValue(DEFAULT_ROLE_PREFIX);
 
         configurationModel.put(enabledField);
         configurationModel.put(serverField);
@@ -81,7 +78,6 @@ public class LdapManagerTest {
         configurationModel.put(groupSearchBaseField);
         configurationModel.put(groupSearchFilterField);
         configurationModel.put(groupRoleAttributeField);
-        configurationModel.put(rolePrefixField);
 
         return configurationModel;
     }
@@ -107,7 +103,6 @@ public class LdapManagerTest {
         assertEquals(DEFAULT_GROUP_SEARCH_BASE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_GROUP_SEARCH_FILTER, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_GROUP_ROLE_ATTRIBUTE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_ROLE_PREFIX, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_ROLE_PREFIX).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test

@@ -30,6 +30,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
+import com.synopsys.integration.alert.database.api.user.UserRole;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -90,7 +91,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         final Optional<UserModel> userModel = userAccessor.getUser(userName);
         assertTrue(userModel.isPresent());
         final UserModel model = userModel.get();
-        assertFalse(model.hasRole("ADMIN"));
+        assertFalse(model.hasRole(UserRole.ALERT_ADMIN_TEXT));
         assertTrue(model.getRoles().isEmpty());
 
         userAccessor.deleteUser(userName);
