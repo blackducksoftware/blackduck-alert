@@ -58,6 +58,8 @@ public class RestChannelUtility {
             for (final Request request : requests) {
                 sendMessageRequest(intHttpClient, request, eventDestination);
             }
+        } catch (final AlertException alertException) {
+            throw alertException;
         } catch (final Exception ex) {
             throw new AlertException(ex);
         }
@@ -85,8 +87,10 @@ public class RestChannelUtility {
     public void sendMessageRequest(final IntHttpClient intHttpClient, final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
         try (final Response response = sendGenericRequest(intHttpClient, request)) {
-            if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.BAD_REQUEST_400) {
+            if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
                 logger.info("Successfully sent a {} message!", messageType);
+            } else {
+                throw new AlertException(String.format("Could not send message: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
             }
         } catch (final IOException e) {
             throw new AlertException(e.getMessage(), e);
