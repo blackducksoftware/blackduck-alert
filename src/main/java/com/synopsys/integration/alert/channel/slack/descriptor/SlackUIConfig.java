@@ -35,6 +35,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 
 @Component
 public class SlackUIConfig extends ChannelDistributionUIConfig {
+    private static final String SLACK_WEBHOOK_DESCRIPTION = "The Slack URL to receive alerts.";
+    private static final String SLACK_CHANNEL_NAME_DESCRIPTION = "The name of the Slack channel.";
+    private static final String SLACK_CHANNEL_USERNAME_DESCRIPTION = "The username to show as the message sender in the Slack channel.";
 
     @Autowired
     public SlackUIConfig(final DescriptorAccessor descriptorAccessor) {
@@ -43,9 +46,9 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook", "The Slack URL to receive alerts.");
-        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name", "The name of the Slack channel.");
-        final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username", "The username to show as the message sender in the Slack channel.");
+        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook", SLACK_WEBHOOK_DESCRIPTION);
+        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name", SLACK_CHANNEL_NAME_DESCRIPTION);
+        final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username", SLACK_CHANNEL_USERNAME_DESCRIPTION);
         return List.of(webhook, channelName, channelUsername);
     }
 }
