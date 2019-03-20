@@ -37,6 +37,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
+    private static final String EMAIL_ADDRESSES_DESCRIPTION = "";
+    private static final String EMAIL_SUBJECT_LINE_DESCRIPTION = "The subject line to use in the emails sent for this distribution job.";
+    private static final String EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION = "If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.";
 
     @Autowired
     public EmailDistributionUIConfig(final DescriptorAccessor descriptorAccessor) {
@@ -45,10 +48,9 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField emailAddresses = TextInputConfigField.create(EmailDescriptor.KEY_EMAIL_ADDRESSES, "Email Addresses", "");
-        final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line", "The subject line to use in the emails sent for this distribution job.");
-        final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only",
-            "If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.");
+        final ConfigField emailAddresses = TextInputConfigField.create(EmailDescriptor.KEY_EMAIL_ADDRESSES, "Email Addresses", EMAIL_ADDRESSES_DESCRIPTION);
+        final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line", EMAIL_SUBJECT_LINE_DESCRIPTION);
+        final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only", EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION);
         return Arrays.asList(emailAddresses, subjectLine, projectOwnerOnly);
     }
 }
