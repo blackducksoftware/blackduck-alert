@@ -213,7 +213,7 @@ class EmailConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="fa-envelope" configurationName="Email" description={configurationDescription} />
+                <ConfigurationLabel fontAwesomeIcon="envelope" configurationName="Email" description={configurationDescription} />
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
@@ -280,7 +280,7 @@ class EmailConfiguration extends React.Component {
                     />
                     <CollapsiblePane
                         title="Advanced Settings"
-                        expanded={() => FieldModelUtil.keysHaveValueOrIsSet(fieldModel, [
+                        expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [
                             JAVAMAIL_PORT_KEY,
                             JAVAMAIL_CONNECTION_TIMEOUT_KEY,
                             JAVAMAIL_TIMEOUT_KEY,

@@ -34,6 +34,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_LABEL = "Settings";
     public static final String SETTINGS_URL = "settings";
     public static final String SETTINGS_ICON = "cog";
+    public static final String SETTINGS_DESCRIPTION = "This page allows you to configure the admin settings.";
 
     // Values not stored in the database, but keys must be registered
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = "settings.user.default.admin.email";
@@ -61,7 +62,6 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_LDAP_GROUP_SEARCH_BASE = "settings.ldap.group.search.base";
     public static final String KEY_LDAP_GROUP_SEARCH_FILTER = "settings.ldap.group.search.filter";
     public static final String KEY_LDAP_GROUP_ROLE_ATTRIBUTE = "settings.ldap.group.role.attribute";
-    public static final String KEY_LDAP_ROLE_PREFIX = "settings.ldap.role.prefix";
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";

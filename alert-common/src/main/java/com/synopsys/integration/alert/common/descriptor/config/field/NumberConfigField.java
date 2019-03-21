@@ -26,52 +26,52 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class NumberConfigField extends ConfigField {
     public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
 
-    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group) {
-        super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group);
+    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group) {
+        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group);
     }
 
-    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
+    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
     }
 
-    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive) {
-        super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive);
+    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
+        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive);
     }
 
-    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
+    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
     }
 
-    public static NumberConfigField create(final String key, final String label) {
-        return new NumberConfigField(key, label, false, false);
+    public static NumberConfigField create(final String key, final String label, final String description) {
+        return new NumberConfigField(key, label, description, false, false);
     }
 
-    public static NumberConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, false, false, validationFunction);
+    public static NumberConfigField create(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new NumberConfigField(key, label, description, false, false, validationFunction);
     }
 
-    public static NumberConfigField createRequired(final String key, final String label) {
-        return new NumberConfigField(key, label, true, false);
+    public static NumberConfigField createRequired(final String key, final String label, final String description) {
+        return new NumberConfigField(key, label, description, true, false);
     }
 
-    public static NumberConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, true, false, validationFunction);
+    public static NumberConfigField createRequired(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new NumberConfigField(key, label, description, true, false, validationFunction);
     }
 
-    public static NumberConfigField createGrouped(final String key, final String label, final FieldGroup group) {
-        return new NumberConfigField(key, label, false, false, group);
+    public static NumberConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group) {
+        return new NumberConfigField(key, label, description, false, false, group);
     }
 
-    public static NumberConfigField createGrouped(final String key, final String label, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, false, false, group, validationFunction);
+    public static NumberConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        return new NumberConfigField(key, label, description, false, false, group, validationFunction);
     }
 
     @Override

@@ -45,9 +45,9 @@ public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id");
-        final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify");
-        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", List.of("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id", "The API ID of the room to receive Alerts.");
+        final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify", "If true, this will add to the count of new messages in the HipChat room.");
+        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", "The text color to display the Alert messages in.", List.of("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
         return List.of(roomId, notify, color);
     }
 }

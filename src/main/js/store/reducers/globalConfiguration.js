@@ -12,7 +12,7 @@ const initialState = {
     config: {}
 };
 
-const blackduck = (state = initialState, action) => {
+const globalConfiguration = (state = initialState, action) => {
     switch (action.type) {
         case CONFIG_FETCHING:
             return Object.assign({}, state, {
@@ -108,4 +108,4 @@ const blackduck = (state = initialState, action) => {
     }
 };
 
-export default blackduck;
+export default globalConfiguration;

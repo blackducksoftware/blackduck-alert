@@ -36,14 +36,16 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 @Component
 public class SchedulingUIConfig extends UIConfig {
     public SchedulingUIConfig() {
-        super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
+        super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_DESCRIPTION, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField digestHour = SelectConfigField
-                                           .createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, "Daily digest hour of day", getRangeOfNumbers(0, 23));
-        final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", getRangeOfNumbers(1, 7));
+        final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, "Daily digest hour of day", "Select the hour of the day to run the the daily digest distribution jobs.",
+            getRangeOfNumbers(0, 23));
+        final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days",
+            "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.",
+            getRangeOfNumbers(1, 7));
         return Arrays.asList(digestHour, purgeFrequency);
     }
 

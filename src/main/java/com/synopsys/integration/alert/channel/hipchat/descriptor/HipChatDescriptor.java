@@ -41,6 +41,7 @@ public class HipChatDescriptor extends ChannelDescriptor {
     public static final String HIP_CHAT_LABEL = "HipChat";
     public static final String HIP_CHAT_URL = "hipchat";
     public static final String HIP_CHAT_ICON = "comments";
+    public static final String HIP_CHAT_DESCRIPTION = "This page allows you to configure the HipChat server that Alert will send messages to.";
 
     @Autowired
     public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorActionApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
