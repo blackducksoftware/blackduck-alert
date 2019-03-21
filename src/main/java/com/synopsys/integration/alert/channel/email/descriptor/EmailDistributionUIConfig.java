@@ -45,9 +45,10 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField emailAddresses = TextInputConfigField.create(EmailDescriptor.KEY_EMAIL_ADDRESSES, "Email Addresses");
-        final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line");
-        final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only");
+        final ConfigField emailAddresses = TextInputConfigField.create(EmailDescriptor.KEY_EMAIL_ADDRESSES, "Email Addresses", "");
+        final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line", "The subject line to use in the emails sent for this distribution job.");
+        final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only",
+            "If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.");
         return Arrays.asList(emailAddresses, subjectLine, projectOwnerOnly);
     }
 }

@@ -58,7 +58,7 @@
     <changeSet author="psantos" id="1543502711058-4">
         <insert tableName="ROLES" schemaName="ALERT">
             <column name="id" value="1"/>
-            <column name="ROLENAME" value="ADMIN"/>
+            <column name="ROLENAME" value="ALERT_ADMIN"/>
         </insert>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-5">

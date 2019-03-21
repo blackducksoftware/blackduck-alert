@@ -29,10 +29,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
     public static final String INVALID_OPTION_SELECTED = "Invalid option selected";
@@ -40,51 +40,51 @@ public class SelectConfigField extends ConfigField {
     private boolean searchable;
     private boolean multiSelect;
 
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
-        super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", ConfigField.NO_VALIDATION);
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
+        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", ConfigField.NO_VALIDATION);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
     }
 
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
         final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
+        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
     }
 
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options) {
-        this(key, label, required, sensitive, true, false, options);
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<String> options) {
+        this(key, label, description, required, sensitive, true, false, options);
     }
 
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options, final ConfigValidationFunction validationFunction) {
-        this(key, label, required, sensitive, true, false, options, validationFunction);
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+        this(key, label, description, required, sensitive, true, false, options, validationFunction);
     }
 
-    public static SelectConfigField createEmpty(final String key, final String label) {
-        return new SelectConfigField(key, label, false, false, Collections.emptyList());
+    public static SelectConfigField createEmpty(final String key, final String label, final String description) {
+        return new SelectConfigField(key, label, description, false, false, Collections.emptyList());
     }
 
-    public static SelectConfigField createEmpty(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, false, false, Collections.emptyList(), validationFunction);
+    public static SelectConfigField createEmpty(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new SelectConfigField(key, label, description, false, false, Collections.emptyList(), validationFunction);
     }
 
-    public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options) {
-        return new SelectConfigField(key, label, true, false, options);
+    public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<String> options) {
+        return new SelectConfigField(key, label, description, true, false, options);
     }
 
-    public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, true, false, options, validationFunction);
+    public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+        return new SelectConfigField(key, label, description, true, false, options, validationFunction);
     }
 
-    public static SelectConfigField create(final String key, final String label, final Collection<String> options) {
-        return new SelectConfigField(key, label, false, false, options);
+    public static SelectConfigField create(final String key, final String label, final String description, final Collection<String> options) {
+        return new SelectConfigField(key, label, description, false, false, options);
     }
 
-    public static SelectConfigField create(final String key, final String label, final Collection<String> options, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, false, false, options, validationFunction);
+    public static SelectConfigField create(final String key, final String label, final String description, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+        return new SelectConfigField(key, label, description, false, false, options, validationFunction);
     }
 
     public boolean isSearchable() {

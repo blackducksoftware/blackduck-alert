@@ -43,9 +43,9 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook");
-        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name");
-        final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username");
+        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook", "The Slack URL to receive alerts.");
+        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name", "The name of the Slack channel.");
+        final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username", "The username to show as the message sender in the Slack channel.");
         return List.of(webhook, channelName, channelUsername);
     }
 }

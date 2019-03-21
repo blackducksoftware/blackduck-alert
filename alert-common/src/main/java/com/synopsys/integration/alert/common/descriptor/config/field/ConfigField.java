@@ -42,6 +42,7 @@ public class ConfigField extends AlertSerializableModel {
 
     private String key;
     private String label;
+    private final String description;
     private String type;
     private boolean required;
     private boolean sensitive;
@@ -49,10 +50,11 @@ public class ConfigField extends AlertSerializableModel {
     private String subGroup;
     private transient ConfigValidationFunction validationFunction;
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
         final ConfigValidationFunction validationFunction) {
         this.key = key;
         this.label = label;
+        this.description = description;
         this.type = type;
         this.required = required;
         this.sensitive = sensitive;
@@ -61,28 +63,28 @@ public class ConfigField extends AlertSerializableModel {
         this.validationFunction = validationFunction;
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group) {
-        this(key, label, type, required, sensitive, group, "", NO_VALIDATION);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group) {
+        this(key, label, description, type, required, sensitive, group, "", NO_VALIDATION);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        this(key, label, type, required, sensitive, group, "", validationFunction);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        this(key, label, description, type, required, sensitive, group, "", validationFunction);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, NO_VALIDATION);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String subGroup) {
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, subGroup, NO_VALIDATION);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, validationFunction);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, subGroup, validationFunction);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", NO_VALIDATION);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive) {
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, "", NO_VALIDATION);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
     }
 
     public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
@@ -118,6 +120,10 @@ public class ConfigField extends AlertSerializableModel {
 
     public void setLabel(final String label) {
         this.label = label;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getType() {

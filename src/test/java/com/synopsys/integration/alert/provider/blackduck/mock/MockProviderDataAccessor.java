@@ -36,8 +36,23 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderProject> deleteAndSaveAllProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
-        providerProjectMap.put(providerName, new HashSet<>(providerProjects));
+    public void deleteProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
+        Set<ProviderProject> projects = providerProjectMap.get(providerName);
+        if (null == projects) {
+            projects = new HashSet<>();
+        }
+        projects.removeAll(providerProjects);
+        providerProjectMap.put(providerName, projects);
+    }
+
+    @Override
+    public List<ProviderProject> saveProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
+        Set<ProviderProject> projects = providerProjectMap.get(providerName);
+        if (null == projects) {
+            projects = new HashSet<>();
+        }
+        projects.addAll(providerProjects);
+        providerProjectMap.put(providerName, projects);
         return new ArrayList<>(providerProjects);
     }
 
@@ -84,11 +99,15 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderUserModel> deleteAndSaveAllUsers(final String providerName, final Collection<ProviderUserModel> userEntitiesToDelete, final Collection<ProviderUserModel> userEntitiesToAdd) {
-        for (final ProviderUserModel user : userEntitiesToDelete) {
+    public void deleteUsers(final String providerName, final Collection<ProviderUserModel> userEntities) {
+        for (final ProviderUserModel user : userEntities) {
             users.remove(user);
         }
-        for (final ProviderUserModel user : userEntitiesToAdd) {
+    }
+
+    @Override
+    public List<ProviderUserModel> saveUsers(final String providerName, final Collection<ProviderUserModel> userEntities) {
+        for (final ProviderUserModel user : userEntities) {
             users.add(user);
         }
         return new ArrayList<>(users);

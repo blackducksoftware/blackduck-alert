@@ -396,9 +396,6 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('settings.ldap.group.role.attribute', FALSE, 'component_settings', 'GLOBAL');
         </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('settings.ldap.role.prefix', FALSE, 'component_settings', 'GLOBAL');
-        </sql>
     </changeSet>
 
 

@@ -126,7 +126,8 @@ public abstract class Descriptor extends AlertSerializableModel {
         final String label = uiConfig.getLabel();
         final String urlName = uiConfig.getUrlName();
         final String fontAwesomeIcon = uiConfig.getFontAwesomeIcon();
-        return new DescriptorMetadata(label, urlName, getName(), getType(), context, fontAwesomeIcon, uiConfig.createFields());
+        final String description = uiConfig.getDescription();
+        return new DescriptorMetadata(label, urlName, getName(), description, context, fontAwesomeIcon, uiConfig.createFields(), getType());
     }
 
 }

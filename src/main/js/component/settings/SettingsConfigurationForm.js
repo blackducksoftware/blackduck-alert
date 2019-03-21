@@ -35,7 +35,6 @@ const KEY_LDAP_USER_ATTRIBUTES = 'settings.ldap.user.attributes';
 const KEY_LDAP_GROUP_SEARCH_BASE = 'settings.ldap.group.search.base';
 const KEY_LDAP_GROUP_SEARCH_FILTER = 'settings.ldap.group.search.filter';
 const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'settings.ldap.group.role.attribute';
-const KEY_LDAP_ROLE_PREFIX = 'settings.ldap.role.prefix';
 
 
 const fieldDescriptions = {
@@ -61,7 +60,6 @@ const fieldDescriptions = {
     [KEY_LDAP_GROUP_SEARCH_BASE]: 'The part of the LDAP directory in which group searches should be done.',
     [KEY_LDAP_GROUP_SEARCH_FILTER]: 'The filter used to search for group membership.',
     [KEY_LDAP_GROUP_ROLE_ATTRIBUTE]: 'The ID of the attribute which contains the role name for a group.',
-    [KEY_LDAP_ROLE_PREFIX]: 'The prefix which will be prepended to the user roles.'
 };
 
 const fieldNames = [
@@ -86,8 +84,7 @@ const fieldNames = [
     KEY_LDAP_USER_ATTRIBUTES,
     KEY_LDAP_GROUP_SEARCH_BASE,
     KEY_LDAP_GROUP_SEARCH_FILTER,
-    KEY_LDAP_GROUP_ROLE_ATTRIBUTE,
-    KEY_LDAP_ROLE_PREFIX
+    KEY_LDAP_GROUP_ROLE_ATTRIBUTE
 ];
 
 class SettingsConfigurationForm extends Component {
@@ -172,17 +169,20 @@ class SettingsConfigurationForm extends Component {
         const saving = this.props.updateStatus === 'UPDATING' || this.props.updateStatus === 'FETCHING';
         return (
             <div>
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
+                {errorMessage && <div className="alert alert-danger"> {errorMessage} </div>}
 
-                {actionMessage && <div className="alert alert-success">
-                    {actionMessage}
-                </div>}
-                <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
+                {actionMessage && <div className="alert alert-success"> {actionMessage} </div>}
+
+                <form
+                    method="POST"
+                    className="form-horizontal loginForm"
+                    onSubmit={this.handleSubmit}>
                     <div className="form-group">
                         <div className="col-sm-12">
-                            <h2>Default System Administrator Configuration</h2>
+                            <h2> Default
+                                System
+                                Administrator
+                                Configuration </h2>
                             <TextInput
                                 id={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
                                 label="Email Address"
@@ -208,7 +208,8 @@ class SettingsConfigurationForm extends Component {
                     </div>
                     <div className="form-group">
                         <div className="col-sm-12">
-                            <h2>Encryption Configuration</h2>
+                            <h2> Encryption
+                                Configuration </h2>
                             <PasswordInput
                                 id={KEY_ENCRYPTION_PASSWORD}
                                 label="Password"
@@ -251,7 +252,9 @@ class SettingsConfigurationForm extends Component {
                         <div className="col-sm-12">
                             <CollapsiblePane
                                 title="Proxy Configuration"
-                                expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_PROXY_HOST, KEY_PROXY_PORT, KEY_PROXY_USERNAME, KEY_PROXY_PASSWORD])}
+                                expanded={() =>
+                                    FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_PROXY_HOST, KEY_PROXY_PORT, KEY_PROXY_USERNAME, KEY_PROXY_PASSWORD])
+                                }
                             >
                                 <TextInput
                                     id={KEY_PROXY_HOST}
@@ -301,9 +304,11 @@ class SettingsConfigurationForm extends Component {
                         <div className="col-sm-12">
                             <CollapsiblePane
                                 title="LDAP Configuration"
-                                expanded={() => FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_LDAP_ENABLED, KEY_LDAP_SERVER, KEY_LDAP_MANAGER_DN, KEY_LDAP_MANAGER_PASSWORD,
-                                    KEY_LDAP_AUTHENTICATION_TYPE, KEY_LDAP_REFERRAL, KEY_LDAP_USER_SEARCH_BASE, KEY_LDAP_USER_SEARCH_FILTER, KEY_LDAP_USER_DN_PATTERNS, KEY_LDAP_USER_ATTRIBUTES,
-                                    KEY_LDAP_GROUP_SEARCH_BASE, KEY_LDAP_GROUP_SEARCH_FILTER, KEY_LDAP_GROUP_ROLE_ATTRIBUTE, KEY_LDAP_ROLE_PREFIX])}
+                                expanded={() =>
+                                    FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_LDAP_ENABLED, KEY_LDAP_SERVER, KEY_LDAP_MANAGER_DN, KEY_LDAP_MANAGER_PASSWORD,
+                                        KEY_LDAP_AUTHENTICATION_TYPE, KEY_LDAP_REFERRAL, KEY_LDAP_USER_SEARCH_BASE, KEY_LDAP_USER_SEARCH_FILTER, KEY_LDAP_USER_DN_PATTERNS, KEY_LDAP_USER_ATTRIBUTES,
+                                        KEY_LDAP_GROUP_SEARCH_BASE, KEY_LDAP_GROUP_SEARCH_FILTER, KEY_LDAP_GROUP_ROLE_ATTRIBUTE])
+                                }
                             >
                                 <CheckboxInput
                                     id={KEY_LDAP_ENABLED}
@@ -444,16 +449,6 @@ class SettingsConfigurationForm extends Component {
                                     onChange={this.handleChange}
                                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                     errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_ROLE_ATTRIBUTE]}
-                                />
-                                <TextInput
-                                    id={KEY_LDAP_ROLE_PREFIX}
-                                    label="Role Prefix"
-                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_LDAP_ROLE_PREFIX)}
-                                    name={KEY_LDAP_ROLE_PREFIX}
-                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_ROLE_PREFIX)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
-                                    errorValue={this.props.fieldErrors[KEY_LDAP_ROLE_PREFIX]}
                                 />
                             </CollapsiblePane>
                         </div>

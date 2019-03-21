@@ -51,16 +51,19 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private final DescriptorAccessor descriptorAccessor;
 
     public ChannelDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final DescriptorAccessor descriptorAccessor) {
-        super(label, urlName, fontAwesomeIcon);
+        super(label, "Channel distribution setup.", urlName, fontAwesomeIcon);
         this.descriptorAccessor = descriptorAccessor;
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name");
-        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(FrequencyType::name).collect(Collectors.toList()));
-        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", getDescriptorNames(DescriptorType.CHANNEL));
-        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", getDescriptorNames(DescriptorType.PROVIDER));
+        final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name", "The name of the distribution job. Must be unique.");
+        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", "Select how frequently this job should check for notifications to send.",
+            Arrays.stream(FrequencyType.values()).map(FrequencyType::name).collect(Collectors.toList()));
+        final ConfigField channelName = SelectConfigField
+                                            .createRequired(KEY_CHANNEL_NAME, "Channel Type", "Select the channel. Notifications generated through Alert will be sent through this channel.", getDescriptorNames(DescriptorType.CHANNEL));
+        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", "Select the provider. Only notifications for that provider will be processed in this distribution job.",
+            getDescriptorNames(DescriptorType.PROVIDER));
 
         final List<ConfigField> configFields = List.of(name, channelName, frequency, providerName);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
