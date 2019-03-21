@@ -37,6 +37,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 
 @Component
 public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
+    private static final String LABEL_ROOM_ID = "Room Id";
+    private static final String LABEL_NOTIFY = "Notify";
+    private static final String LABEL_COLOR = "Color";
+
     private static final String HIP_CHAT_ROOM_ID_DESCRIPTION = "The API ID of the room to receive Alerts.";
     private static final String HIP_CHAT_NOTIFY_DESCRIPTION = "If true, this will add to the count of new messages in the HipChat room.";
     private static final String HIP_CHAT_COLOR_DESCRIPTION = "The text color to display the Alert messages in.";
@@ -48,9 +52,9 @@ public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id", HIP_CHAT_ROOM_ID_DESCRIPTION);
-        final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify", HIP_CHAT_NOTIFY_DESCRIPTION);
-        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", HIP_CHAT_COLOR_DESCRIPTION, List.of("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, LABEL_ROOM_ID, HIP_CHAT_ROOM_ID_DESCRIPTION);
+        final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, LABEL_NOTIFY, HIP_CHAT_NOTIFY_DESCRIPTION);
+        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, LABEL_COLOR, HIP_CHAT_COLOR_DESCRIPTION, List.of("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
         return List.of(roomId, notify, color);
     }
 }
