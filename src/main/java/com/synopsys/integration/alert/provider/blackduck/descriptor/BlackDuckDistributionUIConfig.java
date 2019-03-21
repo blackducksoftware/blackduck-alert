@@ -45,6 +45,12 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
+    private static final String LABEL_FILTER_BY_PROJECT = "Filter by project";
+    private static final String LABEL_PROJECT_NAME_PATTERN = "Project name pattern";
+    private static final String LABEL_PROJECTS = "Projects";
+
+    private static final String BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION = "If true, all projects will be included. Any notifications matching the configured notification types will be processed.";
+    private static final String BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";
 
     @Autowired
     public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
@@ -53,14 +59,12 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final ConfigField filterByProject = CheckboxConfigField.createRequired(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, "Filter by project",
-            "If true, all projects will be included. Any notifications matching the configured notification types will be processed.");
-        final ConfigField projectNamePattern = TextInputConfigField.create(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, "Project name pattern",
-            "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.", this::validateProjectNamePattern);
+        final ConfigField filterByProject = CheckboxConfigField.createRequired(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION);
+        final ConfigField projectNamePattern = TextInputConfigField.create(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION, this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = SelectConfigField.createEmpty(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, "Projects", "", this::validateConfiguredProject);
+        final ConfigField configuredProject = SelectConfigField.createEmpty(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, "", this::validateConfiguredProject);
         return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 
