@@ -23,12 +23,5 @@
  */
 package com.synopsys.integration.alert.common.descriptor.action;
 
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
-
 public abstract class ProviderDistributionDescriptorActionApi extends DescriptorActionApi {
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-
-    }
 }
