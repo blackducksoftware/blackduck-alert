@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,19 +50,32 @@ public abstract class DescriptorActionApi {
 
     public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
-            final String fieldKey = fieldEntry.getKey();
-            final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
-            if (fieldEntry.getValue().isRequired() && optionalField.isEmpty()) {
-                fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
-            }
+            final String key = fieldEntry.getKey();
+            final ConfigField field = fieldEntry.getValue();
+            final boolean hasRequiredField = shouldValidateField(field, fieldModel, fieldErrors);
             // field is present now validate the field
-            if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
-                final Collection<String> validationErrors = fieldEntry.getValue().validate(optionalField.get(), fieldModel);
+            if (!fieldErrors.containsKey(key) && hasRequiredField) {
+                final Set<ConfigField> requiredRelatedFields = field.getRequiredRelatedFields();
+                for (final ConfigField relatedField : requiredRelatedFields) {
+                    shouldValidateField(relatedField, fieldModel, fieldErrors);
+                }
+                final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+                final Collection<String> validationErrors = field.validate(optionalFieldValue.get(), fieldModel);
                 if (!validationErrors.isEmpty()) {
-                    fieldErrors.put(fieldKey, StringUtils.join(validationErrors, ", "));
+                    fieldErrors.put(key, StringUtils.join(validationErrors, ", "));
                 }
             }
         }
+    }
+
+    public boolean shouldValidateField(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String key = field.getKey();
+        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+        if (field.isRequired() && optionalFieldValue.isEmpty()) {
+            fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
+            return false;
+        }
+        return !optionalFieldValue.isEmpty();
     }
 
     public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws AlertFieldException {
