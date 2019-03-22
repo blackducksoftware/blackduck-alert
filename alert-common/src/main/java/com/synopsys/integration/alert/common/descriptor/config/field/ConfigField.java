@@ -24,8 +24,10 @@
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,6 +50,7 @@ public class ConfigField extends AlertSerializableModel {
     private boolean sensitive;
     private FieldGroup group;
     private String subGroup;
+    private Set<ConfigField> requiredRelatedFields;
     private transient ConfigValidationFunction validationFunction;
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
@@ -60,6 +63,7 @@ public class ConfigField extends AlertSerializableModel {
         this.sensitive = sensitive;
         this.group = group;
         this.subGroup = subGroup;
+        requiredRelatedFields = new HashSet<>();
         this.validationFunction = validationFunction;
     }
 
@@ -164,6 +168,18 @@ public class ConfigField extends AlertSerializableModel {
 
     public void setSubGroup(final String subGroup) {
         this.subGroup = subGroup;
+    }
+
+    public Set<ConfigField> getRequiredRelatedFields() {
+        return requiredRelatedFields;
+    }
+
+    public void setRequiredRelatedFields(final Set<ConfigField> requiredRelatedFields) {
+        this.requiredRelatedFields = requiredRelatedFields;
+    }
+
+    public void requireField(final ConfigField configField) {
+        requiredRelatedFields.add(configField);
     }
 
     public ConfigValidationFunction getValidationFunction() {
