@@ -40,8 +40,8 @@ class HipChatJobConfiguration extends Component {
 
     componentDidMount() {
         const { jobId } = this.props;
+        this.props.getDistributionJob(jobId);
         if (jobId) {
-            this.props.getDistributionJob(jobId);
             this.loading = true;
         }
     }
