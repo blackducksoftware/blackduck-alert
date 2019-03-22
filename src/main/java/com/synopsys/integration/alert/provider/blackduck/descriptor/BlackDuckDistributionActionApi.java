@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.action.ProviderDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class BlackDuckDistributionActionApi extends ProviderDistributionDescriptorActionApi {
+public class BlackDuckDistributionActionApi extends DescriptorActionApi {
     private final ProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired

@@ -54,8 +54,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
         final DistributionEvent event = createChannelTestEvent(testConfigModel.getConfigId().orElse(null), fieldAccessor);
-        final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
-        final Optional<DescriptorActionApi> providerActionApi = getProviderActionApi(providerName);
+        final Optional<DescriptorActionApi> providerActionApi = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(this::getProviderActionApi);
         if (providerActionApi.isPresent()) {
             providerActionApi.get().testConfig(testConfigModel);
         }
