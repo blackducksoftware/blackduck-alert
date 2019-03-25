@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
@@ -47,9 +46,9 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     private final BlackDuckTopicCollectorFactory topicCollectorFactory;
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderDescriptorActionApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final NoTestActionApi noTestActionApi,
+    public BlackDuckDescriptor(final BlackDuckProviderDescriptorActionApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionActionApi blackDuckDistributionActionApi,
         final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider, final BlackDuckTopicCollectorFactory topicCollectorFactory) {
-        super(providerRestApi, blackDuckProviderUIConfig, noTestActionApi, blackDuckDistributionUIConfig, provider);
+        super(providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionActionApi, blackDuckDistributionUIConfig, provider);
         this.topicCollectorFactory = topicCollectorFactory;
     }
 
