@@ -23,9 +23,11 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -35,6 +37,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
@@ -101,17 +105,17 @@ public class SettingsUIConfig extends UIConfig {
         // Proxy settings
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, LABEL_PROXY_HOST, SETTINGS_PROXY_HOST_DESCRIPTION);
         final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, LABEL_PROXY_PORT, SETTINGS_PROXY_PORT_DESCRIPTION);
-        proxyPort.requireField(proxyHost);
+        proxyPort.requireField(proxyHost.getKey());
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
-        proxyUsername.requireField(proxyHost);
+        proxyUsername.requireField(proxyHost.getKey());
         final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION);
-        proxyPassword.requireFields(Set.of(proxyHost, proxyUsername));
+        proxyPassword.requireFields(Set.of(proxyHost.getKey(), proxyUsername.getKey()));
 
         // Ldap settings
         final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION);
-        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION);
-        final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION);
-        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION);
+        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION, this::validateLDAPServer);
+        final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION, this::validateLDAPUsername);
+        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION, this::validateLDAPPassword);
         final ConfigField ldapAuthenticationType = SelectConfigField
                                                        .create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, LABEL_LDAP_AUTHENTICATION_TYPE, SETTINGS_LDAP_AUTHENTICATION_TYPE_DESCRIPTION, List.of("simple", "none", "digest"));
         final ConfigField ldapReferral = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_REFERRAL, LABEL_LDAP_REFERRAL, SETTINGS_LDAP_REFERRAL_DESCRIPTION, List.of("ignore", "follow", "throw"));
@@ -123,104 +127,40 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField ldapGroupSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, SETTINGS_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION);
         final ConfigField ldapGroupRoleAttribute = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, SETTINGS_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION);
 
-        ldapEnabled.requireFields(Set.of(ldapServer, ldapManagerDn, ldapManagerPassword));
-        ldapManagerDn.requireField(ldapManagerPassword);
-        ldapManagerPassword.requireField(ldapManagerDn);
-
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute);
     }
 
-    //    private Collection<String> validateProxyHost(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        final boolean hostExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_HOST);
-    //        final boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
-    //        final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
-    //        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
-    //        final boolean isHostMissing = (portExists || passwordExists || userNameExists) && !hostExists;
-    //        if (isHostMissing) {
-    //            return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
-    //        }
-    //
-    //        return List.of();
-    //    }
-    //
-    //    private Collection<String> validateProxyPort(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        final boolean hostExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_HOST);
-    //        final boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
-    //        final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
-    //        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
-    //        final boolean isPortMissing = (hostExists || passwordExists || userNameExists) && !portExists;
-    //        if (isPortMissing) {
-    //            return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PORT_MISSING);
-    //        }
-    //        return List.of();
-    //    }
-    //
-    //    private Collection<String> validateProxyUserName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        Collection<String> result = List.of();
-    //        final String proxyPassword = fieldModel.getField(SettingsDescriptor.KEY_PROXY_PWD).flatMap(FieldValueModel::getValue).orElse("");
-    //
-    //        final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
-    //        if (fieldHasNoValue && StringUtils.isNotBlank(proxyPassword)) {
-    //            result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
-    //        }
-    //        return result;
-    //    }
-    //
-    //    private Collection<String> validateProxyPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        Collection<String> result = List.of();
-    //        final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
-    //
-    //        final boolean fieldHasNoValue = !fieldToValidate.isSet() && (!fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse("")));
-    //        if (fieldHasNoValue && userNameExists) {
-    //            result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PWD_MISSING);
-    //        }
-    //        return result;
-    //    }
+    private Collection<String> validateLDAPServer(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (isLDAPEnabled(fieldModel) && fieldToValidate.containsNoData()) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
+        }
 
-    //    private boolean validateFieldExists(final FieldModel fieldModel, final String fieldKey) {
-    //        final Optional<String> fieldValue = fieldModel.getFieldValue(fieldKey);
-    //        return fieldValue.stream().anyMatch(StringUtils::isNotBlank);
-    //    }
+        return List.of();
+    }
 
-    //    private Collection<String> validateLDAPServer(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        if (isLDAPEnabled(fieldModel)) {
-    //            final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
-    //            if (fieldHasNoValue) {
-    //                return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
-    //            }
-    //        }
-    //        return List.of();
-    //    }
-    //
-    //    private Collection<String> validateLDAPUsername(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        if (isLDAPEnabled(fieldModel)) {
-    //            final String managerPassword = fieldModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(FieldValueModel::getValue).orElse("");
-    //            final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
-    //            if (fieldHasNoValue && StringUtils.isNotBlank(managerPassword)) {
-    //                return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_USERNAME_MISSING);
-    //            }
-    //        }
-    //
-    //        return List.of();
-    //    }
-    //
-    //    private Collection<String> validateLDAPPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-    //        if (isLDAPEnabled(fieldModel)) {
-    //            final String managerDN = fieldModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).flatMap(FieldValueModel::getValue).orElse("");
-    //            final boolean fieldHasNoValue = !fieldToValidate.isSet() && (!fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse("")));
-    //            if (fieldHasNoValue && StringUtils.isNotBlank(managerDN)) {
-    //                return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_PWD_MISSING);
-    //            }
-    //        }
-    //
-    //        return List.of();
-    //    }
-    //
-    //    private boolean isLDAPEnabled(final FieldModel fieldModel) {
-    //        return fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED)
-    //                   .flatMap(FieldValueModel::getValue)
-    //                   .map(Boolean::parseBoolean)
-    //                   .orElse(false);
-    //    }
+    private Collection<String> validateLDAPUsername(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String managerPwd = fieldModel.getFieldValue(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).orElse("");
+        if (isLDAPEnabled(fieldModel) && fieldToValidate.containsNoData() && StringUtils.isNotBlank(managerPwd)) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_USERNAME_MISSING);
+        }
+
+        return List.of();
+    }
+
+    private Collection<String> validateLDAPPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String managerDn = fieldModel.getFieldValue(SettingsDescriptor.KEY_LDAP_MANAGER_DN).orElse("");
+        if (isLDAPEnabled(fieldModel) && fieldToValidate.containsNoData() && StringUtils.isNotBlank(managerDn)) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_PWD_MISSING);
+        }
+
+        return List.of();
+    }
+
+    private boolean isLDAPEnabled(final FieldModel fieldModel) {
+        return fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED)
+                   .flatMap(FieldValueModel::getValue)
+                   .map(Boolean::parseBoolean)
+                   .orElse(false);
+    }
 }

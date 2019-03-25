@@ -50,7 +50,7 @@ public class ConfigField extends AlertSerializableModel {
     private boolean sensitive;
     private FieldGroup group;
     private String subGroup;
-    private Set<ConfigField> requiredRelatedFields;
+    private Set<String> requiredRelatedFields;
     private transient ConfigValidationFunction validationFunction;
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
@@ -98,13 +98,11 @@ public class ConfigField extends AlertSerializableModel {
     final Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<ConfigValidationFunction> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
         validateRequiredField(fieldToValidate, errors);
-        if (!fieldToValidate.containsNoData()) {
-            validateLength(fieldToValidate, errors);
-            if (errors.isEmpty()) {
-                for (final ConfigValidationFunction validation : validationFunctions) {
-                    if (null != validation) {
-                        errors.addAll(validation.apply(fieldToValidate, fieldModel));
-                    }
+        validateLength(fieldToValidate, errors);
+        if (errors.isEmpty()) {
+            for (final ConfigValidationFunction validation : validationFunctions) {
+                if (null != validation) {
+                    errors.addAll(validation.apply(fieldToValidate, fieldModel));
                 }
             }
         }
@@ -172,20 +170,20 @@ public class ConfigField extends AlertSerializableModel {
         this.subGroup = subGroup;
     }
 
-    public Set<ConfigField> getRequiredRelatedFields() {
+    public Set<String> getRequiredRelatedFields() {
         return requiredRelatedFields;
     }
 
-    public void setRequiredRelatedFields(final Set<ConfigField> requiredRelatedFields) {
+    public void setRequiredRelatedFields(final Set<String> requiredRelatedFields) {
         this.requiredRelatedFields = requiredRelatedFields;
     }
 
-    public void requireField(final ConfigField configField) {
-        requiredRelatedFields.add(configField);
+    public void requireField(final String configFieldKey) {
+        requiredRelatedFields.add(configFieldKey);
     }
 
-    public void requireFields(final Collection<ConfigField> configField) {
-        requiredRelatedFields.addAll(configField);
+    public void requireFields(final Collection<String> configFieldKeys) {
+        requiredRelatedFields.addAll(configFieldKeys);
     }
 
     public ConfigValidationFunction getValidationFunction() {

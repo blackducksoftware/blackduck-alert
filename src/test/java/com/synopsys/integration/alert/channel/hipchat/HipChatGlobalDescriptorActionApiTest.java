@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public class HipChatGlobalDescriptorActionApiTest {
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, restChannelUtility);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
-        addFieldValueToMap(fields, HipChatDescriptor.KEY_API_KEY, "");
+        fields.put(HipChatDescriptor.KEY_API_KEY, new FieldValueModel(List.of(""), false));
         addFieldValueToMap(fields, HipChatDescriptor.KEY_HOST_SERVER, "anything");
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), fields);
         final Map<String, String> fieldErrors = new HashMap<>();
