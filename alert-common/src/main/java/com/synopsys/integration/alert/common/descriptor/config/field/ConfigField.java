@@ -98,11 +98,13 @@ public class ConfigField extends AlertSerializableModel {
     final Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<ConfigValidationFunction> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
         validateRequiredField(fieldToValidate, errors);
-        validateLength(fieldToValidate, errors);
-        if (errors.isEmpty()) {
-            for (final ConfigValidationFunction validation : validationFunctions) {
-                if (null != validation) {
-                    errors.addAll(validation.apply(fieldToValidate, fieldModel));
+        if (!fieldToValidate.containsNoData()) {
+            validateLength(fieldToValidate, errors);
+            if (errors.isEmpty()) {
+                for (final ConfigValidationFunction validation : validationFunctions) {
+                    if (null != validation) {
+                        errors.addAll(validation.apply(fieldToValidate, fieldModel));
+                    }
                 }
             }
         }
@@ -182,6 +184,10 @@ public class ConfigField extends AlertSerializableModel {
         requiredRelatedFields.add(configField);
     }
 
+    public void requireFields(final Collection<ConfigField> configField) {
+        requiredRelatedFields.addAll(configField);
+    }
+
     public ConfigValidationFunction getValidationFunction() {
         return validationFunction;
     }
@@ -191,17 +197,8 @@ public class ConfigField extends AlertSerializableModel {
     }
 
     private void validateRequiredField(final FieldValueModel fieldToValidate, final Collection<String> errors) {
-        if (isRequired()) {
-            if (fieldToValidate.hasValues()) {
-                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(StringUtils::isBlank);
-                if (valuesAllEmpty) {
-                    errors.add(REQUIRED_FIELD_MISSING);
-                }
-            } else {
-                if (!fieldToValidate.isSet()) {
-                    errors.add(REQUIRED_FIELD_MISSING);
-                }
-            }
+        if (isRequired() && fieldToValidate.containsNoData()) {
+            errors.add(REQUIRED_FIELD_MISSING);
         }
     }
 

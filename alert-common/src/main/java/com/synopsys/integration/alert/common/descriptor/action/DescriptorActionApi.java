@@ -52,15 +52,20 @@ public abstract class DescriptorActionApi {
         for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
             final String key = fieldEntry.getKey();
             final ConfigField field = fieldEntry.getValue();
-            final boolean hasRequiredField = shouldValidateField(field, fieldModel, fieldErrors);
+            final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+            if (field.isRequired() && optionalFieldValue.isEmpty()) {
+                fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
+            }
             // field is present now validate the field
-            if (!fieldErrors.containsKey(key) && hasRequiredField) {
-                final Set<ConfigField> requiredRelatedFields = field.getRequiredRelatedFields();
-                for (final ConfigField relatedField : requiredRelatedFields) {
-                    shouldValidateField(relatedField, fieldModel, fieldErrors);
+            if (!fieldErrors.containsKey(key) && optionalFieldValue.isPresent()) {
+                final FieldValueModel fieldValueModel = optionalFieldValue.get();
+                if (!fieldValueModel.containsNoData()) {
+                    final Set<ConfigField> requiredRelatedFields = field.getRequiredRelatedFields();
+                    for (final ConfigField relatedField : requiredRelatedFields) {
+                        validateRelatedFields(relatedField, fieldModel, fieldErrors);
+                    }
                 }
-                final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
-                final Collection<String> validationErrors = field.validate(optionalFieldValue.get(), fieldModel);
+                final Collection<String> validationErrors = field.validate(fieldValueModel, fieldModel);
                 if (!validationErrors.isEmpty()) {
                     fieldErrors.put(key, StringUtils.join(validationErrors, ", "));
                 }
@@ -68,14 +73,12 @@ public abstract class DescriptorActionApi {
         }
     }
 
-    public boolean shouldValidateField(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+    public void validateRelatedFields(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final String key = field.getKey();
         final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
-        if (field.isRequired() && optionalFieldValue.isEmpty()) {
-            fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
-            return false;
+        if (optionalFieldValue.isEmpty() || (optionalFieldValue.isPresent() && optionalFieldValue.get().containsNoData())) {
+            fieldErrors.put(key, field.getLabel() + " is missing");
         }
-        return !optionalFieldValue.isEmpty();
     }
 
     public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws AlertFieldException {

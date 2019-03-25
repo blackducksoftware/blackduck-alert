@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FieldValueModel extends AlertSerializableModel {
     private Collection<String> values;
     private boolean isSet;
@@ -75,5 +77,13 @@ public class FieldValueModel extends AlertSerializableModel {
 
     public boolean hasValues() {
         return values != null && !values.isEmpty();
+    }
+
+    public boolean containsNoData() {
+        if (hasValues()) {
+            return getValues().stream().allMatch(StringUtils::isBlank);
+        } else {
+            return !isSet();
+        }
     }
 }
