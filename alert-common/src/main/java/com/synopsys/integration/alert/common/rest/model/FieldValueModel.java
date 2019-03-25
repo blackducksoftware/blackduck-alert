@@ -40,31 +40,28 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     public FieldValueModel(final Collection<String> values, final boolean isSet) {
-        this.values = values;
+        setValues(values);
         this.isSet = isSet;
     }
 
     public Collection<String> getValues() {
         if (null != values) {
-            return values.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+            return values;
         }
         return Set.of();
     }
 
     public void setValues(final Collection<String> values) {
         this.values = values;
+        cleanValues();
     }
 
     public Optional<String> getValue() {
-        Optional<String> value = Optional.empty();
-        if (null != values) {
-            value = values.stream().filter(Objects::nonNull).findFirst();
-        }
-        return value;
+        return getValues().stream().findFirst();
     }
 
     public void setValue(final String value) {
-        values = Set.of(value);
+        setValues(Set.of(value));
     }
 
     public boolean isSet() {
@@ -76,14 +73,14 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     public boolean hasValues() {
-        return values != null && !values.isEmpty();
+        return !getValues().isEmpty();
     }
 
     public boolean containsNoData() {
-        if (hasValues()) {
-            return getValues().stream().allMatch(StringUtils::isBlank);
-        } else {
-            return !isSet();
-        }
+        return !hasValues() && !isSet();
+    }
+
+    private void cleanValues() {
+        values = getValues().stream().filter(Objects::nonNull).filter(StringUtils::isNotBlank).collect(Collectors.toSet());
     }
 }

@@ -60,8 +60,9 @@ public abstract class DescriptorActionApi {
             if (!fieldErrors.containsKey(key) && optionalFieldValue.isPresent()) {
                 final FieldValueModel fieldValueModel = optionalFieldValue.get();
                 if (!fieldValueModel.containsNoData()) {
-                    final Set<ConfigField> requiredRelatedFields = field.getRequiredRelatedFields();
-                    for (final ConfigField relatedField : requiredRelatedFields) {
+                    final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
+                    for (final String relatedFieldKey : requiredRelatedFields) {
+                        final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
                         validateRelatedFields(relatedField, fieldModel, fieldErrors);
                     }
                 }
