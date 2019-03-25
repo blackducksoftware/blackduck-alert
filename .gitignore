@@ -26,6 +26,7 @@ classes/
 *-last-search.txt
 /node_modules
 /data/
+/data*/
 sonar-project.properties
 .scannerwork/
 /coverage/
