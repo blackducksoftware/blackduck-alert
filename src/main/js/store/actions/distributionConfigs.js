@@ -127,7 +127,7 @@ export function getDistributionJob(jobId) {
                 }
             }).catch(console.error);
         } else {
-            dispatch(jobFetchError());
+            dispatch(jobFetched({}));
         }
     };
 }
