@@ -39,8 +39,8 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.database.api.user.UserModel;
-import com.synopsys.integration.alert.database.api.user.UserRole;
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.model.LoginConfig;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -96,7 +96,7 @@ public class LoginActions {
     }
 
     private boolean isAuthorized(final Authentication authentication) {
-        EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
+        final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return authentication.getAuthorities().stream()
                    .map(GrantedAuthority::getAuthority)
                    .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
