@@ -33,54 +33,54 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.polaris.common.api.generated.common.BranchV0;
-import com.synopsys.integration.polaris.common.api.generated.common.ProjectV0;
-import com.synopsys.integration.polaris.common.model.QueryIssue;
+import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Resource;
+import com.synopsys.integration.polaris.common.api.common.project.ProjectV0Resource;
+import com.synopsys.integration.polaris.common.model.QueryIssueResource;
 import com.synopsys.integration.polaris.common.service.BranchService;
 import com.synopsys.integration.polaris.common.service.ProjectService;
 
 @Component
 public class PolarisDataHelper {
-    public String getProjectName(final ProjectV0 project) {
+    public String getProjectName(final ProjectV0Resource project) {
         return project
                    .getAttributes()
                    .getName();
     }
 
-    public String getProjectHref(final ProjectV0 project) {
+    public String getProjectHref(final ProjectV0Resource project) {
         return project
                    .getLinks()
                    .getSelf()
                    .getHref();
     }
 
-    public Optional<ProjectV0> getProjectByHrefOrName(final Set<ProjectV0> projects, final String href, final String name, final ProjectService projectService) throws IntegrationException {
-        final Optional<ProjectV0> optionalProjectV0 = projects
-                                                          .stream()
-                                                          .filter(p -> href.equals(getProjectHref(p)))
-                                                          .findFirst();
-        if (optionalProjectV0.isPresent()) {
-            return optionalProjectV0;
+    public Optional<ProjectV0Resource> getProjectByHrefOrName(final Set<ProjectV0Resource> projects, final String href, final String name, final ProjectService projectService) throws IntegrationException {
+        final Optional<ProjectV0Resource> optionalProjectV0Resource = projects
+                                                                          .stream()
+                                                                          .filter(p -> href.equals(getProjectHref(p)))
+                                                                          .findFirst();
+        if (optionalProjectV0Resource.isPresent()) {
+            return optionalProjectV0Resource;
         }
         return projectService.getProjectByName(name);
     }
 
-    public List<String> getBranchesIdsForProject(final Map<ProjectV0, List<BranchV0>> projectToBranchMappings, final ProjectV0 project, final BranchService branchService) throws IntegrationException {
+    public List<String> getBranchesIdsForProject(final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings, final ProjectV0Resource project, final BranchService branchService) throws IntegrationException {
         if (projectToBranchMappings.containsKey(project)) {
             return projectToBranchMappings.get(project)
                        .stream()
-                       .map(BranchV0::getId)
+                       .map(BranchV0Resource::getId)
                        .collect(Collectors.toList());
         }
         return branchService.getBranchesForProject(project.getId())
                    .stream()
-                   .map(BranchV0::getId)
+                   .map(BranchV0Resource::getId)
                    .collect(Collectors.toList());
     }
 
-    public final Map<String, Integer> mapIssueTypeToCount(final List<QueryIssue> queryIssues) {
+    public final Map<String, Integer> mapIssueTypeToCount(final List<QueryIssueResource> queryIssues) {
         final Map<String, Integer> issueTypeCounts = new HashMap<>();
-        for (final QueryIssue queryIssue : queryIssues) {
+        for (final QueryIssueResource queryIssue : queryIssues) {
             // FIXME issue type is not the same as issue key
             final String issueType = queryIssue.getAttributes().getSubTool();
             if (!issueTypeCounts.containsKey(issueType)) {
