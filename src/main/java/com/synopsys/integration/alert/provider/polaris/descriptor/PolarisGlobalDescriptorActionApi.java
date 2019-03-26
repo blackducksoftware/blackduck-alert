@@ -98,9 +98,10 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
-        final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
+        // FIXME had to remove client check for now so that the task actually starts without restarting alert.
+        // final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
         final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-        if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
+        if (nextRunTime.isEmpty()) {
             taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, PolarisProjectSyncTask.TASK_NAME);
         }
         return super.saveConfig(fieldModel);
