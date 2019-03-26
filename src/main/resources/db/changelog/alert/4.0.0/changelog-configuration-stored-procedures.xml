@@ -133,9 +133,14 @@
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery(String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName));
                         if (resultSet.next()) {
-                            value = resultSet.getInt(columnName);
+                            final java.lang.String string = resultSet.getString(columnName);
+                            if (null != string &amp;&amp; string.length() > 0) {
+                                value = java.lang.Integer.parseInt(string);
+                            } else {
+                                value = null;
+                            }
                         } else {
-                            return null;
+                            value = null;
                         }
                     }
                     if (value != null) {
@@ -161,9 +166,14 @@
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery(java.lang.String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName));
                         if (resultSet.next()) {
-                            value = resultSet.getBoolean(columnName);
+                            final java.lang.String string = resultSet.getString(columnName);
+                            if (null != string &amp;&amp; string.length() > 0) {
+                                value = java.lang.Boolean.valueOf(string);
+                            } else {
+                                value = null;
+                            }
                         } else {
-                            return null;
+                            value = null;
                         }
                     }
                     if (value != null) {

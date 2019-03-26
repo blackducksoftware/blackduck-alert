@@ -97,18 +97,12 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveBlackDuckProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject) throws AlertFieldException {
+    private Set<ProviderProject> retrieveBlackDuckProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject) {
         final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
         if (filterByProject) {
             final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
             final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
             final String projectNamePattern = fieldAccessor.getString(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN).orElse("");
-            final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
-            if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
-                final Map<String, String> fieldErrors = new HashMap<>();
-                fieldErrors.put(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
-                throw new AlertFieldException(fieldErrors);
-            }
             return blackDuckProjects
                        .stream()
                        .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
