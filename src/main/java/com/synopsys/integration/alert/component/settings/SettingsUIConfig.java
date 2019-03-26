@@ -23,11 +23,9 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -37,8 +35,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
@@ -112,10 +108,10 @@ public class SettingsUIConfig extends UIConfig {
         proxyPassword.requireFields(Set.of(proxyHost.getKey(), proxyUsername.getKey()));
 
         // Ldap settings
-        final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION);
-        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION, this::validateLDAPServer);
-        final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION, this::validateLDAPUsername);
-        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION, this::validateLDAPPassword);
+        final ConfigField ldapEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION);
+        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION);
+        final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION);
+        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION);
         final ConfigField ldapAuthenticationType = SelectConfigField
                                                        .create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, LABEL_LDAP_AUTHENTICATION_TYPE, SETTINGS_LDAP_AUTHENTICATION_TYPE_DESCRIPTION, List.of("simple", "none", "digest"));
         final ConfigField ldapReferral = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_REFERRAL, LABEL_LDAP_REFERRAL, SETTINGS_LDAP_REFERRAL_DESCRIPTION, List.of("ignore", "follow", "throw"));
@@ -126,41 +122,10 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField ldapGroupSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, SETTINGS_LDAP_GROUP_SEARCH_BASE_DESCRIPTION);
         final ConfigField ldapGroupSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, SETTINGS_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION);
         final ConfigField ldapGroupRoleAttribute = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, SETTINGS_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION);
+        ldapEnabled.requireFields(Set.of(ldapServer.getKey(), ldapManagerDn.getKey(), ldapManagerPassword.getKey()));
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute);
     }
 
-    private Collection<String> validateLDAPServer(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        if (isLDAPEnabled(fieldModel) && fieldToValidate.containsNoData()) {
-            return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
-        }
-
-        return List.of();
-    }
-
-    private Collection<String> validateLDAPUsername(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String managerPwd = fieldModel.getFieldValue(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).orElse("");
-        if (isLDAPEnabled(fieldModel) && fieldToValidate.containsNoData() && StringUtils.isNotBlank(managerPwd)) {
-            return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_USERNAME_MISSING);
-        }
-
-        return List.of();
-    }
-
-    private Collection<String> validateLDAPPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String managerDn = fieldModel.getFieldValue(SettingsDescriptor.KEY_LDAP_MANAGER_DN).orElse("");
-        if (isLDAPEnabled(fieldModel) && fieldToValidate.containsNoData() && StringUtils.isNotBlank(managerDn)) {
-            return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_PWD_MISSING);
-        }
-
-        return List.of();
-    }
-
-    private boolean isLDAPEnabled(final FieldModel fieldModel) {
-        return fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED)
-                   .flatMap(FieldValueModel::getValue)
-                   .map(Boolean::parseBoolean)
-                   .orElse(false);
-    }
 }

@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -146,6 +147,7 @@ public class EmailGlobalUIConfig extends UIConfig {
         final ConfigField mailSmtpAuth = CheckboxConfigField.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), LABEL_SMTP_AUTH, JAVAMAIL_AUTH_DESCRIPTION);
         final ConfigField mailSmtpUser = TextInputConfigField.create(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), LABEL_SMTP_USER, JAVAMAIL_USER_DESCRIPTION);
         final ConfigField mailSmtpPassword = PasswordConfigField.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), LABEL_SMTP_PASSWORD, JAVAMAIL_PASSWORD_DESCRIPTION);
+        mailSmtpAuth.requireFields(Set.of(mailSmtpUser.getKey(), mailSmtpPassword.getKey()));
 
         // Advanced fields
         final ConfigField mailSmtpPort = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), LABEL_SMTP_PORT, JAVAMAIL_PORT_DESCRIPTION, FieldGroup.ADVANCED);

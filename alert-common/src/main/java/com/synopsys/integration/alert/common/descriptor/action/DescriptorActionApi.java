@@ -34,6 +34,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -56,10 +57,11 @@ public abstract class DescriptorActionApi {
             if (field.isRequired() && optionalFieldValue.isEmpty()) {
                 fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
             }
-            // field is present now validate the field
+
             if (!fieldErrors.containsKey(key) && optionalFieldValue.isPresent()) {
+                // field is present now validate the field
                 final FieldValueModel fieldValueModel = optionalFieldValue.get();
-                if (!fieldValueModel.containsNoData()) {
+                if (shouldValidateField(fieldValueModel, field.getType())) {
                     final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
                     for (final String relatedFieldKey : requiredRelatedFields) {
                         final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
@@ -72,6 +74,12 @@ public abstract class DescriptorActionApi {
                 }
             }
         }
+    }
+
+    public Boolean shouldValidateField(final FieldValueModel fieldValueModel, final String type) {
+        final Boolean isValueTrue = fieldValueModel.getValue().map(Boolean::parseBoolean).orElse(false);
+        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
+        return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
     }
 
     public void validateRelatedFields(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
