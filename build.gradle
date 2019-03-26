@@ -73,8 +73,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
 
-    implementation 'com.synopsys.integration:polaris-common:0.9.0'
-    implementation 'com.synopsys.integration:polaris-common-api:0.0.3'
+    implementation 'com.synopsys.integration:polaris-common:0.10.0'
 
     // Spring
     implementation 'org.springframework:spring-webmvc'

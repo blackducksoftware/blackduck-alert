@@ -60,10 +60,10 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.polaris.common.api.generated.common.BranchV0;
-import com.synopsys.integration.polaris.common.api.generated.common.BranchV0Attributes;
-import com.synopsys.integration.polaris.common.api.generated.common.ProjectV0;
-import com.synopsys.integration.polaris.common.model.QueryIssue;
+import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Attributes;
+import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Resource;
+import com.synopsys.integration.polaris.common.api.common.project.ProjectV0Resource;
+import com.synopsys.integration.polaris.common.model.QueryIssueResource;
 import com.synopsys.integration.polaris.common.service.BranchService;
 import com.synopsys.integration.polaris.common.service.IssueService;
 import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
@@ -106,7 +106,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             final BranchService branchService = polarisServicesFactory.createBranchService();
             final IssueService issueService = polarisServicesFactory.createIssueService();
 
-            final Map<ProjectV0, List<BranchV0>> projectToBranchMappings = getProjectToBranchMappings(projectService, branchService);
+            final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings = getProjectToBranchMappings(projectService, branchService);
 
             final Map<String, ProviderProject> hrefToRemoteProjectsMap = convertToProviderProjects(projectToBranchMappings);
             logger.info("{} remote projects", hrefToRemoteProjectsMap.size());
@@ -126,12 +126,12 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         logger.info("### Finished {}...", getTaskName());
     }
 
-    private Map<ProjectV0, List<BranchV0>> getProjectToBranchMappings(final ProjectService projectService, final BranchService branchService) {
-        final Map<ProjectV0, List<BranchV0>> projectToBranchMappings = new HashMap<>();
+    private Map<ProjectV0Resource, List<BranchV0Resource>> getProjectToBranchMappings(final ProjectService projectService, final BranchService branchService) {
+        final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings = new HashMap<>();
         try {
-            final List<ProjectV0> allProjects = projectService.getAllProjects();
-            for (final ProjectV0 project : allProjects) {
-                final List<BranchV0> branchesForProject = branchService.getBranchesForProject(project.getId());
+            final List<ProjectV0Resource> allProjects = projectService.getAllProjects();
+            for (final ProjectV0Resource project : allProjects) {
+                final List<BranchV0Resource> branchesForProject = branchService.getBranchesForProject(project.getId());
                 projectToBranchMappings.put(project, branchesForProject);
             }
         } catch (final IntegrationException e) {
@@ -140,13 +140,13 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         return projectToBranchMappings;
     }
 
-    private Map<String, ProviderProject> convertToProviderProjects(final Map<ProjectV0, List<BranchV0>> projectToBranchMappings) {
+    private Map<String, ProviderProject> convertToProviderProjects(final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings) {
         final Map<String, ProviderProject> providerProjects = new HashMap<>();
-        for (final ProjectV0 serverProject : projectToBranchMappings.keySet()) {
-            final List<BranchV0> branchesForProject = projectToBranchMappings.get(serverProject);
+        for (final ProjectV0Resource serverProject : projectToBranchMappings.keySet()) {
+            final List<BranchV0Resource> branchesForProject = projectToBranchMappings.get(serverProject);
             final String branchesString = branchesForProject
                                               .stream()
-                                              .map(BranchV0::getAttributes)
+                                              .map(BranchV0Resource::getAttributes)
                                               .map(BranchV0Attributes::getName)
                                               .collect(Collectors.joining(", "));
             final String name = polarisDataHelper.getProjectName(serverProject);
@@ -175,7 +175,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     }
 
     private Map<ProviderProject, Set<PolarisIssueModel>> updateIssuesForProjects(final ProjectService projectService, final BranchService branchService, final IssueService issueService, final Set<ProviderProject> projects,
-        final Map<ProjectV0, List<BranchV0>> projectToBranchMappings) {
+        final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings) {
 
         final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap = new HashMap<>();
         for (final ProviderProject project : projects) {
@@ -185,11 +185,11 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             final String projectId;
             final List<String> branchIds;
             try {
-                final Optional<ProjectV0> optionalProjectV0 = polarisDataHelper.getProjectByHrefOrName(projectToBranchMappings.keySet(), projectHref, projectName, projectService);
-                if (optionalProjectV0.isPresent()) {
-                    final ProjectV0 projectV0 = optionalProjectV0.get();
-                    projectId = projectV0.getId();
-                    branchIds = polarisDataHelper.getBranchesIdsForProject(projectToBranchMappings, projectV0, branchService);
+                final Optional<ProjectV0Resource> optionalProjectV0Resource = polarisDataHelper.getProjectByHrefOrName(projectToBranchMappings.keySet(), projectHref, projectName, projectService);
+                if (optionalProjectV0Resource.isPresent()) {
+                    final ProjectV0Resource ProjectV0Resource = optionalProjectV0Resource.get();
+                    projectId = ProjectV0Resource.getId();
+                    branchIds = polarisDataHelper.getBranchesIdsForProject(projectToBranchMappings, ProjectV0Resource, branchService);
                 } else {
                     continue;
                 }
@@ -201,7 +201,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             final List<PolarisIssueModel> issuesForProjectFromServer = new ArrayList<>();
             for (final String branchId : branchIds) {
                 try {
-                    final List<QueryIssue> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
+                    final List<QueryIssueResource> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
                     final Map<String, Integer> issueTypeCounts = polarisDataHelper.mapIssueTypeToCount(foundIssues);
 
                     for (final Map.Entry<String, Integer> issueTypeEntry : issueTypeCounts.entrySet()) {
