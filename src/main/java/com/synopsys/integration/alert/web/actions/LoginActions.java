@@ -33,11 +33,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.api.user.UserRole;
 import com.synopsys.integration.alert.web.model.LoginConfig;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
@@ -96,9 +98,9 @@ public class LoginActions {
     private boolean isAuthorized(final Authentication authentication) {
         EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return authentication.getAuthorities().stream()
-                   .map(authority -> authority.getAuthority())
-                   .filter(role -> role.startsWith("ROLE_"))
-                   .map(role -> StringUtils.substringAfter(role, "ROLE_"))
+                   .map(GrantedAuthority::getAuthority)
+                   .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
+                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX))
                    .anyMatch(roleName -> allowedRoles.contains(UserRole.valueOf(roleName)));
     }
 
