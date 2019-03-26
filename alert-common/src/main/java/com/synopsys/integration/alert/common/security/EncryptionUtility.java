@@ -53,8 +53,10 @@ public class EncryptionUtility {
     }
 
     public String encrypt(final String value) {
-        if (StringUtils.isNotBlank(value)) {
-            final TextEncryptor encryptor = Encryptors.delux(getPassword(), getEncodedSalt());
+        final String password = getPassword();
+        final String salt = getEncodedSalt();
+        if (StringUtils.isNotBlank(value) && StringUtils.isNotBlank(password) && StringUtils.isNotBlank(salt)) {
+            final TextEncryptor encryptor = Encryptors.delux(password, salt);
             return encryptor.encrypt(value);
         }
         return StringUtils.EMPTY;
@@ -62,8 +64,10 @@ public class EncryptionUtility {
 
     public String decrypt(final String encryptedValue) {
         try {
-            if (StringUtils.isNotBlank(encryptedValue)) {
-                final TextEncryptor decryptor = Encryptors.delux(getPassword(), getEncodedSalt());
+            final String password = getPassword();
+            final String salt = getEncodedSalt();
+            if (StringUtils.isNotBlank(encryptedValue) && StringUtils.isNotBlank(password) && StringUtils.isNotBlank(salt)) {
+                final TextEncryptor decryptor = Encryptors.delux(password, salt);
                 return decryptor.decrypt(encryptedValue);
             }
         } catch (final IllegalArgumentException | IllegalStateException | NullPointerException ex) {
