@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -38,6 +35,9 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -54,6 +54,10 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
         final DistributionEvent event = createChannelTestEvent(testConfigModel.getConfigId().orElse(null), fieldAccessor);
+        final Optional<DescriptorActionApi> providerActionApi = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(this::getProviderActionApi);
+        if (providerActionApi.isPresent()) {
+            providerActionApi.get().testConfig(testConfigModel);
+        }
         distributionChannel.sendMessage(event);
     }
 
@@ -81,6 +85,10 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         final String providerName = fieldModel.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                         .flatMap(FieldValueModel::getValue)
                                         .orElse(null);
+        return getProviderActionApi(providerName);
+    }
+
+    private Optional<DescriptorActionApi> getProviderActionApi(final String providerName) {
         return providerDescriptors.stream()
                    .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
                    .findFirst()

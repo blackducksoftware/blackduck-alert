@@ -35,16 +35,21 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
+    private static final String LABEL_DAILY_DIGEST_HOUR_OF_DAY = "Daily digest hour of day";
+    private static final String LABEL_PURGE_DATA_FREQUENCY_IN_DAYS = "Purge data frequency in days";
+
+    private static final String SCHEDULING_DIGEST_HOUR_DESCRIPTION = "Select the hour of the day to run the the daily digest distribution jobs.";
+    private static final String SCHEDULING_PURGE_FREQUENCY_DESCRIPTION = "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.";
+
     public SchedulingUIConfig() {
         super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_DESCRIPTION, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, "Daily digest hour of day", "Select the hour of the day to run the the daily digest distribution jobs.",
+        final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION,
             getRangeOfNumbers(0, 23));
-        final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days",
-            "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.",
+        final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, LABEL_PURGE_DATA_FREQUENCY_IN_DAYS, SCHEDULING_PURGE_FREQUENCY_DESCRIPTION,
             getRangeOfNumbers(1, 7));
         return Arrays.asList(digestHour, purgeFrequency);
     }

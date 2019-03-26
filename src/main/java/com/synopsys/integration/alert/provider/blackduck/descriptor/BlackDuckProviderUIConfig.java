@@ -32,13 +32,20 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class BlackDuckProviderUIConfig extends UIConfig {
+    private static final String LABEL_URL = "Url";
+    private static final String LABEL_API_TOKEN = "API Token";
+    private static final String LABEL_TIMEOUT = "Timeout";
+
+    private static final String BLACKDUCK_URL_DESCRIPTION = "The URL of the Black Duck server.";
+    private static final String BLACKDUCK_API_KEY_DESCRIPTION = "The API token used to retrieve data from the Black Duck server. The API token should be for a super user.";
+    private static final String BLACKDUCK_TIMEOUT_DESCRIPTION = "The timeout in seconds for all connections to the Black Duck server. Default: 300.";
 
     public BlackDuckProviderUIConfig() {
         super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_DESCRIPTION, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);
@@ -46,11 +53,9 @@ public class BlackDuckProviderUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField blackDuckUrl = ReadOnlyConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "Url", "The URL of the Black Duck server.");
-        final ConfigField blackDuckApiKey = PasswordConfigField
-                                                .createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "API Token", "The API token used to retrieve data from the Black Duck server. The API token should be for a super user.",
-                                                    this::validateAPIToken);
-        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout (in seconds)", "The timeout in seconds for all connections to the Black Duck server. Default: 300.");
+        final ConfigField blackDuckUrl = TextInputConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION);
+        final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, this::validateAPIToken);
+        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION);
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
     }

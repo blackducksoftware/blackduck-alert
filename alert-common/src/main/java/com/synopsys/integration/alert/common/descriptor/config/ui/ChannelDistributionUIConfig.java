@@ -47,6 +47,17 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
     public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
     public static final String KEY_FREQUENCY = "channel.common.frequency";
+
+    private static final String LABEL_NAME = "Name";
+    private static final String LABEL_FREQUENCY = "Frequency";
+    private static final String LABEL_CHANNEL_NAME = "Channel Type";
+    private static final String LABEL_PROVIDER_NAME = "Provider Type";
+
+    private static final String DESCRIPTION_NAME = "The name of the distribution job. Must be unique.";
+    private static final String DESCRIPTION_FREQUENCY = "Select how frequently this job should check for notifications to send.";
+    private static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
+    private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
+
     private final Logger logger = LoggerFactory.getLogger(ChannelDistributionUIConfig.class);
     private final DescriptorAccessor descriptorAccessor;
 
@@ -57,13 +68,10 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name", "The name of the distribution job. Must be unique.");
-        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", "Select how frequently this job should check for notifications to send.",
-            Arrays.stream(FrequencyType.values()).map(FrequencyType::name).collect(Collectors.toList()));
-        final ConfigField channelName = SelectConfigField
-                                            .createRequired(KEY_CHANNEL_NAME, "Channel Type", "Select the channel. Notifications generated through Alert will be sent through this channel.", getDescriptorNames(DescriptorType.CHANNEL));
-        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", "Select the provider. Only notifications for that provider will be processed in this distribution job.",
-            getDescriptorNames(DescriptorType.PROVIDER));
+        final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
+        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values()).map(FrequencyType::name).collect(Collectors.toList()));
+        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, getDescriptorNames(DescriptorType.CHANNEL));
+        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, getDescriptorNames(DescriptorType.PROVIDER));
 
         final List<ConfigField> configFields = List.of(name, channelName, frequency, providerName);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();

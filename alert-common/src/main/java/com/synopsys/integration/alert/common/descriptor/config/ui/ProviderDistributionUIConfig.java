@@ -41,6 +41,12 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
     public static final String KEY_FORMAT_TYPE = "provider.distribution.format.type";
 
+    private static final String LABEL_NOTIFICATION_TYPES = "Notification Types";
+    private static final String LABEL_FORMAT = "Format";
+
+    private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
+    private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created.";
+
     private final Provider provider;
 
     public ProviderDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final Provider provider) {
@@ -50,11 +56,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField notificationTypesField = SelectConfigField
-                                                       .createRequired(KEY_NOTIFICATION_TYPES, "Notification Types", "Select one or more of the notification types. Only these notification types will be included for this distribution job.",
-                                                           provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(Collectors.toList()), this::validateNotificationTypes);
-        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", "Select the format of the message that will be created.",
-            provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
+        final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES,
+            provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(Collectors.toList()), this::validateNotificationTypes);
+        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT, provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
 
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
