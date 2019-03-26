@@ -81,7 +81,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.3.RELEASE'
+
 
     // Email
     runtimeOnly 'com.sun.mail:javax.mail:1.6.2'
@@ -137,7 +139,7 @@ task runServer(type: Exec, dependsOn: [build]) {
                         '-Dcom.sun.management.jmxremote.local.only=false',
                         '-Dcom.sun.management.jmxremote.authenticate=false',
                         '-Dcom.sun.management.jmxremote.ssl=false']
-    def applicationVariables = ['--spring.profiles.active=default']
+    def applicationVariables = ['--spring.profiles.active=saml']
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(debugVariables)
