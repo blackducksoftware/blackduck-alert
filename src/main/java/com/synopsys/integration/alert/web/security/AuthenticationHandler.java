@@ -32,7 +32,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @EnableWebSecurity
 @Configuration
-@Profile("!ssl")
+@Profile("no_ssl")
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String RESET_PASSWORD_PATH = "/resetPassword/**";
     public static final String RESET_PASSWORD_WITH_USERNAME_PATH = "/resetPassword/**";

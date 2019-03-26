@@ -24,17 +24,17 @@
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
@@ -43,10 +43,10 @@ import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileUrlResource;
-import org.springframework.core.io.Resource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
@@ -55,7 +55,7 @@ import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLLogoutProcessingFilter;
 import org.springframework.security.saml.SAMLProcessingFilter;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
-import org.springframework.security.saml.key.JKSKeyManager;
+import org.springframework.security.saml.key.EmptyKeyManager;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
@@ -90,37 +90,54 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.synopsys.integration.alert.web.controller.BaseController;
+
+@EnableWebSecurity
 @Configuration
+@Profile("saml")
 public class SAMLAuth extends WebSecurityConfigurerAdapter {
+
+    private static final String[] DEFAULT_PATHS = {
+        "/",
+        "/#",
+        "/favicon.ico",
+        "/fonts/**",
+        "/js/bundle.js",
+        "/js/bundle.js.map",
+        "/css/style.css",
+        "index.html",
+        BaseController.BASE_PATH + "/login",
+        BaseController.BASE_PATH + "/logout",
+        BaseController.BASE_PATH + "/resetPassword",
+        BaseController.BASE_PATH + "/resetPassword/**",
+        BaseController.BASE_PATH + "/about",
+        BaseController.BASE_PATH + "/system/messages/latest",
+        BaseController.BASE_PATH + "/system/setup/initial"
+    };
+
+    public String[] getAllowedPaths() {
+        return DEFAULT_PATHS;
+    }
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .authenticationProvider(samlAuthenticationProvider());
+        auth.authenticationProvider(samlAuthenticationProvider());
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 
-        http
-            .exceptionHandling()
-            .authenticationEntryPoint(samlEntryPoint());
-        http
-            .csrf()
-            .disable();
-        http
-            .addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
+        http.exceptionHandling().authenticationEntryPoint(samlEntryPoint());
+
+        http.csrf().disable();
+
+        http.addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class);
 
-        http
-            .authorizeRequests()
-            .antMatchers("/error").permitAll()
-            .antMatchers("/saml/**").permitAll()
+        http.authorizeRequests().antMatchers(getAllowedPaths()).permitAll()
             .anyRequest().authenticated();
 
-        http
-            .logout()
-            .logoutSuccessUrl("/");
+        http.logout().logoutSuccessUrl("/");
     }
 
     @Bean
@@ -151,7 +168,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
         final SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler =
             new SavedRequestAwareAuthenticationSuccessHandler();
-        successRedirectHandler.setDefaultTargetUrl("/");
+        successRedirectHandler.setDefaultTargetUrl("/jobs/distribution");
         return successRedirectHandler;
     }
 
@@ -203,26 +220,24 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     @Bean
     public MetadataGenerator metadataGenerator() {
         final MetadataGenerator metadataGenerator = new MetadataGenerator();
-        metadataGenerator.setEntityId("");
+        // TODO audience label in Okta?
+        metadataGenerator.setEntityId("James - Alert");
+        //TODO Alert URL
+        metadataGenerator.setEntityBaseURL("");
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
+        metadataGenerator.setRequestSigned(false);
+        metadataGenerator.setWantAssertionSigned(false);
+        metadataGenerator.setBindingsSLO(Collections.emptyList());
+        metadataGenerator.setBindingsSSO(Arrays.asList("post"));
+        metadataGenerator.setNameID(Arrays.asList(NameIDType.UNSPECIFIED));
         return metadataGenerator;
     }
 
     @Bean
     public KeyManager keyManager() {
-        final Map<String, String> passwords = new HashMap<>();
-        //TODO
-        passwords.put("okta", "");
-        Resource resource = null;
-        try {
-            resource = new FileUrlResource("");
-        } catch (final MalformedURLException e) {
-            System.err.println("KEYSTORE FAILURE");
-        }
-
-        return new JKSKeyManager(resource, "changeit", passwords, "okta");
+        return new EmptyKeyManager();
     }
 
     @Bean
@@ -350,6 +365,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
 
         final Timer backgroundTaskTimer = new Timer(true);
 
+        //TODO metadata URL from app in okta
         final HTTPMetadataProvider httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer,
             new HttpClient(), "");
 
