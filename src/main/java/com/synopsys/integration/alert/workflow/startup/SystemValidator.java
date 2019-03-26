@@ -191,7 +191,7 @@ public class SystemValidator {
             }
 
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            if (!blackDuckUrlOptional.isPresent()) {
+            if (blackDuckUrlOptional.isEmpty()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
                 final String errorMessage = "BlackDuck Provider invalid: URL missing";
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
