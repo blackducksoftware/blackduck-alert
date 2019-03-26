@@ -23,6 +23,9 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
+import java.util.EnumSet;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.database.api.user.UserRole;
 import com.synopsys.integration.alert.web.model.LoginConfig;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -57,7 +61,7 @@ public class LoginActions {
             authentication = performDatabaseAuthentication(loginConfig);
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return authentication.isAuthenticated();
+        return authentication.isAuthenticated() && isAuthorized(authentication);
     }
 
     private Authentication performDatabaseAuthentication(final LoginConfig loginConfig) {
@@ -87,6 +91,15 @@ public class LoginActions {
             result = pendingAuthentication;
         }
         return result;
+    }
+
+    private boolean isAuthorized(final Authentication authentication) {
+        EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
+        return authentication.getAuthorities().stream()
+                   .map(authority -> authority.getAuthority())
+                   .filter(role -> role.startsWith("ROLE_"))
+                   .map(role -> StringUtils.substringAfter(role, "ROLE_"))
+                   .anyMatch(roleName -> allowedRoles.contains(UserRole.valueOf(roleName)));
     }
 
     private UsernamePasswordAuthenticationToken createUsernamePasswordAuthToken(final LoginConfig loginConfig) {
