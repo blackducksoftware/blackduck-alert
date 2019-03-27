@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 
 @Component
 public class PolarisCollector extends MessageContentCollector {
-
     @Autowired
     public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
         super(jsonExtractor, messageContentProcessorList, List.of(PolarisProviderContentTypes.ISSUE_COUNT_INCREASED, PolarisProviderContentTypes.ISSUE_COUNT_DECREASED));
@@ -71,4 +70,5 @@ public class PolarisCollector extends MessageContentCollector {
         }
         return ItemOperation.DELETE;
     }
+
 }
