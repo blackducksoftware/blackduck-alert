@@ -75,7 +75,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_PROXY_USER_MISSING = "Proxy Username missing";
     public static final String FIELD_ERROR_PROXY_PWD_MISSING = "Proxy Password missing";
 
-    public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server missing";
+    public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server is missing";
     public static final String FIELD_ERROR_LDAP_USERNAME_MISSING = "LDAP Manager DN is missing";
     public static final String FIELD_ERROR_LDAP_PWD_MISSING = "LDAP Manager DN password is missing";
 

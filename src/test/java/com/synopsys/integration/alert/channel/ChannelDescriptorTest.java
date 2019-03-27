@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -156,7 +157,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
         for (final Map.Entry<String, String> fieldValue : fieldValueMap.entrySet()) {
             final String key = fieldValue.getKey();
-            final FieldValueModel fieldValueModel = new FieldValueModel(List.of(fieldValue.getValue()), true);
+            final String value = fieldValue.getValue();
+            final FieldValueModel fieldValueModel = new FieldValueModel(List.of(value), StringUtils.isNotBlank(value));
             fieldModelMap.put(key, fieldValueModel);
         }
         return fieldModelMap;
