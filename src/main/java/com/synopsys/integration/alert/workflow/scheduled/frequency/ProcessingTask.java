@@ -72,7 +72,7 @@ public abstract class ProcessingTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
+    public void runTask() {
         final String taskName = getTaskName();
         logger.info("{} Task Started...", taskName);
         final DateRange dateRange = getDateRange();
