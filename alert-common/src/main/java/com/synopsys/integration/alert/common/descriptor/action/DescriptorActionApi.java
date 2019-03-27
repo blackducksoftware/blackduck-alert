@@ -65,7 +65,7 @@ public abstract class DescriptorActionApi {
                     final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
                     for (final String relatedFieldKey : requiredRelatedFields) {
                         final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
-                        validateRelatedFields(relatedField, fieldModel, fieldErrors);
+                        validateAnyRelatedFieldsMissing(relatedField, fieldModel, fieldErrors);
                     }
                 }
                 final Collection<String> validationErrors = field.validate(fieldValueModel, fieldModel);
@@ -82,7 +82,7 @@ public abstract class DescriptorActionApi {
         return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
     }
 
-    public void validateRelatedFields(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+    public void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final String key = field.getKey();
         final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
         if (optionalFieldValue.isEmpty() || (optionalFieldValue.isPresent() && optionalFieldValue.get().containsNoData())) {

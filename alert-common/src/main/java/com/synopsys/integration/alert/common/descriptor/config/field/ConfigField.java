@@ -178,12 +178,9 @@ public class ConfigField extends AlertSerializableModel {
         this.requiredRelatedFields = requiredRelatedFields;
     }
 
-    public void requireField(final String configFieldKey) {
+    public ConfigField requireField(final String configFieldKey) {
         requiredRelatedFields.add(configFieldKey);
-    }
-
-    public void requireFields(final Collection<String> configFieldKeys) {
-        requiredRelatedFields.addAll(configFieldKeys);
+        return this;
     }
 
     public ConfigValidationFunction getValidationFunction() {
