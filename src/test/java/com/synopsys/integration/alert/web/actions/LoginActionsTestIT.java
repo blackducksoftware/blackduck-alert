@@ -87,7 +87,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword(), "");
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
-        assertTrue(userAuthenticated);
+        assertFalse(userAuthenticated);
         final Optional<UserModel> userModel = userAccessor.getUser(userName);
         assertTrue(userModel.isPresent());
         final UserModel model = userModel.get();
@@ -109,7 +109,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
         final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, mockLdapManager);
         final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
-        assertTrue(authenticated);
+        assertFalse(authenticated);
     }
 
     @Test

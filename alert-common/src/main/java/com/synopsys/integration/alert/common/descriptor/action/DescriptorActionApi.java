@@ -29,10 +29,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -49,18 +51,42 @@ public abstract class DescriptorActionApi {
 
     public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
-            final String fieldKey = fieldEntry.getKey();
-            final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
-            if (fieldEntry.getValue().isRequired() && optionalField.isEmpty()) {
-                fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
+            final String key = fieldEntry.getKey();
+            final ConfigField field = fieldEntry.getValue();
+            final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+            if (field.isRequired() && optionalFieldValue.isEmpty()) {
+                fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
             }
-            // field is present now validate the field
-            if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
-                final Collection<String> validationErrors = fieldEntry.getValue().validate(optionalField.get(), fieldModel);
+
+            if (!fieldErrors.containsKey(key) && optionalFieldValue.isPresent()) {
+                // field is present now validate the field
+                final FieldValueModel fieldValueModel = optionalFieldValue.get();
+                if (shouldValidateField(fieldValueModel, field.getType())) {
+                    final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
+                    for (final String relatedFieldKey : requiredRelatedFields) {
+                        final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
+                        validateAnyRelatedFieldsMissing(relatedField, fieldModel, fieldErrors);
+                    }
+                }
+                final Collection<String> validationErrors = field.validate(fieldValueModel, fieldModel);
                 if (!validationErrors.isEmpty()) {
-                    fieldErrors.put(fieldKey, StringUtils.join(validationErrors, ", "));
+                    fieldErrors.put(key, StringUtils.join(validationErrors, ", "));
                 }
             }
+        }
+    }
+
+    public Boolean shouldValidateField(final FieldValueModel fieldValueModel, final String type) {
+        final Boolean isValueTrue = fieldValueModel.getValue().map(Boolean::parseBoolean).orElse(false);
+        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
+        return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
+    }
+
+    public void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String key = field.getKey();
+        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+        if (optionalFieldValue.isEmpty() || (optionalFieldValue.isPresent() && optionalFieldValue.get().containsNoData())) {
+            fieldErrors.put(key, field.getLabel() + " is missing");
         }
     }
 
