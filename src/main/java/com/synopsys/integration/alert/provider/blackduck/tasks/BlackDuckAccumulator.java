@@ -91,7 +91,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     @Override
-    public void run() {
+    public void runTask() {
         accumulate();
     }
 

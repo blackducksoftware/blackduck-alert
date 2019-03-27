@@ -60,7 +60,7 @@ public class PurgeTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
+    public void runTask() {
         purgeNotifications();
         purgeSystemMessages();
     }

@@ -68,7 +68,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
+    public void runTask() {
         logger.info("### Starting {}...", getTaskName());
         try {
             final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
