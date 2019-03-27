@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.api.auth.model.group.GroupResource;
 import com.synopsys.integration.polaris.common.api.auth.model.role.RoleAttributes;
@@ -57,20 +59,26 @@ public class PolarisApiHelper {
         return projectToBranchMappings;
     }
 
-    public String getProjectName(final ProjectV0Resource project) {
-        return project
-                   .getAttributes()
-                   .getName();
+    public List<PolarisIssueModel> createIssueModelsForProject(final String projectId, final String projectName, final List<String> branchIds) {
+        final List<PolarisIssueModel> issuesForProjectFromServer = new ArrayList<>();
+        for (final String branchId : branchIds) {
+            try {
+                final List<QueryIssueResource> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
+                final Map<String, Integer> issueTypeCounts = mapIssueTypeToCount(foundIssues);
+
+                for (final Map.Entry<String, Integer> issueTypeEntry : issueTypeCounts.entrySet()) {
+                    final PolarisIssueModel newIssue = new PolarisIssueModel(issueTypeEntry.getKey(), 0, issueTypeEntry.getValue());
+                    issuesForProjectFromServer.add(newIssue);
+                }
+            } catch (final IntegrationException e) {
+                logger.error("Problem getting issues from Polaris: {}", projectName, e);
+                continue;
+            }
+        }
+        return issuesForProjectFromServer;
     }
 
-    public String getProjectHref(final ProjectV0Resource project) {
-        return project
-                   .getLinks()
-                   .getSelf()
-                   .getHref();
-    }
-
-    public Optional<ProjectV0Resource> getProjectByHrefOrName(final Set<ProjectV0Resource> projects, final String href, final String name, final ProjectService projectService) throws IntegrationException {
+    public Optional<ProjectV0Resource> retrieveProjectByHrefOrName(final Set<ProjectV0Resource> projects, final String href, final String name) throws IntegrationException {
         final Optional<ProjectV0Resource> optionalProjectV0Resource = projects
                                                                           .stream()
                                                                           .filter(p -> href.equals(getProjectHref(p)))
@@ -81,7 +89,7 @@ public class PolarisApiHelper {
         return projectService.getProjectByName(name);
     }
 
-    public List<String> getBranchesIdsForProject(final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings, final ProjectV0Resource project, final BranchService branchService) throws IntegrationException {
+    public List<String> getBranchesIdsForProject(final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings, final ProjectV0Resource project) throws IntegrationException {
         if (projectToBranchMappings.containsKey(project)) {
             return projectToBranchMappings.get(project)
                        .stream()
@@ -92,20 +100,6 @@ public class PolarisApiHelper {
                    .stream()
                    .map(BranchV0Resource::getId)
                    .collect(Collectors.toList());
-    }
-
-    public final Map<String, Integer> mapIssueTypeToCount(final List<QueryIssueResource> queryIssues) {
-        final Map<String, Integer> issueTypeCounts = new HashMap<>();
-        for (final QueryIssueResource queryIssue : queryIssues) {
-            // FIXME issue type is not the same as issue key
-            final String issueType = queryIssue.getAttributes().getSubTool();
-            if (!issueTypeCounts.containsKey(issueType)) {
-                issueTypeCounts.put(issueType, 0);
-            }
-            final Integer tempCount = issueTypeCounts.get(issueType);
-            issueTypeCounts.put(issueType, tempCount + 1);
-        }
-        return issueTypeCounts;
     }
 
     public Set<String> getAllEmailsForProject(final ProjectV0Resource project) throws IntegrationException {
@@ -146,6 +140,20 @@ public class PolarisApiHelper {
         return Optional.empty();
     }
 
+    private Map<String, Integer> mapIssueTypeToCount(final List<QueryIssueResource> queryIssues) {
+        final Map<String, Integer> issueTypeCounts = new HashMap<>();
+        for (final QueryIssueResource queryIssue : queryIssues) {
+            // FIXME issue type is not the same as issue key
+            final String issueType = queryIssue.getAttributes().getSubTool();
+            if (!issueTypeCounts.containsKey(issueType)) {
+                issueTypeCounts.put(issueType, 0);
+            }
+            final Integer tempCount = issueTypeCounts.get(issueType);
+            issueTypeCounts.put(issueType, tempCount + 1);
+        }
+        return issueTypeCounts;
+    }
+
     private Optional<String> getEmailForRoleAssignedUser(final RoleAssignmentResources populatedRoleAssignments, final RoleAssignmentResource roleAssignment) throws IntegrationException {
         final Optional<UserResource> user = roleAssignmentsService.getUserFromPopulatedRoleAssignments(populatedRoleAssignments, roleAssignment);
         if (user.isPresent()) {
@@ -164,6 +172,13 @@ public class PolarisApiHelper {
             }
         }
         return groupEmails;
+    }
+
+    private String getProjectHref(final ProjectV0Resource project) {
+        return project
+                   .getLinks()
+                   .getSelf()
+                   .getHref();
     }
 
 }
