@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -61,8 +62,8 @@ public class PolarisGlobalDescriptorActionApiTest {
                                                             .stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
+        assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Api token should be populated with valid token");
+        assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT), "Timeout should be populated with valid timeout");
     }
 
     @Test
