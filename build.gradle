@@ -82,6 +82,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+    implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.3.RELEASE'
 
 

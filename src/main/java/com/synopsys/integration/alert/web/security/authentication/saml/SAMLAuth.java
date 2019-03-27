@@ -34,6 +34,7 @@ import java.util.Timer;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
@@ -61,7 +62,6 @@ import org.springframework.security.saml.log.SAMLDefaultLogger;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
-import org.springframework.security.saml.metadata.MetadataDisplayFilter;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
 import org.springframework.security.saml.parser.ParserPoolHolder;
@@ -88,9 +88,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import com.synopsys.integration.alert.web.controller.BaseController;
 
 @EnableWebSecurity
 @Configuration
@@ -98,22 +97,20 @@ import com.synopsys.integration.alert.web.controller.BaseController;
 public class SAMLAuth extends WebSecurityConfigurerAdapter {
 
     private static final String[] DEFAULT_PATHS = {
-        "/",
+        "/saml/**",
         "/#",
         "/favicon.ico",
         "/fonts/**",
         "/js/bundle.js",
         "/js/bundle.js.map",
-        "/css/style.css",
-        "index.html",
-        BaseController.BASE_PATH + "/login",
-        BaseController.BASE_PATH + "/logout",
-        BaseController.BASE_PATH + "/resetPassword",
-        BaseController.BASE_PATH + "/resetPassword/**",
-        BaseController.BASE_PATH + "/about",
-        BaseController.BASE_PATH + "/system/messages/latest",
-        BaseController.BASE_PATH + "/system/setup/initial"
+        "/css/style.css"
     };
+
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+
+    public SAMLAuth(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
+    }
 
     public String[] getAllowedPaths() {
         return DEFAULT_PATHS;
@@ -126,10 +123,9 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-
         http.exceptionHandling().authenticationEntryPoint(samlEntryPoint());
 
-        http.csrf().disable();
+        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(getAllowedPaths());
 
         http.addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class);
@@ -144,6 +140,11 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public WebSSOProfileOptions defaultWebSSOProfileOptions() {
         final WebSSOProfileOptions webSSOProfileOptions = new WebSSOProfileOptions();
         webSSOProfileOptions.setIncludeScoping(false);
+        //TODO move string to static
+        webSSOProfileOptions.setProviderName("Synopsys - Alert");
+        webSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        // TODO local logout configuration
+        webSSOProfileOptions.setForceAuthN(true);
         return webSSOProfileOptions;
     }
 
@@ -152,11 +153,6 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
         final SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
         samlEntryPoint.setDefaultProfileOptions(defaultWebSSOProfileOptions());
         return samlEntryPoint;
-    }
-
-    @Bean
-    public MetadataDisplayFilter metadataDisplayFilter() {
-        return new MetadataDisplayFilter();
     }
 
     @Bean
@@ -191,28 +187,6 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public SecurityContextLogoutHandler logoutHandler() {
-        final SecurityContextLogoutHandler logoutHandler =
-            new SecurityContextLogoutHandler();
-        logoutHandler.setInvalidateHttpSession(true);
-        logoutHandler.setClearAuthentication(true);
-        return logoutHandler;
-    }
-
-    @Bean
-    public SAMLLogoutFilter samlLogoutFilter() {
-        return new SAMLLogoutFilter(successLogoutHandler(),
-            new LogoutHandler[] { logoutHandler() },
-            new LogoutHandler[] { logoutHandler() });
-    }
-
-    @Bean
-    public SAMLLogoutProcessingFilter samlLogoutProcessingFilter() {
-        return new SAMLLogoutProcessingFilter(successLogoutHandler(),
-            logoutHandler());
-    }
-
-    @Bean
     public MetadataGeneratorFilter metadataGeneratorFilter() {
         return new MetadataGeneratorFilter(metadataGenerator());
     }
@@ -221,9 +195,9 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public MetadataGenerator metadataGenerator() {
         final MetadataGenerator metadataGenerator = new MetadataGenerator();
         // TODO audience label in Okta?
-        metadataGenerator.setEntityId("James - Alert");
-        //TODO Alert URL
-        metadataGenerator.setEntityBaseURL("");
+        metadataGenerator.setEntityId("http://localhost:8080/alert/");
+        //TODO Alert URL, Cant end with / it messes with the samlFilter()
+        metadataGenerator.setEntityBaseURL("http://localhost:8080/alert");
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
@@ -245,6 +219,8 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
         final ExtendedMetadata extendedMetadata = new ExtendedMetadata();
         extendedMetadata.setIdpDiscoveryEnabled(false);
         extendedMetadata.setSignMetadata(false);
+        extendedMetadata.setEcpEnabled(true);
+        extendedMetadata.setRequireLogoutRequestSigned(false);
         return extendedMetadata;
     }
 
@@ -252,22 +228,37 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public FilterChainProxy samlFilter() throws Exception {
         final List<SecurityFilterChain> chains = new ArrayList<>();
 
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/metadata/**"),
-            metadataDisplayFilter()));
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/login/**"), samlEntryPoint()));
 
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/login/**"),
-            samlEntryPoint()));
+        final SAMLProcessingFilter samlProcessingFilter = samlWebSSOProcessingFilter();
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"), samlProcessingFilter));
+        //        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("saml/SSO/**"), samlProcessingFilter));
 
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"),
-            samlWebSSOProcessingFilter()));
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/logout/**"), samlLogoutFilter()));
 
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/logout/**"),
-            samlLogoutFilter()));
-
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SingleLogout/**"),
-            samlLogoutProcessingFilter()));
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SingleLogout/**"), samlLogoutProcessingFilter()));
 
         return new FilterChainProxy(chains);
+    }
+
+    @Bean
+    public SecurityContextLogoutHandler logoutHandler() {
+        final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        logoutHandler.setInvalidateHttpSession(true);
+        logoutHandler.setClearAuthentication(true);
+        return logoutHandler;
+    }
+
+    @Bean
+    public SAMLLogoutFilter samlLogoutFilter() {
+        return new SAMLLogoutFilter(successLogoutHandler(),
+            new LogoutHandler[] { logoutHandler() },
+            new LogoutHandler[] { logoutHandler() });
+    }
+
+    @Bean
+    public SAMLLogoutProcessingFilter samlLogoutProcessingFilter() {
+        return new SAMLLogoutProcessingFilter(successLogoutHandler(), logoutHandler());
     }
 
     @Bean
@@ -388,7 +379,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        final SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
+        final MyAuthProvider samlAuthenticationProvider = new MyAuthProvider();
         samlAuthenticationProvider.setForcePrincipalAsString(false);
         return samlAuthenticationProvider;
     }
