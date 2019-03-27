@@ -62,8 +62,8 @@ public class PolarisGlobalDescriptorActionApiTest {
                                                             .stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
-        assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Apitoken should be populated with valid token");
-        assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT), "timeout should be populated with valid timeout");
+        assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Api token should be populated with valid token");
+        assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT), "Timeout should be populated with valid timeout");
     }
 
     @Test

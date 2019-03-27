@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -104,11 +103,11 @@ public class SettingsUIConfig extends UIConfig {
         proxyPort.requireField(proxyHost.getKey());
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
         proxyUsername.requireField(proxyHost.getKey());
-        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION);
-        proxyPassword.requireFields(Set.of(proxyHost.getKey(), proxyUsername.getKey()));
+        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION)
+                                              .requireField(proxyHost.getKey())
+                                              .requireField(proxyUsername.getKey());
 
         // Ldap settings
-        final ConfigField ldapEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION);
         final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION);
         final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION);
         final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION);
@@ -122,7 +121,10 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField ldapGroupSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, SETTINGS_LDAP_GROUP_SEARCH_BASE_DESCRIPTION);
         final ConfigField ldapGroupSearchFilter = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, SETTINGS_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION);
         final ConfigField ldapGroupRoleAttribute = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, SETTINGS_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION);
-        ldapEnabled.requireFields(Set.of(ldapServer.getKey(), ldapManagerDn.getKey(), ldapManagerPassword.getKey()));
+        final ConfigField ldapEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION)
+                                            .requireField(ldapServer.getKey())
+                                            .requireField(ldapManagerDn.getKey())
+                                            .requireField(ldapManagerPassword.getKey());
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute);

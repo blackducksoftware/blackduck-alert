@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,6 +80,6 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     private void cleanValues() {
-        values = getValues().stream().filter(Objects::nonNull).filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+        values = getValues().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
     }
 }
