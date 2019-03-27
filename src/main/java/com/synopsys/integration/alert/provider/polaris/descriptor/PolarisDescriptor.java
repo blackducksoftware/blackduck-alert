@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,18 +47,18 @@ public class PolarisDescriptor extends ProviderDescriptor {
     public static final String POLARIS_URL_NAME = "polaris";
     public static final String POLARIS_DESCRIPTION = "This is the configuration to connect to the Polaris server. Configuring this will cause Alert to start pulling data from Polaris Issues.";
 
-    private final PolarisCollector polarisCollector;
+    private final ObjectFactory<PolarisCollector> polarisCollector;
 
     @Autowired
     public PolarisDescriptor(final PolarisGlobalDescriptorActionApi polarisGlobalDescriptorActionApi, final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionDescriptorActionApi polarisDistributionDescriptorActionApi,
-        final PolarisDistributionUIConfig polarisDistributionUIConfig, final @NotNull PolarisProvider provider, final PolarisCollector polarisCollector) {
+        final PolarisDistributionUIConfig polarisDistributionUIConfig, final @NotNull PolarisProvider provider, final ObjectFactory<PolarisCollector> polarisCollector) {
         super(polarisGlobalDescriptorActionApi, polarisGlobalUIConfig, polarisDistributionDescriptorActionApi, polarisDistributionUIConfig, provider);
         this.polarisCollector = polarisCollector;
     }
 
     @Override
     public Set<MessageContentCollector> createTopicCollectors() {
-        return Set.of(polarisCollector);
+        return Set.of(polarisCollector.getObject());
     }
 
 }

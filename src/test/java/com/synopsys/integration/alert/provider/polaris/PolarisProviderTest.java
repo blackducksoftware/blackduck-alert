@@ -34,7 +34,7 @@ public class PolarisProviderTest {
     public void destroy() {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
         Mockito.when(taskManager.unregisterTask(Mockito.anyString())).thenReturn(Optional.empty());
-        final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(null, null, null, null, null, null, null);
+        final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(null, null, null, null, null, null);
         final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, null, null);
         polarisProvider.destroy();
     }
