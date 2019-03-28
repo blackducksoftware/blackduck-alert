@@ -42,6 +42,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -63,6 +64,7 @@ import com.synopsys.integration.rest.support.AuthenticationSupport;
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
+@EnableAsync(proxyTargetClass = true)
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication(exclude = { BatchAutoConfiguration.class })
@@ -114,7 +116,9 @@ public class Application {
 
     @Bean
     public TaskScheduler taskScheduler() {
-        return new ThreadPoolTaskScheduler();
+        final ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
+        return threadPoolTaskScheduler;
     }
 
     @Bean

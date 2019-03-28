@@ -72,15 +72,12 @@ public abstract class ProcessingTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
-        final String taskName = getTaskName();
-        logger.info("{} Task Started...", taskName);
+    public void runTask() {
         final DateRange dateRange = getDateRange();
         final List<AlertNotificationWrapper> modelList = read(dateRange);
         final List<DistributionEvent> eventList = process(modelList);
         channelTemplateManager.sendEvents(eventList);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        logger.info("{} Task Finished", taskName);
     }
 
     public List<AlertNotificationWrapper> read(final DateRange dateRange) {
