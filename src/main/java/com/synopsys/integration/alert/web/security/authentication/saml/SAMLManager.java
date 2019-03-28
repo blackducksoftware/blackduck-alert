@@ -41,6 +41,9 @@ import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.util.resource.ResourceException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -91,11 +94,20 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+
 @EnableWebSecurity
 @Configuration
 @Profile("saml")
-public class SAMLAuth extends WebSecurityConfigurerAdapter {
+public class SAMLManager extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
+
+    private static final Logger logger = LoggerFactory.getLogger(SAMLManager.class);
     private static final String[] DEFAULT_PATHS = {
         "/saml/**",
         "/#",
@@ -107,9 +119,12 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     };
 
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+    private final ConfigurationAccessor configurationAccessor;
 
-    public SAMLAuth(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+    @Autowired
+    public SAMLManager(final HttpSessionCsrfTokenRepository csrfTokenRepository, final ConfigurationAccessor configurationAccessor) {
         this.csrfTokenRepository = csrfTokenRepository;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public String[] getAllowedPaths() {
@@ -134,6 +149,29 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated();
 
         http.logout().logoutSuccessUrl("/");
+    }
+
+    public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
+        return configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT)
+                   .stream()
+                   .findFirst()
+                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
+    }
+
+    public boolean isSAMLEnabled() {
+        boolean enabled = false;
+        try {
+            enabled = Boolean.valueOf(getFieldValueOrEmpty(getCurrentConfiguration(), SettingsDescriptor.KEY_SAML_ENABLED));
+        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
+            logger.warn(ex.getMessage());
+            logger.debug("cause: ", ex);
+        }
+
+        return enabled;
+    }
+
+    private String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
+        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
     }
 
     @Bean
