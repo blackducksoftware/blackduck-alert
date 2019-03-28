@@ -49,11 +49,11 @@ public class PolarisIssueModel extends AlertSerializableModel {
     }
 
     public boolean isIssueCountIncreasing() {
-        return previousIssueCount < currentIssueCount;
+        return previousIssueCount.intValue() < currentIssueCount.intValue();
     }
 
     public boolean isIssueCountDecreasing() {
-        return !isIssueCountIncreasing() && previousIssueCount != currentIssueCount;
+        return currentIssueCount.intValue() < previousIssueCount.intValue();
     }
 
 }
