@@ -134,7 +134,8 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField ldapEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION)
                                             .requireField(ldapServer.getKey())
                                             .requireField(ldapManagerDn.getKey())
-                                            .requireField(ldapManagerPassword.getKey());
+                                            .requireField(ldapManagerPassword.getKey())
+                                            .disallowField(SettingsDescriptor.KEY_SAML_ENABLED);
 
         final ConfigField samlForceAuth = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, SETTINGS_SAML_FORCE_AUTH_DESCRIPTION);
         final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION);
@@ -144,7 +145,8 @@ public class SettingsUIConfig extends UIConfig {
                                             .requireField(samlForceAuth.getKey())
                                             .requireField(samlMetaDataURL.getKey())
                                             .requireField(samlEntityId.getKey())
-                                            .requireField(samlEntityBaseURL.getKey());
+                                            .requireField(samlEntityBaseURL.getKey())
+                                            .disallowField(SettingsDescriptor.KEY_LDAP_ENABLED);
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, samlForceAuth, samlMetaDataURL,
