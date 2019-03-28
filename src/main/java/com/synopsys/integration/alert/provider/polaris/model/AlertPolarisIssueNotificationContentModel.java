@@ -30,15 +30,18 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class AlertPolarisIssueNotificationContentModel extends AlertSerializableModel {
     private final String notificationType;
     private final String projectName;
+    private final String description;
     private final String projectLink;
     private final String issueType;
     private final Integer numberChanged;
     private final Integer newTotal;
     // TODO packages?
 
-    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String projectLink, final String issueType, final Integer numberChanged, final Integer newTotal) {
+    public AlertPolarisIssueNotificationContentModel(
+        final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String description, final String projectLink, final String issueType, final Integer numberChanged, final Integer newTotal) {
         this.notificationType = notificationType.name();
         this.projectName = projectName;
+        this.description = description;
         this.projectLink = projectLink;
         this.issueType = issueType;
         this.numberChanged = numberChanged;
@@ -51,6 +54,10 @@ public class AlertPolarisIssueNotificationContentModel extends AlertSerializable
 
     public String getProjectName() {
         return projectName;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getProjectLink() {
