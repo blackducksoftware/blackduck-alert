@@ -30,6 +30,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentPr
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 
 @Component
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
 
     @Autowired
