@@ -68,6 +68,13 @@ public class PolarisApiHelper {
         this.userService = userService;
     }
 
+    public String getProjectHref(final ProjectV0Resource project) {
+        return project
+                   .getLinks()
+                   .getSelf()
+                   .getHref();
+    }
+
     public Map<ProjectV0Resource, List<BranchV0Resource>> getProjectToBranchMappings() {
         final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings = new HashMap<>();
         try {
@@ -195,13 +202,6 @@ public class PolarisApiHelper {
             }
         }
         return groupEmails;
-    }
-
-    private String getProjectHref(final ProjectV0Resource project) {
-        return project
-                   .getLinks()
-                   .getSelf()
-                   .getHref();
     }
 
 }
