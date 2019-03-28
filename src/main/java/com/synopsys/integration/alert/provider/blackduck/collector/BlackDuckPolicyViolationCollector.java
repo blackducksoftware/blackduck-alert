@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionS
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 @Component
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
