@@ -28,7 +28,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 
-public class MyAuthProvider extends SAMLAuthenticationProvider {
+public class SAMLAuthProvider extends SAMLAuthenticationProvider {
 
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         final Authentication currentAuth = super.authenticate(authentication);

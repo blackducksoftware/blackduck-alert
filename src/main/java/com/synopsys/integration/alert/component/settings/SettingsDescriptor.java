@@ -62,6 +62,14 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_LDAP_GROUP_SEARCH_BASE = "settings.ldap.group.search.base";
     public static final String KEY_LDAP_GROUP_SEARCH_FILTER = "settings.ldap.group.search.filter";
     public static final String KEY_LDAP_GROUP_ROLE_ATTRIBUTE = "settings.ldap.group.role.attribute";
+
+    // SAML Keys
+    public static final String KEY_SAML_ENABLED = "settings.saml.enabled";
+    public static final String KEY_SAML_FORCE_AUTH = "settings.saml.force.auth";
+    public static final String KEY_SAML_METADATA_URL = "settings.saml.metadata.url";
+    public static final String KEY_SAML_ENTITY_ID = "settings.saml.entity.id";
+    public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
+
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
