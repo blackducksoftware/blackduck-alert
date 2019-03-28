@@ -74,7 +74,7 @@ public class PhoneHomeTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
+    public void runTask() {
         final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
         if (optionalBlackDuckHttpClient.isPresent()) {
             final String productVersion = aboutReader.getProductVersion();

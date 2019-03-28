@@ -83,8 +83,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
-        logger.info("### Starting {}...", getTaskName());
+    public void runTask() {
         try {
             final String baseUrl = polarisProperties
                                        .getUrl()
@@ -106,7 +105,6 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         } catch (final IntegrationException e) {
             logger.error("Could not create Polaris connection", e);
         }
-        logger.info("### Finished {}...", getTaskName());
     }
 
     private Map<String, ProviderProject> getProjectsFromServer(final AccessTokenPolarisHttpClient polarisHttpClient, final String baseUrl) {
