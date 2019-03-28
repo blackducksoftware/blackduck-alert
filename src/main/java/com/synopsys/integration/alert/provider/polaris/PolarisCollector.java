@@ -24,7 +24,8 @@
 package com.synopsys.integration.alert.provider.polaris;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -54,18 +55,19 @@ public class PolarisCollector extends MessageContentCollector {
 
     @Override
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
-        final Optional<JsonField<Integer>> optionalCountField = getIntegerFields(notificationFields)
-                                                                    .stream()
-                                                                    .findFirst();
-        if (optionalCountField.isPresent()) {
-            final JsonField<Integer> countField = optionalCountField.get();
-            final Integer currentCount = jsonFieldAccessor.getFirst(countField).orElse(0);
-            final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
+        final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
 
-            final LinkableItem countItem = new LinkableItem(countField.getLabel(), currentCount.toString());
-            final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
-            categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), countItem));
+        final SortedSet<LinkableItem> countItems = new TreeSet<>();
+        for (final JsonField<Integer> field : countFields) {
+            final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
+
+            final LinkableItem countItem = new LinkableItem(field.getLabel(), currentCount.toString());
+            countItems.add(countItem);
         }
+
+        final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
+        final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
+        categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), countItems));
     }
 
     private ItemOperation getOperationFromNotificationType(final String notificationType) {
