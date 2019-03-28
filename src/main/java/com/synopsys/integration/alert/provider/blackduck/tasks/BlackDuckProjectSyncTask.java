@@ -69,7 +69,6 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
 
     @Override
     public void runTask() {
-        logger.info("### Starting {}...", getTaskName());
         try {
             final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
             if (optionalBlackDuckHttpClient.isPresent()) {
@@ -89,7 +88,6 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         } catch (final IntegrationException | AlertRuntimeException e) {
             logger.error("Could not retrieve the current data from the BlackDuck server: " + e.getMessage(), e);
         }
-        logger.info("### Finished {}...", getTaskName());
     }
 
     public Map<ProviderProject, ProjectView> getCurrentData(final List<ProjectView> projectViews, final BlackDuckService blackDuckService) {
