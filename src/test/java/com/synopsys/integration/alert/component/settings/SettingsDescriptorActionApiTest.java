@@ -34,7 +34,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
 
         try {
             actionaApi.testConfig(null);
@@ -52,7 +52,7 @@ public class SettingsDescriptorActionApiTest {
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         FieldModel fieldModel = Mockito.mock(FieldModel.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
 
         actionaApi.readConfig(fieldModel);
         assertFieldsMissing(fieldModel);
@@ -71,7 +71,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -89,7 +89,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -108,7 +108,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -124,7 +124,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -143,7 +143,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
@@ -162,7 +162,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
@@ -192,7 +192,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
@@ -213,7 +213,7 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadata, parserPool, extendedMetadata);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));

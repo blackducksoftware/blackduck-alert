@@ -26,11 +26,19 @@ package com.synopsys.integration.alert.component.settings;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Timer;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.xml.parse.ParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.saml.metadata.ExtendedMetadata;
+import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
+import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
@@ -47,12 +55,20 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
+    private final MetadataManager metadata;
+    private final ParserPool parserPool;
+    private final ExtendedMetadata extendedMetadata;
 
     @Autowired
-    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator) {
+
+    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final MetadataManager metadata,
+        final ParserPool parserPool, final ExtendedMetadata extendedMetadata) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
+        this.metadata = metadata;
+        this.parserPool = parserPool;
+        this.extendedMetadata = extendedMetadata;
     }
 
     @Override
@@ -76,6 +92,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
+        addSAMLMetadata(fieldModel);
         systemValidator.validate();
         return createScrubbedModel(fieldModel);
     }
@@ -125,5 +142,29 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         } catch (final IllegalArgumentException | IOException ex) {
             logger.error("Error saving encryption configuration.", ex);
         }
+    }
+
+    private void addSAMLMetadata(final FieldModel fieldModel) {
+        final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
+        metadataURLFieldValueOptional.ifPresent(metadataURLFieldValue -> {
+            final String metadataURL = metadataURLFieldValue.getValue().orElse("");
+            if (StringUtils.isNotBlank(metadataURL)) {
+                final Timer backgroundTaskTimer = new Timer(true);
+
+                // The URL can not end in a '/' because it messes with the paths for saml
+                final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
+                final HTTPMetadataProvider httpMetadataProvider;
+                try {
+                    httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
+                    httpMetadataProvider.setParserPool(parserPool);
+
+                    final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
+                    idpMetadata.setMetadataTrustCheck(true);
+                    idpMetadata.setMetadataRequireSignature(false);
+                } catch (final MetadataProviderException e) {
+                    logger.error("Error setting the SAML metadata.", e);
+                }
+            }
+        });
     }
 }

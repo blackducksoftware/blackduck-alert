@@ -29,17 +29,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.util.resource.ResourceException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -64,7 +62,6 @@ import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
 import org.springframework.security.saml.parser.ParserPoolHolder;
@@ -174,43 +171,37 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
     }
 
+    private Boolean getFieldValueBoolean(final ConfigurationModel configurationModel, final String fieldKey) {
+        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).map(BooleanUtils::toBoolean).orElse(false);
+    }
+
+    @Lazy
     @Bean
-    public WebSSOProfileOptions defaultWebSSOProfileOptions() {
+    public SAMLEntryPoint samlEntryPoint() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
+        final SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
+
         final WebSSOProfileOptions webSSOProfileOptions = new WebSSOProfileOptions();
         webSSOProfileOptions.setIncludeScoping(false);
         webSSOProfileOptions.setProviderName(SSO_PROVIDER_NAME);
         webSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
-        // TODO local logout configuration
-        webSSOProfileOptions.setForceAuthN(true);
-        return webSSOProfileOptions;
-    }
+        final Boolean forceAuth = getFieldValueBoolean(getCurrentConfiguration(), SettingsDescriptor.KEY_SAML_FORCE_AUTH);
+        webSSOProfileOptions.setForceAuthN(forceAuth);
 
-    @Bean
-    public SAMLEntryPoint samlEntryPoint() {
-        final SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
-        samlEntryPoint.setDefaultProfileOptions(defaultWebSSOProfileOptions());
+        samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions);
         return samlEntryPoint;
-    }
-
-    @Bean
-    public SimpleUrlAuthenticationFailureHandler authenticationFailureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler();
-    }
-
-    @Bean
-    public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
-        final SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler =
-            new SavedRequestAwareAuthenticationSuccessHandler();
-        successRedirectHandler.setDefaultTargetUrl("/");
-        return successRedirectHandler;
     }
 
     @Bean
     public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
         final SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
         samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
-        samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(successRedirectHandler());
-        samlWebSSOProcessingFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
+
+        final SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler =
+            new SavedRequestAwareAuthenticationSuccessHandler();
+        successRedirectHandler.setDefaultTargetUrl("/");
+        samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(successRedirectHandler);
+
+        samlWebSSOProcessingFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler());
         return samlWebSSOProcessingFilter;
     }
 
@@ -223,18 +214,15 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         return simpleUrlLogoutSuccessHandler;
     }
 
+    @Lazy
     @Bean
-    public MetadataGeneratorFilter metadataGeneratorFilter() {
-        return new MetadataGeneratorFilter(metadataGenerator());
-    }
-
-    @Bean
-    public MetadataGenerator metadataGenerator() {
+    public MetadataGeneratorFilter metadataGeneratorFilter() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
         final MetadataGenerator metadataGenerator = new MetadataGenerator();
-        // TODO audience label in Okta?
-        metadataGenerator.setEntityId("");
-        //TODO Alert URL, Cant end with / it messes with the samlFilter()
-        metadataGenerator.setEntityBaseURL("");
+        final ConfigurationModel currentConfiguration = getCurrentConfiguration();
+        final String entityId = getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_ID);
+        metadataGenerator.setEntityId(entityId);
+        final String entityURL = getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+        metadataGenerator.setEntityBaseURL(entityURL);
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
@@ -243,7 +231,8 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         metadataGenerator.setBindingsSLO(Collections.emptyList());
         metadataGenerator.setBindingsSSO(Arrays.asList("post"));
         metadataGenerator.setNameID(Arrays.asList(NameIDType.UNSPECIFIED));
-        return metadataGenerator;
+
+        return new MetadataGeneratorFilter(metadataGenerator);
     }
 
     @Bean
@@ -387,29 +376,9 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public ExtendedMetadataDelegate idpMetadata() throws MetadataProviderException, ResourceException {
-
-        final Timer backgroundTaskTimer = new Timer(true);
-
-        //TODO metadata URL from app in okta
-        final HTTPMetadataProvider httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer,
-            new HttpClient(), "");
-
-        httpMetadataProvider.setParserPool(parserPool());
-
-        final ExtendedMetadataDelegate extendedMetadataDelegate =
-            new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata());
-        extendedMetadataDelegate.setMetadataTrustCheck(true);
-        extendedMetadataDelegate.setMetadataRequireSignature(false);
-        return extendedMetadataDelegate;
-    }
-
-    @Bean
     @Qualifier("metadata")
-    public CachingMetadataManager metadata() throws MetadataProviderException, ResourceException {
-        final List<MetadataProvider> providers = new ArrayList<>();
-        providers.add(idpMetadata());
-        return new CachingMetadataManager(providers);
+    public CachingMetadataManager metadata() throws MetadataProviderException, AlertDatabaseConstraintException, AlertLDAPConfigurationException {
+        return new CachingMetadataManager(Collections.emptyList());
     }
 
     @Bean
