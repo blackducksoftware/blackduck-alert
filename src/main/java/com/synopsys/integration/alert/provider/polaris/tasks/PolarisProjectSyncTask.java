@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.PolarisIssueAc
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
@@ -61,7 +62,9 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Attributes;
 import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Resource;
 import com.synopsys.integration.polaris.common.api.common.project.ProjectV0Resource;
+import com.synopsys.integration.polaris.common.service.BranchService;
 import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
+import com.synopsys.integration.polaris.common.service.ProjectService;
 
 @Component
 public class PolarisProjectSyncTask extends ScheduledTask {
@@ -86,120 +89,76 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     @Override
     public void runTask() {
+        final IntLogger intLogger = new Slf4jIntLogger(logger);
         try {
             polarisProperties
                 .getUrl()
                 .orElseThrow(() -> new AlertException("Polaris Url is not configured"));
-            final IntLogger intLogger = new Slf4jIntLogger(logger);
+
             final PolarisServicesFactory servicesFactory = polarisProperties.createPolarisServicesFactory(intLogger);
-            final PolarisApiHelper polarisApiHelper = new PolarisApiHelper(
-                servicesFactory.createProjectService(), servicesFactory.createBranchService(), servicesFactory.createIssueService(), servicesFactory.createRoleAssignmentsService(), servicesFactory.createUserService());
+            final ProjectService projectService = servicesFactory.createProjectService();
+            final BranchService branchService = servicesFactory.createBranchService();
+            final PolarisApiHelper polarisApiHelper = new PolarisApiHelper(servicesFactory.createIssueService(), servicesFactory.createRoleAssignmentsService(), servicesFactory.createUserService());
 
-            final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings = polarisApiHelper.getProjectToBranchMappings();
-            final Map<String, ProviderProject> hrefToRemoteProjectsMap = convertToProviderProjects(polarisApiHelper, projectToBranchMappings);
-            logger.info("{} remote projects", hrefToRemoteProjectsMap.size());
+            final Map<ProviderProject, Set<String>> projectUserEmailMappings = new HashMap<>();
+            final Map<ProviderProject, Set<PolarisIssueModel>> issuesToUpdate = new HashMap<>();
+            final Set<AlertNotificationWrapper> notificationsToSave = new LinkedHashSet<>();
 
-            final Map<ProviderProject, Set<String>> serverStateMappings = createProjectToUsersMap(polarisApiHelper, projectToBranchMappings.keySet(), hrefToRemoteProjectsMap);
-            providerDataAccessor.updateProjectAndUserData(PolarisProvider.COMPONENT_NAME, serverStateMappings);
+            final List<ProjectV0Resource> projectResources = projectService.getAllProjects();
+            logger.info("{} remote projects", projectResources.size());
+            for (final ProjectV0Resource projectResource : projectResources) {
+                final List<BranchV0Resource> projectBranches = branchService.getBranchesForProject(projectResource.getId());
+                final ProviderProject projectModel = convertToProviderProject(polarisApiHelper, projectResource, projectBranches);
 
-            final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap = updateIssuesForProjects(polarisApiHelper, serverStateMappings.keySet(), projectToBranchMappings);
-            generateNotificationsForProjectIssues(projectIssuesMap);
+                final Set<String> projectUserEmails = polarisApiHelper.getAllEmailsForProject(projectResource);
+                projectUserEmailMappings.put(projectModel, projectUserEmails);
+
+                final Set<PolarisIssueModel> issuesForProject = createIssuesForProject(polarisApiHelper, projectResource, projectModel, projectBranches);
+                issuesToUpdate.put(projectModel, issuesForProject);
+
+                final Set<AlertNotificationWrapper> newNotificationsForProject = createNotificationContentForProject(projectModel, issuesForProject);
+                notificationsToSave.addAll(newNotificationsForProject);
+            }
+
+            persistProjectData(projectUserEmailMappings);
+            persistIssues(issuesToUpdate);
+            persistNotifications(notificationsToSave);
         } catch (final IntegrationException e) {
-            logger.error("Could not create Polaris connection", e);
+            logger.error("Problem communicating with Polaris", e);
         }
     }
 
-    private Map<String, ProviderProject> convertToProviderProjects(final PolarisApiHelper polarisApiHelper, final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings) throws IntegrationException {
-        final Map<String, ProviderProject> providerProjects = new HashMap<>();
-        for (final ProjectV0Resource serverProject : projectToBranchMappings.keySet()) {
-            final List<BranchV0Resource> branchesForProject = projectToBranchMappings.get(serverProject);
-            final String branchesString = branchesForProject
-                                              .stream()
-                                              .map(BranchV0Resource::getAttributes)
-                                              .map(BranchV0Attributes::getName)
-                                              .collect(Collectors.joining(", "));
-            final String name = serverProject.getAttributes().getName();
-            final String description = StringUtils.truncate(branchesString, 80);
-            final String href = serverProject.getLinks().getSelf().getHref();
-            final String projectOwnerEmail = polarisApiHelper.getAdminEmailForProject(serverProject).orElse(StringUtils.EMPTY);
+    private ProviderProject convertToProviderProject(final PolarisApiHelper polarisApiHelper, final ProjectV0Resource project, final List<BranchV0Resource> branches) throws IntegrationException {
+        final String branchesString = branches
+                                          .stream()
+                                          .map(BranchV0Resource::getAttributes)
+                                          .map(BranchV0Attributes::getName)
+                                          .collect(Collectors.joining(", "));
+        final String name = project.getAttributes().getName();
+        final String description = StringUtils.truncate(branchesString, 80);
+        final String href = project.getLinks().getSelf().getHref();
+        final String projectOwnerEmail = polarisApiHelper.getAdminEmailForProject(project).orElse(StringUtils.EMPTY);
 
-            final ProviderProject providerProject = new ProviderProject(name, description, href, projectOwnerEmail);
-            providerProjects.put(href, providerProject);
-        }
-        return providerProjects;
+        return new ProviderProject(name, description, href, projectOwnerEmail);
     }
 
-    private Map<ProviderProject, Set<String>> createProjectToUsersMap(final PolarisApiHelper polarisApiHelper, final Set<ProjectV0Resource> projectsFromServer, final Map<String, ProviderProject> hrefToRemoteProjects) {
-        final Map<ProviderProject, Set<String>> projectToUsers = new HashMap<>();
-        for (final ProjectV0Resource projectResource : projectsFromServer) {
-            final String projectHref = polarisApiHelper.getProjectHref(projectResource);
-            final ProviderProject providerProject = hrefToRemoteProjects.get(projectHref);
-            if (null != providerProject) {
-                final Set<String> emailsForProject;
-                try {
-                    emailsForProject = polarisApiHelper.getAllEmailsForProject(projectResource);
-                    projectToUsers.put(providerProject, emailsForProject);
-                } catch (final IntegrationException e) {
-                    logger.error("Failed to get emails for project '{}': ", providerProject.getName(), e.getMessage());
-                }
-            }
-        }
-        return projectToUsers;
+    private Set<PolarisIssueModel> createIssuesForProject(final PolarisApiHelper polarisApiHelper, final ProjectV0Resource projectResource, final ProviderProject projectModel, final List<BranchV0Resource> branches) {
+        final String projectId = projectResource.getId();
+        final List<String> branchIds = polarisApiHelper.getBranchesIdsForProject(branches);
+
+        return polarisApiHelper.createIssueModelsForProject(projectId, projectModel.getName(), branchIds);
     }
 
-    private Map<ProviderProject, Set<PolarisIssueModel>> updateIssuesForProjects(final PolarisApiHelper polarisApiHelper, final Set<ProviderProject> projects, final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings) {
-        final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap = new HashMap<>();
-        for (final ProviderProject project : projects) {
-            final String projectHref = project.getHref();
-            final String projectName = project.getName();
-
-            final String projectId;
-            final List<String> branchIds;
-            try {
-                final Optional<ProjectV0Resource> optionalProjectV0Resource = polarisApiHelper.retrieveProjectByHrefOrName(projectToBranchMappings.keySet(), projectHref, projectName);
-                if (optionalProjectV0Resource.isPresent()) {
-                    final ProjectV0Resource ProjectV0Resource = optionalProjectV0Resource.get();
-                    projectId = ProjectV0Resource.getId();
-                    branchIds = polarisApiHelper.getBranchesIdsForProject(projectToBranchMappings, ProjectV0Resource);
-                } else {
-                    continue;
-                }
-            } catch (final IntegrationException e) {
-                logger.error("Problem getting project data from Polaris: {}", projectName, e);
-                continue;
-            }
-
-            final List<PolarisIssueModel> issueModelsFromServer = polarisApiHelper.createIssueModelsForProject(projectId, projectName, branchIds);
-            final Set<PolarisIssueModel> projectIssues = updateIssues(projectHref, issueModelsFromServer);
-            projectIssuesMap.put(project, projectIssues);
-        }
-        return projectIssuesMap;
-    }
-
-    private Set<PolarisIssueModel> updateIssues(final String projectHref, final List<PolarisIssueModel> issuesToStore) {
-        final Set<PolarisIssueModel> actionableIssues = new HashSet<>();
-        for (final PolarisIssueModel issueFromServer : issuesToStore) {
-            try {
-                logger.trace("Updating Polaris issue: {}", issueFromServer);
-                final PolarisIssueModel updatedIssue = polarisIssueAccessor.updateIssueType(projectHref, issueFromServer.getIssueType(), issueFromServer.getCurrentIssueCount());
-                actionableIssues.add(updatedIssue);
-            } catch (final AlertDatabaseConstraintException e) {
-                logger.error("Problem updating issue type", e);
-            }
-        }
-        return actionableIssues;
-    }
-
-    private void generateNotificationsForProjectIssues(final Map<ProviderProject, Set<PolarisIssueModel>> projectIssuesMap) {
+    private Set<AlertNotificationWrapper> createNotificationContentForProject(final ProviderProject project, final Set<PolarisIssueModel> projectIssues) {
+        final Set<AlertNotificationWrapper> notifications = new LinkedHashSet<>();
         final Date providerCreationDate = new Date();
-        for (final Map.Entry<ProviderProject, Set<PolarisIssueModel>> projectIssueEntry : projectIssuesMap.entrySet()) {
-            final Collection<AlertPolarisIssueNotificationContentModel> notifications = createNotificationModelsForProject(projectIssueEntry.getKey(), projectIssueEntry.getValue());
-            for (final AlertPolarisIssueNotificationContentModel notification : notifications) {
-                final String notificationContent = gson.toJson(notification);
-                final NotificationContent notificationEntity = new NotificationContent(providerCreationDate, PolarisProvider.COMPONENT_NAME, providerCreationDate, notification.getNotificationType().name(), notificationContent);
-                notificationManager.saveNotification(notificationEntity);
-            }
+        final Collection<AlertPolarisIssueNotificationContentModel> notificationModels = createNotificationModelsForProject(project, projectIssues);
+        for (final AlertPolarisIssueNotificationContentModel notificationModel : notificationModels) {
+            final String notificationContent = gson.toJson(notificationModel);
+            final AlertNotificationWrapper notification = new NotificationContent(providerCreationDate, PolarisProvider.COMPONENT_NAME, providerCreationDate, notificationModel.getNotificationType().name(), notificationContent);
+            notifications.add(notification);
         }
+        return notifications;
     }
 
     private Collection<AlertPolarisIssueNotificationContentModel> createNotificationModelsForProject(final ProviderProject project, final Set<PolarisIssueModel> issues) {
@@ -220,6 +179,30 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             }
         }
         return notifications;
+    }
+
+    private void persistProjectData(final Map<ProviderProject, Set<String>> projectUserEmailMappings) {
+        logger.info("Updating {} projects", projectUserEmailMappings.keySet().size());
+        providerDataAccessor.updateProjectAndUserData(PolarisProvider.COMPONENT_NAME, projectUserEmailMappings);
+    }
+
+    private void persistIssues(final Map<ProviderProject, Set<PolarisIssueModel>> projectIssueMappings) {
+        for (final Map.Entry<ProviderProject, Set<PolarisIssueModel>> projectToIssues : projectIssueMappings.entrySet()) {
+            final ProviderProject project = projectToIssues.getKey();
+            for (final PolarisIssueModel issueFromServer : projectToIssues.getValue()) {
+                try {
+                    logger.trace("Updating Polaris issue: {}", issueFromServer);
+                    polarisIssueAccessor.updateIssueType(project.getHref(), issueFromServer.getIssueType(), issueFromServer.getCurrentIssueCount());
+                } catch (final AlertDatabaseConstraintException e) {
+                    logger.error("Problem updating issue type", e);
+                }
+            }
+        }
+    }
+
+    private void persistNotifications(final Collection<AlertNotificationWrapper> notificationsToSave) {
+        logger.info("Generating {} new notifications", notificationsToSave.size());
+        notificationsToSave.forEach(notificationManager::saveNotification);
     }
 
 }

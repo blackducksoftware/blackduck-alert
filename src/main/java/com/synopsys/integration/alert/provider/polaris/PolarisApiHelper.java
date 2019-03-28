@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,51 +45,24 @@ import com.synopsys.integration.polaris.common.api.auth.model.user.UserResource;
 import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Resource;
 import com.synopsys.integration.polaris.common.api.common.project.ProjectV0Resource;
 import com.synopsys.integration.polaris.common.model.QueryIssueResource;
-import com.synopsys.integration.polaris.common.service.BranchService;
 import com.synopsys.integration.polaris.common.service.IssueService;
-import com.synopsys.integration.polaris.common.service.ProjectService;
 import com.synopsys.integration.polaris.common.service.RoleAssignmentsService;
 import com.synopsys.integration.polaris.common.service.UserService;
 
 public class PolarisApiHelper {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ProjectService projectService;
-    private final BranchService branchService;
     private final IssueService issueService;
     private final RoleAssignmentsService roleAssignmentsService;
     private final UserService userService;
 
-    public PolarisApiHelper(final ProjectService projectService, final BranchService branchService, final IssueService issueService, final RoleAssignmentsService roleAssignmentsService, final UserService userService) {
-        this.projectService = projectService;
-        this.branchService = branchService;
+    public PolarisApiHelper(final IssueService issueService, final RoleAssignmentsService roleAssignmentsService, final UserService userService) {
         this.issueService = issueService;
         this.roleAssignmentsService = roleAssignmentsService;
         this.userService = userService;
     }
 
-    public String getProjectHref(final ProjectV0Resource project) {
-        return project
-                   .getLinks()
-                   .getSelf()
-                   .getHref();
-    }
-
-    public Map<ProjectV0Resource, List<BranchV0Resource>> getProjectToBranchMappings() {
-        final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings = new HashMap<>();
-        try {
-            final List<ProjectV0Resource> allProjects = projectService.getAllProjects();
-            for (final ProjectV0Resource project : allProjects) {
-                final List<BranchV0Resource> branchesForProject = branchService.getBranchesForProject(project.getId());
-                projectToBranchMappings.put(project, branchesForProject);
-            }
-        } catch (final IntegrationException e) {
-            logger.error("Failed to get projects from Polaris", e);
-        }
-        return projectToBranchMappings;
-    }
-
-    public List<PolarisIssueModel> createIssueModelsForProject(final String projectId, final String projectName, final List<String> branchIds) {
-        final List<PolarisIssueModel> issuesForProjectFromServer = new ArrayList<>();
+    public Set<PolarisIssueModel> createIssueModelsForProject(final String projectId, final String projectName, final List<String> branchIds) {
+        final Set<PolarisIssueModel> issuesForProjectFromServer = new HashSet<>();
         for (final String branchId : branchIds) {
             try {
                 final List<QueryIssueResource> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
@@ -108,25 +80,8 @@ public class PolarisApiHelper {
         return issuesForProjectFromServer;
     }
 
-    public Optional<ProjectV0Resource> retrieveProjectByHrefOrName(final Set<ProjectV0Resource> projects, final String href, final String name) throws IntegrationException {
-        final Optional<ProjectV0Resource> optionalProjectV0Resource = projects
-                                                                          .stream()
-                                                                          .filter(p -> href.equals(getProjectHref(p)))
-                                                                          .findFirst();
-        if (optionalProjectV0Resource.isPresent()) {
-            return optionalProjectV0Resource;
-        }
-        return projectService.getProjectByName(name);
-    }
-
-    public List<String> getBranchesIdsForProject(final Map<ProjectV0Resource, List<BranchV0Resource>> projectToBranchMappings, final ProjectV0Resource project) throws IntegrationException {
-        if (projectToBranchMappings.containsKey(project)) {
-            return projectToBranchMappings.get(project)
-                       .stream()
-                       .map(BranchV0Resource::getId)
-                       .collect(Collectors.toList());
-        }
-        return branchService.getBranchesForProject(project.getId())
+    public List<String> getBranchesIdsForProject(final List<BranchV0Resource> branches) {
+        return branches
                    .stream()
                    .map(BranchV0Resource::getId)
                    .collect(Collectors.toList());
