@@ -34,7 +34,7 @@ public class ScheduledTaskTest {
         future = Mockito.mock(ScheduledFuture.class);
         task = new ScheduledTask(taskScheduler, taskName) {
             @Override
-            public void run() {
+            public void runTask() {
 
             }
         };
