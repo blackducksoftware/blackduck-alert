@@ -95,7 +95,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @Profile("saml")
 public class SAMLAuth extends WebSecurityConfigurerAdapter {
-
+    public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
     private static final String[] DEFAULT_PATHS = {
         "/saml/**",
         "/#",
@@ -140,8 +140,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public WebSSOProfileOptions defaultWebSSOProfileOptions() {
         final WebSSOProfileOptions webSSOProfileOptions = new WebSSOProfileOptions();
         webSSOProfileOptions.setIncludeScoping(false);
-        //TODO move string to static
-        webSSOProfileOptions.setProviderName("Synopsys - Alert");
+        webSSOProfileOptions.setProviderName(SSO_PROVIDER_NAME);
         webSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         // TODO local logout configuration
         webSSOProfileOptions.setForceAuthN(true);
@@ -164,7 +163,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
         final SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler =
             new SavedRequestAwareAuthenticationSuccessHandler();
-        successRedirectHandler.setDefaultTargetUrl("/jobs/distribution");
+        successRedirectHandler.setDefaultTargetUrl("/");
         return successRedirectHandler;
     }
 
@@ -181,7 +180,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public SimpleUrlLogoutSuccessHandler successLogoutHandler() {
         final SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler =
             new SimpleUrlLogoutSuccessHandler();
-        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/jobs/distribution");
+        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
         simpleUrlLogoutSuccessHandler.setAlwaysUseDefaultTargetUrl(true);
         return simpleUrlLogoutSuccessHandler;
     }
@@ -195,9 +194,9 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     public MetadataGenerator metadataGenerator() {
         final MetadataGenerator metadataGenerator = new MetadataGenerator();
         // TODO audience label in Okta?
-        metadataGenerator.setEntityId("http://localhost:8080/alert/");
+        metadataGenerator.setEntityId("");
         //TODO Alert URL, Cant end with / it messes with the samlFilter()
-        metadataGenerator.setEntityBaseURL("http://localhost:8080/alert");
+        metadataGenerator.setEntityBaseURL("");
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
@@ -232,7 +231,6 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
 
         final SAMLProcessingFilter samlProcessingFilter = samlWebSSOProcessingFilter();
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"), samlProcessingFilter));
-        //        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("saml/SSO/**"), samlProcessingFilter));
 
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/logout/**"), samlLogoutFilter()));
 
@@ -351,8 +349,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public ExtendedMetadataDelegate idpMetadata()
-        throws MetadataProviderException, ResourceException {
+    public ExtendedMetadataDelegate idpMetadata() throws MetadataProviderException, ResourceException {
 
         final Timer backgroundTaskTimer = new Timer(true);
 
@@ -379,7 +376,7 @@ public class SAMLAuth extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        final MyAuthProvider samlAuthenticationProvider = new MyAuthProvider();
+        final SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider();
         samlAuthenticationProvider.setForcePrincipalAsString(false);
         return samlAuthenticationProvider;
     }
