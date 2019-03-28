@@ -32,17 +32,17 @@ public class AlertPolarisIssueNotificationContentModel extends AlertSerializable
     private final String projectName;
     private final String projectLink;
     private final String issueType;
-    private final Integer previousCount;
-    private final Integer newCount;
+    private final Integer numberChanged;
+    private final Integer newTotal;
     // TODO packages?
 
-    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String projectLink, final String issueType, final Integer previousCount, final Integer newCount) {
+    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String projectLink, final String issueType, final Integer numberChanged, final Integer newTotal) {
         this.notificationType = notificationType.name();
         this.projectName = projectName;
         this.projectLink = projectLink;
         this.issueType = issueType;
-        this.previousCount = previousCount;
-        this.newCount = newCount;
+        this.numberChanged = numberChanged;
+        this.newTotal = newTotal;
     }
 
     public AlertPolarisNotificationTypeEnum getNotificationType() {
@@ -61,11 +61,11 @@ public class AlertPolarisIssueNotificationContentModel extends AlertSerializable
         return issueType;
     }
 
-    public Integer getPreviousCount() {
-        return previousCount;
+    public Integer getNumberChanged() {
+        return numberChanged;
     }
 
-    public Integer getNewCount() {
-        return newCount;
+    public Integer getNewTotal() {
+        return newTotal;
     }
 }

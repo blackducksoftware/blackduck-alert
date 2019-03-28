@@ -217,8 +217,9 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             }
 
             if (notificationType != null) {
+                final Integer numberChanged = Math.abs(issue.getCurrentIssueCount() - issue.getPreviousIssueCount());
                 final AlertPolarisIssueNotificationContentModel newNotification =
-                    new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getHref(), issue.getIssueType(), issue.getPreviousIssueCount(), issue.getCurrentIssueCount());
+                    new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getHref(), issue.getIssueType(), numberChanged, issue.getCurrentIssueCount());
                 notifications.add(newNotification);
             }
         }
