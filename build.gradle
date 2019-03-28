@@ -134,7 +134,7 @@ task runServer(type: Exec, dependsOn: [build]) {
     File jarFile = new File("${projectDir}/build/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',
-                          '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=n']
+                          '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=y']
 
     def jmxVariables = ['-Dcom.sun.management.jmxremote',
                         '-Dcom.sun.management.jmxremote.port=9045',
