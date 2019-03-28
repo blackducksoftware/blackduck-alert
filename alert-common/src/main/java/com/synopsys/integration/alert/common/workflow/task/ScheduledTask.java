@@ -60,8 +60,10 @@ public abstract class ScheduledTask implements Runnable {
     }
 
     @Override
-    public void run() {
+    public final void run() {
+        logger.info("### {} Task Started...", taskName);
         runTask();
+        logger.info("### {} Task Finished", taskName);
     }
 
     @Async

@@ -65,7 +65,6 @@ import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class BlackDuckAccumulator extends ScheduledTask {
-    public static final String ENCODING = "UTF-8";
     public static final String TASK_NAME = "blackduck-accumulator-task";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
     private final BlackDuckProperties blackDuckProperties;
@@ -96,7 +95,6 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     public void accumulate() {
-        logger.info("### Accumulator Starting Operation...");
         try {
             if (!filePersistenceUtil.exists(getSearchRangeFileName())) {
                 initializeSearchRangeFile();
@@ -114,7 +112,6 @@ public class BlackDuckAccumulator extends ScheduledTask {
                 final Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
                 logger.debug("Accumulator next run: {} seconds", seconds);
             }
-            logger.info("### Accumulator Finished Operation.");
         }
     }
 
