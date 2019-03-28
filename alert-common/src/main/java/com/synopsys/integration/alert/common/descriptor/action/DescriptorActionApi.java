@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -116,13 +115,11 @@ public abstract class DescriptorActionApi {
     }
 
     private void checkRelatedFields(final ConfigField field, final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
-        for (final String relatedFieldKey : requiredRelatedFields) {
+        for (final String relatedFieldKey : field.getRequiredRelatedFields()) {
             final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
             validateAnyRelatedFieldsMissing(relatedField, fieldModel, fieldErrors);
         }
-        final Set<String> disallowedRelatedFields = field.getDisallowedRelatedFields();
-        for (final String disallowedRelatedFieldKey : disallowedRelatedFields) {
+        for (final String disallowedRelatedFieldKey : field.getDisallowedRelatedFields()) {
             final ConfigField relatedField = descriptorFields.get(disallowedRelatedFieldKey);
             validateAnyDisallowedFieldsSet(relatedField, fieldModel, fieldErrors, field.getLabel());
         }
@@ -137,7 +134,7 @@ public abstract class DescriptorActionApi {
     private void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final String key = field.getKey();
         final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
-        if (optionalFieldValue.isEmpty() || (optionalFieldValue.isPresent() && optionalFieldValue.get().containsNoData())) {
+        if (optionalFieldValue.isEmpty() || optionalFieldValue.map(FieldValueModel::containsNoData).orElse(true)) {
             fieldErrors.put(key, field.getLabel() + " is missing");
         }
     }
