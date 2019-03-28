@@ -61,32 +61,14 @@ public abstract class DescriptorActionApi {
             if (!fieldErrors.containsKey(key) && optionalFieldValue.isPresent()) {
                 // field is present now validate the field
                 final FieldValueModel fieldValueModel = optionalFieldValue.get();
-                if (shouldValidateField(fieldValueModel, field.getType())) {
-                    final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
-                    for (final String relatedFieldKey : requiredRelatedFields) {
-                        final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
-                        validateAnyRelatedFieldsMissing(relatedField, fieldModel, fieldErrors);
-                    }
+                if (hasValueOrChecked(fieldValueModel, field.getType())) {
+                    checkRelatedFields(field, descriptorFields, fieldModel, fieldErrors);
                 }
                 final Collection<String> validationErrors = field.validate(fieldValueModel, fieldModel);
                 if (!validationErrors.isEmpty()) {
                     fieldErrors.put(key, StringUtils.join(validationErrors, ", "));
                 }
             }
-        }
-    }
-
-    public Boolean shouldValidateField(final FieldValueModel fieldValueModel, final String type) {
-        final Boolean isValueTrue = fieldValueModel.getValue().map(Boolean::parseBoolean).orElse(false);
-        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
-        return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
-    }
-
-    public void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final String key = field.getKey();
-        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
-        if (optionalFieldValue.isEmpty() || (optionalFieldValue.isPresent() && optionalFieldValue.get().containsNoData())) {
-            fieldErrors.put(key, field.getLabel() + " is missing");
         }
     }
 
@@ -131,5 +113,41 @@ public abstract class DescriptorActionApi {
 
     public FieldModel deleteConfig(final FieldModel fieldModel) {
         return fieldModel;
+    }
+
+    private void checkRelatedFields(final ConfigField field, final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final Set<String> requiredRelatedFields = field.getRequiredRelatedFields();
+        for (final String relatedFieldKey : requiredRelatedFields) {
+            final ConfigField relatedField = descriptorFields.get(relatedFieldKey);
+            validateAnyRelatedFieldsMissing(relatedField, fieldModel, fieldErrors);
+        }
+        final Set<String> disallowedRelatedFields = field.getDisallowedRelatedFields();
+        for (final String disallowedRelatedFieldKey : disallowedRelatedFields) {
+            final ConfigField relatedField = descriptorFields.get(disallowedRelatedFieldKey);
+            validateAnyDisallowedFieldsSet(relatedField, fieldModel, fieldErrors, field.getLabel());
+        }
+    }
+
+    private Boolean hasValueOrChecked(final FieldValueModel fieldValueModel, final String type) {
+        final Boolean isValueTrue = fieldValueModel.getValue().map(Boolean::parseBoolean).orElse(false);
+        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
+        return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
+    }
+
+    private void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String key = field.getKey();
+        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+        if (optionalFieldValue.isEmpty() || (optionalFieldValue.isPresent() && optionalFieldValue.get().containsNoData())) {
+            fieldErrors.put(key, field.getLabel() + " is missing");
+        }
+    }
+
+    private void validateAnyDisallowedFieldsSet(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors, final String validatedFieldLabel) {
+        final String key = field.getKey();
+        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+        if (optionalFieldValue.isPresent() && hasValueOrChecked(optionalFieldValue.get(), field.getType())) {
+            final String errorMessage = String.format("%s cannot be set if %s is already set", field.getLabel(), validatedFieldLabel);
+            fieldErrors.put(key, errorMessage);
+        }
     }
 }
