@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.polaris;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -56,18 +57,28 @@ public class PolarisCollector extends MessageContentCollector {
     @Override
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
+        final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
+                                                                       .stream()
+                                                                       .filter(field -> PolarisProviderContentTypes.LABEL_ISSUE_TYPE.equals(field.getLabel()))
+                                                                       .findFirst();
 
-        final SortedSet<LinkableItem> countItems = new TreeSet<>();
+        final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
+        if (optionalIssueTypeField.isPresent()) {
+            final JsonField<String> issueTypeField = optionalIssueTypeField.get();
+            final String issueType = jsonFieldAccessor.getFirst(issueTypeField).orElse("<unknown>");
+            final LinkableItem issueTypeItem = new LinkableItem(issueTypeField.getLabel(), issueType);
+            linkableItems.add(issueTypeItem);
+        }
+
         for (final JsonField<Integer> field : countFields) {
             final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
-
             final LinkableItem countItem = new LinkableItem(field.getLabel(), currentCount.toString());
-            countItems.add(countItem);
+            linkableItems.add(countItem);
         }
 
         final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
         final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
-        categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), countItems));
+        categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), linkableItems));
     }
 
     private ItemOperation getOperationFromNotificationType(final String notificationType) {

@@ -119,7 +119,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
                                               .map(BranchV0Attributes::getName)
                                               .collect(Collectors.joining(", "));
             final String name = serverProject.getAttributes().getName();
-            final String description = StringUtils.truncate("Branches: " + branchesString, 80);
+            final String description = StringUtils.truncate(branchesString, 80);
             final String href = serverProject.getLinks().getSelf().getHref();
             final String projectOwnerEmail = polarisApiHelper.getAdminEmailForProject(serverProject).orElse(StringUtils.EMPTY);
 
@@ -215,7 +215,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             if (notificationType != null) {
                 final Integer numberChanged = Math.abs(issue.getCurrentIssueCount() - issue.getPreviousIssueCount());
                 final AlertPolarisIssueNotificationContentModel newNotification =
-                    new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getHref(), issue.getIssueType(), numberChanged, issue.getCurrentIssueCount());
+                    new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getDescription(), project.getHref(), issue.getIssueType(), numberChanged, issue.getCurrentIssueCount());
                 notifications.add(newNotification);
             }
         }
