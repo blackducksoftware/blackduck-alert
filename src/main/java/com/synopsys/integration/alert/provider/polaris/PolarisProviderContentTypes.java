@@ -33,13 +33,15 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 public class PolarisProviderContentTypes {
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_ISSUE_TYPE = "Issue Type";
-    public static final String LABEL_ISSUE_COUNT = "Updated Issue Count";
+    public static final String LABEL_PREVIOUS_ISSUE_COUNT = "Previous Issue Count";
+    public static final String LABEL_NEW_ISSUE_COUNT = "Updated Issue Count";
 
     public static final String JSON_FIELD_PROJECT_NAME = "projectName";
     public static final String JSON_FIELD_PROJECT_LINK = "projectLink";
 
     public static final String JSON_FIELD_ISSUE_TYPE = "issueType";
-    public static final String JSON_FIELD_COUNT = "count";
+    public static final String JSON_FIELD_PREVIOUS_COUNT = "previousCount";
+    public static final String JSON_FIELD_NEW_COUNT = "newCount";
 
     private static final JsonField<String> PROJECT_NAME_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC,
         LABEL_PROJECT_NAME);
@@ -47,10 +49,12 @@ public class PolarisProviderContentTypes {
         LABEL_PROJECT_NAME + JsonField.LABEL_URL_SUFFIX);
     private static final JsonField<String> ISSUE_TYPE_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_ISSUE_TYPE), JSON_FIELD_ISSUE_TYPE, FieldContentIdentifier.SUB_TOPIC,
         LABEL_ISSUE_TYPE);
-    private static final JsonField<Integer> ISSUE_COUNT_FIELD = JsonField.createIntegerField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_COUNT), JSON_FIELD_COUNT, FieldContentIdentifier.CATEGORY_ITEM,
-        LABEL_ISSUE_COUNT);
+    private static final JsonField<Integer> ISSUE_PREVIOUS_COUNT_FIELD = JsonField.createIntegerField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PREVIOUS_COUNT), JSON_FIELD_PREVIOUS_COUNT,
+        FieldContentIdentifier.CATEGORY_ITEM, LABEL_PREVIOUS_ISSUE_COUNT);
+    private static final JsonField<Integer> ISSUE_NEW_COUNT_FIELD = JsonField.createIntegerField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_NEW_COUNT), JSON_FIELD_NEW_COUNT,
+        FieldContentIdentifier.CATEGORY_ITEM, LABEL_NEW_ISSUE_COUNT);
 
-    private static final List<JsonField<?>> POLARIS_FIELDS = List.of(PROJECT_NAME_FIELD, PROJECT_LINK_FIELD, ISSUE_TYPE_FIELD, ISSUE_COUNT_FIELD);
+    private static final List<JsonField<?>> POLARIS_FIELDS = List.of(PROJECT_NAME_FIELD, PROJECT_LINK_FIELD, ISSUE_TYPE_FIELD, ISSUE_PREVIOUS_COUNT_FIELD, ISSUE_NEW_COUNT_FIELD);
 
     public static final ProviderContentType ISSUE_COUNT_INCREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED.name(), POLARIS_FIELDS);
     public static final ProviderContentType ISSUE_COUNT_DECREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_DECREASED.name(), POLARIS_FIELDS);
