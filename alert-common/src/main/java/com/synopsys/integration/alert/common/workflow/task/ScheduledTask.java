@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.support.CronTrigger;
 
 public abstract class ScheduledTask implements Runnable {
@@ -57,6 +58,16 @@ public abstract class ScheduledTask implements Runnable {
     public String getTaskName() {
         return taskName;
     }
+
+    @Override
+    public final void run() {
+        logger.info("### {} Task Started...", taskName);
+        runTask();
+        logger.info("### {} Task Finished", taskName);
+    }
+
+    @Async
+    public abstract void runTask();
 
     public void scheduleExecution(final String cron) {
         if (StringUtils.isNotBlank(cron)) {
