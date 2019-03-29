@@ -1,8 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -109,6 +108,10 @@ public abstract class MessageContentCollector {
 
     protected final List<JsonField<Long>> getLongFields(final List<JsonField<?>> fields) {
         return getTypedFields(fields, new TypeRef<Long>() {});
+    }
+
+    protected final List<JsonField<Integer>> getIntegerFields(final List<JsonField<?>> fields) {
+        return getTypedFields(fields, new TypeRef<Integer>() {});
     }
 
     protected final <T> List<JsonField<T>> getFieldsOfType(final List<JsonField<?>> fields, final TypeRef<?> typeRef) {

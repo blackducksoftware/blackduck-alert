@@ -20,9 +20,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.collector;
+package com.synopsys.integration.alert.provider.polaris;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -43,28 +42,49 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
+import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
+public class PolarisCollector extends MessageContentCollector {
+
     @Autowired
-    public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.LICENSE_LIMIT));
+    public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
+        super(jsonExtractor, messageContentProcessorList, List.of(PolarisProviderContentTypes.ISSUE_COUNT_INCREASED, PolarisProviderContentTypes.ISSUE_COUNT_DECREASED));
     }
 
     @Override
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
-        final List<JsonField<Long>> longFields = getLongFields(notificationFields);
+        final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
+        final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
+                                                                       .stream()
+                                                                       .filter(field -> PolarisProviderContentTypes.LABEL_ISSUE_TYPE.equals(field.getLabel()))
+                                                                       .findFirst();
 
         final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-        for (final JsonField<Long> field : longFields) {
-            final Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
-            optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
+        if (optionalIssueTypeField.isPresent()) {
+            final JsonField<String> issueTypeField = optionalIssueTypeField.get();
+            final String issueType = jsonFieldAccessor.getFirst(issueTypeField).orElse("<unknown>");
+            final LinkableItem issueTypeItem = new LinkableItem(issueTypeField.getLabel(), issueType);
+            linkableItems.add(issueTypeItem);
         }
-        if (!linkableItems.isEmpty()) {
-            final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
-            categoryItems.add(new CategoryItem(key, ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
+
+        for (final JsonField<Integer> field : countFields) {
+            final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
+            final LinkableItem countItem = new LinkableItem(field.getLabel(), currentCount.toString());
+            linkableItems.add(countItem);
         }
+
+        final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
+        final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
+        categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), linkableItems));
     }
+
+    private ItemOperation getOperationFromNotificationType(final String notificationType) {
+        if (AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED.name().equals(notificationType)) {
+            return ItemOperation.ADD;
+        }
+        return ItemOperation.DELETE;
+    }
+
 }
