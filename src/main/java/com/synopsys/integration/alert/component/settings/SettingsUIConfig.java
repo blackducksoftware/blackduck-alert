@@ -102,6 +102,8 @@ public class SettingsUIConfig extends UIConfig {
                                           .requireField(proxyHost.getKey());
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
         final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION);
+        proxyHost
+            .requireField(proxyPort.getKey());
         proxyUsername
             .requireField(proxyHost.getKey())
             .requireField(proxyPassword.getKey());
