@@ -72,8 +72,8 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     }
 
     @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
-        return getProviderActionApi(fieldModel).map(descriptorActionApi -> descriptorActionApi.saveConfig(fieldModel)).orElse(fieldModel);
+    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
+        return getProviderActionApi(fieldModel).map(descriptorActionApi -> descriptorActionApi.beforeSaveConfig(fieldModel)).orElse(fieldModel);
     }
 
     @Override

@@ -95,7 +95,7 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel modelToSave = actionaApi.saveConfig(fieldModel);
+        final FieldModel modelToSave = actionaApi.beforeSaveConfig(fieldModel);
         assertFieldsMissing(modelToSave);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
@@ -115,7 +115,7 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
 
         Mockito.doThrow(new IllegalArgumentException()).when(encryptionUtility).updatePasswordField(Mockito.anyString());
-        final FieldModel modelToSave = actionaApi.saveConfig(fieldModel);
+        final FieldModel modelToSave = actionaApi.beforeSaveConfig(fieldModel);
         assertFieldsMissing(modelToSave);
     }
 

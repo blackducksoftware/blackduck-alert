@@ -188,7 +188,7 @@ public class AlertStartupInitializer {
     private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertDatabaseConstraintException {
         final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
-        final FieldModel savedFieldModel = fieldModelProcessor.performSaveAction(fieldModel);
+        final FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertFromFieldModel(savedFieldModel).values();
     }
 

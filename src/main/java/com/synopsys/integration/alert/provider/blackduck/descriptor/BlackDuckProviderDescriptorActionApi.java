@@ -109,12 +109,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public FieldModel updateConfig(final FieldModel fieldModel) {
-        return saveConfig(fieldModel);
-    }
-
-    @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
+    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         final boolean valid = systemValidator.validate();
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
@@ -123,6 +118,6 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
                 taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
             }
         }
-        return super.saveConfig(fieldModel);
+        return super.afterSaveConfig(fieldModel);
     }
 }
