@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Timer;
@@ -35,6 +36,7 @@ import org.opensaml.xml.parse.ParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataManager;
@@ -54,18 +56,17 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
-    private final MetadataManager metadata;
+    private final MetadataManager metadataManager;
     private final ParserPool parserPool;
     private final ExtendedMetadata extendedMetadata;
 
     @Autowired
-
-    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final MetadataManager metadata,
-        final ParserPool parserPool, final ExtendedMetadata extendedMetadata) {
+    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator,
+        @Lazy final MetadataManager metadataManager, @Lazy final ParserPool parserPool, @Lazy final ExtendedMetadata extendedMetadata) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
-        this.metadata = metadata;
+        this.metadataManager = metadataManager;
         this.parserPool = parserPool;
         this.extendedMetadata = extendedMetadata;
     }
@@ -145,7 +146,8 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
 
     private void addSAMLMetadata(final FieldModel fieldModel) {
         final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
-        metadataURLFieldValueOptional.ifPresent(metadataURLFieldValue -> {
+        if (metadataURLFieldValueOptional.isPresent()) {
+            final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
             final String metadataURL = metadataURLFieldValue.getValue().orElse("");
             if (StringUtils.isNotBlank(metadataURL)) {
                 final Timer backgroundTaskTimer = new Timer(true);
@@ -160,10 +162,16 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
                     final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
                     idpMetadata.setMetadataTrustCheck(true);
                     idpMetadata.setMetadataRequireSignature(false);
+                    metadataManager.addMetadataProvider(idpMetadata);
                 } catch (final MetadataProviderException e) {
                     logger.error("Error setting the SAML metadata.", e);
                 }
             }
-        });
+        }
+        try {
+            metadataManager.setProviders(Collections.emptyList());
+        } catch (final MetadataProviderException e) {
+            logger.error("Error clearing the SAML metadata.", e);
+        }
     }
 }
