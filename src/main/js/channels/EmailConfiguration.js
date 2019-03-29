@@ -8,7 +8,7 @@ import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
+import { getEmailConfig, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -222,7 +222,7 @@ class EmailConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate=true>
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
