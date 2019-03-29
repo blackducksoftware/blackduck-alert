@@ -57,7 +57,7 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
     }
 
     @Override
-    public FieldModel updateConfig(final FieldModel fieldModel) {
+    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
         return beforeSaveConfig(fieldModel);
     }
 
