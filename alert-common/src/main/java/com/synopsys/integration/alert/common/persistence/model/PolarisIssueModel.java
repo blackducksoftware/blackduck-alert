@@ -1,8 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -30,6 +29,10 @@ public class PolarisIssueModel extends AlertSerializableModel {
     private final Integer previousIssueCount;
     private final Integer currentIssueCount;
 
+    public static PolarisIssueModel createNewIssue(final String issueType, final Integer issueCount) {
+        return new PolarisIssueModel(issueType, 0, issueCount);
+    }
+
     public PolarisIssueModel(final String issueType, final Integer previousIssueCount, final Integer currentIssueCount) {
         this.issueType = issueType;
         this.previousIssueCount = previousIssueCount;
@@ -49,11 +52,11 @@ public class PolarisIssueModel extends AlertSerializableModel {
     }
 
     public boolean isIssueCountIncreasing() {
-        return previousIssueCount < currentIssueCount;
+        return previousIssueCount.intValue() < currentIssueCount.intValue();
     }
 
     public boolean isIssueCountDecreasing() {
-        return !isIssueCountIncreasing() && previousIssueCount != currentIssueCount;
+        return previousIssueCount.intValue() > currentIssueCount.intValue();
     }
 
 }

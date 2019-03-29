@@ -29,17 +29,22 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class AlertPolarisIssueNotificationContentModel extends AlertSerializableModel {
     private final String notificationType;
     private final String projectName;
+    private final String description;
     private final String projectLink;
     private final String issueType;
-    private final Integer count;
+    private final Integer numberChanged;
+    private final Integer newTotal;
     // TODO packages?
 
-    public AlertPolarisIssueNotificationContentModel(final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String projectLink, final String issueType, final Integer count) {
+    public AlertPolarisIssueNotificationContentModel(
+        final AlertPolarisNotificationTypeEnum notificationType, final String projectName, final String description, final String projectLink, final String issueType, final Integer numberChanged, final Integer newTotal) {
         this.notificationType = notificationType.name();
         this.projectName = projectName;
+        this.description = description;
         this.projectLink = projectLink;
         this.issueType = issueType;
-        this.count = count;
+        this.numberChanged = numberChanged;
+        this.newTotal = newTotal;
     }
 
     public AlertPolarisNotificationTypeEnum getNotificationType() {
@@ -50,6 +55,10 @@ public class AlertPolarisIssueNotificationContentModel extends AlertSerializable
         return projectName;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public String getProjectLink() {
         return projectLink;
     }
@@ -58,8 +67,11 @@ public class AlertPolarisIssueNotificationContentModel extends AlertSerializable
         return issueType;
     }
 
-    public Integer getCount() {
-        return count;
+    public Integer getNumberChanged() {
+        return numberChanged;
     }
 
+    public Integer getNewTotal() {
+        return newTotal;
+    }
 }

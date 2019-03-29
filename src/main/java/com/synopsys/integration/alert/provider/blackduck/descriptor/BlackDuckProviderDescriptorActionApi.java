@@ -48,12 +48,12 @@ import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBui
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
 import com.synopsys.integration.blackduck.service.model.RequestFactory;
+import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
-import com.synopsys.integration.util.BuilderStatus;
 
 @Component
 public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
@@ -114,6 +114,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
+        // FIXME validate can't be called here as the validation is being ran before the data is actually saved.
         final boolean valid = systemValidator.validate();
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
