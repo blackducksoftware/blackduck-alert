@@ -7,7 +7,6 @@ import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 
 import { saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
-import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -416,7 +415,7 @@ class BaseJobConfiguration extends Component {
         const selectedProviderOption = this.getSelectedSingleValue(providers, fieldModel, KEY_PROVIDER_NAME);
         const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, fieldModel, KEY_FREQUENCY);
         return (
-            <form className="form-horizontal" onSubmit={this.onSubmit}>
+            <form className="form-horizontal" onSubmit={this.onSubmit} noValidate=true>
                 <TextInput
                     id={KEY_NAME}
                     label="Job Name"
