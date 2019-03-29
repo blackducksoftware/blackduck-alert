@@ -180,7 +180,7 @@ public class AlertStartupInitializer {
 
         final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(fieldsToUpdate);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
-        final FieldModel updatedFieldModel = fieldModelProcessor.performUpdateAction(fieldModel);
+        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         return modelConverter.convertFromFieldModel(updatedFieldModel).values();
     }
 

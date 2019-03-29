@@ -95,8 +95,12 @@ public class FieldModelProcessor {
         return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.afterSaveConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel performUpdateAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
+    public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) {
+        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.beforeUpdateConfig(fieldModel)).orElse(fieldModel);
+    }
+
+    public FieldModel performAfterUpdateAction(final FieldModel fieldModel) {
+        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.afterUpdateConfig(fieldModel)).orElse(fieldModel);
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
