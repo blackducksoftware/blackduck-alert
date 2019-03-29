@@ -69,7 +69,7 @@ public class PolarisApiHelper {
                 final Map<String, Integer> issueTypeCounts = mapIssueTypeToCount(foundIssues);
 
                 for (final Map.Entry<String, Integer> issueTypeEntry : issueTypeCounts.entrySet()) {
-                    final PolarisIssueModel newIssue = new PolarisIssueModel(issueTypeEntry.getKey(), 0, issueTypeEntry.getValue());
+                    final PolarisIssueModel newIssue = PolarisIssueModel.createNewIssue(issueTypeEntry.getKey(), issueTypeEntry.getValue());
                     issuesForProjectFromServer.add(newIssue);
                 }
             } catch (final IntegrationException e) {
