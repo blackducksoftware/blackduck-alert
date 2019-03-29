@@ -1,8 +1,7 @@
 /**
  * alert-database
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -29,6 +28,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PolarisIssueRepository extends JpaRepository<PolarisIssueEntity, Long> {
-    Optional<PolarisIssueEntity> findFirstByIssueType(final String issueType);
+    Optional<PolarisIssueEntity> findFirstByIssueTypeAndProjectId(final String issueType, final Long projectId);
+
     List<PolarisIssueEntity> findByProjectId(final Long projectId);
 }

@@ -35,12 +35,16 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
+import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
+import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
+import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
+import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 @Component
 public class PolarisProperties extends ProviderProperties {
@@ -48,15 +52,13 @@ public class PolarisProperties extends ProviderProperties {
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
     private final Gson gson;
-    private final AuthenticationSupport authenticationSupport;
 
     @Autowired
-    public PolarisProperties(final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson, final AuthenticationSupport authenticationSupport) {
+    public PolarisProperties(final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
         this.gson = gson;
-        this.authenticationSupport = authenticationSupport;
     }
 
     public Optional<String> getUrl() {
@@ -88,6 +90,14 @@ public class PolarisProperties extends ProviderProperties {
     }
 
     public AccessTokenPolarisHttpClient createPolarisHttpClient(final IntLogger intLogger) throws IntegrationException {
+        return createPolarisServerConfig(intLogger).createPolarisHttpClient(intLogger);
+    }
+
+    public PolarisServicesFactory createPolarisServicesFactory(final IntLogger intLogger) throws IntegrationException {
+        return createPolarisServerConfig(intLogger).createPolarisServicesFactory(intLogger);
+    }
+
+    public PolarisServerConfig createPolarisServerConfig(final IntLogger intLogger) throws IntegrationException {
         final String errorFormat = "The field %s cannot be blank";
         final String baseUrl = getUrl()
                                    .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "baseUrl")));
@@ -95,14 +105,38 @@ public class PolarisProperties extends ProviderProperties {
                                        .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "accessToken")));
         final Integer timeout = getTimeout();
 
-        return createPolarisHttpClient(intLogger, baseUrl, accessToken, timeout);
+        final PolarisServerConfigBuilder polarisServerConfigBuilder = createInitialPolarisServerConfigBuilder(intLogger);
+        polarisServerConfigBuilder.setUrl(baseUrl);
+        polarisServerConfigBuilder.setAccessToken(accessToken);
+        polarisServerConfigBuilder.setTimeoutInSeconds(timeout);
 
+        final BuilderStatus builderStatus = polarisServerConfigBuilder.validateAndGetBuilderStatus();
+        if (!builderStatus.isValid()) {
+            throw new IntegrationException(builderStatus.getFullErrorMessage());
+        }
+        return polarisServerConfigBuilder.build();
     }
 
-    public AccessTokenPolarisHttpClient createPolarisHttpClient(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
-        final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
+    public PolarisServerConfigBuilder createInitialPolarisServerConfigBuilder(final IntLogger logger) {
+        final PolarisServerConfigBuilder builder = new PolarisServerConfigBuilder();
+        builder.setLogger(logger);
+        builder.setGson(gson);
+        builder.setTrustCert(alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE));
+
         final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        return new AccessTokenPolarisHttpClient(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken, gson, authenticationSupport);
+        final Optional<String> optionalProxyHost = proxyInfo.getHost();
+        if (optionalProxyHost.map(StringUtils::isNotBlank).isPresent()) {
+            builder.setProxyHost(proxyInfo.getHost().get());
+            builder.setProxyPort(proxyInfo.getPort());
+            final Optional<Credentials> optionalProxyCredentials = proxyInfo.getProxyCredentials();
+            if (optionalProxyCredentials.isPresent()) {
+                final Credentials proxyCredentials = optionalProxyCredentials.get();
+                builder.setProxyUsername(proxyCredentials.getUsername().orElse(null));
+                builder.setProxyUsername(proxyCredentials.getPassword().orElse(null));
+            }
+        }
+
+        return builder;
     }
 
     private Optional<String> getAccessToken() {
