@@ -1,8 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -29,22 +28,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.NameIDType;
+import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -62,6 +61,7 @@ import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
+import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
 import org.springframework.security.saml.parser.ParserPoolHolder;
@@ -93,8 +93,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 
@@ -104,9 +102,8 @@ import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 public class SAMLManager extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
 
-    private static final Logger logger = LoggerFactory.getLogger(SAMLManager.class);
     private static final String[] DEFAULT_PATHS = {
-        "/saml/**",
+        "/h2/**",
         "/#",
         "/favicon.ico",
         "/fonts/**",
@@ -116,12 +113,12 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
     };
 
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
-    private final ConfigurationAccessor configurationAccessor;
+    private final SAMLContext samlContext;
 
     @Autowired
-    public SAMLManager(final HttpSessionCsrfTokenRepository csrfTokenRepository, final ConfigurationAccessor configurationAccessor) {
+    public SAMLManager(final HttpSessionCsrfTokenRepository csrfTokenRepository, final SAMLContext samlContext) {
         this.csrfTokenRepository = csrfTokenRepository;
-        this.configurationAccessor = configurationAccessor;
+        this.samlContext = samlContext;
     }
 
     public String[] getAllowedPaths() {
@@ -139,6 +136,8 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
 
         http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(getAllowedPaths());
 
+        http.headers().frameOptions().disable();
+
         http.addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class);
 
@@ -148,46 +147,19 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         http.logout().logoutSuccessUrl("/");
     }
 
-    public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        return configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT)
-                   .stream()
-                   .findFirst()
-                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
-    }
-
-    public boolean isSAMLEnabled() {
-        boolean enabled = false;
-        try {
-            enabled = Boolean.valueOf(getFieldValueOrEmpty(getCurrentConfiguration(), SettingsDescriptor.KEY_SAML_ENABLED));
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
-            logger.warn(ex.getMessage());
-            logger.debug("cause: ", ex);
-        }
-
-        return enabled;
-    }
-
-    private String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
-        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-    }
-
-    private Boolean getFieldValueBoolean(final ConfigurationModel configurationModel, final String fieldKey) {
-        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).map(BooleanUtils::toBoolean).orElse(false);
-    }
-
-    @Lazy
     @Bean
-    public SAMLEntryPoint samlEntryPoint() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
+    public WebSSOProfileOptions webSSOProfileOptions() {
+        final AlertWebSSOProfileOptions alertWebSSOProfileOptions = new AlertWebSSOProfileOptions(samlContext);
+        alertWebSSOProfileOptions.setIncludeScoping(false);
+        alertWebSSOProfileOptions.setProviderName(SSO_PROVIDER_NAME);
+        alertWebSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        return alertWebSSOProfileOptions;
+    }
+
+    @Bean
+    public SAMLEntryPoint samlEntryPoint() {
         final SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
-
-        final WebSSOProfileOptions webSSOProfileOptions = new WebSSOProfileOptions();
-        webSSOProfileOptions.setIncludeScoping(false);
-        webSSOProfileOptions.setProviderName(SSO_PROVIDER_NAME);
-        webSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
-        final Boolean forceAuth = getFieldValueBoolean(getCurrentConfiguration(), SettingsDescriptor.KEY_SAML_FORCE_AUTH);
-        webSSOProfileOptions.setForceAuthN(forceAuth);
-
-        samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions);
+        samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions());
         return samlEntryPoint;
     }
 
@@ -214,15 +186,14 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         return simpleUrlLogoutSuccessHandler;
     }
 
-    @Lazy
     @Bean
-    public MetadataGeneratorFilter metadataGeneratorFilter() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        final MetadataGenerator metadataGenerator = new MetadataGenerator();
-        final ConfigurationModel currentConfiguration = getCurrentConfiguration();
-        final String entityId = getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_ID);
-        metadataGenerator.setEntityId(entityId);
-        final String entityURL = getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
-        metadataGenerator.setEntityBaseURL(entityURL);
+    public MetadataGeneratorFilter metadataGeneratorFilter() {
+        return new AlertSAMLMetadataGeneratorFilter(metadataGenerator(), samlContext);
+    }
+
+    @Bean
+    public MetadataGenerator metadataGenerator() {
+        final AlertSAMLMetadataGenerator metadataGenerator = new AlertSAMLMetadataGenerator(samlContext);
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
@@ -232,7 +203,7 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         metadataGenerator.setBindingsSSO(Arrays.asList("post"));
         metadataGenerator.setNameID(Arrays.asList(NameIDType.UNSPECIFIED));
 
-        return new MetadataGeneratorFilter(metadataGenerator);
+        return metadataGenerator;
     }
 
     @Bean
@@ -378,7 +349,27 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
     @Bean
     @Qualifier("metadata")
     public CachingMetadataManager metadata() throws MetadataProviderException, AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        return new CachingMetadataManager(Collections.emptyList());
+        final List<MetadataProvider> providers = new ArrayList<>();
+
+        final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+        final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
+        if (StringUtils.isNotBlank(metadataURL)) {
+            if (StringUtils.isNotBlank(metadataURL)) {
+                final Timer backgroundTaskTimer = new Timer(true);
+
+                // The URL can not end in a '/' because it messes with the paths for saml
+                final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
+                final HTTPMetadataProvider httpMetadataProvider;
+                httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
+                httpMetadataProvider.setParserPool(parserPool());
+
+                final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata());
+                idpMetadata.setMetadataTrustCheck(true);
+                idpMetadata.setMetadataRequireSignature(false);
+                providers.add(idpMetadata);
+            }
+        }
+        return new CachingMetadataManager(providers);
     }
 
     @Bean
