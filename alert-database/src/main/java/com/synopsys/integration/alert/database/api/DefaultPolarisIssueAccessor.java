@@ -1,8 +1,7 @@
 /**
  * alert-database
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -84,7 +83,7 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
         final Long projectId = providerProjectRepository.findFirstByHref(projectHref)
                                    .map(ProviderProjectEntity::getId)
                                    .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
-        final Optional<PolarisIssueEntity> optionalIssueEntity = polarisIssueRepository.findFirstByIssueType(issueType);
+        final Optional<PolarisIssueEntity> optionalIssueEntity = polarisIssueRepository.findFirstByIssueTypeAndProjectId(issueType, projectId);
 
         final PolarisIssueEntity newIssueEntity;
         if (optionalIssueEntity.isPresent()) {

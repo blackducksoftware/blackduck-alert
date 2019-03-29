@@ -1,8 +1,7 @@
 /**
  * alert-database
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -168,6 +167,14 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return savedUsers;
     }
 
+    @Override
+    public void updateProjectAndUserData(final String providerName, final Map<ProviderProject, Set<String>> projectToUserData) {
+        updateProjectDB(providerName, projectToUserData.keySet());
+        final Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        updateUserDB(providerName, userData);
+        updateUserProjectRelations(projectToUserData);
+    }
+
     private ProviderProject convertToProjectModel(final ProviderProjectEntity providerProjectEntity) {
         return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
             providerProjectEntity.getProjectOwnerEmail());
@@ -183,14 +190,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     private ProviderUserEntity convertToUserEntity(final String providerName, final ProviderUserModel providerUserModel) {
         return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerName);
-    }
-
-    @Override
-    public void updateProjectAndUserData(final String providerName, final Map<ProviderProject, Set<String>> projectToUserData) {
-        updateProjectDB(providerName, projectToUserData.keySet());
-        final Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-        updateUserDB(providerName, userData);
-        updateUserProjectRelations(projectToUserData);
     }
 
     private List<ProviderProject> updateProjectDB(final String providerName, final Set<ProviderProject> currentProjects) {
@@ -213,8 +212,8 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         projectsToAdd.addAll(currentProjects);
         projectsToAdd.removeIf(project -> storedProjectLinks.contains(project.getHref()));
 
-        logger.info("Adding {} project", projectsToAdd.size());
-        logger.info("Removing {} project", projectsToRemove.size());
+        logger.info("Adding {} projects", projectsToAdd.size());
+        logger.info("Removing {} projects", projectsToRemove.size());
         deleteProjects(providerName, projectsToRemove);
         return saveProjects(providerName, projectsToAdd);
     }
@@ -270,4 +269,5 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         }
         logger.info("User to project relationships {}", userProjectRelations.size());
     }
+
 }
