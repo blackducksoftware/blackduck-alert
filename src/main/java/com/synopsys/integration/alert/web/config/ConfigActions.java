@@ -125,13 +125,14 @@ public class ConfigActions {
 
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
-        final FieldModel modifiedFieldModel = fieldModelProcessor.performSaveAction(fieldModel);
+        final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         final String descriptorName = modifiedFieldModel.getDescriptorName();
         final String context = modifiedFieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(modifiedFieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        return dbSavedModel.fill(modifiedFieldModel);
+        final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
+        return dbSavedModel.fill(afterSaveAction);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {

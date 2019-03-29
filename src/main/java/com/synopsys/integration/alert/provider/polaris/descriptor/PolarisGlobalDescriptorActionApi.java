@@ -83,12 +83,12 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
+    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
         final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
             taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, PolarisProjectSyncTask.TASK_NAME);
         }
-        return super.saveConfig(fieldModel);
+        return super.afterSaveConfig(fieldModel);
     }
 }

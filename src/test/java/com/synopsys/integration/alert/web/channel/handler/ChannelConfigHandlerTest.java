@@ -44,7 +44,7 @@ public class ChannelConfigHandlerTest {
     //
     //        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
     //        Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
-    //        Mockito.when(configActions.saveConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
+    //        Mockito.when(configActions.beforeSaveConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
     //
     //        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
     //        final ResponseEntity<String> response = handler.postConfig(restModel, descriptor);
