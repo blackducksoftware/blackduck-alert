@@ -392,7 +392,6 @@ class BaseJobConfiguration extends Component {
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFICATION_TYPES)}
                     errorValue={this.props.fieldErrors[KEY_NOTIFICATION_TYPES]}
                 />
-
                 {this.props.childContent}
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME)}
