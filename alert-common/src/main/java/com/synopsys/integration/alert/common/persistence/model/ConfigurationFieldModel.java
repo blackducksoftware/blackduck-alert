@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class ConfigurationFieldModel extends AlertSerializableModel {
     private final String fieldKey;
     private final Boolean isSensitive;
-    private boolean isSet;
     private Collection<String> fieldValues;
 
     public static final ConfigurationFieldModel create(final String fieldKey) {
@@ -62,17 +61,14 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
 
     public void setFieldValue(final String value) {
         if (StringUtils.isNotBlank(value)) {
-            isSet = true;
             fieldValues = Collections.singleton(value);
         } else {
-            isSet = false;
             fieldValues = null;
         }
     }
 
     public void setFieldValues(final Collection<String> values) {
         fieldValues = values;
-        isSet = values != null && values.stream().anyMatch(StringUtils::isNotBlank);
     }
 
     public Optional<String> getFieldValue() {
@@ -89,12 +85,8 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
         return Collections.emptySet();
     }
 
-    public void setSet(final boolean set) {
-        isSet = set;
-    }
-
     public boolean isSet() {
-        return isSet;
+        return fieldValues != null;
     }
 
     @Override

@@ -81,7 +81,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     }
 
     private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
-        final String providerName = fieldModel.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+        final String providerName = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                         .flatMap(FieldValueModel::getValue)
                                         .orElse(null);
         return getProviderActionApi(providerName);

@@ -58,28 +58,25 @@ public class ConfigurationFieldModelConverter {
         return new FieldAccessor(fields);
     }
 
-    // TODO verify if we need this method or if we can just use the method this calls
-    public final Map<String, ConfigurationFieldModel> convertFromFieldModel(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
-        return convertToConfigurationFieldModelMap(fieldModel);
-    }
-
     public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final String value, final boolean isSet) {
-        final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
         final boolean actualSetValue = isSet || StringUtils.isNotBlank(value);
-        configurationModel.ifPresent(model -> {
-            model.setFieldValue(value);
-            model.setSet(actualSetValue);
-        });
+        if (!actualSetValue) {
+            return Optional.empty();
+        }
+
+        final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
+        configurationModel.ifPresent(model -> model.setFieldValue(value));
         return configurationModel;
     }
 
     public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final Collection<String> values, final boolean isSet) {
-        final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
         final boolean actualSetValue = isSet || (values != null && values.stream().anyMatch(StringUtils::isNotBlank));
-        configurationModel.ifPresent(model -> {
-            model.setFieldValues(values);
-            model.setSet(actualSetValue);
-        });
+        if (!actualSetValue) {
+            return Optional.empty();
+        }
+
+        final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
+        configurationModel.ifPresent(model -> model.setFieldValues(values));
         return configurationModel;
     }
 
@@ -90,7 +87,7 @@ public class ConfigurationFieldModelConverter {
         final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
         final Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
         for (final DefinedFieldModel definedField : fieldsForContext) {
-            fieldModel.getField(definedField.getKey())
+            fieldModel.getFieldValueModel(definedField.getKey())
                 .flatMap(fieldValueModel -> convertFromDefinedFieldModel(definedField, fieldValueModel.getValues(), fieldValueModel.isSet()))
                 .ifPresent(configurationFieldModel -> configurationModels.put(configurationFieldModel.getFieldKey(), configurationFieldModel));
         }

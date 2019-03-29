@@ -110,11 +110,11 @@ public class FieldModelProcessor {
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
         if (configurationModel.isPresent()) {
-            final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertFromFieldModel(fieldModel);
+            final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel);
             return updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.get().getCopyOfFieldList());
         }
 
-        return fieldModelConverter.convertFromFieldModel(fieldModel).values();
+        return fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
     }
 
     public FieldModel createTestFieldModel(final FieldModel fieldModel) throws AlertException {
