@@ -30,6 +30,10 @@ public class PolarisIssueModel extends AlertSerializableModel {
     private final Integer previousIssueCount;
     private final Integer currentIssueCount;
 
+    public static PolarisIssueModel createNewIssue(final String issueType, final Integer issueCount) {
+        return new PolarisIssueModel(issueType, 0, issueCount);
+    }
+
     public PolarisIssueModel(final String issueType, final Integer previousIssueCount, final Integer currentIssueCount) {
         this.issueType = issueType;
         this.previousIssueCount = previousIssueCount;
