@@ -9,6 +9,10 @@ class SelectInput extends Component {
             onChange, id, inputClass, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components, selectSpacingClass
         } = this.props;
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
+        let closeOnSelect = true;
+        if (hasMultipleValues) {
+            closeOnSelect = false;
+        }
 
         const field = (<div className={selectClasses}>
             <Select
@@ -21,6 +25,7 @@ class SelectInput extends Component {
                 placeholder={placeholder}
                 value={value}
                 isMulti={hasMultipleValues}
+                closeMenuOnSelect={closeOnSelect}
                 components={components}
             />
         </div>);

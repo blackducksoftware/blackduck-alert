@@ -51,6 +51,5 @@ public class PolarisProviderTest {
         final Set<FormatType> formatTypes = polarisProvider.getSupportedFormatTypes();
 
         assertTrue(formatTypes.contains(FormatType.DEFAULT));
-        assertTrue(formatTypes.contains(FormatType.DIGEST));
     }
 }

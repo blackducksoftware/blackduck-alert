@@ -1,8 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -51,6 +50,7 @@ public class ConfigField extends AlertSerializableModel {
     private FieldGroup group;
     private String subGroup;
     private Set<String> requiredRelatedFields;
+    private Set<String> disallowedRelatedFields;
     private transient ConfigValidationFunction validationFunction;
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
@@ -64,6 +64,7 @@ public class ConfigField extends AlertSerializableModel {
         this.group = group;
         this.subGroup = subGroup;
         requiredRelatedFields = new HashSet<>();
+        disallowedRelatedFields = new HashSet<>();
         this.validationFunction = validationFunction;
     }
 
@@ -180,6 +181,19 @@ public class ConfigField extends AlertSerializableModel {
 
     public ConfigField requireField(final String configFieldKey) {
         requiredRelatedFields.add(configFieldKey);
+        return this;
+    }
+
+    public Set<String> getDisallowedRelatedFields() {
+        return disallowedRelatedFields;
+    }
+
+    public void setDisallowedRelatedFields(final Set<String> disallowedRelatedFields) {
+        this.disallowedRelatedFields = disallowedRelatedFields;
+    }
+
+    public ConfigField disallowField(final String configFieldKey) {
+        disallowedRelatedFields.add(configFieldKey);
         return this;
     }
 
