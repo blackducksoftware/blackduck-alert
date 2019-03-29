@@ -6,7 +6,7 @@ import TextInput from 'field/input/TextInput';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import { saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -397,6 +397,7 @@ class BaseJobConfiguration extends Component {
                             onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.PROVIDER)}
                             isSearchable
                             isMulti
+                            closeMenuOnSelect={false}
                             removeSelected
                             options={notificationOptions}
                             placeholder="Choose the notification types"
