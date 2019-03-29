@@ -181,14 +181,14 @@ public class AlertStartupInitializer {
         final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(fieldsToUpdate);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel updatedFieldModel = fieldModelProcessor.performUpdateAction(fieldModel);
-        return modelConverter.convertFromFieldModel(updatedFieldModel).values();
+        return modelConverter.convertToConfigurationFieldModelMap(updatedFieldModel).values();
     }
 
     private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertDatabaseConstraintException {
         final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel savedFieldModel = fieldModelProcessor.performSaveAction(fieldModel);
-        return modelConverter.convertFromFieldModel(savedFieldModel).values();
+        return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();
     }
 
     private String convertKeyToProperty(final String descriptorName, final String key) {
