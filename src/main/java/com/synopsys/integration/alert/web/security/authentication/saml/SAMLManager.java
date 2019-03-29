@@ -145,6 +145,8 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         http.logout().logoutSuccessUrl("/");
     }
 
+    // TODO, more of the SAML beans are in Application so we can use them when we change the SAML settings at Runtime
+
     @Bean
     public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
         final SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
