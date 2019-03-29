@@ -64,7 +64,7 @@ public class StartupManagerTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, proxyManager,
-            taskManager);
+            taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
@@ -94,7 +94,7 @@ public class StartupManagerTest {
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager);
+            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -135,7 +135,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
 
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager);
+            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -168,7 +168,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.updateConfiguration(Mockito.anyLong(), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager);
+            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -200,7 +200,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager);
+            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 

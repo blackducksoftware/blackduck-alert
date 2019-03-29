@@ -25,10 +25,12 @@ package com.synopsys.integration.alert.component.settings;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
@@ -145,33 +147,41 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     private void addSAMLMetadata(final FieldModel fieldModel) {
-        final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
-        if (metadataURLFieldValueOptional.isPresent()) {
-            final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
-            final String metadataURL = metadataURLFieldValue.getValue().orElse("");
-            if (StringUtils.isNotBlank(metadataURL)) {
-                final Timer backgroundTaskTimer = new Timer(true);
+        final Boolean samlEnabled = fieldModel.getField(SettingsDescriptor.KEY_SAML_ENABLED)
+                                        .map(fieldValueModel -> fieldValueModel.getValue()
+                                                                    .map(BooleanUtils::toBoolean)
+                                                                    .orElse(false)
+                                        ).orElse(false);
+        if (samlEnabled) {
+            final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
+            if (metadataURLFieldValueOptional.isPresent()) {
+                final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
+                final String metadataURL = metadataURLFieldValue.getValue().orElse("");
+                if (StringUtils.isNotBlank(metadataURL)) {
+                    final Timer backgroundTaskTimer = new Timer(true);
 
-                // The URL can not end in a '/' because it messes with the paths for saml
-                final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
-                final HTTPMetadataProvider httpMetadataProvider;
-                try {
-                    httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
-                    httpMetadataProvider.setParserPool(parserPool);
+                    // The URL can not end in a '/' because it messes with the paths for saml
+                    final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
+                    final HTTPMetadataProvider httpMetadataProvider;
+                    try {
+                        httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
+                        httpMetadataProvider.setParserPool(parserPool);
 
-                    final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
-                    idpMetadata.setMetadataTrustCheck(true);
-                    idpMetadata.setMetadataRequireSignature(false);
-                    metadataManager.addMetadataProvider(idpMetadata);
-                } catch (final MetadataProviderException e) {
-                    logger.error("Error setting the SAML metadata.", e);
+                        final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
+                        idpMetadata.setMetadataTrustCheck(true);
+                        idpMetadata.setMetadataRequireSignature(false);
+                        metadataManager.setProviders(List.of(idpMetadata));
+                    } catch (final MetadataProviderException e) {
+                        logger.error("Error setting the SAML metadata.", e);
+                    }
                 }
             }
-        }
-        try {
-            metadataManager.setProviders(Collections.emptyList());
-        } catch (final MetadataProviderException e) {
-            logger.error("Error clearing the SAML metadata.", e);
+            try {
+                metadataManager.setProviders(Collections.emptyList());
+            } catch (final MetadataProviderException e) {
+                logger.error("Error clearing the SAML metadata.", e);
+            }
+            metadataManager.refreshMetadata();
         }
     }
 }

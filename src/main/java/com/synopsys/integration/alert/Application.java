@@ -22,8 +22,12 @@
  */
 package com.synopsys.integration.alert;
 
+import java.util.Collections;
+
 import javax.annotation.PostConstruct;
 
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -32,6 +36,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -48,6 +53,10 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.saml.key.EmptyKeyManager;
+import org.springframework.security.saml.key.KeyManager;
+import org.springframework.security.saml.metadata.CachingMetadataManager;
+import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -151,5 +160,32 @@ public class Application {
     @Bean
     public PasswordEncoder defaultPasswordEncoder() {
         return new BCryptPasswordEncoder(16);
+    }
+
+    // SAML beans
+    @Bean
+    @Qualifier("metadata")
+    public CachingMetadataManager metadata() throws MetadataProviderException {
+        return new CachingMetadataManager(Collections.emptyList());
+    }
+
+    @Bean
+    public KeyManager keyManager() {
+        return new EmptyKeyManager();
+    }
+
+    @Bean(initMethod = "initialize")
+    public StaticBasicParserPool parserPool() {
+        return new StaticBasicParserPool();
+    }
+
+    @Bean
+    public ExtendedMetadata extendedMetadata() {
+        final ExtendedMetadata extendedMetadata = new ExtendedMetadata();
+        extendedMetadata.setIdpDiscoveryEnabled(false);
+        extendedMetadata.setSignMetadata(false);
+        extendedMetadata.setEcpEnabled(true);
+        extendedMetadata.setRequireLogoutRequestSigned(false);
+        return extendedMetadata;
     }
 }

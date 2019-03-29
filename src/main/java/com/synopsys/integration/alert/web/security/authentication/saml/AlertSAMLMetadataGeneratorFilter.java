@@ -51,10 +51,10 @@ public class AlertSAMLMetadataGeneratorFilter extends MetadataGeneratorFilter {
         if (request instanceof HttpServletRequest && samlContext.isSAMLEnabled()) {
             final HttpServletRequest req = (HttpServletRequest) request;
             final String path = req.getRequestURI();
-            if (path.startsWith("/api/") || path.equals("/")) {
-                super.doFilter(request, response, chain);
-                return;
-            }
+            //if (path.startsWith("/api/") || path.equals("/")) {
+            super.doFilter(request, response, chain);
+            return;
+            //}
         }
         chain.doFilter(request, response);
     }

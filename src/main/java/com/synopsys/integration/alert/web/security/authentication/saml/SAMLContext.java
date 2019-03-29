@@ -53,15 +53,19 @@ public class SAMLContext {
     }
 
     public boolean isSAMLEnabled() {
-        boolean enabled = false;
+        final boolean enabled = false;
         try {
-            enabled = Boolean.valueOf(getFieldValueOrEmpty(getCurrentConfiguration(), SettingsDescriptor.KEY_SAML_ENABLED));
+            return isSAMLEnabled(getCurrentConfiguration());
         } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
             logger.warn(ex.getMessage());
             logger.debug("cause: ", ex);
         }
 
         return enabled;
+    }
+
+    public boolean isSAMLEnabled(final ConfigurationModel configurationModel) {
+        return Boolean.valueOf(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_SAML_ENABLED));
     }
 
     public String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
