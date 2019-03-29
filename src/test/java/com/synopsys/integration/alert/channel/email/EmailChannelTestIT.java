@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
+import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -49,7 +49,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(DefaultProviderDataAccessor.class));
+        final DefaultEmailHandler blackDuckEmailHandler = new DefaultEmailHandler(Mockito.mock(DefaultProviderDataAccessor.class));
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 

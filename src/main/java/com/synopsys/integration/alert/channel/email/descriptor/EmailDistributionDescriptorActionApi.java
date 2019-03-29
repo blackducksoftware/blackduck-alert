@@ -45,20 +45,20 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
+import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
-    private final BlackDuckEmailHandler blackDuckEmailHandler;
-    private final DefaultProviderDataAccessor blackDuckDataAccessor;
+    private final DefaultEmailHandler emailHandler;
+    private final DefaultProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final List<ProviderDescriptor> providerDescriptors, final DefaultProviderDataAccessor blackDuckDataAccessor,
-        final BlackDuckEmailHandler blackDuckEmailHandler) {
+    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final List<ProviderDescriptor> providerDescriptors, final DefaultProviderDataAccessor providerDataAccessor,
+        final DefaultEmailHandler emailHandler) {
         super(emailChannel, providerDescriptors);
-        this.blackDuckEmailHandler = blackDuckEmailHandler;
-        this.blackDuckDataAccessor = blackDuckDataAccessor;
+        this.emailHandler = emailHandler;
+        this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     }
 
     private Set<ProviderProject> retrieveBlackDuckProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject) {
-        final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
         if (filterByProject) {
             final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
             final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
@@ -119,7 +119,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
         final Set<String> projectsWithoutEmails = new HashSet<>();
         for (final ProviderProject project : blackDuckProjects) {
-            final Set<String> emailsForProject = blackDuckEmailHandler.getEmailAddressesForProject(project, projectOwnerOnly);
+            final Set<String> emailsForProject = emailHandler.getEmailAddressesForProject(project, projectOwnerOnly);
             if (emailsForProject.isEmpty()) {
                 projectsWithoutEmails.add(project.getName());
             }

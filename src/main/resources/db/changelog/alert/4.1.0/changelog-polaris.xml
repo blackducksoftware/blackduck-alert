@@ -20,6 +20,23 @@
             CALL DEFINE_FIELD('polaris.timeout', FALSE, 'provider_polaris', 'GLOBAL');
         </sql>
     </changeSet>
+    <changeSet author="bmandel" id="1553637843412">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.filter.by.project', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.project.name.pattern', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.configured.project', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('provider.distribution.notification.types', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('provider.distribution.format.type', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+    </changeSet>
     <changeSet author="gkillough" id="1551366126977-3">
         <createTable schemaName="ALERT" tableName="POLARIS_ISSUES">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
