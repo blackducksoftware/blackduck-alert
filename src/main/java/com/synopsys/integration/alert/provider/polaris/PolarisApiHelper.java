@@ -44,6 +44,7 @@ import com.synopsys.integration.polaris.common.api.auth.model.user.UserResource;
 import com.synopsys.integration.polaris.common.api.common.model.branch.BranchV0Resource;
 import com.synopsys.integration.polaris.common.api.common.model.project.ProjectV0Resource;
 import com.synopsys.integration.polaris.common.api.query.model.issue.IssueV0Resource;
+import com.synopsys.integration.polaris.common.api.query.model.issue.type.IssueTypeV0Attributes;
 import com.synopsys.integration.polaris.common.api.query.model.issue.type.IssueTypeV0Resource;
 import com.synopsys.integration.polaris.common.model.IssueResourcesSingle;
 import com.synopsys.integration.polaris.common.service.IssueService;
@@ -131,15 +132,17 @@ public class PolarisApiHelper {
         for (final IssueV0Resource queryIssue : queryIssues) {
             final String issueKey = queryIssue.getAttributes().getIssueKey();
             final IssueResourcesSingle populatedIssueResouce = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
-            final Optional<IssueTypeV0Resource> optionalIssueTypeResource = issueService.getIssueTypeFromPopulatedIssueResources(populatedIssueResouce);
-            optionalIssueTypeResource.ifPresent(issueTypeResource -> {
-                final String issueType = issueTypeResource.getAttributes().getName();
-                if (!issueTypeCounts.containsKey(issueType)) {
-                    issueTypeCounts.put(issueType, 0);
-                }
-                final Integer tempCount = issueTypeCounts.get(issueType);
-                issueTypeCounts.put(issueType, tempCount + 1);
-            });
+            final String subTool = queryIssue.getAttributes().getSubTool();
+            final String issueType = issueService
+                                         .getIssueTypeFromPopulatedIssueResources(populatedIssueResouce)
+                                         .map(IssueTypeV0Resource::getAttributes)
+                                         .map(IssueTypeV0Attributes::getName)
+                                         .orElse(subTool);
+            if (!issueTypeCounts.containsKey(issueType)) {
+                issueTypeCounts.put(issueType, 0);
+            }
+            final Integer tempCount = issueTypeCounts.get(issueType);
+            issueTypeCounts.put(issueType, tempCount + 1);
         }
         return issueTypeCounts;
     }
