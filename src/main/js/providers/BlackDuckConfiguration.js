@@ -100,7 +100,7 @@ class BlackDuckConfiguration
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
                     <div>
                         <TextInput
                             id={KEY_BLACKDUCK_URL}
