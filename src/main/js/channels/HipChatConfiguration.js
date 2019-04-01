@@ -65,7 +65,7 @@ class HipChatConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const fieldModel = this.state.currentHipChatConfig;
-        let emptyModel = !FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_API_KEY, KEY_HOST_SERVER]);
+        let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
         if (emptyModel) {
             this.props.deleteConfig(fieldModel);
         } else {
@@ -88,7 +88,7 @@ class HipChatConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"

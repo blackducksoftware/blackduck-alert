@@ -68,7 +68,7 @@ export function hasFieldModelValues(fieldModel, key) {
 export function keysHaveValueOrIsSet(fieldModel, keys) {
     let hasValue = false;
     if (fieldModel.keyToValues && keys) {
-        const found = keys.find((key) => {
+        hasValue = keys.find((key) => {
             const fieldObject = fieldModel.keyToValues[key];
             if (fieldObject) {
                 const { isSet, values } = fieldObject;
@@ -78,11 +78,24 @@ export function keysHaveValueOrIsSet(fieldModel, keys) {
             }
             return false;
         });
-        if (found) {
-            hasValue = true;
-        }
     }
     return hasValue;
+}
+
+export function hasAnyValuesExcludingId(fieldModel) {
+    if (fieldModel.keyToValues) {
+        return Object.keys(fieldModel.keyToValues).find((key) => {
+            const fieldObject = fieldModel.keyToValues[key];
+            if (fieldObject && (key !== 'id')) {
+                const { isSet, values } = fieldObject;
+                const valuesNotEmpty = values ? values.length > 0 : false;
+                const everyValueIsNotEmpty = values ? values.every(item => item !== '') : false;
+                return isSet || (values && valuesNotEmpty && everyValueIsNotEmpty);
+            }
+            return false;
+        });
+    }
+    return false;
 }
 
 export function updateFieldModelSingleValue(fieldModel, key, value) {
