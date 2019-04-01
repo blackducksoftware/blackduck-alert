@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -85,12 +84,12 @@ public class EmailChannelTestIT extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", EmailChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), PolarisProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent("1L", EmailChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content, fieldAccessor);
         emailChannel.sendAuditedMessage(event);
     }
 
     @Test
-    public void sendEmailNullGlobalTest() throws Exception {
+    public void sendEmailNullGlobalTest() {
         try {
             final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
@@ -105,5 +104,6 @@ public class EmailChannelTestIT extends ChannelTest {
             assertEquals("ERROR: Missing global config.", e.getMessage());
         }
     }
+
 }
 

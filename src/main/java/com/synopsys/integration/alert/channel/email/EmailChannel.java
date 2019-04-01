@@ -47,11 +47,18 @@ import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
+import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailChannel.COMPONENT_NAME)
 public class EmailChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_email";
+
+    public static final String PROPERTY_USER_DIR = "user.dir";
+    public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
+    public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
+    public static final String DIRECTORY_EMAIL_IMAGE_RESOURCES = "/src/main/resources/email/images/";
+
     private final BlackDuckProperties blackDuckProperties;
     private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
@@ -93,22 +100,19 @@ public class EmailChannel extends DistributionChannel {
             final HashMap<String, Object> model = new HashMap<>();
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
 
-            final String imageName;
-            final String templateName;
             final String providerUrl;
             final String providerName;
             if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
-                imageName = "Ducky-80.png";
-                templateName = "black_duck_message_content.ftl";
                 final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
                 providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
                 providerName = "Black Duck";
-            } else {
-                imageName = "synopsys.png";
-                templateName = "message_content.ftl";
+            } else if (PolarisProvider.COMPONENT_NAME.equals(provider)) {
                 final Optional<String> optionalProviderUrl = polarisProperties.getUrl();
                 providerUrl = optionalProviderUrl.map(StringUtils::trimToEmpty).orElse("#");
                 providerName = "Polaris";
+            } else {
+                providerUrl = null;
+                providerName = null;
             }
 
             model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
@@ -122,9 +126,9 @@ public class EmailChannel extends DistributionChannel {
             model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
-            emailService.addTemplateImage(model, new HashMap<>(), EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(imageName));
-            if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {
-                final EmailTarget emailTarget = new EmailTarget(emailAddresses, templateName, model, contentIdsToFilePaths);
+            emailService.addTemplateImage(model, new HashMap<>(), EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
+            if (!model.isEmpty()) {
+                final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
                 emailService.sendEmailMessage(emailTarget);
             }
         } catch (final IOException ex) {
@@ -137,7 +141,8 @@ public class EmailChannel extends DistributionChannel {
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/" + imageFileName;
         }
-        return System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/" + imageFileName;
+        final String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
+        return userDirectory + DIRECTORY_EMAIL_IMAGE_RESOURCES + imageFileName;
     }
 
 }
