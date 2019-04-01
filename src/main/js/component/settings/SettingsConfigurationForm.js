@@ -176,7 +176,8 @@ class SettingsConfigurationForm extends Component {
                 <form
                     method="POST"
                     className="form-horizontal loginForm"
-                    onSubmit={this.handleSubmit}>
+                    onSubmit={this.handleSubmit}
+                    noValidate="true">
                     <div className="form-group">
                         <div className="col-sm-12">
                             <h2> Default

@@ -190,7 +190,7 @@ public class EmailGlobalDescriptorActionApiTest {
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(descriptorMap);
 
-        final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, auditUtility, emailAddressHandler);
+        final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, null, auditUtility, emailAddressHandler);
         //////////////////////////////////////
         final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
 

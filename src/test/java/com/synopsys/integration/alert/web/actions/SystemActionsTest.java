@@ -108,12 +108,12 @@ public class SystemActionsTest {
 
         final FieldModel actual = systemActions.getCurrentSystemSetup();
 
-        assertEquals(globalEncryptionPassword, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(globalEncryptionSalt, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyHost, actual.getField(SettingsDescriptor.KEY_PROXY_HOST).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyPort, actual.getField(SettingsDescriptor.KEY_PROXY_PORT).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyUsername, actual.getField(SettingsDescriptor.KEY_PROXY_USERNAME).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyPassword, actual.getField(SettingsDescriptor.KEY_PROXY_PWD).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(globalEncryptionPassword, actual.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(globalEncryptionSalt, actual.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyHost, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_HOST).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyPort, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_PORT).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyUsername, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_USERNAME).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyPassword, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_PWD).flatMap(field -> field.getValue()).orElse(null));
     }
 
     @Test
