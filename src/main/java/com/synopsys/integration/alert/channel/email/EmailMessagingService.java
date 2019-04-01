@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -166,20 +167,31 @@ public class EmailMessagingService {
 
     public void sendMessages(final EmailProperties emailProperties, final Session session, final List<Message> messages) throws AlertException {
         final Set<String> errorMessages = new HashSet<>();
+        final Set<String> invalidRecipients = new HashSet<>();
         for (final Message message : messages) {
+            Address[] recipients = null;
             try {
+                recipients = message.getAllRecipients();
                 if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY))) {
                     sendAuthenticated(emailProperties, message, session);
                 } else {
                     Transport.send(message);
                 }
             } catch (final MessagingException e) {
+                if (recipients != null) {
+                    Stream.of(recipients).map(Address::toString).forEach(invalidRecipients::add);
+                }
                 errorMessages.add(e.getMessage());
-                logger.error("Could not send this email: " + e.getMessage());
+                logger.error("Could not send this email to the following recipients: {}. Reason: ", recipients, e.getMessage());
             }
         }
         if (!errorMessages.isEmpty()) {
-            final String errorMessage = "Errors sending emails. " + StringUtils.join(errorMessages, ", ");
+            final String errorMessage;
+            if (invalidRecipients.isEmpty()) {
+                errorMessage = "Errors sending emails. " + StringUtils.join(errorMessages, ", ");
+            } else {
+                errorMessage = "Error sending emails to the following recipients: " + invalidRecipients;
+            }
             throw new AlertException(errorMessage);
         }
     }
