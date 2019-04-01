@@ -151,7 +151,7 @@ public class JobConfigActions {
     private Set<FieldModel> performUpdate(final JobFieldModel savedJobFieldModel) {
         return savedJobFieldModel.getFieldModels()
                    .stream()
-                   .map(fieldModelProcessor::performUpdateAction)
+                   .map(fieldModelProcessor::performBeforeUpdateAction)
                    .collect(Collectors.toSet());
     }
 

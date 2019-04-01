@@ -66,12 +66,12 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     @Override
-    public FieldModel updateConfig(final FieldModel fieldModel) {
-        return saveConfig(fieldModel);
+    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
+        return beforeSaveConfig(fieldModel);
     }
 
     @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
+    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);

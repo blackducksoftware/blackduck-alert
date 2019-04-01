@@ -101,11 +101,19 @@ public abstract class DescriptorActionApi {
         return fieldModel;
     }
 
-    public FieldModel updateConfig(final FieldModel fieldModel) {
+    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
         return fieldModel;
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) {
+    public FieldModel afterUpdateConfig(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
+    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
+    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         return fieldModel;
     }
 
