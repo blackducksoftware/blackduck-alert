@@ -82,7 +82,7 @@ class HipChatConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate=true>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"

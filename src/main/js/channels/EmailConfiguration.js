@@ -222,7 +222,7 @@ class EmailConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate=true>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
