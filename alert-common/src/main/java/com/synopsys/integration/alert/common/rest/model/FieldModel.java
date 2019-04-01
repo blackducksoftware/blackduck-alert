@@ -62,12 +62,12 @@ public class FieldModel extends Config {
         return keyToValues;
     }
 
-    public Optional<FieldValueModel> getField(final String key) {
+    public Optional<FieldValueModel> getFieldValueModel(final String key) {
         return Optional.ofNullable(keyToValues.get(key));
     }
 
     public Optional<String> getFieldValue(final String key) {
-        return getField(key).flatMap(FieldValueModel::getValue);
+        return getFieldValueModel(key).flatMap(FieldValueModel::getValue);
     }
 
     public void putField(final String key, final FieldValueModel field) {
