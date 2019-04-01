@@ -197,11 +197,10 @@ export function deleteConfig(config) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             if (response.ok) {
-                response.json().then(() => {
-                    dispatch(configDeleted());
-                });
+                dispatch(getEmailConfig());
+                dispatch(configDeleted());
             } else {
-                dispatch(verifyLoginByStatus(response.status));
+                handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
     };

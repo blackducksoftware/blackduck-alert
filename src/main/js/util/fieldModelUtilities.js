@@ -68,7 +68,7 @@ export function hasFieldModelValues(fieldModel, key) {
 export function keysHaveValueOrIsSet(fieldModel, keys) {
     let hasValue = false;
     if (fieldModel.keyToValues && keys) {
-        hasValue = keys.find((key) => {
+        hasValue = Object.keys(keys).find((key) => {
             const fieldObject = fieldModel.keyToValues[key];
             if (fieldObject) {
                 const { isSet, values } = fieldObject;
