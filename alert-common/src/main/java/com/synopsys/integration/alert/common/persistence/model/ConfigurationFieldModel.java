@@ -86,7 +86,7 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
     }
 
     public boolean isSet() {
-        return fieldValues != null;
+        return fieldValues != null && !fieldValues.isEmpty();
     }
 
     @Override

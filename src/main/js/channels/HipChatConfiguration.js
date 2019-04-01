@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import ConfigButtons from 'component/common/ConfigButtons';
-import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, updateConfig } from 'store/actions/hipChatConfig';
+import { getConfig, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -82,7 +82,7 @@ class HipChatConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"
