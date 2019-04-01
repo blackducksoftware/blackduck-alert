@@ -136,18 +136,10 @@ public class BlackDuckProperties extends ProviderProperties {
             final ConfigurationModel globalBlackDuckConfig = optionalGlobalBlackDuckConfig.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
 
-            final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+            final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(300);
             final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
-            if (timeout == null || apiKey == null) {
-                final StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Invalid global config settings.");
-                if (timeout == null) {
-                    stringBuilder.append(" Timeout is null.");
-                }
-                if (apiKey == null) {
-                    stringBuilder.append(" API Token is null.");
-                }
-                throw new AlertException(stringBuilder.toString());
+            if (apiKey == null) {
+                throw new AlertException("Invalid global config settings. API Token is null.");
             }
             return Optional.of(createBlackDuckServerConfig(logger, timeout, apiKey));
         }
