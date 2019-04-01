@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.database.provider.blackduck.data;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +53,25 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
 
     @Override
     public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
-        final String trimmedDescription = StringUtils.abbreviate(blackDuckProjectEntity.getDescription(), MAX_DESCRIPTION_LENGTH);
-        final BlackDuckProjectEntity trimmedBlackDuckProjectEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
+        final BlackDuckProjectEntity trimmedBlackDuckProjectEntity = trimDescription(blackDuckProjectEntity);
         return super.saveEntity(trimmedBlackDuckProjectEntity);
     }
 
     public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
         blackDuckProjectRepository.deleteAllInBatch();
-        return blackDuckProjectRepository.saveAll(blackDuckProjectEntities);
+        return saveAll(blackDuckProjectEntities);
+    }
+
+    public List<BlackDuckProjectEntity> saveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
+        final List<BlackDuckProjectEntity> trimmedEntities = StreamSupport.stream(blackDuckProjectEntities.spliterator(), false)
+                                                                 .map(this::trimDescription)
+                                                                 .collect(Collectors.toList());
+        return blackDuckProjectRepository.saveAll(trimmedEntities);
+    }
+
+    private BlackDuckProjectEntity trimDescription(final BlackDuckProjectEntity blackDuckProjectEntity) {
+        final String trimmedDescription = StringUtils.abbreviate(blackDuckProjectEntity.getDescription(), MAX_DESCRIPTION_LENGTH);
+        return new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
     }
 
 }
