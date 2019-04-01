@@ -171,17 +171,19 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
                         idpMetadata.setMetadataTrustCheck(true);
                         idpMetadata.setMetadataRequireSignature(false);
                         metadataManager.setProviders(List.of(idpMetadata));
+                        metadataManager.refreshMetadata();
                     } catch (final MetadataProviderException e) {
                         logger.error("Error setting the SAML metadata.", e);
                     }
                 }
             }
+        } else {
             try {
                 metadataManager.setProviders(Collections.emptyList());
             } catch (final MetadataProviderException e) {
                 logger.error("Error clearing the SAML metadata.", e);
             }
-            metadataManager.refreshMetadata();
         }
+
     }
 }
