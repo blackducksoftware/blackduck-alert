@@ -103,9 +103,6 @@ public class EmailChannel extends DistributionChannel {
                 final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
                 providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
                 providerName = "Black Duck";
-
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
             } else {
                 imageName = "synopsys.png";
                 templateName = "message_content.ftl";
@@ -121,6 +118,8 @@ public class EmailChannel extends DistributionChannel {
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), content.getValue());
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
             emailService.addTemplateImage(model, new HashMap<>(), EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(imageName));
