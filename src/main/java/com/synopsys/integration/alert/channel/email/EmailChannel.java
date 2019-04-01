@@ -46,18 +46,22 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailChannel.COMPONENT_NAME)
 public class EmailChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_email";
     private final BlackDuckProperties blackDuckProperties;
+    private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
 
     @Autowired
-    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final DefaultAuditUtility auditUtility, final EmailAddressHandler emailAddressHandler) {
+    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
+        final EmailAddressHandler emailAddressHandler) {
         super(EmailChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
+        this.polarisProperties = polarisProperties;
         this.emailAddressHandler = emailAddressHandler;
     }
 
@@ -91,23 +95,32 @@ public class EmailChannel extends DistributionChannel {
 
             final String imageName;
             final String templateName;
+            final String providerUrl;
+            final String providerName;
             if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
                 imageName = "Ducky-80.png";
                 templateName = "black_duck_message_content.ftl";
                 final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), content.getValue());
+                providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
+                providerName = "Black Duck";
 
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
             } else {
                 imageName = "synopsys.png";
                 templateName = "message_content.ftl";
+                final Optional<String> optionalProviderUrl = polarisProperties.getUrl();
+                providerUrl = optionalProviderUrl.map(StringUtils::trimToEmpty).orElse("#");
+                providerName = "Polaris";
             }
 
             model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
             model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
+
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), content.getValue());
 
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
             emailService.addTemplateImage(model, new HashMap<>(), EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(imageName));
