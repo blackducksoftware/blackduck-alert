@@ -1,4 +1,6 @@
 import {
+    EMAIL_CONFIG_DELETED,
+    EMAIL_CONFIG_DELETING,
     EMAIL_CONFIG_FETCHED,
     EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
@@ -109,6 +111,27 @@ const config = (state = initialState, action) => {
                 error: {
                     message: action.message,
                     fieldErrors: action.errors || {}
+                }
+            });
+
+        case EMAIL_CONFIG_DELETED:
+            return Object.assign({}, state, {
+                updateStatus: 'DELETED',
+                actionMessage: 'Delete successful',
+                config: {},
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
+            });
+
+        case EMAIL_CONFIG_DELETING:
+            return Object.assign({}, state, {
+                actionMessage: null,
+                updateStatus: 'DELETING',
+                error: {
+                    message: '',
+                    fieldErrors: {}
                 }
             });
 

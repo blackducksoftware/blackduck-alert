@@ -8,7 +8,7 @@ import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { getEmailConfig, updateEmailConfig } from 'store/actions/emailConfig';
+import { deleteConfig, getEmailConfig, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -205,7 +205,14 @@ class EmailConfiguration extends React.Component {
         evt.preventDefault();
         evt.stopPropagation();
         const fieldModel = this.state.currentEmailConfig;
-        this.props.updateEmailConfig(fieldModel);
+        let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        console.log(fieldModel);
+        console.log(emptyModel);
+        if (emptyModel) {
+            this.props.deleteConfig(fieldModel);
+        } else {
+            this.props.updateEmailConfig(fieldModel);
+        }
     }
 
     render() {
@@ -222,7 +229,7 @@ class EmailConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
@@ -818,6 +825,7 @@ EmailConfiguration.propTypes = {
     openEmailConfigTest: PropTypes.func.isRequired,
     closeEmailConfigTest: PropTypes.func.isRequired,
     sendEmailConfigTest: PropTypes.func.isRequired,
+    deleteConfig: PropTypes.func.isRequired,
     currentEmailConfig: PropTypes.object,
     showTestModal: PropTypes.bool.isRequired,
     modalTesting: PropTypes.bool.isRequired,
@@ -851,7 +859,8 @@ const mapDispatchToProps = dispatch => ({
     updateEmailConfig: config => dispatch(updateEmailConfig(config)),
     sendEmailConfigTest: (config, destination) => dispatch(sendEmailConfigTest(config, destination)),
     openEmailConfigTest: () => dispatch(openEmailConfigTest()),
-    closeEmailConfigTest: () => dispatch(closeEmailConfigTest())
+    closeEmailConfigTest: () => dispatch(closeEmailConfigTest()),
+    deleteConfig: config => dispatch(deleteConfig(config))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EmailConfiguration);

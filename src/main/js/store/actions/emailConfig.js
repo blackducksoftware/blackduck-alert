@@ -1,4 +1,6 @@
 import {
+    EMAIL_CONFIG_DELETED,
+    EMAIL_CONFIG_DELETING,
     EMAIL_CONFIG_FETCHED,
     EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
@@ -35,6 +37,18 @@ function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
         config
+    };
+}
+
+function deletingConfig() {
+    return {
+        type: EMAIL_CONFIG_DELETING
+    };
+}
+
+function configDeleted() {
+    return {
+        type: EMAIL_CONFIG_DELETED
     };
 }
 
@@ -170,6 +184,24 @@ export function sendEmailConfigTest(config, destination) {
             } else {
                 dispatch(emailConfigTestFailure());
                 handleFailureResponse(dispatch, response);
+            }
+        }).catch(console.error);
+    };
+}
+
+export function deleteConfig(config) {
+    return (dispatch, getState) => {
+        dispatch(deletingConfig());
+        const { csrfToken } = getState().session;
+        const { id } = config;
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(configDeleted());
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
             }
         }).catch(console.error);
     };
