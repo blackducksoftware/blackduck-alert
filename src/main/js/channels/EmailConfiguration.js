@@ -185,7 +185,7 @@ class EmailConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'DELETED')) {
             const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentEmailConfig, fieldNames);
             this.setState({
                 currentEmailConfig: newState
@@ -206,9 +206,10 @@ class EmailConfiguration extends React.Component {
         evt.stopPropagation();
         const fieldModel = this.state.currentEmailConfig;
         let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
-        console.log(fieldModel);
+        let idSet = FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [ID_KEY]);
         console.log(emptyModel);
-        if (emptyModel) {
+        console.log(idSet);
+        if (emptyModel && idSet) {
             this.props.deleteConfig(fieldModel);
         } else {
             this.props.updateEmailConfig(fieldModel);

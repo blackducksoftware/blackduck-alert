@@ -118,10 +118,9 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 updateStatus: 'DELETED',
                 actionMessage: 'Delete successful',
-                config: {},
                 error: {
-                    message: '',
-                    fieldErrors: {}
+                    message: action.message,
+                    fieldErrors: action.errors || {}
                 }
             });
 
