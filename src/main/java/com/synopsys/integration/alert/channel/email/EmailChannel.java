@@ -86,45 +86,31 @@ public class EmailChannel extends DistributionChannel {
             throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
         }
         try {
-            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
-
             final HashMap<String, Object> model = new HashMap<>();
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = getAlertProperties().getAlertImagesDir();
-            String templateName = "";
+
+            final String imageName;
+            final String templateName;
             if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
+                imageName = "Ducky-80.png";
                 templateName = "black_duck_message_content.ftl";
-                model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
-                model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
                 final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), content.getValue());
 
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-
-                final String imageDirectoryPath;
-                if (StringUtils.isNotBlank(imagesDirectory)) {
-                    imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
-                } else {
-                    imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
-                }
-                emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
             } else {
+                imageName = "synopsys.png";
                 templateName = "message_content.ftl";
-                model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
-                model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
-                final String imageDirectoryPath;
-                if (StringUtils.isNotBlank(imagesDirectory)) {
-                    imageDirectoryPath = imagesDirectory + "/synopsys.png";
-                } else {
-                    imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
-                }
-                emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
             }
 
+            model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
+            model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
+
+            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
+            emailService.addTemplateImage(model, new HashMap<>(), EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(imageName));
             if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {
                 final EmailTarget emailTarget = new EmailTarget(emailAddresses, templateName, model, contentIdsToFilePaths);
                 emailService.sendEmailMessage(emailTarget);
@@ -132,6 +118,14 @@ public class EmailChannel extends DistributionChannel {
         } catch (final IOException ex) {
             throw new AlertException(ex);
         }
+    }
+
+    private String getImagePath(final String imageFileName) {
+        final String imagesDirectory = getAlertProperties().getAlertImagesDir();
+        if (StringUtils.isNotBlank(imagesDirectory)) {
+            return imagesDirectory + "/" + imageFileName;
+        }
+        return System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/" + imageFileName;
     }
 
 }
