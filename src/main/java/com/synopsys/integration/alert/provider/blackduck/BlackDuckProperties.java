@@ -1,8 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (C) 2019 Black Duck Software, Inc.
- * http://www.blackducksoftware.com/
+ * Copyright (c) 2019 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -137,10 +136,10 @@ public class BlackDuckProperties extends ProviderProperties {
             final ConfigurationModel globalBlackDuckConfig = optionalGlobalBlackDuckConfig.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
 
-            final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+            final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
             final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
-            if (timeout == null || apiKey == null) {
-                throw new AlertException("Global config settings can not be null.");
+            if (apiKey == null) {
+                throw new AlertException("Invalid global config settings. API Token is null.");
             }
             return Optional.of(createBlackDuckServerConfig(logger, timeout, apiKey));
         }
