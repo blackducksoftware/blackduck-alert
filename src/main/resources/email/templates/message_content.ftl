@@ -19,6 +19,7 @@
 <div style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #445B68;">${provider_name} captured the following new policy violations and vulnerabilities.</div>
 <a href="${provider_url}" style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #225786;">See more details in the ${provider_name} server</a>
 <br />
+<br />
 <#macro printLink linkableItem>
     <#assign url = linkableItem.getUrl()/>
     <#if url.isPresent()>
