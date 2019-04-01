@@ -127,7 +127,7 @@ public class ConfigActions {
         final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         final String descriptorName = modifiedFieldModel.getDescriptorName();
         final String context = modifiedFieldModel.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(modifiedFieldModel);
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
         final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);

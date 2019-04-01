@@ -122,7 +122,7 @@ public class JobConfigActions {
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             descriptorNames.add(fieldModel.getDescriptorName());
-            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertFromFieldModel(fieldModel).values();
+            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
             configurationFieldModels.addAll(savedFieldsModels);
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
@@ -162,7 +162,7 @@ public class JobConfigActions {
     }
 
     private void validateJobNameUnique(final FieldModel fieldModel) throws AlertFieldException {
-        final Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getField(ChannelDistributionUIConfig.KEY_NAME);
+        final Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME);
         String error = "";
         if (jobNameFieldOptional.isPresent()) {
             final String jobName = jobNameFieldOptional.get().getValue().orElse(null);
@@ -217,13 +217,13 @@ public class JobConfigActions {
             if (descriptorActionApi.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
-                fields.putAll(modelConverter.convertFromFieldModel(channelFieldModel));
+                fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
                 final Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
 
                 configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
 
                 for (final FieldModel fieldModel : otherJobModels) {
-                    fields.putAll(modelConverter.convertFromFieldModel(fieldModel));
+                    fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
                 }
 
                 final DescriptorActionApi descriptorApi = descriptorActionApi.get();
