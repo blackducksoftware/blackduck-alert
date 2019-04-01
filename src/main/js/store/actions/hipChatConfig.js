@@ -1,4 +1,6 @@
 import {
+    HIPCHAT_CONFIG_DELETED,
+    HIPCHAT_CONFIG_DELETING,
     HIPCHAT_CONFIG_FETCHED,
     HIPCHAT_CONFIG_FETCHING,
     HIPCHAT_CONFIG_HIDE_TEST_MODAL,
@@ -34,6 +36,18 @@ function configFetched(config) {
     return {
         type: HIPCHAT_CONFIG_FETCHED,
         config
+    };
+}
+
+function deletingConfig() {
+    return {
+        type: HIPCHAT_CONFIG_DELETING
+    };
+}
+
+function configDeleted() {
+    return {
+        type: HIPCHAT_CONFIG_DELETED
     };
 }
 
@@ -180,5 +194,23 @@ export function testConfig(config, destination) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function deleteConfig(config) {
+    return (dispatch, getState) => {
+        dispatch(deletingConfig());
+        const { csrfToken } = getState().session;
+        const { id } = config;
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(configDeleted());
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
+            }
+        }).catch(console.error);
     };
 }

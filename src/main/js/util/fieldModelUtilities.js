@@ -71,8 +71,7 @@ export function keysHaveValueOrIsSet(fieldModel, keys) {
         const found = keys.find((key) => {
             const fieldObject = fieldModel.keyToValues[key];
             if (fieldObject) {
-                const { isSet } = fieldObject;
-                const { values } = fieldObject;
+                const { isSet, values } = fieldObject;
                 const valuesNotEmpty = values ? values.length > 0 : false;
                 const everyValueIsNotEmpty = values ? values.every(item => item !== '') : false;
                 return isSet || (values && valuesNotEmpty && everyValueIsNotEmpty);

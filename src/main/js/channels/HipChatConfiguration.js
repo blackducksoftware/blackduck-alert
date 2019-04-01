@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import ConfigButtons from 'component/common/ConfigButtons';
-import { getConfig, updateConfig } from 'store/actions/hipChatConfig';
+import { deleteConfig, getConfig, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -65,7 +65,13 @@ class HipChatConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const fieldModel = this.state.currentHipChatConfig;
-        this.props.updateConfig(fieldModel);
+        let emptyModel = !FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_API_KEY, KEY_HOST_SERVER]);
+        if (emptyModel) {
+            this.props.deleteConfig(fieldModel);
+        } else {
+            this.props.updateConfig(fieldModel);
+        }
+
     }
 
     render() {
@@ -137,7 +143,8 @@ HipChatConfiguration.propTypes = {
     testConfig: PropTypes.func.isRequired,
     showTestModal: PropTypes.bool.isRequired,
     modalTesting: PropTypes.bool.isRequired,
-    updateConfig: PropTypes.func.isRequired
+    updateConfig: PropTypes.func.isRequired,
+    deleteConfig: PropTypes.func.isRequired
 };
 
 HipChatConfiguration.defaultProps = {
@@ -165,7 +172,8 @@ const mapDispatchToProps = dispatch => ({
     updateConfig: config => dispatch(updateConfig(config)),
     openHipChatConfigTest: () => dispatch(openHipChatConfigTest()),
     closeHipChatConfigTest: () => dispatch(closeHipChatConfigTest()),
-    testConfig: (config, destination) => dispatch(testConfig(config, destination))
+    testConfig: (config, destination) => dispatch(testConfig(config, destination)),
+    deleteConfig: config => dispatch(deleteConfig(config))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatConfiguration);
