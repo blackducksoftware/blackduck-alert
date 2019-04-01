@@ -24,11 +24,13 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class, DescriptorMocker.class })
+// TODO change SAMLManager to wherever the SAML beans end up
+@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class, DescriptorMocker.class, SAMLManager.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @WebAppConfiguration
 @Transactional
