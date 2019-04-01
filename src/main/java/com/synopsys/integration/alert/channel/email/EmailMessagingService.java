@@ -182,7 +182,7 @@ public class EmailMessagingService {
                     Stream.of(recipients).map(Address::toString).forEach(invalidRecipients::add);
                 }
                 errorMessages.add(e.getMessage());
-                logger.error("Could not send this email to the following recipients: {}. Reason: ", recipients, e.getMessage());
+                logger.error("Could not send this email to the following recipients: {}. Reason: {}", recipients, e.getMessage());
             }
         }
         if (!errorMessages.isEmpty()) {
