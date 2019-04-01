@@ -163,6 +163,7 @@ public class Application {
     }
 
     // SAML beans
+    // These are here to be used as part of the initialization process. So if you have SAML previously configured, these are here to initialize it on startup.
     @Bean
     @Qualifier("metadata")
     public CachingMetadataManager metadata() throws MetadataProviderException {
