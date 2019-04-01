@@ -44,6 +44,8 @@ import com.synopsys.integration.polaris.common.api.auth.model.user.UserResource;
 import com.synopsys.integration.polaris.common.api.common.model.branch.BranchV0Resource;
 import com.synopsys.integration.polaris.common.api.common.model.project.ProjectV0Resource;
 import com.synopsys.integration.polaris.common.api.query.model.issue.IssueV0Resource;
+import com.synopsys.integration.polaris.common.api.query.model.issue.type.IssueTypeV0Resource;
+import com.synopsys.integration.polaris.common.model.IssueResourcesSingle;
 import com.synopsys.integration.polaris.common.service.IssueService;
 import com.synopsys.integration.polaris.common.service.RoleAssignmentService;
 import com.synopsys.integration.polaris.common.service.UserService;
@@ -65,7 +67,7 @@ public class PolarisApiHelper {
         for (final String branchId : branchIds) {
             try {
                 final List<IssueV0Resource> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
-                final Map<String, Integer> issueTypeCounts = mapIssueTypeToCount(foundIssues);
+                final Map<String, Integer> issueTypeCounts = mapIssueTypeToCount(projectId, branchId, foundIssues);
 
                 for (final Map.Entry<String, Integer> issueTypeEntry : issueTypeCounts.entrySet()) {
                     final PolarisIssueModel newIssue = PolarisIssueModel.createNewIssue(issueTypeEntry.getKey(), issueTypeEntry.getValue());
@@ -124,16 +126,20 @@ public class PolarisApiHelper {
         return Optional.empty();
     }
 
-    private Map<String, Integer> mapIssueTypeToCount(final List<IssueV0Resource> queryIssues) {
+    private Map<String, Integer> mapIssueTypeToCount(final String projectId, final String branchId, final List<IssueV0Resource> queryIssues) throws IntegrationException {
         final Map<String, Integer> issueTypeCounts = new HashMap<>();
         for (final IssueV0Resource queryIssue : queryIssues) {
-            // FIXME issue type is not the same as issue key
-            final String issueType = queryIssue.getAttributes().getSubTool();
-            if (!issueTypeCounts.containsKey(issueType)) {
-                issueTypeCounts.put(issueType, 0);
-            }
-            final Integer tempCount = issueTypeCounts.get(issueType);
-            issueTypeCounts.put(issueType, tempCount + 1);
+            final String issueKey = queryIssue.getAttributes().getIssueKey();
+            final IssueResourcesSingle populatedIssueResouce = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
+            final Optional<IssueTypeV0Resource> optionalIssueTypeResource = issueService.getIssueTypeFromPopulatedIssueResources(populatedIssueResouce);
+            optionalIssueTypeResource.ifPresent(issueTypeResource -> {
+                final String issueType = issueTypeResource.getAttributes().getName();
+                if (!issueTypeCounts.containsKey(issueType)) {
+                    issueTypeCounts.put(issueType, 0);
+                }
+                final Integer tempCount = issueTypeCounts.get(issueType);
+                issueTypeCounts.put(issueType, tempCount + 1);
+            });
         }
         return issueTypeCounts;
     }
