@@ -46,18 +46,29 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
+import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailChannel.COMPONENT_NAME)
 public class EmailChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_email";
+
+    public static final String PROPERTY_USER_DIR = "user.dir";
+    public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
+    public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
+    public static final String DIRECTORY_EMAIL_IMAGE_RESOURCES = "/src/main/resources/email/images/";
+
     private final BlackDuckProperties blackDuckProperties;
+    private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
 
     @Autowired
-    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final DefaultAuditUtility auditUtility, final EmailAddressHandler emailAddressHandler) {
+    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
+        final EmailAddressHandler emailAddressHandler) {
         super(EmailChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
+        this.polarisProperties = polarisProperties;
         this.emailAddressHandler = emailAddressHandler;
     }
 
@@ -86,52 +97,52 @@ public class EmailChannel extends DistributionChannel {
             throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
         }
         try {
-            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
-
             final HashMap<String, Object> model = new HashMap<>();
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = getAlertProperties().getAlertImagesDir();
-            String templateName = "";
+
+            final String providerUrl;
+            final String providerName;
             if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
-                templateName = "black_duck_message_content.ftl";
-                model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
-                model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
                 final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), content.getValue());
-
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-
-                final String imageDirectoryPath;
-                if (StringUtils.isNotBlank(imagesDirectory)) {
-                    imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
-                } else {
-                    imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
-                }
-                emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
+                providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
+                providerName = "Black Duck";
+            } else if (PolarisProvider.COMPONENT_NAME.equals(provider)) {
+                final Optional<String> optionalProviderUrl = polarisProperties.getUrl();
+                providerUrl = optionalProviderUrl.map(StringUtils::trimToEmpty).orElse("#");
+                providerName = "Polaris";
             } else {
-                templateName = "message_content.ftl";
-                model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
-                model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
-                final String imageDirectoryPath;
-                if (StringUtils.isNotBlank(imagesDirectory)) {
-                    imageDirectoryPath = imagesDirectory + "/synopsys.png";
-                } else {
-                    imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
-                }
-                emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
+                providerUrl = null;
+                providerName = null;
             }
 
-            if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {
-                final EmailTarget emailTarget = new EmailTarget(emailAddresses, templateName, model, contentIdsToFilePaths);
+            model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
+            model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
+
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), content.getValue());
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+
+            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
+            emailService.addTemplateImage(model, new HashMap<>(), EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
+            if (!model.isEmpty()) {
+                final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
                 emailService.sendEmailMessage(emailTarget);
             }
         } catch (final IOException ex) {
             throw new AlertException(ex);
         }
+    }
+
+    private String getImagePath(final String imageFileName) {
+        final String imagesDirectory = getAlertProperties().getAlertImagesDir();
+        if (StringUtils.isNotBlank(imagesDirectory)) {
+            return imagesDirectory + "/" + imageFileName;
+        }
+        final String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
+        return userDirectory + DIRECTORY_EMAIL_IMAGE_RESOURCES + imageFileName;
     }
 
 }
