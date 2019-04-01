@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -52,7 +50,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         proxyHost.setFieldValue("username");
         final ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.create(SettingsDescriptor.KEY_PROXY_PWD);
         proxyPort.setFieldValue("somestuff");
-        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
+        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
 
         final FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         final FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
@@ -63,7 +61,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final Long longConfigId = configurationModel.getConfigurationId();
         final String configId = contentConverter.getStringValue(longConfigId);
 
-        final FieldModel fieldModel = new FieldModel(configId, HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(),
+        final FieldModel fieldModel = new FieldModel(configId, SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(),
             Map.of(SettingsDescriptor.KEY_PROXY_HOST, proxyHostFieldValue, SettingsDescriptor.KEY_PROXY_PORT, proxyPortFieldValue,
                 SettingsDescriptor.KEY_PROXY_USERNAME, proxyUsernameFieldValue, SettingsDescriptor.KEY_PROXY_PWD, proxyPasswordFieldValue));
         final FieldModel updatedConfig = configActions.updateConfig(longConfigId, fieldModel);
@@ -71,6 +69,6 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
 
         assertEquals(newUsername, updatedValues.get(SettingsDescriptor.KEY_PROXY_USERNAME).getValue().orElse(""));
-        assertNull(updatedValues.get(HipChatDescriptor.KEY_API_KEY), "Saving an empty values should remove it from DB.");
+        assertNull(updatedValues.get(SettingsDescriptor.KEY_PROXY_PWD), "Saving an empty values should remove it from DB.");
     }
 }
