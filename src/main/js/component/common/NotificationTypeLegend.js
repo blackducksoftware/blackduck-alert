@@ -35,8 +35,8 @@ const NotificationTypeLegend = ({
                 {hasMediumVulnerability && <div>{mediumVulnerabilityIcon} Medium Vulnerability</div>}
                 {hasLowVulnerability && <div>{lowVulnerabilityIcon} Low Vulnerability</div>}
                 {hasVulnerability && <div>{vulnerabilityIcon} Vulnerability</div>}
-                {hasIssueCountIncreased && <div>{issueCountIncreasedIcon} Issue Count Increasing</div>}
-                {hasIssueCountDecreased && <div>{issueCountDecreasedIcon} Issue Count Decreasing</div>}
+                {hasIssueCountIncreased && <div>{issueCountIncreasedIcon} Issue Count Increased</div>}
+                {hasIssueCountDecreased && <div>{issueCountDecreasedIcon} Issue Count Decreased</div>}
             </Popover>
         )}
     >
