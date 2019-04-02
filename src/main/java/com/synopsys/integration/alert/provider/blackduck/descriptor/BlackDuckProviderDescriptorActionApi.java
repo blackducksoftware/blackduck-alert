@@ -115,6 +115,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     @Override
     public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         final boolean valid = systemValidator.validate();
+        // This doesn't need to validate the whole system, just the Black Duck settings.
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {
