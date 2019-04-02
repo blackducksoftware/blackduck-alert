@@ -154,8 +154,9 @@ export function updateEmailConfig(config) {
         dispatch(updatingEmailConfig());
         const { csrfToken } = getState().session;
         let request;
-        if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
+        const id = FieldModelUtilities.getFieldModelId(config);
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, config);
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
@@ -189,15 +190,13 @@ export function sendEmailConfigTest(config, destination) {
     };
 }
 
-export function deleteConfig(config) {
+export function deleteConfig(id) {
     return (dispatch, getState) => {
         dispatch(deletingConfig());
         const { csrfToken } = getState().session;
-        const { id } = config;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             if (response.ok) {
-                dispatch(getEmailConfig());
                 dispatch(configDeleted());
             } else {
                 handleFailureResponse(dispatch, response);
