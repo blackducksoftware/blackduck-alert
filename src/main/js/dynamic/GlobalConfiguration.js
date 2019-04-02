@@ -13,6 +13,7 @@ import * as FieldMapping from 'util/fieldMapping';
 class GlobalConfiguration extends React.Component {
     constructor(props) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
         const { fields, name } = this.props.descriptor;
@@ -32,7 +33,7 @@ class GlobalConfiguration extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
-            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.props.descriptor.name);
+            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
             this.setState({
                 currentConfig: newState
             });
@@ -42,6 +43,15 @@ class GlobalConfiguration extends React.Component {
                 currentConfig: fieldModel
             });
         }
+    }
+
+    handleChange({ target }) {
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+
+        this.setState({
+            currentConfig: newState
+        });
     }
 
     handleTest() {
@@ -64,7 +74,7 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields
+            fontAwesomeIcon, label, description, fields, name
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         return (
@@ -80,7 +90,7 @@ class GlobalConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <div>
-                        <FieldsPanel currentConfig={this.state.currentConfig} fieldKeys={this.state.currentKeys} descriptorFields={fields} updateStatus={this.props.updateStatus} fieldErrors={this.props.fieldErrors} />
+                        <FieldsPanel descriptorFields={fields} currentConfig={this.state.currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
