@@ -140,8 +140,9 @@ export function updateConfig(config) {
         dispatch(updatingConfig());
         const { csrfToken } = getState().session;
         let request;
-        if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
+        const id = FieldModelUtilities.getFieldModelId(config);
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, config);
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }

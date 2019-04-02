@@ -45,7 +45,12 @@ class HipChatConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'DELETED')) {
+        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && this.props.updateStatus === 'DELETED') {
+            const newState = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT);
+            this.setState({
+                currentHipChatConfig: newState
+            });
+        } else if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentHipChatConfig, fieldNames);
             this.setState({
                 currentHipChatConfig: newState
