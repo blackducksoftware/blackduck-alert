@@ -185,7 +185,12 @@ class EmailConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'DELETED')) {
+        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && this.props.updateStatus === 'DELETED') {
+            const newState = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL);
+            this.setState({
+                currentEmailConfig: newState
+            });
+        } else if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentEmailConfig, fieldNames);
             this.setState({
                 currentEmailConfig: newState
@@ -206,11 +211,9 @@ class EmailConfiguration extends React.Component {
         evt.stopPropagation();
         const fieldModel = this.state.currentEmailConfig;
         let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
-        let idSet = FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [ID_KEY]);
-        console.log(emptyModel);
-        console.log(idSet);
-        if (emptyModel && idSet) {
-            this.props.deleteConfig(fieldModel);
+        let id = FieldModelUtilities.getFieldModelId(fieldModel);
+        if (emptyModel && id) {
+            this.props.deleteConfig(id);
         } else {
             this.props.updateEmailConfig(fieldModel);
         }
@@ -861,7 +864,7 @@ const mapDispatchToProps = dispatch => ({
     sendEmailConfigTest: (config, destination) => dispatch(sendEmailConfigTest(config, destination)),
     openEmailConfigTest: () => dispatch(openEmailConfigTest()),
     closeEmailConfigTest: () => dispatch(closeEmailConfigTest()),
-    deleteConfig: config => dispatch(deleteConfig(config))
+    deleteConfig: id => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EmailConfiguration);

@@ -71,14 +71,12 @@ class HipChatConfiguration extends React.Component {
         event.stopPropagation();
         const fieldModel = this.state.currentHipChatConfig;
         let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
-        let idValue = FieldModelUtilities.getFieldModelSingleValue(fieldModel, ID_KEY);
-        let id = fieldModel.id || idValue;
+        let id = FieldModelUtilities.getFieldModelId(fieldModel);
         if (emptyModel && id) {
             this.props.deleteConfig(id);
         } else {
             this.props.updateConfig(fieldModel);
         }
-
     }
 
     render() {
