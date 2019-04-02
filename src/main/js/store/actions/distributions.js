@@ -14,10 +14,10 @@ import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
-function updateJobWithAuditInfo(jobs) {
+function updateJobWithAuditInfo(job) {
     return {
         type: DISTRIBUTION_JOB_UPDATE_AUDIT_INFO,
-        jobs
+        job
     };
 }
 
@@ -62,9 +62,10 @@ function deletingJobConfig() {
     };
 }
 
-function deletingJobConfigSuccess() {
+function deletingJobConfigSuccess(jobId) {
     return {
-        type: DISTRIBUTION_JOB_DELETED
+        type: DISTRIBUTION_JOB_DELETED,
+        jobId
     };
 }
 
@@ -79,9 +80,7 @@ function updateJobModelWithAuditInfo(dispatch, jobConfig, lastRan, status) {
     let newConfig = Object.assign({}, jobConfig);
     newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
     newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
-    const jobList = [];
-    jobList.push(newConfig);
-    dispatch(updateJobWithAuditInfo(jobList));
+    dispatch(updateJobWithAuditInfo(newConfig));
 }
 
 function fetchAuditInfoForJob(jobConfig) {
@@ -124,12 +123,13 @@ export function openJobDeleteModal() {
 
 export function deleteDistributionJob(job) {
     return (dispatch, getState) => {
+        const { jobId } = job;
         dispatch(deletingJobConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.jobId);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
         request.then((response) => {
             if (response.ok) {
-                dispatch(deletingJobConfigSuccess());
+                dispatch(deletingJobConfigSuccess(jobId));
             } else {
                 response.json()
                     .then((data) => {

@@ -41,8 +41,8 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_UPDATE_AUDIT_INFO:
             return Object.assign({}, state, {
                 jobs: [
-                    ...action.jobs,
-                    ...state.jobs
+                    action.job,
+                    ...state.jobs.filter(job => job.jobId !== action.job.jobId)
                 ]
             });
 
@@ -57,7 +57,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                jobConfigTableMessage: ''
+                jobConfigTableMessage: '',
+                jobs: state.jobs.filter(job => job.jobId !== action.jobId)
             });
 
         case DISTRIBUTION_JOB_DELETING:
