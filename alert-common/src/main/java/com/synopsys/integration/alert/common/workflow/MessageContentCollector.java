@@ -185,22 +185,32 @@ public abstract class MessageContentCollector {
         for (int index = 0; index < count; index++) {
             final LinkableItem topicItem = topicItems.get(index);
 
-            final LinkableItem subTopic;
+            final Optional<LinkableItem> subTopic;
             if (!subTopicItems.isEmpty()) {
-                subTopic = subTopicItems.get(index);
+                subTopic = Optional.ofNullable(subTopicItems.get(index));
             } else {
-                subTopic = new LinkableItem(null, null);
+                subTopic = Optional.empty();
             }
 
-            final AggregateMessageContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
+            final String subTopicName = subTopic.map(LinkableItem::getName).orElse(null);
+            final String subTopicValue = subTopic.map(LinkableItem::getValue).orElse(null);
+            final AggregateMessageContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopicName, subTopicValue);
+
             if (foundContent != null) {
                 aggregateMessageContentsForNotifications.add(foundContent);
             } else {
                 final List<CategoryItem> categoryList = new ArrayList<>();
-                aggregateMessageContentsForNotifications.add(new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
+                aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryList));
             }
         }
         return aggregateMessageContentsForNotifications;
+    }
+
+    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final List<CategoryItem> categoryItems) {
+        if (subTopic.isPresent()) {
+            return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems);
+        }
+        return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), categoryItems);
     }
 
     private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
