@@ -160,7 +160,7 @@ class SettingsConfigurationForm extends Component {
         const fieldModel = this.state.settingsData;
         const selectedAuthenticationType = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
         const authenticationTypeOptions = this.getAuthenticationTypes();
-        const selectedAuthenticationOption = authenticationTypeOptions.filter(option => option.value === selectedAuthenticationType);
+        const selectedAuthenticationOption = authenticationTypeOptions.filter(option => option.value === selectedAuthenticationType.toLowerCase());
 
         const selectedReferral = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_REFERRAL);
         const referralOptions = this.getReferralOptions();
