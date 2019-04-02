@@ -9,6 +9,8 @@ const highVulnerabilityIcon = <span key="highVulnerabilityIcon" alt="High Vulner
 const mediumVulnerabilityIcon = <span key="mediumVulnerabilityIcon" alt="Medium Vulnerability" className="fa fa-shield mediumVulnerability" aria-hidden="true" />;
 const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerability" className="fa fa-shield lowVulnerability" aria-hidden="true" />;
 const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
+const issueCountIncreasedIcon = <span key="issueCountIncreasing" alt="Issue Count Increased" className="fa fa-angle-double-up fa-lg issueCountIncreased" aria-hidden="true" />;
+const issueCountDecreasedIcon = <span key="issueCountDecreased" alt="Issue Count Decreased" className="fa fa-angle-double-down fa-lg issueCountDecreased" aria-hidden="true" />;
 
 const NotificationTypeLegend = ({
     hasPolicyViolation,
@@ -17,7 +19,9 @@ const NotificationTypeLegend = ({
     hasHighVulnerability,
     hasMediumVulnerability,
     hasLowVulnerability,
-    hasVulnerability
+    hasVulnerability,
+    hasIssueCountIncreased,
+    hasIssueCountDecreased
 }) => (
     <OverlayTrigger
         trigger={['hover', 'focus']}
@@ -31,6 +35,8 @@ const NotificationTypeLegend = ({
                 {hasMediumVulnerability && <div>{mediumVulnerabilityIcon} Medium Vulnerability</div>}
                 {hasLowVulnerability && <div>{lowVulnerabilityIcon} Low Vulnerability</div>}
                 {hasVulnerability && <div>{vulnerabilityIcon} Vulnerability</div>}
+                {hasIssueCountIncreased && <div>{issueCountIncreasedIcon} Issue Count Increasing</div>}
+                {hasIssueCountDecreased && <div>{issueCountDecreasedIcon} Issue Count Decreasing</div>}
             </Popover>
         )}
     >
@@ -42,6 +48,8 @@ const NotificationTypeLegend = ({
             {hasMediumVulnerability && mediumVulnerabilityIcon}
             {hasLowVulnerability && lowVulnerabilityIcon}
             {hasVulnerability && vulnerabilityIcon}
+            {hasIssueCountIncreased && issueCountIncreasedIcon}
+            {hasIssueCountDecreased && issueCountDecreasedIcon}
         </span>
     </OverlayTrigger>
 );
@@ -53,7 +61,9 @@ NotificationTypeLegend.propTypes = {
     hasHighVulnerability: PropTypes.bool,
     hasMediumVulnerability: PropTypes.bool,
     hasLowVulnerability: PropTypes.bool,
-    hasVulnerability: PropTypes.bool
+    hasVulnerability: PropTypes.bool,
+    hasIssueCountIncreased: PropTypes.bool,
+    hasIssueCountDecreased: PropTypes.bool
 };
 
 NotificationTypeLegend.defaultProps = {
@@ -63,7 +73,9 @@ NotificationTypeLegend.defaultProps = {
     hasHighVulnerability: false,
     hasMediumVulnerability: false,
     hasLowVulnerability: false,
-    hasVulnerability: false
+    hasVulnerability: false,
+    hasIssueCountIncreased: false,
+    hasIssueCountDecreased: false
 };
 
 export default NotificationTypeLegend;
