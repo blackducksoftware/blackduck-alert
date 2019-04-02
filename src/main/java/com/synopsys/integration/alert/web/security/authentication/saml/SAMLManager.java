@@ -119,6 +119,11 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         this.parserPool = parserPool;
     }
 
+    @Bean
+    public static SAMLBootstrap sAMLBootstrap() {
+        return new SAMLBootstrap();
+    }
+
     public String[] getAllowedPaths() {
         return DEFAULT_PATHS;
     }
@@ -127,6 +132,8 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(samlAuthenticationProvider());
     }
+
+    // TODO, more of the SAML beans are in Application so we can use them when we change the SAML settings at Runtime
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -144,8 +151,6 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
 
         http.logout().logoutSuccessUrl("/");
     }
-
-    // TODO, more of the SAML beans are in Application so we can use them when we change the SAML settings at Runtime
 
     @Bean
     public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
@@ -166,14 +171,10 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
         final List<SecurityFilterChain> chains = new ArrayList<>();
 
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/login/**"), samlEntryPoint()));
-
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"), samlWebSSOProcessingFilter()));
-
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/logout/**"), samlLogoutFilter()));
-
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SingleLogout/**"), samlLogoutProcessingFilter()));
-
-        return new FilterChainProxy(chains);
+        return new AlertFilterChainProxy(chains, samlContext);
     }
 
     @Bean
@@ -187,7 +188,7 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLEntryPoint samlEntryPoint() {
-        final SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
+        final SAMLEntryPoint samlEntryPoint = new AlertSAMLEntryPoint(samlContext);
         samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions());
         return samlEntryPoint;
     }
@@ -284,11 +285,6 @@ public class SAMLManager extends WebSecurityConfigurerAdapter {
     @Bean
     public MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager() {
         return new MultiThreadedHttpConnectionManager();
-    }
-
-    @Bean
-    public static SAMLBootstrap sAMLBootstrap() {
-        return new SAMLBootstrap();
     }
 
     @Bean

@@ -23,36 +23,30 @@
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
 
-@Component
-public class AlertSAMLMetadataGeneratorFilter extends MetadataGeneratorFilter {
+public class AlertFilterChainProxy extends FilterChainProxy {
+    final SAMLContext samlContext;
 
-    private final SAMLContext samlContext;
-
-    @Autowired
-    public AlertSAMLMetadataGeneratorFilter(final MetadataGenerator metadataGenerator, final SAMLContext samlContext) {
-        super(metadataGenerator);
+    public AlertFilterChainProxy(final List<SecurityFilterChain> chains, final SAMLContext samlContext) {
+        super(chains);
         this.samlContext = samlContext;
     }
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest && samlContext.isSAMLEnabled()) {
+        if (samlContext.isSAMLEnabled()) {
             super.doFilter(request, response, chain);
             return;
         }
         chain.doFilter(request, response);
     }
 }
-
