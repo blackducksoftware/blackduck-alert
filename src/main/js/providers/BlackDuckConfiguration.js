@@ -7,7 +7,7 @@ import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
+import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
@@ -48,7 +48,12 @@ class BlackDuckConfiguration
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+        if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
+            const newState = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK);
+            this.setState({
+                currentConfig: newState
+            });
+        } else if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             let fieldModel = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
             fieldModel = this.updateDefaults(fieldModel);
             this.setState({
@@ -80,10 +85,17 @@ class BlackDuckConfiguration
         this.props.testConfig(fieldModel);
     }
 
-    handleSubmit(evt) {
-        evt.preventDefault();
+    handleSubmit(event) {
+        event.preventDefault();
+        event.stopPropagation();
         const fieldModel = this.state.currentConfig;
-        this.props.updateConfig(fieldModel);
+        let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        let id = FieldModelUtilities.getFieldModelId(fieldModel);
+        if (emptyModel && id) {
+            this.props.deleteConfig(id);
+        } else {
+            this.props.updateConfig(fieldModel);
+        }
     }
 
     render() {
@@ -100,7 +112,7 @@ class BlackDuckConfiguration
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <div>
                         <TextInput
                             id={KEY_BLACKDUCK_URL}
@@ -150,7 +162,8 @@ BlackDuckConfiguration.propTypes = {
     actionMessage: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired,
-    testConfig: PropTypes.func.isRequired
+    testConfig: PropTypes.func.isRequired,
+    deleteConfig: PropTypes.func.isRequired
 };
 
 // Default values
@@ -175,7 +188,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getConfig()),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: config => dispatch(testConfig(config))
+    testConfig: config => dispatch(testConfig(config)),
+    deleteConfig: id => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BlackDuckConfiguration);
