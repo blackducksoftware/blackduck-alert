@@ -41,6 +41,11 @@ export function getFieldModelBooleanValue(fieldModel, key) {
     return false;
 }
 
+export function getFieldModelId(fieldModel) {
+    const idValue = getFieldModelSingleValue(fieldModel, 'id');
+    return fieldModel.id || idValue;
+}
+
 export function getFieldModelBooleanValueOrDefault(fieldModel, key, defaultValue) {
     return getFieldModelBooleanValue(fieldModel, key) || defaultValue;
 }
