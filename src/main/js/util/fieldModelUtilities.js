@@ -65,32 +65,34 @@ export function hasFieldModelValues(fieldModel, key) {
     return false;
 }
 
+export function hasValuesOrIsSet(fieldObject) {
+    if (fieldObject) {
+        const { isSet, values } = fieldObject;
+        const valuesNotEmpty = values ? values.length > 0 : false;
+        const everyValueIsNotEmpty = values ? values.every(item => item !== '') : false;
+        return isSet || (values && valuesNotEmpty && everyValueIsNotEmpty);
+    }
+    return false;
+}
+
 export function keysHaveValueOrIsSet(fieldModel, keys) {
-    let hasValue = false;
-    if (fieldModel.keyToValues && keys) {
-        hasValue = Object.keys(keys).find((key) => {
-            const fieldObject = fieldModel.keyToValues[key];
-            if (fieldObject) {
-                const { isSet, values } = fieldObject;
-                const valuesNotEmpty = values ? values.length > 0 : false;
-                const everyValueIsNotEmpty = values ? values.every(item => item !== '') : false;
-                return isSet || (values && valuesNotEmpty && everyValueIsNotEmpty);
-            }
-            return false;
+    const { keyToValues } = fieldModel;
+    if (keyToValues && keys) {
+        return keys.every((key) => {
+            const fieldObject = keyToValues[key];
+            return hasValuesOrIsSet(fieldObject);
         });
     }
-    return hasValue;
+    return false;
 }
 
 export function hasAnyValuesExcludingId(fieldModel) {
-    if (fieldModel.keyToValues) {
-        return Object.keys(fieldModel.keyToValues).find((key) => {
-            const fieldObject = fieldModel.keyToValues[key];
-            if (fieldObject && (key !== 'id')) {
-                const { isSet, values } = fieldObject;
-                const valuesNotEmpty = values ? values.length > 0 : false;
-                const everyValueIsNotEmpty = values ? values.every(item => item !== '') : false;
-                return isSet || (values && valuesNotEmpty && everyValueIsNotEmpty);
+    const { keyToValues } = fieldModel;
+    if (keyToValues) {
+        return Object.keys(keyToValues).find((key) => {
+            if (key !== 'id') {
+                const fieldObject = keyToValues[key];
+                return hasValuesOrIsSet(fieldObject);
             }
             return false;
         });

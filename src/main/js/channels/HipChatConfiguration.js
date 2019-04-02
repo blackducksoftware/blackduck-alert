@@ -45,7 +45,7 @@ class HipChatConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'DELETED')) {
             const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentHipChatConfig, fieldNames);
             this.setState({
                 currentHipChatConfig: newState
@@ -66,8 +66,10 @@ class HipChatConfiguration extends React.Component {
         event.stopPropagation();
         const fieldModel = this.state.currentHipChatConfig;
         let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
-        if (emptyModel) {
-            this.props.deleteConfig(fieldModel);
+        let idValue = FieldModelUtilities.getFieldModelSingleValue(fieldModel, ID_KEY);
+        let id = fieldModel.id || idValue;
+        if (emptyModel && id) {
+            this.props.deleteConfig(id);
         } else {
             this.props.updateConfig(fieldModel);
         }
@@ -173,7 +175,7 @@ const mapDispatchToProps = dispatch => ({
     openHipChatConfigTest: () => dispatch(openHipChatConfigTest()),
     closeHipChatConfigTest: () => dispatch(closeHipChatConfigTest()),
     testConfig: (config, destination) => dispatch(testConfig(config, destination)),
-    deleteConfig: config => dispatch(deleteConfig(config))
+    deleteConfig: id => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatConfiguration);

@@ -197,11 +197,10 @@ export function testConfig(config, destination) {
     };
 }
 
-export function deleteConfig(config) {
+export function deleteConfig(id) {
     return (dispatch, getState) => {
         dispatch(deletingConfig());
         const { csrfToken } = getState().session;
-        const { id } = config;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             if (response.ok) {
@@ -209,7 +208,19 @@ export function deleteConfig(config) {
                     dispatch(configDeleted());
                 });
             } else {
-                dispatch(verifyLoginByStatus(response.status));
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(configError(data.message, data.errors));
+                            case 412:
+                                return dispatch(configError(data.message, data.errors));
+                            default: {
+                                dispatch(configError(data.message, null));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            }
+                        }
+                    });
             }
         }).catch(console.error);
     };
