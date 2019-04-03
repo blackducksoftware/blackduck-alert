@@ -8,7 +8,7 @@ import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { getEmailConfig, updateEmailConfig } from 'store/actions/emailConfig';
+import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
