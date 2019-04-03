@@ -22,51 +22,28 @@
  */
 package com.synopsys.integration.alert;
 
-import java.util.Collections;
-
 import javax.annotation.PostConstruct;
 
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.task.SyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.saml.key.EmptyKeyManager;
-import org.springframework.security.saml.key.KeyManager;
-import org.springframework.security.saml.metadata.CachingMetadataManager;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.web.security.authentication.database.UserDatabaseService;
 import com.synopsys.integration.alert.workflow.startup.StartupManager;
-import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 @EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database" })
 @EnableTransactionManagement
@@ -76,9 +53,9 @@ import com.synopsys.integration.rest.support.AuthenticationSupport;
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication(exclude = { BatchAutoConfiguration.class })
+@AutoConfigureOrder(4)
 public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
-
     @Autowired
     private UserDatabaseService userDatabaseService;
     @Autowired
@@ -94,99 +71,10 @@ public class Application {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new ResourcelessTransactionManager();
-    }
-
-    @Bean
-    public MapJobRepositoryFactoryBean mapJobRepositoryFactory() throws Exception {
-        final MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
-        factory.afterPropertiesSet();
-
-        return factory;
-    }
-
-    @Bean
-    public JobRepository jobRepository() throws Exception {
-        return mapJobRepositoryFactory().getObject();
-    }
-
-    @Bean
-    public SimpleJobLauncher jobLauncher() {
-        final SimpleJobLauncher launcher = new SimpleJobLauncher();
-        try {
-            launcher.setJobRepository(jobRepository());
-        } catch (final Exception ex) {
-            logger.error("Creating job launcher bean", ex);
-        }
-        return launcher;
-    }
-
-    @Bean
-    public TaskScheduler taskScheduler() {
-        final ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
-        return threadPoolTaskScheduler;
-    }
-
-    @Bean
-    public TaskExecutor taskExecutor() {
-        return new SyncTaskExecutor();
-    }
-
-    @Bean
-    public Gson gson() {
-        return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
-    }
-
-    @Bean
-    public AuthenticationSupport authenticationSupport() {
-        return new AuthenticationSupport();
-    }
-
-    @Bean
-    public HttpSessionCsrfTokenRepository csrfTokenRepository() {
-        return new HttpSessionCsrfTokenRepository();
-    }
-
-    @Bean
     public DaoAuthenticationProvider alertDatabaseAuthProvider(final PasswordEncoder defaultPasswordEncoder) {
         final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDatabaseService);
         provider.setPasswordEncoder(defaultPasswordEncoder);
         return provider;
-    }
-
-    @Bean
-    public PasswordEncoder defaultPasswordEncoder() {
-        return new BCryptPasswordEncoder(16);
-    }
-
-    // SAML beans
-    // These are here to be used as part of the initialization process. So if you have SAML previously configured, these are here to initialize it on startup.
-    @Bean
-    @Qualifier("metadata")
-    public CachingMetadataManager metadata() throws MetadataProviderException {
-        return new CachingMetadataManager(Collections.emptyList());
-    }
-
-    @Bean
-    public KeyManager keyManager() {
-        return new EmptyKeyManager();
-    }
-
-    @Bean(initMethod = "initialize")
-    public StaticBasicParserPool parserPool() {
-        return new StaticBasicParserPool();
-    }
-
-    @Bean
-    public ExtendedMetadata extendedMetadata() {
-        final ExtendedMetadata extendedMetadata = new ExtendedMetadata();
-        extendedMetadata.setIdpDiscoveryEnabled(false);
-        extendedMetadata.setSignMetadata(false);
-        extendedMetadata.setEcpEnabled(true);
-        extendedMetadata.setRequireLogoutRequestSigned(false);
-        return extendedMetadata;
     }
 }

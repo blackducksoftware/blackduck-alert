@@ -29,10 +29,15 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
 
 public class AlertSAMLEntryPoint extends SAMLEntryPoint {
+    private final Logger logger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
 
     private final SAMLContext samlContext;
 
@@ -44,14 +49,21 @@ public class AlertSAMLEntryPoint extends SAMLEntryPoint {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
         if (samlContext.isSAMLEnabled()) {
+            logger.info("saml is enabled perform SAML filtering");
             super.doFilter(request, response, chain);
             return;
         }
+        logger.info("saml is disabled pass down the chain");
         chain.doFilter(request, response);
     }
 
     @Override
     protected boolean processFilter(final HttpServletRequest request) {
         return samlContext.isSAMLEnabled() && super.processFilter(request);
+    }
+
+    @Override
+    public void commence(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException e) throws IOException, ServletException {
+        super.commence(request, response, e);
     }
 }

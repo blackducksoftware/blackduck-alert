@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security;
+package com.synopsys.integration.alert.web.security.authentication.saml;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
@@ -84,31 +83,15 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGeneratorFilter;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertWebSSOProfileOptions;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLAuthProvider;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLConfiguration;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 
-@EnableWebSecurity
 @Configuration
-public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
-    public static final String RESET_PASSWORD_PATH = "/resetPassword/**";
-    public static final String RESET_PASSWORD_WITH_USERNAME_PATH = "/resetPassword/**";
-    public static final String H2_CONSOLE_PATH = "/h2/**";
+public class SAMLConfiguration extends WebSecurityConfigurerAdapter {
+    public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
 
-    private final HttpPathManager httpPathManager;
-    private final SSLValidator sslValidator;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final SSLValidator sslValidator, final ConfigurationAccessor configurationAccessor) {
-        this.httpPathManager = httpPathManager;
-        this.sslValidator = sslValidator;
+    public SAMLConfiguration(final ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -118,37 +101,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(final AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(samlAuthenticationProvider());
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.exceptionHandling().authenticationEntryPoint(samlEntryPoint());
-        if (sslValidator.isSSLEnabled()) {
-            configureWithSSL(http);
-        } else {
-            configureInsecure(http);
-        }
-    }
-
-    private void configureInsecure(final HttpSecurity http) throws Exception {
-        ignorePaths(H2_CONSOLE_PATH, RESET_PASSWORD_PATH, RESET_PASSWORD_WITH_USERNAME_PATH);
-        httpPathManager.completeHttpSecurity(http);
-        // The profile above ensures that this will not be used if SSL is enabled.
-        http.headers().frameOptions().disable();
-    }
-
-    private void configureWithSSL(final HttpSecurity http) throws Exception {
-        httpPathManager.completeHttpSecurity(http.requiresChannel().anyRequest().requiresSecure()
-                                                 .and());
-    }
-
-    private void ignorePaths(final String... paths) {
-        for (final String path : paths) {
-            httpPathManager.addAllowedPath(path);
-            httpPathManager.addCsrfIgnoredPath(path);
-        }
     }
 
     @Bean

@@ -30,17 +30,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
-import org.springframework.stereotype.Component;
 
-@Component
 public class AlertSAMLMetadataGeneratorFilter extends MetadataGeneratorFilter {
 
     private final SAMLContext samlContext;
 
-    @Autowired
     public AlertSAMLMetadataGeneratorFilter(final MetadataGenerator metadataGenerator, final SAMLContext samlContext) {
         super(metadataGenerator);
         this.samlContext = samlContext;
