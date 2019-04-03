@@ -5,7 +5,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
+import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
@@ -13,6 +13,7 @@ import * as FieldMapping from 'util/fieldMapping';
 class GlobalConfiguration extends React.Component {
     constructor(props) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
         const { fields, name } = this.props.descriptor;
@@ -31,7 +32,12 @@ class GlobalConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+        if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
+            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
+            this.setState({
+                currentConfig: newState
+            });
+        } else if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             const fieldModel = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentConfig, this.state.currentKeys);
             this.setState({
                 currentConfig: fieldModel
@@ -39,20 +45,36 @@ class GlobalConfiguration extends React.Component {
         }
     }
 
+    handleChange({ target }) {
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+
+        this.setState({
+            currentConfig: newState
+        });
+    }
+
     handleTest() {
         const fieldModel = this.state.currentConfig;
         this.props.testConfig(fieldModel);
     }
 
-    handleSubmit(evt) {
-        evt.preventDefault();
+    handleSubmit(event) {
+        event.preventDefault();
+        event.stopPropagation();
         const fieldModel = this.state.currentConfig;
-        this.props.updateConfig(fieldModel);
+        const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        const id = FieldModelUtilities.getFieldModelId(fieldModel);
+        if (emptyModel && id) {
+            this.props.deleteConfig(id);
+        } else {
+            this.props.updateConfig(fieldModel);
+        }
     }
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields
+            fontAwesomeIcon, label, description, fields, name
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         return (
@@ -66,9 +88,9 @@ class GlobalConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <div>
-                        <FieldsPanel currentConfig={this.state.currentConfig} fieldKeys={this.state.currentKeys} descriptorFields={fields} updateStatus={this.props.updateStatus} fieldErrors={this.props.fieldErrors} />
+                        <FieldsPanel descriptorFields={fields} currentConfig={this.state.currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
@@ -87,7 +109,8 @@ GlobalConfiguration.propTypes = {
     updateStatus: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired,
-    testConfig: PropTypes.func.isRequired
+    testConfig: PropTypes.func.isRequired,
+    deleteConfig: PropTypes.func.isRequired
 };
 
 // Default values
@@ -112,7 +135,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getConfig: descriptorName => dispatch(getConfig(descriptorName)),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: config => dispatch(testConfig(config))
+    testConfig: config => dispatch(testConfig(config)),
+    deleteConfig: id => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GlobalConfiguration);
