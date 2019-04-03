@@ -45,7 +45,12 @@ class HipChatConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && this.props.updateStatus === 'DELETED') {
+            const newState = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT);
+            this.setState({
+                currentHipChatConfig: newState
+            });
+        } else if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentHipChatConfig, fieldNames);
             this.setState({
                 currentHipChatConfig: newState
@@ -65,7 +70,13 @@ class HipChatConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const fieldModel = this.state.currentHipChatConfig;
-        this.props.updateConfig(fieldModel);
+        const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        const id = FieldModelUtilities.getFieldModelId(fieldModel);
+        if (emptyModel && id) {
+            this.props.deleteConfig(id);
+        } else {
+            this.props.updateConfig(fieldModel);
+        }
     }
 
     render() {
@@ -82,7 +93,7 @@ class HipChatConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"
@@ -137,7 +148,8 @@ HipChatConfiguration.propTypes = {
     testConfig: PropTypes.func.isRequired,
     showTestModal: PropTypes.bool.isRequired,
     modalTesting: PropTypes.bool.isRequired,
-    updateConfig: PropTypes.func.isRequired
+    updateConfig: PropTypes.func.isRequired,
+    deleteConfig: PropTypes.func.isRequired
 };
 
 HipChatConfiguration.defaultProps = {
@@ -165,7 +177,8 @@ const mapDispatchToProps = dispatch => ({
     updateConfig: config => dispatch(updateConfig(config)),
     openHipChatConfigTest: () => dispatch(openHipChatConfigTest()),
     closeHipChatConfigTest: () => dispatch(closeHipChatConfigTest()),
-    testConfig: (config, destination) => dispatch(testConfig(config, destination))
+    testConfig: (config, destination) => dispatch(testConfig(config, destination)),
+    deleteConfig: id => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatConfiguration);

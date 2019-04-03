@@ -109,4 +109,10 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
         }
         return super.afterSaveConfig(fieldModel);
     }
+
+    @Override
+    public FieldModel deleteConfig(final FieldModel fieldModel) {
+        taskManager.unScheduleTask(PolarisProjectSyncTask.TASK_NAME);
+        return super.deleteConfig(fieldModel);
+    }
 }

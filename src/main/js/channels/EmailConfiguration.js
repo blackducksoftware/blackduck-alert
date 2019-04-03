@@ -185,7 +185,12 @@ class EmailConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && this.props.updateStatus === 'DELETED') {
+            const newState = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL);
+            this.setState({
+                currentEmailConfig: newState
+            });
+        } else if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentEmailConfig, fieldNames);
             this.setState({
                 currentEmailConfig: newState
@@ -205,7 +210,13 @@ class EmailConfiguration extends React.Component {
         evt.preventDefault();
         evt.stopPropagation();
         const fieldModel = this.state.currentEmailConfig;
-        this.props.updateEmailConfig(fieldModel);
+        const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        const id = FieldModelUtilities.getFieldModelId(fieldModel);
+        if (emptyModel && id) {
+            this.props.deleteConfig(id);
+        } else {
+            this.props.updateEmailConfig(fieldModel);
+        }
     }
 
     render() {
@@ -222,7 +233,7 @@ class EmailConfiguration extends React.Component {
                     {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate="true">
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
@@ -818,6 +829,7 @@ EmailConfiguration.propTypes = {
     openEmailConfigTest: PropTypes.func.isRequired,
     closeEmailConfigTest: PropTypes.func.isRequired,
     sendEmailConfigTest: PropTypes.func.isRequired,
+    deleteConfig: PropTypes.func.isRequired,
     currentEmailConfig: PropTypes.object,
     showTestModal: PropTypes.bool.isRequired,
     modalTesting: PropTypes.bool.isRequired,
@@ -851,7 +863,8 @@ const mapDispatchToProps = dispatch => ({
     updateEmailConfig: config => dispatch(updateEmailConfig(config)),
     sendEmailConfigTest: (config, destination) => dispatch(sendEmailConfigTest(config, destination)),
     openEmailConfigTest: () => dispatch(openEmailConfigTest()),
-    closeEmailConfigTest: () => dispatch(closeEmailConfigTest())
+    closeEmailConfigTest: () => dispatch(closeEmailConfigTest()),
+    deleteConfig: id => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EmailConfiguration);
