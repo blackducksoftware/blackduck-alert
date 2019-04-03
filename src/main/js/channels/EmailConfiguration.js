@@ -210,8 +210,8 @@ class EmailConfiguration extends React.Component {
         evt.preventDefault();
         evt.stopPropagation();
         const fieldModel = this.state.currentEmailConfig;
-        let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
-        let id = FieldModelUtilities.getFieldModelId(fieldModel);
+        const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        const id = FieldModelUtilities.getFieldModelId(fieldModel);
         if (emptyModel && id) {
             this.props.deleteConfig(id);
         } else {
