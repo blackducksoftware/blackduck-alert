@@ -125,4 +125,11 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         }
         return super.afterSaveConfig(fieldModel);
     }
+
+    @Override
+    public FieldModel deleteConfig(final FieldModel fieldModel) {
+        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
+        taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
+        return super.deleteConfig(fieldModel);
+    }
 }
