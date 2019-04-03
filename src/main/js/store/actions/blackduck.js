@@ -1,4 +1,4 @@
-import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from 'store/actions/types';
+import { CONFIG_DELETED, CONFIG_DELETING, CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
@@ -77,6 +77,18 @@ function testFailed(message, errors) {
     };
 }
 
+function deletingConfig() {
+    return {
+        type: CONFIG_DELETING
+    };
+}
+
+function configDeleted() {
+    return {
+        type: CONFIG_DELETED
+    };
+}
+
 export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
@@ -104,8 +116,9 @@ export function updateConfig(config) {
         dispatch(updatingConfig());
         const { csrfToken } = getState().session;
         let request;
-        if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
+        const id = FieldModelUtilities.getFieldModelId(config);
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, config);
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
@@ -158,5 +171,34 @@ export function testConfig(config) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function deleteConfig(id) {
+    return (dispatch, getState) => {
+        dispatch(deletingConfig());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(configDeleted());
+                });
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(configError(data.message, data.errors));
+                            case 412:
+                                return dispatch(configError(data.message, data.errors));
+                            default: {
+                                dispatch(configError(data.message, null));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            }
+                        }
+                    });
+            }
+        }).catch(console.error);
     };
 }
