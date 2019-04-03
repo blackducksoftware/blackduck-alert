@@ -118,8 +118,9 @@ public class FieldModelProcessor {
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
         if (configurationModel.isPresent()) {
-            final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel);
-            return updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.get().getCopyOfFieldList());
+            final Map<String, FieldValueModel> updatedFieldValueModels = updateConfigurationWithSavedConfiguration(fieldModel.getKeyToValues(), configurationModel.get().getCopyOfFieldList());
+            fieldModel.setKeyToValues(updatedFieldValueModels);
+            return fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
         }
 
         return fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
@@ -221,27 +222,19 @@ public class FieldModelProcessor {
         return Optional.empty();
     }
 
-    private Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {
+    private Map<String, FieldValueModel> updateConfigurationWithSavedConfiguration(final Map<String, FieldValueModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {
         final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(ConfigurationFieldModel::isSensitive).collect(Collectors.toSet());
-        for (final ConfigurationFieldModel fieldModel : sensitiveFields) {
-            final String key = fieldModel.getFieldKey();
+        for (final ConfigurationFieldModel sensitiveConfigurationFieldModel : sensitiveFields) {
+            final String key = sensitiveConfigurationFieldModel.getFieldKey();
             if (newConfiguration.containsKey(key)) {
-                final ConfigurationFieldModel configurationFieldModel = newConfiguration.get(key);
-                if (configurationFieldModel.isSet() && doesFieldHaveNoValue(configurationFieldModel)) {
-                    final ConfigurationFieldModel newFieldModel = newConfiguration.get(key);
-                    newFieldModel.setFieldValues(fieldModel.getFieldValues());
+                final FieldValueModel sensitiveFieldValueModel = newConfiguration.get(key);
+                if (sensitiveFieldValueModel.isSet() && !sensitiveFieldValueModel.hasValues()) {
+                    final FieldValueModel newFieldModel = newConfiguration.get(key);
+                    newFieldModel.setValues(sensitiveConfigurationFieldModel.getFieldValues());
                 }
             }
         }
-        return newConfiguration.values();
-    }
-
-    private boolean doesFieldHaveNoValue(final ConfigurationFieldModel configurationFieldModel) {
-        final Collection<String> fieldValues = configurationFieldModel.getFieldValues();
-        if (fieldValues.isEmpty()) {
-            return true;
-        }
-        return fieldValues.stream().allMatch(StringUtils::isBlank);
+        return newConfiguration;
     }
 
 }

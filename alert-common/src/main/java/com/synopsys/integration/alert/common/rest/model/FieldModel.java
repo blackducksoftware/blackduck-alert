@@ -29,7 +29,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 public class FieldModel extends Config {
-    private final Map<String, FieldValueModel> keyToValues;
+    private Map<String, FieldValueModel> keyToValues;
     private final String descriptorName;
     private final String context;
 
@@ -60,6 +60,10 @@ public class FieldModel extends Config {
 
     public Map<String, FieldValueModel> getKeyToValues() {
         return keyToValues;
+    }
+
+    public void setKeyToValues(final Map<String, FieldValueModel> keyToValues) {
+        this.keyToValues = keyToValues;
     }
 
     public Optional<FieldValueModel> getFieldValueModel(final String key) {
