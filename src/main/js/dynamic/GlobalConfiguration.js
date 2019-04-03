@@ -63,8 +63,8 @@ class GlobalConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const fieldModel = this.state.currentConfig;
-        let emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
-        let id = FieldModelUtilities.getFieldModelId(fieldModel);
+        const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
+        const id = FieldModelUtilities.getFieldModelId(fieldModel);
         if (emptyModel && id) {
             this.props.deleteConfig(id);
         } else {
