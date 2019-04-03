@@ -140,7 +140,7 @@ task runServer(type: Exec, dependsOn: [build]) {
                         '-Dcom.sun.management.jmxremote.local.only=false',
                         '-Dcom.sun.management.jmxremote.authenticate=false',
                         '-Dcom.sun.management.jmxremote.ssl=false']
-    def applicationVariables = ['--spring.profiles.active=saml']
+    def applicationVariables = ['--spring.profiles.active=no_ssl']
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(debugVariables)

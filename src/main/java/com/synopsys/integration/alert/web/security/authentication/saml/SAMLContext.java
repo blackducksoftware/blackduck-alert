@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.web.security.authentication.saml;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
@@ -35,12 +33,10 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 
-@Component
 public class SAMLContext {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
     private final ConfigurationAccessor configurationAccessor;
 
-    @Autowired
     public SAMLContext(final ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }

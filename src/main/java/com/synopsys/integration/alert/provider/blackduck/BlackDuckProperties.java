@@ -28,9 +28,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
@@ -50,7 +48,6 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 
-@Component
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
     private final Gson gson;
@@ -65,7 +62,6 @@ public class BlackDuckProperties extends ProviderProperties {
     @Value("${public.hub.webserver.port:}")
     private String publicBlackDuckWebserverPort;
 
-    @Autowired
     public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
         super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
         this.gson = gson;
