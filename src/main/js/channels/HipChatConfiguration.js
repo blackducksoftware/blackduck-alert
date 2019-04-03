@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import ConfigButtons from 'component/common/ConfigButtons';
-import { getConfig, updateConfig } from 'store/actions/hipChatConfig';
+import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
