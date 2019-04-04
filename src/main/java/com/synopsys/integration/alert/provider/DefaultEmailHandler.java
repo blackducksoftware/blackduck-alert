@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.provider;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,12 +36,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 
 @Component
 public class DefaultEmailHandler extends EmailHandler {
@@ -59,6 +63,10 @@ public class DefaultEmailHandler extends EmailHandler {
         final Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
         final Set<String> providerEmailAddresses = collectProviderEmailsFromProject(content.getValue(), projectOwnerOnly);
         emailAddresses.addAll(providerEmailAddresses);
+
+        // Temporary fix for license notifications
+        final Set<String> licenseNotificationEmails = licenseNotificationCheck(content, originalAccessor, projectOwnerOnly);
+        emailAddresses.addAll(licenseNotificationEmails);
 
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(originalAccessor.getFields());
@@ -91,6 +99,34 @@ public class DefaultEmailHandler extends EmailHandler {
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
+        return Set.of();
+    }
+
+    // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
+    private Set<String> licenseNotificationCheck(final AggregateMessageContent content, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
+        final Optional<LinkableItem> subTopic = content.getSubTopic();
+        if (subTopic.isEmpty()) {
+            final Boolean filterByProject = fieldAccessor.getBoolean(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT).orElse(false);
+            List<String> associatedProjects = List.of();
+            if (filterByProject) {
+                associatedProjects = fieldAccessor.getAllStrings(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT)
+                                         .stream()
+                                         .collect(Collectors.toList());
+            } else {
+                final Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+                if (providerName.isPresent()) {
+                    associatedProjects = providerDataAccessor.findByProviderName(providerName.get())
+                                             .stream()
+                                             .map(ProviderProject::getName)
+                                             .collect(Collectors.toList());
+                }
+            }
+            return associatedProjects.stream()
+                       .map(projectName -> collectProviderEmailsFromProject(projectName, projectOwnerOnly))
+                       .flatMap(Set::stream)
+                       .collect(Collectors.toSet());
+        }
+
         return Set.of();
     }
 }
