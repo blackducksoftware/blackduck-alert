@@ -152,6 +152,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
                                                                     .map(BooleanUtils::toBoolean)
                                                                     .orElse(false)
                                         ).orElse(false);
+        //TODO SAMLMANAGER should be used here.
         if (samlEnabled) {
             final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
             if (metadataURLFieldValueOptional.isPresent()) {

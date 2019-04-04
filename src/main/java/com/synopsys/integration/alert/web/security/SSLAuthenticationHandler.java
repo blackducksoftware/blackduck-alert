@@ -38,6 +38,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final HttpPathManager httpPathManager;
 
+    //TODO delete this class
     @Autowired
     public SSLAuthenticationHandler(final HttpPathManager httpPathManager) {
         this.httpPathManager = httpPathManager;
@@ -49,7 +50,5 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        httpPathManager.completeHttpSecurity(http.requiresChannel().anyRequest().requiresSecure()
-                                                 .and());
     }
 }
