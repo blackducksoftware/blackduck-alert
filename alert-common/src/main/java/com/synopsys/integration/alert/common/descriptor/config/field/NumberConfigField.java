@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -33,12 +32,12 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class NumberConfigField extends ConfigField {
     public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
 
-    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group) {
-        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group);
+    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel) {
+        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, panel);
     }
 
-    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
+    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, panel, validationFunction);
     }
 
     public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
@@ -65,12 +64,12 @@ public class NumberConfigField extends ConfigField {
         return new NumberConfigField(key, label, description, true, false, validationFunction);
     }
 
-    public static NumberConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group) {
-        return new NumberConfigField(key, label, description, false, false, group);
+    public static NumberConfigField createPanel(final String key, final String label, final String description, final String panel) {
+        return new NumberConfigField(key, label, description, false, false, panel);
     }
 
-    public static NumberConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, description, false, false, group, validationFunction);
+    public static NumberConfigField createPanel(final String key, final String label, final String description, final String panel, final ConfigValidationFunction validationFunction) {
+        return new NumberConfigField(key, label, description, false, false, panel, validationFunction);
     }
 
     @Override

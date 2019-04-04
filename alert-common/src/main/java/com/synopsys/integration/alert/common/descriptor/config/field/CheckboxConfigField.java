@@ -25,18 +25,17 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class CheckboxConfigField extends ConfigField {
-    public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final FieldGroup group) {
-        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group);
+    public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final String panel) {
+        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, panel);
     }
 
-    public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group, validationFunction);
+    public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final String panel, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, panel, validationFunction);
     }
 
     public CheckboxConfigField(final String key, final String label, final String description, final boolean required) {
@@ -63,12 +62,12 @@ public class CheckboxConfigField extends ConfigField {
         return new CheckboxConfigField(key, label, description, true, validationFunction);
     }
 
-    public static CheckboxConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group) {
-        return new CheckboxConfigField(key, label, description, false, group);
+    public static CheckboxConfigField createPanel(final String key, final String label, final String description, final String panel) {
+        return new CheckboxConfigField(key, label, description, false, panel);
     }
 
-    public static CheckboxConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        return new CheckboxConfigField(key, label, description, false, group, validationFunction);
+    public static CheckboxConfigField createPanel(final String key, final String label, final String description, final String panel, final ConfigValidationFunction validationFunction) {
+        return new CheckboxConfigField(key, label, description, false, panel, validationFunction);
     }
 
     @Override
