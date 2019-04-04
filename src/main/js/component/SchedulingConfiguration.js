@@ -2,9 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import Tooltip from 'react-bootstrap/Tooltip';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-
 import { getSchedulingConfig, updateSchedulingConfig } from 'store/actions/schedulingConfig';
 
 import ConfigButtons from 'component/common/ConfigButtons';
@@ -13,6 +10,7 @@ import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
+import LabeledField from 'field/LabeledField';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
@@ -153,28 +151,16 @@ class SchedulingConfiguration extends React.Component {
                 </div>}
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
-                    <div className="form-group">
-                        <label className="col-sm-4 col-form-label text-right">Collecting Provider data in</label>
-                        <div className="d-inline-flex">
-                            <OverlayTrigger
-                                key="top"
-                                placement="top"
-                                delay={{ show: 200, hide: 100 }}
-                                overlay={
-                                    <Tooltip id="description-tooltip">
-                                        {FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ACCUMULATOR_NEXT_RUN)}
-                                    </Tooltip>
-                                }
-                            >
-                                <span className="fa fa-question-circle" />
-                            </OverlayTrigger>
-                        </div>
-                        <div className="d-inline-flex p-2 col-sm-4">
+                    <LabeledField
+                        labelClass="col-sm-4 col-form-label"
+                        label="Collecting Provider data in"
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_ACCUMULATOR_NEXT_RUN)}
+                        field={<div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static accumulator-countdown">
                                 {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ACCUMULATOR_NEXT_RUN)} seconds &nbsp;&nbsp;
-                            </p>
-                        </div>
-                    </div>
+                            </p></div>}
+
+                    />
 
                     <SelectInput
                         label="Daily Digest Run Time"
@@ -194,28 +180,16 @@ class SchedulingConfiguration extends React.Component {
                         errorValue={fieldErrors.dailyDigestHourOfDay}
                     />
 
-                    <div className="form-group">
-                        <label className="col-sm-4 col-form-label text-right">Daily Digest Cron Next Run</label>
-                        <div className="d-inline-flex">
-                            <OverlayTrigger
-                                key="top"
-                                placement="top"
-                                delay={{ show: 200, hide: 100 }}
-                                overlay={
-                                    <Tooltip id="description-tooltip">
-                                        {FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DAILY_DIGEST_NEXT_RUN)}
-                                    </Tooltip>
-                                }
-                            >
-                                <span className="fa fa-question-circle" />
-                            </OverlayTrigger>
-                        </div>
-                        <div className="d-inline-flex p-2 col-sm-4">
+                    <LabeledField
+                        labelClass="col-sm-4 col-form-label"
+                        label="Daily Digest Cron Next Run"
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_DAILY_DIGEST_NEXT_RUN)}
+                        field={<div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static">
                                 {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_NEXT_RUN)}
-                            </p>
-                        </div>
-                    </div>
+                            </p></div>}
+
+                    />
 
                     <SelectInput
                         label="Data Purge Frequency"
@@ -232,28 +206,16 @@ class SchedulingConfiguration extends React.Component {
                         errorValue={fieldErrors.purgeDataFrequencyDays}
                     />
 
-                    <div className="form-group">
-                        <label className="col-sm-4 col-form-label text-right">Purge Cron Next Run</label>
-                        <div className="d-inline-flex">
-                            <OverlayTrigger
-                                key="top"
-                                placement="top"
-                                delay={{ show: 200, hide: 100 }}
-                                overlay={
-                                    <Tooltip id="description-tooltip">
-                                        {FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PURGE_DATA_NEXT_RUN)}
-                                    </Tooltip>
-                                }
-                            >
-                                <span className="fa fa-question-circle" />
-                            </OverlayTrigger>
-                        </div>
-                        <div className="d-inline-flex p-2 col-sm-4">
+                    <LabeledField
+                        labelClass="col-sm-4 col-form-label"
+                        label="Purge Cron Next Run"
+                        description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PURGE_DATA_NEXT_RUN)}
+                        field={<div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static">
                                 {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_NEXT_RUN)}
-                            </p>
-                        </div>
-                    </div>
+                            </p></div>}
+
+                    />
                     <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
                 </form>
             </div>
