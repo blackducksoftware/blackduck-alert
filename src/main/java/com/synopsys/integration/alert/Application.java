@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -53,7 +52,6 @@ import com.synopsys.integration.alert.workflow.startup.StartupManager;
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication(exclude = { BatchAutoConfiguration.class })
-@AutoConfigureOrder(4)
 public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired
