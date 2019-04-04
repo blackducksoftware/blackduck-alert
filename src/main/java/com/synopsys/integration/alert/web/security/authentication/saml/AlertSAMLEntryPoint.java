@@ -24,10 +24,7 @@ package com.synopsys.integration.alert.web.security.authentication.saml;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,16 +43,16 @@ public class AlertSAMLEntryPoint extends SAMLEntryPoint {
         this.samlContext = samlContext;
     }
 
-    @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        if (samlContext.isSAMLEnabled()) {
-            logger.info("saml is enabled perform SAML filtering");
-            super.doFilter(request, response, chain);
-            return;
-        }
-        logger.info("saml is disabled pass down the chain");
-        chain.doFilter(request, response);
-    }
+    //    @Override
+    //    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+    //        if (samlContext.isSAMLEnabled()) {
+    //            logger.info("saml is enabled perform SAML filtering");
+    //            super.doFilter(request, response, chain);
+    //            return;
+    //        }
+    //        logger.info("saml is disabled pass down the chain");
+    //        chain.doFilter(request, response);
+    //    }
 
     @Override
     protected boolean processFilter(final HttpServletRequest request) {
