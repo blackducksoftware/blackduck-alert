@@ -64,6 +64,7 @@ import org.springframework.security.saml.processor.HTTPPostBinding;
 import org.springframework.security.saml.processor.HTTPRedirectDeflateBinding;
 import org.springframework.security.saml.processor.SAMLBinding;
 import org.springframework.security.saml.processor.SAMLProcessorImpl;
+import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.security.saml.util.VelocityFactory;
 import org.springframework.security.saml.websso.SingleLogoutProfile;
 import org.springframework.security.saml.websso.SingleLogoutProfileImpl;
@@ -76,14 +77,18 @@ import org.springframework.security.saml.websso.WebSSOProfileOptions;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
@@ -93,6 +98,7 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLAuthP
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLConfiguration;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.web.security.authentication.saml.UserDetailsService;
 
 @EnableWebSecurity
 @Configuration
@@ -104,12 +110,14 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final HttpPathManager httpPathManager;
     private final SSLValidator sslValidator;
     private final ConfigurationAccessor configurationAccessor;
+    private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final SSLValidator sslValidator, final ConfigurationAccessor configurationAccessor) {
+    AuthenticationHandler(final HttpPathManager httpPathManager, final SSLValidator sslValidator, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository) {
         this.httpPathManager = httpPathManager;
         this.sslValidator = sslValidator;
         this.configurationAccessor = configurationAccessor;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @Bean
@@ -130,18 +138,21 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         } else {
             configureInsecure(http);
         }
+        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(httpPathManager.getCsrfIgnoredPaths())
+            .and().headers().frameOptions().disable()
+            .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
+            .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
+            .authorizeRequests().antMatchers(httpPathManager.getAllowedPaths()).permitAll()
+            .and().authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
+            .and().logout().logoutSuccessUrl("/");
     }
 
     private void configureInsecure(final HttpSecurity http) throws Exception {
         ignorePaths(H2_CONSOLE_PATH, RESET_PASSWORD_PATH, RESET_PASSWORD_WITH_USERNAME_PATH);
-        httpPathManager.completeHttpSecurity(http);
-        // The profile above ensures that this will not be used if SSL is enabled.
-        http.headers().frameOptions().disable();
     }
 
     private void configureWithSSL(final HttpSecurity http) throws Exception {
-        httpPathManager.completeHttpSecurity(http.requiresChannel().anyRequest().requiresSecure()
-                                                 .and());
+        http.requiresChannel().anyRequest().requiresSecure();
     }
 
     private void ignorePaths(final String... paths) {
@@ -190,7 +201,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Bean
     public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
         final SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
-        samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManagerBean());
+        samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
 
         final SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler =
             new SavedRequestAwareAuthenticationSuccessHandler();
@@ -361,6 +372,11 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Bean
     public SingleLogoutProfile logoutProfile() {
         return new SingleLogoutProfileImpl();
+    }
+
+    @Bean
+    public SAMLUserDetailsService samlUserDetailsService() {
+        return new UserDetailsService();
     }
 
 }

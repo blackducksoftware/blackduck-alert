@@ -8,11 +8,6 @@ import org.mockito.Mockito;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.saml.SAMLEntryPoint;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGeneratorFilter;
 
 public class SSLAuthenticationHandlerTest {
 
@@ -34,7 +29,7 @@ public class SSLAuthenticationHandlerTest {
     class PublicSSLAuthenticationHandler extends SSLAuthenticationHandler {
 
         public PublicSSLAuthenticationHandler() {
-            super(new HttpPathManager(Mockito.mock(HttpSessionCsrfTokenRepository.class), Mockito.mock(AlertSAMLMetadataGeneratorFilter.class), Mockito.mock(FilterChainProxy.class), Mockito.mock(SAMLEntryPoint.class)));
+            super(new HttpPathManager());
         }
 
         public void callConfigure(final HttpSecurity http) throws Exception {

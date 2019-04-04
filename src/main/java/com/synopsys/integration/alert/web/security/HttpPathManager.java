@@ -26,16 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.saml.SAMLEntryPoint;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 @Component
@@ -60,17 +52,9 @@ public class HttpPathManager {
     };
     private final List<String> allowedPaths;
     private final List<String> csrfIgnoredPaths;
-    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
-    private final MetadataGeneratorFilter metadataGeneratorFilter;
-    private final FilterChainProxy samlFilter;
-    private final SAMLEntryPoint samlEntryPoint;
 
     @Autowired
-    public HttpPathManager(final HttpSessionCsrfTokenRepository csrfTokenRepository, final MetadataGeneratorFilter metadataGeneratorFilter, final FilterChainProxy samlFilter, final SAMLEntryPoint samlEntryPoint) {
-        this.csrfTokenRepository = csrfTokenRepository;
-        this.metadataGeneratorFilter = metadataGeneratorFilter;
-        this.samlFilter = samlFilter;
-        this.samlEntryPoint = samlEntryPoint;
+    public HttpPathManager() {
         allowedPaths = createDefaultAllowedPaths();
         csrfIgnoredPaths = createDefaultCsrfIgnoredPaths();
     }
@@ -107,15 +91,5 @@ public class HttpPathManager {
     public String[] getCsrfIgnoredPaths() {
         final String[] csrfIgnoredPathArray = new String[csrfIgnoredPaths.size()];
         return csrfIgnoredPaths.toArray(csrfIgnoredPathArray);
-    }
-
-    public void completeHttpSecurity(final HttpSecurity http) throws Exception {
-        http.exceptionHandling().authenticationEntryPoint(samlEntryPoint)
-            .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(getCsrfIgnoredPaths())
-            .and().addFilterBefore(metadataGeneratorFilter, ChannelProcessingFilter.class)
-            .addFilterAfter(samlFilter, BasicAuthenticationFilter.class)
-            .authorizeRequests().antMatchers(getAllowedPaths()).permitAll()
-            .and().authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
-            .and().logout().logoutSuccessUrl("/");
     }
 }
