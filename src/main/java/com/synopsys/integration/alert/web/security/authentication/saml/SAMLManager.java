@@ -58,29 +58,44 @@ public class SAMLManager {
     public void initializeSAML() {
         try {
             final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            if (samlContext.isSAMLEnabled(currentConfiguration)) {
-                final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
-                if (StringUtils.isNotBlank(metadataURL)) {
-                    if (StringUtils.isNotBlank(metadataURL)) {
-                        final Timer backgroundTaskTimer = new Timer(true);
-
-                        // The URL can not end in a '/' because it messes with the paths for saml
-                        final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
-                        final HTTPMetadataProvider httpMetadataProvider;
-                        httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
-                        httpMetadataProvider.setParserPool(parserPool);
-
-                        final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
-                        idpMetadata.setMetadataTrustCheck(true);
-                        idpMetadata.setMetadataRequireSignature(false);
-                        metadataManager.setProviders(List.of(idpMetadata));
-                        metadataManager.refreshMetadata();
-                    }
-                }
+            final boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
+            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
+            if (samlEnabled) {
+                setupMetadataManager(metadataURL);
             }
         } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException | MetadataProviderException e) {
             logger.error("Error adding the SAML identity provider.", e);
         }
+    }
+
+    public void updateSAMLConfiguration(final boolean samlEnabled, final String metadataURL) {
+        try {
+            if (samlEnabled) {
+                if (StringUtils.isNotBlank(metadataURL)) {
+                    setupMetadataManager(metadataURL);
+                }
+            } else {
+                metadataManager.setProviders(List.of());
+            }
+        } catch (final MetadataProviderException e) {
+            logger.error("Error updating the SAML identity provider.", e);
+        }
+    }
+
+    private void setupMetadataManager(final String metadataURL) throws MetadataProviderException {
+        final Timer backgroundTaskTimer = new Timer(true);
+
+        // The URL can not end in a '/' because it messes with the paths for saml
+        final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
+        final HTTPMetadataProvider httpMetadataProvider;
+        httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
+        httpMetadataProvider.setParserPool(parserPool);
+
+        final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
+        idpMetadata.setMetadataTrustCheck(true);
+        idpMetadata.setMetadataRequireSignature(false);
+        metadataManager.setProviders(List.of(idpMetadata));
+        metadataManager.refreshMetadata();
     }
 
 }

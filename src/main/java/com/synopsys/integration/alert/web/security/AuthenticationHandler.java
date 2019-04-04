@@ -95,7 +95,6 @@ import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAML
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGeneratorFilter;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertWebSSOProfileOptions;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLAuthProvider;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLConfiguration;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.web.security.authentication.saml.UserDetailsService;
@@ -103,6 +102,7 @@ import com.synopsys.integration.alert.web.security.authentication.saml.UserDetai
 @EnableWebSecurity
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+    public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
     public static final String RESET_PASSWORD_PATH = "/resetPassword/**";
     public static final String RESET_PASSWORD_WITH_USERNAME_PATH = "/resetPassword/**";
     public static final String H2_CONSOLE_PATH = "/h2/**";
@@ -227,7 +227,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public WebSSOProfileOptions webSSOProfileOptions() {
         final AlertWebSSOProfileOptions alertWebSSOProfileOptions = new AlertWebSSOProfileOptions(samlContext());
         alertWebSSOProfileOptions.setIncludeScoping(false);
-        alertWebSSOProfileOptions.setProviderName(SAMLConfiguration.SSO_PROVIDER_NAME);
+        alertWebSSOProfileOptions.setProviderName(AuthenticationHandler.SSO_PROVIDER_NAME);
         alertWebSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         return alertWebSSOProfileOptions;
     }

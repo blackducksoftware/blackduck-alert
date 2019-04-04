@@ -23,25 +23,14 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.parse.ParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
-import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
@@ -50,6 +39,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
@@ -58,19 +48,15 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
-    private final MetadataManager metadataManager;
-    private final ParserPool parserPool;
-    private final ExtendedMetadata extendedMetadata;
+    private final SAMLManager samlManager;
 
     @Autowired
     public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator,
-        @Lazy final MetadataManager metadataManager, @Lazy final ParserPool parserPool, @Lazy final ExtendedMetadata extendedMetadata) {
+        final SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
-        this.metadataManager = metadataManager;
-        this.parserPool = parserPool;
-        this.extendedMetadata = extendedMetadata;
+        this.samlManager = samlManager;
     }
 
     @Override
@@ -152,39 +138,11 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
                                                                     .map(BooleanUtils::toBoolean)
                                                                     .orElse(false)
                                         ).orElse(false);
-        //TODO SAMLMANAGER should be used here.
-        if (samlEnabled) {
-            final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
-            if (metadataURLFieldValueOptional.isPresent()) {
-                final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
-                final String metadataURL = metadataURLFieldValue.getValue().orElse("");
-                if (StringUtils.isNotBlank(metadataURL)) {
-                    final Timer backgroundTaskTimer = new Timer(true);
-
-                    // The URL can not end in a '/' because it messes with the paths for saml
-                    final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
-                    final HTTPMetadataProvider httpMetadataProvider;
-                    try {
-                        httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
-                        httpMetadataProvider.setParserPool(parserPool);
-
-                        final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
-                        idpMetadata.setMetadataTrustCheck(true);
-                        idpMetadata.setMetadataRequireSignature(false);
-                        metadataManager.setProviders(List.of(idpMetadata));
-                        metadataManager.refreshMetadata();
-                    } catch (final MetadataProviderException e) {
-                        logger.error("Error setting the SAML metadata.", e);
-                    }
-                }
-            }
-        } else {
-            try {
-                metadataManager.setProviders(Collections.emptyList());
-            } catch (final MetadataProviderException e) {
-                logger.error("Error clearing the SAML metadata.", e);
-            }
+        final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
+        if (metadataURLFieldValueOptional.isPresent()) {
+            final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
+            final String metadataURL = metadataURLFieldValue.getValue().orElse("");
+            samlManager.updateSAMLConfiguration(samlEnabled, metadataURL);
         }
-
     }
 }
