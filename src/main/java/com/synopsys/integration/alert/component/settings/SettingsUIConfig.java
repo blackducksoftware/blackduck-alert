@@ -69,8 +69,8 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION = "If true, the Alert environment variables will override the stored configurations.";
     private static final String SETTINGS_PROXY_HOST_DESCRIPTION = "The host name of the proxy server to use.";
     private static final String SETTINGS_PROXY_PORT_DESCRIPTION = "The port of the proxy server to use.";
-    private static final String SETTINGS_PROXY_USERNAME_DESCRIPTION = "If the proxy server requires authentication, the username to authentication with the proxy server.";
-    private static final String SETTINGS_PROXY_PASSWORD_DESCRIPTION = "If the proxy server requires authentication, the password to authentication with the proxy server.";
+    private static final String SETTINGS_PROXY_USERNAME_DESCRIPTION = "If the proxy server requires authentication, the username to authenticate with the proxy server.";
+    private static final String SETTINGS_PROXY_PASSWORD_DESCRIPTION = "If the proxy server requires authentication, the password to authenticate with the proxy server.";
     private static final String SETTINGS_LDAP_ENABLED_DESCRIPTION = "If true, Alert with attempt to authenticate using the LDAP configuration.";
     private static final String SETTINGS_LDAP_SERVER_DESCRIPTION = "The URL of the LDAP server.";
     private static final String SETTINGS_LDAP_MANAGER_DN_DESCRIPTION = "The distinguished name of the LDAP manager.";
