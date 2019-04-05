@@ -1,4 +1,4 @@
-import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING, SERIALIZE } from 'store/actions/types';
+import { CONFIG_DELETED, CONFIG_DELETING, CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING, SERIALIZE } from 'store/actions/types';
 
 const initialState = {
     fetching: false,
@@ -98,6 +98,27 @@ const blackduck = (state = initialState, action) => {
                 error: {
                     message: action.message,
                     fieldErrors: action.errors || {}
+                }
+            });
+
+        case CONFIG_DELETED:
+            return Object.assign({}, state, {
+                updateStatus: 'DELETED',
+                actionMessage: 'Delete successful',
+                config: {},
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
+            });
+
+        case CONFIG_DELETING:
+            return Object.assign({}, state, {
+                actionMessage: null,
+                updateStatus: 'DELETING',
+                error: {
+                    message: '',
+                    fieldErrors: {}
                 }
             });
         case SERIALIZE:

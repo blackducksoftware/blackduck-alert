@@ -117,9 +117,9 @@ public class LdapManager {
         final String authenticationType = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
         DirContextAuthenticationStrategy strategy = null;
         if (StringUtils.isNotBlank(authenticationType)) {
-            if ("digest".equals(authenticationType)) {
+            if ("digest".equalsIgnoreCase(authenticationType)) {
                 strategy = new DigestMd5DirContextAuthenticationStrategy();
-            } else if ("simple".equals(authenticationType)) {
+            } else if ("simple".equalsIgnoreCase(authenticationType)) {
                 strategy = new SimpleDirContextAuthenticationStrategy();
             }
         }

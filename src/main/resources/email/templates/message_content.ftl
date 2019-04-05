@@ -16,6 +16,12 @@
 </div>
 <div style="border: 1px solid #979797;"></div>
 <br />
+<#if provider_name??>
+    <div style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #445B68;">${provider_name} captured the following new notifications.</div>
+    <a href="${provider_url}" style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #225786;">See more details in the ${provider_name} server</a>
+    <br />
+    <br />
+</#if>
 <#macro printLink linkableItem>
     <#assign url = linkableItem.getUrl()/>
     <#if url.isPresent()>
@@ -80,9 +86,15 @@
 <br />
 <div style="border: 1px solid #979797;"></div>
 <br />
-<div style="display:inline-block;width:100%;">
-    <img src="cid:${logo_image}" height="33" width="150" />
-</div>
-<br />
+<#if provider_name??>
+    <div style="display:inline-block;width:100%;">
+        <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are assigned to project: ${provider_project_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the project.</span>
+    </div>
+    <br />
+    <div style="display:inline-block;width:100%;">
+        <img src="cid:${logo_image}" height="33" width="150" />
+    </div>
+    <br />
+</#if>
 </body>
 <html>

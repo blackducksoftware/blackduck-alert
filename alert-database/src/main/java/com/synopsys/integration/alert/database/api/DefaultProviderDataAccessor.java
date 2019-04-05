@@ -82,9 +82,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public ProviderProject saveProject(final String providerName, final ProviderProject providerProject) {
-        final String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
-        final ProviderProjectEntity trimmedBlackDuckProjectEntity = new ProviderProjectEntity(
-            providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
+        final ProviderProjectEntity trimmedBlackDuckProjectEntity = convertToProjectEntity(providerName, providerProject);
         return convertToProjectModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
     }
 
@@ -181,7 +179,8 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private ProviderProjectEntity convertToProjectEntity(final String providerName, final ProviderProject providerProject) {
-        return new ProviderProjectEntity(providerProject.getName(), providerProject.getDescription(), providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
+        final String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
+        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerName);
     }
 
     private ProviderUserModel convertToUserModel(final ProviderUserEntity providerUserEntity) {

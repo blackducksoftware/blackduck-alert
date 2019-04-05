@@ -41,22 +41,25 @@ import com.synopsys.integration.polaris.common.api.auth.model.role.RoleResource;
 import com.synopsys.integration.polaris.common.api.auth.model.role.assignments.RoleAssignmentResource;
 import com.synopsys.integration.polaris.common.api.auth.model.role.assignments.RoleAssignmentResources;
 import com.synopsys.integration.polaris.common.api.auth.model.user.UserResource;
-import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Resource;
-import com.synopsys.integration.polaris.common.api.common.project.ProjectV0Resource;
-import com.synopsys.integration.polaris.common.model.QueryIssueResource;
+import com.synopsys.integration.polaris.common.api.common.model.branch.BranchV0Resource;
+import com.synopsys.integration.polaris.common.api.common.model.project.ProjectV0Resource;
+import com.synopsys.integration.polaris.common.api.query.model.issue.IssueV0Resource;
+import com.synopsys.integration.polaris.common.api.query.model.issue.type.IssueTypeV0Attributes;
+import com.synopsys.integration.polaris.common.api.query.model.issue.type.IssueTypeV0Resource;
+import com.synopsys.integration.polaris.common.model.IssueResourcesSingle;
 import com.synopsys.integration.polaris.common.service.IssueService;
-import com.synopsys.integration.polaris.common.service.RoleAssignmentsService;
+import com.synopsys.integration.polaris.common.service.RoleAssignmentService;
 import com.synopsys.integration.polaris.common.service.UserService;
 
 public class PolarisApiHelper {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final IssueService issueService;
-    private final RoleAssignmentsService roleAssignmentsService;
+    private final RoleAssignmentService roleAssignmentService;
     private final UserService userService;
 
-    public PolarisApiHelper(final IssueService issueService, final RoleAssignmentsService roleAssignmentsService, final UserService userService) {
+    public PolarisApiHelper(final IssueService issueService, final RoleAssignmentService roleAssignmentService, final UserService userService) {
         this.issueService = issueService;
-        this.roleAssignmentsService = roleAssignmentsService;
+        this.roleAssignmentService = roleAssignmentService;
         this.userService = userService;
     }
 
@@ -64,8 +67,8 @@ public class PolarisApiHelper {
         final Set<PolarisIssueModel> issuesForProjectFromServer = new HashSet<>();
         for (final String branchId : branchIds) {
             try {
-                final List<QueryIssueResource> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
-                final Map<String, Integer> issueTypeCounts = mapIssueTypeToCount(foundIssues);
+                final List<IssueV0Resource> foundIssues = issueService.getIssuesForProjectAndBranch(projectId, branchId);
+                final Map<String, Integer> issueTypeCounts = mapIssueTypeToCount(projectId, branchId, foundIssues);
 
                 for (final Map.Entry<String, Integer> issueTypeEntry : issueTypeCounts.entrySet()) {
                     final PolarisIssueModel newIssue = PolarisIssueModel.createNewIssue(issueTypeEntry.getKey(), issueTypeEntry.getValue());
@@ -88,8 +91,8 @@ public class PolarisApiHelper {
 
     public Set<String> getAllEmailsForProject(final ProjectV0Resource project) throws IntegrationException {
         List<UserResource> allUsers = null;
-        final RoleAssignmentResources projectRoleAssignements = roleAssignmentsService.getRoleAssignmentsForProjectWithIncluded(project.getId(),
-            RoleAssignmentsService.INCLUDE_USERS, RoleAssignmentsService.INCLUDE_GROUPS);
+        final RoleAssignmentResources projectRoleAssignements = roleAssignmentService.getRoleAssignmentsForProjectWithIncluded(project.getId(),
+            RoleAssignmentService.INCLUDE_USERS, RoleAssignmentService.INCLUDE_GROUPS);
 
         final Set<String> emails = new HashSet<>();
         for (final RoleAssignmentResource roleAssignment : projectRoleAssignements.getData()) {
@@ -108,9 +111,9 @@ public class PolarisApiHelper {
     }
 
     public Optional<String> getAdminEmailForProject(final ProjectV0Resource project) throws IntegrationException {
-        final RoleAssignmentResources projectRoleAssignements = roleAssignmentsService.getRoleAssignmentsForProjectWithIncluded(project.getId(), RoleAssignmentsService.INCLUDE_USERS, RoleAssignmentsService.INCLUDE_ROLES);
+        final RoleAssignmentResources projectRoleAssignements = roleAssignmentService.getRoleAssignmentsForProjectWithIncluded(project.getId(), RoleAssignmentService.INCLUDE_USERS, RoleAssignmentService.INCLUDE_ROLES);
         for (final RoleAssignmentResource roleAssignment : projectRoleAssignements.getData()) {
-            final Optional<String> optionalRoleName = roleAssignmentsService.getRoleFromPopulatedRoleAssignments(projectRoleAssignements, roleAssignment)
+            final Optional<String> optionalRoleName = roleAssignmentService.getRoleFromPopulatedRoleAssignments(projectRoleAssignements, roleAssignment)
                                                           .map(RoleResource::getAttributes)
                                                           .map(RoleAttributes::getRolename)
                                                           .filter(roleName -> roleName.equals(RoleAttributes.ROLE_ADMINISTRATOR));
@@ -124,11 +127,17 @@ public class PolarisApiHelper {
         return Optional.empty();
     }
 
-    private Map<String, Integer> mapIssueTypeToCount(final List<QueryIssueResource> queryIssues) {
+    private Map<String, Integer> mapIssueTypeToCount(final String projectId, final String branchId, final List<IssueV0Resource> queryIssues) throws IntegrationException {
         final Map<String, Integer> issueTypeCounts = new HashMap<>();
-        for (final QueryIssueResource queryIssue : queryIssues) {
-            // FIXME issue type is not the same as issue key
-            final String issueType = queryIssue.getAttributes().getSubTool();
+        for (final IssueV0Resource queryIssue : queryIssues) {
+            final String issueKey = queryIssue.getAttributes().getIssueKey();
+            final IssueResourcesSingle populatedIssueResouce = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
+            final String subTool = queryIssue.getAttributes().getSubTool();
+            final String issueType = issueService
+                                         .getIssueTypeFromPopulatedIssueResources(populatedIssueResouce)
+                                         .map(IssueTypeV0Resource::getAttributes)
+                                         .map(IssueTypeV0Attributes::getName)
+                                         .orElse(subTool);
             if (!issueTypeCounts.containsKey(issueType)) {
                 issueTypeCounts.put(issueType, 0);
             }
@@ -139,7 +148,7 @@ public class PolarisApiHelper {
     }
 
     private Optional<String> getEmailForRoleAssignedUser(final RoleAssignmentResources populatedRoleAssignments, final RoleAssignmentResource roleAssignment) throws IntegrationException {
-        final Optional<UserResource> user = roleAssignmentsService.getUserFromPopulatedRoleAssignments(populatedRoleAssignments, roleAssignment);
+        final Optional<UserResource> user = roleAssignmentService.getUserFromPopulatedRoleAssignments(populatedRoleAssignments, roleAssignment);
         if (user.isPresent()) {
             return userService.getEmailForUser(user.get());
         }
@@ -148,7 +157,7 @@ public class PolarisApiHelper {
 
     private Set<String> getGroupEmailsForRoleAssignedUser(final RoleAssignmentResources populatedRoleAssignments, final RoleAssignmentResource roleAssignment, final List<UserResource> allUsers) throws IntegrationException {
         final Set<String> groupEmails = new HashSet<>();
-        final Optional<GroupResource> optionalGroup = roleAssignmentsService.getGroupFromPopulatedRoleAssignments(populatedRoleAssignments, roleAssignment);
+        final Optional<GroupResource> optionalGroup = roleAssignmentService.getGroupFromPopulatedRoleAssignments(populatedRoleAssignments, roleAssignment);
         if (optionalGroup.isPresent()) {
             final Set<UserResource> usersInGroup = userService.getUsersForGroup(allUsers, optionalGroup.get());
             for (final UserResource userInGroup : usersInGroup) {

@@ -1,4 +1,6 @@
 import {
+    HIPCHAT_CONFIG_DELETED,
+    HIPCHAT_CONFIG_DELETING,
     HIPCHAT_CONFIG_FETCHED,
     HIPCHAT_CONFIG_FETCHING,
     HIPCHAT_CONFIG_HIDE_TEST_MODAL,
@@ -34,6 +36,18 @@ function configFetched(config) {
     return {
         type: HIPCHAT_CONFIG_FETCHED,
         config
+    };
+}
+
+function deletingConfig() {
+    return {
+        type: HIPCHAT_CONFIG_DELETING
+    };
+}
+
+function configDeleted() {
+    return {
+        type: HIPCHAT_CONFIG_DELETED
     };
 }
 
@@ -126,8 +140,9 @@ export function updateConfig(config) {
         dispatch(updatingConfig());
         const { csrfToken } = getState().session;
         let request;
-        if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
+        const id = FieldModelUtilities.getFieldModelId(config);
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, config);
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
@@ -180,5 +195,34 @@ export function testConfig(config, destination) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function deleteConfig(id) {
+    return (dispatch, getState) => {
+        dispatch(deletingConfig());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(configDeleted());
+                });
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(configError(data.message, data.errors));
+                            case 412:
+                                return dispatch(configError(data.message, data.errors));
+                            default: {
+                                dispatch(configError(data.message, null));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            }
+                        }
+                    });
+            }
+        }).catch(console.error);
     };
 }

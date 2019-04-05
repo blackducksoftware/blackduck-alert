@@ -58,9 +58,9 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Attributes;
-import com.synopsys.integration.polaris.common.api.common.branch.BranchV0Resource;
-import com.synopsys.integration.polaris.common.api.common.project.ProjectV0Resource;
+import com.synopsys.integration.polaris.common.api.common.model.branch.BranchV0Attributes;
+import com.synopsys.integration.polaris.common.api.common.model.branch.BranchV0Resource;
+import com.synopsys.integration.polaris.common.api.common.model.project.ProjectV0Resource;
 import com.synopsys.integration.polaris.common.service.BranchService;
 import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 import com.synopsys.integration.polaris.common.service.ProjectService;
@@ -97,7 +97,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             final PolarisServicesFactory servicesFactory = polarisProperties.createPolarisServicesFactory(intLogger);
             final ProjectService projectService = servicesFactory.createProjectService();
             final BranchService branchService = servicesFactory.createBranchService();
-            final PolarisApiHelper polarisApiHelper = new PolarisApiHelper(servicesFactory.createIssueService(), servicesFactory.createRoleAssignmentsService(), servicesFactory.createUserService());
+            final PolarisApiHelper polarisApiHelper = new PolarisApiHelper(servicesFactory.createIssueService(), servicesFactory.createRoleAssignmentService(), servicesFactory.createUserService());
 
             final Map<ProviderProject, Set<String>> projectUserEmailMappings = new HashMap<>();
             final Map<ProviderProject, Set<PolarisIssueModel>> issuesToUpdate = new HashMap<>();
