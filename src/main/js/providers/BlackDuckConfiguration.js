@@ -135,7 +135,7 @@ class BlackDuckConfiguration
                             label="Timeout"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_BLACKDUCK_TIMEOUT)}
                             name={KEY_BLACKDUCK_TIMEOUT}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
                             errorValue={this.props.fieldErrors[KEY_BLACKDUCK_TIMEOUT]}
