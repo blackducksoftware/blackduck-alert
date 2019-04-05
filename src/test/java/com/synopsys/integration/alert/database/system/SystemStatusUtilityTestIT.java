@@ -54,9 +54,9 @@ public class SystemStatusUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSaveStartupTime() {
+        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         systemStatusUtility.startupOccurred();
         final SystemStatus systemStatus = systemStatusRepository.getOne(SystemStatusUtility.SYSTEM_STATUS_ID);
-        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         final Date date = systemStatus.getStartupTime();
         final ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
         assertNotNull(date);
