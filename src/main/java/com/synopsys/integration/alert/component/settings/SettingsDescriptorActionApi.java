@@ -85,12 +85,12 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     @Override
-    public FieldModel updateConfig(final FieldModel fieldModel) {
-        return saveConfig(fieldModel);
+    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
+        return beforeSaveConfig(fieldModel);
     }
 
     @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
+    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
@@ -110,14 +110,14 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
-        final String password = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
+        final String password = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
         if (StringUtils.isNotBlank(password)) {
             userAccessor.changeUserPassword(DefaultUserAccessor.DEFAULT_ADMIN_USER, password);
         }
     }
 
     private void saveDefaultAdminUserEmail(final FieldModel fieldModel) {
-        final Optional<FieldValueModel> optionalEmail = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
+        final Optional<FieldValueModel> optionalEmail = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
         if (optionalEmail.isPresent()) {
             userAccessor.changeUserEmailAddress(DefaultUserAccessor.DEFAULT_ADMIN_USER, optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
         }
@@ -125,8 +125,8 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
 
     private void saveEncryptionProperties(final FieldModel fieldModel) {
         try {
-            final Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD);
-            final Optional<FieldValueModel> optionalEncryptionSalt = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+            final Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD);
+            final Optional<FieldValueModel> optionalEncryptionSalt = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
             if (optionalEncryptionPassword.isPresent()) {
                 final String passwordToSave = optionalEncryptionPassword.get().getValue().orElse("");

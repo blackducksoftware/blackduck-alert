@@ -108,14 +108,14 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public FieldModel updateConfig(final FieldModel fieldModel) {
-        return saveConfig(fieldModel);
+    public FieldModel afterUpdateConfig(final FieldModel fieldModel) {
+        return afterSaveConfig(fieldModel);
     }
 
     @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
-        // FIXME validate can't be called here as the validation is being ran before the data is actually saved.
+    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         final boolean valid = systemValidator.validate();
+        // This doesn't need to validate the whole system, just the Black Duck settings.
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {
@@ -123,6 +123,13 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
                 taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
             }
         }
-        return super.saveConfig(fieldModel);
+        return super.afterSaveConfig(fieldModel);
+    }
+
+    @Override
+    public FieldModel deleteConfig(final FieldModel fieldModel) {
+        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
+        taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
+        return super.deleteConfig(fieldModel);
     }
 }

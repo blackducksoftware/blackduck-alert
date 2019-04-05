@@ -175,8 +175,12 @@ class SettingsConfigurationForm extends Component {
         const { errorMessage, actionMessage } = this.props;
 
         const fieldModel = this.state.settingsData;
-        const selectedAuthenticationType = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
+        let selectedAuthenticationType = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
+        if (selectedAuthenticationType) {
+            selectedAuthenticationType = selectedAuthenticationType.toString().toLowerCase();
+        }
         const authenticationTypeOptions = this.getAuthenticationTypes();
+
         const selectedAuthenticationOption = authenticationTypeOptions.filter(option => option.value === selectedAuthenticationType);
 
         const selectedReferral = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_REFERRAL);
@@ -193,7 +197,8 @@ class SettingsConfigurationForm extends Component {
                 <form
                     method="POST"
                     className="form-horizontal loginForm"
-                    onSubmit={this.handleSubmit}>
+                    onSubmit={this.handleSubmit}
+                    noValidate="true">
                     <div className="form-group">
                         <div className="col-sm-12">
                             <h2> Default
