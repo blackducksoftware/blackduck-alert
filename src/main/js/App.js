@@ -18,8 +18,8 @@ import '../css/main.scss';
 
 class App extends Component {
     componentDidMount() {
-        this.props.getConfig();
         this.props.verifyLogin();
+        this.props.getConfig();
         this.props.getSettings();
     }
 

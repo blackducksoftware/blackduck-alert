@@ -127,7 +127,7 @@ export function logout() {
             }
         }).then((response) => {
             dispatch(loggedOut());
-            dispatch(push('/alert'));
+            dispatch(push('/alert/logout'));
         }).catch((error) => {
             console.log(error);
         });
