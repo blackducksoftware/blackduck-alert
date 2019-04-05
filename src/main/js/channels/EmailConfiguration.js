@@ -13,6 +13,7 @@ import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import StatusMessage from 'field/StatusMessage';
 
 const ID_KEY = 'id';
 
@@ -225,15 +226,9 @@ class EmailConfiguration extends React.Component {
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon="envelope" configurationName="Email" description={configurationDescription} />
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
-                {actionMessage && <div className="alert alert-success">
-                    {actionMessage}
-                </div>}
-
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <TextInput
                         id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"

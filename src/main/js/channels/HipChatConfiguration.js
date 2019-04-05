@@ -10,6 +10,7 @@ import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import StatusMessage from 'field/StatusMessage';
 
 const ID_KEY = 'id';
 const KEY_API_KEY = 'channel.hipchat.api.key';
@@ -85,15 +86,9 @@ class HipChatConfiguration extends React.Component {
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon="comments" configurationName="HipChat" description={configurationDescription} />
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
-                {actionMessage && <div className="alert alert-success">
-                    {actionMessage}
-                </div>}
-
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <PasswordInput
                         id={KEY_API_KEY}
                         label="API Key"

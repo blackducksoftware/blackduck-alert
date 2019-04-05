@@ -10,6 +10,7 @@ import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import StatusMessage from 'field/StatusMessage';
 
 const KEY_BLACKDUCK_URL = 'blackduck.url';
 const KEY_BLACKDUCK_API_KEY = 'blackduck.api.key';
@@ -104,15 +105,9 @@ class BlackDuckConfiguration
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon="laptop" configurationName="Black Duck" description={configurationDescription} />
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
-                {actionMessage && <div className="alert alert-success">
-                    {actionMessage}
-                </div>}
-
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <div>
                         <TextInput
                             id={KEY_BLACKDUCK_URL}
