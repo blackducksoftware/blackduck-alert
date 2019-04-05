@@ -335,7 +335,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Port"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_PORT_KEY)}
                             name={JAVAMAIL_PORT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_PORT_KEY]}
@@ -346,7 +346,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Connection Timeout"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             name={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_CONNECTION_TIMEOUT_KEY]}
@@ -357,7 +357,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Timeout"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_TIMEOUT_KEY)}
                             name={JAVAMAIL_TIMEOUT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_TIMEOUT_KEY]}
@@ -368,7 +368,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Write Timeout"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_WRITETIMEOUT_KEY)}
                             name={JAVAMAIL_WRITETIMEOUT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_WRITETIMEOUT_KEY]}
@@ -401,7 +401,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Local Port"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             name={JAVAMAIL_LOCALHOST_PORT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_PORT_KEY]}
@@ -489,7 +489,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Auth NTLM Flags"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             name={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_FLAGS_KEY]}
@@ -731,7 +731,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Proxy Port"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_PROXY_PORT_KEY)}
                             name={JAVAMAIL_PROXY_PORT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_PROXY_PORT_KEY]}
@@ -753,7 +753,7 @@ class EmailConfiguration extends React.Component {
                             label="SMTP Socks Port"
                             description={FieldModelUtilities.getFieldDescription(fieldDescriptions, JAVAMAIL_SOCKS_PORT_KEY)}
                             name={JAVAMAIL_SOCKS_PORT_KEY}
-                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleNumberValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)}
                             errorValue={this.props.fieldErrors[JAVAMAIL_SOCKS_PORT_KEY]}
