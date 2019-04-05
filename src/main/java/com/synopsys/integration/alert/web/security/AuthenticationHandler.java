@@ -86,6 +86,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.user.UserRole;
@@ -97,15 +98,13 @@ import com.synopsys.integration.alert.web.security.authentication.saml.AlertWebS
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLAuthProvider;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.web.security.authentication.saml.SamlAntMatcher;
 import com.synopsys.integration.alert.web.security.authentication.saml.UserDetailsService;
 
 @EnableWebSecurity
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
-    public static final String RESET_PASSWORD_PATH = "/resetPassword/**";
-    public static final String RESET_PASSWORD_WITH_USERNAME_PATH = "/resetPassword/**";
-    public static final String H2_CONSOLE_PATH = "/h2/**";
 
     private final HttpPathManager httpPathManager;
     private final SSLValidator sslValidator;
@@ -138,17 +137,19 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         } else {
             configureInsecure(http);
         }
-        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(httpPathManager.getCsrfIgnoredPaths())
+        final RequestMatcher[] ignoringRequestMatchers = createCsrfIgnoreMatchers();
+        final RequestMatcher[] authorizedRequestMatchers = createAllowedPathMatchers();
+        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(ignoringRequestMatchers)
             .and().headers().frameOptions().disable()
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-            .authorizeRequests().antMatchers(httpPathManager.getAllowedPaths()).permitAll()
+            .authorizeRequests().requestMatchers(authorizedRequestMatchers).permitAll()
             .and().authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
             .and().logout().logoutSuccessUrl("/");
     }
 
     private void configureInsecure(final HttpSecurity http) throws Exception {
-        ignorePaths(H2_CONSOLE_PATH, RESET_PASSWORD_PATH, RESET_PASSWORD_WITH_USERNAME_PATH);
+        ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
     }
 
     private void configureWithSSL(final HttpSecurity http) throws Exception {
@@ -159,7 +160,23 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         for (final String path : paths) {
             httpPathManager.addAllowedPath(path);
             httpPathManager.addCsrfIgnoredPath(path);
+            httpPathManager.addSamlAllowedPath(path);
+            httpPathManager.addSamlCsrfIgnoredPath(path);
         }
+    }
+
+    private RequestMatcher[] createCsrfIgnoreMatchers() {
+        final RequestMatcher[] matchers = {
+            new SamlAntMatcher(samlContext(), httpPathManager.getSamlCsrfIgnoredPaths(), httpPathManager.getCsrfIgnoredPaths())
+        };
+        return matchers;
+    }
+
+    private RequestMatcher[] createAllowedPathMatchers() {
+        final RequestMatcher[] matchers = {
+            new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
+        };
+        return matchers;
     }
 
     @Bean
