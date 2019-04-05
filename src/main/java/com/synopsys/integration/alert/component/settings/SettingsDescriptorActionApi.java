@@ -147,13 +147,13 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     private void addSAMLMetadata(final FieldModel fieldModel) {
-        final Boolean samlEnabled = fieldModel.getField(SettingsDescriptor.KEY_SAML_ENABLED)
+        final Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
                                         .map(fieldValueModel -> fieldValueModel.getValue()
                                                                     .map(BooleanUtils::toBoolean)
                                                                     .orElse(false)
                                         ).orElse(false);
         if (samlEnabled) {
-            final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getField(SettingsDescriptor.KEY_SAML_METADATA_URL);
+            final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
             if (metadataURLFieldValueOptional.isPresent()) {
                 final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
                 final String metadataURL = metadataURLFieldValue.getValue().orElse("");
