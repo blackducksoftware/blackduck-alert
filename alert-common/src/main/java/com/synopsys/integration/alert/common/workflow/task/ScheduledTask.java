@@ -116,9 +116,15 @@ public abstract class ScheduledTask implements Runnable {
     public Optional<String> getFormatedNextRunTime() {
         final Optional<Long> msToNextRun = getMillisecondsToNextRun();
         if (msToNextRun.isPresent()) {
+
             final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
             ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun.get(), ChronoUnit.MILLIS);
-            nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+            final int seconds = nextRunTime.getSecond();
+            if (seconds >= 30) {
+                nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+            } else {
+                nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES);
+            }
             final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN));
             return Optional.of(formattedString + " UTC");
         }

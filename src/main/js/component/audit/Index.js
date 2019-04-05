@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
-import { getAuditData, resendNotification } from 'store/actions/audit';
+import { getAuditData } from 'store/actions/audit';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
@@ -158,6 +158,8 @@ class Index extends Component {
         const hasMediumVulnerability = false;
         const hasLowVulnerability = false;
         let hasVulnerability = false;
+        let hasIssueCountIncreased = false;
+        let hasIssueCountDecreased = false;
 
 
         if (cell === 'RULE_VIOLATION') {
@@ -168,6 +170,10 @@ class Index extends Component {
             hasPolicyViolationOverride = true;
         } else if (cell === 'VULNERABILITY') {
             hasVulnerability = true;
+        } else if (cell === 'ISSUE_COUNT_INCREASED') {
+            hasIssueCountIncreased = true;
+        } else if (cell === 'ISSUE_COUNT_DECREASED') {
+            hasIssueCountDecreased = true;
         }
 
 
@@ -179,6 +185,8 @@ class Index extends Component {
             hasMediumVulnerability={hasMediumVulnerability}
             hasLowVulnerability={hasLowVulnerability}
             hasVulnerability={hasVulnerability}
+            hasIssueCountIncreased={hasIssueCountIncreased}
+            hasIssueCountDecreased={hasIssueCountDecreased}
         />);
     }
 

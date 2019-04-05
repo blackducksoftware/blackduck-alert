@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -46,8 +47,12 @@ public class EmailChannelTestIT extends ChannelTest {
         final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);
-        globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        final TestBlackDuckProperties testBlackDuckProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);
+        testBlackDuckProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+
+        final PolarisProperties testPolarisProperties = Mockito.mock(PolarisProperties.class);
+        final String polarisUrl = properties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
+        Mockito.when(testPolarisProperties.getUrl()).thenReturn(Optional.ofNullable(polarisUrl));
 
         final DefaultEmailHandler blackDuckEmailHandler = new DefaultEmailHandler(Mockito.mock(DefaultProviderDataAccessor.class));
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
@@ -61,7 +66,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(descriptorMap);
 
-        final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, globalProperties, auditUtility, emailAddressHandler);
+        final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, testBlackDuckProperties, testPolarisProperties, auditUtility, emailAddressHandler);
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
         final Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         final String subjectLine = "Integration test subject line";
@@ -79,16 +84,14 @@ public class EmailChannelTestIT extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-
         final DistributionEvent event = new DistributionEvent("1L", EmailChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content, fieldAccessor);
-
         emailChannel.sendAuditedMessage(event);
     }
 
     @Test
-    public void sendEmailNullGlobalTest() throws Exception {
+    public void sendEmailNullGlobalTest() {
         try {
-            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null);
+            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
@@ -101,5 +104,6 @@ public class EmailChannelTestIT extends ChannelTest {
             assertEquals("ERROR: Missing global config.", e.getMessage());
         }
     }
+
 }
 

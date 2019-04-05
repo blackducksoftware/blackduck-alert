@@ -1,4 +1,6 @@
 import {
+    EMAIL_CONFIG_DELETED,
+    EMAIL_CONFIG_DELETING,
     EMAIL_CONFIG_FETCHED,
     EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
@@ -35,6 +37,18 @@ function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
         config
+    };
+}
+
+function deletingConfig() {
+    return {
+        type: EMAIL_CONFIG_DELETING
+    };
+}
+
+function configDeleted() {
+    return {
+        type: EMAIL_CONFIG_DELETED
     };
 }
 
@@ -140,8 +154,9 @@ export function updateEmailConfig(config) {
         dispatch(updatingEmailConfig());
         const { csrfToken } = getState().session;
         let request;
-        if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
+        const id = FieldModelUtilities.getFieldModelId(config);
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, config);
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
@@ -169,6 +184,21 @@ export function sendEmailConfigTest(config, destination) {
                 dispatch(emailConfigTestSucceeded());
             } else {
                 dispatch(emailConfigTestFailure());
+                handleFailureResponse(dispatch, response);
+            }
+        }).catch(console.error);
+    };
+}
+
+export function deleteConfig(id) {
+    return (dispatch, getState) => {
+        dispatch(deletingConfig());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
+        request.then((response) => {
+            if (response.ok) {
+                dispatch(configDeleted());
+            } else {
                 handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
