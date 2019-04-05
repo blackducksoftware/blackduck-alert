@@ -66,7 +66,7 @@ public class ConfigurationFieldModelTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
+        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertToConfigurationFieldModelMap(fieldModel);
         assertTrue(actualModelMap.containsKey(KEY_FIELD_1));
         assertTrue(actualModelMap.containsKey(KEY_FIELD_2));
         assertEquals(VALUE_FIELD_1, actualModelMap.get(KEY_FIELD_1).getFieldValue().orElseThrow(IllegalArgumentException::new));
@@ -79,7 +79,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(List.of());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
+        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertToConfigurationFieldModelMap(fieldModel);
         assertTrue(actualModelMap.isEmpty());
     }
 

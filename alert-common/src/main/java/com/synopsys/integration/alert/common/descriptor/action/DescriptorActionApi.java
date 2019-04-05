@@ -51,7 +51,7 @@ public abstract class DescriptorActionApi {
         for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
             final String key = fieldEntry.getKey();
             final ConfigField field = fieldEntry.getValue();
-            final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+            final Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
             if (field.isRequired() && optionalFieldValue.isEmpty()) {
                 fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
             }
@@ -101,11 +101,19 @@ public abstract class DescriptorActionApi {
         return fieldModel;
     }
 
-    public FieldModel updateConfig(final FieldModel fieldModel) {
+    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
         return fieldModel;
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) {
+    public FieldModel afterUpdateConfig(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
+    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
+    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         return fieldModel;
     }
 
@@ -132,7 +140,7 @@ public abstract class DescriptorActionApi {
 
     private void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final String key = field.getKey();
-        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
         if (optionalFieldValue.isEmpty() || optionalFieldValue.map(FieldValueModel::containsNoData).orElse(true)) {
             fieldErrors.put(key, field.getLabel() + " is missing");
         }
@@ -140,7 +148,7 @@ public abstract class DescriptorActionApi {
 
     private void validateAnyDisallowedFieldsSet(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors, final String validatedFieldLabel) {
         final String key = field.getKey();
-        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getField(key);
+        final Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
         if (optionalFieldValue.isPresent() && hasValueOrChecked(optionalFieldValue.get(), field.getType())) {
             final String errorMessage = String.format("%s cannot be set if %s is already set", field.getLabel(), validatedFieldLabel);
             fieldErrors.put(key, errorMessage);

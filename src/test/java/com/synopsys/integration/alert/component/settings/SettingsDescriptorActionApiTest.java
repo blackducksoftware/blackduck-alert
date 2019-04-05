@@ -83,7 +83,7 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel modelToSave = actionaApi.updateConfig(fieldModel);
+        final FieldModel modelToSave = actionaApi.beforeUpdateConfig(fieldModel);
         assertFieldsMissing(modelToSave);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
@@ -102,7 +102,7 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel modelToSave = actionaApi.saveConfig(fieldModel);
+        final FieldModel modelToSave = actionaApi.beforeSaveConfig(fieldModel);
         assertFieldsMissing(modelToSave);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
@@ -123,7 +123,7 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
 
         Mockito.doThrow(new IllegalArgumentException()).when(encryptionUtility).updatePasswordField(Mockito.anyString());
-        final FieldModel modelToSave = actionaApi.saveConfig(fieldModel);
+        final FieldModel modelToSave = actionaApi.beforeSaveConfig(fieldModel);
         assertFieldsMissing(modelToSave);
     }
 
@@ -242,22 +242,22 @@ public class SettingsDescriptorActionApiTest {
     }
 
     private void assertFieldsMissing(final FieldModel fieldModel) {
-        assertFalse(fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
-        assertFalse(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
-        assertFalse(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
 
-        assertFalse(fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
-        assertFalse(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
-        assertFalse(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> Optional.of(field.isSet())).orElse(false));
     }
 
     private void assertFieldsPresent(final FieldModel fieldModel) {
-        assertTrue(fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
-        assertTrue(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
-        assertTrue(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
+        assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
+        assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
+        assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
 
-        assertTrue(fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
-        assertTrue(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
-        assertTrue(fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> Optional.of(field.isSet())).orElse(false));
     }
 }
