@@ -40,8 +40,8 @@ const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'settings.ldap.group.role.attribute';
 const fieldDescriptions = {
     [KEY_DEFAULT_SYSTEM_ADMIN_EMAIL]: 'The email address of the Alert system administrator. Used in case a password reset is needed.',
     [KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD]: 'The password of the Alert system administrator. Used when logging in as the "sysadmin" user.',
-    [KEY_ENCRYPTION_PASSWORD]: 'The password used when encrypting sensitive fields.',
-    [KEY_ENCRYPTION_GLOBAL_SALT]: 'The salt used when encrypting sensitive fields.',
+    [KEY_ENCRYPTION_PASSWORD]: 'The password used when encrypting sensitive fields. Must be at least 8 characters long.',
+    [KEY_ENCRYPTION_GLOBAL_SALT]: 'The salt used when encrypting sensitive fields. Must be at least 8 characters long.',
     [KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE]: 'If true, the Alert environment variables will override the stored configurations.',
     [KEY_PROXY_HOST]: 'The host name of the proxy server to use.',
     [KEY_PROXY_PORT]: 'The port of the proxy server to use.',
