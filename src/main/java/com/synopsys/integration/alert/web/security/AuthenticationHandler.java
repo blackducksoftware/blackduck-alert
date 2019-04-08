@@ -251,8 +251,10 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLEntryPoint samlEntryPoint() {
+        final SAMLEntryPoint entryPoint = new SAMLEntryPoint();
+        entryPoint.setDefaultProfileOptions(webSSOProfileOptions());
         final SAMLEntryPoint samlEntryPoint = new AlertSAMLEntryPoint(samlContext());
-        samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions());
+
         return samlEntryPoint;
     }
 
