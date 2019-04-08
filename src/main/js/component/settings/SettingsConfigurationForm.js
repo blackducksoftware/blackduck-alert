@@ -8,6 +8,7 @@ import CollapsiblePane from 'component/common/CollapsiblePane';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import StatusMessage from 'field/StatusMessage';
 
 const KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = 'settings.user.default.admin.email';
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'settings.user.default.admin.password';
@@ -47,8 +48,8 @@ const KEY_SAML_ENTITY_BASE_URL = 'settings.saml.entity.base.url';
 const fieldDescriptions = {
     [KEY_DEFAULT_SYSTEM_ADMIN_EMAIL]: 'The email address of the Alert system administrator. Used in case a password reset is needed.',
     [KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD]: 'The password of the Alert system administrator. Used when logging in as the "sysadmin" user.',
-    [KEY_ENCRYPTION_PASSWORD]: 'The password used when encrypting sensitive fields.',
-    [KEY_ENCRYPTION_GLOBAL_SALT]: 'The salt used when encrypting sensitive fields.',
+    [KEY_ENCRYPTION_PASSWORD]: 'The password used when encrypting sensitive fields. Must be at least 8 characters long.',
+    [KEY_ENCRYPTION_GLOBAL_SALT]: 'The salt used when encrypting sensitive fields. Must be at least 8 characters long.',
     [KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE]: 'If true, the Alert environment variables will override the stored configurations.',
     [KEY_PROXY_HOST]: 'The host name of the proxy server to use.',
     [KEY_PROXY_PORT]: 'The port of the proxy server to use.',
@@ -190,10 +191,7 @@ class SettingsConfigurationForm extends Component {
         const saving = this.props.updateStatus === 'UPDATING' || this.props.updateStatus === 'FETCHING';
         return (
             <div>
-                {errorMessage && <div className="alert alert-danger"> {errorMessage} </div>}
-
-                {actionMessage && <div className="alert alert-success"> {actionMessage} </div>}
-
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
                 <form
                     method="POST"
                     className="form-horizontal loginForm"

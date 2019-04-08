@@ -12,6 +12,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
 import LabeledField from 'field/LabeledField';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import StatusMessage from 'field/StatusMessage';
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -139,16 +140,14 @@ class SchedulingConfiguration extends React.Component {
     render() {
         const fieldModel = this.state.currentConfig;
         const { fieldErrors, errorMessage, updateStatus } = this.props;
+        let actionMessage = null;
+        if (updateStatus === 'UPDATED') {
+            actionMessage = 'Update successful';
+        }
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon="clock-o" configurationName="Scheduling" description={configurationDescription} />
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
-
-                {updateStatus === 'UPDATED' && <div className="alert alert-success">
-                    {'Update successful'}
-                </div>}
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <LabeledField
