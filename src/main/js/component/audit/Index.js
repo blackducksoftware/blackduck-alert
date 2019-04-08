@@ -272,9 +272,11 @@ class Index extends Component {
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
-                {!this.props.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
+                {!this.props.autoRefresh &&
+                <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
                     <span className="fa fa-refresh fa-fw" aria-hidden="true" /> Refresh
-                </div>}
+                </div>
+                }
             </ButtonGroup>
         );
     }
