@@ -1,16 +1,10 @@
 import React, { Component } from "react";
-import Header from "./LoginPage";
-import PropTypes from "prop-types";
-import { logout } from "./store/actions/session";
+import Header from 'component/common/Header';
 import { connect } from "react-redux";
 
 class LogoutPage extends Component {
     constructor(props) {
         super(props);
-    }
-
-    componentDidUpdate(prevProps) {
-        this.props.logout();
     }
 
     render() {
@@ -19,15 +13,11 @@ class LogoutPage extends Component {
                 <div className="loginContainer">
                     <div className="loginBox">
                         <Header />
-                        <div>
-                            {this.props.errorMessage &&
-                            <div className="alert alert-danger">
-                                <p name="configurationMessage">{this.props.errorMessage}</p>
-                            </div>
-                            }
+                        <div className="form-horizontal loginForm">
                             <div className="row">
-                                <div className="col-sm-12 text-right">
-                                    <p>You've successfully logged out of Alert! Please close your browser to complete logout</p>
+                                <div className="col-sm-12 text-center">
+                                    <div className="d-inline-flex flex-column p-2">You've successfully logged out of Alert!</div>
+                                    <div className="d-inline-flex flex-column p-2">Please close your browser to complete logout.</div>
                                 </div>
                             </div>
                         </div>
@@ -38,20 +28,13 @@ class LogoutPage extends Component {
     }
 }
 
-LogoutPage.propTypes = {
-    logout: PropTypes.func.isRequired,
-    errorMessage: PropTypes.string
-};
+LogoutPage.propTypes = {};
 
-LogoutPage.defaultProps = {
-    errorMessage: ''
-};
+LogoutPage.defaultProps = {};
 
 // Redux mappings to be used later....
-const mapStateToProps = state => ({});
+const mapStateToProps = () => ({});
 
-const mapDispatchToProps = dispatch => ({
-    logout: () => dispatch(logout())
-});
+const mapDispatchToProps = () => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(LogoutPage);

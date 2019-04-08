@@ -1,5 +1,5 @@
 import { push } from 'react-router-redux';
-import { SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR } from 'store/actions/types';
+import { SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
 
 /**
  * Triggers Logging In Reducer
@@ -36,6 +36,12 @@ function loggedOut() {
     return {
         type: SESSION_LOGGED_OUT
     };
+}
+
+function logOut() {
+    return {
+        type: SESSION_LOGOUT
+    }
 }
 
 export function loginError(errorMessage, errors) {
@@ -127,7 +133,8 @@ export function logout() {
             }
         }).then((response) => {
             dispatch(loggedOut());
-            dispatch(push('/alert/logout'));
+            dispatch(logOut());
+            dispatch(push('/alert'));
         }).catch((error) => {
             console.log(error);
         });
