@@ -8,6 +8,7 @@ import CollapsiblePane from 'component/common/CollapsiblePane';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import StatusMessage from 'field/StatusMessage';
 
 const KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = 'settings.user.default.admin.email';
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'settings.user.default.admin.password';
@@ -173,10 +174,7 @@ class SettingsConfigurationForm extends Component {
         const saving = this.props.updateStatus === 'UPDATING' || this.props.updateStatus === 'FETCHING';
         return (
             <div>
-                {errorMessage && <div className="alert alert-danger"> {errorMessage} </div>}
-
-                {actionMessage && <div className="alert alert-success"> {actionMessage} </div>}
-
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
                 <form
                     method="POST"
                     className="form-horizontal loginForm"

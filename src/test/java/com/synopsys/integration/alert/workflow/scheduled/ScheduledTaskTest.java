@@ -50,7 +50,12 @@ public class ScheduledTaskTest {
         final Long millisecondsToNextRun = 10000L;
         final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
         ZonedDateTime expectedDateTime = currentUTCTime.plus(millisecondsToNextRun, ChronoUnit.MILLIS);
-        expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+        final int seconds = expectedDateTime.getSecond();
+        if (seconds >= 30) {
+            expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+        } else {
+            expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES);
+        }
         final String expectedNextRunTime = expectedDateTime.format(DateTimeFormatter.ofPattern(ScheduledTask.FORMAT_PATTERN)) + " UTC";
 
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));

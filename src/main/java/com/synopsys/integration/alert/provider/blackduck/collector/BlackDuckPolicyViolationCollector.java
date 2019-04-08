@@ -110,12 +110,12 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
         final String componentName = componentVersionStatus.getComponentName();
         if (StringUtils.isNotBlank(componentName)) {
-            blackDuckPolicyLinkableItem.addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, componentName, componentName));
+            blackDuckPolicyLinkableItem.addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, componentName, componentVersionStatus.getComponent()));
         }
 
         final String componentVersionName = componentVersionStatus.getComponentVersionName();
         if (StringUtils.isNotBlank(componentVersionName)) {
-            blackDuckPolicyLinkableItem.addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, componentVersionName, componentVersionName));
+            blackDuckPolicyLinkableItem.addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, componentVersionName, componentVersionStatus.getComponentVersion()));
         }
 
         blackDuckPolicyLinkableItem.setPolicyUrls(componentVersionStatus.getPolicies().stream().collect(Collectors.toSet()));

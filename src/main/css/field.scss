@@ -111,3 +111,20 @@ small {
   display: inline-block;
   width: 100%;
 }
+
+.statusAlert {
+  position: fixed;
+  top: 5px;
+  left: 255px;
+  right: 20px;
+  z-index: 100;
+}
+
+.visibleField {
+  opacity: 1;
+}
+
+.fadingField {
+  opacity: 0;
+  transition: opacity 2s ease-in-out 0s;
+}
