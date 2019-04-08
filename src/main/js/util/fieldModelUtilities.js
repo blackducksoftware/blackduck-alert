@@ -21,6 +21,18 @@ export function getFieldModelSingleValueOrDefault(fieldModel, key, defaultValue)
     return getFieldModelSingleValue(fieldModel, key) || defaultValue;
 }
 
+export function getFieldModelSingleNumberValue(fieldModel, key) {
+    const value = getFieldModelSingleValue(fieldModel, key);
+    if (value) {
+        return Number(value);
+    }
+    return undefined;
+}
+
+export function getFieldModelSingleNumberValueOrDefault(fieldModel, key, defaultValue) {
+    return getFieldModelSingleNumberValue(fieldModel, key) || defaultValue;
+}
+
 export function getFieldModelValues(fieldModel, key) {
     if (fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
