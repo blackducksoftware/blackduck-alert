@@ -23,9 +23,13 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -76,18 +80,25 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                                         .collect(Collectors.toMap(PolicyInfo::getPolicy, Function.identity()));
         final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
 
-        for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
-            final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = mapPolicyToComponent(componentVersionStatus);
-            for (final String policyUrl : blackDuckPolicyLinkableItem.getPolicyUrls()) {
-                final PolicyInfo policyItem = policyItems.get(policyUrl);
-                if (null != policyItem) {
-                    final String policyName = policyItem.getPolicyName();
-                    final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
-                    final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getLinkableItems();
-                    addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
-                }
-            }
+        final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses);
+        for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
+            final PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
+            final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
+            final SortedSet<LinkableItem> linkablePolicyItems = policyComponentMapping.getPolicyUrls()
+                                                                    .stream()
+                                                                    .filter(policyItems::containsKey)
+                                                                    .map(policyItems::get)
+                                                                    .map(this::createPolicyLinkableItem)
+                                                                    .collect(Collectors.toCollection(TreeSet::new));
+            final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getLinkableItems();
+            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
         }
+    }
+
+    private LinkableItem createPolicyLinkableItem(final PolicyInfo policyInfo) {
+        final String policyName = policyInfo.getPolicyName();
+        final String policyUrl = policyInfo.getPolicy();
+        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
     }
 
     private ItemOperation getOperationFromNotification(final AlertNotificationWrapper notificationContent) {
@@ -105,20 +116,42 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         return operation;
     }
 
-    private BlackDuckPolicyLinkableItem mapPolicyToComponent(final ComponentVersionStatus componentVersionStatus) {
+    private Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> createPolicyComponentToLinkableItemMapping(final Collection<ComponentVersionStatus> componentVersionStatuses) {
+        final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
+        for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
+            final PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus);
+            BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
+            if (blackDuckPolicyLinkableItem == null) {
+                blackDuckPolicyLinkableItem = createBlackDuckPolicyLinkableItem(componentVersionStatus);
+            } else {
+                blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionStatus.getComponentVersionName(), componentVersionStatus.getComponentVersion());
+            }
+            policyComponentToLinkableItemMapping.put(policyComponentMapping, blackDuckPolicyLinkableItem);
+        }
+        return policyComponentToLinkableItemMapping;
+    }
+
+    private PolicyComponentMapping createPolicyComponentMapping(final ComponentVersionStatus componentVersionStatus) {
+        final String componentName = componentVersionStatus.getComponentName();
+        final Set<String> policies = componentVersionStatus.getPolicies().stream().collect(Collectors.toSet());
+
+        return new PolicyComponentMapping(componentName, policies);
+    }
+
+    private BlackDuckPolicyLinkableItem createBlackDuckPolicyLinkableItem(final ComponentVersionStatus componentVersionStatus) {
         final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = new BlackDuckPolicyLinkableItem();
 
         final String componentName = componentVersionStatus.getComponentName();
         if (StringUtils.isNotBlank(componentName)) {
-            blackDuckPolicyLinkableItem.addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, componentName, componentVersionStatus.getComponent()));
+            blackDuckPolicyLinkableItem.addComponentNameItem(componentName, componentVersionStatus.getComponent());
         }
 
         final String componentVersionName = componentVersionStatus.getComponentVersionName();
         if (StringUtils.isNotBlank(componentVersionName)) {
-            blackDuckPolicyLinkableItem.addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, componentVersionName, componentVersionStatus.getComponentVersion()));
+            blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionName, componentVersionStatus.getComponentVersion());
         }
 
-        blackDuckPolicyLinkableItem.setPolicyUrls(componentVersionStatus.getPolicies().stream().collect(Collectors.toSet()));
         return blackDuckPolicyLinkableItem;
     }
+
 }
