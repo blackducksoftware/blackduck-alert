@@ -76,6 +76,7 @@ public class SAMLManager {
                 }
             } else {
                 metadataManager.setProviders(List.of());
+                metadataManager.refreshMetadata();
             }
         } catch (final MetadataProviderException e) {
             logger.error("Error updating the SAML identity provider.", e);
