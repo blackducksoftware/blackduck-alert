@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
-import { getAuditData } from 'store/actions/audit';
+import { getAuditData, resendNotification } from 'store/actions/audit';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
