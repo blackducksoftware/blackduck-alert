@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,6 +48,7 @@ import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
+    private static final Logger logger = LoggerFactory.getLogger(SystemControllerTestIT.class);
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String systemMessageBaseUrl = BaseController.BASE_PATH + "/system/messages";
     private final String systemInitialSetupBaseUrl = BaseController.BASE_PATH + "/system/setup/initial";
@@ -115,15 +118,15 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         request.contentType(contentType);
         if (systemStatusUtility.isSystemInitialized()) {
             final MockHttpServletResponse response = mockMvc.perform(request).andReturn().getResponse();
-            System.out.println("Status: " + response.getStatus());
-            System.out.println("Response: " + response.getContentAsString());
+            logger.info("Status: " + response.getStatus());
+            logger.info("Response: " + response.getContentAsString());
 
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
         } else {
             final MockHttpServletResponse response = mockMvc.perform(request).andReturn().getResponse();
-            System.out.println("Status: " + response.getStatus());
-            System.out.println("Response: " + response.getContentAsString());
+            logger.info("Status: " + response.getStatus());
+            logger.info("Response: " + response.getContentAsString());
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         }
     }
