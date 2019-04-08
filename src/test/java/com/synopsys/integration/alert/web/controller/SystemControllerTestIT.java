@@ -97,6 +97,8 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testPostInitialSystemSetup() throws Exception {
+        logger.info("Starting Post inital system setup test");
+
         final TestProperties testProperties = new TestProperties();
         final String defaultAdminEmail = "noreply@abcdomain.blackducksoftware.com";
         final String defaultAdminPassword = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD);
@@ -120,6 +122,8 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
             final MockHttpServletResponse response = mockMvc.perform(request).andReturn().getResponse();
             logger.info("Status: " + response.getStatus());
             logger.info("Response: " + response.getContentAsString());
+            System.err.println("Status: " + response.getStatus());
+            System.err.println("Response: " + response.getContentAsString());
 
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
@@ -127,6 +131,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
             final MockHttpServletResponse response = mockMvc.perform(request).andReturn().getResponse();
             logger.info("Status: " + response.getStatus());
             logger.info("Response: " + response.getContentAsString());
+            System.err.println("Status: " + response.getStatus());
+            System.err.println("Response: " + response.getContentAsString());
+
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         }
     }
