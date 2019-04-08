@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -73,7 +74,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
 
         for (final LinkableItem policyItem : policyItems) {
             final String policyUrl = policyItem.getUrl().orElse("");
-            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, applicableItems);
+            addApplicableItems(categoryItems, notificationContent.getId(), Set.of(policyItem), operation, applicableItems);
         }
     }
 }
