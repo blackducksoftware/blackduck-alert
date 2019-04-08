@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -103,7 +102,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final String defaultAdminEmail = "noreply@abcdomain.blackducksoftware.com";
         final String defaultAdminPassword = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD);
         final String globalEncryptionPassword = "password";
-        final String globalEncryptionSalt = "salt";
+        final String globalEncryptionSalt = "longsalt";
 
         final HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
 
@@ -119,21 +118,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
         if (systemStatusUtility.isSystemInitialized()) {
-            final MockHttpServletResponse response = mockMvc.perform(request).andReturn().getResponse();
-            logger.info("Status: " + response.getStatus());
-            logger.info("Response: " + response.getContentAsString());
-            System.err.println("Status: " + response.getStatus());
-            System.err.println("Response: " + response.getContentAsString());
-
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
         } else {
-            final MockHttpServletResponse response = mockMvc.perform(request).andReturn().getResponse();
-            logger.info("Status: " + response.getStatus());
-            logger.info("Response: " + response.getContentAsString());
-            System.err.println("Status: " + response.getStatus());
-            System.err.println("Response: " + response.getContentAsString());
-
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         }
     }
