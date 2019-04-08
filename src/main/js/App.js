@@ -14,6 +14,7 @@ import { verifyLogin } from 'store/actions/session';
 import { getInitialSystemSetup } from './store/actions/system';
 
 import '../css/main.scss';
+import LogoutPage from "./LogoutPage";
 
 
 class App extends Component {
@@ -27,6 +28,11 @@ class App extends Component {
         if (this.props.initializing) {
             return (<div />);
         }
+
+        if (this.props.logoutPerformed) {
+            return <LogoutPage />
+        }
+
         let contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
         if (!this.props.systemInitialized) {
             contentPage = <SetupPage />;
@@ -43,6 +49,7 @@ class App extends Component {
 
 App.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
+    logoutPerformed: PropTypes.bool.isRequired,
     initializing: PropTypes.bool.isRequired,
     getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired,
@@ -53,6 +60,7 @@ App.propTypes = {
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
     loggedIn: state.session.loggedIn,
+    logoutPerformed: state.session.logoutPerformed,
     initializing: state.session.initializing,
     systemInitialized: state.system.systemInitialized
 });

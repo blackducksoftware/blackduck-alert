@@ -16,7 +16,6 @@ import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
 import SettingsConfiguration from 'component/settings/SettingsConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
-import LogoutPage from 'LogoutPage';
 
 
 class MainPage extends Component {
@@ -77,7 +76,6 @@ class MainPage extends Component {
                     <Route path="/alert/general/settings" component={SettingsConfiguration} />
                     <Route path="/alert/general/audit" component={Audit} />
                     <Route path="/alert/general/about" component={AboutInfo} />
-                    <Route path="/alert/logout" component={LogoutPage} />
                 </div>
                 <div className="modalsArea">
                     <LogoutConfirmation />
