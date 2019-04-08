@@ -9,6 +9,7 @@ import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
+import StatusMessage from 'field/StatusMessage';
 
 class GlobalConfiguration extends React.Component {
     constructor(props) {
@@ -80,13 +81,7 @@ class GlobalConfiguration extends React.Component {
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
-                {errorMessage && <div className="alert alert-danger">
-                    {errorMessage}
-                </div>}
-
-                {actionMessage && <div className="alert alert-success">
-                    {actionMessage}
-                </div>}
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <div>
