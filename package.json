@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/blackducksoftware/blackduck-alert.git",
   "dependencies": {
-    "bootstrap": "^4.1.2",
+    "bootstrap": "^4.3.1",
     "enzyme": "^3.7.0",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
