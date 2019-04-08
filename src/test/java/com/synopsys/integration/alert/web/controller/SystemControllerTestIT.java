@@ -97,7 +97,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final String defaultAdminEmail = "noreply@abcdomain.blackducksoftware.com";
         final String defaultAdminPassword = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD);
         final String globalEncryptionPassword = "password";
-        final String globalEncryptionSalt = "salt";
+        final String globalEncryptionSalt = "salt####";
 
         final HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
 
