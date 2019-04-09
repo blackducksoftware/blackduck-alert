@@ -116,7 +116,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 }
 
                 if (StringUtils.isNotBlank(versionStatus.getComponentName())) {
-                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.getComponentName(), versionStatus.getComponentName()));
+                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.getComponentName(), versionStatus.getComponent()));
                 }
 
                 if (StringUtils.isNotBlank(versionStatus.getComponentVersionName())) {

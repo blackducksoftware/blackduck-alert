@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,6 +47,7 @@ import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
+    private static final Logger logger = LoggerFactory.getLogger(SystemControllerTestIT.class);
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String systemMessageBaseUrl = BaseController.BASE_PATH + "/system/messages";
     private final String systemInitialSetupBaseUrl = BaseController.BASE_PATH + "/system/setup/initial";
@@ -93,11 +96,13 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testPostInitialSystemSetup() throws Exception {
+        logger.info("Starting Post inital system setup test");
+
         final TestProperties testProperties = new TestProperties();
         final String defaultAdminEmail = "noreply@abcdomain.blackducksoftware.com";
         final String defaultAdminPassword = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD);
         final String globalEncryptionPassword = "password";
-        final String globalEncryptionSalt = "salt####";
+        final String globalEncryptionSalt = "longsalt";
 
         final HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
 
@@ -174,7 +179,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     public void testGetSystemMessagesBadDateRange() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
-        Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("errorparsing date ", 0));
+        Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("error parsing date ", 0));
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());

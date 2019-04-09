@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
-import { getAuditData } from 'store/actions/audit';
+import { getAuditData, resendNotification } from 'store/actions/audit';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
@@ -272,9 +272,11 @@ class Index extends Component {
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
-                {!this.props.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
+                {!this.props.autoRefresh &&
+                <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
                     <span className="fa fa-refresh fa-fw" aria-hidden="true" /> Refresh
-                </div>}
+                </div>
+                }
             </ButtonGroup>
         );
     }
