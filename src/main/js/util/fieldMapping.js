@@ -71,6 +71,7 @@ export function createField(field, value, isSet, fieldError, onChange) {
         description,
         label,
         value,
+        isChecked: value,
         isSet,
         onChange,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
