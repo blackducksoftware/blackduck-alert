@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -40,7 +39,7 @@ public class SelectConfigField extends ConfigField {
     private boolean multiSelect;
 
     public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
-        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", ConfigField.NO_VALIDATION);
+        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
@@ -48,7 +47,7 @@ public class SelectConfigField extends ConfigField {
 
     public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
         final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
+        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, validationFunction);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
