@@ -14,9 +14,6 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opensaml.xml.parse.ParserPool;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.MetadataManager;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -26,6 +23,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 public class SettingsDescriptorActionApiTest {
@@ -37,11 +35,9 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
 
         try {
             actionaApi.testConfig(null);
@@ -58,12 +54,10 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
         FieldModel fieldModel = Mockito.mock(FieldModel.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
 
         actionaApi.readConfig(fieldModel);
         assertFieldsMissing(fieldModel);
@@ -82,10 +76,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -103,10 +95,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -125,10 +115,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -144,10 +132,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -166,10 +152,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
@@ -188,10 +172,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
@@ -221,10 +203,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
@@ -245,10 +225,8 @@ public class SettingsDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, metadataManager, parserPool, extendedMetadata);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
+        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));

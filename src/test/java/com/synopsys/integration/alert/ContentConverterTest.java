@@ -10,7 +10,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.util.Stringable;
 
 public class ContentConverterTest {
-    private final Gson gson = new Application().gson();
+    private final Gson gson = new Gson();
 
     @Test
     public void testLong() {

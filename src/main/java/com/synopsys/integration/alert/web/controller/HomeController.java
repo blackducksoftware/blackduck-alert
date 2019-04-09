@@ -29,6 +29,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
@@ -53,7 +55,14 @@ public class HomeController {
     public ResponseEntity<String> checkAuthentication(final HttpServletRequest request) {
         final HttpServletRequest httpRequest = request;
         final CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
-        if (csrfToken == null) {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean authorized = false;
+        if (authentication.isAuthenticated() && csrfToken != null) {
+            authorized = true;
+        }
+
+        if (!authorized) {
             httpRequest.getSession().invalidate();
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else {

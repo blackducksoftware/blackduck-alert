@@ -22,32 +22,38 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.saml.websso.WebSSOProfileOptions;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.saml.SAMLEntryPoint;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+public class AlertSAMLEntryPoint extends SAMLEntryPoint {
+    private final Logger logger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
 
-public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
-    private static final Logger logger = LoggerFactory.getLogger(AlertWebSSOProfileOptions.class);
     private final SAMLContext samlContext;
 
-    public AlertWebSSOProfileOptions(final SAMLContext samlContext) {
+    public AlertSAMLEntryPoint(final SAMLContext samlContext) {
+        super();
         this.samlContext = samlContext;
     }
 
     @Override
-    public Boolean getForceAuthN() {
-        try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            return samlContext.getFieldValueBoolean(currentConfiguration, SettingsDescriptor.KEY_SAML_FORCE_AUTH);
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException e) {
-            logger.error("Could not get the SAML force AuthN.", e);
-        }
-        return false;
+    protected boolean processFilter(final HttpServletRequest request) {
+        return samlContext.isSAMLEnabled() && super.processFilter(request);
     }
 
+    @Override
+    public void commence(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException e) throws IOException, ServletException {
+        if (samlContext.isSAMLEnabled()) {
+            super.commence(request, response, e);
+            return;
+        }
+        throw new ServletException(e);
+    }
 }

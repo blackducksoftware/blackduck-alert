@@ -24,21 +24,17 @@ package com.synopsys.integration.alert.web.security.authentication.saml;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 
-@Component
 public class AlertSAMLMetadataGenerator extends MetadataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(AlertSAMLMetadataGenerator.class);
     private final SAMLContext samlContext;
 
-    @Autowired
     public AlertSAMLMetadataGenerator(final SAMLContext samlContext) {
         this.samlContext = samlContext;
     }

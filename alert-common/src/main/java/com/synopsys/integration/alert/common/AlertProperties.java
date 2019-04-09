@@ -26,9 +26,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
 public class AlertProperties {
     @Value("${alert.config.home:}")
     private String alertConfigHome;

@@ -13,9 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opensaml.xml.parse.ParserPool;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.MetadataManager;
 
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -28,7 +25,7 @@ import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -67,12 +64,9 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SAMLContext samlContext = Mockito.mock(SAMLContext.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, proxyManager,
-            taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
+            taskManager, samlManager);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
@@ -101,12 +95,9 @@ public class StartupManagerTest {
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SAMLContext samlContext = Mockito.mock(SAMLContext.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
+            proxyManager, taskManager, samlManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -146,12 +137,9 @@ public class StartupManagerTest {
         final List<ConfigurationModel> configList = List.of(schedulingModel);
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
 
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SAMLContext samlContext = Mockito.mock(SAMLContext.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
+            proxyManager, taskManager, samlManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -183,13 +171,10 @@ public class StartupManagerTest {
         final List<ConfigurationModel> configList = List.of(schedulingModel);
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.updateConfiguration(Mockito.anyLong(), Mockito.anyCollection())).thenReturn(schedulingModel);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SAMLContext samlContext = Mockito.mock(SAMLContext.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
+            proxyManager, taskManager, samlManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -220,12 +205,9 @@ public class StartupManagerTest {
         final List<ConfigurationModel> configList = List.of();
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
-        final MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
-        final ParserPool parserPool = Mockito.mock(ParserPool.class);
-        final ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        final SAMLContext samlContext = Mockito.mock(SAMLContext.class);
+        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            proxyManager, taskManager, samlContext, parserPool, extendedMetadata, metadataManager);
+            proxyManager, taskManager, samlManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
