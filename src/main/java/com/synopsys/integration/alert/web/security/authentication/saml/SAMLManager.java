@@ -75,8 +75,12 @@ public class SAMLManager {
                     setupMetadataManager(metadataURL);
                 }
             } else {
+                final List<ExtendedMetadataDelegate> currentProviders = metadataManager.getAvailableProviders();
+                currentProviders.forEach(ExtendedMetadataDelegate::destroy);
                 metadataManager.setProviders(List.of());
-                metadataManager.refreshMetadata();
+                metadataManager.setDefaultIDP(null);
+                metadataManager.setHostedSPName(null);
+                metadataManager.afterPropertiesSet();
             }
         } catch (final MetadataProviderException e) {
             logger.error("Error updating the SAML identity provider.", e);
@@ -96,7 +100,7 @@ public class SAMLManager {
         idpMetadata.setMetadataTrustCheck(true);
         idpMetadata.setMetadataRequireSignature(false);
         metadataManager.setProviders(List.of(idpMetadata));
-        metadataManager.refreshMetadata();
+        metadataManager.afterPropertiesSet();
     }
 
 }
