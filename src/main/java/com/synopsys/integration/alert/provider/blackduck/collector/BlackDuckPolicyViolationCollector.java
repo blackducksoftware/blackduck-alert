@@ -83,22 +83,16 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses);
         for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
             final PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
-            final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
             final SortedSet<LinkableItem> linkablePolicyItems = policyComponentMapping.getPolicyUrls()
                                                                     .stream()
                                                                     .filter(policyItems::containsKey)
                                                                     .map(policyItems::get)
                                                                     .map(this::createPolicyLinkableItem)
                                                                     .collect(Collectors.toCollection(TreeSet::new));
+            final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
             final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getLinkableItems();
             addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
         }
-    }
-
-    private LinkableItem createPolicyLinkableItem(final PolicyInfo policyInfo) {
-        final String policyName = policyInfo.getPolicyName();
-        final String policyUrl = policyInfo.getPolicy();
-        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
     }
 
     private ItemOperation getOperationFromNotification(final AlertNotificationWrapper notificationContent) {
@@ -152,6 +146,12 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         }
 
         return blackDuckPolicyLinkableItem;
+    }
+
+    private LinkableItem createPolicyLinkableItem(final PolicyInfo policyInfo) {
+        final String policyName = policyInfo.getPolicyName();
+        final String policyUrl = policyInfo.getPolicy();
+        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
     }
 
 }
