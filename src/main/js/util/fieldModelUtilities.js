@@ -47,10 +47,7 @@ export function getFieldModelValues(fieldModel, key) {
 
 export function getFieldModelBooleanValue(fieldModel, key) {
     const fieldValue = getFieldModelSingleValue(fieldModel, key);
-    if (fieldValue && fieldValue.toString().toLowerCase() === 'true') {
-        return true;
-    }
-    return false;
+    return fieldValue && fieldValue.toString().toLowerCase() === 'true';
 }
 
 export function getFieldModelId(fieldModel) {
@@ -118,11 +115,7 @@ export function hasAnyValuesExcludingId(fieldModel) {
 }
 
 export function updateFieldModelSingleValue(fieldModel, key, value) {
-    console.log(fieldModel);
-    console.log(key);
-    console.log(value);
     const copy = Object.assign({}, fieldModel);
-    console.log(copy);
     if (!copy.keyToValues) {
         copy.keyToValues = {};
     }
@@ -141,7 +134,6 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
         copy.keyToValues[key].values[0] = value;
     }
     copy.keyToValues[key].isSet = false;
-    console.log(copy);
     return copy;
 }
 
