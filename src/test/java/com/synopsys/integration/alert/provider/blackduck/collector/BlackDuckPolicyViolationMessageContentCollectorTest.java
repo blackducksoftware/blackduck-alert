@@ -63,7 +63,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION);
     }
 
-    // FIXME the test is geared towards a very specific format. Since we want to change it now, we'll have to think of a new standard to measure
+    // FIXME the test is geared towards a very specific format. Since it's now more flexible, we'll have to think of a new standard to measure
     // @Test
     public void insertMultipleAndVerifyCorrectNumberOfCategoryItemsTest() throws Exception {
         final String topicName = "example";
