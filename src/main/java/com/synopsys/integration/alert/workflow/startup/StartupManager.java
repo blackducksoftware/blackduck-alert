@@ -26,22 +26,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.parse.ParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
-import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +41,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -59,11 +49,10 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -87,16 +76,13 @@ public class StartupManager {
     private final ProxyManager proxyManager;
     private final TaskManager taskManager;
 
-    private final SAMLContext samlContext;
-    private final ParserPool parserPool;
-    private final ExtendedMetadata extendedMetadata;
-    private final MetadataManager metadataManager;
+    private final SAMLManager samlManager;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager,
-        final TaskManager taskManager, @Lazy final SAMLContext samlContext, @Lazy final ParserPool parserPool, @Lazy final ExtendedMetadata extendedMetadata, @Lazy final MetadataManager metadataManager) {
+        final TaskManager taskManager, final SAMLManager samlManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -110,10 +96,7 @@ public class StartupManager {
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.taskManager = taskManager;
-        this.samlContext = samlContext;
-        this.parserPool = parserPool;
-        this.extendedMetadata = extendedMetadata;
-        this.metadataManager = metadataManager;
+        this.samlManager = samlManager;
     }
 
     @Transactional
@@ -272,30 +255,6 @@ public class StartupManager {
     }
 
     public void initializeSAML() {
-        try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            if (samlContext.isSAMLEnabled(currentConfiguration)) {
-                final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
-                if (StringUtils.isNotBlank(metadataURL)) {
-                    if (StringUtils.isNotBlank(metadataURL)) {
-                        final Timer backgroundTaskTimer = new Timer(true);
-
-                        // The URL can not end in a '/' because it messes with the paths for saml
-                        final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
-                        final HTTPMetadataProvider httpMetadataProvider;
-                        httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
-                        httpMetadataProvider.setParserPool(parserPool);
-
-                        final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
-                        idpMetadata.setMetadataTrustCheck(true);
-                        idpMetadata.setMetadataRequireSignature(false);
-                        metadataManager.setProviders(List.of(idpMetadata));
-                        metadataManager.refreshMetadata();
-                    }
-                }
-            }
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException | MetadataProviderException e) {
-            logger.error("Error adding the SAML identity provider.", e);
-        }
+        samlManager.initializeSAML();
     }
 }

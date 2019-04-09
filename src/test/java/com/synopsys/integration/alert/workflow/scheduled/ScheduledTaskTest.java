@@ -21,12 +21,11 @@ import org.springframework.scheduling.support.CronTrigger;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public class ScheduledTaskTest {
+    private final String validCronExpression = "0 0/1 * 1/1 * *";
+    private final String taskName = "scheduledTaskTest";
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> future;
     private ScheduledTask task;
-
-    private final String validCronExpression = "0 0/1 * 1/1 * *";
-    private final String taskName = "scheduledTaskTest";
 
     @BeforeEach
     public void initializeTest() {
@@ -50,7 +49,12 @@ public class ScheduledTaskTest {
         final Long millisecondsToNextRun = 10000L;
         final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
         ZonedDateTime expectedDateTime = currentUTCTime.plus(millisecondsToNextRun, ChronoUnit.MILLIS);
-        expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+        final int seconds = expectedDateTime.getSecond();
+        if (seconds >= 30) {
+            expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+        } else {
+            expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES);
+        }
         final String expectedNextRunTime = expectedDateTime.format(DateTimeFormatter.ofPattern(ScheduledTask.FORMAT_PATTERN)) + " UTC";
 
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
@@ -58,7 +62,8 @@ public class ScheduledTaskTest {
         task.scheduleExecution(validCronExpression);
         final Optional<String> nextRunTime = task.getFormatedNextRunTime();
         assertTrue(nextRunTime.isPresent());
-        assertEquals(expectedNextRunTime, nextRunTime.get());
+        final String nextTime = nextRunTime.get();
+        assertEquals(expectedNextRunTime, nextTime);
     }
 
     @Test
