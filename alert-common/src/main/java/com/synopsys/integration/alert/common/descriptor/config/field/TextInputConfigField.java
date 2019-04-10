@@ -22,16 +22,15 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class TextInputConfigField extends ConfigField {
-    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group) {
-        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group);
+    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel) {
+        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, panel);
     }
 
-    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
+    public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, panel, validationFunction);
     }
 
     public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
@@ -50,12 +49,12 @@ public class TextInputConfigField extends ConfigField {
         return new TextInputConfigField(key, label, description, false, false, validationFunction);
     }
 
-    public static TextInputConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group) {
-        return new TextInputConfigField(key, label, description, false, false, group);
+    public static TextInputConfigField createPanel(final String key, final String label, final String description, final String panel) {
+        return new TextInputConfigField(key, label, description, false, false, panel);
     }
 
-    public static TextInputConfigField createGrouped(final String key, final String label, final String description, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        return new TextInputConfigField(key, label, description, false, false, group, validationFunction);
+    public static TextInputConfigField createPanel(final String key, final String label, final String description, final String panel, final ConfigValidationFunction validationFunction) {
+        return new TextInputConfigField(key, label, description, false, false, panel, validationFunction);
     }
 
     public static TextInputConfigField createRequired(final String key, final String label, final String description) {
