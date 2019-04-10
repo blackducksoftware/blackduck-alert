@@ -35,20 +35,15 @@ class FieldsPanel extends React.Component {
     }
 
     parsePanel(panelName, headerName, field, fieldMapping) {
-        let foundPanel = fieldMapping[panelName];
-        if (!foundPanel) {
-            foundPanel = {};
-        }
-
+        const foundPanel = fieldMapping[panelName];
         const newHeader = headerName ? this.parseHeader(foundPanel, headerName, field) : this.parseHeader(foundPanel, DEFAULT_PANEL, field);
-        Object.assign(foundPanel, newHeader);
-        return foundPanel;
+        return Object.assign({}, foundPanel, newHeader);
     }
 
     parseHeader(foundPanel, headerName, field) {
-        let foundHeader = foundPanel[headerName];
-        if (!foundHeader) {
-            foundHeader = [];
+        const foundHeader = [];
+        if (foundPanel && foundPanel[headerName]) {
+            foundHeader.push(...foundPanel[headerName]);
         }
         foundHeader.push(field);
         return { [headerName]: foundHeader };
@@ -104,6 +99,7 @@ class FieldsPanel extends React.Component {
         const createdPanels = [];
 
         const sortedFields = this.initializeFieldMapping(this.props.descriptorFields);
+        console.log(sortedFields);
         Object.keys(sortedFields).forEach((key) => {
             const panel = (key === DEFAULT_PANEL) ? this.createDefaultPanel(sortedFields[key]) : this.createPanel(key, sortedFields[key]);
             createdPanels.push(panel);
