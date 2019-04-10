@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
@@ -63,8 +64,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION);
     }
 
-    // FIXME the test is geared towards a very specific format. Since it's now more flexible, we'll have to think of a new standard to measure
-    // @Test
+    @Test
     public void insertMultipleAndVerifyCorrectNumberOfCategoryItemsTest() throws Exception {
         final String topicName = "example";
         final int numberOfRulesCleared = 4;
@@ -82,8 +82,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
 
-        //Rules are now being combined to fix size
-        int categoryCount = linkableItemsPerCategory;
+        int categoryCount = numberOfRulesCleared;
         // add 1 item for the policy override name linkable items
         int linkableItemsCount = categoryCount * linkableItemsPerCategory;
         insertAndAssertCountsOnTopic(collector, n0, topicName, categoryCount, linkableItemsCount);
@@ -111,7 +110,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addApplicableItems(Mockito.anyList(), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class));
+            .addApplicableItems(Mockito.anyList(), Mockito.anyLong(), Mockito.any(LinkableItem.class), Mockito.anyString(), Mockito.any(ItemOperation.class), Mockito.any(SortedSet.class));
         spiedCollector.insert(n0);
         final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());

@@ -38,7 +38,20 @@ class MainPage extends Component {
         if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
-        const routeList = descriptorList.map(component => <Route path={`${uriPrefix}${component.urlName}`} render={() => <GlobalConfiguration descriptor={component} />} />);
+        const routeList = descriptorList.map((component) => {
+            if (component.urlName === 'blackduck') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={BlackDuckConfiguration} />;
+            } else if (component.urlName === 'polaris') {
+                return <Route path={`${uriPrefix}${component.urlName}`} render={() => <GlobalConfiguration descriptor={component} />} />;
+            } else if (component.urlName === 'email') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={EmailConfiguration} />;
+            } else if (component.urlName === 'hipchat') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={HipChatConfiguration} />;
+            } else if (component.urlName === 'slack') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={SlackConfiguration} />;
+            }
+            return null;
+        });
         return routeList;
     }
 
