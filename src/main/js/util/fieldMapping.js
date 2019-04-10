@@ -65,14 +65,12 @@ export function createField(field, value, isSet, fieldError, onChange) {
     const {
         key, label, description, type
     } = field;
-    const checkedValue = value.toString().toLowerCase() === 'true';
     const propMapping = {
         id: key,
         name: key,
         description,
         label,
         value,
-        isChecked: checkedValue,
         isSet,
         onChange,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),

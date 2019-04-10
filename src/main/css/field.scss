@@ -128,16 +128,3 @@ small {
   opacity: 0;
   transition: opacity 2s ease-in-out 0s;
 }
-
-
-.buttonGroupBuffer {
-  height: 29px;
-}
-
-.buttonGroup {
-  position: fixed;
-  bottom: 29px;
-  left: 255px;
-  right: 20px;
-  z-index: 100;
-}

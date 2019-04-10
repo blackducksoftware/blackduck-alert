@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -37,8 +38,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class ConfigField extends AlertSerializableModel {
     public static final String REQUIRED_FIELD_MISSING = "Required field missing";
     public static final int MAX_FIELD_LENGTH = 511;
-    public static final String FIELD_HEADER_EMPTY = "";
-    public static final String FIELD_PANEL_DEFAULT = "";
     public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);
     public static final ConfigValidationFunction NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
 
@@ -48,13 +47,13 @@ public class ConfigField extends AlertSerializableModel {
     private String type;
     private boolean required;
     private boolean sensitive;
-    private String panel;
-    private String header;
+    private FieldGroup group;
+    private String subGroup;
     private Set<String> requiredRelatedFields;
     private Set<String> disallowedRelatedFields;
     private transient ConfigValidationFunction validationFunction;
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel, final String header,
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
         final ConfigValidationFunction validationFunction) {
         this.key = key;
         this.label = label;
@@ -62,27 +61,35 @@ public class ConfigField extends AlertSerializableModel {
         this.type = type;
         this.required = required;
         this.sensitive = sensitive;
-        this.panel = panel;
-        this.header = header;
+        this.group = group;
+        this.subGroup = subGroup;
         requiredRelatedFields = new HashSet<>();
         disallowedRelatedFields = new HashSet<>();
         this.validationFunction = validationFunction;
     }
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel) {
-        this(key, label, description, type, required, sensitive, panel, FIELD_HEADER_EMPTY, NO_VALIDATION);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group) {
+        this(key, label, description, type, required, sensitive, group, "", NO_VALIDATION);
     }
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
-        this(key, label, description, type, required, sensitive, panel, FIELD_HEADER_EMPTY, validationFunction);
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        this(key, label, description, type, required, sensitive, group, "", validationFunction);
+    }
+
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String subGroup) {
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, subGroup, NO_VALIDATION);
+    }
+
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, subGroup, validationFunction);
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive) {
-        this(key, label, description, type, required, sensitive, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, NO_VALIDATION);
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, "", NO_VALIDATION);
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        this(key, label, description, type, required, sensitive, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, validationFunction);
+        this(key, label, description, type, required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
     }
 
     public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
@@ -148,20 +155,20 @@ public class ConfigField extends AlertSerializableModel {
         this.sensitive = sensitive;
     }
 
-    public String getPanel() {
-        return panel;
+    public FieldGroup getGroup() {
+        return group;
     }
 
-    public void setPanel(final String panel) {
-        this.panel = panel;
+    public void setGroup(final FieldGroup group) {
+        this.group = group;
     }
 
-    public String getHeader() {
-        return header;
+    public String getSubGroup() {
+        return subGroup;
     }
 
-    public void setHeader(final String header) {
-        this.header = header;
+    public void setSubGroup(final String subGroup) {
+        this.subGroup = subGroup;
     }
 
     public Set<String> getRequiredRelatedFields() {
