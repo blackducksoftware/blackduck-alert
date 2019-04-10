@@ -89,7 +89,7 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_LDAP_GROUP_SEARCH_BASE_DESCRIPTION = "The part of the LDAP directory in which group searches should be done.";
     private static final String SETTINGS_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION = "The filter used to search for group membership.";
     private static final String SETTINGS_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION = "The ID of the attribute which contains the role name for a group.";
-    private static final String SETTINGS_SAML_ENABLED_DESCRIPTION = "If true, Alert with attempt to authenticate using the SAML configuration.";
+    private static final String SETTINGS_SAML_ENABLED_DESCRIPTION = "If true, Alert will attempt to authenticate using the SAML configuration.";
     private static final String SETTINGS_SAML_FORCE_AUTH_DESCRIPTION = "If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported.";
     private static final String SETTINGS_SAML_METADATA_URL_DESCRIPTION = "The Metadata URL from the external Identity Provider.";
     private static final String SETTINGS_SAML_ENTITY_ID_DESCRIPTION = "The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta.";
