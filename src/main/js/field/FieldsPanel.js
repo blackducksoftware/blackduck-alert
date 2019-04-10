@@ -60,10 +60,12 @@ class FieldsPanel extends React.Component {
     }
 
     createPanel(panelName, fieldMapping) {
+        const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : <CollapsiblePane title={panelName}>{this.createHeaders(fieldMapping)}</CollapsiblePane>;
+
         return (
             <div className="form-group">
                 <div className="col-sm-12">
-                    <CollapsiblePane title={panelName}>{this.createHeaders(fieldMapping)}</CollapsiblePane>
+                    {panel}
                 </div>
             </div>
         );
@@ -101,8 +103,7 @@ class FieldsPanel extends React.Component {
         const sortedFields = this.initializeFieldMapping(this.props.descriptorFields);
         console.log(sortedFields);
         Object.keys(sortedFields).forEach((key) => {
-            const panel = (key === DEFAULT_PANEL) ? this.createDefaultPanel(sortedFields[key]) : this.createPanel(key, sortedFields[key]);
-            createdPanels.push(panel);
+            createdPanels.push(this.createPanel(key, sortedFields[key]));
         });
 
         return (
