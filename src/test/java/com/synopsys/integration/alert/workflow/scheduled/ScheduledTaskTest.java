@@ -21,12 +21,11 @@ import org.springframework.scheduling.support.CronTrigger;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public class ScheduledTaskTest {
+    private final String validCronExpression = "0 0/1 * 1/1 * *";
+    private final String taskName = "scheduledTaskTest";
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> future;
     private ScheduledTask task;
-
-    private final String validCronExpression = "0 0/1 * 1/1 * *";
-    private final String taskName = "scheduledTaskTest";
 
     @BeforeEach
     public void initializeTest() {
@@ -63,7 +62,8 @@ public class ScheduledTaskTest {
         task.scheduleExecution(validCronExpression);
         final Optional<String> nextRunTime = task.getFormatedNextRunTime();
         assertTrue(nextRunTime.isPresent());
-        assertEquals(expectedNextRunTime, nextRunTime.get());
+        final String nextTime = nextRunTime.get();
+        assertEquals(expectedNextRunTime, nextTime);
     }
 
     @Test

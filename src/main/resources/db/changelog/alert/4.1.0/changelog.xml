@@ -3,4 +3,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="changelog-provider-data.xml" relativeToChangelogFile="true"/>
     <include file="changelog-polaris.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-saml-authentication.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
