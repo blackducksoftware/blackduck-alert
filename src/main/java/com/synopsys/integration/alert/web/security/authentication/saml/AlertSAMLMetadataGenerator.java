@@ -39,10 +39,12 @@ public class AlertSAMLMetadataGenerator extends MetadataGenerator {
         this.samlContext = samlContext;
     }
 
+    @Override
     public String getEntityId() {
         return getEntityString(SettingsDescriptor.KEY_SAML_ENTITY_ID);
     }
 
+    @Override
     public String getEntityBaseURL() {
         return getEntityString(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
     }

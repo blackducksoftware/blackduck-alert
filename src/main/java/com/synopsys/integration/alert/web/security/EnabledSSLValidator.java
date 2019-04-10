@@ -25,8 +25,10 @@ package com.synopsys.integration.alert.web.security;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.AlertConstants;
+
 @Component
-@Profile("ssl")
+@Profile(AlertConstants.PROFILE_NAME_SSL)
 public class EnabledSSLValidator implements SSLValidator {
 
     @Override
