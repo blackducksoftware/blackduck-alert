@@ -27,8 +27,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -40,12 +38,10 @@ import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
-@Component
 public class ProxyManager {
     private static final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
     private final ConfigurationAccessor configurationAccessor;
 
-    @Autowired
     public ProxyManager(final ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
