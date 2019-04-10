@@ -90,7 +90,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                                                     .map(this::createPolicyLinkableItem)
                                                                     .collect(Collectors.toCollection(TreeSet::new));
             final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
-            final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getLinkableItems();
+            final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getComponentData();
             addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
         }
     }

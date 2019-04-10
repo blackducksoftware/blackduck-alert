@@ -30,26 +30,26 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 
 public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
-    private final SortedSet<LinkableItem> linkableItems;
+    private final SortedSet<LinkableItem> componentData;
 
     public BlackDuckPolicyLinkableItem() {
-        linkableItems = new TreeSet<>();
+        componentData = new TreeSet<>();
     }
 
-    public SortedSet<LinkableItem> getLinkableItems() {
-        return linkableItems;
+    public SortedSet<LinkableItem> getComponentData() {
+        return componentData;
     }
 
-    public void addLinkableItem(final LinkableItem linkableItem) {
-        linkableItems.add(linkableItem);
+    public void addComponentData(final LinkableItem linkableItem) {
+        componentData.add(linkableItem);
     }
 
     public void addComponentNameItem(final String name, final String url) {
-        addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, name, url));
+        addComponentData(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, name, url));
     }
 
     public void addComponentVersionItem(final String version, final String url) {
-        addLinkableItem(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, version, url));
+        addComponentData(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, version, url));
     }
 
 }
