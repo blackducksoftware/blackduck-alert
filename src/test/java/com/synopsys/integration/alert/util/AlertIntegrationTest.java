@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
@@ -28,7 +29,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class, DescriptorMocker.class })
+@ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @WebAppConfiguration
 @Transactional

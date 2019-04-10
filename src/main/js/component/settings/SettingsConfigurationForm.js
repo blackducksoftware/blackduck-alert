@@ -37,6 +37,13 @@ const KEY_LDAP_GROUP_SEARCH_BASE = 'settings.ldap.group.search.base';
 const KEY_LDAP_GROUP_SEARCH_FILTER = 'settings.ldap.group.search.filter';
 const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'settings.ldap.group.role.attribute';
 
+// SAML Keys
+const KEY_SAML_ENABLED = 'settings.saml.enabled';
+const KEY_SAML_FORCE_AUTH = 'settings.saml.force.auth';
+const KEY_SAML_METADATA_URL = 'settings.saml.metadata.url';
+const KEY_SAML_ENTITY_ID = 'settings.saml.entity.id';
+const KEY_SAML_ENTITY_BASE_URL = 'settings.saml.entity.base.url';
+
 
 const fieldDescriptions = {
     [KEY_DEFAULT_SYSTEM_ADMIN_EMAIL]: 'The email address of the Alert system administrator. Used in case a password reset is needed.',
@@ -61,6 +68,11 @@ const fieldDescriptions = {
     [KEY_LDAP_GROUP_SEARCH_BASE]: 'The part of the LDAP directory in which group searches should be done.',
     [KEY_LDAP_GROUP_SEARCH_FILTER]: 'The filter used to search for group membership.',
     [KEY_LDAP_GROUP_ROLE_ATTRIBUTE]: 'The ID of the attribute which contains the role name for a group.',
+    [KEY_SAML_ENABLED]: 'If true, Alert with attempt to authenticate using the SAML configuration.',
+    [KEY_SAML_FORCE_AUTH]: 'If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported.',
+    [KEY_SAML_METADATA_URL]: 'The Metadata URL from the external Identity Provider.',
+    [KEY_SAML_ENTITY_ID]: 'The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta.',
+    [KEY_SAML_ENTITY_BASE_URL]: 'This should be the URL of the Alert system. Ex: https://alert:8080/alert'
 };
 
 const fieldNames = [
@@ -85,7 +97,12 @@ const fieldNames = [
     KEY_LDAP_USER_ATTRIBUTES,
     KEY_LDAP_GROUP_SEARCH_BASE,
     KEY_LDAP_GROUP_SEARCH_FILTER,
-    KEY_LDAP_GROUP_ROLE_ATTRIBUTE
+    KEY_LDAP_GROUP_ROLE_ATTRIBUTE,
+    KEY_SAML_ENABLED,
+    KEY_SAML_FORCE_AUTH,
+    KEY_SAML_METADATA_URL,
+    KEY_SAML_ENTITY_ID,
+    KEY_SAML_ENTITY_BASE_URL
 ];
 
 class SettingsConfigurationForm extends Component {
@@ -452,6 +469,67 @@ class SettingsConfigurationForm extends Component {
                                     onChange={this.handleChange}
                                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                     errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_ROLE_ATTRIBUTE]}
+                                />
+                            </CollapsiblePane>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <div className="col-sm-12">
+                            <CollapsiblePane
+                                title="SAML Configuration"
+                                expanded={() =>
+                                    FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_SAML_ENABLED, KEY_SAML_METADATA_URL, KEY_SAML_ENTITY_ID, KEY_SAML_ENTITY_BASE_URL])
+                                }
+                            >
+                                <CheckboxInput
+                                    id={KEY_SAML_ENABLED}
+                                    label="Enabled"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_ENABLED)}
+                                    name={KEY_SAML_ENABLED}
+                                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_SAML_ENABLED)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_ENABLED)}
+                                    errorValue={this.props.fieldErrors[KEY_SAML_ENABLED]}
+                                />
+                                <CheckboxInput
+                                    id={KEY_SAML_FORCE_AUTH}
+                                    label="Force Auth"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_FORCE_AUTH)}
+                                    name={KEY_SAML_FORCE_AUTH}
+                                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_SAML_FORCE_AUTH)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_FORCE_AUTH)}
+                                    errorValue={this.props.fieldErrors[KEY_SAML_FORCE_AUTH]}
+                                />
+                                <TextInput
+                                    id={KEY_SAML_METADATA_URL}
+                                    label="Identity Provider Metadata URL"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_METADATA_URL)}
+                                    name={KEY_SAML_METADATA_URL}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SAML_METADATA_URL)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_METADATA_URL)}
+                                    errorValue={this.props.fieldErrors[KEY_SAML_METADATA_URL]}
+                                />
+                                <TextInput
+                                    id={KEY_SAML_ENTITY_ID}
+                                    label="Entity ID"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_ENTITY_ID)}
+                                    name={KEY_SAML_ENTITY_ID}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SAML_ENTITY_ID)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_ENTITY_ID)}
+                                    errorValue={this.props.fieldErrors[KEY_SAML_ENTITY_ID]}
+                                />
+                                <TextInput
+                                    id={KEY_SAML_ENTITY_BASE_URL}
+                                    label="Alert Base URL"
+                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_ENTITY_BASE_URL)}
+                                    name={KEY_SAML_ENTITY_BASE_URL}
+                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SAML_ENTITY_BASE_URL)}
+                                    onChange={this.handleChange}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_ENTITY_BASE_URL)}
+                                    errorValue={this.props.fieldErrors[KEY_SAML_ENTITY_BASE_URL]}
                                 />
                             </CollapsiblePane>
                         </div>

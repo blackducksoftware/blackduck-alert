@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+     <changeSet author="jrichard" id="1553788005986-1">
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.enabled', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.force.auth', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.metadata.url', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.entity.id', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.entity.base.url', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+    </changeSet>
+</databaseChangeLog>

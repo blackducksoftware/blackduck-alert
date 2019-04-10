@@ -61,6 +61,11 @@ public class SettingsUIConfig extends UIConfig {
     private static final String LABEL_LDAP_GROUP_SEARCH_BASE = "LDAP Group Search Base";
     private static final String LABEL_LDAP_GROUP_SEARCH_FILTER = "LDAP Group Search Filter";
     private static final String LABEL_LDAP_GROUP_ROLE_ATTRIBUTE = "LDAP Group Role Attribute";
+    private static final String LABEL_SAML_ENABLED = "SAML Enabled";
+    private static final String LABEL_SAML_FORCE_AUTH = "Force Auth";
+    private static final String LABEL_SAML_METADATA_URL = "Identity Provider Metadata URL";
+    private static final String LABEL_SAML_ENTITY_ID = "Entity ID";
+    private static final String LABEL_SAML_ENTITY_BASE_URL = "Entity Base URL";
 
     private static final String SETTINGS_ADMIN_EMAIL_DESCRIPTION = "The email address of the Alert system administrator. Used in case a password reset is needed.";
     private static final String SETTINGS_USER_PASSWORD_DESCRIPTION = "The password of the Alert system administrator. Used when logging in as the \"sysadmin\" user.";
@@ -84,6 +89,11 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_LDAP_GROUP_SEARCH_BASE_DESCRIPTION = "The part of the LDAP directory in which group searches should be done.";
     private static final String SETTINGS_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION = "The filter used to search for group membership.";
     private static final String SETTINGS_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION = "The ID of the attribute which contains the role name for a group.";
+    private static final String SETTINGS_SAML_ENABLED_DESCRIPTION = "If true, Alert will attempt to authenticate using the SAML configuration.";
+    private static final String SETTINGS_SAML_FORCE_AUTH_DESCRIPTION = "If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported.";
+    private static final String SETTINGS_SAML_METADATA_URL_DESCRIPTION = "The Metadata URL from the external Identity Provider.";
+    private static final String SETTINGS_SAML_ENTITY_ID_DESCRIPTION = "The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta.";
+    private static final String SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION = "This should be the URL of the Alert system.";
 
     public SettingsUIConfig() {
         super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL, SettingsDescriptor.SETTINGS_ICON);
@@ -132,10 +142,23 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField ldapEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, SETTINGS_LDAP_ENABLED_DESCRIPTION)
                                             .requireField(ldapServer.getKey())
                                             .requireField(ldapManagerDn.getKey())
-                                            .requireField(ldapManagerPassword.getKey());
+                                            .requireField(ldapManagerPassword.getKey())
+                                            .disallowField(SettingsDescriptor.KEY_SAML_ENABLED);
+
+        final ConfigField samlForceAuth = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, SETTINGS_SAML_FORCE_AUTH_DESCRIPTION);
+        final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION);
+        final ConfigField samlEntityId = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, SETTINGS_SAML_ENTITY_ID_DESCRIPTION);
+        final ConfigField samlEntityBaseURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL, LABEL_SAML_ENTITY_BASE_URL, SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION);
+        final ConfigField samlEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_ENABLED, LABEL_SAML_ENABLED, SETTINGS_SAML_ENABLED_DESCRIPTION)
+                                            .requireField(samlForceAuth.getKey())
+                                            .requireField(samlMetaDataURL.getKey())
+                                            .requireField(samlEntityId.getKey())
+                                            .requireField(samlEntityBaseURL.getKey())
+                                            .disallowField(SettingsDescriptor.KEY_LDAP_ENABLED);
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
-            ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute);
+            ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, samlForceAuth, samlMetaDataURL,
+            samlEntityId, samlEntityBaseURL, samlEnabled);
     }
 
     private Collection<String> minimumEncryptionFieldLength(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
