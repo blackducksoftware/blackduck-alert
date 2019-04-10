@@ -52,12 +52,12 @@ public class SamlAntMatcher implements RequestMatcher {
 
     @Override
     public boolean matches(final HttpServletRequest request) {
-        final Collection<RequestMatcher> requestMatchers;
+        Collection<RequestMatcher> requestMatchers = disabledMatchers;
+
         if (context.isSAMLEnabled()) {
             requestMatchers = enabledMatchers;
-        } else {
-            requestMatchers = disabledMatchers;
         }
+
         return requestMatchers.stream().anyMatch(requestMatcher -> requestMatcher.matches(request));
     }
 }

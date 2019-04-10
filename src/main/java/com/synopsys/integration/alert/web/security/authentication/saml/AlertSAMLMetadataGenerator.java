@@ -40,21 +40,19 @@ public class AlertSAMLMetadataGenerator extends MetadataGenerator {
     }
 
     public String getEntityId() {
-        try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            return samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_ID);
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException e) {
-            logger.error("Could not get the SAML entity ID.", e);
-        }
-        return "";
+        return getEntityString(SettingsDescriptor.KEY_SAML_ENTITY_ID);
     }
 
     public String getEntityBaseURL() {
+        return getEntityString(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+    }
+
+    private String getEntityString(final String entityKey) {
         try {
             final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            return samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            return samlContext.getFieldValueOrEmpty(currentConfiguration, entityKey);
         } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException e) {
-            logger.error("Could not get the SAML entity base URL.", e);
+            logger.error("Could not get the SAML entity.", e);
         }
         return "";
     }
