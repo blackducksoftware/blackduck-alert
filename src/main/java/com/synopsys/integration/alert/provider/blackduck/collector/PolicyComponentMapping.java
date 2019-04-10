@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,10 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.provider.blackduck.collector;
 
-public enum FieldGroup {
-    DEFAULT,
-    ADVANCED,
-    KEY_VALUE;
+import java.util.Set;
+
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class PolicyComponentMapping extends AlertSerializableModel {
+    // Do not delete this member. This is used for checking equals and filtering.
+    private final String componentName;
+    private final Set<String> policyUrls;
+
+    public PolicyComponentMapping(final String componentName, final Set<String> policyUrls) {
+        this.componentName = componentName;
+        this.policyUrls = policyUrls;
+    }
+
+    public Set<String> getPolicyUrls() {
+        return policyUrls;
+    }
+
 }
