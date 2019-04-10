@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
@@ -39,6 +40,10 @@ public class HipChatGlobalUIConfig extends UIConfig {
     private static final String HIP_CHAT_API_KEY_DESCRIPTION = "The API key of the user you want to use to authenticate with the HipChat server.";
     private static final String HIP_CHAT_HOST_SERVER_DESCRIPTION = "The URL for your HipChat server.";
 
+    private static final String KEY_TEST_HIP_CHAT = "channel.hipchat.test.key";
+    private static final String LABEL_TEST_ROOM_ID = "Room ID";
+    private static final String DESCRIPTION_TEST_ROOM_ID = "The Room ID to use for testing HipChat configuration.";
+
     public HipChatGlobalUIConfig() {
         super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_DESCRIPTION, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON);
     }
@@ -48,5 +53,10 @@ public class HipChatGlobalUIConfig extends UIConfig {
         final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, LABEL_API_KEY, HIP_CHAT_API_KEY_DESCRIPTION);
         final ConfigField hostServer = TextInputConfigField.createRequired(HipChatDescriptor.KEY_HOST_SERVER, LABEL_HOST_SERVER, HIP_CHAT_HOST_SERVER_DESCRIPTION);
         return List.of(apiKey, hostServer);
+    }
+
+    @Override
+    public List<ConfigField> createTestFields() {
+        return List.of(NumberConfigField.createRequired(KEY_TEST_HIP_CHAT, LABEL_TEST_ROOM_ID, DESCRIPTION_TEST_ROOM_ID));
     }
 }
