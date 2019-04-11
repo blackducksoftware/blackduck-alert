@@ -69,6 +69,25 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
     }
 
     @Override
+    public Optional<PolarisIssueModel> getProjectIssuesByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(projectHref)) {
+            throw new AlertDatabaseConstraintException("The field projectHref cannot be blank");
+        }
+        if (StringUtils.isBlank(issueType)) {
+            throw new AlertDatabaseConstraintException("The field issueType cannot be blank");
+        }
+        final Long projectId = providerProjectRepository.findFirstByHref(projectHref)
+                                   .map(ProviderProjectEntity::getId)
+                                   .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
+        return polarisIssueRepository.findByProjectId(projectId)
+                   .stream()
+                   .filter(entity -> projectId == entity.getProjectId())
+                   .filter(entity -> issueType == entity.getIssueType())
+                   .findFirst()
+                   .map(entity -> new PolarisIssueModel(entity.getIssueType(), entity.getPreviousCount(), entity.getCurrentCount()));
+    }
+
+    @Override
     public PolarisIssueModel updateIssueType(final String projectHref, final String issueType, final Integer newCount) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(projectHref)) {
             throw new AlertDatabaseConstraintException("The field projectHref cannot be blank");
