@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfig
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.DefaultEmailHandler;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
@@ -71,14 +70,14 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Boolean filterByProject = fieldAccessor.getString(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT)
                                             .map(Boolean::parseBoolean)
                                             .orElse(Boolean.FALSE);
-        final Boolean isBlackduckProvider = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                .filter(providerName -> BlackDuckProvider.COMPONENT_NAME.equals(providerName))
-                                                .isPresent();
-        if (isBlackduckProvider) {
-            final Set<ProviderProject> blackDuckProjects = retrieveBlackDuckProjects(fieldAccessor, filterByProject);
-            if (null != blackDuckProjects) {
-                final Set<String> blackDuckEmailAddresses = addEmailAddresses(blackDuckProjects, fieldAccessor);
-                emailAddresses.addAll(blackDuckEmailAddresses);
+        final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                        .orElse("");
+
+        if (StringUtils.isNotBlank(providerName)) {
+            final Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerName);
+            if (null != providerProjects) {
+                final Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldAccessor);
+                emailAddresses.addAll(providerEmailAddresses);
             }
         }
 
@@ -96,29 +95,29 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveBlackDuckProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject) {
-        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+    private Set<ProviderProject> retrieveProviderProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject, final String providerName) {
+        final List<ProviderProject> providerProjects = providerDataAccessor.findByProviderName(providerName);
         if (filterByProject) {
             final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
             final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
             final String projectNamePattern = fieldAccessor.getString(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN).orElse("");
-            return blackDuckProjects
+            return providerProjects
                        .stream()
                        .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
                        .collect(Collectors.toSet());
         }
-        return blackDuckProjects
+        return providerProjects
                    .stream()
                    .collect(Collectors.toSet());
     }
 
-    private Set<String> addEmailAddresses(final Set<ProviderProject> blackDuckProjects, final FieldAccessor fieldAccessor) throws AlertFieldException {
+    private Set<String> addEmailAddresses(final Set<ProviderProject> providerProjects, final FieldAccessor fieldAccessor) throws AlertFieldException {
         final Optional<String> projectOwnerOnlyOptional = fieldAccessor.getString(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
         final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
 
         final Set<String> emailAddresses = new HashSet<>();
         final Set<String> projectsWithoutEmails = new HashSet<>();
-        for (final ProviderProject project : blackDuckProjects) {
+        for (final ProviderProject project : providerProjects) {
             final Set<String> emailsForProject = emailHandler.getEmailAddressesForProject(project, projectOwnerOnly);
             if (emailsForProject.isEmpty()) {
                 projectsWithoutEmails.add(project.getName());
