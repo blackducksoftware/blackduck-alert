@@ -13,7 +13,6 @@ class ChannelTestModal extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSendTestMessage = this.handleSendTestMessage.bind(this);
-        this.handleCancel = this.handleCancel.bind(this);
         this.handleHide = this.handleHide.bind(this);
     }
 
@@ -27,29 +26,21 @@ class ChannelTestModal extends Component {
         event.preventDefault();
         event.stopPropagation();
         const destination = this.state.destination;
-        this.props.sendTestMessage(destination);
+        const fieldModel = this.props.fieldModel;
+        this.props.sendTestMessage(fieldModel, destination);
     }
 
-    handleCancel(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.setState({
-            show: false
-        });
-    }
-
-    handleHide(event) {
-        event.preventDefault();
-        event.stopPropagation();
+    handleHide() {
         this.setState({
             destination: ''
         });
+        this.props.handleCancel();
     }
 
     render() {
         // TODO figure out a way to toggle the spinner/ there is no point to toggling the spinner if the sendTestMessage is closing the modal
         return (
-            <Modal show={this.state.show} onHide={this.handleHide}>
+            <Modal show={this.props.showTestModal} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Test Your Configuration</Modal.Title>
                 </Modal.Header>
@@ -57,7 +48,7 @@ class ChannelTestModal extends Component {
                     <TextInput id="destinationName" label={this.props.destinationName} name="destinationName" value={this.state.destination} onChange={this.handleChange} />
                 </Modal.Body>
                 <Modal.Footer>
-                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleCancel}>Cancel</button>
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel</button>
                     <button id="testSend" type="button" className="btn btn-primary" onClick={this.handleSendTestMessage}>Send Test Message</button>
                     {this.state.show &&
                     <div className="progressIcon">
@@ -72,7 +63,10 @@ class ChannelTestModal extends Component {
 
 ChannelTestModal.propTypes = {
     showTestModal: PropTypes.bool,
-    sendTestMessage: PropTypes.func.isRequired
+    sendTestMessage: PropTypes.func.isRequired,
+    handleCancel: PropTypes.func.isRequired,
+    destinationName: PropTypes.string.isRequired,
+    fieldModel: PropTypes.object.isRequired
 };
 
 ChannelTestModal.defaultProps = {

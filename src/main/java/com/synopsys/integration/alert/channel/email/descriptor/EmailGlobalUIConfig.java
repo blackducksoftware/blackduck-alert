@@ -215,4 +215,9 @@ public class EmailGlobalUIConfig extends UIConfig {
             mailSmtpStartTlsRequired, mailSmtpProxyHost, mailSmtpProxyPort, mailSmtpSocksHost, mailSmtpSocksPort, mailSmtpMailExtension, mailSmtpUserSet, mailSmtpNoopStrict
         );
     }
+
+    @Override
+    public String createTestLabel() {
+        return "Email address";
+    }
 }

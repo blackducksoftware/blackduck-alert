@@ -42,8 +42,8 @@ public abstract class UIConfig extends AlertSerializableModel {
 
     public abstract List<ConfigField> createFields();
 
-    public List<ConfigField> createTestFields() {
-        return List.of();
+    public String createTestLabel() {
+        return "";
     }
 
     public String getLabel() {

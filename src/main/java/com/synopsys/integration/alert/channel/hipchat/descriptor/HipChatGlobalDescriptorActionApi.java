@@ -95,7 +95,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
             sendTestRequest(intHttpClient, configuredApiUrl, apiKey);
         } catch (final IntegrationException integrationException) {
             logger.error("Unable to create a response", integrationException);
-            throw new AlertException("Invalid API key: " + integrationException.getMessage());
+            throw new AlertException("Invalid HipChat configuration.");
         }
     }
 

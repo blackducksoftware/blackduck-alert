@@ -18,6 +18,7 @@ class GlobalConfiguration extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        this.handleTestCancel = this.handleTestCancel.bind(this);
 
         const { fields, name } = this.props.descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
@@ -26,7 +27,8 @@ class GlobalConfiguration extends React.Component {
             currentConfig: fieldModel,
             currentDescriptor: this.props.descriptor,
             currentKeys: fieldKeys,
-            showTest: false
+            showTest: false,
+            destinationName: ''
         }
         ;
     }
@@ -60,15 +62,22 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFields } = this.state.currentDescriptor;
-        if (Array.isArray(testFields) && testFields.length > 0) {
+        const { testFieldLabel } = this.state.currentDescriptor;
+        if (testFieldLabel) {
             this.setState({
-                showTest: true
+                showTest: true,
+                destinationName: testFieldLabel
             });
         } else {
             const fieldModel = this.state.currentConfig;
             this.props.testConfig(fieldModel, '');
         }
+    }
+
+    handleTestCancel() {
+        this.setState({
+            showTest: false
+        });
     }
 
     handleSubmit(event) {
@@ -89,6 +98,7 @@ class GlobalConfiguration extends React.Component {
             fontAwesomeIcon, label, description, fields, name
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
+        const { currentConfig } = this.state
 
         return (
             <div>
@@ -97,10 +107,10 @@ class GlobalConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <div>
-                        <FieldsPanel descriptorFields={fields} currentConfig={this.state.currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
+                        <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
-                    <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} />
+                    <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
                 </form>
             </div>
         );
