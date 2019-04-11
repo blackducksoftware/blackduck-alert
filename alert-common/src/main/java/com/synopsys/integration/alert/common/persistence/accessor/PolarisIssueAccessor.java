@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel
 public interface PolarisIssueAccessor {
     List<PolarisIssueModel> getProjectIssues(final String projectHref) throws AlertDatabaseConstraintException;
 
-    Optional<PolarisIssueModel> getProjectIssuesByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException;
+    Optional<PolarisIssueModel> getProjectIssueByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException;
 
     PolarisIssueModel updateIssueType(final String projectHref, final String issueType, final Integer newCount) throws AlertDatabaseConstraintException;
 }

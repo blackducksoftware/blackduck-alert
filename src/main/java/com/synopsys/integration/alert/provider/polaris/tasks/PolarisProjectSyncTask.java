@@ -209,7 +209,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     private Set<PolarisIssueModel> updatePreviousCounts(final String projectHref, final Set<PolarisIssueModel> polarisIssueModels) throws AlertDatabaseConstraintException {
         final Set<PolarisIssueModel> updatedPolarisIssues = new HashSet<>();
         for (final PolarisIssueModel polarisIssueModel : polarisIssueModels) {
-            final Optional<PolarisIssueModel> optionalStoredProjectIssue = polarisIssueAccessor.getProjectIssuesByIssueType(projectHref, polarisIssueModel.getIssueType());
+            final Optional<PolarisIssueModel> optionalStoredProjectIssue = polarisIssueAccessor.getProjectIssueByIssueType(projectHref, polarisIssueModel.getIssueType());
             if (optionalStoredProjectIssue.isPresent()) {
                 final PolarisIssueModel storedPolarisIssueModel = optionalStoredProjectIssue.get();
                 updatedPolarisIssues.add(new PolarisIssueModel(polarisIssueModel.getIssueType(), storedPolarisIssueModel.getCurrentIssueCount(), polarisIssueModel.getCurrentIssueCount()));
