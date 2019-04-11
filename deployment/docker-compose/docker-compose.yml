@@ -1,4 +1,4 @@
-version: '2.1'
+version: '2.3'
 services:
   cfssl:
     image: blackducksoftware/blackduck-cfssl:1.0.0
