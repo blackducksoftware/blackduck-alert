@@ -134,6 +134,8 @@ public class EmailGlobalUIConfig extends UIConfig {
 
     private static final String ADVANCED_PANEL = "Advanced";
 
+    private static final String TEST_LABEL_ADDRESS = "Email address";
+
     public EmailGlobalUIConfig() {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_DESCRIPTION, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
     }
@@ -218,6 +220,6 @@ public class EmailGlobalUIConfig extends UIConfig {
 
     @Override
     public String createTestLabel() {
-        return "Email address";
+        return TEST_LABEL_ADDRESS;
     }
 }
