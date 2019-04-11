@@ -415,7 +415,7 @@ class BaseJobConfiguration extends Component {
         const selectedProviderOption = this.getSelectedSingleValue(providers, fieldModel, KEY_PROVIDER_NAME);
         const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, fieldModel, KEY_FREQUENCY);
         return (
-            <form className="form-horizontal" onSubmit={this.onSubmit} noValidate="true">
+            <form className="form-horizontal" onSubmit={this.onSubmit} noValidate={true}>
                 <TextInput
                     id={KEY_NAME}
                     label="Job Name"
