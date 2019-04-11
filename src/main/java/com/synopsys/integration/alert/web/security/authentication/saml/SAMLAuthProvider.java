@@ -29,6 +29,7 @@ import org.springframework.security.saml.SAMLAuthenticationProvider;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
 
+    @Override
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         final Authentication currentAuth = super.authenticate(authentication);
         if (currentAuth.isAuthenticated()) {
