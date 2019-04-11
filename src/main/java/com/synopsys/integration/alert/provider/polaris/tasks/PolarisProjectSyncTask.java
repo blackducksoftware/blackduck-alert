@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -112,7 +113,8 @@ public class PolarisProjectSyncTask extends ScheduledTask {
                 final Set<String> projectUserEmails = polarisApiHelper.getAllEmailsForProject(projectResource);
                 projectUserEmailMappings.put(projectModel, projectUserEmails);
 
-                final Set<PolarisIssueModel> issuesForProject = createIssuesForProject(polarisApiHelper, projectResource, projectModel, projectBranches);
+                Set<PolarisIssueModel> issuesForProject = createIssuesForProject(polarisApiHelper, projectResource, projectModel, projectBranches);
+                issuesForProject = updatePreviousCounts(projectResource.getLinks().getSelf().getHref(), issuesForProject);
                 issuesToUpdate.put(projectModel, issuesForProject);
 
                 final Set<AlertNotificationWrapper> newNotificationsForProject = createNotificationContentForProject(projectModel, issuesForProject);
@@ -202,6 +204,20 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     private void persistNotifications(final Collection<AlertNotificationWrapper> notificationsToSave) {
         logger.info("Generating {} new notifications", notificationsToSave.size());
         notificationsToSave.forEach(notificationManager::saveNotification);
+    }
+
+    private Set<PolarisIssueModel> updatePreviousCounts(final String projectHref, final Set<PolarisIssueModel> polarisIssueModels) throws AlertDatabaseConstraintException {
+        final Set<PolarisIssueModel> updatedPolarisIssues = new HashSet<>();
+        for (final PolarisIssueModel polarisIssueModel : polarisIssueModels) {
+            final Optional<PolarisIssueModel> optionalStoredProjectIssue = polarisIssueAccessor.getProjectIssuesByIssueType(projectHref, polarisIssueModel.getIssueType());
+            if (optionalStoredProjectIssue.isPresent()) {
+                final PolarisIssueModel storedPolarisIssueModel = optionalStoredProjectIssue.get();
+                updatedPolarisIssues.add(new PolarisIssueModel(polarisIssueModel.getIssueType(), storedPolarisIssueModel.getCurrentIssueCount(), polarisIssueModel.getCurrentIssueCount()));
+            } else {
+                updatedPolarisIssues.add(polarisIssueModel);
+            }
+        }
+        return updatedPolarisIssues;
     }
 
 }
