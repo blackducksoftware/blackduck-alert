@@ -20,19 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security;
+package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import java.util.Set;
 
-import com.synopsys.integration.alert.AlertConstants;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-@Component
-@Profile(AlertConstants.PROFILE_NAME_SSL)
-public class EnabledSSLValidator implements SSLValidator {
+public class PolicyComponentMapping extends AlertSerializableModel {
+    // Do not delete this member. This is used for checking equals and filtering.
+    private final String componentName;
+    private final Set<String> policyUrls;
 
-    @Override
-    public boolean isSSLEnabled() {
-        return true;
+    public PolicyComponentMapping(final String componentName, final Set<String> policyUrls) {
+        this.componentName = componentName;
+        this.policyUrls = policyUrls;
     }
+
+    public Set<String> getPolicyUrls() {
+        return policyUrls;
+    }
+
 }

@@ -46,8 +46,8 @@ public class SamlAntMatcher implements RequestMatcher {
     }
 
     private void createAntMatchers() {
-        enabledMatchers = enabledPatterns.stream().map(pattern -> new AntPathRequestMatcher(pattern)).collect(Collectors.toList());
-        disabledMatchers = disabledPatterns.stream().map(pattern -> new AntPathRequestMatcher(pattern)).collect(Collectors.toList());
+        enabledMatchers = enabledPatterns.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
+        disabledMatchers = disabledPatterns.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
     }
 
     @Override
