@@ -84,7 +84,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
 
     private Authentication performLdapAuthentication(final Authentication pendingAuthentication) {
         logger.info("Checking ldap based authentication...");
-        Authentication result;
+        Authentication result = pendingAuthentication;
         if (ldapManager.isLdapEnabled()) {
             logger.info("LDAP authentication enabled");
             try {
@@ -92,14 +92,11 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
                 result = authenticationProvider.authenticate(pendingAuthentication);
             } catch (final AlertLDAPConfigurationException ex) {
                 logger.error("LDAP Configuration error", ex);
-                result = pendingAuthentication;
             } catch (final Exception ex) {
                 logger.error("LDAP Authentication error", ex);
-                result = pendingAuthentication;
             }
         } else {
             logger.info("LDAP authentication disabled");
-            result = pendingAuthentication;
         }
         return result;
     }
@@ -110,6 +107,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
                    .map(GrantedAuthority::getAuthority)
                    .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
                    .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX))
-                   .anyMatch(roleName -> allowedRoles.contains(UserRole.valueOf(roleName)));
+                   .map(UserRole::valueOf)
+                   .anyMatch(allowedRoles::contains);
     }
 }
