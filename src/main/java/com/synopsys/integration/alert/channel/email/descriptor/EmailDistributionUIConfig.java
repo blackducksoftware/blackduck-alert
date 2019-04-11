@@ -42,7 +42,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     private static final String EMAIL_ADDRESSES_DESCRIPTION = "";
     private static final String EMAIL_SUBJECT_LINE_DESCRIPTION = "The subject line to use in the emails sent for this distribution job.";
-    private static final String EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION = "If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.";
+    private static final String EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
 
     @Autowired
     public EmailDistributionUIConfig(final DescriptorAccessor descriptorAccessor) {
