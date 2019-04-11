@@ -22,27 +22,17 @@
  */
 package com.synopsys.integration.alert.web.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.stereotype.Component;
 
-@EnableWebSecurity
-@Configuration
-@Profile("ssl")
-public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
-    private final HttpPathManager httpPathManager;
+import com.synopsys.integration.alert.AlertConstants;
 
-    @Autowired
-    public SSLAuthenticationHandler(final HttpPathManager httpPathManager) {
-        this.httpPathManager = httpPathManager;
-    }
+@Component
+@Profile(AlertConstants.PROFILE_NAME_SSL)
+public class EnabledSSLValidator implements SSLValidator {
 
     @Override
-    protected void configure(final HttpSecurity http) throws Exception {
-        httpPathManager.completeHttpSecurity(http.requiresChannel().anyRequest().requiresSecure()
-                                                 .and());
+    public boolean isSSLEnabled() {
+        return true;
     }
 }
