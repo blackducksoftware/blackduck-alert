@@ -69,7 +69,7 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
     }
 
     @Override
-    public Optional<PolarisIssueModel> getProjectIssuesByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException {
+    public Optional<PolarisIssueModel> getProjectIssueByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(projectHref)) {
             throw new AlertDatabaseConstraintException("The field projectHref cannot be blank");
         }
