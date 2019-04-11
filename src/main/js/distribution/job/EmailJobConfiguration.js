@@ -14,7 +14,7 @@ const KEY_EMAIL_ADDRESSES = 'email.addresses';
 
 const fieldDescriptions = {
     [KEY_SUBJECT_LINE]: 'The subject line to use in the emails sent for this distribution job.',
-    [KEY_PROJECT_OWNER_ONLY]: 'If true, emails will only be sent to the Project owner of the Black Duck project. Otherwise, all users assigned to the Black Duck project will get an email.'
+    [KEY_PROJECT_OWNER_ONLY]: 'If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.'
 };
 
 const fieldNames = [
