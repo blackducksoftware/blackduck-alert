@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,15 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.provider.blackduck.collector;
 
-public class AlertConstants {
-    public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
-    public static final String ALERT_APPLICATION_NAME = "Alert";
-    public static final String PROFILE_NAME_NO_SSL = "no_ssl";
-    public static final String PROFILE_NAME_SSL = "ssl";
+import java.util.Set;
 
-    private AlertConstants() throws InstantiationException {
-        throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class PolicyComponentMapping extends AlertSerializableModel {
+    // Do not delete this member. This is used for checking equals and filtering.
+    private final String componentName;
+    private final Set<String> policyUrls;
+
+    public PolicyComponentMapping(final String componentName, final Set<String> policyUrls) {
+        this.componentName = componentName;
+        this.policyUrls = policyUrls;
     }
+
+    public Set<String> getPolicyUrls() {
+        return policyUrls;
+    }
+
 }

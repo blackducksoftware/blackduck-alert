@@ -1,9 +1,10 @@
-import { SERIALIZE, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR } from 'store/actions/types';
+import { SERIALIZE, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
 
 const initialState = {
     csrfToken: null,
     fetching: false,
     loggedIn: false,
+    logoutPerformed: false,
     initializing: true,
     showLogoutConfirm: false,
     name: '',
@@ -64,7 +65,10 @@ const session = (state = initialState, action) => {
             return Object.assign({}, state, {
                 showLogoutConfirm: true
             });
-
+        case SESSION_LOGOUT:
+            return Object.assign({}, state, {
+                logoutPerformed: true
+            });
         case SERIALIZE:
             return initialState;
 

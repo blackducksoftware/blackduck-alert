@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,15 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.web.security;
 
-public class AlertConstants {
-    public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
-    public static final String ALERT_APPLICATION_NAME = "Alert";
-    public static final String PROFILE_NAME_NO_SSL = "no_ssl";
-    public static final String PROFILE_NAME_SSL = "ssl";
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-    private AlertConstants() throws InstantiationException {
-        throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
+import com.synopsys.integration.alert.AlertConstants;
+
+@Component
+@Profile(AlertConstants.PROFILE_NAME_NO_SSL)
+public class NoSSLValidator implements SSLValidator {
+
+    @Override
+    public boolean isSSLEnabled() {
+        return false;
     }
 }
