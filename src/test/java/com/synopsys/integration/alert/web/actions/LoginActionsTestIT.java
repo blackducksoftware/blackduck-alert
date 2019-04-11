@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
@@ -43,11 +44,11 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
     private final TestProperties properties = new TestProperties();
     @Autowired
-    private DaoAuthenticationProvider alertDatabaseAuthProvider;
-    @Autowired
     private DefaultUserAccessor userAccessor;
     @Autowired
     private LdapManager ldapManager;
+    @Autowired
+    private AlertAuthenticationProvider authenticationProvider;
 
     @BeforeEach
     public void init() throws Exception {
@@ -58,7 +59,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void testAuthenticateDBUserIT() {
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
+        final LoginActions loginActions = new LoginActions(authenticationProvider);
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertTrue(userAuthenticated);
@@ -67,7 +68,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @Test
     public void testAuthenticateDBUserFailIT() {
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
+        final LoginActions loginActions = new LoginActions(authenticationProvider);
         final MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setBlackDuckPassword("badpassword");
         try {
@@ -83,7 +84,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         // add a user test then delete a user.
         final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
+        final LoginActions loginActions = new LoginActions(authenticationProvider);
         userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword(), "");
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
@@ -107,9 +108,9 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(ldapAuthenticationProvider);
 
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, mockLdapManager);
+        final LoginActions loginActions = new LoginActions(authenticationProvider);
         final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
-        assertFalse(authenticated);
+        assertTrue(authenticated);
     }
 
     @Test
@@ -121,10 +122,12 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         final LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
         Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertLDAPConfigurationException("LDAP CONFIG EXCEPTION"));
-        final DaoAuthenticationProvider databaseProvider = Mockito.spy(alertDatabaseAuthProvider);
-        final LoginActions loginActions = new LoginActions(databaseProvider, mockLdapManager);
+        final DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
+        Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+        final AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager);
+        final LoginActions loginActions = new LoginActions(authenticationProvider);
         final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
-        assertTrue(authenticated);
+        assertFalse(authenticated);
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
     }
 
