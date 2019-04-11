@@ -219,10 +219,15 @@ public class StartupManager {
         taskManager.scheduleCronTask(PhoneHomeTask.CRON_EXPRESSION, phoneHomeTask.getTaskName());
         taskManager.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS, onDemandTask.getTaskName());
 
-        logger.info("Daily Digest next run:     {}", taskManager.getNextRunTime(dailyTask.getTaskName()));
-        logger.info("On Demand next run:        {}", taskManager.getNextRunTime(onDemandTask.getTaskName()));
-        logger.info("Purge Old Data next run:   {}", taskManager.getNextRunTime(purgeTask.getTaskName()));
-        logger.debug("Phone home next run:       {}", taskManager.getNextRunTime(phoneHomeTask.getTaskName()));
+        final String dailyDigestNextRun = taskManager.getNextRunTime(dailyTask.getTaskName()).orElse("");
+        final String onDemandNextRun = taskManager.getNextRunTime(onDemandTask.getTaskName()).orElse("");
+        final String purgeNextRun = taskManager.getNextRunTime(purgeTask.getTaskName()).orElse("");
+        final String phoneHomeNextRun = taskManager.getNextRunTime(phoneHomeTask.getTaskName()).orElse("");
+
+        logger.info("Daily Digest next run:     {}", dailyDigestNextRun);
+        logger.info("On Demand next run:        {}", onDemandNextRun);
+        logger.info("Purge Old Data next run:   {}", purgeNextRun);
+        logger.debug("Phone home next run:       {}", phoneHomeNextRun);
     }
 
     @Transactional
