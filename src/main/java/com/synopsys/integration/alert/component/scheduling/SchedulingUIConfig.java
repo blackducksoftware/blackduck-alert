@@ -22,23 +22,27 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
+import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
     private static final String LABEL_DAILY_DIGEST_HOUR_OF_DAY = "Daily digest hour of day";
+    private static final String LABEL_DAILY_PROCESSOR_NEXT_RUN = "Daily Digest Cron Next Run";
     private static final String LABEL_PURGE_DATA_FREQUENCY_IN_DAYS = "Purge data frequency in days";
+    private static final String LABEL_PURGE_DATA_NEXT_RUN = "Purge Cron Next Run";
 
     private static final String SCHEDULING_DIGEST_HOUR_DESCRIPTION = "Select the hour of the day to run the the daily digest distribution jobs.";
+    private static final String DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION = "This is the next time daily digest distribution jobs will run.";
     private static final String SCHEDULING_PURGE_FREQUENCY_DESCRIPTION = "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.";
+    private static final String PURGE_DATA_NEXT_RUN_DESCRIPTION = "This is the next time Alert will purge provider data.";
 
     public SchedulingUIConfig() {
         super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_DESCRIPTION, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
@@ -48,9 +52,11 @@ public class SchedulingUIConfig extends UIConfig {
     public List<ConfigField> createFields() {
         final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION,
             createDigestHours());
+        final ConfigField digestHourNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, LABEL_DAILY_PROCESSOR_NEXT_RUN, DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION);
         final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, LABEL_PURGE_DATA_FREQUENCY_IN_DAYS, SCHEDULING_PURGE_FREQUENCY_DESCRIPTION,
             createPurgeFrequency());
-        return Arrays.asList(digestHour, purgeFrequency);
+        final ConfigField purgeNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, LABEL_PURGE_DATA_NEXT_RUN, PURGE_DATA_NEXT_RUN_DESCRIPTION);
+        return List.of(digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
     }
 
     private List<LabelValueSelectOption> createDigestHours() {
