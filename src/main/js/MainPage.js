@@ -59,9 +59,7 @@ class MainPage extends Component {
                     />}
                     {providers}
                     {channels}
-                    {/*<Route path="/alert/jobs/scheduling" component={SchedulingConfiguration} />*/}
                     <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
-                    {/*<Route path="/alert/general/settings" component={SettingsConfiguration} />*/}
                     {components}
                     <Route path="/alert/general/audit" component={Audit} />
                     <Route path="/alert/general/about" component={AboutInfo} />
