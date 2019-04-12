@@ -63,7 +63,7 @@ export function retrieveKeys(descriptorFields) {
 
 export function createField(field, value, isSet, fieldError, onChange) {
     const {
-        key, label, description, type
+        key, label, description, type, options, searchable, multiSelect
     } = field;
     const checkedValue = value.toString().toLowerCase() === 'true';
     const propMapping = {
@@ -75,6 +75,9 @@ export function createField(field, value, isSet, fieldError, onChange) {
         isChecked: checkedValue,
         isSet,
         onChange,
+        options,
+        searchable,
+        multiSelect,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
         errorValue: fieldError
     };
