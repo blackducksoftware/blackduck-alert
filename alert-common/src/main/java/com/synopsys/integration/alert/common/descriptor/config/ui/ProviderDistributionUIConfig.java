@@ -29,10 +29,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
@@ -56,8 +55,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES,
-            provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(Collectors.toList()), this::validateNotificationTypes);
-        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT, provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
+            provider.getProviderContentTypes().stream().map(providerContentType -> new LabelValueSelectOption(providerContentType.getNotificationType())).collect(Collectors.toList()), this::validateNotificationTypes);
+        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
+            provider.getSupportedFormatTypes().stream().map(formatType -> new LabelValueSelectOption(formatType.name())).collect(Collectors.toList()));
 
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();

@@ -65,6 +65,7 @@ export function createField(field, value, isSet, fieldError, onChange) {
     const {
         key, label, description, type, options, searchable, multiSelect
     } = field;
+    console.log(options);
     const checkedValue = value.toString().toLowerCase() === 'true';
     const propMapping = {
         id: key,
