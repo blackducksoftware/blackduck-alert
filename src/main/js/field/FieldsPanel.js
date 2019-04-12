@@ -91,7 +91,6 @@ class FieldsPanel extends React.Component {
             const fieldKey = field.key;
             const values = FieldModelUtilities.getFieldModelValues(this.props.currentConfig, fieldKey);
             const isSet = FieldModelUtilities.isFieldModelValueSet(this.props.currentConfig, fieldKey);
-            console.log(field);
             const newField = FieldMapping.createField(field, values, isSet, this.props.fieldErrors[fieldKey], this.props.handleChange);
             createdFields.push(newField);
         });

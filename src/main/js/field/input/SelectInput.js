@@ -14,7 +14,6 @@ class SelectInput extends Component {
             closeOnSelect = false;
         }
 
-        console.log(this.props);
         const field = (<div className={selectClasses}>
             <Select
                 id={id}
