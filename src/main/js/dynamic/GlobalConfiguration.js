@@ -10,7 +10,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
-import ChannelTestModal from "../component/common/ChannelTestModal";
+import ChannelTestModal from 'component/common/ChannelTestModal';
 
 class GlobalConfiguration extends React.Component {
     constructor(props) {
