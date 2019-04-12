@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -53,7 +54,13 @@ public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
     public List<ConfigField> createChannelDistributionFields() {
         final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, LABEL_ROOM_ID, HIP_CHAT_ROOM_ID_DESCRIPTION);
         final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, LABEL_NOTIFY, HIP_CHAT_NOTIFY_DESCRIPTION);
-        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, LABEL_COLOR, HIP_CHAT_COLOR_DESCRIPTION, List.of("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, LABEL_COLOR, HIP_CHAT_COLOR_DESCRIPTION, List.of(
+            new LabelValueSelectOption("Yellow"),
+            new LabelValueSelectOption("Green"),
+            new LabelValueSelectOption("Red"),
+            new LabelValueSelectOption("Purple"),
+            new LabelValueSelectOption("Gray"),
+            new LabelValueSelectOption("Random")));
         return List.of(roomId, notify, color);
     }
 }

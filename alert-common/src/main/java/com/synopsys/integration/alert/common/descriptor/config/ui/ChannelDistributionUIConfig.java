@@ -33,13 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_NAME = "channel.common.name";
@@ -68,7 +68,9 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
-        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values()).map(FrequencyType::name).collect(Collectors.toList()));
+        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
+                                                                                                                                  .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
+                                                                                                                                  .collect(Collectors.toList()));
         final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, getDescriptorNames(DescriptorType.CHANNEL));
         final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, getDescriptorNames(DescriptorType.PROVIDER));
 
@@ -79,9 +81,9 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     public abstract List<ConfigField> createChannelDistributionFields();
 
-    private Collection<String> getDescriptorNames(final DescriptorType descriptorType) {
+    private Collection<LabelValueSelectOption> getDescriptorNames(final DescriptorType descriptorType) {
         try {
-            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream().map(RegisteredDescriptorModel::getName).collect(Collectors.toSet());
+            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream().map(descriptor -> new LabelValueSelectOption(descriptor.getName())).collect(Collectors.toSet());
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("There was an error when retrieving data from the DB when building fields.");
         }

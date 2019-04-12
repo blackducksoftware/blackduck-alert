@@ -14,6 +14,7 @@ class SelectInput extends Component {
             closeOnSelect = false;
         }
 
+        console.log(this.props);
         const field = (<div className={selectClasses}>
             <Select
                 id={id}
@@ -41,7 +42,7 @@ SelectInput.propTypes = {
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
     components: PropTypes.object,
-    value: PropTypes.string,
+    value: PropTypes.array,
     placeholder: PropTypes.string,
     isSearchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
@@ -55,8 +56,9 @@ SelectInput.defaultProps = {
     placeholder: 'Choose a value',
     options: [],
     components: {},
-    inputClass: 'form-control',
-    selectSpacingClass: 'col-sm-4',
+    inputClass: 'typeAheadField',
+    labelClass: 'col-sm-3',
+    selectSpacingClass: 'col-sm-8',
     isSearchable: false,
     removeSelected: false,
     hasMultipleValues: false
