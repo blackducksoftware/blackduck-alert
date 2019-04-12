@@ -59,9 +59,6 @@ class Navigation extends Component {
                             </NavLink>
                         </li>
                         <li className="divider" />
-                        <li className="navHeader">
-                            Components
-                        </li>
                         {components}
                         <li>
                             <NavLink to="/alert/general/audit" activeClassName="activeNav">

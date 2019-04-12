@@ -14,11 +14,20 @@ class SelectInput extends Component {
             closeOnSelect = false;
         }
 
+        const handleChange = (option) => {
+            onChange({
+                target: {
+                    name: id,
+                    value: option ? option.value : null
+                }
+            });
+        };
+
         const field = (<div className={selectClasses}>
             <Select
                 id={id}
                 className={inputClass}
-                onChange={onChange}
+                onChange={handleChange}
                 isSearchable={isSearchable}
                 removeSelected={removeSelected}
                 options={options}
