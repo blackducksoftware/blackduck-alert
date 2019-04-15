@@ -185,8 +185,9 @@ public class SettingsUIConfig extends UIConfig {
                                             .setPanel(SETTINGS_PANEL_SAML);
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
-            ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, samlForceAuth, samlMetaDataURL,
-            samlEntityId, samlEntityBaseURL, samlEnabled);
+            ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, samlEnabled, samlForceAuth,
+            samlMetaDataURL,
+            samlEntityId, samlEntityBaseURL);
     }
 
     private Collection<String> minimumEncryptionFieldLength(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

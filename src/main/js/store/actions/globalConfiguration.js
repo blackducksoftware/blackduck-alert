@@ -122,7 +122,7 @@ export function updateConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', data.id);
+                    const updatedConfig = FieldModelUtilities.combineFieldModels(config, data);
                     dispatch(configUpdated(updatedConfig));
                 });
             } else {
