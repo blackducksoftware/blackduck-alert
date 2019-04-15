@@ -136,7 +136,7 @@ export function updateConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const updatedConfig = FieldModelUtilities.combineFieldModels(config, data);
+                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', data.id);
                     dispatch(configUpdated(updatedConfig));
                 });
             } else {
