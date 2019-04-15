@@ -59,6 +59,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         final ItemOperation operation = ItemOperation.DELETE;
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
+        final List<LinkableItem> policySeverity = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_SEVERITY_NAME);
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
         final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
         final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
@@ -66,6 +67,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
         applicableItems.addAll(componentItems);
         applicableItems.addAll(componentVersionItems);
+        applicableItems.addAll(policySeverity);
 
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
@@ -73,7 +75,6 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         }
 
         for (final LinkableItem policyItem : policyItems) {
-            final String policyUrl = policyItem.getUrl().orElse("");
             addApplicableItems(categoryItems, notificationContent.getId(), Set.of(policyItem), operation, applicableItems);
         }
     }

@@ -25,19 +25,19 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 public class PolicyComponentMapping extends AlertSerializableModel {
     // Do not delete this member. This is used for checking equals and filtering.
     private final String componentName;
-    private final Set<String> policyUrls;
+    private final Set<PolicyInfo> policies;
 
-    public PolicyComponentMapping(final String componentName, final Set<String> policyUrls) {
+    public PolicyComponentMapping(final String componentName, final Set<PolicyInfo> policies) {
         this.componentName = componentName;
-        this.policyUrls = policyUrls;
+        this.policies = policies;
     }
 
-    public Set<String> getPolicyUrls() {
-        return policyUrls;
+    public Set<PolicyInfo> getPolicies() {
+        return policies;
     }
-
 }
