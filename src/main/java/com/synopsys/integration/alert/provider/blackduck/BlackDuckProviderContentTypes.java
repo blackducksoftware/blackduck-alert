@@ -66,6 +66,7 @@ public class BlackDuckProviderContentTypes {
     public static final String JSON_FIELD_POLICY_INFOS = "policyInfos[*]";
     public static final String JSON_FIELD_POLICY_NAME = "policyName";
     public static final String JSON_FIELD_POLICY = "policy";
+    public static final String JSON_FIELD_POLICY_SEVERITY = "severity";
     public static final String JSON_FIELD_FIRST_NAME = "firstName";
     public static final String JSON_FIELD_LAST_NAME = "lastName";
 
@@ -82,6 +83,7 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_COMPONENT_VERSION_NAME = "Component Version";
     public static final String LABEL_POLICY_INFO_LIST = "Policy Infos";
     public static final String LABEL_POLICY_NAME = "Policy";
+    public static final String LABEL_POLICY_SEVERITY_NAME = "Severity";
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_PROJECT_VERSION_NAME = "Project Version";
     public static final String LABEL_POLICY_OVERRIDE_FIRST_NAME = JSON_FIELD_FIRST_NAME;
@@ -132,7 +134,9 @@ public class BlackDuckProviderContentTypes {
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LAST_NAME), JSON_FIELD_LAST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_NAME), JSON_FIELD_POLICY_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY), JSON_FIELD_POLICY, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_POLICY_NAME + JsonField.LABEL_URL_SUFFIX)
+                LABEL_POLICY_NAME + JsonField.LABEL_URL_SUFFIX),
+            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_SEVERITY), JSON_FIELD_POLICY_SEVERITY, FieldContentIdentifier.CATEGORY_ITEM,
+                LABEL_POLICY_SEVERITY_NAME)
 
         )
     );
