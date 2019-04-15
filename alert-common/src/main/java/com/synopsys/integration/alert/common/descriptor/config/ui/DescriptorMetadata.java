@@ -39,13 +39,15 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private final String fontAwesomeIcon;
     private final boolean automaticallyGenerateUI;
     private List<ConfigField> fields;
+    private String testFieldLabel;
 
-    public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final ConfigContextEnum context, final String fontAwesomeIcon, final List<ConfigField> fields, final DescriptorType type) {
-        this(label, urlName, name, description, type, context, fontAwesomeIcon, true, fields);
+    public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final ConfigContextEnum context, final String fontAwesomeIcon, final List<ConfigField> fields,
+        final String testFieldLabel, final DescriptorType type) {
+        this(label, urlName, name, description, type, context, fontAwesomeIcon, true, fields, testFieldLabel);
     }
 
     public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon,
-        final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
+        final boolean automaticallyGenerateUI, final List<ConfigField> fields, final String testFieldLabel) {
         this.label = label;
         this.urlName = urlName;
         this.name = name;
@@ -55,6 +57,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.fontAwesomeIcon = fontAwesomeIcon;
         this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.fields = fields;
+        this.testFieldLabel = testFieldLabel;
     }
 
     public String getLabel() {
@@ -95,5 +98,13 @@ public class DescriptorMetadata extends AlertSerializableModel {
 
     public void setFields(final List<ConfigField> fields) {
         this.fields = fields;
+    }
+
+    public String getTestFieldLabel() {
+        return testFieldLabel;
+    }
+
+    public void setTestFieldLabel(final String testFieldLabel) {
+        this.testFieldLabel = testFieldLabel;
     }
 }
