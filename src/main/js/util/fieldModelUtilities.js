@@ -47,7 +47,10 @@ export function getFieldModelValues(fieldModel, key) {
 
 export function getFieldModelBooleanValue(fieldModel, key) {
     const fieldValue = getFieldModelSingleValue(fieldModel, key);
-    return fieldValue && fieldValue.toString().toLowerCase() === 'true';
+    if (fieldValue && fieldValue.toString().toLowerCase() === 'true') {
+        return true;
+    }
+    return false;
 }
 
 export function getFieldModelId(fieldModel) {
