@@ -107,11 +107,12 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields, name
+            fontAwesomeIcon, label, description, fields, name, type
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
-        const { currentConfig } = this.state
-
+        const { currentConfig } = this.state;
+        const displayTest = type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT;
+        
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
@@ -121,7 +122,7 @@ class GlobalConfiguration extends React.Component {
                     <div>
                         <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
-                    <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
+                    <ConfigButtons isFixed={false} includeSave includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
                     <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
                 </form>
             </div>
