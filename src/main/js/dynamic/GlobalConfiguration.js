@@ -10,6 +10,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
+import ChannelTestModal from 'component/common/ChannelTestModal';
 
 class GlobalConfiguration extends React.Component {
     constructor(props) {
@@ -17,14 +18,19 @@ class GlobalConfiguration extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        this.handleTestCancel = this.handleTestCancel.bind(this);
+
         const { fields, name } = this.props.descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
         const fieldModel = FieldModelUtilities.createEmptyFieldModelFromFieldObject(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
         this.state = {
             currentConfig: fieldModel,
             currentDescriptor: this.props.descriptor,
-            currentKeys: fieldKeys
-        };
+            currentKeys: fieldKeys,
+            showTest: false,
+            destinationName: ''
+        }
+        ;
     }
 
     componentDidMount() {
@@ -56,8 +62,22 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const fieldModel = this.state.currentConfig;
-        this.props.testConfig(fieldModel);
+        const { testFieldLabel } = this.state.currentDescriptor;
+        if (testFieldLabel) {
+            this.setState({
+                showTest: true,
+                destinationName: testFieldLabel
+            });
+        } else {
+            const fieldModel = this.state.currentConfig;
+            this.props.testConfig(fieldModel, '');
+        }
+    }
+
+    handleTestCancel() {
+        this.setState({
+            showTest: false
+        });
     }
 
     handleSubmit(event) {
@@ -78,6 +98,8 @@ class GlobalConfiguration extends React.Component {
             fontAwesomeIcon, label, description, fields, name
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
+        const { currentConfig } = this.state
+
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
@@ -85,9 +107,10 @@ class GlobalConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
                     <div>
-                        <FieldsPanel descriptorFields={fields} currentConfig={this.state.currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
+                        <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
+                    <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
                 </form>
             </div>
         );
@@ -130,7 +153,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getConfig: descriptorName => dispatch(getConfig(descriptorName)),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: config => dispatch(testConfig(config)),
+    testConfig: (config, destination) => dispatch(testConfig(config, destination)),
     deleteConfig: id => dispatch(deleteConfig(id))
 });
 

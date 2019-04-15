@@ -87,6 +87,20 @@ function configDeleted() {
     };
 }
 
+function handleFailureResponse(dispatch, response) {
+    response.json().then((data) => {
+        switch (response.status) {
+            case 400:
+            case 412:
+                return dispatch(configError(data.message, data.errors));
+            default: {
+                dispatch(configError(data.message, null));
+                return dispatch(verifyLoginByStatus(response.status));
+            }
+        }
+    });
+}
+
 export function getConfig(descriptorName) {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
@@ -126,44 +140,32 @@ export function updateConfig(config) {
                     dispatch(configUpdated(updatedConfig));
                 });
             } else {
-                response.json().then((data) => {
-                    switch (response.status) {
-                        case 400:
-                            return dispatch(configError(data.message, data.errors));
-                        case 412:
-                            return dispatch(configError(data.message, data.errors));
-                        default: {
-                            dispatch(configError(data.message));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        }
-                    }
-                });
+                handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
     };
 }
 
 
-export function testConfig(config) {
+export function testConfig(config, destination) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config, '');
+        const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config, destination);
         request.then((response) => {
             if (response.ok) {
                 dispatch(testSuccess());
             } else {
-                response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 400:
-                                return dispatch(testFailed(data.message, data.errors));
-                            case 401:
-                                return dispatch(testFailed('API Key isn\'t valid, try a different one'));
-                            default:
-                                return dispatch(testFailed(data.message));
-                        }
-                    });
+                response.json().then((data) => {
+                    switch (response.status) {
+                        case 400:
+                            return dispatch(testFailed(data.message, data.errors));
+                        case 401:
+                            return dispatch(testFailed('There was a problem testing your configuration.'));
+                        default:
+                            return dispatch(testFailed(data.message));
+                    }
+                });
             }
         }).catch(console.error);
     };
@@ -180,19 +182,7 @@ export function deleteConfig(id) {
                     dispatch(configDeleted());
                 });
             } else {
-                response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 400:
-                                return dispatch(configError(data.message, data.errors));
-                            case 412:
-                                return dispatch(configError(data.message, data.errors));
-                            default: {
-                                dispatch(configError(data.message, null));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            }
-                        }
-                    });
+                handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
     };
