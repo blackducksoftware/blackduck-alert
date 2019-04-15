@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_NAME = "channel.common.name";
@@ -83,7 +84,10 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     private Collection<LabelValueSelectOption> getDescriptorNames(final DescriptorType descriptorType) {
         try {
-            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream().map(descriptor -> new LabelValueSelectOption(descriptor.getName())).collect(Collectors.toSet());
+            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream()
+                       .map(RegisteredDescriptorModel::getName)
+                       .map(LabelValueSelectOption::new)
+                       .collect(Collectors.toSet());
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("There was an error when retrieving data from the DB when building fields.");
         }
