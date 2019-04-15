@@ -92,7 +92,7 @@ public abstract class MessageContentCollector {
             final MessageContentProcessor processor = messageContentProcessorMap.get(format);
             return processor.process(collectedContent);
         } else {
-            return Collections.emptyList();
+            return List.of();
         }
     }
 
