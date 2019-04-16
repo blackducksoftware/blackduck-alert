@@ -101,7 +101,6 @@ class FieldsPanel extends React.Component {
         const createdPanels = [];
 
         const sortedFields = this.initializeFieldMapping(this.props.descriptorFields);
-        console.log(sortedFields);
         Object.keys(sortedFields).forEach((key) => {
             createdPanels.push(this.createPanel(key, sortedFields[key]));
         });
