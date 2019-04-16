@@ -41,6 +41,14 @@ public class ReadOnlyConfigField extends ConfigField {
         super(key, label, description, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, validationFunction);
     }
 
+    public static ReadOnlyConfigField create(final String key, final String label, final String description) {
+        return new ReadOnlyConfigField(key, label, description, false, false);
+    }
+
+    public static ReadOnlyConfigField create(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new ReadOnlyConfigField(key, label, description, false, false, validationFunction);
+    }
+
     public static ReadOnlyConfigField createRequired(final String key, final String label, final String description) {
         return new ReadOnlyConfigField(key, label, description, true, false);
     }

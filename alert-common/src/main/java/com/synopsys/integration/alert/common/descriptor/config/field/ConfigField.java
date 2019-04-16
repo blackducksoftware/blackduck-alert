@@ -152,16 +152,18 @@ public class ConfigField extends AlertSerializableModel {
         return panel;
     }
 
-    public void setPanel(final String panel) {
+    public ConfigField setPanel(final String panel) {
         this.panel = panel;
+        return this;
     }
 
     public String getHeader() {
         return header;
     }
 
-    public void setHeader(final String header) {
+    public ConfigField setHeader(final String header) {
         this.header = header;
+        return this;
     }
 
     public Set<String> getRequiredRelatedFields() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import SelectInput from 'field/input/SelectInput';
+import SelectInput from 'field/input/DynamicSelect';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import PasswordInput from 'field/input/PasswordInput';
@@ -8,32 +8,42 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
-export function buildTextInput(props) {
-    return <TextInput {...props} />;
+export function buildTextInput(items) {
+    return <TextInput {...items} />;
 }
 
-export function buildTextArea(props) {
-    return <TextArea {...props} />;
+export function buildTextArea(items) {
+    return <TextArea {...items} />;
 }
 
-export function buildSelectInput(props) {
-    return <SelectInput {...props} />;
+export function buildSelectInput(items, field) {
+    const { value } = items;
+    const { searchable, multiSelect, options } = field;
+
+    const selectValue = options.filter(option => option.value === value[0]);
+    Object.assign(items, {
+        value: selectValue, searchable, multiSelect, options
+    });
+    return <SelectInput {...items} />;
 }
 
-export function buildPasswordInput(props) {
-    return <PasswordInput {...props} />;
+export function buildPasswordInput(items) {
+    return <PasswordInput {...items} />;
 }
 
-export function buildNumberInput(props) {
-    return <NumberInput {...props} />;
+export function buildNumberInput(items) {
+    return <NumberInput {...items} />;
 }
 
-export function buildCheckboxInput(props) {
-    return <CheckboxInput {...props} />;
+export function buildCheckboxInput(items) {
+    const { value } = items;
+    const checkedValue = value.toString().toLowerCase() === 'true';
+    Object.assign(items, { isChecked: checkedValue });
+    return <CheckboxInput {...items} />;
 }
 
-export function buildReadOnlyField(props) {
-    return <ReadOnlyField {...props} />;
+export function buildReadOnlyField(items) {
+    return <ReadOnlyField {...items} />;
 }
 
 export const FIELDS = {
@@ -46,9 +56,9 @@ export const FIELDS = {
     ReadOnlyField: buildReadOnlyField
 };
 
-export function getField(fieldType, props) {
-    const field = FIELDS[fieldType];
-    return field(props);
+export function getField(fieldType, props, field) {
+    const fieldFunction = FIELDS[fieldType];
+    return fieldFunction(props, field);
 }
 
 export function retrieveKeys(descriptorFields) {
@@ -65,19 +75,17 @@ export function createField(field, value, isSet, fieldError, onChange) {
     const {
         key, label, description, type
     } = field;
-    const checkedValue = value.toString().toLowerCase() === 'true';
     const propMapping = {
         id: key,
         name: key,
         description,
         label,
         value,
-        isChecked: checkedValue,
         isSet,
         onChange,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
         errorValue: fieldError
     };
 
-    return getField(type, propMapping);
+    return getField(type, propMapping, field);
 }
