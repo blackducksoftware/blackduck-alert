@@ -473,67 +473,6 @@ class SettingsConfigurationForm extends Component {
                             </CollapsiblePane>
                         </div>
                     </div>
-                    <div className="form-group">
-                        <div className="col-sm-12">
-                            <CollapsiblePane
-                                title="SAML Configuration"
-                                expanded={() =>
-                                    FieldModelUtilities.keysHaveValueOrIsSet(fieldModel, [KEY_SAML_ENABLED, KEY_SAML_METADATA_URL, KEY_SAML_ENTITY_ID, KEY_SAML_ENTITY_BASE_URL])
-                                }
-                            >
-                                <CheckboxInput
-                                    id={KEY_SAML_ENABLED}
-                                    label="Enabled"
-                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_ENABLED)}
-                                    name={KEY_SAML_ENABLED}
-                                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_SAML_ENABLED)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_ENABLED)}
-                                    errorValue={this.props.fieldErrors[KEY_SAML_ENABLED]}
-                                />
-                                <CheckboxInput
-                                    id={KEY_SAML_FORCE_AUTH}
-                                    label="Force Auth"
-                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_FORCE_AUTH)}
-                                    name={KEY_SAML_FORCE_AUTH}
-                                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_SAML_FORCE_AUTH)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_FORCE_AUTH)}
-                                    errorValue={this.props.fieldErrors[KEY_SAML_FORCE_AUTH]}
-                                />
-                                <TextInput
-                                    id={KEY_SAML_METADATA_URL}
-                                    label="Identity Provider Metadata URL"
-                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_METADATA_URL)}
-                                    name={KEY_SAML_METADATA_URL}
-                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SAML_METADATA_URL)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_METADATA_URL)}
-                                    errorValue={this.props.fieldErrors[KEY_SAML_METADATA_URL]}
-                                />
-                                <TextInput
-                                    id={KEY_SAML_ENTITY_ID}
-                                    label="Entity ID"
-                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_ENTITY_ID)}
-                                    name={KEY_SAML_ENTITY_ID}
-                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SAML_ENTITY_ID)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_ENTITY_ID)}
-                                    errorValue={this.props.fieldErrors[KEY_SAML_ENTITY_ID]}
-                                />
-                                <TextInput
-                                    id={KEY_SAML_ENTITY_BASE_URL}
-                                    label="Alert Base URL"
-                                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_SAML_ENTITY_BASE_URL)}
-                                    name={KEY_SAML_ENTITY_BASE_URL}
-                                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SAML_ENTITY_BASE_URL)}
-                                    onChange={this.handleChange}
-                                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SAML_ENTITY_BASE_URL)}
-                                    errorValue={this.props.fieldErrors[KEY_SAML_ENTITY_BASE_URL]}
-                                />
-                            </CollapsiblePane>
-                        </div>
-                    </div>
                     <ConfigButtons isFixed={false} includeSave type="submit" performingAction={saving} />
                 </form>
             </div>
