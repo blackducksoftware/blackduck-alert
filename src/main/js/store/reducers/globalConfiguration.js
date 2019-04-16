@@ -1,4 +1,18 @@
-import { CONFIG_DELETED, CONFIG_DELETING, CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING, SERIALIZE } from 'store/actions/types';
+import {
+    CONFIG_DELETED,
+    CONFIG_DELETING,
+    CONFIG_FETCHED,
+    CONFIG_FETCHING,
+    CONFIG_REFRESH,
+    CONFIG_REFRESHING,
+    CONFIG_TEST_FAILED,
+    CONFIG_TEST_SUCCESS,
+    CONFIG_TESTING,
+    CONFIG_UPDATE_ERROR,
+    CONFIG_UPDATED,
+    CONFIG_UPDATING,
+    SERIALIZE
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,
@@ -33,6 +47,21 @@ const globalConfiguration = (state = initialState, action) => {
                     message: '',
                     fieldErrors: {}
                 }
+            });
+
+        case CONFIG_REFRESHING:
+            return Object.assign({}, state, {
+                fetching: true,
+                updateStatus: null,
+                testing: false
+            });
+
+        case CONFIG_REFRESH:
+            return Object.assign({}, state, {
+                fetching: false,
+                updateStatus: 'FETCHED',
+                testing: false,
+                config: action.config
             });
 
         case CONFIG_UPDATE_ERROR:
