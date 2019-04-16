@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
@@ -51,15 +52,20 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @BeforeEach
     public void testSetup() throws Exception {
-        final ProviderProject project1 = providerDataAccessor.saveProject("provider", new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
-        final ProviderProject project2 = providerDataAccessor.saveProject("provider", new ProviderProject("TestProject2", "", "", ""));
-        final ProviderProject project3 = providerDataAccessor.saveProject("provider", new ProviderProject("Project three", "", "", ""));
-        final ProviderProject project4 = providerDataAccessor.saveProject("provider", new ProviderProject("Project four", "", "", ""));
-        final ProviderProject project5 = providerDataAccessor.saveProject("provider", new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
+        final List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(BlackDuckProvider.COMPONENT_NAME);
+        providerDataAccessor.deleteUsers(BlackDuckProvider.COMPONENT_NAME, allUsers);
+        final List<ProviderProject> allProjects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        providerDataAccessor.deleteProjects(BlackDuckProvider.COMPONENT_NAME, allProjects);
 
-        final ProviderUserEntity user1 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
-        final ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
-        final ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, "provider_blackduck"));
+        final ProviderProject project1 = providerDataAccessor.saveProject(BlackDuckProvider.COMPONENT_NAME, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
+        final ProviderProject project2 = providerDataAccessor.saveProject(BlackDuckProvider.COMPONENT_NAME, new ProviderProject("TestProject2", "", "", ""));
+        final ProviderProject project3 = providerDataAccessor.saveProject(BlackDuckProvider.COMPONENT_NAME, new ProviderProject("Project three", "", "", ""));
+        final ProviderProject project4 = providerDataAccessor.saveProject(BlackDuckProvider.COMPONENT_NAME, new ProviderProject("Project four", "", "", ""));
+        final ProviderProject project5 = providerDataAccessor.saveProject(BlackDuckProvider.COMPONENT_NAME, new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
+
+        final ProviderUserEntity user1 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BlackDuckProvider.COMPONENT_NAME));
+        final ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BlackDuckProvider.COMPONENT_NAME));
+        final ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BlackDuckProvider.COMPONENT_NAME));
 
         providerDataAccessor.remapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
         providerDataAccessor.remapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
