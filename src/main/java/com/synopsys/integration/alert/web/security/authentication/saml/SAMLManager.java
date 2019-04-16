@@ -22,26 +22,9 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import java.util.List;
-import java.util.Timer;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.lang3.StringUtils;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.parse.ParserPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
-import org.springframework.security.saml.metadata.MetadataManager;
-
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-
 public class SAMLManager {
+    // TODO enable SAML support
+    /*
     public static Logger logger = LoggerFactory.getLogger(SAMLManager.class);
     private final SAMLContext samlContext;
     private final ParserPool parserPool;
@@ -101,6 +84,6 @@ public class SAMLManager {
         idpMetadata.setMetadataRequireSignature(false);
         metadataManager.setProviders(List.of(idpMetadata));
         metadataManager.afterPropertiesSet();
-    }
+    }*/
 
 }
