@@ -22,16 +22,10 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
+public class SamlAntMatcher {
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-public class SamlAntMatcher implements RequestMatcher {
+    // TODO enable SAML support
+    /*implements RequestMatcher {
     private final SAMLContext context;
     private final Set<String> enabledPatterns;
     private final Set<String> disabledPatterns;
@@ -59,5 +53,5 @@ public class SamlAntMatcher implements RequestMatcher {
         }
 
         return requestMatchers.stream().anyMatch(requestMatcher -> requestMatcher.matches(request));
-    }
+    } */
 }
