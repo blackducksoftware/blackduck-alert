@@ -22,16 +22,9 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-
-public class AlertSAMLMetadataGenerator extends MetadataGenerator {
+public class AlertSAMLMetadataGenerator {
+    // TODO enable SAML support
+    /*extends MetadataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(AlertSAMLMetadataGenerator.class);
     private final SAMLContext samlContext;
 
@@ -57,6 +50,6 @@ public class AlertSAMLMetadataGenerator extends MetadataGenerator {
             logger.error("Could not get the SAML entity.", e);
         }
         return "";
-    }
+    } */
 
 }
