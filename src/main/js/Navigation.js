@@ -33,6 +33,7 @@ class Navigation extends Component {
     render() {
         const channelGlobals = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
         const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
+        const components = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
         return (
             <div className="navigation">
@@ -57,17 +58,8 @@ class Navigation extends Component {
                                 <FontAwesome name="truck" fixedWidth /> Distribution
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink to="/alert/jobs/scheduling" activeClassName="activeNav">
-                                <FontAwesome name="clock-o" fixedWidth /> Scheduling
-                            </NavLink>
-                        </li>
                         <li className="divider" />
-                        <li>
-                            <NavLink to="/alert/general/settings" activeClassName="activeNav">
-                                <FontAwesome name="cog" fixedWidth /> Settings
-                            </NavLink>
-                        </li>
+                        {components}
                         <li>
                             <NavLink to="/alert/general/audit" activeClassName="activeNav">
                                 <FontAwesome name="history" fixedWidth /> Audit

@@ -33,6 +33,14 @@ public class PasswordConfigField extends ConfigField {
         super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, validationFunction);
     }
 
+    public PasswordConfigField(final String key, final String label, final String description, final boolean required, final String panel) {
+        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, panel);
+    }
+
+    public PasswordConfigField(final String key, final String label, final String description, final boolean required, final String panel, final ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, panel, validationFunction);
+    }
+
     public static PasswordConfigField create(final String key, final String label, final String description) {
         return new PasswordConfigField(key, label, description, false);
     }
@@ -46,6 +54,22 @@ public class PasswordConfigField extends ConfigField {
     }
 
     public static PasswordConfigField createRequired(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
+        return new PasswordConfigField(key, label, description, true, validationFunction);
+    }
+
+    public static PasswordConfigField create(final String key, final String label, final String description, final String panel) {
+        return new PasswordConfigField(key, label, description, false);
+    }
+
+    public static PasswordConfigField create(final String key, final String label, final String description, final String panel, final ConfigValidationFunction validationFunction) {
+        return new PasswordConfigField(key, label, description, false, validationFunction);
+    }
+
+    public static PasswordConfigField createRequired(final String key, final String label, final String description, final String panel) {
+        return new PasswordConfigField(key, label, description, true);
+    }
+
+    public static PasswordConfigField createRequired(final String key, final String label, final String description, final String panel, final ConfigValidationFunction validationFunction) {
         return new PasswordConfigField(key, label, description, true, validationFunction);
     }
 
