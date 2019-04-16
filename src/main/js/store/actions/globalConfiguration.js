@@ -235,8 +235,6 @@ export function deleteConfig(id) {
             if (response.ok) {
                 response.json().then(() => {
                     dispatch(configDeleted());
-                }).then(() => {
-                    dispatch(refreshConfig());
                 });
             } else {
                 handleFailureResponse(dispatch, response);
