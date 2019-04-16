@@ -22,19 +22,9 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-
 public class SAMLContext {
-    private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
+    // TODO enable SAML support
+    /*private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
     private final ConfigurationAccessor configurationAccessor;
 
     public SAMLContext(final ConfigurationAccessor configurationAccessor) {
@@ -70,5 +60,5 @@ public class SAMLContext {
 
     public Boolean getFieldValueBoolean(final ConfigurationModel configurationModel, final String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).map(BooleanUtils::toBoolean).orElse(false);
-    }
+    } */
 }

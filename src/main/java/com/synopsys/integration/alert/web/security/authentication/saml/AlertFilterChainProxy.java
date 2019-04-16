@@ -22,18 +22,9 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
-
-public class AlertFilterChainProxy extends FilterChainProxy {
+public class AlertFilterChainProxy {
+    // TODO enable SAML support
+    /* extends FilterChainProxy {
     final SAMLContext samlContext;
 
     public AlertFilterChainProxy(final List<SecurityFilterChain> chains, final SAMLContext samlContext) {
@@ -48,5 +39,5 @@ public class AlertFilterChainProxy extends FilterChainProxy {
             return;
         }
         chain.doFilter(request, response);
-    }
+    }*/
 }
