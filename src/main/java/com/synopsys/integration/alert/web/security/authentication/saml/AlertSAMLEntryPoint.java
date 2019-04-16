@@ -22,17 +22,12 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import java.io.IOException;
+public class AlertSAMLEntryPoint {
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+    // TODO enable SAML support
+    /*extends SAMLEntryPoint {
+    private final Logger logger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
 
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.saml.SAMLEntryPoint;
-
-public class AlertSAMLEntryPoint extends SAMLEntryPoint {
     private final SAMLContext samlContext;
 
     public AlertSAMLEntryPoint(final SAMLContext samlContext) {
@@ -51,8 +46,10 @@ public class AlertSAMLEntryPoint extends SAMLEntryPoint {
             super.commence(request, response, e);
             return;
         }
+
         if (e instanceof InsufficientAuthenticationException) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
     }
+    */
 }
