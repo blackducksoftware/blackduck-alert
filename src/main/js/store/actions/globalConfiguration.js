@@ -1,4 +1,17 @@
-import { CONFIG_DELETED, CONFIG_DELETING, CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from 'store/actions/types';
+import {
+    CONFIG_DELETED,
+    CONFIG_DELETING,
+    CONFIG_FETCHED,
+    CONFIG_FETCHING,
+    CONFIG_REFRESH,
+    CONFIG_REFRESHING,
+    CONFIG_TEST_FAILED,
+    CONFIG_TEST_SUCCESS,
+    CONFIG_TESTING,
+    CONFIG_UPDATE_ERROR,
+    CONFIG_UPDATED,
+    CONFIG_UPDATING
+} from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
@@ -22,6 +35,19 @@ function configFetched(config) {
     return {
         type: CONFIG_FETCHED,
         config
+    };
+}
+
+function configRefreshed(config) {
+    return {
+        type: CONFIG_REFRESH,
+        config
+    };
+}
+
+function refreshingConfig() {
+    return {
+        type: CONFIG_REFRESHING
     };
 }
 
@@ -101,6 +127,31 @@ function handleFailureResponse(dispatch, response) {
     });
 }
 
+export function refreshConfig(id) {
+    return (dispatch, getState) => {
+        dispatch(refreshingConfig());
+        if (!id) {
+            dispatch(configRefreshed({}));
+            return;
+        }
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((body) => {
+                    if (body) {
+                        dispatch(configRefreshed(body));
+                    } else {
+                        dispatch(configRefreshed({}));
+                    }
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
+            }
+        }).catch(console.error);
+    };
+}
+
 export function getConfig(descriptorName) {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
@@ -136,8 +187,12 @@ export function updateConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', data.id);
+                    const newId = data.id;
+                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
                     dispatch(configUpdated(updatedConfig));
+                    return newId;
+                }).then((data) => {
+                    dispatch(refreshConfig(data));
                 });
             } else {
                 handleFailureResponse(dispatch, response);
@@ -180,6 +235,8 @@ export function deleteConfig(id) {
             if (response.ok) {
                 response.json().then(() => {
                     dispatch(configDeleted());
+                }).then(() => {
+                    dispatch(refreshConfig());
                 });
             } else {
                 handleFailureResponse(dispatch, response);
