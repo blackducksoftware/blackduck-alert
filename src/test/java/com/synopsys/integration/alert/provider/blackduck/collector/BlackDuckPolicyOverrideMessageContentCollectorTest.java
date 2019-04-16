@@ -44,11 +44,12 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final int numberOfPoliciesOverridden = 1;
         final int policyOverlap = 1;
 
-        // there are 3 possible linkable items per notification in the test data
+        // there are 4 possible linkable items per notification in the test data
         // 1- policy rule
         // 2- component
         // 3- component version or policy override user
-        final int linkableItemsPerCategory = 3;
+        // 4- severity
+        final int linkableItemsPerCategory = 4;
 
         final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
 
