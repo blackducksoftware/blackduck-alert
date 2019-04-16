@@ -312,8 +312,9 @@ class BaseJobConfiguration extends Component {
             const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
             if (options) {
-                const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
-                return optionList;
+                return options;
+                // const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
+                // return optionList;
             }
         }
         return [];
@@ -324,7 +325,8 @@ class BaseJobConfiguration extends Component {
             const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
             if (options) {
-                return options.map(option => Object.assign({}, { label: option, value: option }));
+                return options;
+                // return options.map(option => Object.assign({}, { label: option, value: option }));
             }
         }
         return [];
@@ -334,14 +336,15 @@ class BaseJobConfiguration extends Component {
         const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, this.props.alertChannelName, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FREQUENCY);
         if (options) {
-            return options.map((option) => {
-                if (option === 'DAILY') {
-                    return Object.assign({}, { label: 'Daily', value: option });
-                } else if (option === 'REAL_TIME') {
-                    return Object.assign({}, { label: 'Real Time', value: option });
-                }
-                return Object.assign({}, { label: option, value: option });
-            });
+            return options;
+            // return options.map((option) => {
+            //     if (option === 'DAILY') {
+            //         return Object.assign({}, { label: 'Daily', value: option });
+            //     } else if (option === 'REAL_TIME') {
+            //         return Object.assign({}, { label: 'Real Time', value: option });
+            //     }
+            //     return Object.assign({}, { label: option, value: option });
+            // });
         }
         return [];
     }
