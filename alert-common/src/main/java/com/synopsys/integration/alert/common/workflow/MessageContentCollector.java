@@ -277,11 +277,9 @@ public abstract class MessageContentCollector {
     }
 
     private void addContent(final AggregateMessageContent content) {
-        for (final AggregateMessageContent existingContent : collectedContent) {
-            if (existingContent.equals(content)) {
-                // This object is already in the list
-                return;
-            }
+        if (collectedContent.contains(content)) {
+            // This object is already in the list
+            return;
         }
         collectedContent.add(content);
     }
