@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +32,12 @@ import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
 @Component
 public class SchedulingDescriptorActionApi extends NoTestActionApi {
-
     private final TaskManager taskManager;
 
     @Autowired
@@ -49,8 +47,8 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
 
     @Override
     public FieldModel readConfig(final FieldModel fieldModel) {
-        final Optional<Long> accumulatorNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS);
-        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(accumulatorNextRun.map(String::valueOf).orElse("")), true));
+        final String accumulatorNextRun = taskManager.getDifferenceToNextRun(OnDemandTask.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
+        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(accumulatorNextRun), true));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
         return fieldModel;

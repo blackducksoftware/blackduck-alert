@@ -20,13 +20,10 @@ class CounterField extends Component {
     }
 
     tickDown() {
-        console.log('tick down');
         const time = this.state.currentTime || this.props.value;
-        console.log(time);
         const parsedTime = parseInt(time, 10);
         if (!Number.isNaN(parsedTime)) {
             const nextTime = (parsedTime <= 0) ? this.props.countdown : (parsedTime - 1);
-            console.log(nextTime);
             this.setState({
                 currentTime: nextTime.toString()
             });
