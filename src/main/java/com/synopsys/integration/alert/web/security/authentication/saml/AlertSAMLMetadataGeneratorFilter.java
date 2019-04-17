@@ -22,9 +22,17 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-public class AlertSAMLMetadataGeneratorFilter {
-    // TODO enable SAML support
-    /* extends MetadataGeneratorFilter {
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.springframework.security.saml.metadata.MetadataGenerator;
+import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
+
+public class AlertSAMLMetadataGeneratorFilter extends MetadataGeneratorFilter {
 
     private final SAMLContext samlContext;
 
@@ -40,6 +48,6 @@ public class AlertSAMLMetadataGeneratorFilter {
             return;
         }
         chain.doFilter(request, response);
-    } */
+    }
 }
 
