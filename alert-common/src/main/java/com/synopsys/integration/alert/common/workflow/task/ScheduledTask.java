@@ -42,6 +42,7 @@ public abstract class ScheduledTask implements Runnable {
     public static final String FORMAT_PATTERN = "MM/dd/yyy hh:mm a";
     public static final String STOP_SCHEDULE_EXPRESSION = "";
     public static final String EVERY_MINUTE_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
+    public static final Long EVERY_MINUTE_SECONDS = 60L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;

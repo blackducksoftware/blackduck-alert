@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.builder.BuilderStatus;
@@ -103,7 +102,7 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     @Override
     public FieldModel afterSaveConfig(final FieldModel fieldModel) {
         final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
-        final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+        final Optional<String> nextRunTime = taskManager.getNextRunTime(PolarisProjectSyncTask.TASK_NAME);
         if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
             taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, PolarisProjectSyncTask.TASK_NAME);
         }

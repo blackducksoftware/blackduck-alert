@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -33,17 +32,19 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
-    private static final String LABEL_ACCUMULATOR_NEXT_RUN = "Collecting Provider data in";
+    private static final String LABEL_BLACKDUCK_NEXT_RUN = "Collecting Black Duck data in";
+    private static final String LABEL_POLARIS_NEXT_RUN = "Collecting Polaris data in";
     private static final String LABEL_DAILY_DIGEST_HOUR_OF_DAY = "Daily digest hour of day";
     private static final String LABEL_DAILY_PROCESSOR_NEXT_RUN = "Daily Digest Cron Next Run";
     private static final String LABEL_PURGE_DATA_FREQUENCY_IN_DAYS = "Purge data frequency in days";
     private static final String LABEL_PURGE_DATA_NEXT_RUN = "Purge Cron Next Run";
 
-    private static final String ACCUMULATOR_NEXT_RUN_DESCRIPTION = "By default, Alert collects data every 60 seconds. This value indicates the number of seconds until the next time Alert pulls data from the Providers.";
+    private static final String ACCUMULATOR_NEXT_RUN_DESCRIPTION = "By default, Black Duck collects data every 60 seconds. This value indicates the number of seconds until the next time Black Duck pulls data.";
+    private static final String POLARIS_NEXT_RUN_DESCRIPTION = "By default, Polaris collects data every 60 seconds. This value indicates the number of seconds until the next time Polaris pulls data.";
     private static final String SCHEDULING_DIGEST_HOUR_DESCRIPTION = "Select the hour of the day to run the the daily digest distribution jobs.";
     private static final String DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION = "This is the next time daily digest distribution jobs will run.";
     private static final String SCHEDULING_PURGE_FREQUENCY_DESCRIPTION = "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.";
@@ -55,15 +56,16 @@ public class SchedulingUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final Long countdownMax = TimeUnit.MILLISECONDS.toSeconds(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
-        final ConfigField accumulatorNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, LABEL_ACCUMULATOR_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, countdownMax);
+        final Long countdownMax = ScheduledTask.EVERY_MINUTE_SECONDS;
+        final ConfigField blackDuckNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, LABEL_BLACKDUCK_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, countdownMax);
+        final ConfigField polarisNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_POLARIS_NEXT_RUN, LABEL_POLARIS_NEXT_RUN, POLARIS_NEXT_RUN_DESCRIPTION, countdownMax);
         final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION,
             createDigestHours());
         final ConfigField digestHourNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, LABEL_DAILY_PROCESSOR_NEXT_RUN, DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION);
         final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, LABEL_PURGE_DATA_FREQUENCY_IN_DAYS, SCHEDULING_PURGE_FREQUENCY_DESCRIPTION,
             createPurgeFrequency());
         final ConfigField purgeNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, LABEL_PURGE_DATA_NEXT_RUN, PURGE_DATA_NEXT_RUN_DESCRIPTION);
-        return List.of(accumulatorNextRun, digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
+        return List.of(blackDuckNextRun, polarisNextRun, digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
     }
 
     private List<LabelValueSelectOption> createDigestHours() {
