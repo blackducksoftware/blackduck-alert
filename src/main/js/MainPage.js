@@ -7,13 +7,7 @@ import Audit from 'component/audit/Index';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
 import { getDescriptors } from 'store/actions/descriptors';
-import SchedulingConfiguration from 'component/SchedulingConfiguration';
-import SlackConfiguration from 'channels/SlackConfiguration';
-import EmailConfiguration from 'channels/EmailConfiguration';
-import HipChatConfiguration from 'channels/HipChatConfiguration';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
-import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
-import SettingsConfiguration from 'component/settings/SettingsConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 
