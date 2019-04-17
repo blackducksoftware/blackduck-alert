@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
@@ -53,7 +55,8 @@ public class SchedulingUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField accumulatorNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, LABEL_ACCUMULATOR_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, 60);
+        final Long countdownMax = TimeUnit.MILLISECONDS.toSeconds(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
+        final ConfigField accumulatorNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, LABEL_ACCUMULATOR_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, countdownMax);
         final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION,
             createDigestHours());
         final ConfigField digestHourNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, LABEL_DAILY_PROCESSOR_NEXT_RUN, DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION);
