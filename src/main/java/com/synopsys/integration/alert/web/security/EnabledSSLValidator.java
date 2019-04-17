@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.web.security;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.AlertConstants;
+import com.synopsys.integration.alert.common.AlertConstants;
 
 @Component
 @Profile(AlertConstants.PROFILE_NAME_SSL)

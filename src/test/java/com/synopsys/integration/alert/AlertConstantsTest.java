@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.AlertConstants;
+
 import javassist.Modifier;
 
 public class AlertConstantsTest {

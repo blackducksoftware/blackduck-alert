@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
@@ -35,7 +36,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
         final BlackDuckPolicyCollector collector = createCollector();
-        runSingleTest(collector, "json/policyOverrideNotification.json", NotificationType.POLICY_OVERRIDE);
+        runSingleTest(collector, TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH, NotificationType.POLICY_OVERRIDE);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         // 4- severity
         final int linkableItemsPerCategory = 4;
 
-        final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
+        final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
 
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         final NotificationContent n1 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
@@ -77,7 +78,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     public void insertionExceptionTest() throws Exception {
         final BlackDuckPolicyOverrideCollector collector = createCollector();
         final BlackDuckPolicyOverrideCollector spiedCollector = Mockito.spy(collector);
-        final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
+        final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
             .addCategoryItems(Mockito.anyList(), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
@@ -95,7 +96,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     }
 
     private void runSingleTest(final BlackDuckPolicyCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
-        final String content = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String content = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final NotificationContent notificationContent = createNotification(content, notificationType);
         test(collector, notificationContent);
     }
