@@ -9,18 +9,16 @@ import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
 import SetupPage from 'SetupPage';
-import { getConfig } from 'store/actions/blackduck';
 import { verifyLogin } from 'store/actions/session';
-import { getInitialSystemSetup } from './store/actions/system';
+import { getInitialSystemSetup } from 'store/actions/system';
 
+import LogoutPage from 'LogoutPage';
 import '../css/main.scss';
-import LogoutPage from "./LogoutPage";
 
 
 class App extends Component {
     componentDidMount() {
         this.props.verifyLogin();
-        this.props.getConfig();
         this.props.getSettings();
     }
 
@@ -30,7 +28,7 @@ class App extends Component {
         }
 
         if (this.props.logoutPerformed) {
-            return <LogoutPage />
+            return <LogoutPage />;
         }
 
         let contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
