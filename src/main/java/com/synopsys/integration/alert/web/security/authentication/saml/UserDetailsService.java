@@ -22,9 +22,18 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-public class UserDetailsService {
-    // TODO enable SAML support
-    /*implements SAMLUserDetailsService {
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.saml.SAMLCredential;
+import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+
+import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.web.security.authentication.database.UserPrincipal;
+
+public class UserDetailsService implements SAMLUserDetailsService {
     @Override
     public Object loadUserBySAML(final SAMLCredential credential) throws UsernameNotFoundException {
         final String userName = credential.getAttributeAsString("Name");
@@ -34,5 +43,5 @@ public class UserDetailsService {
 
         final UserModel userModel = UserModel.of(userName, "", emailAddress, roles);
         return new UserPrincipal(userModel);
-    } */
+    }
 }
