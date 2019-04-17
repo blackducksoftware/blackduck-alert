@@ -29,7 +29,8 @@ public enum FieldType {
     PASSWORD_INPUT("PasswordInput"),
     NUMBER_INPUT("NumberInput"),
     CHECKBOX_INPUT("CheckboxInput"),
-    READ_ONLY("ReadOnlyField");
+    READ_ONLY("ReadOnlyField"),
+    COUNTDOWN("CountdownField");
 
     private final String fieldTypeName;
 
