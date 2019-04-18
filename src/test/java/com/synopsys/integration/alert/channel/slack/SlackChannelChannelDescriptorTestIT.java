@@ -1,11 +1,11 @@
 package com.synopsys.integration.alert.channel.slack;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -25,6 +22,9 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -73,7 +73,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public DistributionEvent createChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
         List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorName(SlackChannel.COMPONENT_NAME);
