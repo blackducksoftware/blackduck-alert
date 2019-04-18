@@ -10,7 +10,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
-import ChannelTestModal from 'component/common/ChannelTestModal';
+import ChannelTestModal from 'dynamic/ChannelTestModal';
 
 class GlobalConfiguration extends React.Component {
     constructor(props) {
@@ -112,7 +112,7 @@ class GlobalConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
         const displayTest = type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT;
-        
+
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
