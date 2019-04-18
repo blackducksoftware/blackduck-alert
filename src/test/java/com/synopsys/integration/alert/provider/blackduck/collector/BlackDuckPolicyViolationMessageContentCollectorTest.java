@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -39,12 +40,12 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final int expectedLinkableItemsCount) {
         collector.insert(notification);
         final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
-        final List<CategoryItem> items = content.getCategoryItemList();
+        final SortedSet<CategoryItem> items = content.getCategoryItems();
         Assert.assertEquals(expectedCategoryItemsCount, items.size());
         Assert.assertEquals(expectedLinkableItemsCount, getCategoryItemLinkableItemsCount(items));
     }
 
-    public static int getCategoryItemLinkableItemsCount(final List<CategoryItem> items) {
+    public static int getCategoryItemLinkableItemsCount(final SortedSet<CategoryItem> items) {
         int count = 0;
         for (final CategoryItem item : items) {
             count += item.getItems().size();
@@ -112,7 +113,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addApplicableItems(Mockito.anyList(), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class));
+            .addApplicableItems(Mockito.any(SortedSet.class), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class));
         spiedCollector.insert(n0);
         final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());

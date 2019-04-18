@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -88,7 +88,7 @@ public class HipChatChannelTest extends ChannelTest {
         IntegrationException intException = null;
         try {
             final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-            final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
+            final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 
             final FieldAccessor fieldAccessor = new FieldAccessor(new HashMap<>());
             final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -105,7 +105,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, auditUtility, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
@@ -142,7 +142,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, restChannelUtilitySpy);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
@@ -189,7 +189,7 @@ public class HipChatChannelTest extends ChannelTest {
         int count = 0;
         while (gson.toJson(messageContent).length() < HipChatChannel.MESSAGE_SIZE_LIMIT * 2) {
             final LinkableItem newItem = new LinkableItem("Name " + count++, "Relatively long value #" + count + " with some trailing text for good measure...", "https://google.com");
-            messageContent.getCategoryItemList().get(0).getItems().add(newItem);
+            messageContent.getCategoryItems().iterator().next().getItems().add(newItem);
         }
         return messageContent;
     }

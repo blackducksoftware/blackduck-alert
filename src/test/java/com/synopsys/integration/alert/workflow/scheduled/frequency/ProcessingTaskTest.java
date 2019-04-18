@@ -20,9 +20,7 @@ import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
@@ -39,8 +37,6 @@ public class ProcessingTaskTest {
     @BeforeEach
     public void initTest() {
         final AlertNotificationWrapper model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
-        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         modelList = Arrays.asList(model);
         eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", FormatType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }

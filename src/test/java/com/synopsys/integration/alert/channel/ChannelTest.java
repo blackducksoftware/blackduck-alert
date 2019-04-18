@@ -12,7 +12,6 @@
 package com.synopsys.integration.alert.channel;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -62,7 +61,13 @@ public class ChannelTest {
         final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, asSet(linkableItem2));
         final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, asSet(linkableItem3, linkableItem4, linkableItem5));
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
-        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2, categoryItem3));
+
+        final SortedSet<CategoryItem> items = new TreeSet<>();
+        items.add(categoryItem1);
+        items.add(categoryItem2);
+        items.add(categoryItem3);
+
+        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, items);
     }
 
     private SortedSet<LinkableItem> asSet(final LinkableItem... items) {
