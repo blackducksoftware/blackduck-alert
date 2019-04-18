@@ -10,7 +10,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
-import ChannelTestModal from 'component/common/ChannelTestModal';
+import ChannelTestModal from 'dynamic/ChannelTestModal';
 
 class GlobalConfiguration extends React.Component {
     constructor(props) {
@@ -52,13 +52,25 @@ class GlobalConfiguration extends React.Component {
         }
     }
 
-    handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+    handleChange(event) {
+        const target = event.target;
+        if (target) {
+            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
 
-        this.setState({
-            currentConfig: newState
-        });
+            this.setState({
+                currentConfig: newState
+            });
+        } else {
+            const { value, name } = event;
+            if (value && name) {
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, name, value);
+                this.setState({
+                    currentConfig: newState
+                });
+            }
+        }
+
     }
 
     handleTest() {
@@ -95,10 +107,11 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields, name
+            fontAwesomeIcon, label, description, fields, name, type
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
-        const { currentConfig } = this.state
+        const { currentConfig } = this.state;
+        const displayTest = type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT;
 
         return (
             <div>
@@ -109,7 +122,7 @@ class GlobalConfiguration extends React.Component {
                     <div>
                         <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
-                    <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
+                    <ConfigButtons isFixed={false} includeSave includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
                     <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
                 </form>
             </div>

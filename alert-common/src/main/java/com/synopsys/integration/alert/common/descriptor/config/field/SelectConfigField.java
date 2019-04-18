@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,18 +33,20 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
     public static final String INVALID_OPTION_SELECTED = "Invalid option selected";
-    private Collection<String> options;
+    private Collection<LabelValueSelectOption> options;
     private boolean searchable;
     private boolean multiSelect;
 
-    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect,
+        final Collection<LabelValueSelectOption> options) {
         super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
     }
 
-    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect,
+        final Collection<LabelValueSelectOption> options,
         final ConfigValidationFunction validationFunction) {
         super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, validationFunction);
         this.searchable = searchable;
@@ -53,35 +54,36 @@ public class SelectConfigField extends ConfigField {
         this.options = options;
     }
 
-    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<String> options) {
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<LabelValueSelectOption> options) {
         this(key, label, description, required, sensitive, true, false, options);
     }
 
-    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<LabelValueSelectOption> options,
+        final ConfigValidationFunction validationFunction) {
         this(key, label, description, required, sensitive, true, false, options, validationFunction);
     }
 
     public static SelectConfigField createEmpty(final String key, final String label, final String description) {
-        return new SelectConfigField(key, label, description, false, false, Collections.emptyList());
+        return new SelectConfigField(key, label, description, false, false, List.of());
     }
 
     public static SelectConfigField createEmpty(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, false, false, Collections.emptyList(), validationFunction);
+        return new SelectConfigField(key, label, description, false, false, List.of(), validationFunction);
     }
 
-    public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<String> options) {
+    public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options) {
         return new SelectConfigField(key, label, description, true, false, options);
     }
 
-    public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+    public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, description, true, false, options, validationFunction);
     }
 
-    public static SelectConfigField create(final String key, final String label, final String description, final Collection<String> options) {
+    public static SelectConfigField create(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options) {
         return new SelectConfigField(key, label, description, false, false, options);
     }
 
-    public static SelectConfigField create(final String key, final String label, final String description, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+    public static SelectConfigField create(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, description, false, false, options, validationFunction);
     }
 
@@ -101,11 +103,11 @@ public class SelectConfigField extends ConfigField {
         this.multiSelect = multiSelect;
     }
 
-    public Collection<String> getOptions() {
+    public Collection<LabelValueSelectOption> getOptions() {
         return options;
     }
 
-    public void setOptions(final Collection<String> options) {
+    public void setOptions(final Collection<LabelValueSelectOption> options) {
         this.options = options;
     }
 
@@ -121,13 +123,14 @@ public class SelectConfigField extends ConfigField {
     }
 
     private Collection<String> validateIsValidOption(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final Collection<String> fieldOptions = getOptions();
+        final Collection<LabelValueSelectOption> fieldOptions = getOptions();
         if (fieldToValidate.hasValues() && !fieldOptions.isEmpty()) {
             final boolean doesMatchKnownReferral = fieldToValidate.getValues()
                                                        .stream()
                                                        .map(StringUtils::trimToEmpty)
                                                        .allMatch(value -> fieldOptions
                                                                               .stream()
+                                                                              .map(LabelValueSelectOption::getValue)
                                                                               .anyMatch(fieldOption -> fieldOption.equalsIgnoreCase(value)));
             if (!doesMatchKnownReferral) {
                 return List.of(INVALID_OPTION_SELECTED);

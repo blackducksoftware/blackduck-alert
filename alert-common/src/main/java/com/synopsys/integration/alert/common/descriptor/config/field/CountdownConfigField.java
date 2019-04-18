@@ -20,31 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-public enum FieldType {
-    SELECT("Select"),
-    TEXT_INPUT("TextInput"),
-    TEXT_AREA("TextArea"),
-    PASSWORD_INPUT("PasswordInput"),
-    NUMBER_INPUT("NumberInput"),
-    CHECKBOX_INPUT("CheckboxInput"),
-    READ_ONLY("ReadOnlyField"),
-    COUNTDOWN("CountdownField");
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-    private final String fieldTypeName;
+public class CountdownConfigField extends ConfigField {
+    public Long countdown;
 
-    FieldType(final String fieldTypeName) {
-        this.fieldTypeName = fieldTypeName;
+    public CountdownConfigField(final String key, final String label, final String description, final String panel, final Long countdown) {
+        super(key, label, description, FieldType.COUNTDOWN.getFieldTypeName(), false, false, panel);
+        this.countdown = countdown;
     }
 
-    public String getFieldTypeName() {
-        return fieldTypeName;
+    public static CountdownConfigField create(final String key, final String label, final String description, final Long countdown) {
+        return new CountdownConfigField(key, label, description, "", countdown);
     }
-
-    @Override
-    public String toString() {
-        return getFieldTypeName();
-    }
-
 }
