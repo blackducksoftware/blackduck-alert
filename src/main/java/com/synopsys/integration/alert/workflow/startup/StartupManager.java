@@ -52,6 +52,7 @@ import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -74,14 +75,13 @@ public class StartupManager {
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final TaskManager taskManager;
-    // TODO enable SAML support
-    //private final SAMLManager samlManager;
+    private final SAMLManager samlManager;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager,
-        final TaskManager taskManager) {
+        final TaskManager taskManager, final SAMLManager samlManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -95,8 +95,7 @@ public class StartupManager {
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.taskManager = taskManager;
-        // TODO enable SAML support
-        //this.samlManager = samlManager;
+        this.samlManager = samlManager;
     }
 
     @Transactional
@@ -260,7 +259,6 @@ public class StartupManager {
     }
 
     public void initializeSAML() {
-        // TODO enable SAML support
-        // samlManager.initializeSAML();
+        samlManager.initializeSAML();
     }
 }

@@ -102,6 +102,22 @@ public class AlertProperties {
         return getOptionalString(loggingLevel);
     }
 
+    public Optional<String> getKeyAlias() {
+        return getOptionalString(keyAlias);
+    }
+
+    public Optional<String> getKeyStoreFile() {
+        return getOptionalString(keyStoreFile);
+    }
+
+    public Optional<String> getKeyStorePass() {
+        return getOptionalString(keyStorePass);
+    }
+
+    public Optional<String> getKeyStoreType() {
+        return getOptionalString(keyStoreType);
+    }
+
     private Optional<String> getOptionalString(final String value) {
         if (StringUtils.isNotBlank(value)) {
             return Optional.of(value);
