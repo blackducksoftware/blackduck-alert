@@ -79,13 +79,15 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
      */
     public Map<String, List<LinkableItem>> getItemsOfSameName() {
         final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
-        if (null != items && !items.isEmpty()) {
-            for (final LinkableItem item : items) {
-                if (!map.containsKey(item.getName())) {
-                    map.put(item.getName(), new ArrayList<>());
-                }
-                map.get(item.getName()).add(item);
+        if (null == items || items.isEmpty()) {
+            return map;
+        }
+        for (final LinkableItem item : items) {
+            final String name = item.getName();
+            if (!map.containsKey(name)) {
+                map.put(name, new ArrayList<>());
             }
+            map.get(name).add(item);
         }
         return map;
     }
