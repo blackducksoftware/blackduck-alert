@@ -22,84 +22,16 @@
  */
 package com.synopsys.integration.alert.web.security;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.velocity.app.VelocityEngine;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.parse.ParserPool;
-import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.saml.SAMLAuthenticationProvider;
-import org.springframework.security.saml.SAMLBootstrap;
-import org.springframework.security.saml.SAMLEntryPoint;
-import org.springframework.security.saml.SAMLLogoutFilter;
-import org.springframework.security.saml.SAMLLogoutProcessingFilter;
-import org.springframework.security.saml.SAMLProcessingFilter;
-import org.springframework.security.saml.context.SAMLContextProviderImpl;
-import org.springframework.security.saml.key.EmptyKeyManager;
-import org.springframework.security.saml.key.KeyManager;
-import org.springframework.security.saml.log.SAMLDefaultLogger;
-import org.springframework.security.saml.metadata.CachingMetadataManager;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
-import org.springframework.security.saml.parser.ParserPoolHolder;
-import org.springframework.security.saml.processor.HTTPPostBinding;
-import org.springframework.security.saml.processor.HTTPRedirectDeflateBinding;
-import org.springframework.security.saml.processor.SAMLBinding;
-import org.springframework.security.saml.processor.SAMLProcessorImpl;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-import org.springframework.security.saml.util.VelocityFactory;
-import org.springframework.security.saml.websso.SingleLogoutProfile;
-import org.springframework.security.saml.websso.SingleLogoutProfileImpl;
-import org.springframework.security.saml.websso.WebSSOProfile;
-import org.springframework.security.saml.websso.WebSSOProfileConsumer;
-import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
-import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
-import org.springframework.security.saml.websso.WebSSOProfileImpl;
-import org.springframework.security.saml.websso.WebSSOProfileOptions;
-import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.user.UserRole;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGeneratorFilter;
-import com.synopsys.integration.alert.web.security.authentication.saml.AlertWebSSOProfileOptions;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLAuthProvider;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
-import com.synopsys.integration.alert.web.security.authentication.saml.SamlAntMatcher;
-import com.synopsys.integration.alert.web.security.authentication.saml.UserDetailsService;
 
 @EnableWebSecurity
 @Configuration
@@ -119,37 +51,47 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
+    // TODO enable SAML support
+    /*
     @Bean
     public static SAMLBootstrap sAMLBootstrap() {
         return new SAMLBootstrap();
-    }
+    } */
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(samlAuthenticationProvider());
+        // TODO enable SAML support
+        //auth.authenticationProvider(samlAuthenticationProvider());
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.exceptionHandling().authenticationEntryPoint(samlEntryPoint());
+        // TODO enable SAML support
+        //http.exceptionHandling().authenticationEntryPoint(samlEntryPoint());
         if (sslValidator.isSSLEnabled()) {
             configureWithSSL(http);
         } else {
             configureInsecure(http);
         }
+        /* AntPathRequestMatcher
         final RequestMatcher[] ignoringRequestMatchers = createCsrfIgnoreMatchers();
         final RequestMatcher[] authorizedRequestMatchers = createAllowedPathMatchers();
         http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(ignoringRequestMatchers)
-            .and().headers().frameOptions().disable()
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
             .authorizeRequests().requestMatchers(authorizedRequestMatchers).permitAll()
+            .and().authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
+            .and().logout().logoutSuccessUrl("/"); */
+
+        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(httpPathManager.getCsrfIgnoredPaths())
+            .and().authorizeRequests().antMatchers(httpPathManager.getAllowedPaths()).permitAll()
             .and().authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
             .and().logout().logoutSuccessUrl("/");
     }
 
     private void configureInsecure(final HttpSecurity http) throws Exception {
         ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
+        http.headers().frameOptions().disable();
     }
 
     private void configureWithSSL(final HttpSecurity http) throws Exception {
@@ -164,7 +106,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             httpPathManager.addSamlCsrfIgnoredPath(path);
         }
     }
-
+    // TODO enable SAML support
+    /*
     private RequestMatcher[] createCsrfIgnoreMatchers() {
         final RequestMatcher[] matchers = {
             new SamlAntMatcher(samlContext(), httpPathManager.getSamlCsrfIgnoredPaths(), httpPathManager.getCsrfIgnoredPaths())
@@ -396,6 +339,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Bean
     public SAMLUserDetailsService samlUserDetailsService() {
         return new UserDetailsService();
-    }
+    } */
 
 }

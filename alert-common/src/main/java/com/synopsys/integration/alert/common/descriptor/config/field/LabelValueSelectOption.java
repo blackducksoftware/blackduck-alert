@@ -20,31 +20,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-public enum FieldType {
-    SELECT("Select"),
-    TEXT_INPUT("TextInput"),
-    TEXT_AREA("TextArea"),
-    PASSWORD_INPUT("PasswordInput"),
-    NUMBER_INPUT("NumberInput"),
-    CHECKBOX_INPUT("CheckboxInput"),
-    READ_ONLY("ReadOnlyField"),
-    COUNTDOWN("CountdownField");
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-    private final String fieldTypeName;
+public class LabelValueSelectOption extends AlertSerializableModel {
+    private String label;
+    private String value;
 
-    FieldType(final String fieldTypeName) {
-        this.fieldTypeName = fieldTypeName;
+    public LabelValueSelectOption(final String labelAndValue) {
+        this.label = labelAndValue;
+        this.value = labelAndValue;
     }
 
-    public String getFieldTypeName() {
-        return fieldTypeName;
+    public LabelValueSelectOption(final String label, final String value) {
+        this.label = label;
+        this.value = value;
     }
 
-    @Override
-    public String toString() {
-        return getFieldTypeName();
+    public String getLabel() {
+        return label;
     }
 
+    public void setLabel(final String label) {
+        this.label = label;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(final String value) {
+        this.value = value;
+    }
 }
