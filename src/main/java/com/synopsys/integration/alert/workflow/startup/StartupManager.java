@@ -28,12 +28,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.ProxyManager;
@@ -58,7 +61,8 @@ import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
-@Component
+@Configuration
+@AutoConfigureOrder(99)
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
@@ -96,6 +100,11 @@ public class StartupManager {
         this.proxyManager = proxyManager;
         this.taskManager = taskManager;
         this.samlManager = samlManager;
+    }
+
+    @PostConstruct
+    public void init() {
+        startup();
     }
 
     @Transactional
