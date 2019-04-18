@@ -43,9 +43,9 @@ public class HipChatDescriptor extends ChannelDescriptor {
     public static final String HIP_CHAT_DESCRIPTION = "This page allows you to configure the HipChat server that Alert will send messages to.";
 
     @Autowired
-    public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorActionApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
+    public HipChatDescriptor(final HipChatDistributionDescriptorActionApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
         final HipChatGlobalDescriptorActionApi hipChatGlobalRestApi, final HipChatGlobalUIConfig hipChatGlobalUIConfig) {
-        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig);
+        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig);
     }
 
 }
