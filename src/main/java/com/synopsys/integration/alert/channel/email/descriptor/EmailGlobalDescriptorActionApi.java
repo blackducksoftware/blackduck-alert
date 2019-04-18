@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -76,7 +74,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
         final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from the Alert global email configuration.", null);
         set.add(linkableItem);
         final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("TYPE"), null, 1L, set);
-        final List<CategoryItem> categoryItems = new ArrayList<>();
+        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", categoryItems);
         emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent);

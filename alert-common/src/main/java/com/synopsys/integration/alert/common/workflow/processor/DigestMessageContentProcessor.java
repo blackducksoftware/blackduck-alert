@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
         final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(contentList.size());
         for (final AggregateMessageContent topic : contentList) {
             final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
-            topic.getCategoryItemList().forEach(item -> processOperation(categoryDataCache, item));
+            topic.getCategoryItems().forEach(item -> processOperation(categoryDataCache, item));
 
             final Optional<AggregateMessageContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
             if (collapsedContent.isPresent()) {
@@ -105,7 +106,7 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
         } else {
             final String url = currentContent.getUrl().orElse(null);
             final LinkableItem subTopic = currentContent.getSubTopic().orElse(null);
-            return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new ArrayList<>(categoryItemCollection)));
+            return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new TreeSet<>(categoryItemCollection)));
         }
     }
 }

@@ -78,7 +78,7 @@ public abstract class MessageContentCollector {
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
             final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
             for (final AggregateMessageContent content : contents) {
-                addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification);
+                addCategoryItems(content.getCategoryItems(), jsonFieldAccessor, notificationFields, notification);
                 addContent(content);
             }
         } catch (final IllegalArgumentException ex) {
@@ -96,7 +96,7 @@ public abstract class MessageContentCollector {
         }
     }
 
-    protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
+    protected abstract void addCategoryItems(SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);
@@ -118,7 +118,7 @@ public abstract class MessageContentCollector {
         return getTypedFields(fields, typeRef);
     }
 
-    protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
+    protected void addItem(final SortedSet<CategoryItem> categoryItems, final CategoryItem newItem) {
         final Optional<CategoryItem> foundItem = categoryItems
                                                      .stream()
                                                      .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()) && item.getOperation().equals(newItem.getOperation()))
@@ -199,14 +199,14 @@ public abstract class MessageContentCollector {
             if (foundContent != null) {
                 aggregateMessageContentsForNotifications.add(foundContent);
             } else {
-                final List<CategoryItem> categoryList = new ArrayList<>();
-                aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryList));
+                final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
+                aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryItems));
             }
         }
         return aggregateMessageContentsForNotifications;
     }
 
-    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final List<CategoryItem> categoryItems) {
+    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final SortedSet<CategoryItem> categoryItems) {
         if (subTopic.isPresent()) {
             return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems);
         }

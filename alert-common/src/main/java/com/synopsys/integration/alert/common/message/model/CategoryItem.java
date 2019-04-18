@@ -29,10 +29,12 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class CategoryItem extends AlertSerializableModel {
+public class CategoryItem extends AlertSerializableModel implements Comparable<CategoryItem> {
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
     private final SortedSet<LinkableItem> items;
@@ -77,12 +79,19 @@ public class CategoryItem extends AlertSerializableModel {
      */
     public Map<String, List<LinkableItem>> getItemsOfSameName() {
         final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
-        for (final LinkableItem item : items) {
-            if (!map.containsKey(item.getName())) {
-                map.put(item.getName(), new ArrayList<>());
+        if (null != items && !items.isEmpty()) {
+            for (final LinkableItem item : items) {
+                if (!map.containsKey(item.getName())) {
+                    map.put(item.getName(), new ArrayList<>());
+                }
+                map.get(item.getName()).add(item);
             }
-            map.get(item.getName()).add(item);
         }
         return map;
+    }
+
+    @Override
+    public int compareTo(final CategoryItem otherItem) {
+        return CompareToBuilder.reflectionCompare(this, otherItem);
     }
 }
