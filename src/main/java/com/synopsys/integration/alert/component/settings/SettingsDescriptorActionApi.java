@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
@@ -46,16 +48,14 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
-    // TODO enable SAML support
-    // private final SAMLManager samlManager;
+    private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator) {
+    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
-        // TODO enable SAML support
-        // this.samlManager = samlManager;
+        this.samlManager = samlManager;
     }
 
     @Override
@@ -132,8 +132,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     private void addSAMLMetadata(final FieldModel fieldModel) {
-        // TODO enable SAML support
-        /*final Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
+        final Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
                                         .map(fieldValueModel -> fieldValueModel.getValue()
                                                                     .map(BooleanUtils::toBoolean)
                                                                     .orElse(false)
@@ -143,6 +142,6 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
             final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
             final String metadataURL = metadataURLFieldValue.getValue().orElse("");
             samlManager.updateSAMLConfiguration(samlEnabled, metadataURL);
-        }*/
+        }
     }
 }
