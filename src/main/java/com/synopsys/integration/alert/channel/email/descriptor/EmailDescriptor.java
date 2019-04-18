@@ -40,9 +40,9 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String EMAIL_DESCRIPTION = "This page allows you to configure the email server that Alert will send emails to.";
 
     @Autowired
-    public EmailDescriptor(final EmailChannel channelListener, final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
+    public EmailDescriptor(final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
         final EmailDistributionDescriptorActionApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig) {
-        super(EmailChannel.COMPONENT_NAME, EmailChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig);
+        super(EmailChannel.COMPONENT_NAME, EmailChannel.COMPONENT_NAME, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig);
     }
 
 }
