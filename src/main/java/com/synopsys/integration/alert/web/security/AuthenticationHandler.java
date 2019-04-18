@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.common.xml.SAMLConstants;
+import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +139,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         }
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
-            .and().httpBasic().authenticationEntryPoint(samlEntryPoint())
+            .and().exceptionHandling().authenticationEntryPoint(samlEntryPoint())
             .and().csrf().csrfTokenRepository(csrfTokenRepository)
             .ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
@@ -186,7 +188,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLManager samlManager() throws MetadataProviderException {
-        return new SAMLManager(samlContext(), parserPool(), extendedMetadata(), metadata());
+        return new SAMLManager(samlContext(), parserPool(), extendedMetadata(), metadata(), alertMetadataGenerator());
     }
 
     @Bean
@@ -245,15 +247,20 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public MetadataGenerator metadataGenerator() {
+        return alertMetadataGenerator();
+    }
+
+    @Bean
+    public AlertSAMLMetadataGenerator alertMetadataGenerator() {
         final AlertSAMLMetadataGenerator metadataGenerator = new AlertSAMLMetadataGenerator(samlContext());
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
-        //metadataGenerator.setRequestSigned(false);
-        //metadataGenerator.setWantAssertionSigned(false);
-        //metadataGenerator.setBindingsSLO(Collections.emptyList());
-        //metadataGenerator.setBindingsSSO(Arrays.asList("post"));
-        //metadataGenerator.setNameID(Arrays.asList(NameIDType.UNSPECIFIED));
+        metadataGenerator.setRequestSigned(false);
+        metadataGenerator.setWantAssertionSigned(false);
+        metadataGenerator.setBindingsSLO(Collections.emptyList());
+        metadataGenerator.setBindingsSSO(Arrays.asList("post"));
+        metadataGenerator.setNameID(Arrays.asList(NameIDType.UNSPECIFIED));
 
         return metadataGenerator;
     }
@@ -294,8 +301,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         final ExtendedMetadata extendedMetadata = new ExtendedMetadata();
         extendedMetadata.setIdpDiscoveryEnabled(false);
         extendedMetadata.setSignMetadata(false);
-        //        extendedMetadata.setEcpEnabled(true);
-        //        extendedMetadata.setRequireLogoutRequestSigned(false);
+        extendedMetadata.setEcpEnabled(true);
+        extendedMetadata.setRequireLogoutRequestSigned(false);
         return extendedMetadata;
     }
 
