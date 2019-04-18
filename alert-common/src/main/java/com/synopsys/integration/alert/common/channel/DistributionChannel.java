@@ -64,7 +64,7 @@ public abstract class DistributionChannel extends MessageReceiver {
                 logger.error("There was an error sending the message.", ex);
             }
         } else {
-            logger.warn("Received an event of type '{}', but this channel is for type '{}'.", event.getDestination(), getDestinationName());
+            logger.warn("Received an event for channel '{}', but this channel is '{}'.", event.getDestination(), getDestinationName());
         }
 
     }
