@@ -4,12 +4,12 @@ import static com.synopsys.integration.alert.util.FieldModelUtil.addConfiguratio
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -93,7 +93,7 @@ public class EmailChannelTestIT extends ChannelTest {
         try {
             final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
+            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 
             final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
             final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);

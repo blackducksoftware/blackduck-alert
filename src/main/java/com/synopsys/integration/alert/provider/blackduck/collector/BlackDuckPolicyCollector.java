@@ -47,7 +47,7 @@ public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
         super(jsonExtractor, messageContentProcessorList, contentTypes);
     }
 
-    protected void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
+    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
         final List<String> categoryKeyParts = Stream.concat(
             applicableItems.stream()
                 .map(LinkableItem::getValue),

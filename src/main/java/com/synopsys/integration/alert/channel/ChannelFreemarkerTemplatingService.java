@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.AlertConstants;
+import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 
 import freemarker.template.Configuration;

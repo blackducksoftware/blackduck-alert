@@ -19,17 +19,18 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
+import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -48,10 +49,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     @Test
     public void testNoJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
-        final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
-        final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
+        final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
@@ -64,10 +65,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     @Test
     public void testJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
-        final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
-        final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
+        final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
@@ -90,10 +91,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     @Test
     public void testJobProcessingFrequencyMismatch() throws Exception {
         final FrequencyType frequencyType = FrequencyType.DAILY;
-        final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
-        final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
+        final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
@@ -111,10 +112,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testJobProcessingProviderMismatch() throws Exception {
         final String unknownProvider = "unknown_provider";
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
-        final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
-        final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
+        final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
@@ -137,10 +138,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testJobProcessingNotificationTypeMismatch() throws Exception {
         final String unknownProvider = "unknown_provider";
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
-        final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
-        final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
+        final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
         final AlertNotificationWrapper vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
