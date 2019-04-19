@@ -277,11 +277,9 @@ public abstract class MessageContentCollector {
     }
 
     private void addContent(final AggregateMessageContent content) {
-        if (collectedContent.contains(content)) {
-            // This object is already in the list
-            return;
+        if (!collectedContent.contains(content)) {
+            collectedContent.add(content);
         }
-        collectedContent.add(content);
     }
 
     private <T> List<JsonField<T>> getTypedFields(final List<JsonField<?>> fields, final TypeRef<?> typeRef) {
