@@ -73,8 +73,8 @@
         </#if>
     </strong>
     <br />- - - - - - - - - - - - - - - - - - - -
-    <#if content.categoryItemList??>
-        <#list content.categoryItemList as categoryItem>
+    <#if content.categoryItems??>
+        <#list content.categoryItems as categoryItem>
             <@printCategoryData categoryItem/>
         </#list>
     <#else>

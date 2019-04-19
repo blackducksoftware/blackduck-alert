@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -127,7 +128,13 @@ public class AuditEntryAccessorTest {
         final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, new TreeSet<>(Collections.singletonList(linkableItem2)));
         final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, new TreeSet<>(Arrays.asList(linkableItem3, linkableItem4, linkableItem5)));
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
-        return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2, categoryItem3));
+
+        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
+        categoryItems.add(categoryItem1);
+        categoryItems.add(categoryItem2);
+        categoryItems.add(categoryItem3);
+
+        return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, categoryItems);
     }
 
     private void mockAuditRepositorySave(final AuditEntryRepository auditEntryRepository, final AuditEntryEntity savedAuditEntryEntity) {

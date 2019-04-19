@@ -2,10 +2,10 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class ChannelTemplateManagerTest {
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(contentConverter, auditUtility, jmsTemplate);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
         final FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
         final DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
             content, fieldAccessor);
@@ -48,7 +48,7 @@ public class ChannelTemplateManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(contentConverter, auditUtility, jmsTemplate);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
         final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", content);
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);
         assertTrue(isTrue);

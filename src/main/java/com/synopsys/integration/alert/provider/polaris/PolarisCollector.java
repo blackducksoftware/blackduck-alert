@@ -54,7 +54,7 @@ public class PolarisCollector extends MessageContentCollector {
     }
 
     @Override
-    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
         final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
                                                                        .stream()
