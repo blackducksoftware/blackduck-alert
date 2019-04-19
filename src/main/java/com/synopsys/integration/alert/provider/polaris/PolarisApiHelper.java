@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,6 +124,14 @@ public class PolarisApiHelper {
                     return optionalEmail;
                 }
             }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<String> createLinkToProject(final String polarisUrl, final String projectId) {
+        if (StringUtils.isNotBlank(polarisUrl) && StringUtils.isNotBlank(projectId)) {
+            final String projectLink = String.format("%s/projects/%s", polarisUrl, projectId);
+            return Optional.of(projectLink);
         }
         return Optional.empty();
     }
