@@ -46,7 +46,6 @@ SelectInput.propTypes = {
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
     components: PropTypes.object,
-    value: PropTypes.string,
     placeholder: PropTypes.string,
     isSearchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
@@ -56,7 +55,6 @@ SelectInput.propTypes = {
 
 SelectInput.defaultProps = {
     id: 'id',
-    value: undefined,
     placeholder: 'Choose a value',
     options: [],
     components: {},
