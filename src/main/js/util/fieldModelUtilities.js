@@ -76,7 +76,7 @@ export function hasFieldModelValues(fieldModel, key) {
     if (fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject) {
-            return fieldObject.values && fieldObject.values.length > 0 && fieldObject.values.every(item => item !== '');
+            return fieldObject.values && fieldObject.values.length > 0 && fieldObject.values.every(item => item && item !== '');
         }
     }
     return false;
