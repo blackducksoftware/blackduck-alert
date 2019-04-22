@@ -33,6 +33,7 @@ class JobAddModal extends Component {
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
+                    fixedButtonGroup={false}
                 />);
             case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT:
                 return (<HipChatJobConfiguration
@@ -40,6 +41,7 @@ class JobAddModal extends Component {
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
+                    fixedButtonGroup={false}
                 />);
             case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK:
                 return (<SlackJobConfiguration
@@ -47,6 +49,7 @@ class JobAddModal extends Component {
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
+                    fixedButtonGroup={false}
                 />);
             default:
                 return null;
