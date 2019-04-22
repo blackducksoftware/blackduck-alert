@@ -121,7 +121,8 @@ public abstract class MessageContentCollector {
     protected void addItem(final SortedSet<CategoryItem> categoryItems, final CategoryItem newItem) {
         final Optional<CategoryItem> foundItem = categoryItems
                                                      .stream()
-                                                     .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()) && item.getOperation().equals(newItem.getOperation()))
+                                                     .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()))
+                                                     .filter(item -> item.getOperation().equals(newItem.getOperation()))
                                                      .findFirst();
         if (foundItem.isPresent()) {
             final CategoryItem categoryItem = foundItem.get();
