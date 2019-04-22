@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
+import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -47,9 +48,9 @@ public class SAMLManager {
     private final ParserPool parserPool;
     private final ExtendedMetadata extendedMetadata;
     private final MetadataManager metadataManager;
-    private final AlertSAMLMetadataGenerator metadataGenerator;
+    private final MetadataGenerator metadataGenerator;
 
-    public SAMLManager(final SAMLContext samlContext, final ParserPool parserPool, final ExtendedMetadata extendedMetadata, final MetadataManager metadataManager, final AlertSAMLMetadataGenerator metadataGenerator) {
+    public SAMLManager(final SAMLContext samlContext, final ParserPool parserPool, final ExtendedMetadata extendedMetadata, final MetadataManager metadataManager, final MetadataGenerator metadataGenerator) {
         this.samlContext = samlContext;
         this.parserPool = parserPool;
         this.extendedMetadata = extendedMetadata;
@@ -85,8 +86,8 @@ public class SAMLManager {
                 metadataManager.setDefaultIDP(null);
                 metadataManager.setHostedSPName(null);
                 metadataManager.afterPropertiesSet();
-                //metadataGenerator.setEntityId(null);
-                //metadataGenerator.setEntityBaseURL(null);
+                metadataGenerator.setEntityId(null);
+                metadataGenerator.setEntityBaseURL(null);
             }
         } catch (final MetadataProviderException e) {
             logger.error("Error updating the SAML identity provider.", e);
@@ -94,8 +95,8 @@ public class SAMLManager {
     }
 
     private void setupMetadataManager(final String metadataURL, final String entityId, final String entityBaseUrl) throws MetadataProviderException {
-        //metadataGenerator.setEntityId(entityId);
-        //metadataGenerator.setEntityBaseURL(entityBaseUrl);
+        metadataGenerator.setEntityId(entityId);
+        metadataGenerator.setEntityBaseURL(entityBaseUrl);
 
         final Timer backgroundTaskTimer = new Timer(true);
 
