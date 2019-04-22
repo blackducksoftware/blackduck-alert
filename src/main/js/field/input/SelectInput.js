@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import LabeledField from 'field/LabeledField';
 
+function noOptionsMessage() {
+    return null;
+}
+
 class SelectInput extends Component {
     render() {
         const {
@@ -27,6 +31,7 @@ class SelectInput extends Component {
                 isMulti={hasMultipleValues}
                 closeMenuOnSelect={closeOnSelect}
                 components={components}
+                noOptionsMessage={noOptionsMessage}
             />
         </div>);
         return (
