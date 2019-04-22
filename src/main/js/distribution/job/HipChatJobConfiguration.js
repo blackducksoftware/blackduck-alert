@@ -143,6 +143,7 @@ class HipChatJobConfiguration extends Component {
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
             childContent={content}
+            fixedButtonGroup={this.props.fixedButtonGroup}
         />);
     }
 }
@@ -157,7 +158,8 @@ HipChatJobConfiguration.propTypes = {
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool
+    inProgress: PropTypes.bool,
+    fixedButtonGroup: PropTypes.bool
 };
 
 HipChatJobConfiguration.defaultProps = {
@@ -173,7 +175,8 @@ HipChatJobConfiguration.defaultProps = {
     ],
     fieldErrors: {},
     fetching: false,
-    inProgress: false
+    inProgress: false,
+    fixedButtonGroup: true
 };
 
 const mapStateToProps = state => ({

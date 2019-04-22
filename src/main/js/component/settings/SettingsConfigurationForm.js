@@ -196,7 +196,7 @@ class SettingsConfigurationForm extends Component {
                     method="POST"
                     className="form-horizontal loginForm"
                     onSubmit={this.handleSubmit}
-                    noValidate="true">
+                    noValidate={true}>
                     <div className="form-group">
                         <div className="col-sm-12">
                             <h2> Default
@@ -473,7 +473,7 @@ class SettingsConfigurationForm extends Component {
                             </CollapsiblePane>
                         </div>
                     </div>
-                    <ConfigButtons isFixed={false} includeSave type="submit" performingAction={saving} />
+                    <ConfigButtons includeSave type="submit" performingAction={saving} isFixed={this.props.fixedButtonGroup} />
                 </form>
             </div>
         );
@@ -488,7 +488,8 @@ SettingsConfigurationForm.propTypes = {
     settingsData: PropTypes.object,
     fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
-    actionMessage: PropTypes.string
+    actionMessage: PropTypes.string,
+    fixedButtonGroup: PropTypes.bool
 };
 
 SettingsConfigurationForm.defaultProps = {
@@ -496,7 +497,8 @@ SettingsConfigurationForm.defaultProps = {
     settingsData: {},
     updateStatus: '',
     errorMessage: null,
-    actionMessage: null
+    actionMessage: null,
+    fixedButtonGroup: true
 };
 
 export default SettingsConfigurationForm;

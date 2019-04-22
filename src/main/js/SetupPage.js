@@ -34,6 +34,7 @@ class SetupPage extends Component {
                             saveSettings={this.saveSettings}
                             errorMessage={errorMessage}
                             actionMessage={actionMessage}
+                            fixedButtonGroup={false}
                         />
                     </div>
                 </div>
