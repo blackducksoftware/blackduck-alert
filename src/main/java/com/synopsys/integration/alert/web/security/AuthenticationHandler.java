@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -126,8 +127,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public static SAMLBootstrap sAMLBootstrap() {
+    public static SAMLBootstrap SAMLBootstrap() {
         return new SAMLBootstrap();
+    }
+
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(samlAuthenticationProvider());
     }
 
     @Override
@@ -144,7 +150,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-            .authenticationProvider(samlAuthenticationProvider())
             .authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
             .and().logout().logoutSuccessUrl("/");
     }
@@ -188,7 +193,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLManager samlManager() throws MetadataProviderException {
-        return new SAMLManager(samlContext(), parserPool(), extendedMetadata(), metadata(), alertMetadataGenerator());
+        return new SAMLManager(samlContext(), parserPool(), extendedMetadata(), metadata(), metadataGenerator());
     }
 
     @Bean
@@ -199,6 +204,33 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
         samlWebSSOProcessingFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
         return samlWebSSOProcessingFilter;
+    }
+
+    @Bean
+    public SAMLEntryPoint samlEntryPoint() {
+        final SAMLEntryPoint samlEntryPoint = new AlertSAMLEntryPoint(samlContext());
+        samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions());
+        return samlEntryPoint;
+    }
+
+    @Bean
+    public WebSSOProfileOptions webSSOProfileOptions() {
+        final AlertWebSSOProfileOptions alertWebSSOProfileOptions = new AlertWebSSOProfileOptions(samlContext());
+        alertWebSSOProfileOptions.setIncludeScoping(false);
+        alertWebSSOProfileOptions.setProviderName(AuthenticationHandler.SSO_PROVIDER_NAME);
+        alertWebSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        return alertWebSSOProfileOptions;
+    }
+
+    @Bean
+    public FilterChainProxy samlFilter() throws Exception {
+        final List<SecurityFilterChain> chains = new ArrayList<>();
+
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/login/**"), samlEntryPoint()));
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"), samlWebSSOProcessingFilter()));
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/logout/**"), samlLogoutFilter()));
+        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SingleLogout/**"), samlLogoutProcessingFilter()));
+        return new AlertFilterChainProxy(chains, samlContext());
     }
 
     @Bean
@@ -214,44 +246,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public FilterChainProxy samlFilter() throws Exception {
-        final List<SecurityFilterChain> chains = new ArrayList<>();
-
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/login/**"), samlEntryPoint()));
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"), samlWebSSOProcessingFilter()));
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/logout/**"), samlLogoutFilter()));
-        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SingleLogout/**"), samlLogoutProcessingFilter()));
-        return new AlertFilterChainProxy(chains, samlContext());
-    }
-
-    @Bean
-    public WebSSOProfileOptions webSSOProfileOptions() {
-        final AlertWebSSOProfileOptions alertWebSSOProfileOptions = new AlertWebSSOProfileOptions(samlContext());
-        alertWebSSOProfileOptions.setIncludeScoping(false);
-        alertWebSSOProfileOptions.setProviderName(AuthenticationHandler.SSO_PROVIDER_NAME);
-        alertWebSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
-        return alertWebSSOProfileOptions;
-    }
-
-    @Bean
-    public SAMLEntryPoint samlEntryPoint() {
-        final SAMLEntryPoint samlEntryPoint = new AlertSAMLEntryPoint(samlContext());
-        samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions());
-        return samlEntryPoint;
-    }
-
-    @Bean
     public MetadataGeneratorFilter metadataGeneratorFilter() {
         return new AlertSAMLMetadataGeneratorFilter(metadataGenerator(), samlContext());
     }
 
     @Bean
     public MetadataGenerator metadataGenerator() {
-        return alertMetadataGenerator();
-    }
-
-    @Bean
-    public AlertSAMLMetadataGenerator alertMetadataGenerator() {
         final AlertSAMLMetadataGenerator metadataGenerator = new AlertSAMLMetadataGenerator(samlContext());
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
@@ -287,6 +287,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         if (keyAlias.isEmpty() || keyStore.isEmpty() || keyPass.isEmpty()) {
             return new EmptyKeyManager();
         }
+
         final String file = keyStore.orElse("");
         final String alias = keyAlias.orElse("");
         final String pass = keyPass.orElse("");
