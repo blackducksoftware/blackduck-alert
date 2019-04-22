@@ -180,7 +180,12 @@ export function fetchDistributionJobs() {
                         break;
                     default:
                         response.json().then((json) => {
-                            dispatch(fetchingAllJobsError(json.message));
+                            let message = '';
+                            if (json && json.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = json.message.toString();
+                            }
+                            dispatch(fetchingAllJobsError(message));
                         });
                 }
             }
