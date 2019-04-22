@@ -67,6 +67,12 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public Optional<ProviderProject> findFirstByHref(final String href) {
+        return providerProjectRepository.findFirstByHref(href).map(this::convertToProjectModel);
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Optional<ProviderProject> findFirstByName(final String name) {
         return providerProjectRepository.findFirstByName(name).map(this::convertToProjectModel);
     }
