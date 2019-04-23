@@ -116,14 +116,13 @@ class SettingsConfigurationForm extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.getSettings();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if ((nextProps.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && nextProps.updateStatus === 'FETCHED') ||
-            (this.props.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && this.props.updateStatus === 'FETCHED')) {
-            const newState = FieldModelUtilities.checkModelOrCreateEmpty(nextProps.settingsData, fieldNames);
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.fetchingSetupStatus !== 'SYSTEM_SETUP_FETCHED' && this.props.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED') {
+            const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.settingsData, fieldNames);
             this.setState({
                 settingsData: newState
             });
@@ -196,7 +195,7 @@ class SettingsConfigurationForm extends Component {
                     method="POST"
                     className="form-horizontal loginForm"
                     onSubmit={this.handleSubmit}
-                    noValidate="true">
+                    noValidate={true}>
                     <div className="form-group">
                         <div className="col-sm-12">
                             <h2> Default
