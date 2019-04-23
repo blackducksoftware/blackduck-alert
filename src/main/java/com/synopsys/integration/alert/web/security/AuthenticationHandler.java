@@ -23,14 +23,15 @@
 package com.synopsys.integration.alert.web.security;
 
 import java.io.IOException;
+import java.security.Provider;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
+import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
@@ -38,12 +39,12 @@ import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -56,7 +57,6 @@ import org.springframework.security.saml.SAMLLogoutProcessingFilter;
 import org.springframework.security.saml.SAMLProcessingFilter;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
 import org.springframework.security.saml.key.EmptyKeyManager;
-import org.springframework.security.saml.key.JKSKeyManager;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
@@ -92,7 +92,6 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
@@ -110,20 +109,18 @@ import com.synopsys.integration.alert.web.security.authentication.saml.UserDetai
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
-
     private final HttpPathManager httpPathManager;
     private final SSLValidator sslValidator;
     private final ConfigurationAccessor configurationAccessor;
     private final CsrfTokenRepository csrfTokenRepository;
-    private final AlertProperties alertProperties;
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final SSLValidator sslValidator, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties) {
+    AuthenticationHandler(final HttpPathManager httpPathManager, final SSLValidator sslValidator, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository) {
         this.httpPathManager = httpPathManager;
         this.sslValidator = sslValidator;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
-        this.alertProperties = alertProperties;
     }
 
     @Bean
@@ -138,6 +135,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+        configureActiveMQProvider();
         if (sslValidator.isSSLEnabled()) {
             configureWithSSL(http);
         } else {
@@ -152,6 +150,25 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
             .authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
             .and().logout().logoutSuccessUrl("/");
+    }
+
+    private void configureActiveMQProvider() {
+        // Active MQ initializes the Bouncy Castle provider in a static constructor of the Broker Service
+        // static initialization of the Bouncy Castle provider breaks SAML support over SSL
+        // https://stackoverflow.com/questions/53906154/spring-boot-2-1-embedded-tomcat-keystore-password-was-incorrect
+        try {
+            final ClassLoader loader = BrokerService.class.getClassLoader();
+            final Class<?> clazz = loader.loadClass("org.bouncycastle.jce.provider.BouncyCastleProvider");
+            final Provider bouncycastle = (Provider) clazz.getDeclaredConstructor().newInstance();
+            Security.removeProvider(bouncycastle.getName());
+            logger.info("Alert Application Configuration: Removing Bouncy Castle provider");
+            Security.addProvider(bouncycastle);
+            logger.info("Alert Application Configuration: Adding Bouncy Castle provider to the end of the provider list");
+
+        } catch (final Throwable e) {
+            // nothing needed here if that provider does not exist
+            logger.info("Alert Application Configuration: Bouncy Castle provider not found");
+        }
     }
 
     private void configureInsecure(final HttpSecurity http) throws Exception {
@@ -280,21 +297,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public KeyManager keyManager() {
-        final Optional<String> keyAlias = alertProperties.getKeyAlias();
-        final Optional<String> keyStore = alertProperties.getKeyStoreFile();
-        final Optional<String> keyPass = alertProperties.getKeyStorePass();
-
-        if (keyAlias.isEmpty() || keyStore.isEmpty() || keyPass.isEmpty()) {
-            return new EmptyKeyManager();
-        }
-
-        final String file = keyStore.orElse("");
-        final String alias = keyAlias.orElse("");
-        final String pass = keyPass.orElse("");
-
-        final Resource storeFile = new DefaultResourceLoader().getResource(file);
-        final Map<String, String> passwords = Map.of(alias, pass);
-        return new JKSKeyManager(storeFile, pass, passwords, alias);
+        return new EmptyKeyManager();
     }
 
     @Bean
