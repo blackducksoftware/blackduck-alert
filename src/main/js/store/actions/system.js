@@ -17,7 +17,6 @@ import {
 import { clearLoginError, loginError, verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import { SYSTEM_SETUP_SHOW } from "./types";
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';
