@@ -92,6 +92,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
@@ -110,17 +111,17 @@ import com.synopsys.integration.alert.web.security.authentication.saml.UserDetai
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
     private final HttpPathManager httpPathManager;
-    private final SSLValidator sslValidator;
     private final ConfigurationAccessor configurationAccessor;
     private final CsrfTokenRepository csrfTokenRepository;
+    private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final SSLValidator sslValidator, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository) {
+    AuthenticationHandler(final HttpPathManager httpPathManager, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties) {
         this.httpPathManager = httpPathManager;
-        this.sslValidator = sslValidator;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
+        this.alertProperties = alertProperties;
     }
 
     @Bean
@@ -136,11 +137,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         configureActiveMQProvider();
-        if (sslValidator.isSSLEnabled()) {
-            configureWithSSL(http);
-        } else {
-            configureInsecure(http);
-        }
+        configureWithSSL(http);
+        configureH2Console(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
             .and().exceptionHandling().authenticationEntryPoint(samlEntryPoint())
@@ -171,13 +169,17 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         }
     }
 
-    private void configureInsecure(final HttpSecurity http) throws Exception {
-        ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
-        http.headers().frameOptions().disable();
+    private void configureH2Console(final HttpSecurity http) throws Exception {
+        if (alertProperties.getH2ConsoleEnabled()) {
+            ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
+            http.headers().frameOptions().disable();
+        }
     }
 
     private void configureWithSSL(final HttpSecurity http) throws Exception {
-        http.requiresChannel().anyRequest().requiresSecure();
+        if (alertProperties.getSslEnabled()) {
+            http.requiresChannel().anyRequest().requiresSecure();
+        }
     }
 
     private void ignorePaths(final String... paths) {
