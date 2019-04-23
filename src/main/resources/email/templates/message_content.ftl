@@ -95,6 +95,11 @@
         <img src="cid:${logo_image}" height="33" width="150" />
     </div>
     <br />
+<#else>
+    <div style="display:inline-block;width:100%;">
+        <img src="cid:${logo_image}" height="33" width="150" />
+    </div>
+    <br />
 </#if>
 </body>
 <html>
