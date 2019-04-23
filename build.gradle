@@ -1,7 +1,7 @@
 buildscript {
     ext {
         // if you change this version remember to change the version in the plugins closure
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.1.4.RELEASE'
     }
     repositories {
         jcenter()
@@ -68,6 +68,13 @@ jacoco {
     toolVersion = "0.8.2"
 }
 
+repositories {
+    // Need this repository to resolve the spring-security-saml2-core dependencies
+    maven {
+        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+    }
+}
+
 dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
@@ -85,7 +92,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.security:spring-security-web'
 
-    implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.3.RELEASE'
+    implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.9.RELEASE'
 
 
     // Email
