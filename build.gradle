@@ -145,7 +145,7 @@ task createCert(type: Exec) {
     }
     def commandArray = []
     commandArray.add('keytool')
-    commandArray.add('-genkey')
+    commandArray.add('-genkeypair')
     commandArray.add('-v')
     commandArray.add('-keystore')
     commandArray.add('blackduck-alert.keystore')
@@ -155,6 +155,8 @@ task createCert(type: Exec) {
     commandArray.add('RSA')
     commandArray.add('-keysize')
     commandArray.add('2048')
+    commandArray.add('-storetype')
+    commandArray.add('PKCS12')
     commandArray.add('-validity')
     commandArray.add('3650')
     commandArray.add('-storepass')
@@ -176,7 +178,7 @@ task runServer(type: Exec, dependsOn: [build, createCert]) {
                         '-Dcom.sun.management.jmxremote.local.only=false',
                         '-Dcom.sun.management.jmxremote.authenticate=false',
                         '-Dcom.sun.management.jmxremote.ssl=false']
-    def applicationVariables = ["--server.ssl.key-store=${projectDir}/build/certs", '--server.port=8443', '--spring.h2.console.enabled=true']
+    def applicationVariables = ["--server.ssl.key-store=${projectDir}/build/certs/blackduck-alert.keystore", '--server.port=8443', '--spring.h2.console.enabled=true']
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(debugVariables)
