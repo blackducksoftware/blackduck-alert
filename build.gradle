@@ -138,7 +138,34 @@ gradle.taskGraph.whenReady { graph ->
     }
 }
 
-task runServer(type: Exec, dependsOn: [build]) {
+
+task createCert(type: Exec) {
+    doFirst {
+        mkdir "${projectDir}/build/certs"
+    }
+    def commandArray = []
+    commandArray.add('keytool')
+    commandArray.add('-genkey')
+    commandArray.add('-v')
+    commandArray.add('-keystore')
+    commandArray.add('blackduck-alert.keystore')
+    commandArray.add('-alias')
+    commandArray.add('blackduck-alert')
+    commandArray.add('-keyalg')
+    commandArray.add('RSA')
+    commandArray.add('-keysize')
+    commandArray.add('2048')
+    commandArray.add('-validity')
+    commandArray.add('3650')
+    commandArray.add('-storepass')
+    commandArray.add('changeit')
+    commandArray.add('-dname')
+    commandArray.add("CN=localhost, OU=Engineering, O=Synopsys, C=US")
+    workingDir "${projectDir}/build/certs"
+    commandLine commandArray
+}
+
+task runServer(type: Exec, dependsOn: [build, createCert]) {
     File jarFile = new File("${projectDir}/build/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',
@@ -149,7 +176,7 @@ task runServer(type: Exec, dependsOn: [build]) {
                         '-Dcom.sun.management.jmxremote.local.only=false',
                         '-Dcom.sun.management.jmxremote.authenticate=false',
                         '-Dcom.sun.management.jmxremote.ssl=false']
-    def applicationVariables = ['--spring.profiles.active=no_ssl']
+    def applicationVariables = ["--server.ssl.key-store=${projectDir}/build/certs", '--server.port=8443', '--spring.h2.console.enabled=true']
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(debugVariables)
@@ -159,6 +186,8 @@ task runServer(type: Exec, dependsOn: [build]) {
     commandArray.addAll(applicationVariables)
     commandLine commandArray
 }
+
+tasks.runServer.mustRunAfter(createCert)
 
 // Build tasks
 
