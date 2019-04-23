@@ -5,20 +5,6 @@ import SettingsConfigurationForm from 'component/settings/SettingsConfigurationF
 import PropTypes from 'prop-types';
 
 class SetupPage extends Component {
-    constructor(props) {
-        super(props);
-        this.getSettings = this.getSettings.bind(this);
-        this.saveSettings = this.saveSettings.bind(this);
-    }
-
-    getSettings() {
-        this.props.getSettings();
-    }
-
-    saveSettings(setupData) {
-        this.props.saveSettings(setupData);
-    }
-
     render() {
         const { errorMessage, actionMessage } = this.props;
         return (
@@ -30,8 +16,8 @@ class SetupPage extends Component {
                             updateStatus={this.props.updateStatus}
                             settingsData={this.props.currentSettingsData}
                             fieldErrors={this.props.fieldErrors}
-                            getSettings={this.getSettings}
-                            saveSettings={this.saveSettings}
+                            getSettings={this.props.getSettings}
+                            saveSettings={this.props.saveSettings}
                             errorMessage={errorMessage}
                             actionMessage={actionMessage}
                             fixedButtonGroup={false}
