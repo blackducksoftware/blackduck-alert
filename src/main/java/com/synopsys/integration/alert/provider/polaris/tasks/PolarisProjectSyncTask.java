@@ -91,9 +91,9 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     public void runTask() {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         try {
-            polarisProperties
-                .getUrl()
-                .orElseThrow(() -> new AlertException("Polaris Url is not configured"));
+            final String polarisUrl = polarisProperties
+                                                             .getUrl()
+                                                             .orElseThrow(() -> new AlertException("Polaris Url is not configured"));
 
             final PolarisServicesFactory servicesFactory = polarisProperties.createPolarisServicesFactory(intLogger);
             final ProjectService projectService = servicesFactory.createProjectService();
@@ -114,10 +114,11 @@ public class PolarisProjectSyncTask extends ScheduledTask {
                 projectUserEmailMappings.put(projectModel, projectUserEmails);
 
                 Set<PolarisIssueModel> issuesForProject = createIssuesForProject(polarisApiHelper, projectResource, projectModel, projectBranches);
-                issuesForProject = updatePreviousCounts(projectResource.getLinks().getSelf().getHref(), issuesForProject);
+                issuesForProject = updatePreviousCounts(projectModel.getHref(), issuesForProject);
                 issuesToUpdate.put(projectModel, issuesForProject);
 
-                final Set<AlertNotificationWrapper> newNotificationsForProject = createNotificationContentForProject(projectModel, issuesForProject);
+                final String projectLink = polarisApiHelper.createLinkToProject(polarisUrl, projectResource.getId()).orElse(projectModel.getHref());
+                final Set<AlertNotificationWrapper> newNotificationsForProject = createNotificationContentForProject(projectLink, projectModel, issuesForProject);
                 notificationsToSave.addAll(newNotificationsForProject);
             }
 
@@ -150,10 +151,10 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         return polarisApiHelper.createIssueModelsForProject(projectId, projectModel.getName(), branchIds);
     }
 
-    private Set<AlertNotificationWrapper> createNotificationContentForProject(final ProviderProject project, final Set<PolarisIssueModel> projectIssues) {
+    private Set<AlertNotificationWrapper> createNotificationContentForProject(final String projectLink, final ProviderProject project, final Set<PolarisIssueModel> projectIssues) {
         final Set<AlertNotificationWrapper> notifications = new LinkedHashSet<>();
         final Date providerCreationDate = new Date();
-        final Collection<AlertPolarisIssueNotificationContentModel> notificationModels = createNotificationModelsForProject(project, projectIssues);
+        final Collection<AlertPolarisIssueNotificationContentModel> notificationModels = createNotificationModelsForProject(projectLink, project, projectIssues);
         for (final AlertPolarisIssueNotificationContentModel notificationModel : notificationModels) {
             final String notificationContent = gson.toJson(notificationModel);
             final AlertNotificationWrapper notification = new NotificationContent(providerCreationDate, PolarisProvider.COMPONENT_NAME, providerCreationDate, notificationModel.getNotificationType().name(), notificationContent);
@@ -162,7 +163,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         return notifications;
     }
 
-    private Collection<AlertPolarisIssueNotificationContentModel> createNotificationModelsForProject(final ProviderProject project, final Set<PolarisIssueModel> issues) {
+    private Collection<AlertPolarisIssueNotificationContentModel> createNotificationModelsForProject(final String projectLink, final ProviderProject project, final Set<PolarisIssueModel> issues) {
         final Set<AlertPolarisIssueNotificationContentModel> notifications = new HashSet<>();
         for (final PolarisIssueModel issue : issues) {
             AlertPolarisNotificationTypeEnum notificationType = null;
@@ -175,7 +176,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             if (notificationType != null) {
                 final Integer numberChanged = Math.abs(issue.getCurrentIssueCount() - issue.getPreviousIssueCount());
                 final AlertPolarisIssueNotificationContentModel newNotification =
-                    new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getDescription(), project.getHref(), issue.getIssueType(), numberChanged, issue.getCurrentIssueCount());
+                    new AlertPolarisIssueNotificationContentModel(notificationType, project.getName(), project.getDescription(), projectLink, issue.getIssueType(), numberChanged, issue.getCurrentIssueCount());
                 notifications.add(newNotification);
             }
         }
@@ -208,6 +209,11 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private Set<PolarisIssueModel> updatePreviousCounts(final String projectHref, final Set<PolarisIssueModel> polarisIssueModels) throws AlertDatabaseConstraintException {
         final Set<PolarisIssueModel> updatedPolarisIssues = new HashSet<>();
+        final Optional<ProviderProject> optionalProviderProject = providerDataAccessor.findFirstByHref(projectHref);
+        if (optionalProviderProject.isEmpty()) {
+            // This project is not yet in the database. Nothing to update.
+            return polarisIssueModels;
+        }
         for (final PolarisIssueModel polarisIssueModel : polarisIssueModels) {
             final Optional<PolarisIssueModel> optionalStoredProjectIssue = polarisIssueAccessor.getProjectIssueByIssueType(projectHref, polarisIssueModel.getIssueType());
             if (optionalStoredProjectIssue.isPresent()) {

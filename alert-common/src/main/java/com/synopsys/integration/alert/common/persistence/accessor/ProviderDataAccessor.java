@@ -33,6 +33,8 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 
 public interface ProviderDataAccessor {
+    Optional<ProviderProject> findFirstByHref(final String href);
+
     Optional<ProviderProject> findFirstByName(final String name);
 
     List<ProviderProject> findByProviderName(final String providerName);
