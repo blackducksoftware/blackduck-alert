@@ -56,6 +56,8 @@ import com.synopsys.integration.alert.common.persistence.model.RegisteredDescrip
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventPublisher;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 
 @Component
 public class FieldModelProcessor {
@@ -65,42 +67,56 @@ public class FieldModelProcessor {
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ContentConverter contentConverter;
+    private final ConfigurationEventPublisher configurationEventPublisher;
 
     @Autowired
     public FieldModelProcessor(final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter) {
+        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final ConfigurationEventPublisher configurationEventPublisher) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = fieldModelConverter;
         this.contentConverter = contentConverter;
+        this.configurationEventPublisher = configurationEventPublisher;
     }
 
     //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
-    public FieldModel performReadAction(final FieldModel fieldModel) {
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        return descriptorActionApi.map(actionApi -> actionApi.readConfig(fieldModel)).orElse(fieldModel);
+    public FieldModel performAfterReadAction(final FieldModel fieldModel) {
+        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
     }
 
-    public FieldModel performDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel performBeforeDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
+        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_DELETE_BEFORE);
+    }
+
+    public void performAfterDeleteAction(final String descriptorName) {
+        fireEvent(descriptorName, ConfigurationEventType.CONFIG_DELETE_AFTER);
     }
 
     public FieldModel performBeforeSaveAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.beforeSaveConfig(fieldModel)).orElse(fieldModel);
+        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_SAVE_BEFORE);
     }
 
     public FieldModel performAfterSaveAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.afterSaveConfig(fieldModel)).orElse(fieldModel);
+        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_SAVE_AFTER);
     }
 
     public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.beforeUpdateConfig(fieldModel)).orElse(fieldModel);
+        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
     }
 
     public FieldModel performAfterUpdateAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.afterUpdateConfig(fieldModel)).orElse(fieldModel);
+        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_AFTER);
+    }
+
+    private FieldModel fireEvent(final FieldModel fieldModel, final ConfigurationEventType configurationEventType) {
+        configurationEventPublisher.publishConfigurationEvent(fieldModel, configurationEventType);
+        return fieldModel;
+    }
+
+    private void fireEvent(final String descriptorName, final ConfigurationEventType configurationEventType) {
+        configurationEventPublisher.publishConfigurationEvent(descriptorName, configurationEventType);
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
@@ -167,15 +183,19 @@ public class FieldModelProcessor {
 
     public FieldModel convertToFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final Long configId = configurationModel.getConfigurationId();
-        final RegisteredDescriptorModel descriptor = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
-                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
-        final String descriptorName = descriptor.getName();
+        final String descriptorName = getDescriptorName(configurationModel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         for (final ConfigurationFieldModel fieldModel : configurationModel.getCopyOfFieldList()) {
             populateAndSecureFields(fieldModel, fields);
         }
 
         return new FieldModel(configId.toString(), descriptorName, configurationModel.getDescriptorContext().name(), fields);
+    }
+
+    public String getDescriptorName(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+        final RegisteredDescriptorModel descriptor = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
+        return descriptor.getName();
     }
 
     public Map<String, FieldValueModel> convertToFieldValuesMap(final Collection<ConfigurationFieldModel> configurationFieldModels) {
