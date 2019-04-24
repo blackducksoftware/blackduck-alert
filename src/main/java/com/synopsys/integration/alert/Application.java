@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -42,7 +40,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.synopsys.integration.alert.web.security.authentication.database.UserDatabaseService;
-import com.synopsys.integration.alert.workflow.startup.StartupManager;
 
 @EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database" })
 @EnableTransactionManagement
@@ -56,16 +53,9 @@ public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired
     private UserDatabaseService userDatabaseService;
-    @Autowired
-    private StartupManager startupManager;
 
     public static void main(final String[] args) {
         new SpringApplicationBuilder(Application.class).logStartupInfo(false).run(args);
-    }
-
-    @PostConstruct
-    void init() {
-        startupManager.startup();
     }
 
     @Bean

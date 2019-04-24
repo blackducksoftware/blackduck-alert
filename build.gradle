@@ -1,7 +1,7 @@
 buildscript {
     ext {
         // if you change this version remember to change the version in the plugins closure
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.1.4.RELEASE'
     }
     repositories {
         jcenter()
@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.1.1.RELEASE'
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
     id 'application'
     id 'com.moowork.node' version '1.2.0'
     id 'com.jfrog.artifactory' version '4.8.1'
@@ -68,6 +68,13 @@ jacoco {
     toolVersion = "0.8.2"
 }
 
+repositories {
+    // Need this repository to resolve the spring-security-saml2-core dependencies
+    maven {
+        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+    }
+}
+
 dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
@@ -76,16 +83,16 @@ dependencies {
 
     // Spring
     implementation 'org.springframework:spring-webmvc'
-    implementation 'org.springframework.security:spring-security-web'
-    implementation 'org.springframework.security:spring-security-ldap'
+
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-ldap'
+    implementation 'org.springframework.security:spring-security-web'
 
-    // TODO enable SAML support 
-    // implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.3.RELEASE'
+    implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.9.RELEASE'
 
 
     // Email
@@ -131,7 +138,36 @@ gradle.taskGraph.whenReady { graph ->
     }
 }
 
-task runServer(type: Exec, dependsOn: [build]) {
+
+task createCert(type: Exec) {
+    doFirst {
+        mkdir "${projectDir}/build/certs"
+    }
+    def commandArray = []
+    commandArray.add('keytool')
+    commandArray.add('-genkeypair')
+    commandArray.add('-v')
+    commandArray.add('-keystore')
+    commandArray.add('blackduck-alert.keystore')
+    commandArray.add('-alias')
+    commandArray.add('blackduck-alert')
+    commandArray.add('-keyalg')
+    commandArray.add('RSA')
+    commandArray.add('-keysize')
+    commandArray.add('2048')
+    commandArray.add('-storetype')
+    commandArray.add('PKCS12')
+    commandArray.add('-validity')
+    commandArray.add('3650')
+    commandArray.add('-storepass')
+    commandArray.add('changeit')
+    commandArray.add('-dname')
+    commandArray.add("CN=localhost, OU=Engineering, O=Synopsys, C=US")
+    workingDir "${projectDir}/build/certs"
+    commandLine commandArray
+}
+
+task runServer(type: Exec, dependsOn: [build, createCert]) {
     File jarFile = new File("${projectDir}/build/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',
@@ -142,7 +178,10 @@ task runServer(type: Exec, dependsOn: [build]) {
                         '-Dcom.sun.management.jmxremote.local.only=false',
                         '-Dcom.sun.management.jmxremote.authenticate=false',
                         '-Dcom.sun.management.jmxremote.ssl=false']
-    def applicationVariables = ['--spring.profiles.active=no_ssl']
+    // change the --server.ssl.key-store parameter to the keystore file to use for running over ssl
+    def applicationVariables = ["--server.ssl.key-store=${projectDir}/build/certs/blackduck-alert.keystore",
+                                '--server.port=8443',
+                                '--spring.h2.console.enabled=true']
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(debugVariables)
@@ -152,6 +191,9 @@ task runServer(type: Exec, dependsOn: [build]) {
     commandArray.addAll(applicationVariables)
     commandLine commandArray
 }
+
+tasks.createCert.onlyIf { !file("${projectDir}/build/certs/blackduck-alert.keystore").exists() }
+tasks.runServer.mustRunAfter(createCert)
 
 // Build tasks
 
