@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.descriptor.action;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -86,39 +85,6 @@ public abstract class DescriptorActionApi {
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Test message sent by Alert", null);
         return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new TreeSet<>());
-    }
-
-    protected FieldModel createFieldModelCopy(final FieldModel fieldModel) {
-        final HashMap<String, FieldValueModel> fields = new HashMap<>();
-        fields.putAll(fieldModel.getKeyToValues());
-
-        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
-        modelToSave.setId(fieldModel.getId());
-        return modelToSave;
-    }
-
-    public FieldModel readConfig(final FieldModel fieldModel) {
-        return fieldModel;
-    }
-
-    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
-        return fieldModel;
-    }
-
-    public FieldModel afterUpdateConfig(final FieldModel fieldModel) {
-        return fieldModel;
-    }
-
-    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
-        return fieldModel;
-    }
-
-    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
-        return fieldModel;
-    }
-
-    public FieldModel deleteConfig(final FieldModel fieldModel) {
-        return fieldModel;
     }
 
     private void checkRelatedFields(final ConfigField field, final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
