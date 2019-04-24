@@ -107,11 +107,14 @@ public class JobConfigActions {
     public void deleteJobById(final UUID id) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
         if (jobs.isPresent()) {
+            final LinkedList<String> descriptorNames = new LinkedList<>();
             final ConfigurationJobModel configurationJobModel = jobs.get();
             for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-                fieldModelProcessor.performBeforeDeleteAction(configurationModel);
+                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(configurationModel);
+                descriptorNames.add(fieldModel.getDescriptorName());
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
+            descriptorNames.forEach(fieldModelProcessor::performAfterDeleteAction);
         }
     }
 
@@ -121,8 +124,9 @@ public class JobConfigActions {
         final Set<String> descriptorNames = new HashSet<>();
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            descriptorNames.add(fieldModel.getDescriptorName());
-            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
+            final FieldModel beforeSaveEventFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
+            descriptorNames.add(beforeSaveEventFieldModel.getDescriptorName());
+            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(beforeSaveEventFieldModel).values();
             configurationFieldModels.addAll(savedFieldsModels);
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
@@ -137,8 +141,9 @@ public class JobConfigActions {
         validateJob(jobFieldModel);
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            final Long fieldModelId = contentConverter.getLongValue(fieldModel.getId());
-            final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, fieldModel);
+            final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+            final Long fieldModelId = contentConverter.getLongValue(beforeUpdateEventFieldModel.getId());
+            final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
@@ -151,7 +156,7 @@ public class JobConfigActions {
     private Set<FieldModel> performUpdate(final JobFieldModel savedJobFieldModel) {
         return savedJobFieldModel.getFieldModels()
                    .stream()
-                   .map(fieldModelProcessor::performBeforeUpdateAction)
+                   .map(fieldModelProcessor::performAfterUpdateAction)
                    .collect(Collectors.toSet());
     }
 
