@@ -76,15 +76,16 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
         if (StringUtils.isBlank(issueType)) {
             throw new AlertDatabaseConstraintException("The field issueType cannot be blank");
         }
-        final Long projectId = providerProjectRepository.findFirstByHref(projectHref)
-                                   .map(ProviderProjectEntity::getId)
-                                   .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
-        return polarisIssueRepository.findByProjectId(projectId)
-                   .stream()
-                   .filter(entity -> projectId == entity.getProjectId())
-                   .filter(entity -> issueType == entity.getIssueType())
-                   .findFirst()
-                   .map(entity -> new PolarisIssueModel(entity.getIssueType(), entity.getPreviousCount(), entity.getCurrentCount()));
+
+        final Optional<Long> optionalProjectId = providerProjectRepository.findFirstByHref(projectHref).map(ProviderProjectEntity::getId);
+        if (optionalProjectId.isPresent()) {
+            return polarisIssueRepository.findByProjectId(optionalProjectId.get())
+                       .stream()
+                       .filter(entity -> issueType == entity.getIssueType())
+                       .findFirst()
+                       .map(entity -> new PolarisIssueModel(entity.getIssueType(), entity.getPreviousCount(), entity.getCurrentCount()));
+        }
+        return Optional.empty();
     }
 
     @Override

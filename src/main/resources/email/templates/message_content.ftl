@@ -73,8 +73,8 @@
         </#if>
     </strong>
     <br />- - - - - - - - - - - - - - - - - - - -
-    <#if content.categoryItemList??>
-        <#list content.categoryItemList as categoryItem>
+    <#if content.categoryItems??>
+        <#list content.categoryItems as categoryItem>
             <@printCategoryData categoryItem/>
         </#list>
     <#else>
@@ -91,6 +91,11 @@
         <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are assigned to project: ${provider_project_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the project.</span>
     </div>
     <br />
+    <div style="display:inline-block;width:100%;">
+        <img src="cid:${logo_image}" height="33" width="150" />
+    </div>
+    <br />
+<#else>
     <div style="display:inline-block;width:100%;">
         <img src="cid:${logo_image}" height="33" width="150" />
     </div>

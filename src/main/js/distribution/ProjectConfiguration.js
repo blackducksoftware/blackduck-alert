@@ -17,7 +17,7 @@ function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ? <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> : cell;
 
     if (cell) {
-        return <div title={cell}> {cellContent} </div>;
+        return <div title={cell.toString()}> {cellContent} </div>;
     }
     return <div> {cellContent} </div>;
 }

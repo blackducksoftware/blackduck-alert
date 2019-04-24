@@ -405,7 +405,7 @@ class BaseJobConfiguration extends Component {
                     projectNamePattern={FieldModelUtilities.getFieldModelSingleValueOrDefault(providerFieldModel, KEY_PROJECT_NAME_PATTERN, '')}
                     fieldErrors={this.props.fieldErrors}
                 />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} isFixed={this.props.fixedButtonGroup} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
             </div>
         );
@@ -485,7 +485,8 @@ BaseJobConfiguration.propTypes = {
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    projects: PropTypes.arrayOf(PropTypes.any)
+    projects: PropTypes.arrayOf(PropTypes.any),
+    fixedButtonGroup: PropTypes.bool
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -497,7 +498,8 @@ BaseJobConfiguration.defaultProps = {
     testingConfig: false,
     configurationMessage: '',
     fieldErrors: {},
-    projects: []
+    projects: [],
+    fixedButtonGroup: true
 };
 
 const mapDispatchToProps = dispatch => ({
