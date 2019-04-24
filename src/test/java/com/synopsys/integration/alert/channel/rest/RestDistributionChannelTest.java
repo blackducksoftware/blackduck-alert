@@ -35,7 +35,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         //                gson, testAlertProperties, blackDuckProperties, auditUtility, null, null, channelRestConnectionFactory) {
         //
         //            @Override
-        //            public String getDistributionType() {
+        //            public String getDestinationName() {
         //                return null;
         //            }
         //
@@ -135,7 +135,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         //                null, channelRestConnectionFactory) {
         //
         //            @Override
-        //            public String getDistributionType() {
+        //            public String getDestinationName() {
         //                return null;
         //            }
         //
