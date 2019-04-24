@@ -46,14 +46,16 @@ public abstract class MessageReceiver implements MessageListener {
     public void onMessage(final Message message) {
         try {
             if (TextMessage.class.isAssignableFrom(message.getClass())) {
-                logger.info("Received {} event message: {}", getClass().getName(), message);
+                final String receiverClassName = getClass().getName();
+                logger.info("Received {} event message: {}", receiverClassName, message);
                 final TextMessage textMessage = (TextMessage) message;
                 final DistributionEvent event = gson.fromJson(textMessage.getText(), DistributionEvent.class);
-                logger.info("{} event {}", getClass().getName(), event);
+                logger.info("{} event {}", receiverClassName, event);
                 handleEvent(event);
             }
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
+
 }

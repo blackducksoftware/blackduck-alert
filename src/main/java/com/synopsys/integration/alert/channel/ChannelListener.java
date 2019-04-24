@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.channel;
 
 import java.util.List;
 
-import javax.jms.MessageListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,33 +32,31 @@ import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 
 @Configuration
 public class ChannelListener implements JmsListenerConfigurer {
     private final Logger logger = LoggerFactory.getLogger(ChannelListener.class);
 
-    private final List<ChannelDescriptor> channelDescriptorList;
+    private final List<DistributionChannel> distributionChannelList;
 
     @Autowired
-    public ChannelListener(final List<ChannelDescriptor> channelDescriptorList) {
-        this.channelDescriptorList = channelDescriptorList;
+    public ChannelListener(final List<DistributionChannel> distributionChannelList) {
+        this.distributionChannelList = distributionChannelList;
     }
 
     @Override
     public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        channelDescriptorList.forEach(descriptor -> {
-            final MessageListener channelListener = descriptor.getChannelListener();
-            if (channelListener != null) {
-                final String listenerId = createListenerId(descriptor.getName());
-                logger.info("Registering JMS Listener: {}", listenerId);
-                final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-                endpoint.setId(listenerId);
-                endpoint.setDestination(descriptor.getDestinationName());
-                endpoint.setMessageListener(channelListener);
-                registrar.registerEndpoint(endpoint);
-            }
+        distributionChannelList.forEach(distributionChannel -> {
+            final String destinationName = distributionChannel.getDestinationName();
+            final String listenerId = createListenerId(destinationName);
+            logger.info("Registering JMS Listener: {}", listenerId);
+            final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+            endpoint.setId(listenerId);
+            endpoint.setDestination(destinationName);
+            endpoint.setMessageListener(distributionChannel);
+            registrar.registerEndpoint(endpoint);
         });
     }
 
