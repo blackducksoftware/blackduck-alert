@@ -28,13 +28,14 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
@@ -94,24 +95,17 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
         }
     }
 
-    @Override
-    public FieldModel afterUpdateConfig(final FieldModel fieldModel) {
-        return afterSaveConfig(fieldModel);
-    }
-
-    @Override
-    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
+    public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
         final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
         final Optional<String> nextRunTime = taskManager.getNextRunTime(PolarisProjectSyncTask.TASK_NAME);
         if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
             taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, PolarisProjectSyncTask.TASK_NAME);
         }
-        return super.afterSaveConfig(fieldModel);
     }
 
-    @Override
-    public FieldModel deleteConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
+    public void handleDeleteConfig(final ConfigurationEvent configurationEvent) {
         taskManager.unScheduleTask(PolarisProjectSyncTask.TASK_NAME);
-        return super.deleteConfig(fieldModel);
     }
 }
