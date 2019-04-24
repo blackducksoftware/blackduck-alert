@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     }
 
     private AggregateMessageContent createMessageContent(final String value) {
-        return new AggregateMessageContent("Name", value, List.of());
+        return new AggregateMessageContent("Name", value, new TreeSet<>());
     }
 
 }

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.common;
 
 public class AlertConstants {
     public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";

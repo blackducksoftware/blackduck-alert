@@ -25,9 +25,9 @@ package com.synopsys.integration.alert.common.descriptor.action;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -85,7 +85,7 @@ public abstract class DescriptorActionApi {
 
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Test message sent by Alert", null);
-        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, List.of());
+        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new TreeSet<>());
     }
 
     protected FieldModel createFieldModelCopy(final FieldModel fieldModel) {

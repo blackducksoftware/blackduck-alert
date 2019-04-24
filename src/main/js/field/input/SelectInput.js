@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import LabeledField from 'field/LabeledField';
 
+function noOptionsMessage() {
+    return null;
+}
+
 class SelectInput extends Component {
     render() {
         const {
@@ -27,6 +31,7 @@ class SelectInput extends Component {
                 isMulti={hasMultipleValues}
                 closeMenuOnSelect={closeOnSelect}
                 components={components}
+                noOptionsMessage={noOptionsMessage}
             />
         </div>);
         return (
@@ -41,7 +46,6 @@ SelectInput.propTypes = {
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
     components: PropTypes.object,
-    value: PropTypes.string,
     placeholder: PropTypes.string,
     isSearchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
@@ -51,7 +55,6 @@ SelectInput.propTypes = {
 
 SelectInput.defaultProps = {
     id: 'id',
-    value: undefined,
     placeholder: 'Choose a value',
     options: [],
     components: {},

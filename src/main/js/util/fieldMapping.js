@@ -7,6 +7,7 @@ import NumberInput from 'field/input/NumberInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import CounterField from 'field/CounterField';
 
 export function buildTextInput(items) {
     return <TextInput {...items} />;
@@ -46,6 +47,14 @@ export function buildReadOnlyField(items) {
     return <ReadOnlyField {...items} />;
 }
 
+export function buildCounterField(items, field) {
+    const { countdown } = field;
+    const { value } = items;
+    const trimmedValue = (value.length > 0) && value[0];
+    Object.assign(items, { countdown, value: trimmedValue });
+    return <CounterField {...items} />;
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -53,7 +62,8 @@ export const FIELDS = {
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
     CheckboxInput: buildCheckboxInput,
-    ReadOnlyField: buildReadOnlyField
+    ReadOnlyField: buildReadOnlyField,
+    CountdownField: buildCounterField
 };
 
 export function getField(fieldType, props, field) {

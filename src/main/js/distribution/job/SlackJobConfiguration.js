@@ -113,6 +113,7 @@ class SlackJobConfiguration extends Component {
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
             childContent={content}
+            fixedButtonGroup={this.props.fixedButtonGroup}
         />);
     }
 }
@@ -125,7 +126,8 @@ SlackJobConfiguration.propTypes = {
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool
+    inProgress: PropTypes.bool,
+    fixedButtonGroup: PropTypes.bool
 };
 
 SlackJobConfiguration.defaultProps = {
@@ -133,7 +135,8 @@ SlackJobConfiguration.defaultProps = {
     jobId: null,
     fieldErrors: {},
     fetching: false,
-    inProgress: false
+    inProgress: false,
+    fixedButtonGroup: true
 };
 
 const mapDispatchToProps = dispatch => ({

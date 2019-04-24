@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,8 +18,8 @@ public class AggregateMessageContentTest {
         final String value = "topic value";
         final String url = "topic url";
         final LinkableItem subTopic = Mockito.mock(LinkableItem.class);
-        final List<CategoryItem> itemList = Collections.emptyList();
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, subTopic, itemList);
+        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, subTopic, categoryItems);
 
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
@@ -27,21 +27,21 @@ public class AggregateMessageContentTest {
         assertEquals(url, aggregateMessageContent.getUrl().get());
         assertTrue(aggregateMessageContent.getSubTopic().isPresent());
         assertEquals(subTopic, aggregateMessageContent.getSubTopic().get());
-        assertEquals(itemList, aggregateMessageContent.getCategoryItemList());
+        assertEquals(categoryItems, aggregateMessageContent.getCategoryItems());
     }
 
     @Test
     public void testTopicContentMissingURLandSubTopic() {
         final String name = "topic name";
         final String value = "topic value";
-        final List<CategoryItem> itemList = Collections.emptyList();
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, itemList);
+        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, categoryItems);
 
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
         assertFalse(aggregateMessageContent.getUrl().isPresent());
         assertFalse(aggregateMessageContent.getSubTopic().isPresent());
-        assertEquals(itemList, aggregateMessageContent.getCategoryItemList());
+        assertEquals(categoryItems, aggregateMessageContent.getCategoryItems());
     }
 
     @Test
@@ -49,14 +49,14 @@ public class AggregateMessageContentTest {
         final String name = "topic name";
         final String value = "topic value";
         final String url = "topic url";
-        final List<CategoryItem> itemList = Collections.emptyList();
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, itemList);
+        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, categoryItems);
 
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
         assertTrue(aggregateMessageContent.getUrl().isPresent());
         assertEquals(url, aggregateMessageContent.getUrl().get());
         assertFalse(aggregateMessageContent.getSubTopic().isPresent());
-        assertEquals(itemList, aggregateMessageContent.getCategoryItemList());
+        assertEquals(categoryItems, aggregateMessageContent.getCategoryItems());
     }
 }

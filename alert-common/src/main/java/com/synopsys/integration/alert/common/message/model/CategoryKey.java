@@ -25,9 +25,11 @@ package com.synopsys.integration.alert.common.message.model;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class CategoryKey extends AlertSerializableModel {
+public final class CategoryKey extends AlertSerializableModel implements Comparable<CategoryKey> {
     private final String type;
     private final String key;
 
@@ -53,5 +55,10 @@ public final class CategoryKey extends AlertSerializableModel {
 
     public String getKey() {
         return key;
+    }
+
+    @Override
+    public int compareTo(final CategoryKey otherItem) {
+        return CompareToBuilder.reflectionCompare(this, otherItem);
     }
 }

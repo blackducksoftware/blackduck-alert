@@ -22,32 +22,32 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
 
 public class AggregateMessageContent extends LinkableItem {
     private final LinkableItem subTopic;
-    private final List<CategoryItem> categoryItemList;
     private final MessageContentKey messageContentKey;
+    private SortedSet<CategoryItem> categoryItems;
 
-    public AggregateMessageContent(final String name, final String value, final List<CategoryItem> categoryItemList) {
+    public AggregateMessageContent(final String name, final String value, final SortedSet<CategoryItem> categoryItems) {
         super(name, value);
         this.subTopic = null;
-        this.categoryItemList = categoryItemList;
+        this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final List<CategoryItem> categoryItemList) {
+    public AggregateMessageContent(final String name, final String value, final String url, final SortedSet<CategoryItem> categoryItems) {
         super(name, value, url);
         this.subTopic = null;
-        this.categoryItemList = categoryItemList;
+        this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final List<CategoryItem> categoryItemList) {
+    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final SortedSet<CategoryItem> categoryItems) {
         super(name, value, url);
         this.subTopic = subTopic;
-        this.categoryItemList = categoryItemList;
+        this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value, subTopic.getName(), subTopic.getValue());
     }
 
@@ -55,11 +55,15 @@ public class AggregateMessageContent extends LinkableItem {
         return Optional.ofNullable(subTopic);
     }
 
-    public List<CategoryItem> getCategoryItemList() {
-        return categoryItemList;
-    }
-
     public MessageContentKey getKey() {
         return messageContentKey;
+    }
+
+    public SortedSet<CategoryItem> getCategoryItems() {
+        return categoryItems;
+    }
+
+    public void setCategoryItems(final SortedSet<CategoryItem> categoryItems) {
+        this.categoryItems = categoryItems;
     }
 }

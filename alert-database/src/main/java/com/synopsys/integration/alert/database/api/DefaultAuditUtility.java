@@ -113,7 +113,7 @@ public class DefaultAuditUtility implements AuditUtility {
     @Transactional
     public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final AggregateMessageContent content) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        final Set<Long> notificationIds = content.getCategoryItemList().stream()
+        final Set<Long> notificationIds = content.getCategoryItems().stream()
                                               .map(CategoryItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {

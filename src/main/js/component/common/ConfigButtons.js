@@ -1,37 +1,51 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import CancelButton from 'field/input/CancelButton';
 import SubmitButton from 'field/input/SubmitButton';
 import GeneralButton from 'field/input/GeneralButton';
 
-const ConfigButtons = props => (
-    <div className="form-group">
-        <div className="buttonGroupBuffer" />
-        <div className="buttonGroup d-inline-flex offset-sm-3 col-sm-8">
-            <div className="progressContainer">
-                <div className="progressIcon">
-                    {props.performingAction &&
-                    <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+class ConfigButtons extends Component {
+    render() {
+        const { isFixed, performingAction, includeTest, onTestClick, testLabel, includeSave, submitLabel, includeCancel, onCancelClick, cancelLabel } = this.props;
+
+        let fixedStyle = null;
+        if (isFixed) {
+            fixedStyle = 'fixedButtonGroup';
+        }
+        const wrapperStyles = `${fixedStyle} d-inline-flex offset-sm-3 col-sm-8`;
+        return (
+            <div className="form-group">
+                {isFixed &&
+                <div className="fixedButtonGroupBuffer" />
+                }
+                <div className={wrapperStyles}>
+                    <div className="progressContainer">
+                        <div className="progressIcon">
+                            {performingAction &&
+                            <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                            }
+                        </div>
+                    </div>
+                    {includeTest &&
+                    <div style={{
+                        display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
+                    }}
+                    >
+                        <GeneralButton id="generalButton" onClick={onTestClick}>{testLabel}</GeneralButton>
+                    </div>
+                    }
+                    {includeSave &&
+                    <SubmitButton id="submitButton">{submitLabel}</SubmitButton>
+                    }
+                    {includeCancel &&
+                    <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>
                     }
                 </div>
             </div>
-            {props.includeTest &&
-            <div style={{
-                display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
-            }}
-            >
-                <GeneralButton id="generalButton" onClick={props.onTestClick}>{props.testLabel}</GeneralButton>
-            </div>
-            }
-            {props.includeSave &&
-            <SubmitButton id="submitButton">{props.submitLabel}</SubmitButton>
-            }
-            {props.includeCancel &&
-            <CancelButton id="cancelButton" onClick={props.onCancelClick}>{props.cancelLabel}</CancelButton>
-            }
-        </div>
-    </div>
-);
+        );
+    }
+}
+
 
 ConfigButtons.propTypes = {
     includeCancel: PropTypes.bool,
@@ -42,7 +56,8 @@ ConfigButtons.propTypes = {
     performingAction: PropTypes.bool,
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
-    cancelLabel: PropTypes.string
+    cancelLabel: PropTypes.string,
+    isFixed: PropTypes.bool
 };
 
 ConfigButtons.defaultProps = {
@@ -56,7 +71,8 @@ ConfigButtons.defaultProps = {
     },
     submitLabel: 'Save',
     testLabel: 'Test Configuration',
-    cancelLabel: 'Cancel'
+    cancelLabel: 'Cancel',
+    isFixed: true
 };
 
 export default ConfigButtons;

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -38,12 +40,12 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final int expectedLinkableItemsCount) {
         collector.insert(notification);
         final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
-        final List<CategoryItem> items = content.getCategoryItemList();
+        final SortedSet<CategoryItem> items = content.getCategoryItems();
         Assert.assertEquals(expectedCategoryItemsCount, items.size());
         Assert.assertEquals(expectedLinkableItemsCount, getCategoryItemLinkableItemsCount(items));
     }
 
-    public static int getCategoryItemLinkableItemsCount(final List<CategoryItem> items) {
+    public static int getCategoryItemLinkableItemsCount(final SortedSet<CategoryItem> items) {
         int count = 0;
         for (final CategoryItem item : items) {
             count += item.getItems().size();
@@ -54,13 +56,13 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
-        runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION_CLEARED);
+        runSingleTest(collector, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
-        runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION);
+        runSingleTest(collector, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }
 
     // FIXME the test is geared towards a very specific format. Since it's now more flexible, we'll have to think of a new standard to measure
@@ -75,7 +77,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         // 3- component version or policy override user
         final int linkableItemsPerCategory = 3;
 
-        final String ruleContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String ruleContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
 
         final NotificationContent n0 = createNotification(ruleContent, NotificationType.RULE_VIOLATION_CLEARED);
         final NotificationContent n1 = createNotification(ruleContent, NotificationType.RULE_VIOLATION_CLEARED);
@@ -97,7 +99,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
     @Test
     public void testOperationCircuitBreaker() throws Exception {
-        final String ruleContent = getNotificationContentFromFile("json/notification01.json");
+        final String ruleContent = getNotificationContentFromFile(TestConstants.NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(ruleContent, NotificationType.BOM_EDIT);
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         collector.insert(n0);
@@ -108,10 +110,10 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     public void insertionExceptionTest() throws Exception {
         final BlackDuckPolicyViolationCollector collector = createPolicyViolationCollector();
         final BlackDuckPolicyViolationCollector spiedCollector = Mockito.spy(collector);
-        final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
+        final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addApplicableItems(Mockito.anyList(), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class));
+            .addApplicableItems(Mockito.any(SortedSet.class), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class));
         spiedCollector.insert(n0);
         final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());
@@ -126,7 +128,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     }
 
     private void runSingleTest(final BlackDuckPolicyCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
-        final String content = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final String content = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
         final NotificationContent notificationContent = createNotification(content, notificationType);
         test(collector, notificationContent);
     }

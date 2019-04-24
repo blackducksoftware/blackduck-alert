@@ -68,10 +68,9 @@ class JobDeleteModal extends Component {
                             </BootstrapTable>
                         </div>
                         <p name="jobDeleteMessage">{this.props.jobDeleteMessage}</p>
-                        <ConfigButtons performingAction={this.props.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} />
+                        <ConfigButtons performingAction={this.props.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} isFixed={false} />
                     </form>
                 </Modal.Body>
-
             </Modal>
         );
     }

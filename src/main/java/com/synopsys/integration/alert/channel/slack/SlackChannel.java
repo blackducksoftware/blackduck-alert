@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,7 @@ public class SlackChannel extends DistributionChannel {
         mrkdwnBuilder.append("- - - - - - - - - - - - - - - - - - - -");
         mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
 
-        final List<CategoryItem> categoryItems = messageContent.getCategoryItemList();
+        final SortedSet<CategoryItem> categoryItems = messageContent.getCategoryItems();
         for (final CategoryItem categoryItem : categoryItems) {
             mrkdwnBuilder.append("Type: ");
             mrkdwnBuilder.append(categoryItem.getOperation());

@@ -38,7 +38,7 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.AlertConstants;
+import com.synopsys.integration.alert.common.AlertConstants;
 
 public class MimeMultipartBuilder {
     private String html;

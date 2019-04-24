@@ -116,14 +116,13 @@ class SettingsConfigurationForm extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.getSettings();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if ((nextProps.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && nextProps.updateStatus === 'FETCHED') ||
-            (this.props.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && this.props.updateStatus === 'FETCHED')) {
-            const newState = FieldModelUtilities.checkModelOrCreateEmpty(nextProps.settingsData, fieldNames);
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.fetchingSetupStatus !== 'SYSTEM_SETUP_FETCHED' && this.props.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED') {
+            const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.settingsData, fieldNames);
             this.setState({
                 settingsData: newState
             });
@@ -196,7 +195,7 @@ class SettingsConfigurationForm extends Component {
                     method="POST"
                     className="form-horizontal loginForm"
                     onSubmit={this.handleSubmit}
-                    noValidate="true">
+                    noValidate={true}>
                     <div className="form-group">
                         <div className="col-sm-12">
                             <h2> Default
@@ -473,7 +472,7 @@ class SettingsConfigurationForm extends Component {
                             </CollapsiblePane>
                         </div>
                     </div>
-                    <ConfigButtons isFixed={false} includeSave type="submit" performingAction={saving} />
+                    <ConfigButtons includeSave type="submit" performingAction={saving} isFixed={this.props.fixedButtonGroup} />
                 </form>
             </div>
         );
@@ -488,7 +487,8 @@ SettingsConfigurationForm.propTypes = {
     settingsData: PropTypes.object,
     fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
-    actionMessage: PropTypes.string
+    actionMessage: PropTypes.string,
+    fixedButtonGroup: PropTypes.bool
 };
 
 SettingsConfigurationForm.defaultProps = {
@@ -496,7 +496,8 @@ SettingsConfigurationForm.defaultProps = {
     settingsData: {},
     updateStatus: '',
     errorMessage: null,
-    actionMessage: null
+    actionMessage: null,
+    fixedButtonGroup: true
 };
 
 export default SettingsConfigurationForm;
