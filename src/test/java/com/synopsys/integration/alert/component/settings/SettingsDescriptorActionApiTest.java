@@ -22,6 +22,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
@@ -57,19 +59,20 @@ public class SettingsDescriptorActionApiTest {
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
-        FieldModel fieldModel = Mockito.mock(FieldModel.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        final SettingsDescriptorActionApi actionApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
 
-        actionaApi.readConfig(fieldModel);
-        assertFieldsMissing(fieldModel);
-        fieldModel = Mockito.mock(FieldModel.class);
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
+        actionApi.handleReadConfig(configurationEvent);
+        assertFieldsMissing(configurationEvent.getFieldModel());
         Mockito.when(encryptionUtility.isPasswordSet()).thenReturn(true);
         Mockito.when(encryptionUtility.isGlobalSaltSet()).thenReturn(true);
         final UserModel userModel = Mockito.mock(UserModel.class);
         Mockito.when(userModel.getPassword()).thenReturn("valid_test_value");
         Mockito.when(userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)).thenReturn(Optional.of(userModel));
-        final FieldModel modelCreated = actionaApi.readConfig(fieldModel);
-        assertFieldsPresent(modelCreated);
+        final ConfigurationEvent updatedConfigurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
+        actionApi.handleReadConfig(updatedConfigurationEvent);
+        assertFieldsPresent(updatedConfigurationEvent.getFieldModel());
     }
 
     @Test
@@ -85,8 +88,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel modelToSave = actionaApi.beforeUpdateConfig(fieldModel);
-        assertFieldsMissing(modelToSave);
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
+        actionaApi.handleNewAndUpdatedConfig(configurationEvent);
+        assertFieldsMissing(configurationEvent.getFieldModel());
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
         Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
@@ -105,8 +109,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel modelToSave = actionaApi.beforeSaveConfig(fieldModel);
-        assertFieldsMissing(modelToSave);
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
+        actionaApi.handleNewAndUpdatedConfig(configurationEvent);
+        assertFieldsMissing(configurationEvent.getFieldModel());
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
         Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
@@ -126,9 +131,10 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
 
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_SAVE_BEFORE);
         Mockito.doThrow(new IllegalArgumentException()).when(encryptionUtility).updatePasswordField(Mockito.anyString());
-        final FieldModel modelToSave = actionaApi.beforeSaveConfig(fieldModel);
-        assertFieldsMissing(modelToSave);
+        actionaApi.handleNewAndUpdatedConfig(configurationEvent);
+        assertFieldsMissing(configurationEvent.getFieldModel());
     }
 
     @Test
@@ -251,13 +257,13 @@ public class SettingsDescriptorActionApiTest {
     }
 
     private void assertFieldsMissing(final FieldModel fieldModel) {
-        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
-        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
-        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
+        assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
+        assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
+        assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
 
-        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
-        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> Optional.of(field.isSet())).orElse(false));
-        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> Optional.of(field.isSet())).orElse(false));
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).map(FieldValueModel::isSet).orElse(false));
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).map(FieldValueModel::isSet).orElse(false));
+        assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(FieldValueModel::isSet).orElse(false));
     }
 
     private void assertFieldsPresent(final FieldModel fieldModel) {

@@ -23,6 +23,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -190,9 +192,11 @@ public class SchedulingDescriptorActionApiTest {
         final SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
-        final DescriptorActionApi actionApi = actionApiOptional.get();
+        final SchedulingDescriptorActionApi actionApi = (SchedulingDescriptorActionApi) actionApiOptional.get();
         final FieldModel fieldModel = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        final FieldModel actualFieldModel = actionApi.readConfig(fieldModel);
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
+        actionApi.handleReadConfig(configurationEvent);
+        final FieldModel actualFieldModel = configurationEvent.getFieldModel();
         final Optional<String> accumulatorNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN);
         final Optional<String> dailyTaskNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN);
         final Optional<String> purgeTaskNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN);
@@ -214,12 +218,13 @@ public class SchedulingDescriptorActionApiTest {
         final SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
-        final DescriptorActionApi actionApi = actionApiOptional.get();
+        final SchedulingDescriptorActionApi actionApi = (SchedulingDescriptorActionApi) actionApiOptional.get();
 
         final FieldModel fieldModel = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("1"), false));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of("5"), false));
-        actionApi.beforeUpdateConfig(fieldModel);
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
+        actionApi.handleNewAndSavedConfig(configurationEvent);
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(DailyTask.TASK_NAME));
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(PurgeTask.TASK_NAME));
     }
@@ -232,12 +237,13 @@ public class SchedulingDescriptorActionApiTest {
         final SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
-        final DescriptorActionApi actionApi = actionApiOptional.get();
+        final SchedulingDescriptorActionApi actionApi = (SchedulingDescriptorActionApi) actionApiOptional.get();
 
         final FieldModel fieldModel = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("2"), false));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of("6"), false));
-        actionApi.beforeSaveConfig(fieldModel);
+        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
+        actionApi.handleNewAndSavedConfig(configurationEvent);
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(DailyTask.TASK_NAME));
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(PurgeTask.TASK_NAME));
     }

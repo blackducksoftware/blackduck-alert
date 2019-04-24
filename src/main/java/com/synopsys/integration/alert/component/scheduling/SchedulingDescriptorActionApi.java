@@ -49,7 +49,7 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
     }
 
     @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
-    public void readConfig(final ConfigurationEvent configurationEvent) {
+    public void handleReadConfig(final ConfigurationEvent configurationEvent) {
         final String blackDuckNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
         final String polarisNextRun = taskManager.getDifferenceToNextRun(PolarisProjectSyncTask.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
 
