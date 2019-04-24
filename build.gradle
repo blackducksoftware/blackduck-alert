@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.1.1.RELEASE'
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
     id 'application'
     id 'com.moowork.node' version '1.2.0'
     id 'com.jfrog.artifactory' version '4.8.1'
