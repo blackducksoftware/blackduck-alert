@@ -23,13 +23,13 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
@@ -58,40 +59,31 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         // this.samlManager = samlManager;
     }
 
-    @Override
-    public FieldModel readConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
+    public void handleReadConfig(final ConfigurationEvent configurationEvent) {
+        final FieldModel fieldModel = configurationEvent.getFieldModel();
         final Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
-        final FieldModel newModel = createFieldModelCopy(fieldModel);
         final boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
-        newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
-        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
-        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isGlobalSaltSet()));
-        return newModel;
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isGlobalSaltSet()));
     }
 
-    @Override
-    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
-        return beforeSaveConfig(fieldModel);
-    }
-
-    @Override
-    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE')")
+    public void handleNewAndUpdatedConfig(final ConfigurationEvent configurationEvent) {
+        final FieldModel fieldModel = configurationEvent.getFieldModel();
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
         addSAMLMetadata(fieldModel);
         systemValidator.validate();
-        return createScrubbedModel(fieldModel);
+        scrubModel(fieldModel);
     }
 
-    private FieldModel createScrubbedModel(final FieldModel fieldModel) {
-        final HashMap<String, FieldValueModel> fields = new HashMap<>();
-        fields.putAll(fieldModel.getKeyToValues());
-        fields.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
-        fields.remove(SettingsDescriptor.KEY_ENCRYPTION_PWD);
-        fields.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
-
-        return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+    private void scrubModel(final FieldModel fieldModel) {
+        fieldModel.removeField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
+        fieldModel.removeField(SettingsDescriptor.KEY_ENCRYPTION_PWD);
+        fieldModel.removeField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
