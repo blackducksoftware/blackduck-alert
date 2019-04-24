@@ -47,6 +47,7 @@ public abstract class ChannelDescriptor extends Descriptor {
         addGlobalUiConfig(globalDescriptorActionApi, globalUIConfig);
     }
 
+    // FIXME descriptor destinationName should no longer be used as it was moved to the channels themselves. This should be deleted.
     public String getDestinationName() {
         return destinationName;
     }

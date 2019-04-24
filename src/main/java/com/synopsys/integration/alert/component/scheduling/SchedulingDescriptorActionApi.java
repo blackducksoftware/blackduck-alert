@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
@@ -46,32 +48,27 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
         this.taskManager = taskManager;
     }
 
-    @Override
-    public FieldModel readConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
+    public void readConfig(final ConfigurationEvent configurationEvent) {
         final String blackDuckNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
         final String polarisNextRun = taskManager.getDifferenceToNextRun(PolarisProjectSyncTask.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
 
+        final FieldModel fieldModel = configurationEvent.getFieldModel();
         fieldModel.putField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, new FieldValueModel(List.of(blackDuckNextRun), true));
         fieldModel.putField(SchedulingDescriptor.KEY_POLARIS_NEXT_RUN, new FieldValueModel(List.of(polarisNextRun), true));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
-        return fieldModel;
     }
 
-    @Override
-    public FieldModel beforeUpdateConfig(final FieldModel fieldModel) {
-        return beforeSaveConfig(fieldModel);
-    }
-
-    @Override
-    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && (#configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE')")
+    public void handleNewAndSavedConfig(final ConfigurationEvent configurationEvent) {
+        final FieldModel fieldModel = configurationEvent.getFieldModel();
         final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse("");
         final String purgeDataFrequencyDays = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse("");
         final String dailyDigestCron = String.format(DailyTask.CRON_FORMAT, dailyDigestHourOfDay);
         final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
         taskManager.scheduleCronTask(dailyDigestCron, DailyTask.TASK_NAME);
         taskManager.scheduleCronTask(purgeDataCron, PurgeTask.TASK_NAME);
-        return fieldModel;
     }
 
 }
