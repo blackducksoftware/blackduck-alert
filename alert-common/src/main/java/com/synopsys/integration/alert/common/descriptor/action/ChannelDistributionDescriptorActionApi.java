@@ -34,8 +34,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
@@ -68,23 +66,6 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
-    }
-
-    @Override
-    public FieldModel beforeSaveConfig(final FieldModel fieldModel) {
-        return getProviderActionApi(fieldModel).map(descriptorActionApi -> descriptorActionApi.beforeSaveConfig(fieldModel)).orElse(fieldModel);
-    }
-
-    @Override
-    public FieldModel deleteConfig(final FieldModel fieldModel) {
-        return getProviderActionApi(fieldModel).map(descriptorActionApi -> descriptorActionApi.deleteConfig(fieldModel)).orElse(fieldModel);
-    }
-
-    private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
-        final String providerName = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                        .flatMap(FieldValueModel::getValue)
-                                        .orElse(null);
-        return getProviderActionApi(providerName);
     }
 
     private Optional<DescriptorActionApi> getProviderActionApi(final String providerName) {
