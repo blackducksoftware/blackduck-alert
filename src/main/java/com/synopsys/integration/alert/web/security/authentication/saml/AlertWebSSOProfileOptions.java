@@ -22,9 +22,16 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-public class AlertWebSSOProfileOptions {
-    // TODO enable SAML support
-    /*extends WebSSOProfileOptions {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.saml.websso.WebSSOProfileOptions;
+
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+
+public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
     private static final Logger logger = LoggerFactory.getLogger(AlertWebSSOProfileOptions.class);
     private final SAMLContext samlContext;
 
@@ -41,6 +48,6 @@ public class AlertWebSSOProfileOptions {
             logger.error("Could not get the SAML force AuthN.", e);
         }
         return false;
-    } */
+    }
 
 }

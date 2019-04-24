@@ -74,6 +74,12 @@ public class AlertProperties {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
+    @Value("${spring.h2.console.enabled:false}")
+    private Boolean h2ConsoleEnabled;
+
+    @Value("${server.ssl.enabled:false}")
+    private Boolean sslEnabled;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -84,6 +90,14 @@ public class AlertProperties {
 
     public String getAlertImagesDir() {
         return StringUtils.trimToNull(alertImagesDir);
+    }
+
+    public Boolean getH2ConsoleEnabled() {
+        return h2ConsoleEnabled;
+    }
+
+    public Boolean getSslEnabled() {
+        return sslEnabled;
     }
 
     public Optional<Boolean> getAlertTrustCertificate() {
@@ -100,6 +114,22 @@ public class AlertProperties {
 
     public Optional<String> getLoggingLevel() {
         return getOptionalString(loggingLevel);
+    }
+
+    public Optional<String> getKeyAlias() {
+        return getOptionalString(keyAlias);
+    }
+
+    public Optional<String> getKeyStoreFile() {
+        return getOptionalString(keyStoreFile);
+    }
+
+    public Optional<String> getKeyStorePass() {
+        return getOptionalString(keyStorePass);
+    }
+
+    public Optional<String> getKeyStoreType() {
+        return getOptionalString(keyStoreType);
     }
 
     private Optional<String> getOptionalString(final String value) {
