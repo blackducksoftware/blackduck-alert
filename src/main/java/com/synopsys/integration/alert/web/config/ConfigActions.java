@@ -94,7 +94,7 @@ public class ConfigActions {
             }
 
             for (final FieldModel fieldModel : fieldModelList) {
-                fields.add(fieldModelProcessor.performReadAction(fieldModel));
+                fields.add(fieldModelProcessor.performAfterReadAction(fieldModel));
             }
         }
         return fields;
@@ -105,7 +105,7 @@ public class ConfigActions {
         final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
             final FieldModel configurationFieldModel = fieldModelProcessor.convertToFieldModel(configurationModel.get());
-            final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationFieldModel);
+            final FieldModel fieldModel = fieldModelProcessor.performAfterReadAction(configurationFieldModel);
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;
@@ -116,8 +116,10 @@ public class ConfigActions {
             final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
             if (configuration.isPresent()) {
                 final ConfigurationModel configurationModel = configuration.get();
-                final FieldModel fieldModel = fieldModelProcessor.performDeleteAction(configurationModel);
+                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(configurationModel);
+                final String descriptorName = fieldModel.getDescriptorName();
                 configurationAccessor.deleteConfiguration(contentConverter.getLongValue(fieldModel.getId()));
+                fieldModelProcessor.performAfterDeleteAction(descriptorName);
             }
         }
     }

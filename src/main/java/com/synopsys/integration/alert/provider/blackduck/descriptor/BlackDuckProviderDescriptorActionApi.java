@@ -30,13 +30,14 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -107,13 +108,8 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         }
     }
 
-    @Override
-    public FieldModel afterUpdateConfig(final FieldModel fieldModel) {
-        return afterSaveConfig(fieldModel);
-    }
-
-    @Override
-    public FieldModel afterSaveConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'provider_blackduck' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
+    public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
         final boolean valid = systemValidator.validate();
         // This doesn't need to validate the whole system, just the Black Duck settings.
         if (valid) {
@@ -123,13 +119,12 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
                 taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
             }
         }
-        return super.afterSaveConfig(fieldModel);
     }
 
-    @Override
-    public FieldModel deleteConfig(final FieldModel fieldModel) {
+    @EventListener(condition = "#configurationEvent.configurationName == 'provider_blackduck' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
+    public void handleAfterDeleteConfig(final ConfigurationEvent configurationEvent) {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
         taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
-        return super.deleteConfig(fieldModel);
     }
+
 }

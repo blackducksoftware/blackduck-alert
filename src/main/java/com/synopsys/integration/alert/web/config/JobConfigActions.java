@@ -109,7 +109,7 @@ public class JobConfigActions {
         if (jobs.isPresent()) {
             final ConfigurationJobModel configurationJobModel = jobs.get();
             for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-                fieldModelProcessor.performDeleteAction(configurationModel);
+                fieldModelProcessor.performBeforeDeleteAction(configurationModel);
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
         }
@@ -244,7 +244,7 @@ public class JobConfigActions {
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (final ConfigurationModel configurationModel : configurations) {
             final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-            constructedFieldModels.add(fieldModelProcessor.performReadAction(fieldModel));
+            constructedFieldModels.add(fieldModelProcessor.performAfterReadAction(fieldModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }
