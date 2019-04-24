@@ -185,15 +185,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private void ignorePaths(final String... paths) {
         for (final String path : paths) {
             httpPathManager.addAllowedPath(path);
-            httpPathManager.addCsrfIgnoredPath(path);
             httpPathManager.addSamlAllowedPath(path);
-            httpPathManager.addSamlCsrfIgnoredPath(path);
         }
     }
 
     private RequestMatcher[] createCsrfIgnoreMatchers() {
         final RequestMatcher[] matchers = {
-            new SamlAntMatcher(samlContext(), httpPathManager.getSamlCsrfIgnoredPaths(), httpPathManager.getCsrfIgnoredPaths())
+            new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
         return matchers;
     }
