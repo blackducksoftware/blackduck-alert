@@ -38,17 +38,17 @@ public abstract class DistributionChannel extends MessageReceiver {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
     private final AuditUtility auditUtility;
     private final AlertProperties alertProperties;
-    private final String distributionType;
+    private final String destinationName;
 
-    public DistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
+    public DistributionChannel(final String destinationName, final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
         super(gson);
-        this.distributionType = distributionType;
+        this.destinationName = destinationName;
         this.alertProperties = alertProperties;
         this.auditUtility = auditUtility;
     }
 
-    public String getDistributionType() {
-        return distributionType;
+    public String getDestinationName() {
+        return destinationName;
     }
 
     public AlertProperties getAlertProperties() {
@@ -57,14 +57,14 @@ public abstract class DistributionChannel extends MessageReceiver {
 
     @Override
     public void handleEvent(final DistributionEvent event) {
-        if (event.getDestination().equals(getDistributionType())) {
+        if (event.getDestination().equals(getDestinationName())) {
             try {
                 sendAuditedMessage(event);
             } catch (final IntegrationException ex) {
                 logger.error("There was an error sending the message.", ex);
             }
         } else {
-            logger.warn("Received an event of type '{}', but this channel is for type '{}'.", event.getDestination(), getDistributionType());
+            logger.warn("Received an event for channel '{}', but this channel is '{}'.", event.getDestination(), getDestinationName());
         }
 
     }
