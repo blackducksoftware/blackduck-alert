@@ -37,10 +37,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -79,7 +80,6 @@ public class ConfigActions {
         final List<FieldModel> fields = new LinkedList<>();
         if (context != null && StringUtils.isNotBlank(descriptorName)) {
             final String contextName = context.name();
-            final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(contextName, descriptorName);
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
             final List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
@@ -89,7 +89,7 @@ public class ConfigActions {
                 }
             }
 
-            if (descriptorActionApi.isPresent() && fieldModelList.isEmpty()) {
+            if (fieldModelList.isEmpty()) {
                 fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
             }
 
@@ -146,18 +146,18 @@ public class ConfigActions {
 
     public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
         validateConfig(restModel, new HashMap<>());
-        final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(restModel);
-        if (descriptorActionApi.isPresent()) {
-            final DescriptorActionApi descriptorApi = descriptorActionApi.get();
+        final Optional<TestAction> testActionOptional = fieldModelProcessor.retrieveTestAction(restModel);
+        if (testActionOptional.isPresent()) {
             final FieldModel upToDateFieldModel = fieldModelProcessor.createTestFieldModel(restModel);
             final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
-            final TestConfigModel testConfig = descriptorApi.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
-            descriptorApi.testConfig(testConfig);
+            final TestAction testAction = testActionOptional.get();
+            final TestConfigModel testConfig = testAction.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
+            testAction.testConfig(testConfig);
             return "Successfully sent test message.";
-        } else {
-            logger.error("Descriptor action api did not exist: {}", restModel.getDescriptorName());
-            return "Internal server error. Failed to send test message.";
         }
+        final String descriptorName = restModel.getDescriptorName();
+        logger.error("Test action did not exist: {}", descriptorName);
+        throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
 
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {

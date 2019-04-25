@@ -20,26 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris.descriptor;
+package com.synopsys.integration.alert.provider.polaris;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
-import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
+import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
+import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisGlobalUIConfig;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -49,15 +45,14 @@ import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient
 import com.synopsys.integration.rest.request.Response;
 
 @Component
-public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
+public class PolarisGlobalTestAction extends TestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
-    private final TaskManager taskManager;
 
     @Autowired
-    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties, final TaskManager taskManager) {
+    public PolarisGlobalTestAction(final PolarisProperties polarisProperties) {
+        super(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.polarisProperties = polarisProperties;
-        this.taskManager = taskManager;
     }
 
     @Override
@@ -93,19 +88,5 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
         } catch (final IOException ioException) {
             throw new AlertException(ioException);
         }
-    }
-
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
-    public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
-        final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
-        final Optional<String> nextRunTime = taskManager.getNextRunTime(PolarisProjectSyncTask.TASK_NAME);
-        if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
-            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, PolarisProjectSyncTask.TASK_NAME);
-        }
-    }
-
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
-    public void handleDeleteConfig(final ConfigurationEvent configurationEvent) {
-        taskManager.unScheduleTask(PolarisProjectSyncTask.TASK_NAME);
     }
 }

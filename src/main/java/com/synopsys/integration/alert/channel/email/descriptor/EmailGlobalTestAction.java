@@ -35,7 +35,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
@@ -46,11 +47,12 @@ import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
+public class EmailGlobalTestAction extends TestAction {
     private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailGlobalDescriptorActionApi(final EmailChannel emailChannel) {
+    public EmailGlobalTestAction(final EmailChannel emailChannel) {
+        super(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.emailChannel = emailChannel;
     }
 

@@ -41,13 +41,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -218,8 +219,8 @@ public class JobConfigActions {
         }
 
         if (null != channelFieldModel) {
-            final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(channelFieldModel);
-            if (descriptorActionApi.isPresent()) {
+            final Optional<TestAction> testActionOptional = fieldModelProcessor.retrieveTestAction(channelFieldModel);
+            if (testActionOptional.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
                 fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
@@ -231,14 +232,20 @@ public class JobConfigActions {
                     fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
                 }
 
-                final DescriptorActionApi descriptorApi = descriptorActionApi.get();
+                final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-                final TestConfigModel testConfig = descriptorApi.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
-                descriptorApi.testConfig(testConfig);
+                final TestConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
+                final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                                    .flatMap(providerName -> fieldModelProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                if (providerTestAction.isPresent()) {
+                    providerTestAction.get().testConfig(testConfig);
+                }
+                testAction.testConfig(testConfig);
                 return "Successfully sent test message.";
             } else {
-                logger.error("Descriptor action api did not exist: {}", channelFieldModel.getDescriptorName());
-                return "Internal server error. Failed to send test message.";
+                final String descriptorName = channelFieldModel.getDescriptorName();
+                logger.error("Test action did not exist: {}", descriptorName);
+                throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
             }
         }
         return "No field model of type channel was was sent to test.";

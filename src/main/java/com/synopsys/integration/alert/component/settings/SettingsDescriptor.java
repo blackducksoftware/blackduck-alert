@@ -78,18 +78,10 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_ENCRYPTION_PWD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
-    public static final String FIELD_ERROR_PROXY_HOST_MISSING = "Proxy Host missing";
-    public static final String FIELD_ERROR_PROXY_PORT_MISSING = "Proxy Port missing";
-    public static final String FIELD_ERROR_PROXY_PORT_INVALID = "Proxy Port not a number greater than 1";
-    public static final String FIELD_ERROR_PROXY_USER_MISSING = "Proxy Username missing";
-    public static final String FIELD_ERROR_PROXY_PWD_MISSING = "Proxy Password missing";
-
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server is missing";
-    public static final String FIELD_ERROR_LDAP_USERNAME_MISSING = "LDAP Manager DN is missing";
-    public static final String FIELD_ERROR_LDAP_PWD_MISSING = "LDAP Manager DN password is missing";
 
     @Autowired
-    public SettingsDescriptor(final SettingsDescriptorActionApi componentRestApi, final SettingsUIConfig uiConfig) {
-        super(SETTINGS_COMPONENT, componentRestApi, uiConfig);
+    public SettingsDescriptor(final SettingsUIConfig uiConfig) {
+        super(SETTINGS_COMPONENT, uiConfig);
     }
 }

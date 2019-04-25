@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -68,16 +68,21 @@ public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ContentConverter contentConverter;
     private final ConfigurationEventPublisher configurationEventPublisher;
+    private final ValidationAction validationAction;
+    private final List<TestAction> allTestActions;
 
     @Autowired
     public FieldModelProcessor(final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final ConfigurationEventPublisher configurationEventPublisher) {
+        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final ConfigurationEventPublisher configurationEventPublisher,
+        final ValidationAction validationAction, final List<TestAction> allTestActions) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = fieldModelConverter;
         this.contentConverter = contentConverter;
         this.configurationEventPublisher = configurationEventPublisher;
+        this.validationAction = validationAction;
+        this.allTestActions = allTestActions;
     }
 
     //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
@@ -121,13 +126,10 @@ public class FieldModelProcessor {
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        if (descriptorActionApi.isPresent()) {
-            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
-                                                              .stream()
-                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-            descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
-        }
+        final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
+                                                          .stream()
+                                                          .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        validationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }
 
@@ -167,18 +169,16 @@ public class FieldModelProcessor {
         return descriptorMap.getDescriptor(descriptorName);
     }
 
-    public Optional<DescriptorActionApi> retrieveDescriptorActionApi(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel.getContext(), fieldModel.getDescriptorName());
+    public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
+        return retrieveTestAction(fieldModel.getContext(), fieldModel.getDescriptorName());
     }
 
-    public Optional<DescriptorActionApi> retrieveDescriptorActionApi(final String context, final String descriptorName) {
-        final Optional<Descriptor> descriptor = retrieveDescriptor(descriptorName);
+    public Optional<TestAction> retrieveTestAction(final String context, final String descriptorName) {
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        if (descriptor.isPresent()) {
-            return Optional.ofNullable(descriptor.get().getActionApi(descriptorContext).orElse(null));
-        }
-        logger.error("Could not find a Descriptor with the name: " + descriptorName);
-        return Optional.empty();
+        return allTestActions.stream()
+                   .filter(testAction -> testAction.getDescriptorName().equals(descriptorName))
+                   .filter(testAction -> testAction.getContext() == descriptorContext)
+                   .findFirst();
     }
 
     public FieldModel convertToFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {

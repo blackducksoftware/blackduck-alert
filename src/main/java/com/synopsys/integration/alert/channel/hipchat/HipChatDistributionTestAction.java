@@ -20,22 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.hipchat.descriptor;
-
-import java.util.List;
+package com.synopsys.integration.alert.channel.hipchat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionTestAction;
 
 @Component
-public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
+public class HipChatDistributionTestAction extends ChannelDistributionTestAction {
 
     @Autowired
-    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final List<ProviderDescriptor> providerDescriptors) {
-        super(hipChatChannel, providerDescriptors);
+    public HipChatDistributionTestAction(final HipChatChannel hipChatChannel) {
+        super(hipChatChannel);
     }
 }

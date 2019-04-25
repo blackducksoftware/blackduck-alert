@@ -44,8 +44,8 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
 
     @Autowired
-    public SchedulingDescriptor(final SchedulingDescriptorActionApi actionApi, final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, actionApi, schedulingUIConfig);
+    public SchedulingDescriptor(final SchedulingUIConfig schedulingUIConfig) {
+        super(SCHEDULING_COMPONENT, schedulingUIConfig);
     }
 
 }

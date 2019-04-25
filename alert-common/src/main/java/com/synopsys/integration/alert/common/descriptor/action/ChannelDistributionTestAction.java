@@ -23,11 +23,8 @@
 package com.synopsys.integration.alert.common.descriptor.action;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -38,41 +35,29 @@ import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
-public abstract class ChannelDistributionDescriptorActionApi extends DescriptorActionApi {
+public abstract class ChannelDistributionTestAction extends TestAction {
     private final DistributionChannel distributionChannel;
-    private final List<ProviderDescriptor> providerDescriptors;
 
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final List<ProviderDescriptor> providerDescriptors) {
+    public ChannelDistributionTestAction(final DistributionChannel distributionChannel) {
+        super(distributionChannel.getDestinationName(), ConfigContextEnum.DISTRIBUTION);
         this.distributionChannel = distributionChannel;
-        this.providerDescriptors = providerDescriptors;
     }
 
     @Override
     public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
         final DistributionEvent event = createChannelTestEvent(testConfigModel.getConfigId().orElse(null), fieldAccessor);
-        final Optional<DescriptorActionApi> providerActionApi = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(this::getProviderActionApi);
-        if (providerActionApi.isPresent()) {
-            providerActionApi.get().testConfig(testConfigModel);
-        }
         distributionChannel.sendMessage(event);
     }
 
     public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) {
-        final AggregateMessageContent messageContent = createTestNotificationContent();
+        final AggregateMessageContent messageContent = super.createTestNotificationContent();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
-    }
-
-    private Optional<DescriptorActionApi> getProviderActionApi(final String providerName) {
-        return providerDescriptors.stream()
-                   .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
-                   .findFirst()
-                   .map(providerDescriptor -> providerDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION).orElse(null));
     }
 
 }
