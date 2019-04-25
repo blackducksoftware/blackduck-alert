@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
-public class ValidationAction {
+public class FieldValidationAction {
 
     public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {

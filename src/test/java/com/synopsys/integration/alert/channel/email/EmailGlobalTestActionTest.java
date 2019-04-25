@@ -19,7 +19,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -42,7 +41,7 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 
 public class EmailGlobalTestActionTest {
 
@@ -55,8 +54,8 @@ public class EmailGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()));
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
     }
@@ -74,8 +73,8 @@ public class EmailGlobalTestActionTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()));
@@ -95,8 +94,8 @@ public class EmailGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()));

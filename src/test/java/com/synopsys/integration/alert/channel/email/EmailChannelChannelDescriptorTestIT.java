@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FormatType;

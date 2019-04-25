@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.rest.RestConstants;
 
 public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
@@ -181,8 +181,8 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = getDescriptor().getUIConfig(ConfigContextEnum.DISTRIBUTION).get().createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, model, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, model, fieldErrors);
         assertEquals(invalidLength, fieldErrors.size());
     }
 }

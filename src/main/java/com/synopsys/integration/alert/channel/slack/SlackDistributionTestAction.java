@@ -25,8 +25,7 @@ package com.synopsys.integration.alert.channel.slack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 
 @Component
 public class SlackDistributionTestAction extends ChannelDistributionTestAction {

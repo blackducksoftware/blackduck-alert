@@ -34,9 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;

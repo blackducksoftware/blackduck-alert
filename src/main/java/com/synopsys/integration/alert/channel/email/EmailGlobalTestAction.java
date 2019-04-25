@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.descriptor;
+package com.synopsys.integration.alert.channel.email;
 
 import java.util.Set;
 import java.util.SortedSet;
@@ -33,9 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.channel.email.EmailProperties;
-import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;

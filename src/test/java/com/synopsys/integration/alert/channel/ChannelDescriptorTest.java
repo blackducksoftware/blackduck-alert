@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
@@ -246,8 +246,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         jobNameField.setValue(getTestJobName());
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
@@ -256,8 +256,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final FieldModel restModel = createInvalidDistributionFieldModel();
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
 
         if (restModel.getKeyToValues().size() > 0) {
             assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
@@ -269,8 +269,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
@@ -280,8 +280,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final FieldModel restModel = createInvalidGlobalFieldModel();
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
     }
 

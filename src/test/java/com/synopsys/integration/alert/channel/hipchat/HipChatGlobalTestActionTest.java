@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -55,8 +55,8 @@ public class HipChatGlobalTestActionTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(HipChatDescriptor.KEY_API_KEY));
     }
 
@@ -72,8 +72,8 @@ public class HipChatGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(HipChatDescriptor.KEY_API_KEY));
     }
 
@@ -89,8 +89,8 @@ public class HipChatGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 

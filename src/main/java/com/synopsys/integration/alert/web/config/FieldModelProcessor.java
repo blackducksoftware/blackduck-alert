@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -68,20 +68,20 @@ public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ContentConverter contentConverter;
     private final ConfigurationEventPublisher configurationEventPublisher;
-    private final ValidationAction validationAction;
+    private final FieldValidationAction fieldValidationAction;
     private final List<TestAction> allTestActions;
 
     @Autowired
     public FieldModelProcessor(final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
         final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final ConfigurationEventPublisher configurationEventPublisher,
-        final ValidationAction validationAction, final List<TestAction> allTestActions) {
+        final FieldValidationAction fieldValidationAction, final List<TestAction> allTestActions) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = fieldModelConverter;
         this.contentConverter = contentConverter;
         this.configurationEventPublisher = configurationEventPublisher;
-        this.validationAction = validationAction;
+        this.fieldValidationAction = fieldValidationAction;
         this.allTestActions = allTestActions;
     }
 
@@ -129,7 +129,7 @@ public class FieldModelProcessor {
         final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
                                                           .stream()
                                                           .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        validationAction.validateConfig(configFields, fieldModel, fieldErrors);
+        fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }
 

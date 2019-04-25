@@ -35,8 +35,7 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
 
-    public ProviderDescriptor(final UIConfig providerUiConfig, final UIConfig distributionUIConfig,
-        @NotNull final Provider provider) {
+    public ProviderDescriptor(final UIConfig providerUiConfig, final UIConfig distributionUIConfig, @NotNull final Provider provider) {
         super(provider.getName(), DescriptorType.PROVIDER);
         this.provider = provider;
         addGlobalUiConfig(providerUiConfig);
