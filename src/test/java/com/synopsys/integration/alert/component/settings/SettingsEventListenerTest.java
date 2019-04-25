@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.component.settings;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
@@ -25,6 +23,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.web.config.ValidationAction;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 public class SettingsEventListenerTest {
@@ -32,27 +31,7 @@ public class SettingsEventListenerTest {
     private final SettingsUIConfig settingsUIConfig = new SettingsUIConfig();
 
     @Test
-    public void testTestConfig() throws Exception {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        // TODO enable SAML support
-        // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
-
-        try {
-            actionaApi.testConfig(null);
-            fail();
-        } catch (final AlertMethodNotAllowedException e) {
-            Mockito.verify(encryptionUtility, Mockito.times(0)).isInitialized();
-            Mockito.verify(userAccessor, Mockito.times(0)).getUser(Mockito.anyString());
-            Mockito.verify(systemValidator, Mockito.times(0)).validate(Mockito.anyMap());
-        }
-    }
-
-    @Test
-    public void testReadConfig() throws Exception {
+    public void testReadConfig() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
@@ -139,12 +118,8 @@ public class SettingsEventListenerTest {
 
     @Test
     public void testValidateRequiredFieldsSet() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -153,19 +128,16 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testValidateFieldsIsSetNoValue() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
@@ -174,19 +146,16 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testValidateRequiredFieldsMissing() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
@@ -194,7 +163,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD));
@@ -203,7 +173,7 @@ public class SettingsEventListenerTest {
 
         fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldErrors.clear();
-        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD));
@@ -213,12 +183,8 @@ public class SettingsEventListenerTest {
 
     @Test
     public void testValidateFieldsIsSetFalseHasValue() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
@@ -226,7 +192,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD));
@@ -236,12 +203,8 @@ public class SettingsEventListenerTest {
 
     @Test
     public void testLdapEnabled() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
@@ -251,7 +214,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertFalse(fieldErrors.isEmpty());
         assertEquals(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(SettingsDescriptor.KEY_LDAP_SERVER));
     }
