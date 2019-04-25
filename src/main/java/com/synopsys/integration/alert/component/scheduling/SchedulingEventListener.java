@@ -47,7 +47,7 @@ public class SchedulingEventListener {
         this.taskManager = taskManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
     public void handleReadConfig(final ConfigurationEvent configurationEvent) {
         final String blackDuckNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
         final String polarisNextRun = taskManager.getDifferenceToNextRun(PolarisProjectSyncTask.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
@@ -59,7 +59,7 @@ public class SchedulingEventListener {
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && (#configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE')")
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE')")
     public void handleNewAndSavedConfig(final ConfigurationEvent configurationEvent) {
         final FieldModel fieldModel = configurationEvent.getFieldModel();
         final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse("");

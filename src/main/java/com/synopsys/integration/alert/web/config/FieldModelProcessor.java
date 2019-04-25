@@ -95,8 +95,8 @@ public class FieldModelProcessor {
         return fireEvent(fieldModel, ConfigurationEventType.CONFIG_DELETE_BEFORE);
     }
 
-    public void performAfterDeleteAction(final String descriptorName) {
-        fireEvent(descriptorName, ConfigurationEventType.CONFIG_DELETE_AFTER);
+    public void performAfterDeleteAction(final String descriptorName, final String context) {
+        fireEvent(descriptorName, context, ConfigurationEventType.CONFIG_DELETE_AFTER);
     }
 
     public FieldModel performBeforeSaveAction(final FieldModel fieldModel) {
@@ -120,8 +120,8 @@ public class FieldModelProcessor {
         return fieldModel;
     }
 
-    private void fireEvent(final String descriptorName, final ConfigurationEventType configurationEventType) {
-        configurationEventPublisher.publishConfigurationEvent(descriptorName, configurationEventType);
+    private void fireEvent(final String descriptorName, final String context, final ConfigurationEventType configurationEventType) {
+        configurationEventPublisher.publishConfigurationEvent(descriptorName, context, configurationEventType);
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {

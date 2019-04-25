@@ -58,7 +58,7 @@ public class SettingsEventListener {
         this.samlManager = samlManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
     public void handleReadConfig(final ConfigurationEvent configurationEvent) {
         final FieldModel fieldModel = configurationEvent.getFieldModel();
         final Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
@@ -68,7 +68,7 @@ public class SettingsEventListener {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isGlobalSaltSet()));
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE')")
+    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE')")
     public void handleNewAndUpdatedConfig(final ConfigurationEvent configurationEvent) {
         final FieldModel fieldModel = configurationEvent.getFieldModel();
         saveDefaultAdminUserPassword(fieldModel);

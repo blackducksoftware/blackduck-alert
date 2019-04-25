@@ -27,20 +27,22 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class ConfigurationEvent {
     private final FieldModel fieldModel;
     private final String configurationName;
+    private final String context;
     private final ConfigurationEventType eventType;
 
-    public ConfigurationEvent(final FieldModel fieldModel, final String configurationName, final ConfigurationEventType eventType) {
+    public ConfigurationEvent(final FieldModel fieldModel, final String configurationName, final String context, final ConfigurationEventType eventType) {
         this.fieldModel = fieldModel;
         this.configurationName = configurationName;
+        this.context = context;
         this.eventType = eventType;
     }
 
     public ConfigurationEvent(final FieldModel fieldModel, final ConfigurationEventType eventType) {
-        this(fieldModel, fieldModel.getDescriptorName(), eventType);
+        this(fieldModel, fieldModel.getDescriptorName(), fieldModel.getContext(), eventType);
     }
 
-    public ConfigurationEvent(final String configurationName, final ConfigurationEventType eventType) {
-        this(null, configurationName, eventType);
+    public ConfigurationEvent(final String configurationName, final String context, final ConfigurationEventType eventType) {
+        this(null, configurationName, context, eventType);
     }
 
     public FieldModel getFieldModel() {
@@ -49,6 +51,10 @@ public class ConfigurationEvent {
 
     public String getConfigurationName() {
         return configurationName;
+    }
+
+    public String getContext() {
+        return context;
     }
 
     public ConfigurationEventType getEventType() {

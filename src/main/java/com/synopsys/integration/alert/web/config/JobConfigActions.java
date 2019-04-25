@@ -115,7 +115,7 @@ public class JobConfigActions {
                 descriptorNames.add(fieldModel.getDescriptorName());
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
-            descriptorNames.forEach(fieldModelProcessor::performAfterDeleteAction);
+            descriptorNames.forEach(descriptorName -> fieldModelProcessor.performAfterDeleteAction(descriptorName, ConfigContextEnum.DISTRIBUTION.name()));
         }
     }
 
