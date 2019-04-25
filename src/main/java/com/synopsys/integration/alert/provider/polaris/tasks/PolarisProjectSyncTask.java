@@ -112,6 +112,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
                 logger.debug("Found {} branches for project {}", projectBranches.size(), projectResource.getAttributes().getName());
                 final ProviderProject projectModel = convertToProviderProject(polarisApiHelper, projectResource, projectBranches);
 
+                logger.debug("Gathering emails for project: {}", projectModel.getName());
                 final Set<String> projectUserEmails = polarisApiHelper.getAllEmailsForProject(projectResource);
                 projectUserEmailMappings.put(projectModel, projectUserEmails);
                 logger.debug("Found {} users for project {}", projectUserEmails.size(), projectResource.getAttributes().getName());
@@ -218,7 +219,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             // This project is not yet in the database. Nothing to update.
             return polarisIssueModels;
         }
-        logger.debug("");
+
         for (final PolarisIssueModel polarisIssueModel : polarisIssueModels) {
             final Optional<PolarisIssueModel> optionalStoredProjectIssue = polarisIssueAccessor.getProjectIssueByIssueType(projectHref, polarisIssueModel.getIssueType());
             if (optionalStoredProjectIssue.isPresent()) {
