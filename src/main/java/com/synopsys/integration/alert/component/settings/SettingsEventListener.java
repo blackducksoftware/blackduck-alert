@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.component.settings;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
@@ -46,16 +48,14 @@ public class SettingsEventListener {
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
-    // TODO enable SAML support
-    // private final SAMLManager samlManager;
+    private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsEventListener(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator) {
+    public SettingsEventListener(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
-        // TODO enable SAML support
-        // this.samlManager = samlManager;
+        this.samlManager = samlManager;
     }
 
     @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
@@ -123,17 +123,22 @@ public class SettingsEventListener {
     }
 
     private void addSAMLMetadata(final FieldModel fieldModel) {
-        // TODO enable SAML support
-        /*final Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
+        final Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
                                         .map(fieldValueModel -> fieldValueModel.getValue()
                                                                     .map(BooleanUtils::toBoolean)
                                                                     .orElse(false)
                                         ).orElse(false);
         final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
-        if (metadataURLFieldValueOptional.isPresent()) {
+        final Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_ID);
+        final Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+        if (metadataURLFieldValueOptional.isPresent() && metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
             final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
+            final FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
+            final FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
             final String metadataURL = metadataURLFieldValue.getValue().orElse("");
-            samlManager.updateSAMLConfiguration(samlEnabled, metadataURL);
-        }*/
+            final String entityId = metadataEntityFieldValue.getValue().orElse("");
+            final String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
+            samlManager.updateSAMLConfiguration(samlEnabled, metadataURL, entityId, baseUrl);
+        }
     }
 }

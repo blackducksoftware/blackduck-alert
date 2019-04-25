@@ -85,17 +85,12 @@ public class HttpPathManager {
     };
 
     private final Collection<String> allowedPaths;
-    private final Collection<String> csrfIgnoredPaths;
-
     private final Collection<String> samlAllowedPaths;
-    private final Collection<String> samlCsrfIgnoredPaths;
 
     @Autowired
     public HttpPathManager() {
         allowedPaths = createDefaultAllowedPaths();
-        csrfIgnoredPaths = createDefaultCsrfIgnoredPaths();
         samlAllowedPaths = createSamlDefaultAllowedPaths();
-        samlCsrfIgnoredPaths = createSamlDefaultCsrfIgnoredPaths();
     }
 
     private List<String> createDefaultPaths(final String[] paths) {
@@ -110,47 +105,23 @@ public class HttpPathManager {
         return createDefaultPaths(DEFAULT_PATHS);
     }
 
-    private List<String> createDefaultCsrfIgnoredPaths() {
-        return createDefaultPaths(DEFAULT_PATHS);
-    }
-
     private List<String> createSamlDefaultAllowedPaths() { return createDefaultPaths(DEFAULT_SAML_PATHS);}
-
-    private List<String> createSamlDefaultCsrfIgnoredPaths() { return createDefaultPaths(DEFAULT_SAML_PATHS);}
 
     public void addAllowedPath(final String path) {
         allowedPaths.add(path);
-    }
-
-    public void addCsrfIgnoredPath(final String path) {
-        csrfIgnoredPaths.add(path);
     }
 
     public void addSamlAllowedPath(final String path) {
         samlAllowedPaths.add(path);
     }
 
-    public void addSamlCsrfIgnoredPath(final String path) {
-        samlCsrfIgnoredPaths.add(path);
-    }
-
     public String[] getAllowedPaths() {
         final String[] allowedPathArray = new String[allowedPaths.size()];
         return allowedPaths.toArray(allowedPathArray);
     }
-
-    public String[] getCsrfIgnoredPaths() {
-        final String[] csrfIgnoredPathArray = new String[csrfIgnoredPaths.size()];
-        return csrfIgnoredPaths.toArray(csrfIgnoredPathArray);
-    }
-
+    
     public String[] getSamlAllowedPaths() {
         final String[] allowedPathArray = new String[samlAllowedPaths.size()];
         return samlAllowedPaths.toArray(allowedPathArray);
-    }
-
-    public String[] getSamlCsrfIgnoredPaths() {
-        final String[] csrfIgnoredPathArray = new String[samlCsrfIgnoredPaths.size()];
-        return samlCsrfIgnoredPaths.toArray(csrfIgnoredPathArray);
     }
 }
