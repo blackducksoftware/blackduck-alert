@@ -22,10 +22,12 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-public class SAMLAuthProvider {
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.saml.SAMLAuthenticationProvider;
 
-    // TODO enable SAML support
-    /*extends SAMLAuthenticationProvider {
+public class SAMLAuthProvider extends SAMLAuthenticationProvider {
 
     @Override
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -34,5 +36,5 @@ public class SAMLAuthProvider {
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
         }
         return currentAuth;
-    }*/
+    }
 }

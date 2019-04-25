@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
@@ -36,6 +37,9 @@ public class PolarisProviderContentTypes {
     public static final String LABEL_NUMBER_OF_ISSUES_UPDATED = "Issues Updated";
     public static final String LABEL_NEW_ISSUE_TOTAL = "New Total";
 
+    public static final String CONFIG_MAPPING_PROJECT_NAME_PATTERN = "projectNamePattern";
+    public static final String CONFIG_MAPPING_CONFIGURED_PROJECTS = "configuredProjects[*]";
+
     public static final String JSON_FIELD_PROJECT_NAME = "projectName";
     public static final String JSON_FIELD_PROJECT_LINK = "projectLink";
     public static final String JSON_FIELD_DESCRIPTION = "description";
@@ -45,7 +49,8 @@ public class PolarisProviderContentTypes {
     public static final String JSON_FIELD_NEW_TOTAL = "newTotal";
 
     private static final JsonField<String> PROJECT_NAME_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC,
-        LABEL_PROJECT_NAME);
+        LABEL_PROJECT_NAME, Arrays.asList(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_CONFIGURED_PROJECTS),
+            JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_PROJECT_NAME_PATTERN)));
     private static final JsonField<String> PROJECT_LINK_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PROJECT_LINK), JSON_FIELD_PROJECT_LINK, FieldContentIdentifier.TOPIC_URL,
         LABEL_PROJECT_NAME + JsonField.LABEL_URL_SUFFIX);
     private static final JsonField<String> BRANCHES_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_DESCRIPTION), JSON_FIELD_DESCRIPTION, FieldContentIdentifier.SUB_TOPIC,
