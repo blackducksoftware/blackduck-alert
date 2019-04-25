@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -47,6 +46,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.web.config.ValidationAction;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
@@ -67,6 +67,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     protected ConfigurationModel provider_global;
     protected Optional<ConfigurationModel> global_config;
     protected ConfigurationModel distribution_config;
+    protected String destinationName;
 
     @BeforeEach
     public void init() throws Exception {
@@ -76,6 +77,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         global_config = saveGlobalConfiguration();
         distribution_config = saveDistributionConfiguration();
         channelEvent = createChannelEvent();
+        destinationName = getDestinationName();
     }
 
     @AfterEach
@@ -112,7 +114,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         if (ConfigContextEnum.DISTRIBUTION == context) {
             global_config.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
         }
-        final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), getDescriptor().getDestinationName(), context.name(), fieldValueMap);
+        final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), destinationName, context.name(), fieldValueMap);
         return model;
     }
 
@@ -131,7 +133,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         invalidValuesMap.putAll(createInvalidDistributionFieldMap());
 
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
+        final FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
         return model;
     }
 
@@ -149,7 +151,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     public FieldModel createInvalidGlobalFieldModel() {
         final Map<String, String> invalidValuesMap = createInvalidGlobalFieldMap();
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.GLOBAL.name(), fieldModelMap);
+        final FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
         return model;
     }
 
@@ -184,6 +186,10 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     public abstract String getTestJobName();
 
+    public abstract String getDestinationName();
+
+    public abstract TestAction getTestAction();
+
     private Map<String, ConfigField> createFieldMap(final ConfigContextEnum context) {
         return getDescriptor().getUIConfig(context)
                    .flatMap(uiConfig -> Optional.of(uiConfig.createFields()
@@ -196,14 +202,12 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     public void testDistributionConfig() {
         // Hip Chat public api is currently end of life; need an on premise installation to test
         assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
-        final Optional<DescriptorActionApi> descriptorActionApiOptional = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
 
         final FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
 
         final String destination = createTestConfigDestination();
         try {
-            assertTrue(descriptorActionApiOptional.isPresent());
-            final DescriptorActionApi descriptorActionApi = descriptorActionApiOptional.get();
+            final TestAction descriptorActionApi = getTestAction();
             final TestConfigModel testConfigModel = descriptorActionApi.createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, destination);
             descriptorActionApi.testConfig(testConfigModel);
         } catch (final IntegrationException e) {
@@ -216,13 +220,11 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     public void testGlobalConfig() {
         // Hip Chat public api is currently end of life; need an on premise installation to test
         assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
-        final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.GLOBAL);
-        assumeTrue(descriptorActionApi.isPresent());
         final ConfigurationModel configurationModel = global_config.orElse(null);
         final FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
         try {
-            assertTrue(descriptorActionApi.isPresent());
-            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(String.valueOf(configurationModel.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
+            final TestAction descriptorActionApi = getTestAction();
+            descriptorActionApi.testConfig(descriptorActionApi.createTestConfigModel(String.valueOf(configurationModel.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -234,30 +236,28 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final DistributionEvent channelEvent = createChannelEvent();
         assertEquals(String.valueOf(distribution_config.getConfigurationId()), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
+        assertEquals(destinationName, channelEvent.getDestination());
     }
 
     @Test
     public void testDistributionValidate() {
-        final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
         final FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        assertTrue(descriptorActionApi.isPresent());
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-        descriptorActionApi.get().validateConfig(configFieldMap, restModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testDistributionValidateWithFieldErrors() {
-        final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldModel restModel = createInvalidDistributionFieldModel();
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        assertTrue(descriptorActionApi.isPresent());
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-        descriptorActionApi.get().validateConfig(configFieldMap, restModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
 
         if (restModel.getKeyToValues().size() > 0) {
             assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
@@ -266,26 +266,22 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testGlobalValidate() {
-        final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.GLOBAL);
-        assumeTrue(descriptorActionApi.isPresent());
         final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        assertTrue(descriptorActionApi.isPresent());
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-        descriptorActionApi.get().validateConfig(configFieldMap, restModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testGlobalValidateWithFieldErrors() {
-        final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.GLOBAL);
-        assumeTrue(descriptorActionApi.isPresent());
         // descriptor has a global configuration therefore continue testing
         final FieldModel restModel = createInvalidGlobalFieldModel();
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        assertTrue(descriptorActionApi.isPresent());
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-        descriptorActionApi.get().validateConfig(configFieldMap, restModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
     }
 

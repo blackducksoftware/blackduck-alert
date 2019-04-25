@@ -42,30 +42,28 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.config.ValidationAction;
 
 public class EmailGlobalTestActionTest {
 
     @Test
     public void validateConfigEmptyTest() {
-        final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
         final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 
         final FieldModel fieldModel = new FieldModel(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        emailGlobalTestAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()));
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
     }
 
     @Test
     public void validateConfigInvalidTest() {
-        final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
         final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fillMapBlanks(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "notInt");
@@ -76,7 +74,8 @@ public class EmailGlobalTestActionTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        emailGlobalTestAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()));
@@ -84,9 +83,7 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void validateConfigValidTest() {
-        final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
         final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fillMap(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "10");
@@ -98,7 +95,8 @@ public class EmailGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        emailGlobalTestAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()));

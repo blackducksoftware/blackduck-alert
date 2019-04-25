@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -26,14 +25,11 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 public class NotificationToDistributionEventConverterTestIT extends AlertIntegrationTest {
 
     @Autowired
-    private DescriptorMap descriptorMap;
-
-    @Autowired
     private ConfigurationAccessor configurationAccessor;
 
     @Test
     public void convertToEventsTest() {
-        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(descriptorMap, configurationAccessor);
+        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap = new HashMap<>();
         final List messageContent = List.of(createMessageContent("test"), createMessageContent("example"));
 

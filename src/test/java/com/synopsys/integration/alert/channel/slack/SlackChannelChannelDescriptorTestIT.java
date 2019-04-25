@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -35,6 +36,9 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
     @Autowired
     private SlackDescriptor slackDescriptor;
+
+    @Autowired
+    private SlackChannel slackChannel;
 
     @BeforeEach
     public void testSetup() throws Exception {
@@ -129,6 +133,16 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public String getTestJobName() {
         return UNIT_TEST_JOB_NAME;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return SlackChannel.COMPONENT_NAME;
+    }
+
+    @Override
+    public TestAction getTestAction() {
+        return new SlackDistributionTestAction(slackChannel);
     }
 
     @Override

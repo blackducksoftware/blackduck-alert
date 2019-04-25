@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.config.ValidationAction;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -48,25 +49,20 @@ public class HipChatGlobalTestActionTest {
 
     @Test
     public void validateConfigEmptyTest() {
-        final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
-        final HipChatGlobalTestAction hipChatGlobalTestAction = new HipChatGlobalTestAction(hipChatChannel, restChannelUtility);
 
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        hipChatGlobalTestAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(HipChatDescriptor.KEY_API_KEY));
     }
 
     @Test
     public void validateConfigInvalidTest() {
-        final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
-        final HipChatGlobalTestAction hipChatGlobalTestAction = new HipChatGlobalTestAction(hipChatChannel, restChannelUtility);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fields.put(HipChatDescriptor.KEY_API_KEY, new FieldValueModel(List.of(""), false));
@@ -76,16 +72,14 @@ public class HipChatGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        hipChatGlobalTestAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(HipChatDescriptor.KEY_API_KEY));
     }
 
     @Test
     public void validateConfigValidTest() {
-        final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final RestChannelUtility restChannelUtility = Mockito.mock(RestChannelUtility.class);
-        final HipChatGlobalTestAction hipChatGlobalTestAction = new HipChatGlobalTestAction(hipChatChannel, restChannelUtility);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
         addFieldValueToMap(fields, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -95,7 +89,8 @@ public class HipChatGlobalTestActionTest {
 
         final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        hipChatGlobalTestAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
