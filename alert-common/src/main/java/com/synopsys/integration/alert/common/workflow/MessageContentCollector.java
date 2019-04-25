@@ -142,6 +142,15 @@ public abstract class MessageContentCollector {
         return Collections.emptyList();
     }
 
+    protected final List<LinkableItem> getItemsByLabel(final JsonFieldAccessor accessor, final List<JsonField<String>> fields, final String label) {
+        final Optional<JsonField<String>> foundField = getFieldByLabel(fields, label);
+        if (foundField.isPresent()) {
+            final JsonField<String> valueField = foundField.get();
+            return createLinkableItemsFromFields(accessor, valueField, null);
+        }
+        return Collections.emptyList();
+    }
+
     protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, final List<JsonField<T>> fields, final String label) {
         final Optional<JsonField<T>> field = getFieldByLabel(fields, label);
         if (field.isPresent()) {
