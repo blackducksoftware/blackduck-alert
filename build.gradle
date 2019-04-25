@@ -139,7 +139,7 @@ gradle.taskGraph.whenReady { graph ->
 }
 
 
-task createCert(type: Exec) {
+task createKeystore(type: Exec) {
     doFirst {
         mkdir "${projectDir}/build/certs"
     }
@@ -167,7 +167,14 @@ task createCert(type: Exec) {
     commandLine commandArray
 }
 
-task runServer(type: Exec, dependsOn: [build, createCert]) {
+task createTruststore(type: Copy) {
+    from "${System.getProperty('java.home')}/lib/security/"
+    include 'cacerts'
+    into "${project.buildDir}/certs/"
+    rename 'cacerts', "${project.buildDir}/certs/blackduck-alert.truststore"
+}
+
+task runServer(type: Exec, dependsOn: [build, createKeystore, createTruststore]) {
     File jarFile = new File("${projectDir}/build/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',
@@ -179,7 +186,8 @@ task runServer(type: Exec, dependsOn: [build, createCert]) {
                         '-Dcom.sun.management.jmxremote.authenticate=false',
                         '-Dcom.sun.management.jmxremote.ssl=false']
     // change the --server.ssl.key-store parameter to the keystore file to use for running over ssl
-    def applicationVariables = ["--server.ssl.key-store=${projectDir}/build/certs/blackduck-alert.keystore",
+    def applicationVariables = ["--server.ssl.key-store=${project.buildDir}/certs/blackduck-alert.keystore",
+                                "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
                                 '--spring.h2.console.enabled=true']
     def commandArray = []
@@ -192,8 +200,10 @@ task runServer(type: Exec, dependsOn: [build, createCert]) {
     commandLine commandArray
 }
 
-tasks.createCert.onlyIf { !file("${projectDir}/build/certs/blackduck-alert.keystore").exists() }
-tasks.runServer.mustRunAfter(createCert)
+tasks.createKeystore.onlyIf { !file("${projectDir}/build/certs/blackduck-alert.keystore").exists() }
+tasks.createTruststore.onlyIf { !file("${projectDir}/build/certs/blackduck-alert.truststore").exists() }
+tasks.runServer.mustRunAfter(createKeystore)
+tasks.runServer.mustRunAfter(createTruststore)
 
 // Build tasks
 
