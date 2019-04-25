@@ -180,15 +180,15 @@ class BaseJobConfiguration extends Component {
         const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerModel, KEY_FILTER_BY_PROJECT);
 
-        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE)) {
-            providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType);
+        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE) && selectedFormatType) {
+            providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType.value);
         }
 
         if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
             providerModel = FieldModelUtilities.updateFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
         }
 
-        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FILTER_BY_PROJECT)) {
+        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FILTER_BY_PROJECT) && filterByProject) {
             providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FILTER_BY_PROJECT, filterByProject.toString());
         }
         return providerModel;
