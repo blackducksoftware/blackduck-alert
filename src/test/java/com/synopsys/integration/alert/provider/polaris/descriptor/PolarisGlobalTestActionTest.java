@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -62,8 +62,8 @@ public class PolarisGlobalTestActionTest {
         final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
                                                             .stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Api token should be populated with valid token");
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT), "Timeout should be populated with valid timeout");
     }
@@ -88,8 +88,8 @@ public class PolarisGlobalTestActionTest {
         final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
                                                             .stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertTrue(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT).contains(ERROR_POLARIS_TIMEOUT));
 
@@ -105,7 +105,7 @@ public class PolarisGlobalTestActionTest {
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(negativeValue));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(ERROR_POLARIS_TIMEOUT, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }

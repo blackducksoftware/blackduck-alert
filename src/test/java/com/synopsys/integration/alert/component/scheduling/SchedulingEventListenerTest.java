@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
@@ -50,8 +50,8 @@ public class SchedulingEventListenerTest {
         FIELD_PURGE_FREQUENCY.setValue("1");
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
         assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
@@ -65,8 +65,8 @@ public class SchedulingEventListenerTest {
         FIELD_PURGE_FREQUENCY.setValue("");
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
@@ -80,8 +80,8 @@ public class SchedulingEventListenerTest {
         FIELD_PURGE_FREQUENCY.setValue("not a number");
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         final String actualDailyProcessorError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         assertTrue(actualDailyProcessorError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualDailyProcessorError);
@@ -99,15 +99,15 @@ public class SchedulingEventListenerTest {
         FIELD_HOUR_OF_DAY.setValue("-1");
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         String actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_HOUR_OF_DAY.setValue("24");
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
@@ -121,14 +121,14 @@ public class SchedulingEventListenerTest {
         FIELD_PURGE_FREQUENCY.setValue("0");
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         String actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_PURGE_FREQUENCY.setValue("8");
-        validationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
+        fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);

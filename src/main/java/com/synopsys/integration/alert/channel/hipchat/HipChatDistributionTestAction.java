@@ -25,8 +25,7 @@ package com.synopsys.integration.alert.channel.hipchat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 
 @Component
 public class HipChatDistributionTestAction extends ChannelDistributionTestAction {

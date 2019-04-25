@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.web.config.ValidationAction;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
@@ -123,8 +123,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
     }
@@ -139,8 +139,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
     }
@@ -154,8 +154,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD));
@@ -164,7 +164,7 @@ public class SettingsEventListenerTest {
 
         fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldErrors.clear();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD));
@@ -181,8 +181,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD));
@@ -201,8 +201,8 @@ public class SettingsEventListenerTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ValidationAction validationAction = new ValidationAction();
-        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertFalse(fieldErrors.isEmpty());
         assertEquals(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(SettingsDescriptor.KEY_LDAP_SERVER));
     }
