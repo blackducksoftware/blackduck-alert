@@ -154,13 +154,12 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
     private LinkableItem createPolicyLinkableItem(final PolicyInfo policyInfo) {
         final String policyName = policyInfo.getPolicyName();
-        final String policyUrl = policyInfo.getPolicy();
         final String severity = policyInfo.getSeverity();
         String displayName = policyName;
         if (StringUtils.isNotBlank(severity)) {
             displayName = String.format("%s (%s)", policyName, severity);
         }
-        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, policyUrl);
+        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, null);
     }
 
 }
