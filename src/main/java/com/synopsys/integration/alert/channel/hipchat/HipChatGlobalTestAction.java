@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.hipchat.descriptor;
+package com.synopsys.integration.alert.channel.hipchat;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -35,9 +35,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
@@ -48,14 +49,15 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
 @Component
-public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
-    private final Logger logger = LoggerFactory.getLogger(HipChatGlobalDescriptorActionApi.class);
+public class HipChatGlobalTestAction extends TestAction {
+    private final Logger logger = LoggerFactory.getLogger(HipChatGlobalTestAction.class);
 
     private final HipChatChannel hipChatChannel;
     private final RestChannelUtility restChannelUtility;
 
     @Autowired
-    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel, final RestChannelUtility restChannelUtility) {
+    public HipChatGlobalTestAction(final HipChatChannel hipChatChannel, final RestChannelUtility restChannelUtility) {
+        super(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.hipChatChannel = hipChatChannel;
         this.restChannelUtility = restChannelUtility;
     }

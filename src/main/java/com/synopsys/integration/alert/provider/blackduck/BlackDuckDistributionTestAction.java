@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -42,11 +43,12 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class BlackDuckDistributionActionApi extends DescriptorActionApi {
+public class BlackDuckDistributionTestAction extends TestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired
-    public BlackDuckDistributionActionApi(final ProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckDistributionTestAction(final ProviderDataAccessor blackDuckDataAccessor) {
+        super(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
     }
 

@@ -27,10 +27,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.provider.polaris.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.config.ValidationAction;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -39,16 +41,14 @@ import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class PolarisGlobalDescriptorActionApiTest {
+public class PolarisGlobalTestActionTest {
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
     private static final String ERROR_POLARIS_TIMEOUT = "Must be an Integer greater than zero (0).";
 
     private final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
 
     @Test
-    public void validateConfigWhenValidTest() throws Exception {
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, null);
-
+    public void validateConfigWhenValidTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
         final FieldModel fieldModel = Mockito.mock(FieldModel.class);
         final FieldValueModel accessTokenField = Mockito.mock(FieldValueModel.class);
@@ -62,15 +62,14 @@ public class PolarisGlobalDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
                                                             .stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Api token should be populated with valid token");
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT), "Timeout should be populated with valid timeout");
     }
 
     @Test
-    public void validateConfigWhenInvalidTest() throws Exception {
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, null);
-
+    public void validateConfigWhenInvalidTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
 
         final FieldModel fieldModel = Mockito.mock(FieldModel.class);
@@ -89,8 +88,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
                                                             .stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-
-        actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        final ValidationAction validationAction = new ValidationAction();
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertTrue(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT).contains(ERROR_POLARIS_TIMEOUT));
 
@@ -106,7 +105,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(negativeValue));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
-        actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        validationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(ERROR_POLARIS_TIMEOUT, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
@@ -114,7 +113,7 @@ public class PolarisGlobalDescriptorActionApiTest {
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void testConfigWithRealConnectionTestIT() throws Exception {
+    public void testConfigWithRealConnectionTestIT() {
         final TestProperties testProperties = new TestProperties();
 
         final String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
@@ -136,7 +135,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager, new Gson());
 
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, null);
+        final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
         try {
             actionApi.testConfig(testConfigModel);
         } catch (final Exception e) {
@@ -146,8 +145,8 @@ public class PolarisGlobalDescriptorActionApiTest {
     }
 
     @Test
-    public void testConfigWithInvalidFieldsTest() throws Exception {
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, null);
+    public void testConfigWithInvalidFieldsTest() {
+        final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(null);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, "");
@@ -195,7 +194,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
         Mockito.when(polarisProperties.createInitialPolarisServerConfigBuilder(Mockito.any(IntLogger.class))).thenReturn(mockBuilder);
 
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, null);
+        final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, "good enough to satisfy the check");

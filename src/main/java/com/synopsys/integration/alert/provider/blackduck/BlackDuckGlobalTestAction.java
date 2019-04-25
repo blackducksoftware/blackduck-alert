@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.provider.blackduck;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -33,14 +33,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
@@ -57,14 +58,15 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
 @Component
-public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
+public class BlackDuckGlobalTestAction extends TestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
     private final SystemValidator systemValidator;
     private final TaskManager taskManager;
 
     @Autowired
-    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator, final TaskManager taskManager) {
+    public BlackDuckGlobalTestAction(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator, final TaskManager taskManager) {
+        super(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.blackDuckProperties = blackDuckProperties;
         this.systemValidator = systemValidator;
         this.taskManager = taskManager;

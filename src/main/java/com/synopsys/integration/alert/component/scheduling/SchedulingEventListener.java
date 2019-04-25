@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
@@ -40,11 +39,11 @@ import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
-public class SchedulingDescriptorActionApi extends NoTestActionApi {
+public class SchedulingEventListener {
     private final TaskManager taskManager;
 
     @Autowired
-    public SchedulingDescriptorActionApi(final TaskManager taskManager) {
+    public SchedulingEventListener(final TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 

@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.action.NoTestActionApi;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
@@ -42,8 +41,8 @@ import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
-public class SettingsDescriptorActionApi extends NoTestActionApi {
-    private static final Logger logger = LoggerFactory.getLogger(SettingsDescriptorActionApi.class);
+public class SettingsEventListener {
+    private static final Logger logger = LoggerFactory.getLogger(SettingsEventListener.class);
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
@@ -51,7 +50,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     // private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsDescriptorActionApi(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator) {
+    public SettingsEventListener(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;

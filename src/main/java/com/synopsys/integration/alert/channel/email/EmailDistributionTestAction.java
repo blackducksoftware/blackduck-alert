@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.descriptor;
+package com.synopsys.integration.alert.channel.email;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,8 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -46,22 +46,22 @@ import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfig
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.DefaultEmailHandler;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
+public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     private final DefaultEmailHandler emailHandler;
     private final DefaultProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final List<ProviderDescriptor> providerDescriptors, final DefaultProviderDataAccessor providerDataAccessor,
-        final DefaultEmailHandler emailHandler) {
-        super(emailChannel, providerDescriptors);
+    public EmailDistributionTestAction(final EmailChannel emailChannel, final DefaultProviderDataAccessor providerDataAccessor, final DefaultEmailHandler emailHandler) {
+        super(emailChannel);
         this.emailHandler = emailHandler;
         this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
-    public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws AlertFieldException {
+    public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
         final Set<String> emailAddresses = new HashSet<>();
         if (StringUtils.isNotBlank(destination)) {
             emailAddresses.add(destination);

@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventTy
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
-public class SettingsDescriptorActionApiTest {
+public class SettingsEventListenerTest {
 
     private final SettingsUIConfig settingsUIConfig = new SettingsUIConfig();
 
@@ -39,7 +39,7 @@ public class SettingsDescriptorActionApiTest {
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
 
         try {
             actionaApi.testConfig(null);
@@ -60,7 +60,7 @@ public class SettingsDescriptorActionApiTest {
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        final SettingsDescriptorActionApi actionApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
 
         final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
         actionApi.handleReadConfig(configurationEvent);
@@ -82,7 +82,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -103,7 +103,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -125,7 +125,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -144,7 +144,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -165,7 +165,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
@@ -186,7 +186,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
@@ -218,7 +218,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
@@ -241,7 +241,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
+        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));

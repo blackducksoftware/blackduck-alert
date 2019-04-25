@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,19 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.action;
+package com.synopsys.integration.alert.channel.slack;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.common.descriptor.action.ChannelDistributionTestAction;
 
 @Component
-public class NoTestActionApi extends DescriptorActionApi {
+public class SlackDistributionTestAction extends ChannelDistributionTestAction {
 
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        throw new AlertMethodNotAllowedException("Component descriptors cannot be tested.");
+    @Autowired
+    public SlackDistributionTestAction(final SlackChannel slackChannel) {
+        super(slackChannel);
     }
 }
