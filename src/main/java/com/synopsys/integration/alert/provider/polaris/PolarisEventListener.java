@@ -48,7 +48,7 @@ public class PolarisEventListener {
         this.taskManager = taskManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
+    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
     public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
         final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
         final Optional<String> nextRunTime = taskManager.getNextRunTime(PolarisProjectSyncTask.TASK_NAME);
@@ -57,7 +57,7 @@ public class PolarisEventListener {
         }
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
+    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
     public void handleDeleteConfig(final ConfigurationEvent configurationEvent) {
         taskManager.unScheduleTask(PolarisProjectSyncTask.TASK_NAME);
     }

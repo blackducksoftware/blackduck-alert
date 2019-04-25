@@ -23,14 +23,12 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
@@ -38,13 +36,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
-import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -61,15 +53,11 @@ import com.synopsys.integration.rest.request.Response;
 public class BlackDuckGlobalTestAction extends TestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
-    private final SystemValidator systemValidator;
-    private final TaskManager taskManager;
 
     @Autowired
-    public BlackDuckGlobalTestAction(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator, final TaskManager taskManager) {
+    public BlackDuckGlobalTestAction(final BlackDuckProperties blackDuckProperties) {
         super(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.blackDuckProperties = blackDuckProperties;
-        this.systemValidator = systemValidator;
-        this.taskManager = taskManager;
     }
 
     @Override
@@ -108,25 +96,6 @@ public class BlackDuckGlobalTestAction extends TestAction {
             final String errorMessage = StringUtils.join(builderStatus.getErrorMessages(), ", ");
             throw new AlertException("There were issues with the configuration: " + errorMessage);
         }
-    }
-
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_blackduck' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
-    public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
-        final boolean valid = systemValidator.validate();
-        // This doesn't need to validate the whole system, just the Black Duck settings.
-        if (valid) {
-            final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-            if (nextRunTime.isEmpty()) {
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
-            }
-        }
-    }
-
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_blackduck' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
-    public void handleAfterDeleteConfig(final ConfigurationEvent configurationEvent) {
-        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
-        taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
     }
 
 }
