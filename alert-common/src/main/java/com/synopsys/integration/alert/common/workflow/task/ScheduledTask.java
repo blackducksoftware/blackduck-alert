@@ -46,9 +46,8 @@ public abstract class ScheduledTask implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
-    private ScheduledFuture<?> future;
-
     private final String taskName;
+    private ScheduledFuture<?> future;
 
     public ScheduledTask(final TaskScheduler taskScheduler, final String taskName) {
         this.taskScheduler = taskScheduler;
@@ -60,13 +59,13 @@ public abstract class ScheduledTask implements Runnable {
     }
 
     @Override
-    public final void run() {
+    @Async
+    public void run() {
         logger.info("### {} Task Started...", taskName);
         runTask();
         logger.info("### {} Task Finished", taskName);
     }
 
-    @Async
     public abstract void runTask();
 
     public void scheduleExecution(final String cron) {
