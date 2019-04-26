@@ -20,54 +20,63 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.scheduling;
+package com.synopsys.integration.alert.component.scheduling.actions;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
-public class SchedulingEventListener {
+public class SchedulingGlobalApiAction extends ApiAction {
     private final TaskManager taskManager;
 
     @Autowired
-    public SchedulingEventListener(final TaskManager taskManager) {
+    public SchedulingGlobalApiAction(final TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
-    public void handleReadConfig(final ConfigurationEvent configurationEvent) {
+    @Override
+    public FieldModel beforeSaveAction(final FieldModel fieldModel) {
+        return handleNewAndSavedConfig(fieldModel);
+    }
+
+    @Override
+    public FieldModel beforeUpdateAction(final FieldModel fieldModel) {
+        return handleNewAndSavedConfig(fieldModel);
+    }
+
+    @Override
+    public FieldModel afterGetAction(final FieldModel fieldModel) {
         final String blackDuckNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
         final String polarisNextRun = taskManager.getDifferenceToNextRun(PolarisProjectSyncTask.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
 
-        final FieldModel fieldModel = configurationEvent.getFieldModel();
         fieldModel.putField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, new FieldValueModel(List.of(blackDuckNextRun), true));
         fieldModel.putField(SchedulingDescriptor.KEY_POLARIS_NEXT_RUN, new FieldValueModel(List.of(polarisNextRun), true));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
+        return fieldModel;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_scheduling' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE')")
-    public void handleNewAndSavedConfig(final ConfigurationEvent configurationEvent) {
-        final FieldModel fieldModel = configurationEvent.getFieldModel();
+    public FieldModel handleNewAndSavedConfig(final FieldModel fieldModel) {
         final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse("");
         final String purgeDataFrequencyDays = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse("");
         final String dailyDigestCron = String.format(DailyTask.CRON_FORMAT, dailyDigestHourOfDay);
         final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
         taskManager.scheduleCronTask(dailyDigestCron, DailyTask.TASK_NAME);
         taskManager.scheduleCronTask(purgeDataCron, PurgeTask.TASK_NAME);
+        return fieldModel;
     }
 
 }

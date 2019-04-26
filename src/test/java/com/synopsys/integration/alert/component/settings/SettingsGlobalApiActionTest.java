@@ -20,14 +20,15 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
+import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalApiAction;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsUIConfig;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
-public class SettingsEventListenerTest {
+public class SettingsGlobalApiActionTest {
 
     private final SettingsUIConfig settingsUIConfig = new SettingsUIConfig();
 
@@ -39,18 +40,16 @@ public class SettingsEventListenerTest {
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        final SettingsEventListener actionApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator, samlManager);
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
-        actionApi.handleReadConfig(configurationEvent);
-        assertFieldsMissing(configurationEvent.getFieldModel());
+        final SettingsGlobalApiAction actionApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final FieldModel afterGetAction = actionApi.afterGetAction(fieldModel);
+        assertFieldsMissing(afterGetAction);
         Mockito.when(encryptionUtility.isPasswordSet()).thenReturn(true);
         Mockito.when(encryptionUtility.isGlobalSaltSet()).thenReturn(true);
         final UserModel userModel = Mockito.mock(UserModel.class);
         Mockito.when(userModel.getPassword()).thenReturn("valid_test_value");
         Mockito.when(userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)).thenReturn(Optional.of(userModel));
-        final ConfigurationEvent updatedConfigurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
-        actionApi.handleReadConfig(updatedConfigurationEvent);
-        assertFieldsPresent(updatedConfigurationEvent.getFieldModel());
+        final FieldModel withFields = actionApi.afterGetAction(fieldModel);
+        assertFieldsPresent(withFields);
     }
 
     @Test
@@ -59,16 +58,15 @@ public class SettingsEventListenerTest {
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
 
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
-        actionaApi.handleNewAndUpdatedConfig(configurationEvent);
-        assertFieldsMissing(configurationEvent.getFieldModel());
+        final FieldModel handleNewAndUpdatedConfig = actionaApi.beforeUpdateAction(fieldModel);
+        assertFieldsMissing(handleNewAndUpdatedConfig);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
         Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
@@ -80,15 +78,14 @@ public class SettingsEventListenerTest {
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
-        actionaApi.handleNewAndUpdatedConfig(configurationEvent);
-        assertFieldsMissing(configurationEvent.getFieldModel());
+        final FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
+        assertFieldsMissing(handleNewAndUpdatedConfig);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
         Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
@@ -101,16 +98,15 @@ public class SettingsEventListenerTest {
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsEventListener actionaApi = new SettingsEventListener(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
 
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_SAVE_BEFORE);
         Mockito.doThrow(new IllegalArgumentException()).when(encryptionUtility).updatePasswordField(Mockito.anyString());
-        actionaApi.handleNewAndUpdatedConfig(configurationEvent);
-        assertFieldsMissing(configurationEvent.getFieldModel());
+        final FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
+        assertFieldsMissing(handleNewAndUpdatedConfig);
     }
 
     @Test

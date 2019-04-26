@@ -20,36 +20,53 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris;
+package com.synopsys.integration.alert.provider.polaris.actions;
 
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
+import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
 @Component
-public class PolarisEventListener {
+public class PolarisGlobalApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
     private final TaskManager taskManager;
 
     @Autowired
-    public PolarisEventListener(final PolarisProperties polarisProperties, final TaskManager taskManager) {
+    public PolarisGlobalApiAction(final PolarisProperties polarisProperties, final TaskManager taskManager) {
         this.polarisProperties = polarisProperties;
         this.taskManager = taskManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
-    public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
+    @Override
+    public FieldModel afterSaveAction(final FieldModel fieldModel) {
+        handleNewOrUpdatedConfig();
+        return super.afterSaveAction(fieldModel);
+    }
+
+    @Override
+    public FieldModel afterUpdateAction(final FieldModel fieldModel) {
+        handleNewOrUpdatedConfig();
+        return super.afterUpdateAction(fieldModel);
+    }
+
+    @Override
+    public void afterDeleteAction(final String descriptorName, final String context) {
+        taskManager.unScheduleTask(PolarisProjectSyncTask.TASK_NAME);
+    }
+
+    public void handleNewOrUpdatedConfig() {
         final Optional<AccessTokenPolarisHttpClient> polarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
         final Optional<String> nextRunTime = taskManager.getNextRunTime(PolarisProjectSyncTask.TASK_NAME);
         if (polarisHttpClient.isPresent() && nextRunTime.isEmpty()) {
@@ -57,8 +74,4 @@ public class PolarisEventListener {
         }
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_polaris' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
-    public void handleDeleteConfig(final ConfigurationEvent configurationEvent) {
-        taskManager.unScheduleTask(PolarisProjectSyncTask.TASK_NAME);
-    }
 }

@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationExc
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 public class SAMLContext {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);

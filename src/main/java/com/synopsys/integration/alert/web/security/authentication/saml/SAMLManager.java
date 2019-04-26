@@ -40,7 +40,7 @@ import org.springframework.security.saml.metadata.MetadataManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 public class SAMLManager {
     public static Logger logger = LoggerFactory.getLogger(SAMLManager.class);
