@@ -188,7 +188,7 @@ class BaseJobConfiguration extends Component {
             providerModel = FieldModelUtilities.updateFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
         }
 
-        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FILTER_BY_PROJECT) && filterByProject) {
+        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FILTER_BY_PROJECT)) {
             providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FILTER_BY_PROJECT, filterByProject.toString());
         }
         return providerModel;
