@@ -100,7 +100,7 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     private FieldModel scrubModel(final FieldModel fieldModel) {
-        final Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        final Map<String, FieldValueModel> keyToValues = new HashMap<>(fieldModel.getKeyToValues());
         keyToValues.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_PWD);
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
