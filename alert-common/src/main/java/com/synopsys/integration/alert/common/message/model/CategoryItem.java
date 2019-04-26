@@ -84,7 +84,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
         }
         for (final LinkableItem item : items) {
             final String name = item.getName();
-            map.putIfAbsent(name, new ArrayList<>()).add(item);
+            map.computeIfAbsent(name, ignored -> new ArrayList<>()).add(item);
         }
         return map;
     }

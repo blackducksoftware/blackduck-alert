@@ -45,7 +45,7 @@ public class PolarisProviderContentTypes {
     public static final String JSON_FIELD_DESCRIPTION = "description";
 
     public static final String JSON_FIELD_ISSUE_TYPE = "issueType";
-    public static final String JSON_FIELD_PREVIOUS_COUNT = "numberChanged";
+    public static final String JSON_FIELD_CHANGED_COUNT = "numberChanged";
     public static final String JSON_FIELD_NEW_TOTAL = "newTotal";
 
     private static final JsonField<String> PROJECT_NAME_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC,
@@ -57,7 +57,7 @@ public class PolarisProviderContentTypes {
         LABEL_BRANCHES);
     private static final JsonField<String> ISSUE_TYPE_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_ISSUE_TYPE), JSON_FIELD_ISSUE_TYPE, FieldContentIdentifier.CATEGORY_ITEM,
         LABEL_ISSUE_TYPE);
-    private static final JsonField<Integer> ISSUE_PREVIOUS_COUNT_FIELD = JsonField.createIntegerField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PREVIOUS_COUNT), JSON_FIELD_PREVIOUS_COUNT,
+    private static final JsonField<Integer> ISSUE_PREVIOUS_COUNT_FIELD = JsonField.createIntegerField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_CHANGED_COUNT), JSON_FIELD_CHANGED_COUNT,
         FieldContentIdentifier.CATEGORY_ITEM, LABEL_NUMBER_OF_ISSUES_UPDATED);
     private static final JsonField<Integer> ISSUE_NEW_COUNT_FIELD = JsonField.createIntegerField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_NEW_TOTAL), JSON_FIELD_NEW_TOTAL,
         FieldContentIdentifier.CATEGORY_ITEM, LABEL_NEW_ISSUE_TOTAL);

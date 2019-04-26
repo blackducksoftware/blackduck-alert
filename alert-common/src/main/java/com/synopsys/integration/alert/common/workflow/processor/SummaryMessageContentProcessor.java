@@ -3,11 +3,13 @@ package com.synopsys.integration.alert.common.workflow.processor;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,11 +50,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         final SortedSet<CategoryItem> summarizedCategoryItems = new ConcurrentSkipListSet<>();
         for (final Map.Entry<ItemOperation, SortedSet<CategoryItem>> sortedEntry : itemsByOperation.entrySet()) {
             final CategoryKey uniqueKey = CategoryKey.from(UUID.randomUUID().toString());
-            // Since this will not be a one-to-one mapping, we can't map it back to a notification.
+            // Because this will not be a one-to-one mapping, we can't map it back to a notification.
             final Long invalidNotificationId = Long.MIN_VALUE;
-            final SortedSet<LinkableItem> linkableItems = createSummarizedLinkableItems(sortedEntry.getValue());
 
-            summarizedCategoryItems.add(new CategoryItem(uniqueKey, sortedEntry.getKey(), invalidNotificationId, linkableItems));
+            final SortedSet<LinkableItem> linkableItemsForOperation = getAllLinkableItemsFromCategoryItems(sortedEntry.getValue());
+            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(sortedEntry.getValue(), linkableItemsForOperation);
+
+            summarizedCategoryItems.add(new CategoryItem(uniqueKey, sortedEntry.getKey(), invalidNotificationId, summarizedLinkableItems));
         }
 
         return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems);
@@ -61,48 +65,106 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private Map<ItemOperation, SortedSet<CategoryItem>> sortByOperation(final SortedSet<CategoryItem> originalCategoryItems) {
         final Map<ItemOperation, SortedSet<CategoryItem>> itemsByOperation = new LinkedHashMap<>();
         for (final CategoryItem categoryItem : originalCategoryItems) {
-            itemsByOperation.putIfAbsent(categoryItem.getOperation(), new ConcurrentSkipListSet<>()).add(categoryItem);
+            itemsByOperation.computeIfAbsent(categoryItem.getOperation(), ignored -> new ConcurrentSkipListSet<>()).add(categoryItem);
         }
         return itemsByOperation;
     }
 
-    private SortedSet<LinkableItem> createSummarizedLinkableItems(final SortedSet<CategoryItem> categoryItems) {
+    private SortedSet<LinkableItem> getAllLinkableItemsFromCategoryItems(final SortedSet<CategoryItem> categoryItems) {
+        return categoryItems
+                   .stream()
+                   .flatMap(item -> item.getItems().stream())
+                   .collect(Collectors.toCollection(ConcurrentSkipListSet::new));
+    }
+
+    private SortedSet<LinkableItem> createSummarizedLinkableItems(final SortedSet<CategoryItem> categoryItems, final SortedSet<LinkableItem> linkableItems) {
         final Map<String, List<LinkableItem>> itemsOfSameName = new LinkedHashMap<>();
         categoryItems.forEach(item -> itemsOfSameName.putAll(item.getItemsOfSameName()));
 
-        final SortedSet<LinkableItem> linkableItems = new ConcurrentSkipListSet<>();
+        final SortedSet<LinkableItem> summarizedLinkableItems = new ConcurrentSkipListSet<>();
         for (final Map.Entry<String, List<LinkableItem>> similarItems : itemsOfSameName.entrySet()) {
             final List<LinkableItem> itemsForCategory = similarItems.getValue();
-            if (doThatMatter(itemsForCategory)) {
-                final String newItemName = generateSummaryItemName(similarItems.getKey());
-                final String countString = generateCountAsString(itemsForCategory);
+            final Optional<LinkableItem> summarizableItem = itemsForCategory
+                                                                .stream()
+                                                                .findAny()
+                                                                .filter(LinkableItem::isSummarizable);
+            summarizableItem.ifPresent(item -> createNewItems(item, summarizedLinkableItems, similarItems.getKey(), linkableItems));
+        }
+        return summarizedLinkableItems;
+    }
 
-                linkableItems.add(new LinkableItem(newItemName, countString));
+    private void createNewItems(final LinkableItem item, final SortedSet<LinkableItem> summarizedLinkableItems, final String oldItemName, final SortedSet<LinkableItem> linkableItems) {
+        final boolean isCountable = item.isCountable();
+        final boolean isNumericValue = item.isNumericValue();
+        final String newItemName = generateSummaryItemName(oldItemName, isCountable, isNumericValue);
+
+        if (isCountable) {
+            final String newItemValue = generateCountAsString(oldItemName, linkableItems, isNumericValue);
+            summarizedLinkableItems.add(new LinkableItem(newItemName, newItemValue));
+        } else {
+            final SortedSet<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
+            if (newDetailedItems.isEmpty()) {
+                summarizedLinkableItems.add(new LinkableItem(newItemName, item.getValue()));
+            } else {
+                summarizedLinkableItems.addAll(newDetailedItems);
             }
         }
-        return linkableItems;
     }
 
-    // TODO rename this method
-    private boolean doThatMatter(final List<LinkableItem> items) {
-        return items
-                   .stream()
-                   .findAny()
-                   .filter(LinkableItem::isSummarizable)
-                   .isPresent();
-    }
-
-    private String generateSummaryItemName(final String oldItemName) {
-        return String.format("%s Change Count", oldItemName);
-    }
-
-    private String generateCountAsString(final List<LinkableItem> items) {
-        if (items.isEmpty()) {
-            return "0";
+    private String generateSummaryItemName(final String oldItemName, final boolean isCountable, final boolean isNumeric) {
+        if (isCountable) {
+            if (isNumeric) {
+                return String.format("Total %s Count", oldItemName);
+            }
+            return String.format("%s Count", oldItemName);
         }
+        return oldItemName;
+    }
 
-        final int numberOfItems = items.size();
-        return Integer.toString(numberOfItems);
+    private String generateCountAsString(final String itemName, final SortedSet<LinkableItem> items, final boolean isNumericValue) {
+        final int count = generateCount(itemName, items, isNumericValue);
+        return Integer.toString(count);
+    }
+
+    private Integer generateCount(final String itemName, final SortedSet<LinkableItem> items, final boolean isNumericValue) {
+        if (isNumericValue) {
+            int count = 0;
+            for (final LinkableItem item : items) {
+                if (itemName.equals(item.getName())) {
+                    final String value = item.getValue();
+                    if (StringUtils.isNumeric(value)) {
+                        final int numericValue = Integer.parseInt(value);
+                        count += numericValue;
+                    }
+                }
+            }
+            return count;
+        }
+        return items.size();
+    }
+
+    private SortedSet<LinkableItem> createLinkableItemsByValue(final String linkableItemName, final SortedSet<LinkableItem> linkableItems) {
+        final Map<String, Integer> valueCounts = countItemsOfSameValueForName(linkableItemName, linkableItems);
+        final SortedSet<LinkableItem> summarizedLinkableItems = new ConcurrentSkipListSet<>();
+        for (final Map.Entry<String, Integer> valueCount : valueCounts.entrySet()) {
+            final String newName = String.format("%s - %s", linkableItemName, valueCount.getKey());
+            final String newValue = Integer.toString(valueCount.getValue());
+
+            summarizedLinkableItems.add(new LinkableItem(newName, newValue));
+        }
+        return summarizedLinkableItems;
+    }
+
+    private Map<String, Integer> countItemsOfSameValueForName(final String linkableItemName, final SortedSet<LinkableItem> linkableItems) {
+        final Map<String, Integer> valueCounts = new LinkedHashMap<>();
+        for (final LinkableItem item : linkableItems) {
+            if (linkableItemName.equals(item.getName())) {
+                final String value = item.getValue();
+                final Integer valueCount = valueCounts.getOrDefault(value, 0);
+                valueCounts.put(value, valueCount + 1);
+            }
+        }
+        return valueCounts;
     }
 
 }
