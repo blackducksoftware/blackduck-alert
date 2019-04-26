@@ -51,7 +51,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) {
-        final AggregateMessageContent messageContent = super.createTestNotificationContent();
+        final AggregateMessageContent messageContent = createTestNotificationContent();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");

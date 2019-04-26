@@ -42,11 +42,6 @@ public class ConfigurationEventPublisher {
         applicationEventPublisher.publishEvent(configurationEvent);
     }
 
-    public void publishConfigurationEvent(final FieldModel fieldModel, final String descriptorName, final String context, final ConfigurationEventType eventType) {
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, descriptorName, context, eventType);
-        applicationEventPublisher.publishEvent(configurationEvent);
-    }
-
     public void publishConfigurationEvent(final String descriptorName, final String context, final ConfigurationEventType eventType) {
         final ConfigurationEvent configurationEvent = new ConfigurationEvent(descriptorName, context, eventType);
         applicationEventPublisher.publishEvent(configurationEvent);

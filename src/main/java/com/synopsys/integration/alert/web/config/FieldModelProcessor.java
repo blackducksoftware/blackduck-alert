@@ -177,7 +177,7 @@ public class FieldModelProcessor {
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return allTestActions.stream()
                    .filter(testAction -> testAction.getDescriptorName().equals(descriptorName))
-                   .filter(testAction -> testAction.getContext() == descriptorContext)
+                   .filter(testAction -> testAction.getContext().equals(descriptorContext))
                    .findFirst();
     }
 
@@ -193,9 +193,9 @@ public class FieldModelProcessor {
     }
 
     public String getDescriptorName(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
-        final RegisteredDescriptorModel descriptor = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
-                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
-        return descriptor.getName();
+        return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                   .map(RegisteredDescriptorModel::getName)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
     }
 
     public Map<String, FieldValueModel> convertToFieldValuesMap(final Collection<ConfigurationFieldModel> configurationFieldModels) {
