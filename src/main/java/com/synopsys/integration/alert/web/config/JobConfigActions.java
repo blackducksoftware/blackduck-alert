@@ -133,7 +133,10 @@ public class JobConfigActions {
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
 
-        final Set<FieldModel> updatedFieldModels = performUpdate(savedJobFieldModel);
+        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+                                                       .stream()
+                                                       .map(fieldModelProcessor::performAfterSaveAction)
+                                                       .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
@@ -149,16 +152,12 @@ public class JobConfigActions {
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
-        final Set<FieldModel> updatedFieldModels = performUpdate(savedJobFieldModel);
+        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+                                                       .stream()
+                                                       .map(fieldModelProcessor::performAfterUpdateAction)
+                                                       .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
-    }
-
-    private Set<FieldModel> performUpdate(final JobFieldModel savedJobFieldModel) {
-        return savedJobFieldModel.getFieldModels()
-                   .stream()
-                   .map(fieldModelProcessor::performAfterUpdateAction)
-                   .collect(Collectors.toSet());
     }
 
     private void validateJobNameUnique(final JobFieldModel jobFieldModel) throws AlertFieldException {
