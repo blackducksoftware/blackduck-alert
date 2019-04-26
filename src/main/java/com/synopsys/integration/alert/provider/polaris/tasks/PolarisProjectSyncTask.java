@@ -92,8 +92,8 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         try {
             final String polarisUrl = polarisProperties
-                                                             .getUrl()
-                                                             .orElseThrow(() -> new AlertException("Polaris Url is not configured"));
+                                          .getUrl()
+                                          .orElseThrow(() -> new AlertException("Polaris Url is not configured"));
 
             final PolarisServicesFactory servicesFactory = polarisProperties.createPolarisServicesFactory(intLogger);
             final ProjectService projectService = servicesFactory.createProjectService();
@@ -107,13 +107,18 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             final List<ProjectV0Resource> projectResources = projectService.getAllProjects();
             logger.info("{} remote projects", projectResources.size());
             for (final ProjectV0Resource projectResource : projectResources) {
+                logger.debug("Processing project {}", projectResource.getAttributes().getName());
                 final List<BranchV0Resource> projectBranches = branchService.getBranchesForProject(projectResource.getId());
+                logger.debug("Found {} branches for project {}", projectBranches.size(), projectResource.getAttributes().getName());
                 final ProviderProject projectModel = convertToProviderProject(polarisApiHelper, projectResource, projectBranches);
 
+                logger.debug("Gathering emails for project: {}", projectModel.getName());
                 final Set<String> projectUserEmails = polarisApiHelper.getAllEmailsForProject(projectResource);
                 projectUserEmailMappings.put(projectModel, projectUserEmails);
+                logger.debug("Found {} users for project {}", projectUserEmails.size(), projectResource.getAttributes().getName());
 
                 Set<PolarisIssueModel> issuesForProject = createIssuesForProject(polarisApiHelper, projectResource, projectModel, projectBranches);
+                logger.debug("Creating {} issues for project {}", issuesForProject.size(), projectResource.getAttributes().getName());
                 issuesForProject = updatePreviousCounts(projectModel.getHref(), issuesForProject);
                 issuesToUpdate.put(projectModel, issuesForProject);
 
@@ -214,6 +219,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
             // This project is not yet in the database. Nothing to update.
             return polarisIssueModels;
         }
+
         for (final PolarisIssueModel polarisIssueModel : polarisIssueModels) {
             final Optional<PolarisIssueModel> optionalStoredProjectIssue = polarisIssueAccessor.getProjectIssueByIssueType(projectHref, polarisIssueModel.getIssueType());
             if (optionalStoredProjectIssue.isPresent()) {
