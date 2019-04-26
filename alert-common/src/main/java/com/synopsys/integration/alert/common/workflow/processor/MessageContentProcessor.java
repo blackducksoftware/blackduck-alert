@@ -38,5 +38,6 @@ public abstract class MessageContentProcessor {
         return formatType;
     }
 
-    public abstract List<AggregateMessageContent> process(final List<AggregateMessageContent> contentList);
+    public abstract List<AggregateMessageContent> process(final List<AggregateMessageContent> messages);
+
 }

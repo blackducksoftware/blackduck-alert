@@ -33,14 +33,28 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private final String value;
     private final String url;
 
+    private boolean summarizable;
+
+    public static LinkableItem createSummarizable(final String name, final String value) {
+        return createSummarizable(name, value, null);
+    }
+
+    public static LinkableItem createSummarizable(final String name, final String value, final String url) {
+        final LinkableItem newItem = new LinkableItem(name, value, url);
+        newItem.summarizable = true;
+        return newItem;
+    }
+
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
+        this.summarizable = false;
     }
 
     public LinkableItem(final String name, final String value, final String url) {
         this.name = name;
         this.value = value;
         this.url = url;
+        this.summarizable = false;
     }
 
     public String getName() {
@@ -55,8 +69,13 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return Optional.ofNullable(url);
     }
 
+    public boolean isSummarizable() {
+        return summarizable;
+    }
+
     @Override
     public int compareTo(final LinkableItem otherItem) {
         return CompareToBuilder.reflectionCompare(this, otherItem);
     }
+
 }

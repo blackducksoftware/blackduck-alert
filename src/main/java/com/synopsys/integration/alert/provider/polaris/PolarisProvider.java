@@ -80,7 +80,7 @@ public class PolarisProvider extends Provider {
 
     @Override
     public Set<FormatType> getSupportedFormatTypes() {
-        return EnumSet.of(FormatType.DEFAULT);
+        return EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY);
     }
 
 }
