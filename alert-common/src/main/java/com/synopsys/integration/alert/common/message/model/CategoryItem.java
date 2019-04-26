@@ -84,10 +84,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
         }
         for (final LinkableItem item : items) {
             final String name = item.getName();
-            if (!map.containsKey(name)) {
-                map.put(name, new ArrayList<>());
-            }
-            map.get(name).add(item);
+            map.putIfAbsent(name, new ArrayList<>()).add(item);
         }
         return map;
     }
@@ -96,4 +93,5 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
     public int compareTo(final CategoryItem otherItem) {
         return CompareToBuilder.reflectionCompare(this, otherItem);
     }
+
 }
