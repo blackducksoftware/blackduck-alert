@@ -33,21 +33,14 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private final String value;
     private final String url;
 
+    private boolean countable;
+    private boolean isNumericValue;
     private boolean summarizable;
-
-    public static LinkableItem createSummarizable(final String name, final String value) {
-        return createSummarizable(name, value, null);
-    }
-
-    public static LinkableItem createSummarizable(final String name, final String value, final String url) {
-        final LinkableItem newItem = new LinkableItem(name, value, url);
-        newItem.summarizable = true;
-        return newItem;
-    }
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
         this.summarizable = false;
+        this.isNumericValue = false;
     }
 
     public LinkableItem(final String name, final String value, final String url) {
@@ -55,6 +48,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.value = value;
         this.url = url;
         this.summarizable = false;
+        this.isNumericValue = false;
     }
 
     public String getName() {
@@ -69,8 +63,28 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return Optional.ofNullable(url);
     }
 
+    public boolean isCountable() {
+        return countable;
+    }
+
+    public void setCountable(final boolean countable) {
+        this.countable = countable;
+    }
+
+    public boolean isNumericValue() {
+        return isNumericValue;
+    }
+
+    public void setNumericValueFlag(final boolean isNumericValue) {
+        this.isNumericValue = isNumericValue;
+    }
+
     public boolean isSummarizable() {
         return summarizable;
+    }
+
+    public void setSummarizable(final boolean summarizable) {
+        this.summarizable = summarizable;
     }
 
     @Override

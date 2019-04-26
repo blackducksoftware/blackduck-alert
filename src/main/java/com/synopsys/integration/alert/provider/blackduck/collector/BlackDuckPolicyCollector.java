@@ -49,6 +49,7 @@ public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
         final List<String> categoryKeyParts = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
         final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);
 
+        updatePolicyItems(policyItems);
         for (final LinkableItem item : applicableItems) {
             final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
             linkableItems.add(item);
@@ -56,4 +57,14 @@ public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
             addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
         }
     }
+
+    private void updatePolicyItems(final Set<LinkableItem> policyItems) {
+        policyItems.forEach(this::updatePolicyItem);
+    }
+
+    private void updatePolicyItem(final LinkableItem policyItem) {
+        policyItem.setSummarizable(true);
+        policyItem.setCountable(true);
+    }
+
 }

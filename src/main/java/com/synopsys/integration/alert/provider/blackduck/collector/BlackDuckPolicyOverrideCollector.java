@@ -60,11 +60,13 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
         final List<LinkableItem> policySeverity = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_SEVERITY_NAME);
+        policySeverity.forEach(severityItem -> severityItem.setSummarizable(true));
 
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
         final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
         final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
         final Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
+
         final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
         applicableItems.addAll(componentItems);
         applicableItems.addAll(componentVersionItems);
@@ -79,4 +81,5 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
             addApplicableItems(categoryItems, notificationContent.getId(), Set.of(policyItem), operation, applicableItems);
         }
     }
+
 }
