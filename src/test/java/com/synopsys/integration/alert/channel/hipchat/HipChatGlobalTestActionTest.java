@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.channel.hipchat.actions.HipChatGlobalTestAction;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;

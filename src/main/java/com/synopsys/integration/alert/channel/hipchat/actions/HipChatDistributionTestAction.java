@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,14 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.event;
+package com.synopsys.integration.alert.channel.hipchat.actions;
 
-public enum ConfigurationEventType {
-    CONFIG_SAVE_BEFORE,
-    CONFIG_UPDATE_BEFORE,
-    CONFIG_DELETE_BEFORE,
-    CONFIG_SAVE_AFTER,
-    CONFIG_UPDATE_AFTER,
-    CONFIG_DELETE_AFTER,
-    CONFIG_GET_AFTER
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+
+@Component
+public class HipChatDistributionTestAction extends ChannelDistributionTestAction {
+
+    @Autowired
+    public HipChatDistributionTestAction(final HipChatChannel hipChatChannel) {
+        super(hipChatChannel);
+    }
 }

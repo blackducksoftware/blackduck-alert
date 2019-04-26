@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.scheduling;
+package com.synopsys.integration.alert.component.scheduling.descriptor;
 
 import java.util.List;
 
