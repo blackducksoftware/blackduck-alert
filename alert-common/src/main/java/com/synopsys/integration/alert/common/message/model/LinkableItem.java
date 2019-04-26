@@ -39,16 +39,15 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
-        this.summarizable = false;
-        this.isNumericValue = false;
     }
 
     public LinkableItem(final String name, final String value, final String url) {
         this.name = name;
         this.value = value;
         this.url = url;
-        this.summarizable = false;
+        this.countable = false;
         this.isNumericValue = false;
+        this.summarizable = false;
     }
 
     public String getName() {
