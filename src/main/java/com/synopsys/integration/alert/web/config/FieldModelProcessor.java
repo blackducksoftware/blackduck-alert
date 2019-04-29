@@ -122,15 +122,6 @@ public class FieldModelProcessor {
                    .orElse(fieldModel);
     }
 
-    public Optional<ApiAction> retrieveApiAction(final FieldModel fieldModel) {
-        return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
-    }
-
-    public Optional<ApiAction> retrieveApiAction(final String descriptorName, final String context) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
-    }
-
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
         return retrieveTestAction(fieldModel.getContext(), fieldModel.getDescriptorName());
     }
@@ -138,12 +129,6 @@ public class FieldModelProcessor {
     public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(descriptorContext));
-    }
-
-    public Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
-        return allConfigurationActions.stream()
-                   .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
-                   .findFirst();
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
@@ -250,6 +235,21 @@ public class FieldModelProcessor {
             return configurationAccessor.getConfigurationById(id);
         }
         return Optional.empty();
+    }
+
+    private Optional<ApiAction> retrieveApiAction(final FieldModel fieldModel) {
+        return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+    }
+
+    private Optional<ApiAction> retrieveApiAction(final String descriptorName, final String context) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
+    }
+
+    private Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
+        return allConfigurationActions.stream()
+                   .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
+                   .findFirst();
     }
 
     private Map<String, FieldValueModel> updateConfigurationWithSavedConfiguration(final Map<String, FieldValueModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {
