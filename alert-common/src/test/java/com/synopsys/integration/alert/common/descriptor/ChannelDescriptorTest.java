@@ -13,8 +13,7 @@ public class ChannelDescriptorTest {
     @Test
     public void getterTest() {
         final String name = "channel";
-        final String destinationName = "hipchat";
-        final ChannelDescriptor channelDescriptor = new ChannelDescriptor(name, destinationName, null, null) {
+        final ChannelDescriptor channelDescriptor = new ChannelDescriptor(name, null, null) {
             @Override
             public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
                 return null;
@@ -22,6 +21,5 @@ public class ChannelDescriptorTest {
         };
 
         Assert.assertEquals(name, channelDescriptor.getName());
-        Assert.assertEquals(destinationName, channelDescriptor.getDestinationName());
     }
 }

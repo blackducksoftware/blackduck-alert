@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.event;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -40,16 +40,15 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class NotificationToDistributionEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToDistributionEventConverter.class);
-    private final DescriptorMap descriptorMap;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public NotificationToDistributionEventConverter(final DescriptorMap descriptorMap, final ConfigurationAccessor configurationAccessor) {
-        this.descriptorMap = descriptorMap;
+    public NotificationToDistributionEventConverter(final ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -61,10 +60,7 @@ public class NotificationToDistributionEventConverter {
                 final String descriptorName = config.getChannelName();
                 final Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
                 config.addFields(globalFields);
-                descriptorMap.getChannelDescriptor(descriptorName)
-                    .flatMap(channelDescriptor -> channelDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION))
-                    .map(descriptorActionApi -> descriptorActionApi.createChannelEvent(config, content))
-                    .ifPresent(distributionEvents::add);
+                distributionEvents.add(createChannelEvent(config, content));
             }
         }
         logger.debug("Created {} events.", distributionEvents.size());
@@ -79,6 +75,11 @@ public class NotificationToDistributionEventConverter {
             logger.error("There was an error retrieving global config : {}", e.getMessage());
             return Map.of();
         }
+    }
+
+    private DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
+        return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
+            commmonDistributionConfig.getFormatType().name(), messageContent, commmonDistributionConfig.getFieldAccessor());
     }
 
 }

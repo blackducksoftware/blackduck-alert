@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.web.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class ConfigActionTestIT extends AlertIntegrationTest {
@@ -62,8 +63,8 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final String configId = contentConverter.getStringValue(longConfigId);
 
         final FieldModel fieldModel = new FieldModel(configId, SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(),
-            Map.of(SettingsDescriptor.KEY_PROXY_HOST, proxyHostFieldValue, SettingsDescriptor.KEY_PROXY_PORT, proxyPortFieldValue,
-                SettingsDescriptor.KEY_PROXY_USERNAME, proxyUsernameFieldValue, SettingsDescriptor.KEY_PROXY_PWD, proxyPasswordFieldValue));
+            new HashMap<>(Map.of(SettingsDescriptor.KEY_PROXY_HOST, proxyHostFieldValue, SettingsDescriptor.KEY_PROXY_PORT, proxyPortFieldValue,
+                SettingsDescriptor.KEY_PROXY_USERNAME, proxyUsernameFieldValue, SettingsDescriptor.KEY_PROXY_PWD, proxyPasswordFieldValue)));
         final FieldModel updatedConfig = configActions.updateConfig(longConfigId, fieldModel);
 
         final Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
