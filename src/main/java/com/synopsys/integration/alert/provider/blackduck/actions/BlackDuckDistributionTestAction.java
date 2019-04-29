@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -48,7 +47,6 @@ public class BlackDuckDistributionTestAction extends TestAction {
 
     @Autowired
     public BlackDuckDistributionTestAction(final ProviderDataAccessor blackDuckDataAccessor) {
-        super(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
     }
 

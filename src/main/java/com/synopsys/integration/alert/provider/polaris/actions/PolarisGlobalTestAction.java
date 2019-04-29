@@ -30,12 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisGlobalUIConfig;
 import com.synopsys.integration.builder.BuilderStatus;
@@ -53,7 +51,6 @@ public class PolarisGlobalTestAction extends TestAction {
 
     @Autowired
     public PolarisGlobalTestAction(final PolarisProperties polarisProperties) {
-        super(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.polarisProperties = polarisProperties;
     }
 

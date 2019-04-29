@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
@@ -58,7 +57,6 @@ public class HipChatGlobalTestAction extends TestAction {
 
     @Autowired
     public HipChatGlobalTestAction(final HipChatChannel hipChatChannel, final RestChannelUtility restChannelUtility) {
-        super(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.hipChatChannel = hipChatChannel;
         this.restChannelUtility = restChannelUtility;
     }
