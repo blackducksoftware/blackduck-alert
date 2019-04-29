@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
+public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
     private final String name;
     private final String value;
     private final String url;
@@ -62,6 +62,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return Optional.ofNullable(url);
     }
 
+    @Override
     public boolean isCountable() {
         return countable;
     }
@@ -70,6 +71,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.countable = countable;
     }
 
+    @Override
     public boolean isNumericValue() {
         return isNumericValue;
     }
@@ -78,6 +80,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.isNumericValue = isNumericValue;
     }
 
+    @Override
     public boolean isSummarizable() {
         return summarizable;
     }
