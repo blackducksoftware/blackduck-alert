@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
@@ -98,7 +99,10 @@ public class PhoneHomeTask extends ScheduledTask {
     }
 
     private Map<String, String> getChannelMetaData() {
-        final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
+        final Set<String> descriptorNames = descriptorMap.getDescriptorMap().entrySet().stream()
+                                                .filter(entry -> entry.getValue().getType() != DescriptorType.COMPONENT)
+                                                .map(Map.Entry::getKey)
+                                                .collect(Collectors.toSet());
         final Map<String, Integer> createdSupportedChannels = new HashMap<>();
         for (final String name : descriptorNames) {
             try {
@@ -111,8 +115,7 @@ public class PhoneHomeTask extends ScheduledTask {
         return createdSupportedChannels
                    .entrySet()
                    .stream()
-                   // TODO the valueMapper here seems wrong
-                   .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::toString));
+                   .collect(Collectors.toMap(Map.Entry::getKey, (entry) -> entry.getValue().toString()));
     }
 
 }
