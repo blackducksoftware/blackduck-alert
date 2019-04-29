@@ -34,15 +34,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -56,72 +56,79 @@ import com.synopsys.integration.alert.common.persistence.model.RegisteredDescrip
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventPublisher;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 
 @Component
 public class FieldModelProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(FieldModelProcessor.class);
     private final DescriptorAccessor descriptorAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ContentConverter contentConverter;
-    private final ConfigurationEventPublisher configurationEventPublisher;
     private final FieldValidationAction fieldValidationAction;
-    private final List<TestAction> allTestActions;
+    private final List<ConfigurationAction> allConfigurationActions;
 
     @Autowired
     public FieldModelProcessor(final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final ConfigurationEventPublisher configurationEventPublisher,
-        final FieldValidationAction fieldValidationAction, final List<TestAction> allTestActions) {
+        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final FieldValidationAction fieldValidationAction,
+        final List<ConfigurationAction> allConfigurationActions) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = fieldModelConverter;
         this.contentConverter = contentConverter;
-        this.configurationEventPublisher = configurationEventPublisher;
         this.fieldValidationAction = fieldValidationAction;
-        this.allTestActions = allTestActions;
+        this.allConfigurationActions = allConfigurationActions;
     }
 
     //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
     public FieldModel performAfterReadAction(final FieldModel fieldModel) {
-        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.afterGetAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performBeforeDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
-        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_DELETE_BEFORE);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeDeleteAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public void performAfterDeleteAction(final String descriptorName, final String context) {
-        fireEvent(descriptorName, context, ConfigurationEventType.CONFIG_DELETE_AFTER);
+        retrieveApiAction(descriptorName, context).ifPresent(apiAction -> apiAction.afterDeleteAction(descriptorName, context));
     }
 
     public FieldModel performBeforeSaveAction(final FieldModel fieldModel) {
-        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_SAVE_BEFORE);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeSaveAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performAfterSaveAction(final FieldModel fieldModel) {
-        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_SAVE_AFTER);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.afterSaveAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) {
-        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeUpdateAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performAfterUpdateAction(final FieldModel fieldModel) {
-        return fireEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_AFTER);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.afterUpdateAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
-    private FieldModel fireEvent(final FieldModel fieldModel, final ConfigurationEventType configurationEventType) {
-        configurationEventPublisher.publishConfigurationEvent(fieldModel, configurationEventType);
-        return fieldModel;
+    public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
+        return retrieveTestAction(fieldModel.getContext(), fieldModel.getDescriptorName());
     }
 
-    private void fireEvent(final String descriptorName, final String context, final ConfigurationEventType configurationEventType) {
-        configurationEventPublisher.publishConfigurationEvent(descriptorName, context, configurationEventType);
+    public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(descriptorContext));
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
@@ -167,18 +174,6 @@ public class FieldModelProcessor {
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
         return descriptorMap.getDescriptor(descriptorName);
-    }
-
-    public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
-        return retrieveTestAction(fieldModel.getContext(), fieldModel.getDescriptorName());
-    }
-
-    public Optional<TestAction> retrieveTestAction(final String context, final String descriptorName) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return allTestActions.stream()
-                   .filter(testAction -> testAction.getDescriptorName().equals(descriptorName))
-                   .filter(testAction -> testAction.getContext().equals(descriptorContext))
-                   .findFirst();
     }
 
     public FieldModel convertToFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
@@ -240,6 +235,21 @@ public class FieldModelProcessor {
             return configurationAccessor.getConfigurationById(id);
         }
         return Optional.empty();
+    }
+
+    private Optional<ApiAction> retrieveApiAction(final FieldModel fieldModel) {
+        return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+    }
+
+    private Optional<ApiAction> retrieveApiAction(final String descriptorName, final String context) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
+    }
+
+    private Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
+        return allConfigurationActions.stream()
+                   .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
+                   .findFirst();
     }
 
     private Map<String, FieldValueModel> updateConfigurationWithSavedConfiguration(final Map<String, FieldValueModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {

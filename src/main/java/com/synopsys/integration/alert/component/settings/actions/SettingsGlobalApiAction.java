@@ -20,9 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.settings;
+package com.synopsys.integration.alert.component.settings.actions;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -30,59 +32,80 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
-public class SettingsEventListener {
-    private static final Logger logger = LoggerFactory.getLogger(SettingsEventListener.class);
+public class SettingsGlobalApiAction extends ApiAction {
+    private static final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemValidator systemValidator;
     private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsEventListener(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final SAMLManager samlManager) {
+    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
         this.samlManager = samlManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_GET_AFTER'")
-    public void handleReadConfig(final ConfigurationEvent configurationEvent) {
-        final FieldModel fieldModel = configurationEvent.getFieldModel();
+    @Override
+    public FieldModel afterGetAction(final FieldModel fieldModel) {
         final Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
+        final FieldModel fieldModelCopy = createFieldModelCopy(fieldModel);
         final boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
-        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isGlobalSaltSet()));
+        fieldModelCopy.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
+        fieldModelCopy.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        fieldModelCopy.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isGlobalSaltSet()));
+        return fieldModelCopy;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'component_settings' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_BEFORE' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_BEFORE')")
-    public void handleNewAndUpdatedConfig(final ConfigurationEvent configurationEvent) {
-        final FieldModel fieldModel = configurationEvent.getFieldModel();
+    @Override
+    public FieldModel beforeSaveAction(final FieldModel fieldModel) {
+        return handleNewAndUpdatedConfig(fieldModel);
+    }
+
+    @Override
+    public FieldModel beforeUpdateAction(final FieldModel fieldModel) {
+        return handleNewAndUpdatedConfig(fieldModel);
+    }
+
+    private FieldModel createFieldModelCopy(final FieldModel fieldModel) {
+        final HashMap<String, FieldValueModel> fields = new HashMap<>();
+        fields.putAll(fieldModel.getKeyToValues());
+
+        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+        modelToSave.setId(fieldModel.getId());
+        return modelToSave;
+    }
+
+    private FieldModel handleNewAndUpdatedConfig(final FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
         addSAMLMetadata(fieldModel);
         systemValidator.validate();
-        scrubModel(fieldModel);
+        return scrubModel(fieldModel);
     }
 
-    private void scrubModel(final FieldModel fieldModel) {
-        fieldModel.removeField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
-        fieldModel.removeField(SettingsDescriptor.KEY_ENCRYPTION_PWD);
-        fieldModel.removeField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+    private FieldModel scrubModel(final FieldModel fieldModel) {
+        final Map<String, FieldValueModel> keyToValues = new HashMap<>(fieldModel.getKeyToValues());
+        keyToValues.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
+        keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_PWD);
+        keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+
+        return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), keyToValues);
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {

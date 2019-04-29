@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.settings;
+package com.synopsys.integration.alert.component.settings.descriptor;
 
 import java.util.Collection;
 import java.util.List;

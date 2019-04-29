@@ -21,14 +21,15 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEventType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.component.scheduling.actions.SchedulingGlobalApiAction;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingUIConfig;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
-public class SchedulingEventListenerTest {
+public class SchedulingGlobalApiActionTest {
     private static final FieldValueModel FIELD_HOUR_OF_DAY = new FieldValueModel(new ArrayList<>(), false);
     private static final FieldValueModel FIELD_PURGE_FREQUENCY = new FieldValueModel(new ArrayList<>(), false);
     private static final Map<String, FieldValueModel> FIELD_MAP = Map.of(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, FIELD_HOUR_OF_DAY,
@@ -142,11 +143,9 @@ public class SchedulingEventListenerTest {
         Mockito.when(taskManager.getDifferenceToNextRun(Mockito.anyString(), Mockito.any(TimeUnit.class))).thenReturn(Optional.of(accumulatorTime));
         Mockito.when(taskManager.getNextRunTime(Mockito.anyString())).thenReturn(Optional.of(nextRunTimeString));
 
-        final SchedulingEventListener schedulingActionApi = new SchedulingEventListener(taskManager);
+        final SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(taskManager);
         final FieldModel fieldModel = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_GET_AFTER);
-        schedulingActionApi.handleReadConfig(configurationEvent);
-        final FieldModel actualFieldModel = configurationEvent.getFieldModel();
+        final FieldModel actualFieldModel = schedulingActionApi.afterGetAction(fieldModel);
         final Optional<String> accumulatorNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN);
         final Optional<String> dailyTaskNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN);
         final Optional<String> purgeTaskNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN);
@@ -163,13 +162,12 @@ public class SchedulingEventListenerTest {
     @Test
     public void testUpdateConfig() {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
-        final SchedulingEventListener schedulingActionApi = new SchedulingEventListener(taskManager);
+        final SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(taskManager);
 
         final FieldModel fieldModel = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("1"), false));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of("5"), false));
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
-        schedulingActionApi.handleNewAndSavedConfig(configurationEvent);
+        schedulingActionApi.handleNewAndSavedConfig(fieldModel);
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(DailyTask.TASK_NAME));
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(PurgeTask.TASK_NAME));
     }
@@ -177,13 +175,12 @@ public class SchedulingEventListenerTest {
     @Test
     public void testSaveConfig() {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
-        final SchedulingEventListener actionApi = new SchedulingEventListener(taskManager);
+        final SchedulingGlobalApiAction actionApi = new SchedulingGlobalApiAction(taskManager);
 
         final FieldModel fieldModel = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("2"), false));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of("6"), false));
-        final ConfigurationEvent configurationEvent = new ConfigurationEvent(fieldModel, ConfigurationEventType.CONFIG_UPDATE_BEFORE);
-        actionApi.handleNewAndSavedConfig(configurationEvent);
+        actionApi.handleNewAndSavedConfig(fieldModel);
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(DailyTask.TASK_NAME));
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(PurgeTask.TASK_NAME));
     }

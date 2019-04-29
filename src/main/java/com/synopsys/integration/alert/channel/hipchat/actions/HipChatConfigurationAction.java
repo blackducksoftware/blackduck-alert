@@ -20,18 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.hipchat;
+package com.synopsys.integration.alert.channel.hipchat.actions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
-public class HipChatDistributionTestAction extends ChannelDistributionTestAction {
+public class HipChatConfigurationAction extends ConfigurationAction {
 
     @Autowired
-    public HipChatDistributionTestAction(final HipChatChannel hipChatChannel) {
-        super(hipChatChannel);
+    protected HipChatConfigurationAction(final HipChatGlobalTestAction hipChatGlobalTestAction, final HipChatDistributionTestAction hipChatDistributionTestAction) {
+        super(HipChatChannel.COMPONENT_NAME);
+        addGlobalTestAction(hipChatGlobalTestAction);
+        addDistributionTestAction(hipChatDistributionTestAction);
     }
 }
