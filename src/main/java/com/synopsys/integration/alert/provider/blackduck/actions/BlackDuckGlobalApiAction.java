@@ -20,15 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.workflow.event.ConfigurationEvent;
+import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
@@ -36,18 +36,35 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectS
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
-public class BlackDuckEventListener {
+public class BlackDuckGlobalApiAction extends ApiAction {
     private final SystemValidator systemValidator;
     private final TaskManager taskManager;
 
     @Autowired
-    public BlackDuckEventListener(final SystemValidator systemValidator, final TaskManager taskManager) {
+    public BlackDuckGlobalApiAction(final SystemValidator systemValidator, final TaskManager taskManager) {
         this.systemValidator = systemValidator;
         this.taskManager = taskManager;
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_blackduck' && #configurationEvent.context == 'GLOBAL' && (#configurationEvent.eventType.name() == 'CONFIG_UPDATE_AFTER' || #configurationEvent.eventType.name() == 'CONFIG_SAVE_AFTER')")
-    public void handleNewOrUpdatedConfig(final ConfigurationEvent configurationEvent) {
+    @Override
+    public FieldModel afterSaveAction(final FieldModel fieldModel) {
+        handleNewOrUpdatedConfig();
+        return super.afterSaveAction(fieldModel);
+    }
+
+    @Override
+    public FieldModel afterUpdateAction(final FieldModel fieldModel) {
+        handleNewOrUpdatedConfig();
+        return super.afterUpdateAction(fieldModel);
+    }
+
+    @Override
+    public void afterDeleteAction(final String descriptorName, final String context) {
+        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
+        taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
+    }
+
+    public void handleNewOrUpdatedConfig() {
         final boolean valid = systemValidator.validate();
         // This doesn't need to validate the whole system, just the Black Duck settings.
         if (valid) {
@@ -59,9 +76,4 @@ public class BlackDuckEventListener {
         }
     }
 
-    @EventListener(condition = "#configurationEvent.configurationName == 'provider_blackduck' && #configurationEvent.context == 'GLOBAL' && #configurationEvent.eventType.name() == 'CONFIG_DELETE_AFTER'")
-    public void handleAfterDeleteConfig(final ConfigurationEvent configurationEvent) {
-        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
-        taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
-    }
 }

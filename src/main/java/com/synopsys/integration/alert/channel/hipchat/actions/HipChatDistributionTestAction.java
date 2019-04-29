@@ -20,18 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack;
+package com.synopsys.integration.alert.channel.hipchat.actions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 
 @Component
-public class SlackDistributionTestAction extends ChannelDistributionTestAction {
+public class HipChatDistributionTestAction extends ChannelDistributionTestAction {
 
     @Autowired
-    public SlackDistributionTestAction(final SlackChannel slackChannel) {
-        super(slackChannel);
+    public HipChatDistributionTestAction(final HipChatChannel hipChatChannel) {
+        super(hipChatChannel);
     }
 }
