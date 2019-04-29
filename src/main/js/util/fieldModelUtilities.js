@@ -95,7 +95,8 @@ export function hasValuesOrIsSet(fieldObject) {
 export function keysHaveValueOrIsSet(fieldModel, keys) {
     const { keyToValues } = fieldModel;
     if (keyToValues && keys) {
-        return keys.every((key) => {
+
+        return keys.some((key) => {
             const fieldObject = keyToValues[key];
             return hasValuesOrIsSet(fieldObject);
         });
