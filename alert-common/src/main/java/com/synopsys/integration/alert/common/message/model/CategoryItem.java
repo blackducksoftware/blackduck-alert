@@ -41,7 +41,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
     private final Long notificationId;
 
     private static SortedSet<LinkableItem> singleton(final LinkableItem item) {
-        final SortedSet<LinkableItem> sortedSet = new TreeSet();
+        final SortedSet<LinkableItem> sortedSet = new TreeSet<>();
         sortedSet.add(item);
         return sortedSet;
     }
@@ -91,7 +91,8 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
 
     @Override
     public int compareTo(final CategoryItem otherItem) {
-        return CompareToBuilder.reflectionCompare(this, otherItem);
+        // If the other fields are equal the item order shouldn't matter.
+        return CompareToBuilder.reflectionCompare(this, otherItem, "items");
     }
 
 }
