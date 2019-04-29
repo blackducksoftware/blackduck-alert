@@ -39,7 +39,11 @@ public class UserDetailsService implements SAMLUserDetailsService {
         final String userName = credential.getAttributeAsString("Name");
         final String emailAddress = credential.getAttributeAsString("Email");
         final String[] alertRoles = credential.getAttributeAsStringArray("AlertRoles");
-        Set<String> roles = Arrays.stream(alertRoles).collect(Collectors.toSet());
+        Set<String> roles = Set.of();
+
+        if (alertRoles != null) {
+            roles = Arrays.stream(alertRoles).collect(Collectors.toSet());
+        }
 
         final UserModel userModel = UserModel.of(userName, "", emailAddress, roles);
         return new UserPrincipal(userModel);
