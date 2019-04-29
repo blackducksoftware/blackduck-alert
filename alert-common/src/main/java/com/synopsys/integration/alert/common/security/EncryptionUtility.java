@@ -42,6 +42,8 @@ import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUti
 public class EncryptionUtility {
     private static final Logger logger = LoggerFactory.getLogger(EncryptionUtility.class);
     private static final String DATA_FILE_NAME = "alert_encryption_data.json";
+    private static final String SECRETS_ENCRYPTION_PASSWORD = "ALERT_ENCRYPTION_PASSWORD";
+    private static final String SECRETS_ENCRYPTION_SALT = "ALERT_ENCRYPTION_SALT";
     private final AlertProperties alertProperties;
     private final FilePersistenceUtil filePersistenceUtil;
 
@@ -120,6 +122,19 @@ public class EncryptionUtility {
     }
 
     private String getPasswordFromFile() {
+        final Optional<String> passwordFromSecrets = readPasswordFromSecretsFile();
+        return passwordFromSecrets.orElseGet(this::readPasswordFromVolumeDataFile);
+    }
+
+    private Optional<String> readPasswordFromSecretsFile() {
+        try {
+            return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_PASSWORD));
+        } catch (final IOException ex) {
+            return Optional.empty();
+        }
+    }
+
+    private String readPasswordFromVolumeDataFile() {
         try {
             final EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
             return encryptionFileData.getPassword();
@@ -139,6 +154,19 @@ public class EncryptionUtility {
     }
 
     private String getGlobalSaltFromFile() {
+        final Optional<String> saltFromSecrets = readGlobalSaltFromSecretsFile();
+        return saltFromSecrets.orElseGet(this::readGlobalSaltFromVolumeDataFile);
+    }
+
+    private Optional<String> readGlobalSaltFromSecretsFile() {
+        try {
+            return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
+        } catch (final IOException ex) {
+            return Optional.empty();
+        }
+    }
+
+    private String readGlobalSaltFromVolumeDataFile() {
         try {
             final EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
             return encryptionFileData.getGlobalSalt();
