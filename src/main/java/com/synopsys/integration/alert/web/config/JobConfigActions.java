@@ -41,13 +41,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -107,11 +108,14 @@ public class JobConfigActions {
     public void deleteJobById(final UUID id) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
         if (jobs.isPresent()) {
+            final LinkedList<String> descriptorNames = new LinkedList<>();
             final ConfigurationJobModel configurationJobModel = jobs.get();
             for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-                fieldModelProcessor.performDeleteAction(configurationModel);
+                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(configurationModel);
+                descriptorNames.add(fieldModel.getDescriptorName());
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
+            descriptorNames.forEach(descriptorName -> fieldModelProcessor.performAfterDeleteAction(descriptorName, ConfigContextEnum.DISTRIBUTION.name()));
         }
     }
 
@@ -121,14 +125,18 @@ public class JobConfigActions {
         final Set<String> descriptorNames = new HashSet<>();
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            descriptorNames.add(fieldModel.getDescriptorName());
-            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
+            final FieldModel beforeSaveEventFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
+            descriptorNames.add(beforeSaveEventFieldModel.getDescriptorName());
+            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(beforeSaveEventFieldModel).values();
             configurationFieldModels.addAll(savedFieldsModels);
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
 
-        final Set<FieldModel> updatedFieldModels = performUpdate(savedJobFieldModel);
+        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+                                                       .stream()
+                                                       .map(fieldModelProcessor::performAfterSaveAction)
+                                                       .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
@@ -137,22 +145,19 @@ public class JobConfigActions {
         validateJob(jobFieldModel);
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            final Long fieldModelId = contentConverter.getLongValue(fieldModel.getId());
-            final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, fieldModel);
+            final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+            final Long fieldModelId = contentConverter.getLongValue(beforeUpdateEventFieldModel.getId());
+            final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
-        final Set<FieldModel> updatedFieldModels = performUpdate(savedJobFieldModel);
+        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+                                                       .stream()
+                                                       .map(fieldModelProcessor::performAfterUpdateAction)
+                                                       .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
-    }
-
-    private Set<FieldModel> performUpdate(final JobFieldModel savedJobFieldModel) {
-        return savedJobFieldModel.getFieldModels()
-                   .stream()
-                   .map(fieldModelProcessor::performBeforeUpdateAction)
-                   .collect(Collectors.toSet());
     }
 
     private void validateJobNameUnique(final JobFieldModel jobFieldModel) throws AlertFieldException {
@@ -213,8 +218,8 @@ public class JobConfigActions {
         }
 
         if (null != channelFieldModel) {
-            final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(channelFieldModel);
-            if (descriptorActionApi.isPresent()) {
+            final Optional<TestAction> testActionOptional = fieldModelProcessor.retrieveTestAction(channelFieldModel);
+            if (testActionOptional.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
                 fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
@@ -226,14 +231,20 @@ public class JobConfigActions {
                     fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
                 }
 
-                final DescriptorActionApi descriptorApi = descriptorActionApi.get();
+                final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-                final TestConfigModel testConfig = descriptorApi.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
-                descriptorApi.testConfig(testConfig);
+                final TestConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
+                final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                                    .flatMap(providerName -> fieldModelProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                if (providerTestAction.isPresent()) {
+                    providerTestAction.get().testConfig(testConfig);
+                }
+                testAction.testConfig(testConfig);
                 return "Successfully sent test message.";
             } else {
-                logger.error("Descriptor action api did not exist: {}", channelFieldModel.getDescriptorName());
-                return "Internal server error. Failed to send test message.";
+                final String descriptorName = channelFieldModel.getDescriptorName();
+                logger.error("Test action did not exist: {}", descriptorName);
+                throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
             }
         }
         return "No field model of type channel was was sent to test.";
@@ -244,7 +255,7 @@ public class JobConfigActions {
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (final ConfigurationModel configurationModel : configurations) {
             final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-            constructedFieldModels.add(fieldModelProcessor.performReadAction(fieldModel));
+            constructedFieldModels.add(fieldModelProcessor.performAfterReadAction(fieldModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }

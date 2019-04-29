@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -41,13 +39,11 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public abstract class Descriptor extends AlertSerializableModel {
     private final String name;
     private final DescriptorType type;
-    private final Map<ConfigContextEnum, DescriptorActionApi> actionApis;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
         this.type = type;
-        actionApis = new EnumMap<>(ConfigContextEnum.class);
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
@@ -59,26 +55,12 @@ public abstract class Descriptor extends AlertSerializableModel {
         return type;
     }
 
-    public void addGlobalActionApi(final DescriptorActionApi descriptorActionApi) {
-        actionApis.put(ConfigContextEnum.GLOBAL, descriptorActionApi);
-    }
-
-    public void addDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
-        actionApis.put(ConfigContextEnum.DISTRIBUTION, descriptorActionApi);
-    }
-
-    public void addGlobalUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
+    public void addGlobalUiConfig(final UIConfig uiConfig) {
         uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
-        addGlobalActionApi(descriptorActionApi);
     }
 
-    public void addDistributionUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
+    public void addDistributionUiConfig(final UIConfig uiConfig) {
         uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
-        addDistributionActionApi(descriptorActionApi);
-    }
-
-    public Optional<DescriptorActionApi> getActionApi(final ConfigContextEnum actionApiType) {
-        return Optional.ofNullable(actionApis.get(actionApiType));
     }
 
     public Optional<UIConfig> getUIConfig(final ConfigContextEnum actionApiType) {
@@ -96,17 +78,6 @@ public abstract class Descriptor extends AlertSerializableModel {
                    .stream()
                    .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
                    .collect(Collectors.toSet());
-    }
-
-    public List<DescriptorMetadata> getAllMetaData() {
-        if (hasUIConfigs()) {
-            return uiConfigs.entrySet()
-                       .stream()
-                       .map(entry -> createMetaData(entry.getValue(), entry.getKey()))
-                       .collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     public Set<ConfigContextEnum> getAppliedUIContexts() {
