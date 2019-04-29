@@ -61,7 +61,7 @@ public class SAMLContext {
     }
 
     public boolean isSAMLEnabled(final ConfigurationModel configurationModel) {
-        return Boolean.valueOf(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_SAML_ENABLED));
+        return getFieldValueBoolean(configurationModel, SettingsDescriptor.KEY_SAML_ENABLED);
     }
 
     public String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {

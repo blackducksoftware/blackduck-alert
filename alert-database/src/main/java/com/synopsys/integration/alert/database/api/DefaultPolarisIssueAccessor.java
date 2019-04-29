@@ -81,7 +81,7 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
         if (optionalProjectId.isPresent()) {
             return polarisIssueRepository.findByProjectId(optionalProjectId.get())
                        .stream()
-                       .filter(entity -> issueType == entity.getIssueType())
+                       .filter(entity -> issueType.equals(entity.getIssueType()))
                        .findFirst()
                        .map(entity -> new PolarisIssueModel(entity.getIssueType(), entity.getPreviousCount(), entity.getCurrentCount()));
         }

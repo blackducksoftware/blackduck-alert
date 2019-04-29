@@ -92,19 +92,19 @@ public class PolarisApiHelper {
 
     public Set<String> getAllEmailsForProject(final ProjectV0Resource project) throws IntegrationException {
         List<UserResource> allUsers = null;
-        final RoleAssignmentResources projectRoleAssignements = roleAssignmentService.getRoleAssignmentsForProjectWithIncluded(project.getId(),
+        final RoleAssignmentResources projectRoleAssignments = roleAssignmentService.getRoleAssignmentsForProjectWithIncluded(project.getId(),
             RoleAssignmentService.INCLUDE_USERS, RoleAssignmentService.INCLUDE_GROUPS);
 
         final Set<String> emails = new HashSet<>();
-        for (final RoleAssignmentResource roleAssignment : projectRoleAssignements.getData()) {
-            final Optional<String> optionalUserEmail = getEmailForRoleAssignedUser(projectRoleAssignements, roleAssignment);
+        for (final RoleAssignmentResource roleAssignment : projectRoleAssignments.getData()) {
+            final Optional<String> optionalUserEmail = getEmailForRoleAssignedUser(projectRoleAssignments, roleAssignment);
             if (optionalUserEmail.isPresent()) {
                 emails.add(optionalUserEmail.get());
             } else {
                 if (null == allUsers) {
                     allUsers = userService.getAllUsers();
                 }
-                final Set<String> groupEmails = getGroupEmailsForRoleAssignedUser(projectRoleAssignements, roleAssignment, allUsers);
+                final Set<String> groupEmails = getGroupEmailsForRoleAssignedUser(projectRoleAssignments, roleAssignment, allUsers);
                 emails.addAll(groupEmails);
             }
         }
@@ -140,10 +140,10 @@ public class PolarisApiHelper {
         final Map<String, Integer> issueTypeCounts = new HashMap<>();
         for (final IssueV0Resource queryIssue : queryIssues) {
             final String issueKey = queryIssue.getAttributes().getIssueKey();
-            final IssueResourcesSingle populatedIssueResouce = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
+            final IssueResourcesSingle populatedIssueResource = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
             final String subTool = queryIssue.getAttributes().getSubTool();
             final String issueType = issueService
-                                         .getIssueTypeFromPopulatedIssueResources(populatedIssueResouce)
+                                         .getIssueTypeFromPopulatedIssueResources(populatedIssueResource)
                                          .map(IssueTypeV0Resource::getAttributes)
                                          .map(IssueTypeV0Attributes::getName)
                                          .orElse(subTool);
