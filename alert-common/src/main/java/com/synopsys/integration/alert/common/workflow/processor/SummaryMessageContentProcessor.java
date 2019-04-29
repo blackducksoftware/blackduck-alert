@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -111,7 +112,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         } else {
             final SortedSet<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
             if (newDetailedItems.isEmpty()) {
-                summarizedLinkableItems.add(new LinkableItem(newItemName, item.getValue()));
+                final LinkableItem summarizedLinkableItem = new LinkableItem(newItemName, item.getValue());
+                summarizedLinkableItem.setSummarizable(true);
+                summarizedLinkableItem.setNumericValueFlag(isNumericValue);
+                summarizedLinkableItems.add(summarizedLinkableItem);
             } else {
                 summarizedLinkableItems.addAll(newDetailedItems);
             }
@@ -129,31 +133,18 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     private SortedSet<LinkableItem> createLinkableItemsByValue(final String itemName, final SortedSet<LinkableItem> linkableItems) {
-        final Map<String, Integer> valueCounts = countItemsOfSameValueForName(itemName, linkableItems);
+        final Set<String> uniqueValuesMatchingName = linkableItems
+                                                         .stream()
+                                                         .filter(item -> itemName.equals(item.getName()))
+                                                         .map(LinkableItem::getValue)
+                                                         .collect(Collectors.toSet());
         final SortedSet<LinkableItem> summarizedLinkableItems = new ConcurrentSkipListSet<>();
-        for (final Map.Entry<String, Integer> valueCount : valueCounts.entrySet()) {
-            // TODO original approach to tackle vulnerability counts:
-            //            final String newName = String.format("%s - %s", itemName, valueCount.getKey());
-            //            final String newValue = Integer.toString(valueCount.getValue());
-            //  summarizedLinkableItems.add(new LinkableItem(newName, newValue));
-
-            final LinkableItem newLinkableItem = new LinkableItem(itemName, valueCount.getKey());
+        for (final String uniqueValue : uniqueValuesMatchingName) {
+            final LinkableItem newLinkableItem = new LinkableItem(itemName, uniqueValue);
             newLinkableItem.setSummarizable(true);
             summarizedLinkableItems.add(newLinkableItem);
         }
         return summarizedLinkableItems;
-    }
-
-    private Map<String, Integer> countItemsOfSameValueForName(final String itemName, final SortedSet<LinkableItem> linkableItems) {
-        final Map<String, Integer> valueCounts = new LinkedHashMap<>();
-        for (final LinkableItem item : linkableItems) {
-            if (itemName.equals(item.getName())) {
-                final String value = item.getValue();
-                final Integer valueCount = valueCounts.getOrDefault(value, 0);
-                valueCounts.put(value, valueCount + 1);
-            }
-        }
-        return valueCounts;
     }
 
     private SortedSet<CategoryItem> collapseDuplicateCategoryItems(final List<CategoryItem> categoryItems) {
