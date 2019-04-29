@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 public class FilePersistenceUtil {
     public static final String ENCODING = "UTF-8";
     private final File parentDataDirectory;
+    private final File secretsDirectory;
     private final Gson gson;
 
     @Autowired
@@ -47,6 +48,7 @@ public class FilePersistenceUtil {
             dataDirectory = String.format("%s/data", alertProperties.getAlertConfigHome());
         }
         this.parentDataDirectory = new File(dataDirectory);
+        this.secretsDirectory = new File("/run/secrets");
     }
 
     public void writeToFile(final String fileName, final String content) throws IOException {
@@ -59,7 +61,15 @@ public class FilePersistenceUtil {
     }
 
     public String readFromFile(final String fileName) throws IOException {
-        return FileUtils.readFileToString(createFilePath(fileName), ENCODING);
+        return readFromFile(parentDataDirectory, fileName);
+    }
+
+    public String readFromSecretsFile(final String secretsFileName) throws IOException {
+        return readFromFile(secretsDirectory, secretsFileName);
+    }
+
+    private String readFromFile(final File parentDirectory, final String fileName) throws IOException {
+        return FileUtils.readFileToString(createFilePath(parentDirectory, fileName), ENCODING);
     }
 
     public <T> T readJsonFromFile(final String fileName, final Class<T> clazz) throws IOException {
@@ -68,7 +78,11 @@ public class FilePersistenceUtil {
     }
 
     public boolean exists(final String fileName) {
-        final File file = createFilePath(fileName);
+        return exists(parentDataDirectory, fileName);
+    }
+
+    public boolean exists(final File parentDirectory, final String fileName) {
+        final File file = createFilePath(parentDirectory, fileName);
         return file.exists();
     }
 
@@ -78,6 +92,10 @@ public class FilePersistenceUtil {
     }
 
     private File createFilePath(final String fileName) {
-        return new File(parentDataDirectory, fileName);
+        return createFilePath(parentDataDirectory, fileName);
+    }
+
+    private File createFilePath(final File parent, final String fileName) {
+        return new File(parent, fileName);
     }
 }
