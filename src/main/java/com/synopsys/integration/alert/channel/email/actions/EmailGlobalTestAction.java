@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
@@ -52,7 +51,6 @@ public class EmailGlobalTestAction extends TestAction {
 
     @Autowired
     public EmailGlobalTestAction(final EmailChannel emailChannel) {
-        super(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL);
         this.emailChannel = emailChannel;
     }
 

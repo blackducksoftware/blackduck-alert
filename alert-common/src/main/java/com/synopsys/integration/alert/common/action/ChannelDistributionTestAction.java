@@ -27,7 +27,6 @@ import java.util.Date;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -39,7 +38,6 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     private final DistributionChannel distributionChannel;
 
     public ChannelDistributionTestAction(final DistributionChannel distributionChannel) {
-        super(distributionChannel.getDestinationName(), ConfigContextEnum.DISTRIBUTION);
         this.distributionChannel = distributionChannel;
     }
 
