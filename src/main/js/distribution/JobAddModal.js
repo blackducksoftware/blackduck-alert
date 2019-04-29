@@ -8,52 +8,20 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
-
+import DistributionConfiguration from 'dynamic/DistributionConfiguration';
 
 class JobAddModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
             show: true,
-            values: []
+            channelDescriptor: {}
         };
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
-        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
         this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
-    }
-
-    getCurrentJobConfig() {
-        switch (this.state.values.typeValue) {
-            case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL:
-                return (<EmailJobConfiguration
-                    alertChannelName={this.state.values.typeValue}
-                    projects={this.props.projects}
-                    handleCancel={this.handleClose}
-                    handleSaveBtnClick={this.handleSaveBtnClick}
-                    fixedButtonGroup={false}
-                />);
-            case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT:
-                return (<HipChatJobConfiguration
-                    alertChannelName={this.state.values.typeValue}
-                    projects={this.props.projects}
-                    handleCancel={this.handleClose}
-                    handleSaveBtnClick={this.handleSaveBtnClick}
-                    fixedButtonGroup={false}
-                />);
-            case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK:
-                return (<SlackJobConfiguration
-                    alertChannelName={this.state.values.typeValue}
-                    projects={this.props.projects}
-                    handleCancel={this.handleClose}
-                    handleSaveBtnClick={this.handleSaveBtnClick}
-                    fixedButtonGroup={false}
-                />);
-            default:
-                return null;
-        }
     }
 
     handleSaveBtnClick(values) {
@@ -64,11 +32,11 @@ class JobAddModal extends Component {
     }
 
     handleTypeChanged(option) {
-        const { values } = this.state;
         if (option) {
-            values.typeValue = option.value;
+            const { value } = option;
+            const foundDescriptor = this.props.descriptors.find(descriptor => descriptor.name === value);
             this.setState({
-                values
+                channelDescriptor: foundDescriptor
             });
         }
     }
@@ -97,7 +65,7 @@ class JobAddModal extends Component {
 
         let jobTypeValue = null;
         if (jobTypeOptions) {
-            jobTypeValue = jobTypeOptions.find(option => option.value === this.state.values.typeValue);
+            jobTypeValue = jobTypeOptions.find(option => option.value === this.state.channelDescriptor.name);
         }
 
         // event propagation outside of the modal seems to cause a problem not being able to use the tab key to cycle through the form fields.
@@ -129,7 +97,7 @@ class JobAddModal extends Component {
                                 value={jobTypeValue}
                             />
                         </form>
-                        {this.getCurrentJobConfig()}
+                        <DistributionConfiguration channel={this.state.channelDescriptor} handleCancel={this.handleClose} />
                     </Modal.Body>
 
                 </Modal>

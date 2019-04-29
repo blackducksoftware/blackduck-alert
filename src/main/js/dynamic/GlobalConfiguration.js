@@ -29,8 +29,7 @@ class GlobalConfiguration extends React.Component {
             currentKeys: fieldKeys,
             showTest: false,
             destinationName: ''
-        }
-        ;
+        };
     }
 
     componentDidMount() {
