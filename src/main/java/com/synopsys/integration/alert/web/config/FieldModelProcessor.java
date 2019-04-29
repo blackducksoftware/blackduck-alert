@@ -34,15 +34,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -59,59 +59,84 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class FieldModelProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(FieldModelProcessor.class);
     private final DescriptorAccessor descriptorAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ContentConverter contentConverter;
+    private final FieldValidationAction fieldValidationAction;
+    private final List<ConfigurationAction> allConfigurationActions;
 
     @Autowired
     public FieldModelProcessor(final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter) {
+        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter, final FieldValidationAction fieldValidationAction,
+        final List<ConfigurationAction> allConfigurationActions) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = fieldModelConverter;
         this.contentConverter = contentConverter;
+        this.fieldValidationAction = fieldValidationAction;
+        this.allConfigurationActions = allConfigurationActions;
     }
 
     //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
-    public FieldModel performReadAction(final FieldModel fieldModel) {
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        return descriptorActionApi.map(actionApi -> actionApi.readConfig(fieldModel)).orElse(fieldModel);
+    public FieldModel performAfterReadAction(final FieldModel fieldModel) {
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.afterGetAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
-    public FieldModel performDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel performBeforeDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeDeleteAction(fieldModel))
+                   .orElse(fieldModel);
+    }
+
+    public void performAfterDeleteAction(final String descriptorName, final String context) {
+        retrieveApiAction(descriptorName, context).ifPresent(apiAction -> apiAction.afterDeleteAction(descriptorName, context));
     }
 
     public FieldModel performBeforeSaveAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.beforeSaveConfig(fieldModel)).orElse(fieldModel);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeSaveAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performAfterSaveAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.afterSaveConfig(fieldModel)).orElse(fieldModel);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.afterSaveAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.beforeUpdateConfig(fieldModel)).orElse(fieldModel);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeUpdateAction(fieldModel))
+                   .orElse(fieldModel);
     }
 
     public FieldModel performAfterUpdateAction(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel).map(actionApi -> actionApi.afterUpdateConfig(fieldModel)).orElse(fieldModel);
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.afterUpdateAction(fieldModel))
+                   .orElse(fieldModel);
+    }
+
+    public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
+        return retrieveTestAction(fieldModel.getContext(), fieldModel.getDescriptorName());
+    }
+
+    public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(descriptorContext));
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        if (descriptorActionApi.isPresent()) {
-            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
-                                                              .stream()
-                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-            descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
-        }
+        final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
+                                                          .stream()
+                                                          .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }
 
@@ -151,31 +176,21 @@ public class FieldModelProcessor {
         return descriptorMap.getDescriptor(descriptorName);
     }
 
-    public Optional<DescriptorActionApi> retrieveDescriptorActionApi(final FieldModel fieldModel) {
-        return retrieveDescriptorActionApi(fieldModel.getContext(), fieldModel.getDescriptorName());
-    }
-
-    public Optional<DescriptorActionApi> retrieveDescriptorActionApi(final String context, final String descriptorName) {
-        final Optional<Descriptor> descriptor = retrieveDescriptor(descriptorName);
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        if (descriptor.isPresent()) {
-            return Optional.ofNullable(descriptor.get().getActionApi(descriptorContext).orElse(null));
-        }
-        logger.error("Could not find a Descriptor with the name: " + descriptorName);
-        return Optional.empty();
-    }
-
     public FieldModel convertToFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final Long configId = configurationModel.getConfigurationId();
-        final RegisteredDescriptorModel descriptor = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
-                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
-        final String descriptorName = descriptor.getName();
+        final String descriptorName = getDescriptorName(configurationModel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         for (final ConfigurationFieldModel fieldModel : configurationModel.getCopyOfFieldList()) {
             populateAndSecureFields(fieldModel, fields);
         }
 
         return new FieldModel(configId.toString(), descriptorName, configurationModel.getDescriptorContext().name(), fields);
+    }
+
+    public String getDescriptorName(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+        return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                   .map(RegisteredDescriptorModel::getName)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
     }
 
     public Map<String, FieldValueModel> convertToFieldValuesMap(final Collection<ConfigurationFieldModel> configurationFieldModels) {
@@ -220,6 +235,21 @@ public class FieldModelProcessor {
             return configurationAccessor.getConfigurationById(id);
         }
         return Optional.empty();
+    }
+
+    private Optional<ApiAction> retrieveApiAction(final FieldModel fieldModel) {
+        return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+    }
+
+    private Optional<ApiAction> retrieveApiAction(final String descriptorName, final String context) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
+    }
+
+    private Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
+        return allConfigurationActions.stream()
+                   .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
+                   .findFirst();
     }
 
     private Map<String, FieldValueModel> updateConfigurationWithSavedConfiguration(final Map<String, FieldValueModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {

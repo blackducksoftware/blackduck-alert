@@ -49,9 +49,9 @@ public class PolarisDescriptor extends ProviderDescriptor {
     private final ObjectFactory<PolarisCollector> polarisCollector;
 
     @Autowired
-    public PolarisDescriptor(final PolarisGlobalDescriptorActionApi polarisGlobalDescriptorActionApi, final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionDescriptorActionApi polarisDistributionDescriptorActionApi,
-        final PolarisDistributionUIConfig polarisDistributionUIConfig, final @NotNull PolarisProvider provider, final ObjectFactory<PolarisCollector> polarisCollector) {
-        super(polarisGlobalDescriptorActionApi, polarisGlobalUIConfig, polarisDistributionDescriptorActionApi, polarisDistributionUIConfig, provider);
+    public PolarisDescriptor(final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionUIConfig polarisDistributionUIConfig, final @NotNull PolarisProvider provider,
+        final ObjectFactory<PolarisCollector> polarisCollector) {
+        super(polarisGlobalUIConfig, polarisDistributionUIConfig, provider);
         this.polarisCollector = polarisCollector;
     }
 

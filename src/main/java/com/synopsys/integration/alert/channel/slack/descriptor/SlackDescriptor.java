@@ -39,8 +39,8 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String SLACK_ICON = "slack";
 
     @Autowired
-    public SlackDescriptor(final SlackDistributionDescriptorActionApi distributionRestApi, final SlackUIConfig slackUIConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, distributionRestApi, slackUIConfig);
+    public SlackDescriptor(final SlackUIConfig slackUIConfig) {
+        super(SlackChannel.COMPONENT_NAME, slackUIConfig);
     }
 
 }
