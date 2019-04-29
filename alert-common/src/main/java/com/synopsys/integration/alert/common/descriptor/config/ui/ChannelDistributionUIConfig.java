@@ -68,16 +68,24 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
+        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, getDescriptorNames(DescriptorType.CHANNEL))
+                                            .hideField(KEY_NAME)
+                                            .hideField(KEY_FREQUENCY)
+                                            .hideField(KEY_PROVIDER_NAME);
+
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
                                                                                                                                   .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
                                                                                                                                   .collect(Collectors.toList()));
-        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, getDescriptorNames(DescriptorType.CHANNEL));
+
         final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, getDescriptorNames(DescriptorType.PROVIDER));
 
-        final List<ConfigField> configFields = List.of(name, channelName, frequency, providerName);
+        final List<ConfigField> configFields = List.of(channelName, name, frequency);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
-        return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
+        channelDistributionFields.stream().map(ConfigField::getKey).forEach(channelName::hideField);
+        final List<ConfigField> allChannelFields = Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
+        allChannelFields.add(providerName);
+        return allChannelFields;
     }
 
     public abstract List<ConfigField> createChannelDistributionFields();
