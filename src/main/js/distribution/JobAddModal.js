@@ -9,13 +9,23 @@ import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import SelectInput from 'field/input/SelectInput';
 import DistributionConfiguration from 'dynamic/DistributionConfiguration';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as FieldMapping from "../util/fieldMapping";
+
+const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 
 class JobAddModal extends Component {
     constructor(props) {
         super(props);
+        const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const { fields, context, name } = defaultDescriptor;
+        const fieldKeys = FieldMapping.retrieveKeys(fields);
+        const emptyFieldModel = FieldModelUtilities.createEmptyFieldModel(fieldKeys, context, name);
+        const updatedFieldModel = FieldModelUtilities.updateFieldModelSingleValue(emptyFieldModel, KEY_CHANNEL_NAME, name);
         this.state = {
             show: true,
-            channelDescriptor: {}
+            channelDescriptor: defaultDescriptor,
+            channelConfig: updatedFieldModel
         };
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
@@ -97,7 +107,7 @@ class JobAddModal extends Component {
                                 value={jobTypeValue}
                             />
                         </form>
-                        <DistributionConfiguration channel={this.state.channelDescriptor} handleCancel={this.handleClose} />
+                        <DistributionConfiguration channel={this.state.channelDescriptor} handleCancel={this.handleClose} channelConfig={this.state.channelConfig} />
                     </Modal.Body>
 
                 </Modal>

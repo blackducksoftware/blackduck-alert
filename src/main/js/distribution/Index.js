@@ -8,12 +8,12 @@ import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
-import JobAddModal from 'distribution/JobAddModal';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import DistributionConfiguration from 'dynamic/DistributionConfiguration';
 
 /**
  * Selects className based on field value
@@ -164,9 +164,8 @@ class Index extends Component {
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
-            <JobAddModal
+            <DistributionConfiguration
                 projects={this.state.projects}
-                includeAllProjects
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
                     this.props.fetchDistributionJobs();
