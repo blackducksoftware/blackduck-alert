@@ -24,13 +24,13 @@ package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,26 +70,26 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             return message;
         }
 
-        final Map<ItemOperation, SortedSet<CategoryItem>> itemsByOperation = sortByOperation(originalCategoryItems);
+        final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = sortByOperation(originalCategoryItems);
 
-        final SortedSet<CategoryItem> summarizedCategoryItems = new ConcurrentSkipListSet<>();
-        for (final Map.Entry<ItemOperation, SortedSet<CategoryItem>> sortedEntry : itemsByOperation.entrySet()) {
-            final SortedSet<CategoryItem> summarizedCategoryItemsForOperation = createSummarizedCategoryItems(sortedEntry.getKey(), sortedEntry.getValue());
+        final SortedSet<CategoryItem> summarizedCategoryItems = new TreeSet<>();
+        for (final Map.Entry<ItemOperation, LinkedHashSet<CategoryItem>> sortedEntry : itemsByOperation.entrySet()) {
+            final LinkedHashSet<CategoryItem> summarizedCategoryItemsForOperation = createSummarizedCategoryItems(sortedEntry.getKey(), sortedEntry.getValue());
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
         return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems);
     }
 
-    private Map<ItemOperation, SortedSet<CategoryItem>> sortByOperation(final SortedSet<CategoryItem> originalCategoryItems) {
-        final Map<ItemOperation, SortedSet<CategoryItem>> itemsByOperation = new LinkedHashMap<>();
+    private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {
+        final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = new LinkedHashMap<>();
         for (final CategoryItem categoryItem : originalCategoryItems) {
-            itemsByOperation.computeIfAbsent(categoryItem.getOperation(), ignored -> new ConcurrentSkipListSet<>()).add(categoryItem);
+            itemsByOperation.computeIfAbsent(categoryItem.getOperation(), ignored -> new LinkedHashSet<>()).add(categoryItem);
         }
         return itemsByOperation;
     }
 
-    private SortedSet<CategoryItem> createSummarizedCategoryItems(final ItemOperation operation, final SortedSet<CategoryItem> categoryItemsForOperation) {
+    private LinkedHashSet<CategoryItem> createSummarizedCategoryItems(final ItemOperation operation, final Set<CategoryItem> categoryItemsForOperation) {
         final List<CategoryItem> summarizedCategoryItems = new LinkedList<>();
         for (final CategoryItem categoryItem : categoryItemsForOperation) {
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(categoryItemsForOperation, categoryItem.getItems());
@@ -101,11 +101,11 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return collapseDuplicateCategoryItems(summarizedCategoryItems);
     }
 
-    private SortedSet<LinkableItem> createSummarizedLinkableItems(final SortedSet<CategoryItem> categoryItems, final SortedSet<LinkableItem> linkableItems) {
-        final Map<String, List<LinkableItem>> itemsOfSameName = new ConcurrentSkipListMap<>();
+    private SortedSet<LinkableItem> createSummarizedLinkableItems(final Set<CategoryItem> categoryItems, final Set<LinkableItem> linkableItems) {
+        final Map<String, List<LinkableItem>> itemsOfSameName = new LinkedHashMap<>();
         categoryItems.forEach(item -> itemsOfSameName.putAll(item.getItemsOfSameName()));
 
-        final SortedSet<LinkableItem> summarizedLinkableItems = new ConcurrentSkipListSet<>();
+        final SortedSet<LinkableItem> summarizedLinkableItems = new TreeSet<>();
         for (final Map.Entry<String, List<LinkableItem>> similarItemEntries : itemsOfSameName.entrySet()) {
             similarItemEntries.getValue()
                 .stream()
@@ -117,7 +117,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return summarizedLinkableItems;
     }
 
-    private void createNewItems(final LinkableItem item, final SortedSet<LinkableItem> summarizedLinkableItems, final String oldItemName, final SortedSet<LinkableItem> linkableItems) {
+    private void createNewItems(final LinkableItem item, final Set<LinkableItem> summarizedLinkableItems, final String oldItemName, final Set<LinkableItem> linkableItems) {
         final boolean isCountable = item.isCountable();
         final boolean isNumericValue = item.isNumericValue();
         final String newItemName = generateSummaryItemName(oldItemName, isCountable, isNumericValue);
@@ -128,7 +128,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             updateSummarizability(newLinkableItem, true, true);
             summarizedLinkableItems.add(newLinkableItem);
         } else {
-            final SortedSet<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
+            final Set<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
             if (newDetailedItems.isEmpty()) {
                 final LinkableItem summarizedLinkableItem = new LinkableItem(newItemName, item.getValue());
                 updateSummarizability(summarizedLinkableItem, false, isNumericValue);
@@ -149,13 +149,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return oldItemName;
     }
 
-    private SortedSet<LinkableItem> createLinkableItemsByValue(final String itemName, final SortedSet<LinkableItem> linkableItems) {
+    private LinkedHashSet<LinkableItem> createLinkableItemsByValue(final String itemName, final Set<LinkableItem> linkableItems) {
         final Set<String> uniqueValuesMatchingName = linkableItems
                                                          .stream()
                                                          .filter(item -> itemName.equals(item.getName()))
                                                          .map(LinkableItem::getValue)
                                                          .collect(Collectors.toSet());
-        final SortedSet<LinkableItem> summarizedLinkableItems = new ConcurrentSkipListSet<>();
+        final LinkedHashSet<LinkableItem> summarizedLinkableItems = new LinkedHashSet<>();
         for (final String uniqueValue : uniqueValuesMatchingName) {
             final LinkableItem newLinkableItem = new LinkableItem(itemName, uniqueValue);
             newLinkableItem.setSummarizable(true);
@@ -164,15 +164,15 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return summarizedLinkableItems;
     }
 
-    private SortedSet<CategoryItem> collapseDuplicateCategoryItems(final List<CategoryItem> categoryItems) {
-        final ConcurrentSkipListMap<CategoryKey, CategoryItem> keyToItem = new ConcurrentSkipListMap<>();
+    private LinkedHashSet<CategoryItem> collapseDuplicateCategoryItems(final List<CategoryItem> categoryItems) {
+        final LinkedHashMap<CategoryKey, CategoryItem> keyToItem = new LinkedHashMap<>();
         for (final CategoryItem currentItem : categoryItems) {
             CategoryItem updatedCategoryItem = currentItem;
             final CategoryKey categoryKey = currentItem.getCategoryKey();
             if (keyToItem.containsKey(categoryKey)) {
                 final CategoryItem oldCategoryItem = keyToItem.get(categoryKey);
-                final SortedSet<LinkableItem> oldLinkableItems = oldCategoryItem.getItems();
-                final SortedSet<LinkableItem> currentLinkableItems = currentItem.getItems();
+                final Set<LinkableItem> oldLinkableItems = oldCategoryItem.getItems();
+                final Set<LinkableItem> currentLinkableItems = currentItem.getItems();
                 final List<LinkableItem> combinedLinkableItems = Stream.concat(oldLinkableItems.stream(), currentLinkableItems.stream()).collect(Collectors.toList());
 
                 final SortedSet<LinkableItem> collapsedLinkableItems = collapseDuplicateLinkableItems(combinedLinkableItems);
@@ -180,16 +180,16 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             }
             keyToItem.put(categoryKey, updatedCategoryItem);
         }
-        return new ConcurrentSkipListSet<>(keyToItem.values());
+        return new LinkedHashSet<>(keyToItem.values());
     }
 
     private SortedSet<LinkableItem> collapseDuplicateLinkableItems(final List<LinkableItem> linkableItems) {
-        final ConcurrentSkipListMap<String, List<LinkableItem>> nameToItems = new ConcurrentSkipListMap<>();
+        final LinkedHashMap<String, List<LinkableItem>> nameToItems = new LinkedHashMap<>();
         for (final LinkableItem item : linkableItems) {
             nameToItems.computeIfAbsent(item.getName(), ignored -> new LinkedList<>()).add(item);
         }
 
-        final SortedSet<LinkableItem> collapsedItems = new ConcurrentSkipListSet<>();
+        final SortedSet<LinkableItem> collapsedItems = new TreeSet<>();
         for (final Map.Entry<String, List<LinkableItem>> nameToItemEntries : nameToItems.entrySet()) {
             final String itemName = nameToItemEntries.getKey();
             final List<LinkableItem> itemsOfSameName = nameToItemEntries.getValue();
