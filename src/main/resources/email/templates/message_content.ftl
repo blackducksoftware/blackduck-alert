@@ -67,9 +67,9 @@
 <#if content??>
     <strong>
         <@printLinkableItem content/>
-        <#if content.subTopic.isPresent()>
+        <#if content.subTopics?? && content.subTopics?size != 0>
             <br />
-            <@printLinkableItem content.subTopic.get()/>
+            <@printList content.subTopics[0].name content.subTopics/>
         </#if>
     </strong>
     <br />- - - - - - - - - - - - - - - - - - - -

@@ -104,7 +104,7 @@ public class DefaultEmailHandler extends EmailHandler {
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
     private Set<String> licenseNotificationCheck(final AggregateMessageContent content, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
-        final Optional<LinkableItem> subTopic = content.getSubTopic();
+        final Set<LinkableItem> subTopic = content.getSubTopics();
         if (subTopic.isEmpty()) {
             final Boolean filterByProject = fieldAccessor.getBoolean(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT).orElse(false);
             List<String> associatedProjects = List.of();

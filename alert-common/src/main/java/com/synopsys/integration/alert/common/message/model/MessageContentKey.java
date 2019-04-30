@@ -22,17 +22,16 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.Set;
+
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public final class MessageContentKey extends AlertSerializableModel {
+    private static final String SEPARATOR = "_";
     private final String key;
 
-    private MessageContentKey(final String key) {
-        this.key = key;
-    }
-
     public static MessageContentKey from(final String topicName, final String topicValue) {
-        final String partialKey = String.format("%s_%s", topicName, topicValue);
+        final String partialKey = String.format("%s%s%s", topicName, SEPARATOR, topicValue);
         return new MessageContentKey(partialKey);
     }
 
@@ -44,7 +43,32 @@ public final class MessageContentKey extends AlertSerializableModel {
         return new MessageContentKey(fullKey);
     }
 
+    public static MessageContentKey from(final String topicName, final String topicValue, final Set<LinkableItem> subTopics) {
+        if (null == subTopics || subTopics.isEmpty()) {
+            return from(topicName, topicValue);
+        }
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append(topicName);
+        builder.append(SEPARATOR);
+        builder.append(topicValue);
+
+        for (final LinkableItem subTopic : subTopics) {
+            builder.append(SEPARATOR);
+            builder.append(subTopic.getName());
+            builder.append(SEPARATOR);
+            builder.append(subTopic.getValue());
+        }
+
+        return new MessageContentKey(builder.toString());
+    }
+
+    private MessageContentKey(final String key) {
+        this.key = key;
+    }
+
     public String getKey() {
         return key;
     }
+
 }
