@@ -45,9 +45,9 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     private final BlackDuckTopicCollectorFactory topicCollectorFactory;
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderDescriptorActionApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionActionApi blackDuckDistributionActionApi,
-        final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider, final BlackDuckTopicCollectorFactory topicCollectorFactory) {
-        super(providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionActionApi, blackDuckDistributionUIConfig, provider);
+    public BlackDuckDescriptor(final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider,
+        final BlackDuckTopicCollectorFactory topicCollectorFactory) {
+        super(blackDuckProviderUIConfig, blackDuckDistributionUIConfig, provider);
         this.topicCollectorFactory = topicCollectorFactory;
     }
 
