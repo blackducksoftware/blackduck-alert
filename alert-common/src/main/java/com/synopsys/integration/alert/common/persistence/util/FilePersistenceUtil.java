@@ -52,7 +52,7 @@ public class FilePersistenceUtil {
     }
 
     public void writeToFile(final String fileName, final String content) throws IOException {
-        FileUtils.write(createFilePath(fileName), content, ENCODING);
+        FileUtils.write(createFile(fileName), content, ENCODING);
     }
 
     public void writeJsonToFile(final String fileName, final Object content) throws IOException {
@@ -69,7 +69,7 @@ public class FilePersistenceUtil {
     }
 
     private String readFromFile(final File parentDirectory, final String fileName) throws IOException {
-        return FileUtils.readFileToString(createFilePath(parentDirectory, fileName), ENCODING);
+        return FileUtils.readFileToString(createFile(parentDirectory, fileName), ENCODING);
     }
 
     public <T> T readJsonFromFile(final String fileName, final Class<T> clazz) throws IOException {
@@ -82,20 +82,20 @@ public class FilePersistenceUtil {
     }
 
     public boolean exists(final File parentDirectory, final String fileName) {
-        final File file = createFilePath(parentDirectory, fileName);
+        final File file = createFile(parentDirectory, fileName);
         return file.exists();
     }
 
     public void delete(final String fileName) throws IOException {
-        final File file = createFilePath(fileName);
+        final File file = createFile(fileName);
         FileUtils.forceDelete(file);
     }
 
-    private File createFilePath(final String fileName) {
-        return createFilePath(parentDataDirectory, fileName);
+    private File createFile(final String fileName) {
+        return createFile(parentDataDirectory, fileName);
     }
 
-    private File createFilePath(final File parent, final String fileName) {
+    private File createFile(final File parent, final String fileName) {
         return new File(parent, fileName);
     }
 }
