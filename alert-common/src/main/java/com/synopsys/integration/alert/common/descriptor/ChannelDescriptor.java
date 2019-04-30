@@ -22,33 +22,23 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class ChannelDescriptor extends Descriptor {
-    private final String destinationName;
 
-    public ChannelDescriptor(final String name, final String destinationName, final DescriptorActionApi distributionDescriptorActionApi) {
+    public ChannelDescriptor(final String name) {
         super(name, DescriptorType.CHANNEL);
-        this.destinationName = destinationName;
-        addDistributionActionApi(distributionDescriptorActionApi);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig) {
+    public ChannelDescriptor(final String name, final UIConfig distributionUIConfig) {
         super(name, DescriptorType.CHANNEL);
-        this.destinationName = destinationName;
-        addDistributionUiConfig(distributionDescriptorActionApi, distributionUIConfig);
+        addDistributionUiConfig(distributionUIConfig);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig,
-        final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig) {
-        this(name, destinationName, distributionDescriptorActionApi, distributionUIConfig);
-        addGlobalUiConfig(globalDescriptorActionApi, globalUIConfig);
-    }
-
-    public String getDestinationName() {
-        return destinationName;
+    public ChannelDescriptor(final String name, final UIConfig distributionUIConfig, final UIConfig globalUIConfig) {
+        this(name, distributionUIConfig);
+        addGlobalUiConfig(globalUIConfig);
     }
 
 }

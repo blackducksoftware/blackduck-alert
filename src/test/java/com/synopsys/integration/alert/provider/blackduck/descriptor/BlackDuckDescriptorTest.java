@@ -29,7 +29,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetProvider() {
         final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, null);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider, null);
         assertEquals(provider, descriptor.getProvider());
     }
 
@@ -40,7 +40,7 @@ public class BlackDuckDescriptorTest {
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, null);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider, null);
         final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
         expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
@@ -63,7 +63,7 @@ public class BlackDuckDescriptorTest {
         final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
         final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
         Mockito.when(topicCollectorFactory.createTopicCollectors()).thenReturn(expectedCollectorSet);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, topicCollectorFactory);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider, topicCollectorFactory);
         final Set<MessageContentCollector> actualCollectorSet = descriptor.createTopicCollectors();
         Mockito.verify(topicCollectorFactory).createTopicCollectors();
         assertEquals(expectedCollectorSet, actualCollectorSet);
@@ -82,7 +82,7 @@ public class BlackDuckDescriptorTest {
         Mockito.when(topicCollectorFactory.createTopicCollectors()).thenReturn(expectedCollectorSet);
         final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(provider);
         final BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig();
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, blackDuckProviderUIConfig, null, blackDuckDistributionUIConfig, provider, topicCollectorFactory);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderUIConfig, blackDuckDistributionUIConfig, provider, topicCollectorFactory);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
         assertEquals(3, fields.size());
 

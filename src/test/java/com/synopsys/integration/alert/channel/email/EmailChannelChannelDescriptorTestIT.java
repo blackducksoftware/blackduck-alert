@@ -15,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
+import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -35,6 +37,7 @@ import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
+import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -49,6 +52,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     private ProviderUserRepository blackDuckUserRepository;
     @Autowired
     private EmailDescriptor emailDescriptor;
+    @Autowired
+    private EmailChannel emailChannel;
 
     @BeforeEach
     public void testSetup() throws Exception {
@@ -196,6 +201,16 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public String getTestJobName() {
         return UNIT_TEST_JOB_NAME;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return EmailChannel.COMPONENT_NAME;
+    }
+
+    @Override
+    public TestAction getTestAction() {
+        return new EmailDistributionTestAction(emailChannel, providerDataAccessor, new DefaultEmailHandler(providerDataAccessor));
     }
 
     @Test

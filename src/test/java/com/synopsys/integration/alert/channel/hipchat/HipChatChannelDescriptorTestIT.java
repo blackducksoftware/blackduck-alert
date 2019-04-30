@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
+import com.synopsys.integration.alert.channel.hipchat.actions.HipChatDistributionTestAction;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -39,12 +39,16 @@ import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.rest.RestConstants;
 
 public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "HipChatUnitTestJob";
     @Autowired
     private HipChatDescriptor hipChatDescriptor;
+
+    @Autowired
+    private HipChatChannel hipChatChannel;
 
     @BeforeEach
     public void testSetup() throws Exception {
@@ -157,6 +161,16 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         return UNIT_TEST_JOB_NAME;
     }
 
+    @Override
+    public String getDestinationName() {
+        return HipChatChannel.COMPONENT_NAME;
+    }
+
+    @Override
+    public TestAction getTestAction() {
+        return new HipChatDistributionTestAction(hipChatChannel);
+    }
+
     @Test
     public void testInvalidTextRoomID() {
         final Map<String, String> invalidValuesMap = new HashMap<>();
@@ -164,14 +178,12 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         final int invalidLength = invalidValuesMap.size();
         invalidValuesMap.putAll(createValidCommonDistributionFieldMap());
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
+        final FieldModel model = new FieldModel("1L", getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final DescriptorActionApi descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION).get();
-        final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
         final Map<String, ConfigField> configFieldMap = getDescriptor().getUIConfig(ConfigContextEnum.DISTRIBUTION).get().createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        spyDescriptorConfig.validateConfig(configFieldMap, model, fieldErrors);
+        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        fieldValidationAction.validateConfig(configFieldMap, model, fieldErrors);
         assertEquals(invalidLength, fieldErrors.size());
-        Mockito.verify(spyDescriptorConfig).validateConfig(Mockito.any(), Mockito.any(), Mockito.anyMap());
     }
 }

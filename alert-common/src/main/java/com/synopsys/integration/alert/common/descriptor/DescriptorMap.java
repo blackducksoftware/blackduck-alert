@@ -22,18 +22,14 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -50,30 +46,6 @@ public class DescriptorMap {
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
         providerDescriptorMapping = initDescriptorMap(providerDescriptors);
         componentDescriptorMapping = initDescriptorMap(componentDescriptors);
-    }
-
-    public List<DescriptorMetadata> getDistributionUIConfigs() {
-        return getDescriptorMetadataList(ConfigContextEnum.DISTRIBUTION);
-    }
-
-    public List<DescriptorMetadata> getGlobalUIConfigs() {
-        return getDescriptorMetadataList(ConfigContextEnum.GLOBAL);
-    }
-
-    public List<DescriptorMetadata> getDescriptorMetadataList(final ConfigContextEnum configType) {
-        return descriptorMapping.values()
-                   .stream()
-                   .filter(descriptor -> descriptor.hasUIConfigForType(configType))
-                   .map(descriptor -> descriptor.getMetaData(configType))
-                   .filter(Optional::isPresent)
-                   .map(Optional::get)
-                   .collect(Collectors.toList());
-    }
-
-    public List<DescriptorMetadata> getAllUIComponents() {
-        return Arrays.stream(ConfigContextEnum.values())
-                   .flatMap(type -> getDescriptorMetadataList(type).stream())
-                   .collect(Collectors.toList());
     }
 
     public Optional<Descriptor> getDescriptor(final String name) {

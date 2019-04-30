@@ -12,6 +12,7 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.mockito.Mockito;
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -44,7 +46,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager) {
-        this(gson, alertProperties, baseConfigurationAccessor, proxyManager, 400, true);
+        this(gson, alertProperties, baseConfigurationAccessor, proxyManager, 300, true);
     }
 
     public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager, final Integer blackDuckTimeout,
@@ -106,21 +108,21 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(defaultConfigurationId);
 
         // TODO update these field keys when they are clearly defined by the descriptor
-        final String blackDuckTimeoutKey = TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT.getPropertyKey();
+        final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
         blackDuckTimeoutField.setFieldValue(String.valueOf(getBlackDuckTimeout()));
         Mockito.when(configurationModel.getField(blackDuckTimeoutKey)).thenReturn(Optional.of(blackDuckTimeoutField));
 
-        final String blackDuckApiKey = TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY.getPropertyKey();
+        final String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
         final ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
         blackDuckApiField.setFieldValue(getBlackDuckApiKey());
         Mockito.when(configurationModel.getField(blackDuckApiKey)).thenReturn(Optional.of(blackDuckApiField));
 
-        final String blackDuckProviderUrlKey = TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL.getPropertyKey();
+        final String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
         final ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
         blackDuckProviderUrlField.setFieldValue(getBlackDuckUrl().orElse("URL not set"));
         Mockito.when(configurationModel.getField(blackDuckProviderUrlKey)).thenReturn(Optional.of(blackDuckProviderUrlField));
-
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(Map.of(blackDuckApiKey, blackDuckApiField, blackDuckProviderUrlKey, blackDuckProviderUrlField, blackDuckTimeoutKey, blackDuckTimeoutField));
         Mockito.when(configurationModel.getCopyOfFieldList()).thenReturn(List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
 
         return Optional.of(configurationModel);
