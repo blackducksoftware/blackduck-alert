@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollapser;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -23,7 +24,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitTyp
 
 public class BlackDuckLicenseLimitCollectorTest {
     private final Gson gson = new Gson();
-    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
+    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor(new MessageContentCollapser()));
 
     @Test
     public void addCategoryItemsTest() {

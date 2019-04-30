@@ -47,18 +47,18 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
-    private final DigestMessageContentProcessor digestMessageContentProcessor;
+    private final MessageContentCollapser messageContentCollapser;
 
     @Autowired
-    public SummaryMessageContentProcessor(final DigestMessageContentProcessor digestMessageContentProcessor) {
+    public SummaryMessageContentProcessor(final MessageContentCollapser messageContentCollapser) {
         super(FormatType.SUMMARY);
-        this.digestMessageContentProcessor = digestMessageContentProcessor;
+        this.messageContentCollapser = messageContentCollapser;
     }
 
     @Override
     public List<AggregateMessageContent> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> digestMessages = digestMessageContentProcessor.process(messages);
-        return digestMessages
+        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
+        return collapsedMessages
                    .stream()
                    .map(this::summarize)
                    .collect(Collectors.toList());
@@ -78,7 +78,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems);
+        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopics(), summarizedCategoryItems);
     }
 
     private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {

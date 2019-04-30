@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollapser;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -32,7 +33,7 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 
 public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     private final JsonExtractor jsonExtractor = new JsonExtractor(new Gson());
-    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
+    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor(new MessageContentCollapser()));
 
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
@@ -122,5 +123,6 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
+
 }
 

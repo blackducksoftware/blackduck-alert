@@ -23,12 +23,14 @@
 package com.synopsys.integration.alert.channel.slack;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.commons.lang3.StringUtils;
@@ -104,9 +106,14 @@ public class SlackChannel extends DistributionChannel {
 
         mrkdwnBuilder.append(createLinkableItemString(messageContent, true));
         mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
-        final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
-        if (subTopic.isPresent()) {
-            mrkdwnBuilder.append(createLinkableItemString(subTopic.get(), true));
+        final Set<LinkableItem> subTopics = messageContent.getSubTopics();
+        if (!subTopics.isEmpty()) {
+            final String subTopicName = subTopics
+                                            .stream()
+                                            .findAny()
+                                            .map(LinkableItem::getName)
+                                            .orElse(StringUtils.EMPTY);
+            appendFormattedItems(mrkdwnBuilder, subTopicName, subTopics);
             mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
         }
         mrkdwnBuilder.append("- - - - - - - - - - - - - - - - - - - -");
@@ -129,9 +136,12 @@ public class SlackChannel extends DistributionChannel {
         return mrkdwnBuilder.toString();
     }
 
-    private void appendFormattedItems(final StringBuilder mrkdwnBuilder, final String name, final List<LinkableItem> namedItemsList) {
+    private void appendFormattedItems(final StringBuilder mrkdwnBuilder, final String name, final Collection<LinkableItem> namedItemsList) {
         if (namedItemsList.size() == 1) {
-            final LinkableItem namedLinkableItem = namedItemsList.get(0);
+            final LinkableItem namedLinkableItem = namedItemsList
+                                                       .stream()
+                                                       .findFirst()
+                                                       .orElseThrow();
             mrkdwnBuilder.append(createLinkableItemString(namedLinkableItem, false));
         } else {
             final String encodedName = createSlackString(name);
