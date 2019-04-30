@@ -86,7 +86,7 @@ public class BlackDuckProviderTest {
         final TaskManager taskManager = new TaskManager();
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager, blackDuckProperties);
-        final Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
+        final Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
         final Set<FormatType> providerNotificationTypes = provider.getSupportedFormatTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }

@@ -39,7 +39,8 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
     }
 
     @Override
-    public List<AggregateMessageContent> process(final List<AggregateMessageContent> contentList) {
-        return contentList;
+    public List<AggregateMessageContent> process(final List<AggregateMessageContent> messages) {
+        return messages;
     }
+
 }

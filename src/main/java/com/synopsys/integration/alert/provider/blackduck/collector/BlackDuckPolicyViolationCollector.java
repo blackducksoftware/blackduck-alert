@@ -159,7 +159,9 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         if (StringUtils.isNotBlank(severity)) {
             displayName = String.format("%s (%s)", policyName, severity);
         }
-        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, null);
+        final LinkableItem linkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, null);
+        linkableItem.setSummarizable(true);
+        return linkableItem;
     }
 
 }

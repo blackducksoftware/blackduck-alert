@@ -66,12 +66,20 @@ public class PolarisCollector extends MessageContentCollector {
             final JsonField<String> issueTypeField = optionalIssueTypeField.get();
             final String issueType = jsonFieldAccessor.getFirst(issueTypeField).orElse("<unknown>");
             final LinkableItem issueTypeItem = new LinkableItem(issueTypeField.getLabel(), issueType);
+            issueTypeItem.setSummarizable(true);
+            issueTypeItem.setCountable(true);
             linkableItems.add(issueTypeItem);
         }
 
         for (final JsonField<Integer> field : countFields) {
+            final String label = field.getLabel();
             final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
-            final LinkableItem countItem = new LinkableItem(field.getLabel(), currentCount.toString());
+            final LinkableItem countItem = new LinkableItem(label, currentCount.toString());
+            if (PolarisProviderContentTypes.JSON_FIELD_CHANGED_COUNT.equals(label)) {
+                countItem.setSummarizable(true);
+                countItem.setCountable(true);
+                countItem.setNumericValueFlag(true);
+            }
             linkableItems.add(countItem);
         }
 
