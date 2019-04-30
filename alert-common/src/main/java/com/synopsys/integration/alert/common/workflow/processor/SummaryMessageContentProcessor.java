@@ -27,8 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -109,11 +107,11 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
         final SortedSet<LinkableItem> summarizedLinkableItems = new ConcurrentSkipListSet<>();
         for (final Map.Entry<String, List<LinkableItem>> similarItemEntries : itemsOfSameName.entrySet()) {
-            final Optional<LinkableItem> summarizableItem = similarItemEntries.getValue()
-                                                                .stream()
-                                                                .findAny()
-                                                                .filter(LinkableItem::isSummarizable);
-            summarizableItem.ifPresent(item -> createNewItems(item, summarizedLinkableItems, similarItemEntries.getKey(), linkableItems));
+            similarItemEntries.getValue()
+                .stream()
+                .findAny()
+                .filter(LinkableItem::isSummarizable)
+                .ifPresent(item -> createNewItems(item, summarizedLinkableItems, similarItemEntries.getKey(), linkableItems));
         }
 
         return summarizedLinkableItems;
@@ -127,16 +125,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         if (isCountable) {
             final String newItemValue = generateCountAsString(oldItemName, linkableItems, isNumericValue);
             final LinkableItem newLinkableItem = new LinkableItem(newItemName, newItemValue);
-            newLinkableItem.setCountable(true);
-            newLinkableItem.setNumericValueFlag(isNumericValue);
-            newLinkableItem.setSummarizable(true);
+            updateSummarizability(newLinkableItem, true, true);
             summarizedLinkableItems.add(newLinkableItem);
         } else {
             final SortedSet<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
             if (newDetailedItems.isEmpty()) {
                 final LinkableItem summarizedLinkableItem = new LinkableItem(newItemName, item.getValue());
-                summarizedLinkableItem.setSummarizable(true);
-                summarizedLinkableItem.setNumericValueFlag(isNumericValue);
+                updateSummarizability(summarizedLinkableItem, false, isNumericValue);
                 summarizedLinkableItems.add(summarizedLinkableItem);
             } else {
                 summarizedLinkableItems.addAll(newDetailedItems);
@@ -207,6 +202,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                                               .anyMatch(LinkableItem::isNumericValue);
                 final String countAsString = generateCountAsString(itemName, itemsOfSameName, isNumeric);
                 final LinkableItem collapsedItem = new LinkableItem(itemName, countAsString);
+                updateSummarizability(collapsedItem, true, isNumeric);
                 collapsedItems.add(collapsedItem);
             } else {
                 collapsedItems.addAll(itemsOfSameName);
@@ -241,13 +237,24 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                    .count();
     }
 
-    private CategoryKey createCategoryKeyFromLinkableItems(final SortedSet<LinkableItem> linkableItems) {
-        final List<String> itemsToString = linkableItems
-                                               .stream()
-                                               .filter(LinkableItem::isSummarizable)
-                                               .map(Objects::toString)
-                                               .collect(Collectors.toList());
-        return CategoryKey.from("summary", itemsToString);
+    private CategoryKey createCategoryKeyFromLinkableItems(final Collection<LinkableItem> linkableItems) {
+        final List<String> itemNameValueSequence = new LinkedList<>();
+        for (final LinkableItem item : linkableItems) {
+            if (!item.isSummarizable()) {
+                continue;
+            }
+            itemNameValueSequence.add(item.getName());
+            if (!item.isNumericValue()) {
+                itemNameValueSequence.add(item.getValue());
+            }
+        }
+        return CategoryKey.from("summary", itemNameValueSequence);
+    }
+
+    private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {
+        item.setCountable(isCountable);
+        item.setNumericValueFlag(isNumeric);
+        item.setSummarizable(true);
     }
 
 }
