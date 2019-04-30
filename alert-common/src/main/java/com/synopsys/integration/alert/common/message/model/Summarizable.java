@@ -20,11 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.message.model;
 
-public enum FormatType {
-    DEFAULT,
-    DIGEST,
-    SUMMARY
+public interface Summarizable {
+    boolean isCountable();
+
+    boolean isNumericValue();
+
+    boolean isSummarizable();
 
 }

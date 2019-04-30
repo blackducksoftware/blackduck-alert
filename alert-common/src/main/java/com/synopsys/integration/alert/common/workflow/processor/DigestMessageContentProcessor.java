@@ -58,9 +58,9 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
     }
 
     @Override
-    public List<AggregateMessageContent> process(final List<AggregateMessageContent> contentList) {
-        final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(contentList.size());
-        for (final AggregateMessageContent topic : contentList) {
+    public List<AggregateMessageContent> process(final List<AggregateMessageContent> messages) {
+        final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(messages.size());
+        for (final AggregateMessageContent topic : messages) {
             final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
             topic.getCategoryItems().forEach(item -> processOperation(categoryDataCache, item));
 
@@ -109,4 +109,5 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
             return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new TreeSet<>(categoryItemCollection)));
         }
     }
+
 }

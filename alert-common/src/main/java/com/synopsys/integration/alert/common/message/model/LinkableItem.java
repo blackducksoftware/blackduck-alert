@@ -28,10 +28,14 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
+public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
     private final String name;
     private final String value;
     private final String url;
+
+    private boolean countable;
+    private boolean isNumericValue;
+    private boolean summarizable;
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
@@ -41,6 +45,9 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.name = name;
         this.value = value;
         this.url = url;
+        this.countable = false;
+        this.isNumericValue = false;
+        this.summarizable = false;
     }
 
     public String getName() {
@@ -56,7 +63,35 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     }
 
     @Override
+    public boolean isCountable() {
+        return countable;
+    }
+
+    public void setCountable(final boolean countable) {
+        this.countable = countable;
+    }
+
+    @Override
+    public boolean isNumericValue() {
+        return isNumericValue;
+    }
+
+    public void setNumericValueFlag(final boolean isNumericValue) {
+        this.isNumericValue = isNumericValue;
+    }
+
+    @Override
+    public boolean isSummarizable() {
+        return summarizable;
+    }
+
+    public void setSummarizable(final boolean summarizable) {
+        this.summarizable = summarizable;
+    }
+
+    @Override
     public int compareTo(final LinkableItem otherItem) {
         return CompareToBuilder.reflectionCompare(this, otherItem);
     }
+
 }

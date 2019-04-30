@@ -95,7 +95,7 @@ public class BlackDuckProvider extends Provider {
 
     @Override
     public Set<FormatType> getSupportedFormatTypes() {
-        return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
+        return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
     }
 
 }

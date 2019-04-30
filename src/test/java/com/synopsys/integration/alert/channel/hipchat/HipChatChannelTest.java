@@ -187,7 +187,7 @@ public class HipChatChannelTest extends ChannelTest {
     private AggregateMessageContent createLargeMessageContent() {
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Chunked Request");
         int count = 0;
-        while (gson.toJson(messageContent).length() < HipChatChannel.MESSAGE_SIZE_LIMIT * 2) {
+        while (gson.toJson(messageContent).length() < HipChatChannel.MESSAGE_SIZE_LIMIT * 3) {
             final LinkableItem newItem = new LinkableItem("Name " + count++, "Relatively long value #" + count + " with some trailing text for good measure...", "https://google.com");
             messageContent.getCategoryItems().iterator().next().getItems().add(newItem);
         }
