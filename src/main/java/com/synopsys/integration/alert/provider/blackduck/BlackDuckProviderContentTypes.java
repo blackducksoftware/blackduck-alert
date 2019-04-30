@@ -82,7 +82,7 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_COMPONENT_NAME = "Component";
     public static final String LABEL_COMPONENT_VERSION_NAME = "Component Version";
     public static final String LABEL_POLICY_INFO_LIST = "Policy Infos";
-    public static final String LABEL_POLICY_NAME = "Policy";
+    public static final String LABEL_POLICY_NAME = "Policy Violated";
     public static final String LABEL_POLICY_SEVERITY_NAME = "Severity";
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_PROJECT_VERSION_NAME = "Project Version";
