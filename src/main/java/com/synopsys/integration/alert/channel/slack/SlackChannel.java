@@ -22,9 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.slack;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,9 @@ public class SlackChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
-    private static final String SLACK_LINE_SEPARATOR = "\n";
+    // TODO figure out what the maximum size actually is, this is a trial and error number
+    private static final int MRKDWN_MAX_SIZE_PRE_SPLIT = 2000;
+    private static final char SLACK_LINE_SEPARATOR = '\n';
     private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
 
     static {
@@ -89,15 +91,15 @@ public class SlackChannel extends DistributionChannel {
         final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
         if (StringUtils.isBlank(event.getContent().getValue())) {
-            return Collections.emptyList();
+            return List.of();
         } else {
+            final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
             final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
-            final String jsonString = getJsonString(mrkdwnMessage, channelName, channelUsername.orElse(SLACK_DEFAULT_USERNAME));
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Content-Type", "application/json");
-            return Arrays.asList(restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString));
 
+            return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessage, requestHeaders);
         }
     }
 
@@ -130,6 +132,7 @@ public class SlackChannel extends DistributionChannel {
                 appendFormattedItems(mrkdwnBuilder, namedItems.getKey(), namedItems.getValue());
                 mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
             }
+            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
             mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
         }
         mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
@@ -202,6 +205,63 @@ public class SlackChannel extends DistributionChannel {
         json.addProperty("mrkdwn", true);
 
         return json.toString();
+    }
+
+    private List<Request> createRequestsForMessage(final String channelName, final String channelUsername, final String webhook, final String mrkdwnMessage, final Map<String, String> requestHeaders) {
+        final List<String> mrkdwnMessages = splitMessage(mrkdwnMessage);
+        return mrkdwnMessages
+                   .stream()
+                   .map(message -> getJsonString(message, channelName, channelUsername))
+                   .map(jsonMessage -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonMessage))
+                   .collect(Collectors.toList());
+    }
+
+    private List<String> splitMessage(final String message) {
+        if (message.length() <= MRKDWN_MAX_SIZE_PRE_SPLIT) {
+            return List.of(message);
+        }
+
+        final int splitIndex = getSplitIndex(message);
+        final String preSplit = message.substring(0, splitIndex);
+        final String postSplit = message.substring(splitIndex);
+
+        final List<String> messages = new ArrayList<>();
+        messages.add(preSplit);
+        messages.addAll(splitMessage(postSplit));
+
+        return messages;
+    }
+
+    private int getSplitIndex(final String message) {
+        final char bracket = '[';
+        final int initialSplitIndex = MRKDWN_MAX_SIZE_PRE_SPLIT - 1;
+
+        final String preSplit = message.substring(0, initialSplitIndex);
+        final String postSplit = message.substring(initialSplitIndex);
+
+        final int bracketIndexBefore = preSplit.lastIndexOf(bracket);
+        final int newLineIndexBefore = preSplit.lastIndexOf(SLACK_LINE_SEPARATOR);
+        final int closestBeforeSplitIndex = Math.max(bracketIndexBefore, newLineIndexBefore);
+
+        final int bracketIndexAfter = postSplit.indexOf(bracket);
+        final int newLineIndexAfter = postSplit.indexOf(SLACK_LINE_SEPARATOR);
+        final int closestAfterSplitIndex = initialSplitIndex + Math.max(bracketIndexAfter, newLineIndexAfter);
+
+        final int beforeDistance = initialSplitIndex - Math.abs(closestBeforeSplitIndex);
+        final int afterDistance = Math.abs(closestAfterSplitIndex) - initialSplitIndex;
+
+        final int closestToSplitIndex;
+        if (beforeDistance < afterDistance) {
+            closestToSplitIndex = closestBeforeSplitIndex;
+        } else {
+            closestToSplitIndex = closestAfterSplitIndex;
+        }
+
+        if (closestToSplitIndex != -1) {
+            return closestToSplitIndex;
+        }
+
+        return message.length() - 1;
     }
 
 }
