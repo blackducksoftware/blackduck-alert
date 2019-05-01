@@ -20,14 +20,16 @@ class DistributionConfiguration extends Component {
     constructor(props) {
         super(props);
 
+        this.buildJsonBody = this.buildJsonBody.bind(this);
         this.handleChannelChange = this.handleChannelChange.bind(this);
         this.handleProviderChange = this.handleProviderChange.bind(this);
         this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.renderProviderForm = this.renderProviderForm.bind(this);
-        this.handleTestSubmit = this.handleSubmit.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
-        this.buildJsonBody = this.buildJsonBody.bind(this);
+        this.createChangeHandler = this.createChangeHandler.bind(this);
+        this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const { fields, context, name } = defaultDescriptor;
@@ -53,7 +55,8 @@ class DistributionConfiguration extends Component {
         if (prevChannelName !== selectedChannelOption || prevProviderName !== selectedProviderOption) {
             const newChannel = this.props.descriptors.find(descriptor => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION) || {};
             const newProvider = this.props.descriptors.find(descriptor => descriptor.name === selectedProviderOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION) || {};
-            const updatedProviderConfig = Object.assign(this.state.providerConfig, { name: prevProviderName });
+            const emptyProviderConfig = FieldModelUtilities.createEmptyFieldModel(newProvider.fields, newProvider.context, newProvider.name);
+            const updatedProviderConfig = FieldModelUtilities.combineFieldModels(emptyProviderConfig, this.state.providerConfig);
             this.setState({
                 providerConfig: updatedProviderConfig,
                 currentChannel: newChannel,
@@ -69,6 +72,7 @@ class DistributionConfiguration extends Component {
     handleClose() {
         this.setState({ show: false });
         this.props.onModalClose();
+        this.props.handleCancel();
     }
 
     handleChannelChange(event) {
@@ -111,6 +115,22 @@ class DistributionConfiguration extends Component {
         }
     }
 
+    buildJsonBody() {
+        const { channelConfig, providerConfig } = this.state;
+        const { jobId } = this.props;
+        const configuration = Object.assign({}, {
+            fieldModels: [
+                channelConfig,
+                providerConfig
+            ]
+        });
+
+        if (jobId) {
+            Object.assign(configuration, { jobId });
+        }
+        return configuration;
+    }
+
     handleTestSubmit(event) {
         if (event) {
             event.preventDefault();
@@ -130,24 +150,6 @@ class DistributionConfiguration extends Component {
         } else {
             this.props.saveDistributionJob(jsonBody);
         }
-    }
-
-    buildJsonBody() {
-        const channelName = this.state.commonConfig.descriptorName;
-        const providerName = FieldModelUtilities.getFieldModelSingleValue(this.state.channelConfig, KEY_PROVIDER_NAME);
-        const currentProvider = this.props.descriptors.find(descriptor => descriptor.name === providerName);
-        const emptyProviderModel = FieldModelUtilities.createEmptyFieldModel(currentProvider.fields, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, providerName);
-        const updatedProviderFieldModel = FieldModelUtilities.combineFieldModels(emptyProviderModel, this.state.providerConfig);
-        const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
-        const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, this.state.channelConfig);
-        const configuration = Object.assign({}, {
-            jobId: this.state.jobId,
-            fieldModels: [
-                updatedChannelFieldModel,
-                updatedProviderFieldModel
-            ]
-        });
-        return configuration;
     }
 
     createChangeHandler(negateCheckboxValue) {
@@ -189,12 +191,14 @@ class DistributionConfiguration extends Component {
 
     renderProviderForm() {
         const { providerConfig, currentProvider, channelConfig } = this.state;
+        const updatedProviderFields = currentProvider.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
+        Object.assign(currentProvider, { fields: updatedProviderFields });
         return (
             <div>
                 <FieldsPanel descriptorFields={currentProvider.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
-                    includeAllProjects={FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT)}
+                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT)}
                     handleChange={this.createChangeHandler(true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT)}
                     projects={this.props.projects}
@@ -202,7 +206,7 @@ class DistributionConfiguration extends Component {
                     projectNamePattern={FieldModelUtilities.getFieldModelSingleValueOrDefault(providerConfig, KEY_PROJECT_NAME_PATTERN, '')}
                     fieldErrors={this.props.fieldErrors}
                 />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} isFixed={false} />
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
             </div>
         );
@@ -240,6 +244,7 @@ DistributionConfiguration.propTypes = {
     projects: PropTypes.arrayOf(PropTypes.object),
     fieldErrors: PropTypes.object,
     configurationMessage: PropTypes.string,
+    jobId: PropTypes.string,
     handleCancel: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
     updateDistributionJob: PropTypes.func.isRequired,
