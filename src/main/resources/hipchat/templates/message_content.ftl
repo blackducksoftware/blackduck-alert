@@ -39,7 +39,7 @@
 <#if content??>
     <strong>
         <@printLinkableItem content/>
-        <#if content.subTopics?? && content.subTopics?size != 0>
+        <#if content.subTopics?? && content.subTopics?has_content>
             <br />
             <@printList content.subTopics[0].name content.subTopics/>
         </#if>

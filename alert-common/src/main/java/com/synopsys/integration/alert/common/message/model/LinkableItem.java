@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -33,6 +34,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private final String value;
     private final String url;
 
+    private boolean collapsible;
     private boolean countable;
     private boolean isNumericValue;
     private boolean summarizable;
@@ -45,6 +47,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.name = name;
         this.value = value;
         this.url = url;
+        this.collapsible = true;
         this.countable = false;
         this.isNumericValue = false;
         this.summarizable = false;
@@ -60,6 +63,14 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     public Optional<String> getUrl() {
         return Optional.ofNullable(url);
+    }
+
+    public boolean isCollapsible() {
+        return collapsible;
+    }
+
+    public void setCollapsible(final boolean collapsible) {
+        this.collapsible = collapsible;
     }
 
     @Override
@@ -91,7 +102,8 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     @Override
     public int compareTo(final LinkableItem otherItem) {
-        return CompareToBuilder.reflectionCompare(this, otherItem);
+        final List<String> excludedFields = List.of("collapsible", "countable", "isNumericValue", "summarizable");
+        return CompareToBuilder.reflectionCompare(this, otherItem, excludedFields);
     }
 
 }
