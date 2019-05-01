@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +36,14 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
@@ -61,12 +65,15 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     private final BlackDuckProperties blackDuckProperties;
     private final SystemValidator systemValidator;
     private final TaskManager taskManager;
+    private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator, final TaskManager taskManager) {
+    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator, final TaskManager taskManager,
+        final ProviderDataAccessor providerDataAccessor) {
         this.blackDuckProperties = blackDuckProperties;
         this.systemValidator = systemValidator;
         this.taskManager = taskManager;
+        this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
@@ -130,6 +137,10 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     public FieldModel deleteConfig(final FieldModel fieldModel) {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
         taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
+
+        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        providerDataAccessor.deleteProjects(BlackDuckProvider.COMPONENT_NAME, blackDuckProjects);
+
         return super.deleteConfig(fieldModel);
     }
 }
