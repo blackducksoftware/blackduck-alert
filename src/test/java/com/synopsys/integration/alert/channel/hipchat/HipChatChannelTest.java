@@ -181,7 +181,7 @@ public class HipChatChannelTest extends ChannelTest {
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
 
         hipChatChannel.sendMessage(event);
-        Mockito.verify(restChannelUtilitySpy, Mockito.times(3)).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
+        Mockito.verify(restChannelUtilitySpy, Mockito.times(4)).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
     }
 
     private AggregateMessageContent createLargeMessageContent() {
