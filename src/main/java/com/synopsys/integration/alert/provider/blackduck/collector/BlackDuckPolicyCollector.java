@@ -63,7 +63,7 @@ public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
     }
 
     private void updatePolicyItem(final LinkableItem policyItem) {
-        policyItem.setCollapsible(false);
+        policyItem.setCollapsible(true);
         policyItem.setCountable(true);
         policyItem.setSummarizable(true);
     }
