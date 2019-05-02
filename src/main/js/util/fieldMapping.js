@@ -21,7 +21,7 @@ export function buildSelectInput(items, field) {
     const { value } = items;
     const { searchable, multiSelect, options } = field;
 
-    const selectValue = options.filter(option => option.value === value[0]);
+    const selectValue = options.filter(option => value.includes(option.value));
     Object.assign(items, {
         value: selectValue, searchable, multiSelect, options
     });

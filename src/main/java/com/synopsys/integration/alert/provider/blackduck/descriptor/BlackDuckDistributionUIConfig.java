@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
-    private static final String LABEL_FILTER_BY_PROJECT = "Filter by project";
+    private static final String LABEL_FILTER_BY_PROJECT = "Include all projects";
     private static final String LABEL_PROJECT_NAME_PATTERN = "Project name pattern";
     private static final String LABEL_PROJECTS = "Projects";
 

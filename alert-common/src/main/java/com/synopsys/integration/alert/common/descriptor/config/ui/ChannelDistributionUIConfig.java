@@ -80,12 +80,10 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
         final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, getDescriptorNames(DescriptorType.PROVIDER));
 
-        final List<ConfigField> configFields = List.of(channelName, name, frequency);
+        final List<ConfigField> configFields = List.of(channelName, name, frequency, providerName);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
         channelDistributionFields.stream().map(ConfigField::getKey).forEach(channelName::hideField);
-        final List<ConfigField> allChannelFields = Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
-        allChannelFields.add(providerName);
-        return allChannelFields;
+        return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }
 
     public abstract List<ConfigField> createChannelDistributionFields();

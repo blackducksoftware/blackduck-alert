@@ -102,29 +102,17 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const { id, distributionType } = currentRowSelected;
-            if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL) {
-                return (<EmailJobConfiguration
-                    alertChannelName={distributionType}
-                    jobId={id}
+            return (
+                <DistributionConfiguration
+                    projects={this.state.projects}
                     handleCancel={this.cancelRowSelect}
-                    handleSaveBtnClick={this.saveBtn}
+                    onModalClose={() => {
+                        this.props.fetchDistributionJobs();
+                        this.cancelRowSelect();
+                    }}
+                    onSave={this.saveBtn}
+                    job={currentRowSelected}
                 />);
-            } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT) {
-                return (<HipChatJobConfiguration
-                    alertChannelName={distributionType}
-                    jobId={id}
-                    handleCancel={this.cancelRowSelect}
-                    handleSaveBtnClick={this.saveBtn}
-                />);
-            } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK) {
-                return (<SlackJobConfiguration
-                    alertChannelName={distributionType}
-                    jobId={id}
-                    handleCancel={this.cancelRowSelect}
-                    handleSaveBtnClick={this.saveBtn}
-                />);
-            }
         }
         return null;
     }
@@ -169,10 +157,10 @@ class Index extends Component {
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
                     this.props.fetchDistributionJobs();
-                    this.startAutoReloadIfConfigured();
+                    this.cancelRowSelect();
                     onModalClose();
                 }}
-                onSave={onSave}
+                onSave={this.saveBtn}
                 columns={columns}
                 validateState={validateState}
                 ignoreEditable={ignoreEditable}

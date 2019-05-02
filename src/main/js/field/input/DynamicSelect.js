@@ -11,7 +11,6 @@ function DynamicSelectInput(props) {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
 
     const handleChange = (option) => {
-        console.log(option);
         const optionValue = option ? option.value : null;
         const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : optionValue;
         onChange({
