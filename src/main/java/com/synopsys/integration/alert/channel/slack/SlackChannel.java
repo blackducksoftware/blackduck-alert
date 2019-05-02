@@ -241,6 +241,10 @@ public class SlackChannel extends DistributionChannel {
                 messageChunks.addAll(splitMessage(messagePiece));
             }
         }
+
+        if (chunkBuilder.length() > 0) {
+            flushChunks(messageChunks, chunkBuilder);
+        }
         return messageChunks;
     }
 
