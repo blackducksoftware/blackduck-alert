@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,7 +59,6 @@ public class SlackChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
-    // TODO figure out what the maximum size actually is, this is a trial and error number
     private static final int MRKDWN_MAX_SIZE_PRE_SPLIT = 3500;
     private static final char SLACK_LINE_SEPARATOR = '\n';
     private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
@@ -93,21 +93,21 @@ public class SlackChannel extends DistributionChannel {
         if (StringUtils.isBlank(event.getContent().getValue())) {
             return List.of();
         } else {
-            final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
-            final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
-
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Content-Type", "application/json");
 
-            return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessage, requestHeaders);
+            final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
+            final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(event.getContent());
+            return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
         }
     }
 
-    private String createMrkdwnMessage(final AggregateMessageContent messageContent) {
-        final StringBuilder mrkdwnBuilder = new StringBuilder();
+    private List<String> createMrkdwnMessagePieces(final AggregateMessageContent messageContent) {
+        final LinkedList<String> messagePieces = new LinkedList<>();
 
-        mrkdwnBuilder.append(createLinkableItemString(messageContent, true));
-        mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        final StringBuilder topicBuilder = new StringBuilder();
+        topicBuilder.append(createLinkableItemString(messageContent, true));
+        topicBuilder.append(SLACK_LINE_SEPARATOR);
         final Set<LinkableItem> subTopics = messageContent.getSubTopics();
         if (!subTopics.isEmpty()) {
             final String subTopicName = subTopics
@@ -115,28 +115,36 @@ public class SlackChannel extends DistributionChannel {
                                             .findAny()
                                             .map(LinkableItem::getName)
                                             .orElse(StringUtils.EMPTY);
-            appendFormattedItems(mrkdwnBuilder, subTopicName, subTopics);
-            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+            appendFormattedItems(topicBuilder, subTopicName, subTopics);
+            topicBuilder.append(SLACK_LINE_SEPARATOR);
         }
-        mrkdwnBuilder.append("- - - - - - - - - - - - - - - - - - - -");
-        mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        topicBuilder.append("- - - - - - - - - - - - - - - - - - - -");
+        topicBuilder.append(SLACK_LINE_SEPARATOR);
+        messagePieces.add(topicBuilder.toString());
 
         final SortedSet<CategoryItem> categoryItems = messageContent.getCategoryItems();
         for (final CategoryItem categoryItem : categoryItems) {
-            mrkdwnBuilder.append("Type: ");
-            mrkdwnBuilder.append(categoryItem.getOperation());
-            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+            final StringBuilder categoryItemBuilder = new StringBuilder();
+            categoryItemBuilder.append("Type: ");
+            categoryItemBuilder.append(categoryItem.getOperation());
+            categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
 
             final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
             for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {
-                appendFormattedItems(mrkdwnBuilder, namedItems.getKey(), namedItems.getValue());
-                mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+                appendFormattedItems(categoryItemBuilder, namedItems.getKey(), namedItems.getValue());
+                categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
             }
-            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
-            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+            categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+            categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+            messagePieces.add(categoryItemBuilder.toString());
         }
-        mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
-        return mrkdwnBuilder.toString();
+
+        if (!messagePieces.isEmpty()) {
+            final String lastString = messagePieces.removeLast();
+            final String modifiedLastString = lastString + SLACK_LINE_SEPARATOR;
+            messagePieces.addLast(modifiedLastString);
+        }
+        return messagePieces;
     }
 
     private void appendFormattedItems(final StringBuilder mrkdwnBuilder, final String name, final Collection<LinkableItem> namedItemsList) {
@@ -197,9 +205,9 @@ public class SlackChannel extends DistributionChannel {
         return newString;
     }
 
-    private List<Request> createRequestsForMessage(final String channelName, final String channelUsername, final String webhook, final String mrkdwnMessage, final Map<String, String> requestHeaders) {
-        final List<String> mrkdwnMessages = splitMessage(mrkdwnMessage);
-        return mrkdwnMessages
+    private List<Request> createRequestsForMessage(final String channelName, final String channelUsername, final String webhook, final List<String> mrkdwnMessagePieces, final Map<String, String> requestHeaders) {
+        final List<String> mrkdwnMessageChunks = splitMessages(mrkdwnMessagePieces);
+        return mrkdwnMessageChunks
                    .stream()
                    .map(message -> getJsonString(message, channelName, channelUsername))
                    .map(jsonMessage -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonMessage))
@@ -214,6 +222,31 @@ public class SlackChannel extends DistributionChannel {
         json.addProperty("mrkdwn", true);
 
         return json.toString();
+    }
+
+    private List<String> splitMessages(final List<String> messagePieces) {
+        final List<String> messageChunks = new ArrayList<>();
+
+        StringBuilder chunkBuilder = new StringBuilder();
+        for (final String messagePiece : messagePieces) {
+            if (messagePiece.length() <= MRKDWN_MAX_SIZE_PRE_SPLIT) {
+                if (messagePiece.length() + chunkBuilder.length() <= MRKDWN_MAX_SIZE_PRE_SPLIT) {
+                    chunkBuilder.append(messagePiece);
+                } else {
+                    chunkBuilder = flushChunks(messageChunks, chunkBuilder);
+                    messageChunks.add(messagePiece);
+                }
+            } else {
+                chunkBuilder = flushChunks(messageChunks, chunkBuilder);
+                messageChunks.addAll(splitMessage(messagePiece));
+            }
+        }
+        return messageChunks;
+    }
+
+    private StringBuilder flushChunks(final List<String> messageChunks, final StringBuilder chunkBuilder) {
+        messageChunks.add(chunkBuilder.toString());
+        return new StringBuilder();
     }
 
     private List<String> splitMessage(final String message) {
