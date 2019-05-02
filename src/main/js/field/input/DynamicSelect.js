@@ -7,17 +7,17 @@ function DynamicSelectInput(props) {
     const {
         onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass
     } = props;
+
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
-    let closeOnSelect = true;
-    if (multiSelect) {
-        closeOnSelect = false;
-    }
 
     const handleChange = (option) => {
+        console.log(option);
+        const optionValue = option ? option.value : null;
+        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : optionValue;
         onChange({
             target: {
                 name: id,
-                value: option ? option.value : null
+                value: parsedArray
             }
         });
     };
@@ -33,7 +33,7 @@ function DynamicSelectInput(props) {
             placeholder={placeholder}
             value={value}
             isMulti={multiSelect}
-            closeMenuOnSelect={closeOnSelect}
+            closeMenuOnSelect={!multiSelect}
             components={components}
         />
     </div>);

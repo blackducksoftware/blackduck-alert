@@ -23,7 +23,6 @@ class DistributionConfiguration extends Component {
         this.buildJsonBody = this.buildJsonBody.bind(this);
         this.handleChannelChange = this.handleChannelChange.bind(this);
         this.handleProviderChange = this.handleProviderChange.bind(this);
-        this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -36,11 +35,10 @@ class DistributionConfiguration extends Component {
         const fieldKeys = FieldMapping.retrieveKeys(fields);
         const emptyFieldModel = FieldModelUtilities.createEmptyFieldModel(fieldKeys, context, name);
         const channelFieldModel = FieldModelUtilities.updateFieldModelSingleValue(emptyFieldModel, KEY_CHANNEL_NAME, name);
-        const providerFieldModel = FieldModelUtilities.createEmptyFieldModel([], DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
         this.state = {
             show: true,
             channelConfig: channelFieldModel,
-            providerConfig: providerFieldModel,
+            providerConfig: {},
             currentChannel: defaultDescriptor,
             currentProvider: {}
         };
@@ -52,21 +50,27 @@ class DistributionConfiguration extends Component {
         const selectedProviderOption = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME);
         const prevChannelName = currentChannel ? currentChannel.name : '';
         const prevProviderName = currentProvider ? currentProvider.name : '';
-        if (prevChannelName !== selectedChannelOption || prevProviderName !== selectedProviderOption) {
+
+        if (prevChannelName !== selectedChannelOption) {
             const newChannel = this.props.descriptors.find(descriptor => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION) || {};
+            const channelKeys = FieldMapping.retrieveKeys(newChannel.fields);
+            const emptyChannelConfig = FieldModelUtilities.createEmptyFieldModel(channelKeys, newChannel.context, newChannel.name);
+            const updatedChannelConfig = FieldModelUtilities.combineFieldModels(emptyChannelConfig, this.state.channelConfig);
+            this.setState({
+                channelConfig: updatedChannelConfig,
+                currentChannel: newChannel,
+            });
+        }
+        if (prevProviderName !== selectedProviderOption) {
             const newProvider = this.props.descriptors.find(descriptor => descriptor.name === selectedProviderOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION) || {};
-            const emptyProviderConfig = FieldModelUtilities.createEmptyFieldModel(newProvider.fields, newProvider.context, newProvider.name);
+            const providerKeys = FieldMapping.retrieveKeys(newProvider.fields);
+            const emptyProviderConfig = FieldModelUtilities.createEmptyFieldModel(providerKeys, newProvider.context, newProvider.name);
             const updatedProviderConfig = FieldModelUtilities.combineFieldModels(emptyProviderConfig, this.state.providerConfig);
             this.setState({
                 providerConfig: updatedProviderConfig,
-                currentChannel: newChannel,
                 currentProvider: newProvider
             });
         }
-    }
-
-    handleSaveBtnClick() {
-        this.props.onModalClose();
     }
 
     handleClose() {
@@ -75,44 +79,25 @@ class DistributionConfiguration extends Component {
         this.props.handleCancel();
     }
 
-    handleChannelChange(event) {
-        const { target } = event;
-        if (target) {
-            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.channelConfig, target.name, value);
+    handleChannelChange({ target }) {
+        const { type, name, value } = target;
+        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(this.state.channelConfig, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(this.state.channelConfig, name, updatedValue);
 
-            this.setState({
-                channelConfig: newState
-            });
-        } else {
-            const { value, name } = event;
-            if (value && name) {
-                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.channelConfig, name, value);
-                this.setState({
-                    channelConfig: newState
-                });
-            }
-        }
+
+        this.setState({
+            channelConfig: newState
+        });
     }
 
-    handleProviderChange(event) {
-        const { target } = event;
-        if (target) {
-            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.providerConfig, target.name, value);
+    handleProviderChange({ target }) {
+        const { type, name, value } = target;
+        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(this.state.providerConfig, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(this.state.providerConfig, name, updatedValue);
 
-            this.setState({
-                providerConfig: newState
-            });
-        } else {
-            const { value, name } = event;
-            if (value && name) {
-                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.providerConfig, name, value);
-                this.setState({
-                    providerConfig: newState
-                });
-            }
-        }
+        this.setState({
+            providerConfig: newState
+        });
     }
 
     buildJsonBody() {
@@ -144,12 +129,15 @@ class DistributionConfiguration extends Component {
         if (event) {
             event.preventDefault();
         }
+
         const jsonBody = this.buildJsonBody();
         if (this.state.jobId) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
         }
+        this.setState({ show: false });
+        this.props.onModalClose();
     }
 
     createChangeHandler(negateCheckboxValue) {
