@@ -22,39 +22,39 @@
  */
 package com.synopsys.integration.alert.database.authorization;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import java.io.Serializable;
 
-import com.synopsys.integration.alert.database.DatabaseRelation;
-
-@Entity
-@IdClass(UserRoleTaskPK.class)
-@Table(schema = "alert", name = "role_tasks")
-public class UserRoleTaskRelation extends DatabaseRelation {
-    @Id
-    @Column(name = "role_id")
+public class PermissionMatrixPK implements Serializable {
+    private static final long serialVersionUID = -5317479456840456710L;
     private Long roleId;
-    @Id
-    @Column(name = "task_id")
-    private Long taskId;
+    private Long permissionKeyId;
+    private Long accessOperationId;
 
-    public UserRoleTaskRelation() {
+    public PermissionMatrixPK() {
         // JPA requires default constructor definitions
-    }
-
-    public UserRoleTaskRelation(final Long roleId, final Long taskId) {
-        this.roleId = roleId;
-        this.taskId = taskId;
     }
 
     public Long getRoleId() {
         return roleId;
     }
 
-    public Long getTaskId() {
-        return taskId;
+    public void setRoleId(final Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public Long getPermissionKeyId() {
+        return permissionKeyId;
+    }
+
+    public void setPermissionKeyId(final Long permissionKeyId) {
+        this.permissionKeyId = permissionKeyId;
+    }
+
+    public Long getAccessOperationId() {
+        return accessOperationId;
+    }
+
+    public void setAccessOperationId(final Long accessOperationId) {
+        this.accessOperationId = accessOperationId;
     }
 }

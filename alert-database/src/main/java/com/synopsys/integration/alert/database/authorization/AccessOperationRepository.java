@@ -22,35 +22,7 @@
  */
 package com.synopsys.integration.alert.database.authorization;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.synopsys.integration.alert.database.DatabaseEntity;
-
-@Entity
-@Table(schema = "alert", name = "user_tasks")
-public class UserTaskEntity extends DatabaseEntity {
-    @Column(name = "taskname")
-    private String taskName;
-
-    @Column(name = "access_type")
-    private AccessType accessType;
-
-    public UserTaskEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public UserTaskEntity(final String taskName, final AccessType accessType) {
-        this.taskName = taskName;
-        this.accessType = accessType;
-    }
-
-    public AccessType getAccessType() {
-        return accessType;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
+public interface AccessOperationRepository extends JpaRepository<AccessOperationEntity, Long> {
 }

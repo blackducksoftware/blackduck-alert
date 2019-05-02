@@ -22,30 +22,27 @@
  */
 package com.synopsys.integration.alert.database.authorization;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class UserRoleTaskPK implements Serializable {
-    private static final long serialVersionUID = -5317479456840456710L;
-    private Long roleId;
-    private Long taskId;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-    public UserRoleTaskPK() {
+@Entity
+@Table(schema = "alert", name = "permission_keys")
+public class PermissionKeyEntity extends DatabaseEntity {
+    @Column(name = "keyName")
+    private String keyName;
+
+    public PermissionKeyEntity() {
         // JPA requires default constructor definitions
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public PermissionKeyEntity(final String keyName) {
+        this.keyName = keyName;
     }
 
-    public void setRoleId(final Long roleId) {
-        this.roleId = roleId;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(final Long taskId) {
-        this.taskId = taskId;
+    public String getKeyName() {
+        return keyName;
     }
 }

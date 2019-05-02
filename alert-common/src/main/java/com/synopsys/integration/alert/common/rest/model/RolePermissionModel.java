@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,11 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.authorization;
+package com.synopsys.integration.alert.common.rest.model;
 
-public enum AccessType {
-    CREATE,
-    DELETE,
-    READ,
-    WRITE
+public class RolePermissionModel extends AlertSerializableModel {
+    private final String permissionKey;
+
+    public RolePermissionModel(final String permissionKey) {
+        this.permissionKey = permissionKey;
+    }
+
+    public String getPermissionKey() {
+        return permissionKey;
+    }
 }

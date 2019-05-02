@@ -20,16 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.enumeration;
 
-public class RoleTaskModel extends AlertSerializableModel {
-    private final String taskName;
-
-    public RoleTaskModel(final String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
+public enum AccessOperation {
+    CREATE,
+    DELETE,
+    READ,
+    WRITE
 }

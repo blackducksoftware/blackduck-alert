@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,32 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.database.authorization;
 
-import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class UserRoleModel extends AlertSerializableModel {
-    private final String name;
-    private final Set<RolePermissionModel> permissions;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-    private UserRoleModel(final String name, final Set<RolePermissionModel> permissions) {
-        this.name = name;
-        this.permissions = permissions;
+@Entity
+@Table(schema = "alert", name = "access_operations")
+public class AccessOperationEntity extends DatabaseEntity {
+    @Column(name = "operation_name")
+    private String operationName;
+
+    public AccessOperationEntity() {
+        // JPA requires default constructor definitions
     }
 
-    public static final UserRoleModel of(final String name) {
-        return new UserRoleModel(name, Set.of());
+    public AccessOperationEntity(final String operationName) {
+        this.operationName = operationName;
     }
 
-    public static final UserRoleModel of(final String name, final Set<RolePermissionModel> tasks) {
-        return new UserRoleModel(name, tasks);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Set<RolePermissionModel> getPermissions() {
-        return permissions;
+    public String getOperationName() {
+        return operationName;
     }
 }

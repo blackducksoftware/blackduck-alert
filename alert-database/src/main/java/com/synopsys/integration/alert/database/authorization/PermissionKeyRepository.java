@@ -22,7 +22,10 @@
  */
 package com.synopsys.integration.alert.database.authorization;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserTaskRepository extends JpaRepository<UserTaskEntity, Long> {
+public interface PermissionKeyRepository extends JpaRepository<PermissionKeyEntity, Long> {
+    Optional<PermissionKeyEntity> findByKeyName(String keyName);
 }
