@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
@@ -136,6 +137,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+        final String[] allowedRoles = Arrays.stream(UserRole.values()).map(UserRole::name).collect(Collectors.toList()).toArray(new String[UserRole.values().length]);
         configureActiveMQProvider();
         configureWithSSL(http);
         configureH2Console(http);
@@ -146,7 +148,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-            .authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
+            .authorizeRequests().anyRequest().hasAnyRole(allowedRoles)
             .and().logout().logoutSuccessUrl("/");
     }
 

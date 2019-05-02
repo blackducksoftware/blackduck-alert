@@ -20,14 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.database.authorization;
 
-public enum UserRole {
-    ALERT_ADMIN,
-    ALERT_JOB_MANAGER,
-    ALERT_USER;
-
-    public static final String ALERT_ADMIN_TEXT = "ALERT_ADMIN";
-    public static final String ALERT_JOB_MANAGER_TEXT = "ALERT_JOB_MANAGER";
-    public static final String ALERT_USER_TEXT = "ALERT_USER";
+public enum AccessType {
+    CREATE,
+    DELETE,
+    READ,
+    WRITE
 }

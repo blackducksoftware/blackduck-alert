@@ -20,14 +20,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.database.authorization;
 
-public enum UserRole {
-    ALERT_ADMIN,
-    ALERT_JOB_MANAGER,
-    ALERT_USER;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-    public static final String ALERT_ADMIN_TEXT = "ALERT_ADMIN";
-    public static final String ALERT_JOB_MANAGER_TEXT = "ALERT_JOB_MANAGER";
-    public static final String ALERT_USER_TEXT = "ALERT_USER";
+import com.synopsys.integration.alert.database.DatabaseEntity;
+
+@Entity
+@Table(schema = "alert", name = "user_tasks")
+public class UserTaskEntity extends DatabaseEntity {
+    @Column(name = "taskname")
+    private String taskName;
+
+    @Column(name = "access_type")
+    private AccessType accessType;
+
+    public UserTaskEntity() {
+        // JPA requires default constructor definitions
+    }
+
+    public UserTaskEntity(final String taskName, final AccessType accessType) {
+        this.taskName = taskName;
+        this.accessType = accessType;
+    }
+
+    public AccessType getAccessType() {
+        return accessType;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
 }
