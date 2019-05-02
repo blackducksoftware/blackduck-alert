@@ -85,7 +85,7 @@ public class SlackChannelTest extends ChannelTest {
         slackChannel.sendAuditedMessage(event);
 
         final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + SlackChannel.COMPONENT_NAME + " message!");
-        assertTrue(actual);
+        assertTrue(actual, "No success message appeared in the logs");
     }
 
     @Test
@@ -158,7 +158,7 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         try {
-            assertTrue(channel.createRequests(event).isEmpty());
+            assertTrue(channel.createRequests(event).isEmpty(), "Expected no requests to be created");
         } catch (final IntegrationException e) {
         }
     }
@@ -187,11 +187,11 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
-        assertFalse(requests.isEmpty());
+        assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
-        assertNotNull(actualRequest.getBodyContent());
+        assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
@@ -218,11 +218,11 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
-        assertFalse(requests.isEmpty());
+        assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
-        assertNotNull(actualRequest.getBodyContent());
+        assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
@@ -252,11 +252,11 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
-        assertFalse(requests.isEmpty());
+        assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
-        assertNotNull(actualRequest.getBodyContent());
+        assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
@@ -286,11 +286,11 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
 
         final List<Request> requests = channel.createRequests(event);
-        assertFalse(requests.isEmpty());
+        assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
-        assertNotNull(actualRequest.getBodyContent());
+        assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
@@ -313,7 +313,7 @@ public class SlackChannelTest extends ChannelTest {
             request = slackChannel.createRequests(event);
             fail();
         } catch (final IntegrationException e) {
-            assertNull(request);
+            assertNull(request, "Expected the request to be null");
         }
 
         fieldModels = new HashMap<>();
@@ -328,7 +328,7 @@ public class SlackChannelTest extends ChannelTest {
             request = slackChannel.createRequests(event);
             fail();
         } catch (final IntegrationException e) {
-            assertNull(request);
+            assertNull(request, "Expected the request to be null");
         }
     }
 
@@ -370,7 +370,7 @@ public class SlackChannelTest extends ChannelTest {
         final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(event);
-        assertTrue(requests.isEmpty());
+        assertTrue(requests.isEmpty(), "Expected no requests to be created");
         Mockito.verify(spySlackChannel, Mockito.times(0)).sendMessage(Mockito.any());
     }
 }
