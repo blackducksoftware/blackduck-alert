@@ -59,7 +59,7 @@ public class SlackChannel extends DistributionChannel {
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
     // TODO figure out what the maximum size actually is, this is a trial and error number
-    private static final int MRKDWN_MAX_SIZE_PRE_SPLIT = 2000;
+    private static final int MRKDWN_MAX_SIZE_PRE_SPLIT = 3500;
     private static final char SLACK_LINE_SEPARATOR = '\n';
     private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
 
@@ -197,6 +197,15 @@ public class SlackChannel extends DistributionChannel {
         return newString;
     }
 
+    private List<Request> createRequestsForMessage(final String channelName, final String channelUsername, final String webhook, final String mrkdwnMessage, final Map<String, String> requestHeaders) {
+        final List<String> mrkdwnMessages = splitMessage(mrkdwnMessage);
+        return mrkdwnMessages
+                   .stream()
+                   .map(message -> getJsonString(message, channelName, channelUsername))
+                   .map(jsonMessage -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonMessage))
+                   .collect(Collectors.toList());
+    }
+
     private String getJsonString(final String htmlMessage, final String channel, final String username) {
         final JsonObject json = new JsonObject();
         json.addProperty("text", htmlMessage);
@@ -205,15 +214,6 @@ public class SlackChannel extends DistributionChannel {
         json.addProperty("mrkdwn", true);
 
         return json.toString();
-    }
-
-    private List<Request> createRequestsForMessage(final String channelName, final String channelUsername, final String webhook, final String mrkdwnMessage, final Map<String, String> requestHeaders) {
-        final List<String> mrkdwnMessages = splitMessage(mrkdwnMessage);
-        return mrkdwnMessages
-                   .stream()
-                   .map(message -> getJsonString(message, channelName, channelUsername))
-                   .map(jsonMessage -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonMessage))
-                   .collect(Collectors.toList());
     }
 
     private List<String> splitMessage(final String message) {

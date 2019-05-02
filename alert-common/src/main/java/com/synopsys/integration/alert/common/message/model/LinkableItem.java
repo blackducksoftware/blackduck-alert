@@ -47,7 +47,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.name = name;
         this.value = value;
         this.url = url;
-        this.collapsible = true;
+        this.collapsible = false;
         this.countable = false;
         this.isNumericValue = false;
         this.summarizable = false;
@@ -102,6 +102,10 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     @Override
     public int compareTo(final LinkableItem otherItem) {
+        if (collapsible && !otherItem.collapsible) {
+            return 1;
+        }
+
         final List<String> excludedFields = List.of("collapsible", "countable", "isNumericValue", "summarizable");
         return CompareToBuilder.reflectionCompare(this, otherItem, excludedFields);
     }

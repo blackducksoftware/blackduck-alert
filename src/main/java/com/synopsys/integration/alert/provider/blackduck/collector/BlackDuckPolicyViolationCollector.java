@@ -160,6 +160,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             displayName = String.format("%s (%s)", policyName, severity);
         }
         final LinkableItem linkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, null);
+        linkableItem.setCollapsible(true);
         linkableItem.setSummarizable(true);
         return linkableItem;
     }
