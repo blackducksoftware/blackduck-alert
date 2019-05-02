@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.RoleEntity;
 import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserEntity;
@@ -73,8 +74,9 @@ public class DefaultUserAccessor {
     private UserModel createModel(final UserEntity user) {
         final List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         final List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        final Set<String> rolesForUser = new LinkedHashSet<>(roleRepository.getRoleNames(roleIdsForUser));
-        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), rolesForUser);
+        final Set<String> assignedRoleNames = new LinkedHashSet<>(roleRepository.getRoleNames(roleIdsForUser));
+        final Set<UserRoleModel> roles = createRoles(assignedRoleNames);
+        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
     }
 
     public UserModel addOrUpdateUser(final UserModel user) {
@@ -84,9 +86,6 @@ public class DefaultUserAccessor {
     public UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded) {
         final String password = (passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword()));
         final UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
-        final Collection<String> roles = user.getRoles();
-        final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roles);
-        final List<UserRoleRelation> roleRelations = new LinkedList<>();
 
         final Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
         if (existingUser.isPresent()) {
@@ -95,11 +94,17 @@ public class DefaultUserAccessor {
             userRoleRepository.deleteAllByUserId(userId);
         }
 
-        for (final RoleEntity role : roleEntities) {
-            roleRelations.add(new UserRoleRelation(userEntity.getId(), role.getId()));
+        if (null != user.getRoles()) {
+            final Collection<String> roles = user.getRoles().stream().map(UserRoleModel::getName).collect(Collectors.toSet());
+
+            final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roles);
+            final List<UserRoleRelation> roleRelations = new LinkedList<>();
+            for (final RoleEntity role : roleEntities) {
+                roleRelations.add(new UserRoleRelation(userEntity.getId(), role.getId()));
+            }
+            userRoleRepository.saveAll(roleRelations);
         }
 
-        userRoleRepository.saveAll(roleRelations);
         return createModel(userRepository.save(userEntity));
     }
 
@@ -111,7 +116,7 @@ public class DefaultUserAccessor {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), roles));
+            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), createRoles(roles)));
             assigned = model.getName().equals(username) && model.getRoles().size() == roles.size();
         }
         return assigned;
@@ -145,5 +150,11 @@ public class DefaultUserAccessor {
             assignRoles(entity.getUserName(), Collections.emptySet());
             userRepository.delete(entity);
         });
+    }
+
+    private Set<UserRoleModel> createRoles(final Set<String> roleNames) {
+        return roleNames.stream()
+                   .map(UserRoleModel::of)
+                   .collect(Collectors.toSet());
     }
 }

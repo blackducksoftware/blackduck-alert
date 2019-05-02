@@ -195,12 +195,12 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
     // FIXME Will need to add all configurations to properly run a test check for hipchat.
     //    @Test
-    //    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    //    @WithMockUser(roles = UserRoleModel.ALERT_ADMIN_TEXT)
     //    public void testTestConfig() throws Exception {
     //        registerDescriptor(hipChatDescriptor);
     //        final String urlPath = url + "/test";
     //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-    //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+    //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRoleModel.ALERT_ADMIN_TEXT))
     //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
     //
     //        final FieldModel fieldModel = createTestFieldModel();

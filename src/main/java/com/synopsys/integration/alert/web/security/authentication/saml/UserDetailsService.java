@@ -31,6 +31,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.database.UserPrincipal;
 
 public class UserDetailsService implements SAMLUserDetailsService {
@@ -39,10 +40,12 @@ public class UserDetailsService implements SAMLUserDetailsService {
         final String userName = credential.getAttributeAsString("Name");
         final String emailAddress = credential.getAttributeAsString("Email");
         final String[] alertRoles = credential.getAttributeAsStringArray("AlertRoles");
-        Set<String> roles = Set.of();
+        Set<UserRoleModel> roles = Set.of();
 
         if (alertRoles != null) {
-            roles = Arrays.stream(alertRoles).collect(Collectors.toSet());
+            roles = Arrays.stream(alertRoles)
+                        .map(UserRoleModel::of)
+                        .collect(Collectors.toSet());
         }
 
         final UserModel userModel = UserModel.of(userName, "", emailAddress, roles);

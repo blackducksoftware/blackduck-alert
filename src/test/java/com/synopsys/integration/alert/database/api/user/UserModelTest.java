@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.UserRole;
 
 public class UserModelTest {
@@ -21,7 +22,8 @@ public class UserModelTest {
         final String expectedUserName = "expectedUser";
         final String expectedPassword = "expectedPassword";
         final String expectedEmail = "expectedEmail";
-        final Set<String> expectedRoles = new LinkedHashSet<>(Arrays.asList(UserRole.values()).stream().map(UserRole::name).collect(Collectors.toList()));
+        final Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(UserRole.values()).stream().map(UserRole::name).collect(Collectors.toList()));
+        final Set<UserRoleModel> expectedRoles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
         final UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());

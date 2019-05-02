@@ -34,17 +34,13 @@ public class UserModel extends AlertSerializableModel {
     private final String name;
     private final String password;
     private final String emailAddress;
-    private final Set<String> roles;
+    private final Set<UserRoleModel> roles;
     private final boolean expired;
     private final boolean locked;
     private final boolean passwordExpired;
     private final boolean enabled;
 
-    public static final UserModel of(final String userName, final String password, final String emailAddress, final Set<String> roles) {
-        return new UserModel(userName, password, emailAddress, roles, false, false, false, true);
-    }
-
-    private UserModel(final String name, final String password, final String emailAddress, final Set<String> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    private UserModel(final String name, final String password, final String emailAddress, final Set<UserRoleModel> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
         this.name = name;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -53,6 +49,10 @@ public class UserModel extends AlertSerializableModel {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
+    }
+
+    public static final UserModel of(final String userName, final String password, final String emailAddress, final Set<UserRoleModel> roles) {
+        return new UserModel(userName, password, emailAddress, roles, false, false, false, true);
     }
 
     public String getName() {
@@ -67,17 +67,22 @@ public class UserModel extends AlertSerializableModel {
         return emailAddress;
     }
 
-    public Collection<String> getRoles() {
+    public Collection<UserRoleModel> getRoles() {
         return roles;
     }
 
     public Collection<GrantedAuthority> getRoleAuthorities() {
         // Spring requires the roles to start with ROLE_
-        return roles.stream().map(role -> ROLE_PREFIX + role).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return roles.stream()
+                   .map(UserRoleModel::getName)
+                   .map(role -> ROLE_PREFIX + role)
+                   .map(SimpleGrantedAuthority::new)
+                   .collect(Collectors.toList());
     }
 
     public boolean hasRole(final String role) {
-        return roles.contains(role);
+        //Make this performs better.
+        return roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet()).contains(role);
     }
 
     public boolean isExpired() {

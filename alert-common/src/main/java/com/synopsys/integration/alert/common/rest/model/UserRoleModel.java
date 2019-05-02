@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,32 +20,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.authorization;
+package com.synopsys.integration.alert.common.rest.model;
 
-import java.io.Serializable;
+import java.util.Set;
 
-public class UserRoleTaskPK implements Serializable {
-    private static final long serialVersionUID = -5317479456840456710L;
-    private Long roleId;
-    private Long taskId;
+public class UserRoleModel extends AlertSerializableModel {
+    private final String name;
+    private final Set<RoleTaskModel> tasks;
 
-    public UserRoleTaskPK() {
-        // JPA requires default constructor definitions
+    private UserRoleModel(final String name, final Set<RoleTaskModel> tasks) {
+        this.name = name;
+        this.tasks = tasks;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public static final UserRoleModel of(final String name) {
+        return new UserRoleModel(name, Set.of());
     }
 
-    public void setRoleId(final Long roleId) {
-        this.roleId = roleId;
+    public static final UserRoleModel of(final String name, final Set<RoleTaskModel> tasks) {
+        return new UserRoleModel(name, tasks);
     }
 
-    public Long getTaskId() {
-        return taskId;
+    public String getName() {
+        return name;
     }
 
-    public void setTaskId(final Long taskId) {
-        this.taskId = taskId;
+    public Set<RoleTaskModel> getTasks() {
+        return tasks;
     }
 }
