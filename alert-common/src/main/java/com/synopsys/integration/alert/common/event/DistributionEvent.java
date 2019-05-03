@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public class DistributionEvent extends ContentEvent {
@@ -36,8 +36,8 @@ public class DistributionEvent extends ContentEvent {
     private final String configId;
     private Map<Long, Long> notificationIdToAuditId;
 
-    public DistributionEvent(final String configId, final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final FieldAccessor fieldAccessor) {
-        super(destination, createdAt, provider, formatType, content);
+    public DistributionEvent(final String configId, final String destination, final String createdAt, final String provider, final String formatType, final MessageContentGroup contentGroup, final FieldAccessor fieldAccessor) {
+        super(destination, createdAt, provider, formatType, contentGroup);
         this.fieldAccessor = fieldAccessor;
         this.configId = configId;
     }
@@ -68,4 +68,5 @@ public class DistributionEvent extends ContentEvent {
         }
         return Collections.emptySet();
     }
+
 }
