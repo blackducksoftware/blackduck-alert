@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
@@ -80,7 +81,8 @@ public class SlackChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -104,7 +106,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final AggregateMessageContent content = Mockito.mock(AggregateMessageContent.class);
         Mockito.when(content.getValue()).thenReturn("Value");
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
         try {
             channel.createRequests(event);
             fail("Expected an exception for missing webhook");
@@ -127,7 +129,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final AggregateMessageContent content = Mockito.mock(AggregateMessageContent.class);
         Mockito.when(content.getValue()).thenReturn("Value");
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
@@ -152,7 +154,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(content.getValue()).thenReturn(null);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
@@ -181,7 +183,7 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
@@ -212,7 +214,7 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
@@ -246,7 +248,7 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
@@ -280,7 +282,7 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
-        Mockito.when(event.getContent()).thenReturn(content);
+        Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, restChannelUtility);
@@ -307,7 +309,8 @@ public class SlackChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        DistributionEvent event = new DistributionEvent(
+            "1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         try {
             request = slackChannel.createRequests(event);
@@ -322,7 +325,8 @@ public class SlackChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         fieldAccessor = new FieldAccessor(fieldModels);
-        event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        event = new DistributionEvent(
+            "1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         try {
             request = slackChannel.createRequests(event);
@@ -347,7 +351,8 @@ public class SlackChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendMessage(event);
 
@@ -367,7 +372,8 @@ public class SlackChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty(), "Expected no requests to be created");

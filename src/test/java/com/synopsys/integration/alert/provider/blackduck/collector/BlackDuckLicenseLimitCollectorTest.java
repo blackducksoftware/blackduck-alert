@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
@@ -33,7 +33,7 @@ public class BlackDuckLicenseLimitCollectorTest {
         final NotificationContent notification = getNotificationContent();
 
         collector.insert(notification);
-        final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
+        final List<MessageContentGroup> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
 
         assertEquals(1, aggregateMessageContentList.size());
     }

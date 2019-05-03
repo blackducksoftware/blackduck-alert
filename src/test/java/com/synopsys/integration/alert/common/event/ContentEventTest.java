@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 public class ContentEventTest {
     private static final String TOPIC = "TOPIC";
@@ -30,7 +31,8 @@ public class ContentEventTest {
     public void getContentTest() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, content);
+        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
+        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
         assertEquals(content, event.getContent());
     }
 }
