@@ -101,7 +101,7 @@ public class MessageContentCollapser {
             return Optional.empty();
         } else {
             final String url = currentContent.getUrl().orElse(null);
-            return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, currentContent.getSubTopics(), new TreeSet<>(categoryItemCollection)));
+            return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, currentContent.getSubTopic().orElse(null), new TreeSet<>(categoryItemCollection)));
         }
     }
 

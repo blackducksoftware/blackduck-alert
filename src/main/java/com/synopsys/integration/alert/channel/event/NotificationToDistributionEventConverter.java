@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -52,15 +52,15 @@ public class NotificationToDistributionEventConverter {
         this.configurationAccessor = configurationAccessor;
     }
 
-    public List<DistributionEvent> convertToEvents(final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap) {
+    public List<DistributionEvent> convertToEvents(final Map<CommonDistributionConfiguration, List<MessageContentGroup>> messageContentMap) {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
-        for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : messageContentMap.entrySet()) {
-            for (final AggregateMessageContent content : entry.getValue()) {
+        for (final Map.Entry<CommonDistributionConfiguration, List<MessageContentGroup>> entry : messageContentMap.entrySet()) {
+            for (final MessageContentGroup contentGroup : entry.getValue()) {
                 final CommonDistributionConfiguration config = entry.getKey();
                 final String descriptorName = config.getChannelName();
                 final Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
                 config.addFields(globalFields);
-                distributionEvents.add(createChannelEvent(config, content));
+                distributionEvents.add(createChannelEvent(config, contentGroup));
             }
         }
         logger.debug("Created {} events.", distributionEvents.size());
@@ -77,9 +77,9 @@ public class NotificationToDistributionEventConverter {
         }
     }
 
-    private DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
+    private DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final MessageContentGroup contentGroup) {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
-            commmonDistributionConfig.getFormatType().name(), messageContent, commmonDistributionConfig.getFieldAccessor());
+            commmonDistributionConfig.getFormatType().name(), contentGroup, commmonDistributionConfig.getFieldAccessor());
     }
 
 }

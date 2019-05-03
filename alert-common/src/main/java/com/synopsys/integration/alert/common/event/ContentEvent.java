@@ -22,20 +22,20 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 public class ContentEvent extends AlertEvent {
     private final String createdAt;
     private final String provider;
     private final String formatType;
-    private final AggregateMessageContent content;
+    private final MessageContentGroup contentGroup;
 
-    public ContentEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content) {
+    public ContentEvent(final String destination, final String createdAt, final String provider, final String formatType, final MessageContentGroup contentGroup) {
         super(destination);
         this.createdAt = createdAt;
         this.provider = provider;
         this.formatType = formatType;
-        this.content = content;
+        this.contentGroup = contentGroup;
     }
 
     public String getCreatedAt() {
@@ -50,7 +50,8 @@ public class ContentEvent extends AlertEvent {
         return formatType;
     }
 
-    public AggregateMessageContent getContent() {
-        return content;
+    public MessageContentGroup getContent() {
+        return contentGroup;
     }
+
 }
