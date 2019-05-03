@@ -123,7 +123,7 @@ public class FieldModelProcessor {
     }
 
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
-        return retrieveTestAction(fieldModel.getContext(), fieldModel.getDescriptorName());
+        return retrieveTestAction(fieldModel.getDescriptorName(), fieldModel.getContext());
     }
 
     public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
