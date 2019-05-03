@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +42,7 @@ public class MessageContentGroup extends AlertSerializableModel {
     }
 
     public MessageContentGroup() {
-        this.subContent = new ArrayList<>();
+        this.subContent = new LinkedList<>();
         this.commonTopic = null;
     }
 
