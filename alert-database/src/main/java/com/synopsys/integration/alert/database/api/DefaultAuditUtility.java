@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
@@ -114,27 +115,28 @@ public class DefaultAuditUtility implements AuditUtility {
     @Transactional
     public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final MessageContentGroup contentGroup) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        for (final AggregateMessageContent content : contentGroup.getSubContent()) {
-            final Set<Long> notificationIds = content.getCategoryItems().stream()
-                                                  .map(CategoryItem::getNotificationId)
-                                                  .collect(Collectors.toSet());
-            for (final Long notificationId : notificationIds) {
-                AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
+        final Set<Long> notificationIds = contentGroup.getSubContent()
+                                              .stream()
+                                              .map(AggregateMessageContent::getCategoryItems)
+                                              .flatMap(SortedSet::stream)
+                                              .map(CategoryItem::getNotificationId)
+                                              .collect(Collectors.toSet());
+        for (final Long notificationId : notificationIds) {
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
 
-                if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
-                    final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
-                    if (null != auditEntryId) {
-                        auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
-                    }
+            if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
+                final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
+                if (null != auditEntryId) {
+                    auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
                 }
-
-                auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
-                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-
-                notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
-                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                auditNotificationRepository.save(auditNotificationRelation);
             }
+
+            auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
+            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+
+            notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
+            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+            auditNotificationRepository.save(auditNotificationRelation);
         }
         return notificationIdToAuditId;
     }
