@@ -22,30 +22,34 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.Set;
+import java.util.Map;
+import java.util.Objects;
 
 public class UserRoleModel extends AlertSerializableModel {
     private final String name;
-    private final Set<RolePermissionModel> permissions;
+    private final PermissionMatrixModel permissions;
 
-    private UserRoleModel(final String name, final Set<RolePermissionModel> permissions) {
+    private UserRoleModel(final String name, final PermissionMatrixModel permissions) {
         this.name = name;
         this.permissions = permissions;
     }
 
     public static final UserRoleModel of(final String name) {
-        return new UserRoleModel(name, Set.of());
+        Objects.requireNonNull(name);
+        return new UserRoleModel(name, new PermissionMatrixModel(Map.of()));
     }
 
-    public static final UserRoleModel of(final String name, final Set<RolePermissionModel> tasks) {
-        return new UserRoleModel(name, tasks);
+    public static final UserRoleModel of(final String name, final PermissionMatrixModel permissions) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(permissions);
+        return new UserRoleModel(name, permissions);
     }
 
     public String getName() {
         return name;
     }
 
-    public Set<RolePermissionModel> getPermissions() {
+    public PermissionMatrixModel getPermissions() {
         return permissions;
     }
 }

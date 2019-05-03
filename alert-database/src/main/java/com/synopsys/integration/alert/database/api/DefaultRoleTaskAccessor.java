@@ -22,21 +22,12 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.rest.model.RolePermissionModel;
-import com.synopsys.integration.alert.database.authorization.PermissionKeyEntity;
 import com.synopsys.integration.alert.database.authorization.PermissionKeyRepository;
-import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
-import com.synopsys.integration.alert.database.user.RoleEntity;
 import com.synopsys.integration.alert.database.user.RoleRepository;
 
 @Component
@@ -53,17 +44,19 @@ public class DefaultRoleTaskAccessor {
         this.roleTaskRepository = roleTaskRepository;
     }
 
-    public void assignTaskToRole(final String role, final RolePermissionModel roleTask) {
-        final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleName(List.of(role));
-        final Optional<PermissionKeyEntity> userTask = permissionKeyRepository.findByKeyName(roleTask.getPermissionKey());
-
-        if (userTask.isPresent()) {
-            final PermissionKeyEntity taskEntity = userTask.get();
-            final Collection<PermissionMatrixRelation> roleTaskRelations = new LinkedList<>();
-            for (final RoleEntity databaseRole : roles) {
-                roleTaskRelations.add(new PermissionMatrixRelation(databaseRole.getId(), taskEntity.getId()));
-            }
-            roleTaskRepository.saveAll(roleTaskRelations);
-        }
-    }
+    // TODO assign permissions to roles
+    //    public void assignTaskToRole(final String role, final PermissionMatrixModel permissions) {
+    //        final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleName(List.of(role));
+    //        permissions
+    //        final Optional<PermissionKeyEntity> userTask = permissionKeyRepository.findByKeyName(roleTask.getPermissionKey());
+    //
+    //        if (userTask.isPresent()) {
+    //            final PermissionKeyEntity taskEntity = userTask.get();
+    //            final Collection<PermissionMatrixRelation> roleTaskRelations = new LinkedList<>();
+    //            for (final RoleEntity databaseRole : roles) {
+    //                roleTaskRelations.add(new PermissionMatrixRelation(databaseRole.getId(), taskEntity.getId()));
+    //            }
+    //            roleTaskRepository.saveAll(roleTaskRelations);
+    //        }
+    //    }
 }
