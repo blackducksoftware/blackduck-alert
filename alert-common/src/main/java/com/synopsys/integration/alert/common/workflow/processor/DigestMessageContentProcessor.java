@@ -30,7 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,11 +54,11 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
         final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
-        final Map<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(collapsedMessages);
+        final Map<TopicAndSubTopicPair, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(collapsedMessages);
 
         final Map<String, MessageContentGroup> messageGroups = new LinkedHashMap<>();
-        for (final Map.Entry<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> groupedMessageEntry : messagesGroupedByTopicAndSubTopic.entrySet()) {
-            final Pair<LinkableItem, LinkableItem> topicAndSubTopic = groupedMessageEntry.getKey();
+        for (final Map.Entry<TopicAndSubTopicPair, List<AggregateMessageContent>> groupedMessageEntry : messagesGroupedByTopicAndSubTopic.entrySet()) {
+            final TopicAndSubTopicPair topicAndSubTopic = groupedMessageEntry.getKey();
             final LinkableItem topic = topicAndSubTopic.getLeft();
             final SortedSet<CategoryItem> combinedCategoryItems = gatherCategoryItems(groupedMessageEntry.getValue());
 
@@ -70,12 +69,12 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
         return new ArrayList<>(messageGroups.values());
     }
 
-    private Map<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> groupByTopicAndSubTopicValue(final List<AggregateMessageContent> messages) {
-        final Map<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> groupedMessages = new LinkedHashMap<>();
+    private Map<TopicAndSubTopicPair, List<AggregateMessageContent>> groupByTopicAndSubTopicValue(final List<AggregateMessageContent> messages) {
+        final Map<TopicAndSubTopicPair, List<AggregateMessageContent>> groupedMessages = new LinkedHashMap<>();
         for (final AggregateMessageContent message : messages) {
             final LinkableItem topic = new LinkableItem(message.getName(), message.getValue(), message.getUrl().orElse(null));
             final LinkableItem subTopic = message.getSubTopic().orElse(null);
-            final Pair<LinkableItem, LinkableItem> topicAndSubTopic = new ImmutablePair<>(topic, subTopic);
+            final TopicAndSubTopicPair topicAndSubTopic = new TopicAndSubTopicPair(topic, subTopic);
 
             groupedMessages.computeIfAbsent(topicAndSubTopic, ignored -> new ArrayList<>()).add(message);
         }
@@ -132,6 +131,32 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
             .filter(LinkableItem::isCollapsible)
             .forEach(combinedItems::add);
         return combinedItems;
+    }
+
+    private class TopicAndSubTopicPair extends Pair<LinkableItem, LinkableItem> {
+        private final LinkableItem topic;
+        private final LinkableItem subTopicNullable;
+
+        public TopicAndSubTopicPair(final LinkableItem topic, final LinkableItem subTopicNullable) {
+            this.topic = topic;
+            this.subTopicNullable = subTopicNullable;
+        }
+
+        @Override
+        public LinkableItem getLeft() {
+            return topic;
+        }
+
+        @Override
+        public LinkableItem getRight() {
+            return subTopicNullable;
+        }
+
+        @Override
+        public LinkableItem setValue(final LinkableItem subTopic) {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
 }
