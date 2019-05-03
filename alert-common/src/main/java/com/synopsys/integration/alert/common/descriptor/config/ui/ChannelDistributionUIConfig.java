@@ -50,7 +50,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     private static final String LABEL_NAME = "Name";
     private static final String LABEL_FREQUENCY = "Frequency";
-    private static final String LABEL_CHANNEL_NAME = "Channel Type";
+    private static final String LABEL_CHANNEL_NAME = "Type";
     private static final String LABEL_PROVIDER_NAME = "Provider Type";
 
     private static final String DESCRIPTION_NAME = "The name of the distribution job. Must be unique.";

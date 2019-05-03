@@ -4,9 +4,6 @@ import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
-import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
-import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -102,52 +99,19 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
+            const { id } = currentRowSelected;
             return (
                 <DistributionConfiguration
-                    projects={this.state.projects}
                     handleCancel={this.cancelRowSelect}
+                    onSave={this.saveBtn}
+                    jobId={id}
                     onModalClose={() => {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
                     }}
-                    onSave={this.saveBtn}
-                    job={currentRowSelected}
                 />);
         }
         return null;
-    }
-
-    cancelRowSelect() {
-        this.startAutoReloadIfConfigured();
-        this.setState({
-            currentRowSelected: null
-        });
-    }
-
-    saveBtn() {
-        this.startAutoReloadIfConfigured();
-        this.cancelRowSelect();
-        this.reloadJobs();
-    }
-
-    reloadJobs() {
-        this.props.fetchDistributionJobs();
-    }
-
-    cancelAutoReload() {
-        clearTimeout(this.timeout);
-    }
-
-    startAutoReload() {
-        // Run reload in 10seconds - kill an existing timer if it exists.
-        this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.reloadJobs(), 10000);
-    }
-
-    startAutoReloadIfConfigured() {
-        if (this.props.autoRefresh) {
-            this.startAutoReload();
-        }
     }
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
@@ -166,6 +130,39 @@ class Index extends Component {
                 ignoreEditable={ignoreEditable}
             />
         );
+    }
+
+    startAutoReload() {
+        // Run reload in 10seconds - kill an existing timer if it exists.
+        this.cancelAutoReload();
+        this.timeout = setTimeout(() => this.reloadJobs(), 10000);
+    }
+
+    cancelAutoReload() {
+        clearTimeout(this.timeout);
+    }
+
+    startAutoReloadIfConfigured() {
+        if (this.props.autoRefresh) {
+            this.startAutoReload();
+        }
+    }
+
+    saveBtn() {
+        this.startAutoReloadIfConfigured();
+        this.cancelRowSelect();
+        this.reloadJobs();
+    }
+
+    reloadJobs() {
+        this.props.fetchDistributionJobs();
+    }
+
+    cancelRowSelect() {
+        this.startAutoReloadIfConfigured();
+        this.setState({
+            currentRowSelected: null
+        });
     }
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
@@ -291,8 +288,11 @@ class Index extends Component {
             noDataText: 'No jobs configured',
             clearSearch: true,
             insertModal: this.createCustomModal,
-            handleConfirmDeleteRow: this.customJobConfigDeletionConfirm
+            handleConfirmDeleteRow: this.customJobConfigDeletionConfirm,
+            defaultSortName: 'name',
+            defaultSortOrder: 'asc'
         };
+
         const jobsSelectRowProp = {
             mode: 'checkbox',
             clickToSelect: true,
@@ -304,8 +304,9 @@ class Index extends Component {
             }
         };
 
-        let content = (
+        const content = (
             <div>
+                {this.getCurrentJobConfig(this.state.currentRowSelected)}
                 <BootstrapTable
                     version="4"
                     hover
@@ -340,10 +341,6 @@ class Index extends Component {
                 <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
-        const currentJobContent = this.getCurrentJobConfig(this.state.currentRowSelected);
-        if (currentJobContent !== null) {
-            content = currentJobContent;
-        }
         return (
             <div>
                 <JobDeleteModal

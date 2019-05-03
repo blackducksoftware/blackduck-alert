@@ -5,7 +5,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import { saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -45,6 +45,15 @@ class DistributionConfiguration extends Component {
             currentChannel: defaultDescriptor,
             currentProvider: {}
         };
+        this.loading = false;
+    }
+
+    componentDidMount() {
+        const { jobId } = this.props;
+        this.props.getDistributionJob(jobId);
+        if (jobId) {
+            this.loading = true;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -55,22 +64,28 @@ class DistributionConfiguration extends Component {
         }
 
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const { job } = nextProps;
-            if (job && job.fieldModels) {
-                const channelModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
-                const providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
+            if (this.loading) {
+                this.loading = false;
+                const { job } = nextProps;
+                if (job && job.fieldModels) {
+                    const channelModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
+                    const providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
+                    const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
 
-                this.setState({
-                    fieldErrors: {},
-                    jobId: job.jobId,
-                    commonConfig: channelModel,
-                    providerConfig: providerModel
-                });
+                    this.setState({
+                        fieldErrors: {},
+                        channelConfig: channelModel,
+                        providerConfig: providerModel,
+                        currentChannel: newChannel,
+                        currentProvider: newProvider
+                    });
+                }
             }
         }
     }
 
-    componentDidUpdate() {
+    componentWillUpdate() {
         const { channelConfig, currentChannel, currentProvider } = this.state;
 
         const selectedChannelOption = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_CHANNEL_NAME);
@@ -90,9 +105,7 @@ class DistributionConfiguration extends Component {
             Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_PROVIDER_NAME, provider));
             this.setState({
                 channelConfig: updatedChannelConfig,
-                currentChannel: newChannel,
-                providerConfig: {},
-                currentProvider: {}
+                currentChannel: newChannel
             });
         }
         const selectedProviderOption = FieldModelUtilities.getFieldModelSingleValue(this.state.channelConfig, KEY_PROVIDER_NAME);
@@ -120,7 +133,6 @@ class DistributionConfiguration extends Component {
         const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
         const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(this.state.channelConfig, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(this.state.channelConfig, name, updatedValue);
 
-
         this.setState({
             channelConfig: newState
         });
@@ -138,7 +150,6 @@ class DistributionConfiguration extends Component {
 
     buildJsonBody() {
         const { channelConfig, providerConfig } = this.state;
-        const { jobId } = this.props;
         const configuration = Object.assign({}, {
             fieldModels: [
                 channelConfig,
@@ -146,6 +157,7 @@ class DistributionConfiguration extends Component {
             ]
         });
 
+        const { jobId } = this.props;
         if (jobId) {
             Object.assign(configuration, { jobId });
         }
@@ -163,7 +175,7 @@ class DistributionConfiguration extends Component {
         event.preventDefault();
 
         const jsonBody = this.buildJsonBody();
-        if (this.state.jobId) {
+        if (this.props.jobId) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
@@ -262,15 +274,16 @@ DistributionConfiguration.propTypes = {
     projects: PropTypes.arrayOf(PropTypes.object),
     fieldErrors: PropTypes.object,
     configurationMessage: PropTypes.string,
+    jobId: PropTypes.string,
     job: PropTypes.object,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     saving: PropTypes.bool,
     success: PropTypes.bool,
-    testingConfig: PropTypes.bool,
     onSave: PropTypes.func.isRequired,
     handleCancel: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
+    getDistributionJob: PropTypes.func.isRequired,
     updateDistributionJob: PropTypes.func.isRequired,
     testDistributionJob: PropTypes.func.isRequired,
     saveDistributionJob: PropTypes.func.isRequired,
@@ -279,21 +292,25 @@ DistributionConfiguration.propTypes = {
 
 DistributionConfiguration.defaultProps = {
     projects: [],
+    jobId: null,
     job: {},
     fetching: false,
     inProgress: false,
     saving: false,
     success: false,
-    testingConfig: false
+    fieldErrors: {},
+    configurationMessage: ''
 };
 
 const mapDispatchToProps = dispatch => ({
+    getDistributionJob: id => dispatch(getDistributionJob(id)),
     saveDistributionJob: config => dispatch(saveDistributionJob(config)),
     updateDistributionJob: config => dispatch(updateDistributionJob(config)),
     testDistributionJob: config => dispatch(testDistributionJob(config))
 });
 
 const mapStateToProps = state => ({
+    job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress,
