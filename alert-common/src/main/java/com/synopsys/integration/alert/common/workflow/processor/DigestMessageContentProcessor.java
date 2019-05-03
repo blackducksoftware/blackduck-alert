@@ -121,7 +121,7 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
                 keyParts.add(item.getValue());
             }
         }
-        return CategoryKey.from("digest", keyParts);
+        return CategoryKey.from("ignored", keyParts);
     }
 
     private SortedSet<LinkableItem> combineLinkableItems(final SortedSet<LinkableItem> oldItems, final SortedSet<LinkableItem> newItems) {
