@@ -93,13 +93,13 @@ public class EmailChannel extends DistributionChannel {
 
     public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final MessageContentGroup content)
         throws IntegrationException {
-        String providerProjectName = null;
+        String topicValue = null;
         if (!content.isEmpty()) {
-            providerProjectName = content.getCommonTopic().getValue();
+            topicValue = content.getCommonTopic().getValue();
         }
 
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Project: %s", providerProjectName);
+            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", topicValue);
             throw new AlertException(errorMessage);
         }
         try {
@@ -124,10 +124,10 @@ public class EmailChannel extends DistributionChannel {
             model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
             model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
 
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, providerProjectName));
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), providerProjectName);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
             model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
@@ -144,7 +144,7 @@ public class EmailChannel extends DistributionChannel {
 
     private String createEnhancedSubjectLine(final String originalSubjectLine, final String providerProjectName) {
         if (StringUtils.isNotBlank(providerProjectName)) {
-            return String.format("%s | Project: %s", originalSubjectLine, providerProjectName);
+            return String.format("%s | For: %s", originalSubjectLine, providerProjectName);
         }
         return originalSubjectLine;
     }
