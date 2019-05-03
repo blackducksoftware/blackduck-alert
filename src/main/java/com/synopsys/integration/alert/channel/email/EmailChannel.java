@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -91,10 +91,16 @@ public class EmailChannel extends DistributionChannel {
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent());
     }
 
-    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content)
+    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final MessageContentGroup content)
         throws IntegrationException {
+        String topicValue = null;
+        if (!content.isEmpty()) {
+            topicValue = content.getCommonTopic().getValue();
+        }
+
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
+            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", topicValue);
+            throw new AlertException(errorMessage);
         }
         try {
             final HashMap<String, Object> model = new HashMap<>();
@@ -118,10 +124,10 @@ public class EmailChannel extends DistributionChannel {
             model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
             model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
 
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), content.getValue());
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
             model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
@@ -134,6 +140,13 @@ public class EmailChannel extends DistributionChannel {
         } catch (final IOException ex) {
             throw new AlertException(ex);
         }
+    }
+
+    private String createEnhancedSubjectLine(final String originalSubjectLine, final String providerProjectName) {
+        if (StringUtils.isNotBlank(providerProjectName)) {
+            return String.format("%s | For: %s", originalSubjectLine, providerProjectName);
+        }
+        return originalSubjectLine;
     }
 
     private String getImagePath(final String imageFileName) {

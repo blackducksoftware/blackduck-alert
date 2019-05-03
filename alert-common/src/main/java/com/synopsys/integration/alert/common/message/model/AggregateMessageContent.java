@@ -66,4 +66,5 @@ public class AggregateMessageContent extends LinkableItem {
     public void setCategoryItems(final SortedSet<CategoryItem> categoryItems) {
         this.categoryItems = categoryItems;
     }
+
 }
