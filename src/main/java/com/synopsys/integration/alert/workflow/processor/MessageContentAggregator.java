@@ -35,12 +35,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
@@ -58,7 +58,7 @@ public class MessageContentAggregator {
         this.notificationFilter = notificationFilter;
     }
 
-    public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final Collection<AlertNotificationWrapper> notificationList) {
+    public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final Collection<AlertNotificationWrapper> notificationList) {
         if (notificationList.isEmpty()) {
             return Map.of();
         }
@@ -70,7 +70,7 @@ public class MessageContentAggregator {
         return processNotifications(distributionConfigs, notificationList);
     }
 
-    public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<AlertNotificationWrapper> notificationList) {
+    public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final FrequencyType frequency, final Collection<AlertNotificationWrapper> notificationList) {
         if (notificationList.isEmpty()) {
             return Map.of();
         }
@@ -86,7 +86,7 @@ public class MessageContentAggregator {
         return processNotifications(distributionConfigs, notificationList);
     }
 
-    public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final List<CommonDistributionConfiguration> distributionConfigs, final Collection<AlertNotificationWrapper> notificationList) {
+    public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final List<CommonDistributionConfiguration> distributionConfigs, final Collection<AlertNotificationWrapper> notificationList) {
         if (notificationList.isEmpty()) {
             return Map.of();
         }
@@ -95,7 +95,7 @@ public class MessageContentAggregator {
                    .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
-    private List<AggregateMessageContent> collectTopics(final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
+    private List<MessageContentGroup> collectTopics(final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
         final Optional<ProviderDescriptor> providerDescriptor = getProviderDescriptorByName(jobConfiguration.getProviderName());
         if (providerDescriptor.isPresent()) {
             final Collection<AlertNotificationWrapper> notificationsForJob = filterNotifications(providerDescriptor.get(), jobConfiguration, notificationCollection);

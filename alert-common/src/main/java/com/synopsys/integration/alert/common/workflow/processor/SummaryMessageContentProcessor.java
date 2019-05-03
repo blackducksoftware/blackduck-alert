@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -44,6 +45,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
@@ -56,12 +58,19 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     @Override
-    public List<AggregateMessageContent> process(final List<AggregateMessageContent> messages) {
+    public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
         final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
-        return collapsedMessages
-                   .stream()
-                   .map(this::summarize)
-                   .collect(Collectors.toList());
+
+        final List<MessageContentGroup> messageGroups = new ArrayList<>();
+        for (final AggregateMessageContent message : collapsedMessages) {
+            final AggregateMessageContent summarizedMessage = summarize(message);
+            messageGroups
+                .stream()
+                .filter(group -> group.applies(summarizedMessage))
+                .findAny()
+                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> messageGroups.add(MessageContentGroup.singleton(summarizedMessage)));
+        }
+        return messageGroups;
     }
 
     private AggregateMessageContent summarize(final AggregateMessageContent message) {
@@ -78,7 +87,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopics(), summarizedCategoryItems);
+        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems);
     }
 
     private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {

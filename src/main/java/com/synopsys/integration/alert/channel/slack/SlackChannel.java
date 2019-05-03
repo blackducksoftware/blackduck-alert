@@ -30,11 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,6 +47,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
@@ -90,59 +89,60 @@ public class SlackChannel extends DistributionChannel {
         final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
         final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
-        if (StringUtils.isBlank(event.getContent().getValue())) {
+
+        final MessageContentGroup eventContent = event.getContent();
+        if (eventContent.isEmpty()) {
             return List.of();
         } else {
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Content-Type", "application/json");
 
             final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
-            final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(event.getContent());
+            final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(eventContent);
             return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
         }
     }
 
-    private List<String> createMrkdwnMessagePieces(final AggregateMessageContent messageContent) {
+    private List<String> createMrkdwnMessagePieces(final MessageContentGroup messageContentGroup) {
         final LinkedList<String> messagePieces = new LinkedList<>();
 
         final StringBuilder topicBuilder = new StringBuilder();
-        topicBuilder.append(createLinkableItemString(messageContent, true));
-        topicBuilder.append(SLACK_LINE_SEPARATOR);
-        final Set<LinkableItem> subTopics = messageContent.getSubTopics();
-        if (!subTopics.isEmpty()) {
-            final String subTopicName = subTopics
-                                            .stream()
-                                            .findAny()
-                                            .map(LinkableItem::getName)
-                                            .orElse(StringUtils.EMPTY);
-            appendFormattedItems(topicBuilder, subTopicName, subTopics);
-            topicBuilder.append(SLACK_LINE_SEPARATOR);
-        }
-        topicBuilder.append("- - - - - - - - - - - - - - - - - - - -");
+        topicBuilder.append(createLinkableItemString(messageContentGroup.getCommonTopic(), true));
         topicBuilder.append(SLACK_LINE_SEPARATOR);
         messagePieces.add(topicBuilder.toString());
 
-        final SortedSet<CategoryItem> categoryItems = messageContent.getCategoryItems();
-        for (final CategoryItem categoryItem : categoryItems) {
-            final StringBuilder categoryItemBuilder = new StringBuilder();
-            categoryItemBuilder.append("Type: ");
-            categoryItemBuilder.append(categoryItem.getOperation());
-            categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+        for (final AggregateMessageContent messageContent : messageContentGroup.getSubContent()) {
+            final StringBuilder subTopicBuilder = new StringBuilder();
+            messageContent
+                .getSubTopic()
+                .map(subTopic -> createLinkableItemString(subTopic, true))
+                .ifPresent(subTopicBuilder::append);
+            subTopicBuilder.append("- - - - - - - - - - - - - - - - - - - -");
+            subTopicBuilder.append(SLACK_LINE_SEPARATOR);
+            messagePieces.add(subTopicBuilder.toString());
 
-            final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
-            for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {
-                appendFormattedItems(categoryItemBuilder, namedItems.getKey(), namedItems.getValue());
+            final SortedSet<CategoryItem> categoryItems = messageContent.getCategoryItems();
+            for (final CategoryItem categoryItem : categoryItems) {
+                final StringBuilder categoryItemBuilder = new StringBuilder();
+                categoryItemBuilder.append("Type: ");
+                categoryItemBuilder.append(categoryItem.getOperation());
                 categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
-            }
-            categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
-            categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
-            messagePieces.add(categoryItemBuilder.toString());
-        }
 
-        if (!messagePieces.isEmpty()) {
-            final String lastString = messagePieces.removeLast();
-            final String modifiedLastString = lastString + SLACK_LINE_SEPARATOR;
-            messagePieces.addLast(modifiedLastString);
+                final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
+                for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {
+                    appendFormattedItems(categoryItemBuilder, namedItems.getKey(), namedItems.getValue());
+                    categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                }
+                categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                messagePieces.add(categoryItemBuilder.toString());
+            }
+
+            if (!messagePieces.isEmpty()) {
+                final String lastString = messagePieces.removeLast();
+                final String modifiedLastString = lastString + SLACK_LINE_SEPARATOR;
+                messagePieces.addLast(modifiedLastString);
+            }
         }
         return messagePieces;
     }

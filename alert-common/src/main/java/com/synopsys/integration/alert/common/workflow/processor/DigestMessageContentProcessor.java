@@ -26,11 +26,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {
@@ -51,39 +53,33 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
     }
 
     @Override
-    public List<AggregateMessageContent> process(final List<AggregateMessageContent> messages) {
+    public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
         final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
-        final Map<LinkableItem, List<AggregateMessageContent>> topicInfoToTopics = groupByTopic(collapsedMessages);
+        final Map<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(collapsedMessages);
 
-        final List<AggregateMessageContent> digestMessages = new ArrayList<>();
-        for (final Map.Entry<LinkableItem, List<AggregateMessageContent>> topicInfoToTopicsEntry : topicInfoToTopics.entrySet()) {
-            final LinkableItem topicInfo = topicInfoToTopicsEntry.getKey();
-            final List<AggregateMessageContent> groupedMessages = topicInfoToTopicsEntry.getValue();
+        final Map<String, MessageContentGroup> messageGroups = new LinkedHashMap<>();
+        for (final Map.Entry<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> groupedMessageEntry : messagesGroupedByTopicAndSubTopic.entrySet()) {
+            final Pair<LinkableItem, LinkableItem> topicAndSubTopic = groupedMessageEntry.getKey();
+            final LinkableItem topic = topicAndSubTopic.getLeft();
+            final SortedSet<CategoryItem> combinedCategoryItems = gatherCategoryItems(groupedMessageEntry.getValue());
 
-            final Set<LinkableItem> newSubTopics = gatherSubTopics(groupedMessages);
-            final SortedSet<CategoryItem> newCategoryItems = gatherCategoryItems(groupedMessages);
-
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topicInfo.getName(), topicInfo.getValue(), topicInfo.getUrl().orElse(null), newSubTopics, newCategoryItems);
-            digestMessages.add(newMessage);
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), combinedCategoryItems);
+            messageGroups.computeIfAbsent(topic.getValue(), ignored -> new MessageContentGroup()).add(newMessage);
         }
 
-        return digestMessages;
+        return new ArrayList<>(messageGroups.values());
     }
 
-    private Map<LinkableItem, List<AggregateMessageContent>> groupByTopic(final List<AggregateMessageContent> messages) {
-        final Map<LinkableItem, List<AggregateMessageContent>> groupedMessages = new LinkedHashMap<>();
+    private Map<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> groupByTopicAndSubTopicValue(final List<AggregateMessageContent> messages) {
+        final Map<Pair<LinkableItem, LinkableItem>, List<AggregateMessageContent>> groupedMessages = new LinkedHashMap<>();
         for (final AggregateMessageContent message : messages) {
-            groupedMessages.computeIfAbsent(message, ignored -> new ArrayList<>()).add(message);
+            final LinkableItem topic = new LinkableItem(message.getName(), message.getValue(), message.getUrl().orElse(null));
+            final LinkableItem subTopic = message.getSubTopic().orElse(null);
+            final Pair<LinkableItem, LinkableItem> topicAndSubTopic = new ImmutablePair<>(topic, subTopic);
+
+            groupedMessages.computeIfAbsent(topicAndSubTopic, ignored -> new ArrayList<>()).add(message);
         }
         return groupedMessages;
-    }
-
-    private Set<LinkableItem> gatherSubTopics(final List<AggregateMessageContent> groupedMessages) {
-        return groupedMessages
-                   .stream()
-                   .map(AggregateMessageContent::getSubTopics)
-                   .flatMap(Set::stream)
-                   .collect(Collectors.toSet());
     }
 
     private SortedSet<CategoryItem> gatherCategoryItems(final List<AggregateMessageContent> groupedMessages) {
@@ -97,12 +93,13 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
 
     private SortedSet<CategoryItem> combineCategoryItems(final List<CategoryItem> allCategoryItems) {
         // The amount of collapsing we do makes this impossible to map back to a single notification.
-        final Long unknownNotificationId = Long.MIN_VALUE;
         final Map<CategoryKey, CategoryItem> keyToItems = new LinkedHashMap<>();
         for (final CategoryItem categoryItem : allCategoryItems) {
             final CategoryKey categoryKey = generateCategoryKey(categoryItem);
             final CategoryItem oldItem = keyToItems.get(categoryKey);
 
+            // Always use the newest notification because the audit entry will appear first.
+            final Long notificationId = categoryItem.getNotificationId();
             final SortedSet<LinkableItem> linkableItems;
             if (null != oldItem) {
                 linkableItems = combineLinkableItems(oldItem.getItems(), categoryItem.getItems());
@@ -110,7 +107,7 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
                 linkableItems = categoryItem.getItems();
             }
 
-            final CategoryItem newCategoryItem = new CategoryItem(categoryKey, categoryItem.getOperation(), unknownNotificationId, linkableItems);
+            final CategoryItem newCategoryItem = new CategoryItem(categoryKey, categoryItem.getOperation(), notificationId, linkableItems);
             keyToItems.put(categoryKey, newCategoryItem);
         }
         return new TreeSet<>(keyToItems.values());
@@ -125,7 +122,6 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
                 keyParts.add(item.getValue());
             }
         }
-
         return CategoryKey.from("digest", keyParts);
     }
 
