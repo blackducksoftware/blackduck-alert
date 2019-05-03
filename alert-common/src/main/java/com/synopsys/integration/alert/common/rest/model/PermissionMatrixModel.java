@@ -54,6 +54,10 @@ public class PermissionMatrixModel {
         return hasPermission(permissionKey, AccessOperation.WRITE);
     }
 
+    public boolean hasExecutePermission(final String permissionKey) {
+        return hasPermission(permissionKey, AccessOperation.EXECUTE);
+    }
+
     public boolean hasPermission(final String permissionKey, final AccessOperation operation) {
         return permissions.containsKey(permissionKey) && permissions.get(permissionKey).contains(operation);
     }

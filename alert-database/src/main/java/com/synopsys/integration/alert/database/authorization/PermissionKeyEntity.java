@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "permission_keys")
 public class PermissionKeyEntity extends DatabaseEntity {
-    @Column(name = "keyName")
+    @Column(name = "key_name")
     private String keyName;
 
     public PermissionKeyEntity() {

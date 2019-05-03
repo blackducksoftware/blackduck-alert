@@ -26,5 +26,6 @@ public enum AccessOperation {
     CREATE,
     DELETE,
     READ,
-    WRITE
+    WRITE,
+    EXECUTE
 }
