@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -121,7 +122,7 @@ public class EmailGlobalTestActionTest {
         final ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<AggregateMessageContent> content = ArgumentCaptor.forClass(AggregateMessageContent.class);
 
-        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), provider.capture(), format.capture(), content.capture());
+        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), provider.capture(), format.capture(), MessageContentGroup.singleton(content.capture()));
         assertTrue(emailAddresses.getValue().isEmpty());
         assertEquals("Test from Alert", subjectLine.getValue());
         assertEquals("Global Configuration", provider.getValue());
@@ -161,7 +162,7 @@ public class EmailGlobalTestActionTest {
         final ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<AggregateMessageContent> content = ArgumentCaptor.forClass(AggregateMessageContent.class);
 
-        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), provider.capture(), format.capture(), content.capture());
+        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), provider.capture(), format.capture(), MessageContentGroup.singleton(content.capture()));
         assertEquals("fake@synopsys.com", emailAddresses.getValue().iterator().next());
         assertEquals("Test from Alert", subjectLine.getValue());
         assertEquals("Global Configuration", provider.getValue());

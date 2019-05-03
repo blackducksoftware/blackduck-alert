@@ -25,8 +25,8 @@ public class AggregateMessageContentTest {
         assertEquals(value, aggregateMessageContent.getValue());
         assertTrue(aggregateMessageContent.getUrl().isPresent());
         assertEquals(url, aggregateMessageContent.getUrl().get());
-        assertFalse(aggregateMessageContent.getSubTopics().isEmpty());
-        assertEquals(subTopic, aggregateMessageContent.getSubTopics().stream().findFirst().orElse(null));
+        assertFalse(aggregateMessageContent.getSubTopic().isEmpty());
+        assertEquals(subTopic, aggregateMessageContent.getSubTopic().orElse(null));
         assertEquals(categoryItems, aggregateMessageContent.getCategoryItems());
     }
 
@@ -40,7 +40,7 @@ public class AggregateMessageContentTest {
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
         assertFalse(aggregateMessageContent.getUrl().isPresent());
-        assertTrue(aggregateMessageContent.getSubTopics().isEmpty());
+        assertTrue(aggregateMessageContent.getSubTopic().isEmpty());
         assertEquals(categoryItems, aggregateMessageContent.getCategoryItems());
     }
 
@@ -56,7 +56,7 @@ public class AggregateMessageContentTest {
         assertEquals(value, aggregateMessageContent.getValue());
         assertTrue(aggregateMessageContent.getUrl().isPresent());
         assertEquals(url, aggregateMessageContent.getUrl().get());
-        assertTrue(aggregateMessageContent.getSubTopics().isEmpty());
+        assertTrue(aggregateMessageContent.getSubTopic().isEmpty());
         assertEquals(categoryItems, aggregateMessageContent.getCategoryItems());
     }
 
