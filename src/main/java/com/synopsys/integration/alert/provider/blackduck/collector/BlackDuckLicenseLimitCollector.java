@@ -63,6 +63,7 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
             optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
         }
         if (!linkableItems.isEmpty()) {
+            linkableItems.forEach(item -> item.setSummarizable(true));
             final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
             categoryItems.add(new CategoryItem(key, ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
         }

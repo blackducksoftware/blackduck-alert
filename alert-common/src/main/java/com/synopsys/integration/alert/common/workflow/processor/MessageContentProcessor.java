@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 public abstract class MessageContentProcessor {
     private final FormatType formatType;
@@ -38,5 +39,6 @@ public abstract class MessageContentProcessor {
         return formatType;
     }
 
-    public abstract List<AggregateMessageContent> process(final List<AggregateMessageContent> contentList);
+    public abstract List<MessageContentGroup> process(final List<AggregateMessageContent> messages);
+
 }

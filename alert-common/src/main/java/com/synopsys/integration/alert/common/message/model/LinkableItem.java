@@ -22,16 +22,24 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
+public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
+    private static final List<String> EXCLUDED_FIELDS = List.of("collapsible", "countable", "isNumericValue", "summarizable");
+
     private final String name;
     private final String value;
     private final String url;
+
+    private boolean collapsible;
+    private boolean countable;
+    private boolean isNumericValue;
+    private boolean summarizable;
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
@@ -41,6 +49,10 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.name = name;
         this.value = value;
         this.url = url;
+        this.collapsible = false;
+        this.countable = false;
+        this.isNumericValue = false;
+        this.summarizable = false;
     }
 
     public String getName() {
@@ -55,8 +67,48 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return Optional.ofNullable(url);
     }
 
+    public boolean isCollapsible() {
+        return collapsible;
+    }
+
+    public void setCollapsible(final boolean collapsible) {
+        this.collapsible = collapsible;
+    }
+
+    @Override
+    public boolean isCountable() {
+        return countable;
+    }
+
+    public void setCountable(final boolean countable) {
+        this.countable = countable;
+    }
+
+    @Override
+    public boolean isNumericValue() {
+        return isNumericValue;
+    }
+
+    public void setNumericValueFlag(final boolean isNumericValue) {
+        this.isNumericValue = isNumericValue;
+    }
+
+    @Override
+    public boolean isSummarizable() {
+        return summarizable;
+    }
+
+    public void setSummarizable(final boolean summarizable) {
+        this.summarizable = summarizable;
+    }
+
     @Override
     public int compareTo(final LinkableItem otherItem) {
-        return CompareToBuilder.reflectionCompare(this, otherItem);
+        if (collapsible && !otherItem.collapsible) {
+            return 1;
+        }
+
+        return CompareToBuilder.reflectionCompare(this, otherItem, EXCLUDED_FIELDS);
     }
+
 }

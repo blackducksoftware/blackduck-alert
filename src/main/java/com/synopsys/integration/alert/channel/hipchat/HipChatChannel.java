@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
@@ -142,7 +142,7 @@ public class HipChatChannel extends DistributionChannel {
         return restChannelUtility.createPostMessageRequest(url, requestHeaders, jsonString);
     }
 
-    private String createHtmlMessage(final AggregateMessageContent messageContent) throws AlertException {
+    private String createHtmlMessage(final MessageContentGroup contentGroup) throws AlertException {
         try {
             final String templatesDirectory = getAlertProperties().getAlertTemplatesDir();
             final String templateDirectoryPath;
@@ -154,7 +154,7 @@ public class HipChatChannel extends DistributionChannel {
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put("content", messageContent);
+            model.put("content", contentGroup);
 
             return freemarkerTemplatingService.getResolvedTemplate(model, "message_content.ftl");
         } catch (final IOException | TemplateException e) {

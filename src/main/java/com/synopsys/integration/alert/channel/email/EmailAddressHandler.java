@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.Provider;
 
@@ -44,7 +44,7 @@ public class EmailAddressHandler {
         this.descriptorMap = descriptorMap;
     }
 
-    public FieldAccessor updateEmailAddresses(final String provider, final AggregateMessageContent content, final FieldAccessor originalAccessor) {
+    public FieldAccessor updateEmailAddresses(final String provider, final MessageContentGroup contentGroup, final FieldAccessor originalAccessor) {
         if (StringUtils.isBlank(provider)) {
             return originalAccessor;
         }
@@ -52,7 +52,7 @@ public class EmailAddressHandler {
         return descriptor
                    .map(ProviderDescriptor::getProvider)
                    .map(Provider::getEmailHandler)
-                   .map(emailHandler -> emailHandler.updateFieldAccessor(content, originalAccessor))
+                   .map(emailHandler -> emailHandler.updateFieldAccessor(contentGroup, originalAccessor))
                    .orElse(originalAccessor);
     }
 }

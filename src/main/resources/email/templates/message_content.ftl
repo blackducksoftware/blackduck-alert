@@ -65,20 +65,28 @@
 </#macro>
 
 <#if content??>
-    <strong>
-        <@printLinkableItem content/>
-        <#if content.subTopic.isPresent()>
-            <br />
-            <@printLinkableItem content.subTopic.get()/>
-        </#if>
-    </strong>
-    <br />- - - - - - - - - - - - - - - - - - - -
-    <#if content.categoryItems??>
-        <#list content.categoryItems as categoryItem>
-            <@printCategoryData categoryItem/>
+    <#if content.commonTopic??>
+        <strong>
+            <@printLinkableItem content.commonTopic/>
+        </strong>
+        <#list content.subContent as aggregateMessageContent>
+            <strong>
+                <#if aggregateMessageContent.subTopic.isPresent()>
+                    <br />
+                    <@printLinkableItem aggregateMessageContent.subTopic.get()/>
+                </#if>
+            </strong>
+            <br />- - - - - - - - - - - - - - - - - - - -
+            <#if aggregateMessageContent.categoryItems??>
+                <#list aggregateMessageContent.categoryItems as categoryItem>
+                    <@printCategoryData categoryItem/>
+                </#list>
+            <#else>
+                <br /><i>A notification was received, but it was empty.</i>
+            </#if>
         </#list>
     <#else>
-        <br /><i>A notification was received, but it was empty.</i>
+        <br /><i>A notification was received, but no information was defined.</i>
     </#if>
 <#else>
     <br /><i>A notification was received, but no information was defined.</i>
@@ -91,15 +99,11 @@
         <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are assigned to project: ${provider_project_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the project.</span>
     </div>
     <br />
-    <div style="display:inline-block;width:100%;">
-        <img src="cid:${logo_image}" height="33" width="150" />
-    </div>
-    <br />
-<#else>
-    <div style="display:inline-block;width:100%;">
-        <img src="cid:${logo_image}" height="33" width="150" />
-    </div>
     <br />
 </#if>
+<div style="display:inline-block;width:100%;">
+    <img src="cid:${logo_image}" height="33" width="150" />
+</div>
+<br />
 </body>
 <html>

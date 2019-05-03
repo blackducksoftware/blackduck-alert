@@ -22,15 +22,19 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
@@ -39,11 +43,13 @@ import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 public class BlackDuckGlobalApiAction extends ApiAction {
     private final SystemValidator systemValidator;
     private final TaskManager taskManager;
+    private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckGlobalApiAction(final SystemValidator systemValidator, final TaskManager taskManager) {
+    public BlackDuckGlobalApiAction(final SystemValidator systemValidator, final TaskManager taskManager, final ProviderDataAccessor providerDataAccessor) {
         this.systemValidator = systemValidator;
         this.taskManager = taskManager;
+        this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
@@ -62,6 +68,9 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     public void afterDeleteAction(final String descriptorName, final String context) {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
         taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
+
+        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        providerDataAccessor.deleteProjects(BlackDuckProvider.COMPONENT_NAME, blackDuckProjects);
     }
 
     public void handleNewOrUpdatedConfig() {

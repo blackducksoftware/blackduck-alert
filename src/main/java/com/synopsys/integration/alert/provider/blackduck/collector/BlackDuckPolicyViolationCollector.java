@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
@@ -159,7 +160,26 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         if (StringUtils.isNotBlank(severity)) {
             displayName = String.format("%s (%s)", policyName, severity);
         }
-        return new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, null);
+        final LinkableItem linkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, displayName, null);
+        linkableItem.setCollapsible(true);
+        linkableItem.setSummarizable(true);
+        return linkableItem;
+    }
+
+    private class PolicyComponentMapping extends AlertSerializableModel {
+        // Do not delete this member. This is used for checking equals and filtering.
+        private final String componentName;
+        private final Set<PolicyInfo> policies;
+
+        public PolicyComponentMapping(final String componentName, final Set<PolicyInfo> policies) {
+            this.componentName = componentName;
+            this.policies = policies;
+        }
+
+        public Set<PolicyInfo> getPolicies() {
+            return policies;
+        }
+
     }
 
 }

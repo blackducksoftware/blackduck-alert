@@ -9,14 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class PhoneHomeTest {
     private static final String TEST_VERSION = "1.2.3";
@@ -25,7 +28,9 @@ public class PhoneHomeTest {
     @Test
     public void runTest() throws AlertDatabaseConstraintException {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final TestBlackDuckProperties bdProperties = new TestBlackDuckProperties(new TestAlertProperties());
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final TestBlackDuckProperties bdProperties = new TestBlackDuckProperties(new Gson(), new TestAlertProperties(), Mockito.mock(ConfigurationAccessor.class), proxyManager);
 
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn(TEST_VERSION);

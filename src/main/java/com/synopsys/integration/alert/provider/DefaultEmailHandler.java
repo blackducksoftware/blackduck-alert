@@ -22,7 +22,10 @@
  */
 package com.synopsys.integration.alert.provider;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +41,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -58,14 +61,15 @@ public class DefaultEmailHandler extends EmailHandler {
     }
 
     @Override
-    public FieldAccessor updateFieldAccessor(final AggregateMessageContent content, final FieldAccessor originalAccessor) {
-        final Set<String> emailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
+    public FieldAccessor updateFieldAccessor(final MessageContentGroup contentGroup, final FieldAccessor originalAccessor) {
+        final Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
+        final Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
         final Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
-        final Set<String> providerEmailAddresses = collectProviderEmailsFromProject(content.getValue(), projectOwnerOnly);
+        final Set<String> providerEmailAddresses = collectProviderEmailsFromProject(contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
         emailAddresses.addAll(providerEmailAddresses);
 
         // Temporary fix for license notifications
-        final Set<String> licenseNotificationEmails = licenseNotificationCheck(content, originalAccessor, projectOwnerOnly);
+        final Set<String> licenseNotificationEmails = licenseNotificationCheck(contentGroup.getSubContent(), originalAccessor, projectOwnerOnly);
         emailAddresses.addAll(licenseNotificationEmails);
 
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
@@ -103,15 +107,17 @@ public class DefaultEmailHandler extends EmailHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> licenseNotificationCheck(final AggregateMessageContent content, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
-        final Optional<LinkableItem> subTopic = content.getSubTopic();
-        if (subTopic.isEmpty()) {
+    private Set<String> licenseNotificationCheck(final Collection<AggregateMessageContent> messages, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
+        final boolean hasSubTopic = messages
+                                        .stream()
+                                        .map(AggregateMessageContent::getSubTopic)
+                                        .anyMatch(Optional::isPresent);
+        if (!hasSubTopic) {
             final Boolean filterByProject = fieldAccessor.getBoolean(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT).orElse(false);
             List<String> associatedProjects = List.of();
             if (filterByProject) {
-                associatedProjects = fieldAccessor.getAllStrings(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT)
-                                         .stream()
-                                         .collect(Collectors.toList());
+                final Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
+                associatedProjects = new ArrayList<>(allConfiguredProjects);
             } else {
                 final Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
                 if (providerName.isPresent()) {

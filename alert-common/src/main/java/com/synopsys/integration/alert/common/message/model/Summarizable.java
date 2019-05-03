@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,24 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.collector;
+package com.synopsys.integration.alert.common.message.model;
 
-import java.util.Set;
+public interface Summarizable {
+    boolean isCountable();
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+    boolean isNumericValue();
 
-public class PolicyComponentMapping extends AlertSerializableModel {
-    // Do not delete this member. This is used for checking equals and filtering.
-    private final String componentName;
-    private final Set<PolicyInfo> policies;
+    boolean isSummarizable();
 
-    public PolicyComponentMapping(final String componentName, final Set<PolicyInfo> policies) {
-        this.componentName = componentName;
-        this.policies = policies;
-    }
-
-    public Set<PolicyInfo> getPolicies() {
-        return policies;
-    }
 }
