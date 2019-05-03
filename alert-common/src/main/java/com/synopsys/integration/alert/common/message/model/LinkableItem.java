@@ -30,6 +30,8 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
+    private static final List<String> EXCLUDED_FIELDS = List.of("collapsible", "countable", "isNumericValue", "summarizable");
+
     private final String name;
     private final String value;
     private final String url;
@@ -106,8 +108,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
             return 1;
         }
 
-        final List<String> excludedFields = List.of("collapsible", "countable", "isNumericValue", "summarizable");
-        return CompareToBuilder.reflectionCompare(this, otherItem, excludedFields);
+        return CompareToBuilder.reflectionCompare(this, otherItem, EXCLUDED_FIELDS);
     }
 
 }
