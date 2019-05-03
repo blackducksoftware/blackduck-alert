@@ -30,9 +30,9 @@ public class ContentEventTest {
     @Test
     public void getContentTest() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
-        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
+        final MessageContentGroup contentGroup = MessageContentGroup.singleton(messageContent);
         final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
-        assertEquals(content, event.getContent());
+        assertEquals(contentGroup, event.getContent());
     }
 }
