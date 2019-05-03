@@ -27,10 +27,10 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;

@@ -94,8 +94,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;

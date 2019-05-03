@@ -29,10 +29,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;

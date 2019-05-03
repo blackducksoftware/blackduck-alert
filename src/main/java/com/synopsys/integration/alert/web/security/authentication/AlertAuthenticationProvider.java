@@ -40,9 +40,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.UserModel;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Component
