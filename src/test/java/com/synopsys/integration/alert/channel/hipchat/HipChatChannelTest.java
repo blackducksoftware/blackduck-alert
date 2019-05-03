@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
@@ -73,7 +74,8 @@ public class HipChatChannelTest extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
 
-        final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         hipChatChannel.sendAuditedMessage(event);
 
@@ -91,7 +93,8 @@ public class HipChatChannelTest extends ChannelTest {
             final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 
             final FieldAccessor fieldAccessor = new FieldAccessor(new HashMap<>());
-            final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+            final DistributionEvent event = new DistributionEvent(
+                "1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
             hipChatChannel.createRequests(event);
         } catch (final IntegrationException e) {
             intException = e;
@@ -114,7 +117,8 @@ public class HipChatChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_HOST_SERVER, "bogusHostServer");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
@@ -152,7 +156,8 @@ public class HipChatChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_HOST_SERVER, "bogusHostServer");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         hipChatChannel.sendMessage(event);
         Mockito.verify(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
@@ -178,7 +183,8 @@ public class HipChatChannelTest extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_HOST_SERVER, "bogusHostServer");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(
+            "1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         hipChatChannel.sendMessage(event);
         Mockito.verify(restChannelUtilitySpy, Mockito.times(4)).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());

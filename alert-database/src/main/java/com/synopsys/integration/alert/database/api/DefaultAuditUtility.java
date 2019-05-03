@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
@@ -53,6 +54,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -111,9 +113,12 @@ public class DefaultAuditUtility implements AuditUtility {
 
     @Override
     @Transactional
-    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final AggregateMessageContent content) {
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final MessageContentGroup contentGroup) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        final Set<Long> notificationIds = content.getCategoryItems().stream()
+        final Set<Long> notificationIds = contentGroup.getSubContent()
+                                              .stream()
+                                              .map(AggregateMessageContent::getCategoryItems)
+                                              .flatMap(SortedSet::stream)
                                               .map(CategoryItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {
@@ -133,7 +138,6 @@ public class DefaultAuditUtility implements AuditUtility {
             final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
             auditNotificationRepository.save(auditNotificationRelation);
         }
-
         return notificationIdToAuditId;
     }
 

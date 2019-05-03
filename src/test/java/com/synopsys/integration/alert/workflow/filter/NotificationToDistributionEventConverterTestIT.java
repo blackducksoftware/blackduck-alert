@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.workflow.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -30,12 +32,16 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     @Test
     public void convertToEventsTest() {
         final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor);
-        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap = new HashMap<>();
-        final List messageContent = List.of(createMessageContent("test"), createMessageContent("example"));
+        final Map<CommonDistributionConfiguration, List<MessageContentGroup>> messageContentMap = new HashMap<>();
+        final List<MessageContentGroup> messageContentGroups = new ArrayList<>();
+        final MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
+        final MessageContentGroup contentGroup2 = MessageContentGroup.singleton(createMessageContent("example"));
+        messageContentGroups.add(contentGroup1);
+        messageContentGroups.add(contentGroup2);
 
-        messageContentMap.put(createEmailConfig(), messageContent);
-        messageContentMap.put(createHipChatConfig(), messageContent);
-        messageContentMap.put(createSlackConfig(), messageContent);
+        messageContentMap.put(createEmailConfig(), messageContentGroups);
+        messageContentMap.put(createHipChatConfig(), messageContentGroups);
+        messageContentMap.put(createSlackConfig(), messageContentGroups);
 
         final List<DistributionEvent> events = converter.convertToEvents(messageContentMap);
         assertEquals(6, events.size());

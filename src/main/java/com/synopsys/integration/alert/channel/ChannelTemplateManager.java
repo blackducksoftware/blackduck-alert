@@ -72,4 +72,5 @@ public class ChannelTemplateManager {
         }
         return true;
     }
+
 }
