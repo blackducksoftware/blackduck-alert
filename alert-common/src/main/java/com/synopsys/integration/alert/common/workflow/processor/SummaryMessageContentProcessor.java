@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -44,24 +45,32 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
-    private final DigestMessageContentProcessor digestMessageContentProcessor;
+    private final MessageContentCollapser messageContentCollapser;
 
     @Autowired
-    public SummaryMessageContentProcessor(final DigestMessageContentProcessor digestMessageContentProcessor) {
+    public SummaryMessageContentProcessor(final MessageContentCollapser messageContentCollapser) {
         super(FormatType.SUMMARY);
-        this.digestMessageContentProcessor = digestMessageContentProcessor;
+        this.messageContentCollapser = messageContentCollapser;
     }
 
     @Override
-    public List<AggregateMessageContent> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> digestMessages = digestMessageContentProcessor.process(messages);
-        return digestMessages
-                   .stream()
-                   .map(this::summarize)
-                   .collect(Collectors.toList());
+    public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
+        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
+
+        final List<MessageContentGroup> messageGroups = new ArrayList<>();
+        for (final AggregateMessageContent message : collapsedMessages) {
+            final AggregateMessageContent summarizedMessage = summarize(message);
+            messageGroups
+                .stream()
+                .filter(group -> group.applies(summarizedMessage))
+                .findAny()
+                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> messageGroups.add(MessageContentGroup.singleton(summarizedMessage)));
+        }
+        return messageGroups;
     }
 
     private AggregateMessageContent summarize(final AggregateMessageContent message) {

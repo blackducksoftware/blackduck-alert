@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -44,7 +45,7 @@ public class AuditEntryAccessorTest {
 
         final Map<Long, Long> existingNotificationIdToAuditId = new HashMap<>();
         existingNotificationIdToAuditId.put(1L, auditID);
-        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, commonConfigUUID, content);
+        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, commonConfigUUID, MessageContentGroup.singleton(content));
         assertFalse(savedNotificationIdToAuditId.isEmpty());
         assertEquals(2, savedNotificationIdToAuditId.size());
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.get(1L));
@@ -64,7 +65,7 @@ public class AuditEntryAccessorTest {
         savedAuditEntryEntity.setId(10L);
 
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
-        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, commonConfigUUID, content);
+        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, commonConfigUUID, MessageContentGroup.singleton(content));
         assertFalse(savedNotificationIdToAuditId.isEmpty());
         assertEquals(2, savedNotificationIdToAuditId.size());
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.values().iterator().next());

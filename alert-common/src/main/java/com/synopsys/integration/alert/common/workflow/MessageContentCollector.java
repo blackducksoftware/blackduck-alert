@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageContentKey;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -87,7 +88,7 @@ public abstract class MessageContentCollector {
         }
     }
 
-    public List<AggregateMessageContent> collect(final FormatType format) {
+    public List<MessageContentGroup> collect(final FormatType format) {
         if (messageContentProcessorMap.containsKey(format)) {
             final MessageContentProcessor processor = messageContentProcessorMap.get(format);
             return processor.process(collectedContent);

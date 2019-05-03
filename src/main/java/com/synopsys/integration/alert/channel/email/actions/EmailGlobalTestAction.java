@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -77,7 +78,7 @@ public class EmailGlobalTestAction extends TestAction {
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", categoryItems);
-        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent);
+        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", MessageContentGroup.singleton(messageContent));
     }
 
 }
