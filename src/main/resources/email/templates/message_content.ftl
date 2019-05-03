@@ -65,20 +65,28 @@
 </#macro>
 
 <#if content??>
-    <strong>
-        <@printLinkableItem content/>
-        <#if content.subTopics?? && content.subTopics?has_content>
-            <br />
-            <@printList content.subTopics[0].name content.subTopics/>
-        </#if>
-    </strong>
-    <br />- - - - - - - - - - - - - - - - - - - -
-    <#if content.categoryItems??>
-        <#list content.categoryItems as categoryItem>
-            <@printCategoryData categoryItem/>
+    <#if content.commonTopic??>
+        <strong>
+            <@printLinkableItem content.commonTopic/>
+        </strong>
+        <#list content.subContent as aggregateMessageContent>
+            <strong>
+                <#if aggregateMessageContent.subTopic.isPresent()>
+                    <br />
+                    <@printLinkableItem aggregateMessageContent.subTopic.get()/>
+                </#if>
+            </strong>
+            <br />- - - - - - - - - - - - - - - - - - - -
+            <#if aggregateMessageContent.categoryItems??>
+                <#list aggregateMessageContent.categoryItems as categoryItem>
+                    <@printCategoryData categoryItem/>
+                </#list>
+            <#else>
+                <br /><i>A notification was received, but it was empty.</i>
+            </#if>
         </#list>
     <#else>
-        <br /><i>A notification was received, but it was empty.</i>
+        <br /><i>A notification was received, but no information was defined.</i>
     </#if>
 <#else>
     <br /><i>A notification was received, but no information was defined.</i>

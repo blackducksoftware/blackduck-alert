@@ -29,11 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 
 @Component
 public class NotificationProcessor {
@@ -47,17 +47,18 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(final List<AlertNotificationWrapper> notificationList) {
-        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(notificationList);
+        final Map<CommonDistributionConfiguration, List<MessageContentGroup>> messageContentList = messageContentAggregator.processNotifications(notificationList);
         return notificationToEventConverter.convertToEvents(messageContentList);
     }
 
     public List<DistributionEvent> processNotifications(final FrequencyType frequencyType, final List<AlertNotificationWrapper> notificationList) {
-        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
+        final Map<CommonDistributionConfiguration, List<MessageContentGroup>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
         return notificationToEventConverter.convertToEvents(messageContentList);
     }
 
     public List<DistributionEvent> processNotifications(final CommonDistributionConfiguration commonDistributionConfig, final List<AlertNotificationWrapper> notificationList) {
-        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(List.of(commonDistributionConfig), notificationList);
+        final Map<CommonDistributionConfiguration, List<MessageContentGroup>> messageContentList = messageContentAggregator.processNotifications(List.of(commonDistributionConfig), notificationList);
         return notificationToEventConverter.convertToEvents(messageContentList);
     }
+
 }

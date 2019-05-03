@@ -22,52 +22,37 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.Set;
+import java.util.Optional;
 import java.util.SortedSet;
 
 public class AggregateMessageContent extends LinkableItem {
-    private final Set<LinkableItem> subTopics;
+    private final LinkableItem subTopic;
     private final MessageContentKey messageContentKey;
     private SortedSet<CategoryItem> categoryItems;
 
     public AggregateMessageContent(final String name, final String value, final SortedSet<CategoryItem> categoryItems) {
         super(name, value);
-        this.subTopics = Set.of();
+        this.subTopic = null;
         this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
     }
 
     public AggregateMessageContent(final String name, final String value, final String url, final SortedSet<CategoryItem> categoryItems) {
         super(name, value, url);
-        this.subTopics = Set.of();
+        this.subTopic = null;
         this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final Set<LinkableItem> subTopics, final SortedSet<CategoryItem> categoryItems) {
-        super(name, value, url);
-        if (null != subTopics) {
-            this.subTopics = subTopics;
-        } else {
-            this.subTopics = Set.of();
-        }
-        this.categoryItems = categoryItems;
-        this.messageContentKey = MessageContentKey.from(name, value, subTopics);
-    }
-
     public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final SortedSet<CategoryItem> categoryItems) {
         super(name, value, url);
-        if (null != subTopic) {
-            this.subTopics = Set.of(subTopic);
-        } else {
-            this.subTopics = Set.of();
-        }
+        this.subTopic = subTopic;
         this.categoryItems = categoryItems;
-        this.messageContentKey = MessageContentKey.from(name, value, subTopics);
+        this.messageContentKey = MessageContentKey.from(name, value, subTopic.getName(), subTopic.getValue());
     }
 
-    public Set<LinkableItem> getSubTopics() {
-        return subTopics;
+    public Optional<LinkableItem> getSubTopic() {
+        return Optional.ofNullable(subTopic);
     }
 
     public MessageContentKey getKey() {

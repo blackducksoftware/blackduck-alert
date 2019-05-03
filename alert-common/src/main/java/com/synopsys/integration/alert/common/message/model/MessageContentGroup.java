@@ -9,7 +9,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class MessageContentGroup extends AlertSerializableModel {
     private final List<AggregateMessageContent> subContent;
 
-    private String commonTopicValue;
+    private LinkableItem commonTopic;
 
     public static MessageContentGroup singleton(final AggregateMessageContent message) {
         final MessageContentGroup group = new MessageContentGroup();
@@ -19,19 +19,19 @@ public class MessageContentGroup extends AlertSerializableModel {
 
     public MessageContentGroup() {
         this.subContent = new ArrayList<>();
-        this.commonTopicValue = null;
+        this.commonTopic = null;
     }
 
     public boolean applies(final AggregateMessageContent message) {
-        return null != commonTopicValue && commonTopicValue.equals(message.getValue());
+        return null != commonTopic && commonTopic.getValue().equals(message.getValue());
     }
 
     public void add(final AggregateMessageContent message) {
         final String topicValue = message.getValue();
-        if (null == commonTopicValue) {
-            this.commonTopicValue = topicValue;
-        } else if (!commonTopicValue.equals(message.getValue())) {
-            throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopicValue, topicValue));
+        if (null == commonTopic) {
+            this.commonTopic = new LinkableItem(message.getName(), message.getValue(), message.getUrl().orElse(null));
+        } else if (!commonTopic.getValue().equals(message.getValue())) {
+            throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), topicValue));
         }
         subContent.add(message);
     }
@@ -44,8 +44,12 @@ public class MessageContentGroup extends AlertSerializableModel {
         return subContent;
     }
 
-    public String getCommonTopicValue() {
-        return commonTopicValue;
+    public LinkableItem getCommonTopic() {
+        return commonTopic;
+    }
+
+    public boolean isEmpty() {
+        return subContent.isEmpty();
     }
 
 }

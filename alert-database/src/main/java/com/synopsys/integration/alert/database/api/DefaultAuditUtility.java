@@ -53,6 +53,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -111,29 +112,30 @@ public class DefaultAuditUtility implements AuditUtility {
 
     @Override
     @Transactional
-    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final AggregateMessageContent content) {
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final MessageContentGroup contentGroup) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        final Set<Long> notificationIds = content.getCategoryItems().stream()
-                                              .map(CategoryItem::getNotificationId)
-                                              .collect(Collectors.toSet());
-        for (final Long notificationId : notificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
+        for (final AggregateMessageContent content : contentGroup.getSubContent()) {
+            final Set<Long> notificationIds = content.getCategoryItems().stream()
+                                                  .map(CategoryItem::getNotificationId)
+                                                  .collect(Collectors.toSet());
+            for (final Long notificationId : notificationIds) {
+                AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
 
-            if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
-                final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
-                if (null != auditEntryId) {
-                    auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
+                if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
+                    final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
+                    if (null != auditEntryId) {
+                        auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
+                    }
                 }
+
+                auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
+                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+
+                notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
+                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                auditNotificationRepository.save(auditNotificationRelation);
             }
-
-            auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
-            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-
-            notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
-            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-            auditNotificationRepository.save(auditNotificationRelation);
         }
-
         return notificationIdToAuditId;
     }
 
