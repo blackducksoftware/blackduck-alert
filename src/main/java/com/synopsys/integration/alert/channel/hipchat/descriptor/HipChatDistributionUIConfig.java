@@ -25,15 +25,17 @@ package com.synopsys.integration.alert.channel.hipchat.descriptor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
 @Component
 public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -46,8 +48,8 @@ public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String HIP_CHAT_COLOR_DESCRIPTION = "The text color to display the Alert messages in.";
 
     @Autowired
-    public HipChatDistributionUIConfig(final DescriptorAccessor descriptorAccessor) {
-        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON, descriptorAccessor);
+    public HipChatDistributionUIConfig(@Lazy final DescriptorMap descriptorMap) {
+        super(HipChatChannel.COMPONENT_NAME, HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON, descriptorMap);
     }
 
     @Override

@@ -58,8 +58,7 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final ConfigField filterByProject = CheckboxConfigField.create(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION)
-                                                .hideField(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
+        final ConfigField filterByProject = CheckboxConfigField.create(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION);
         final ConfigField projectNamePattern = TextInputConfigField.create(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION, this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)

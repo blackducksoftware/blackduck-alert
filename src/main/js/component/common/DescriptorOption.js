@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-class DescriptorOption extends Component {
-    render() {
-        const fontAwesomeIcon = `fa fa-${this.props.icon} fa-fw`;
-        return (
-            <div>
-                <span key={`icon-${this.props.value}`} className={fontAwesomeIcon} aria-hidden="true" />
-                <span key={`name-${this.props.value}`}>{this.props.label}</span>
-            </div>
-        );
-    }
+function DescriptorOption(props) {
+    const fontAwesomeIcon = `fa fa-${props.icon} fa-fw`;
+    const formattedIcon = (<span key={`icon-${props.value}`} className={fontAwesomeIcon} aria-hidden="true" />);
+    const icon = props.icon != null ? formattedIcon : null;
+    return (
+        <div>
+            {icon}
+            <span key={`name-${props.value}`}>{props.label}</span>
+        </div>
+    );
 }
 
 DescriptorOption.propTypes = {

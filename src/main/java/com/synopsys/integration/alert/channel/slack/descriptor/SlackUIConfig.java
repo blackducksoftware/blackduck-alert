@@ -25,12 +25,14 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
 @Component
 public class SlackUIConfig extends ChannelDistributionUIConfig {
@@ -43,8 +45,8 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
     private static final String SLACK_CHANNEL_USERNAME_DESCRIPTION = "The username to show as the message sender in the Slack channel.";
 
     @Autowired
-    public SlackUIConfig(final DescriptorAccessor descriptorAccessor) {
-        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON, descriptorAccessor);
+    public SlackUIConfig(@Lazy final DescriptorMap descriptorMap) {
+        super(SlackChannel.COMPONENT_NAME, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON, descriptorMap);
     }
 
     @Override

@@ -26,13 +26,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -43,8 +45,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
 
     @Autowired
-    public EmailDistributionUIConfig(final DescriptorAccessor descriptorAccessor) {
-        super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON, descriptorAccessor);
+    public EmailDistributionUIConfig(@Lazy final DescriptorMap descriptorMap) {
+        super(EmailChannel.COMPONENT_NAME, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON, descriptorMap);
     }
 
     @Override

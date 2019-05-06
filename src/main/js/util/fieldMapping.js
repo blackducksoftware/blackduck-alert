@@ -1,4 +1,5 @@
 import React from 'react';
+import { components } from 'react-select';
 import SelectInput from 'field/input/DynamicSelect';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
@@ -8,46 +9,63 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
+import DescriptorOption from 'component/common/DescriptorOption';
 
-export function buildTextInput(items) {
+
+function buildTextInput(items) {
     return <TextInput {...items} />;
 }
 
-export function buildTextArea(items) {
+function buildTextArea(items) {
     return <TextArea {...items} />;
 }
 
-export function buildSelectInput(items, field) {
+const { Option, SingleValue } = components;
+
+function buildSelectInput(items, field) {
     const { value } = items;
     const { searchable, multiSelect, options } = field;
 
     const selectValue = options.filter(option => value.includes(option.value));
+
+    const typeOptionLabel = props => (
+        <Option {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </Option>
+    );
+
+    const typeLabel = props => (
+        <SingleValue {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </SingleValue>
+    );
+
     Object.assign(items, {
-        value: selectValue, searchable, multiSelect, options
+        value: selectValue, searchable, multiSelect, options, components: { Option: typeOptionLabel, SingleValue: typeLabel }
     });
     return <SelectInput {...items} />;
 }
 
-export function buildPasswordInput(items) {
+function buildPasswordInput(items) {
     return <PasswordInput {...items} />;
 }
 
-export function buildNumberInput(items) {
+function buildNumberInput(items) {
     return <NumberInput {...items} />;
 }
 
-export function buildCheckboxInput(items) {
+function buildCheckboxInput(items) {
     const { value } = items;
     const checkedValue = value.toString().toLowerCase() === 'true';
     Object.assign(items, { isChecked: checkedValue });
     return <CheckboxInput {...items} />;
 }
 
-export function buildReadOnlyField(items) {
+function buildReadOnlyField(items) {
     return <ReadOnlyField {...items} />;
 }
 
-export function buildCounterField(items, field) {
+function buildCounterField(items, field) {
     const { countdown } = field;
     const { value } = items;
     const trimmedValue = (value.length > 0) && value[0];

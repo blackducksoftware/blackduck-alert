@@ -182,6 +182,7 @@ class DistributionConfiguration extends Component {
         }
     }
 
+    // FIXME this function is probably not necessary
     createChangeHandler(negateCheckboxValue) {
         return (event) => {
             const { target } = event;
@@ -202,6 +203,7 @@ class DistributionConfiguration extends Component {
         };
     }
 
+    // FIXME this function is probably not necessary
     createMultiSelectHandler(fieldKey) {
         return (selectedValues) => {
             if (selectedValues && selectedValues.length > 0) {
