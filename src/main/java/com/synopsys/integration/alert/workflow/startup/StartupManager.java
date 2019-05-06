@@ -157,7 +157,6 @@ public class StartupManager {
         logger.info("----------------------------------------");
     }
 
-    @Transactional
     public void initializeCronJobs() {
         List<ConfigurationModel> schedulingConfigs;
         try {
@@ -236,7 +235,6 @@ public class StartupManager {
         logger.debug("Phone home next run:       {}", phoneHomeNextRun);
     }
 
-    @Transactional
     public Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
@@ -268,4 +266,5 @@ public class StartupManager {
     public void initializeSAML() {
         samlManager.initializeSAML();
     }
+
 }
