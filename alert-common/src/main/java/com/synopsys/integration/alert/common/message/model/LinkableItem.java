@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -52,7 +53,10 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     }
 
     public Optional<String> getUrl() {
-        return Optional.ofNullable(url);
+        if (StringUtils.isNotBlank(url)) {
+            return Optional.of(url);
+        }
+        return Optional.empty();
     }
 
     @Override
