@@ -116,13 +116,16 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties) {
+    AuthenticationHandler(final HttpPathManager httpPathManager, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties,
+        final AuthorizationManager authorizationManager) {
         this.httpPathManager = httpPathManager;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
+        this.authorizationManager = authorizationManager;
     }
 
     @Bean
@@ -286,7 +289,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        final SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider();
+        final SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider(authorizationManager);
         samlAuthenticationProvider.setForcePrincipalAsString(false);
         return samlAuthenticationProvider;
     }

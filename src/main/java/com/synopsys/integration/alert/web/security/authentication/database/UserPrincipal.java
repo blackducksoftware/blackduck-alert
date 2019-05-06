@@ -28,8 +28,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.util.Stringable;
 
-public class UserPrincipal implements UserDetails {
+public class UserPrincipal extends Stringable implements UserDetails {
     private final UserModel userModel;
 
     public UserPrincipal(final UserModel userModel) {
