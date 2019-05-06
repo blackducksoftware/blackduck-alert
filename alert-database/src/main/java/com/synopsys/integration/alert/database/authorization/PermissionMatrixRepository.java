@@ -22,8 +22,12 @@
  */
 package com.synopsys.integration.alert.database.authorization;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PermissionMatrixRepository extends JpaRepository<PermissionMatrixRelation, PermissionMatrixPK> {
+
+    List<PermissionMatrixRelation> findAllByRoleId(Long roleId);
 
 }

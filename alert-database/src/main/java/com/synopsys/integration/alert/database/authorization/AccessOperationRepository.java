@@ -22,7 +22,17 @@
  */
 package com.synopsys.integration.alert.database.authorization;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AccessOperationRepository extends JpaRepository<AccessOperationEntity, Long> {
+
+    @Query("SELECT DISTINCT entity.operationName FROM AccessOperationEntity entity WHERE entity.id IN (?1)")
+    List<String> getDistinctOperationNames(final List<Long> operationIds);
+
+    @Query("SELECT entity FROM AccessOperationEntity entity WHERE entity.operationName IN (?1)")
+    List<AccessOperationEntity> findOperationEntitiesByOperationName(final Collection<String> operationNames);
 }
