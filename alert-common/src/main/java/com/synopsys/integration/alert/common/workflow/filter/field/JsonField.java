@@ -45,6 +45,7 @@ public class JsonField<T> extends Stringable {
 
     private final String fieldName;
     private final String label;
+    private boolean optional;
 
     protected JsonField(final TypeRef<List<T>> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         this(typeRef, jsonPath, fieldName, contentIdentifier, label, null);
@@ -57,6 +58,7 @@ public class JsonField<T> extends Stringable {
         this.jsonPath = jsonPath;
         this.contentIdentifier = contentIdentifier;
         this.configNameMappings = configNameMappings;
+        this.optional = false;
     }
 
     public static <NT> JsonField<NT> createObjectField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final TypeRef<List<NT>> typeRef) {
@@ -73,6 +75,12 @@ public class JsonField<T> extends Stringable {
 
     public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label);
+    }
+
+    public static JsonField<String> createOptionalStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+        final JsonField<String> optionalStringField = createStringField(jsonPath, fieldName, contentIdentifier, label);
+        optionalStringField.optional = true;
+        return optionalStringField;
     }
 
     public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
@@ -105,6 +113,10 @@ public class JsonField<T> extends Stringable {
 
     public TypeRef<List<T>> getTypeRef() {
         return typeRef;
+    }
+
+    public boolean isOptional() {
+        return optional;
     }
 
     public boolean isOfType(final Type type) {
