@@ -22,14 +22,8 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,18 +33,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.enumeration.AccessOperation;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.authorization.AccessOperationEntity;
-import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
-import com.synopsys.integration.alert.database.authorization.PermissionKeyEntity;
-import com.synopsys.integration.alert.database.authorization.PermissionKeyRepository;
-import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
-import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
-import com.synopsys.integration.alert.database.user.RoleEntity;
-import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRelation;
@@ -61,23 +45,17 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 public class DefaultUserAccessor {
     public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
-    private final PermissionMatrixRepository permissionMatrixRepository;
-    private final AccessOperationRepository accessOperationRepository;
-    private final PermissionKeyRepository permissionKeyRepository;
+    private final DefaultAuthorizationUtility authorizationUtility;
 
     @Autowired
-    public DefaultUserAccessor(final UserRepository userRepository, final RoleRepository roleRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder,
-        final PermissionMatrixRepository permissionMatrixRepository, final AccessOperationRepository accessOperationRepository, final PermissionKeyRepository permissionKeyRepository) {
+    public DefaultUserAccessor(final UserRepository userRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder,
+        final DefaultAuthorizationUtility authorizationUtility) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
-        this.permissionMatrixRepository = permissionMatrixRepository;
-        this.accessOperationRepository = accessOperationRepository;
-        this.permissionKeyRepository = permissionKeyRepository;
+        this.authorizationUtility = authorizationUtility;
     }
 
     public List<UserModel> getUsers() {
@@ -92,7 +70,7 @@ public class DefaultUserAccessor {
     private UserModel createModel(final UserEntity user) {
         final List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         final List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        final Set<UserRoleModel> roles = createRoles(roleIdsForUser);
+        final Set<UserRoleModel> roles = authorizationUtility.createRoleModels(roleIdsForUser);
         return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
     }
 
@@ -105,22 +83,13 @@ public class DefaultUserAccessor {
         final UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
 
         final Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
+        Long userId = null;
         if (existingUser.isPresent()) {
-            final Long userId = existingUser.get().getId();
+            userId = existingUser.get().getId();
             userEntity.setId(userId);
-            userRoleRepository.deleteAllByUserId(userId);
         }
 
-        if (null != user.getRoles()) {
-            final Collection<String> roles = user.getRoles().stream().map(UserRoleModel::getName).collect(Collectors.toSet());
-
-            final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roles);
-            final List<UserRoleRelation> roleRelations = new LinkedList<>();
-            for (final RoleEntity role : roleEntities) {
-                roleRelations.add(new UserRoleRelation(userEntity.getId(), role.getId()));
-            }
-            userRoleRepository.saveAll(roleRelations);
-        }
+        authorizationUtility.updateUserRoles(userId, user.getRoles());
 
         return createModel(userRepository.save(userEntity));
     }
@@ -133,7 +102,7 @@ public class DefaultUserAccessor {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), createRoles(roles)));
+            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roles)));
             assigned = model.getName().equals(username) && model.getRoles().size() == roles.size();
         }
         return assigned;
@@ -167,36 +136,5 @@ public class DefaultUserAccessor {
             assignRoles(entity.getUserName(), Collections.emptySet());
             userRepository.delete(entity);
         });
-    }
-
-    private Set<UserRoleModel> createRoles(final Collection<Long> roleIds) {
-        final Set<UserRoleModel> userRoles = new LinkedHashSet<>();
-        for (final Long roleId : roleIds) {
-            final Optional<String> roleName = getRoleName(roleId);
-            roleName.ifPresent(role -> userRoles.add(UserRoleModel.of(role, createPermissionMatrix(roleId))));
-        }
-        return userRoles;
-    }
-
-    private Optional<String> getRoleName(final Long roleId) {
-        return roleRepository.findById(roleId).map(RoleEntity::getRoleName);
-    }
-
-    private PermissionMatrixModel createPermissionMatrix(final Long roleId) {
-        final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
-        final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
-
-        for (final PermissionMatrixRelation relation : permissions) {
-            final Optional<PermissionKeyEntity> permissionKey = permissionKeyRepository.findById(relation.getPermissionKeyId());
-            final Optional<AccessOperationEntity> accessOperation = accessOperationRepository.findById(relation.getAccessOperationId());
-            permissionKey.ifPresent(key -> {
-                final String keyName = key.getKeyName();
-                permissionOperations.computeIfAbsent(keyName, ignored -> EnumSet.noneOf(AccessOperation.class));
-                accessOperation.ifPresent(operation -> permissionOperations.get(keyName).add(AccessOperation.valueOf(operation.getOperationName())));
-            });
-        }
-
-        final PermissionMatrixModel model = new PermissionMatrixModel(permissionOperations);
-        return model;
     }
 }
