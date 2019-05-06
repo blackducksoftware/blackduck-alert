@@ -61,7 +61,6 @@ public class JsonExtractor {
 
     private void initializeJsonPath() {
         Configuration.setDefaults(new Configuration.Defaults() {
-
             private final JsonProvider jsonProvider = new GsonJsonProvider(gson);
             private final MappingProvider mappingProvider = new GsonMappingProvider(gson);
 
@@ -87,7 +86,7 @@ public class JsonExtractor {
     public JsonFieldAccessor createJsonFieldAccessor(final List<JsonField<?>> fields, final String json) {
         final Map<JsonField, List<Object>> fieldToValuesMap = new HashMap<>();
         for (final JsonField field : fields) {
-            final List<Object> values = getValuesFromJson(field.getTypeRef(), field.getJsonPath(), json);
+            final List<Object> values = getValuesFromJson(field.getTypeRef(), field.getJsonPath(), json, field.isOptional());
             fieldToValuesMap.put(field, values);
         }
         return new JsonFieldAccessor(fieldToValuesMap);
@@ -98,29 +97,31 @@ public class JsonExtractor {
         final List<T> values = new ArrayList<>();
         mappings.ifPresent(mapping ->
                                mapping.forEach(jsonPath ->
-                                                   values.addAll(getValuesFromObject(field.getTypeRef(), jsonPath, config)))
+                                                   values.addAll(getValuesFromObject(field.getTypeRef(), jsonPath, config, field.isOptional())))
         );
         return values;
     }
 
     public <T> List<T> getValuesFromJson(final JsonField<T> field, final String json) {
-        return getValuesFromJson(field.getTypeRef(), field.getJsonPath(), json);
+        return getValuesFromJson(field.getTypeRef(), field.getJsonPath(), json, field.isOptional());
     }
 
-    private <T> List<T> getValuesFromJson(final TypeRef<?> typeRef, final JsonPath jsonPath, final String json) {
+    private <T> List<T> getValuesFromJson(final TypeRef<?> typeRef, final JsonPath jsonPath, final String json, final boolean isFieldOptional) {
         final List values = new ArrayList<>();
         try {
             final Object obj = JsonPath.parse(json).read(jsonPath, typeRef);
             //The object is always going to be a collection because we set the JsonPath configuration to always return lists
             values.addAll((Collection) obj);
-
         } catch (final PathNotFoundException e) {
-            logger.debug(String.format("Could not find the path: %s. For: %s", jsonPath.getPath(), json), e);
+            if (!isFieldOptional) {
+                logger.warn(String.format("Could not find the path: %s. For: %s", jsonPath.getPath(), json), e);
+            }
         }
         return values;
     }
 
-    private <T> List<T> getValuesFromObject(final TypeRef<?> typeRef, final JsonPath jsonPath, final Object json) {
-        return getValuesFromJson(typeRef, jsonPath, gson.toJson(json));
+    private <T> List<T> getValuesFromObject(final TypeRef<?> typeRef, final JsonPath jsonPath, final Object json, final boolean isFieldOptional) {
+        return getValuesFromJson(typeRef, jsonPath, gson.toJson(json), isFieldOptional);
     }
+
 }
