@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -43,14 +44,18 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
+    private final BlackDuckProperties blackDuckProperties;
+
     @Autowired
-    public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
+    public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.LICENSE_LIMIT));
+        this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
@@ -67,4 +72,22 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
             categoryItems.add(new CategoryItem(key, ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
         }
     }
+
+    @Override
+    protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
+        final List<LinkableItem> topicItems = super.getTopicItems(accessor, fields);
+        final String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
+
+        final List<LinkableItem> newTopicItems = new ArrayList<>();
+        for (final LinkableItem item : topicItems) {
+            final Optional<String> optionalUrl = item.getUrl();
+            if (optionalUrl.isEmpty()) {
+                newTopicItems.add(new LinkableItem(item.getName(), item.getValue(), blackDuckUrl));
+            } else {
+                newTopicItems.add(item);
+            }
+        }
+        return newTopicItems;
+    }
+
 }
