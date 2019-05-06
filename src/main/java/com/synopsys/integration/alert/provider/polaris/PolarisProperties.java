@@ -124,9 +124,9 @@ public class PolarisProperties extends ProviderProperties {
         builder.setTrustCert(alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE));
 
         final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        final Optional<String> optionalProxyHost = proxyInfo.getHost();
-        if (optionalProxyHost.map(StringUtils::isNotBlank).isPresent()) {
-            builder.setProxyHost(proxyInfo.getHost().get());
+        final Optional<String> optionalProxyHost = proxyInfo.getHost().filter(StringUtils::isNotBlank);
+        if (optionalProxyHost.isPresent()) {
+            builder.setProxyHost(optionalProxyHost.get());
             builder.setProxyPort(proxyInfo.getPort());
             final Optional<Credentials> optionalProxyCredentials = proxyInfo.getProxyCredentials();
             if (optionalProxyCredentials.isPresent()) {

@@ -101,11 +101,11 @@ public class StartupManager {
     }
 
     @PostConstruct
+    @Transactional
     public void init() {
         startup();
     }
 
-    @Transactional
     public void startup() {
         logger.info("Alert Starting...");
         systemStatusUtility.startupOccurred();
