@@ -92,7 +92,7 @@ public abstract class MessageContentCollector {
             final MessageContentProcessor processor = messageContentProcessorMap.get(format);
             return processor.process(collectedContent);
         } else {
-            return Collections.emptyList();
+            return List.of();
         }
     }
 
@@ -138,7 +138,7 @@ public abstract class MessageContentCollector {
             final Optional<JsonField<String>> foundUrlField = getRelatedUrlField(fields, label);
             return createLinkableItemsFromFields(accessor, valueField, foundUrlField.orElse(null));
         }
-        return Collections.emptyList();
+        return List.of();
     }
 
     protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, final List<JsonField<T>> fields, final String label) {
@@ -159,6 +159,14 @@ public abstract class MessageContentCollector {
         return list;
     }
 
+    protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
+        return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL, true);
+    }
+
+    protected List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
+        return getLinkableItems(accessor, fields, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL, false);
+    }
+
     private List<JsonField<?>> getFieldsForNotificationType(final String notificationType) {
         for (final ProviderContentType providerContentType : contentTypes) {
             if (providerContentType.getNotificationType().equals(notificationType)) {
@@ -177,7 +185,7 @@ public abstract class MessageContentCollector {
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
         if (topicItems.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
         final List<LinkableItem> subTopicItems = getSubTopicItems(accessor, notificationFields);
         // for the number of topics assume there is an equal number of sub topics and the order is the same.this seems fragile at the moment.
@@ -213,14 +221,6 @@ public abstract class MessageContentCollector {
         return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), categoryItems);
     }
 
-    private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL, true);
-    }
-
-    private List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        return getLinkableItems(accessor, fields, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL, false);
-    }
-
     private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier,
         final boolean required) {
         final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, fieldContentIdentifier);
@@ -228,7 +228,7 @@ public abstract class MessageContentCollector {
             if (required) {
                 throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", fieldContentIdentifier));
             }
-            return Collections.emptyList();
+            return List.of();
         }
         final Optional<JsonField<?>> optionalUrlField = getFieldForContentIdentifier(fields, urlFieldContentIdentifier);
 

@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -61,17 +62,32 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final List<JsonField<Long>> longFields = getLongFields(notificationFields);
 
-        final String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
-
         final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
         for (final JsonField<Long> field : longFields) {
             final Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
-            optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString(), blackDuckUrl)));
+            optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
         }
         if (!linkableItems.isEmpty()) {
             final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
             categoryItems.add(new CategoryItem(key, ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
         }
+    }
+
+    @Override
+    protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
+        final List<LinkableItem> topicItems = super.getTopicItems(accessor, fields);
+        final String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
+
+        final List<LinkableItem> newTopicItems = new ArrayList<>();
+        for (final LinkableItem item : topicItems) {
+            final Optional<String> optionalUrl = item.getUrl();
+            if (optionalUrl.isEmpty()) {
+                newTopicItems.add(new LinkableItem(item.getName(), item.getValue(), blackDuckUrl));
+            } else {
+                newTopicItems.add(item);
+            }
+        }
+        return newTopicItems;
     }
 
 }
