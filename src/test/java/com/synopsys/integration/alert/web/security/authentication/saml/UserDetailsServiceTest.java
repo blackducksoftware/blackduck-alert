@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 
-import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.web.security.authentication.database.UserPrincipal;
 
 public class UserDetailsServiceTest {

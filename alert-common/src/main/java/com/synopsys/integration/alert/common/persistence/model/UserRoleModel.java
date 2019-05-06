@@ -20,10 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.persistence.model;
 
 import java.util.Map;
 import java.util.Objects;
+
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class UserRoleModel extends AlertSerializableModel {
     private final String name;
