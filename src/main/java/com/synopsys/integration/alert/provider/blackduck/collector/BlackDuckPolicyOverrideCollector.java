@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -51,23 +51,23 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
     @Autowired
     public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor,
         final List<MessageContentProcessor> messageContentProcessorList) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.POLICY_OVERRIDE));
+        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.POLICY_OVERRIDE));
     }
 
     @Override
     protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final ItemOperation operation = ItemOperation.DELETE;
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
-        final List<LinkableItem> policyItems = getItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
+        final List<LinkableItem> policyItems = getItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_NAME);
         policyItems.forEach(policyItem -> policyItem.setCollapsible(true));
-        final List<LinkableItem> policySeverity = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_SEVERITY_NAME);
+        final List<LinkableItem> policySeverity = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_SEVERITY_NAME);
         policySeverity.forEach(severityItem -> severityItem.setSummarizable(true));
 
-        final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
-        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
+        final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_NAME);
+        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_VERSION_NAME);
 
-        final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
-        final Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
+        final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
+        final Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
 
         final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
         applicableItems.addAll(componentItems);
@@ -76,7 +76,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
 
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
-            final LinkableItem nameItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value);
+            final LinkableItem nameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_OVERRIDE_BY, value);
             applicableItems.add(nameItem);
         }
 

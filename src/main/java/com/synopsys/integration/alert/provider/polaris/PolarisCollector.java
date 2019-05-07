@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
 @Component
@@ -50,7 +51,7 @@ public class PolarisCollector extends MessageContentCollector {
 
     @Autowired
     public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
-        super(jsonExtractor, messageContentProcessorList, List.of(PolarisProviderContentTypes.ISSUE_COUNT_INCREASED, PolarisProviderContentTypes.ISSUE_COUNT_DECREASED));
+        super(jsonExtractor, messageContentProcessorList, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class PolarisCollector extends MessageContentCollector {
         final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
         final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
                                                                        .stream()
-                                                                       .filter(field -> PolarisProviderContentTypes.LABEL_ISSUE_TYPE.equals(field.getLabel()))
+                                                                       .filter(field -> PolarisContent.LABEL_ISSUE_TYPE.equals(field.getLabel()))
                                                                        .findFirst();
 
         final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
@@ -75,7 +76,7 @@ public class PolarisCollector extends MessageContentCollector {
             final String label = field.getLabel();
             final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
             final LinkableItem countItem = new LinkableItem(label, currentCount.toString());
-            if (PolarisProviderContentTypes.JSON_FIELD_CHANGED_COUNT.equals(label)) {
+            if (PolarisContent.JSON_FIELD_CHANGED_COUNT.equals(label)) {
                 countItem.setSummarizable(true);
                 countItem.setCountable(true);
                 countItem.setNumericValueFlag(true);

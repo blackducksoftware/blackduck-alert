@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
@@ -52,8 +51,8 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
     private static final String BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";
 
     @Autowired
-    public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
-        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON, provider);
+    public BlackDuckDistributionUIConfig(final BlackDuckContent blackDuckContent) {
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON, blackDuckContent);
     }
 
     @Override
@@ -89,4 +88,5 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
         }
         return List.of();
     }
+
 }

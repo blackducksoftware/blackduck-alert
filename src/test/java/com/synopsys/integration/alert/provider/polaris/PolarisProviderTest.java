@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 
 public class PolarisProviderTest {
@@ -26,7 +27,7 @@ public class PolarisProviderTest {
         Mockito.doNothing().when(polarisProjectSyncTask).run();
         Mockito.when(polarisProperties.createPolarisHttpClientSafely((Logger) Mockito.any())).thenReturn(Optional.empty());
 
-        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, polarisProperties, null);
+        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, polarisProperties, null, null, null);
         polarisProvider.initialize();
     }
 
@@ -35,7 +36,7 @@ public class PolarisProviderTest {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
         Mockito.when(taskManager.unregisterTask(Mockito.anyString())).thenReturn(Optional.empty());
         final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(null, null, null, null, null, null);
-        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, null, null);
+        final PolarisProvider polarisProvider = new PolarisProvider(taskManager, polarisProjectSyncTask, null, null, null, null);
         polarisProvider.destroy();
     }
 
@@ -47,9 +48,11 @@ public class PolarisProviderTest {
 
     @Test
     public void getSupportedFormatTypes() {
-        final PolarisProvider polarisProvider = new PolarisProvider(null, null, null, null);
-        final Set<FormatType> formatTypes = polarisProvider.getSupportedFormatTypes();
+        final PolarisContent polarisContent = new PolarisContent();
+        final PolarisProvider polarisProvider = new PolarisProvider(null, null, null, polarisContent, null, null);
+        final Set<FormatType> formatTypes = polarisProvider.getProviderContent().getSupportedContentFormats();
 
         assertTrue(formatTypes.contains(FormatType.DEFAULT));
     }
+
 }
