@@ -108,6 +108,7 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_VULNERABILITY_DELETED = "Deleted Vulnerabilities";
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
 
+    // TODO remove this
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
         Collections.emptyList()
@@ -198,11 +199,16 @@ public class BlackDuckContent extends ProviderContent {
         RULE_VIOLATION_FIELD_LIST
     );
 
-    private static final Set<ProviderContentType> ALL_CONTENT_TYPES = Set.of(BOM_EDIT, LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
+    private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
     private static final EnumSet<FormatType> SUPPORTED_CONTENT_FORMATS = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
 
     public BlackDuckContent() {
-        super(BlackDuckProvider.COMPONENT_NAME, ALL_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
+        super(BlackDuckProvider.COMPONENT_NAME, SUPPORTED_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
+    }
+
+    @Override
+    public Set<ProviderContentType> getContentTypes() {
+        return super.getContentTypes();
     }
 
 }
