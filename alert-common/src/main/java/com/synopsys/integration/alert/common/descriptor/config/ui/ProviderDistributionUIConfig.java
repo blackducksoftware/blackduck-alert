@@ -63,7 +63,6 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                 .map(LabelValueSelectOption::new)
                 .collect(Collectors.toList()), this::validateNotificationTypes);
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
-            // FIXME how will FormatTypes be supported?
             providerContent.getSupportedContentFormats()
                 .stream()
                 .map(FormatType::name)
