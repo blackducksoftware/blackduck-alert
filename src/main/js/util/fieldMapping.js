@@ -11,13 +11,22 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
 
+function trimValue(items) {
+    const { value } = items;
+    const trimmedValue = (Array.isArray(value)) ? value[0] : value;
+
+    Object.assign(items, { value: trimmedValue });
+    return items;
+}
 
 function buildTextInput(items) {
-    return <TextInput {...items} />;
+    const trimmedValue = trimValue(items);
+    return <TextInput {...trimmedValue} />;
 }
 
 function buildTextArea(items) {
-    return <TextArea {...items} />;
+    const trimmedValue = trimValue(items);
+    return <TextArea {...trimmedValue} />;
 }
 
 const { Option, SingleValue } = components;
@@ -47,11 +56,13 @@ function buildSelectInput(items, field) {
 }
 
 function buildPasswordInput(items) {
-    return <PasswordInput {...items} />;
+    const trimmedValue = trimValue(items);
+    return <PasswordInput {...trimmedValue} />;
 }
 
 function buildNumberInput(items) {
-    return <NumberInput {...items} />;
+    const trimmedValue = trimValue(items);
+    return <NumberInput {...trimmedValue} />;
 }
 
 function buildCheckboxInput(items) {
@@ -62,7 +73,8 @@ function buildCheckboxInput(items) {
 }
 
 function buildReadOnlyField(items) {
-    return <ReadOnlyField {...items} />;
+    const trimmedValue = trimValue(items);
+    return <ReadOnlyField {...trimmedValue} />;
 }
 
 function buildCounterField(items, field) {

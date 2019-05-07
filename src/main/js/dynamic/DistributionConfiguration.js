@@ -214,7 +214,7 @@ class DistributionConfiguration extends Component {
                 <FieldsPanel descriptorFields={updatedProviderFields.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
-                    includeAllProjects={FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT)}
+                    includeAllProjects={filterByProject}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT)}
                     projects={this.props.projects}
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerConfig, KEY_CONFIGURED_PROJECT)}
