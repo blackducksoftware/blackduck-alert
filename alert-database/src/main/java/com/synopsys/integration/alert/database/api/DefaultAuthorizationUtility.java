@@ -109,7 +109,12 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
         final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
         for (final RoleEntity role : roles) {
             final PermissionMatrixModel model = readPermissionsForRole(role.getId());
-            permissionOperations.putAll(model.getPermissions());
+            final Map<String, EnumSet<AccessOperation>> rolePermissions = model.getPermissions();
+
+            for (final Map.Entry<String, EnumSet<AccessOperation>> entry : rolePermissions.entrySet()) {
+                permissionOperations.computeIfAbsent(entry.getKey(), ignored -> EnumSet.noneOf(AccessOperation.class)).addAll(entry.getValue());
+                permissionOperations.computeIfPresent(entry.getKey(), (key, accessOperations) -> accessOperations).addAll(entry.getValue());
+            }
         }
         return new PermissionMatrixModel(permissionOperations);
     }

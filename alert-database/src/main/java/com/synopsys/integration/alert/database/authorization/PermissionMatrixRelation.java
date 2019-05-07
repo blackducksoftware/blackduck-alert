@@ -48,9 +48,10 @@ public class PermissionMatrixRelation extends DatabaseRelation {
         // JPA requires default constructor definitions
     }
 
-    public PermissionMatrixRelation(final Long roleId, final Long permissionKeyId) {
+    public PermissionMatrixRelation(final Long roleId, final Long permissionKeyId, final Long accessOperationId) {
         this.roleId = roleId;
         this.permissionKeyId = permissionKeyId;
+        this.accessOperationId = accessOperationId;
     }
 
     public Long getRoleId() {
