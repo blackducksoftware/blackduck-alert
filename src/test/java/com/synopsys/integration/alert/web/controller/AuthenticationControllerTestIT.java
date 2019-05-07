@@ -29,7 +29,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
@@ -66,7 +65,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testLogout() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 

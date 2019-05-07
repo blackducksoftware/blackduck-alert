@@ -34,7 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -74,10 +73,10 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetMessages() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemMessageBaseUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }

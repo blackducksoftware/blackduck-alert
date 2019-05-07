@@ -32,12 +32,12 @@ public class AuthorizationUtilityTest {
         final AccessOperationRepository accessOperationRepository = Mockito.mock(AccessOperationRepository.class);
         final PermissionKeyRepository permissionKeyRepository = Mockito.mock(PermissionKeyRepository.class);
 
-        final RoleEntity adminRole = new RoleEntity(UserRole.ALERT_ADMIN_TEXT);
+        final RoleEntity adminRole = new RoleEntity(UserRole.ALERT_ADMIN.name());
         adminRole.setId(1L);
-        final RoleEntity userRole = new RoleEntity(UserRole.ALERT_USER_TEXT);
+        final RoleEntity userRole = new RoleEntity(UserRole.ALERT_USER.name());
         userRole.setId(2L);
 
-        Mockito.when(roleRepository.findRoleEntitiesByRoleName(Mockito.anyCollection())).thenReturn(List.of(adminRole, userRole));
+        Mockito.when(roleRepository.findRoleEntitiesByRoleNames(Mockito.anyCollection())).thenReturn(List.of(adminRole, userRole));
 
         final String permissionKey_1 = "permission.key.1";
         final String permissionKey_2 = "permission.key.2";

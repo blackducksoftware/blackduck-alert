@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class HomeControllerTestIT extends AlertIntegrationTest {
@@ -42,13 +41,13 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testVerify() throws Exception {
         final HttpHeaders headers = new HttpHeaders();
         final MockHttpSession session = new MockHttpSession();
         final ServletContext servletContext = webApplicationContext.getServletContext();
 
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
         request.session(session);
         final HttpServletRequest httpServletRequest = request.buildRequest(servletContext);
         final CsrfToken csrfToken = csrfTokenRepository.generateToken(httpServletRequest);
@@ -58,31 +57,31 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testVerifyNoToken() throws Exception {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.headers(headers);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testVerifyMissingCSRFToken() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testVerifyNullStringCSRFToken() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");

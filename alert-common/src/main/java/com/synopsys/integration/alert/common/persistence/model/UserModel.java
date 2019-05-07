@@ -37,6 +37,7 @@ public class UserModel extends AlertSerializableModel {
     private final String password;
     private final String emailAddress;
     private final Set<UserRoleModel> roles;
+    private final Set<String> roleNames;
     private final boolean expired;
     private final boolean locked;
     private final boolean passwordExpired;
@@ -51,6 +52,11 @@ public class UserModel extends AlertSerializableModel {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
+        if (null == roles && roles.isEmpty()) {
+            this.roleNames = Set.of();
+        } else {
+            this.roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
+        }
     }
 
     public static final UserModel of(final String userName, final String password, final String emailAddress, final Set<UserRoleModel> roles) {
@@ -83,8 +89,7 @@ public class UserModel extends AlertSerializableModel {
     }
 
     public boolean hasRole(final String role) {
-        //Make this performs better.
-        return roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet()).contains(role);
+        return roleNames.contains(role);
     }
 
     public boolean isExpired() {

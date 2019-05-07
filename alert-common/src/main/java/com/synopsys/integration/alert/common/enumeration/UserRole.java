@@ -25,9 +25,5 @@ package com.synopsys.integration.alert.common.enumeration;
 public enum UserRole {
     ALERT_ADMIN,
     ALERT_JOB_MANAGER,
-    ALERT_USER;
-
-    public static final String ALERT_ADMIN_TEXT = "ALERT_ADMIN";
-    public static final String ALERT_JOB_MANAGER_TEXT = "ALERT_JOB_MANAGER";
-    public static final String ALERT_USER_TEXT = "ALERT_USER";
+    ALERT_USER
 }

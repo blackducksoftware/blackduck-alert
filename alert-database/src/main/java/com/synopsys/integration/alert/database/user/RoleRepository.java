@@ -34,5 +34,5 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     List<String> getRoleNames(final List<Long> roleIds);
 
     @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
-    List<RoleEntity> findRoleEntitiesByRoleName(final Collection<String> roleIds);
+    List<RoleEntity> findRoleEntitiesByRoleNames(final Collection<String> roleIds);
 }

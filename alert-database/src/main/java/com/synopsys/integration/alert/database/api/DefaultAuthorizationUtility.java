@@ -85,17 +85,16 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     public void updateUserRoles(final Long userId, final Collection<UserRoleModel> roles) {
         if (null != userId) {
             userRoleRepository.deleteAllByUserId(userId);
-        }
 
-        if (null != roles) {
-            final Collection<String> roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
-
-            final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roleNames);
-            final List<UserRoleRelation> roleRelations = new LinkedList<>();
-            for (final RoleEntity role : roleEntities) {
-                roleRelations.add(new UserRoleRelation(userId, role.getId()));
+            if (null != roles && !roles.isEmpty()) {
+                final Collection<String> roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
+                final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleNames(roleNames);
+                final List<UserRoleRelation> roleRelations = new LinkedList<>();
+                for (final RoleEntity role : roleEntities) {
+                    roleRelations.add(new UserRoleRelation(userId, role.getId()));
+                }
+                userRoleRepository.saveAll(roleRelations);
             }
-            userRoleRepository.saveAll(roleRelations);
         }
     }
 
@@ -105,7 +104,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
 
     @Override
     public PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames) {
-        final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleName(roleNames);
+        final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleNames(roleNames);
         final List<Long> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
         final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleIdIn(roleIds);
         return readPermissionsForRole(permissions);

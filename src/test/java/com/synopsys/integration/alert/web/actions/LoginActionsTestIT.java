@@ -27,7 +27,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
-import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -93,7 +92,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         final Optional<UserModel> userModel = userAccessor.getUser(userName);
         assertTrue(userModel.isPresent());
         final UserModel model = userModel.get();
-        assertFalse(model.hasRole(UserRole.ALERT_ADMIN_TEXT));
+        assertFalse(model.hasRole(AlertIntegrationTest.ROLE_ALERT_ADMIN));
         assertTrue(model.getRoles().isEmpty());
 
         userAccessor.deleteUser(userName);
