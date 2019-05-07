@@ -115,16 +115,6 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     }
 
     @Override
-    public PermissionMatrixModel readPermissionsForRole(final String roleName) {
-        final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleName(List.of(roleName));
-        final Long roleId = roles.stream()
-                                .findFirst()
-                                .map(RoleEntity::getId)
-                                .orElse(null);
-        return readPermissionsForRole(roleId);
-    }
-
-    @Override
     public PermissionMatrixModel readPermissionsForRole(final Long roleId) {
         final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
         final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();

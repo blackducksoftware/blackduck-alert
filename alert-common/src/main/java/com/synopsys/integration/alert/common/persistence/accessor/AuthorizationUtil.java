@@ -33,8 +33,6 @@ public interface AuthorizationUtil {
 
     PermissionMatrixModel readPermissionsForRoles(final Collection<String> roleNames);
 
-    PermissionMatrixModel readPermissionsForRole(final String roleName);
-
     PermissionMatrixModel readPermissionsForRole(final Long roleId);
 
     void updateUserRoles(final Long userId, final Collection<UserRoleModel> roles);
