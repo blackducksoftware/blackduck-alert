@@ -149,7 +149,6 @@ class Index extends Component {
     }
 
     saveBtn() {
-        this.startAutoReloadIfConfigured();
         this.cancelRowSelect();
         this.reloadJobs();
     }
@@ -160,6 +159,7 @@ class Index extends Component {
 
     cancelRowSelect() {
         this.startAutoReloadIfConfigured();
+        this.refs.table.cleanSelected();
         this.setState({
             currentRowSelected: null
         });
@@ -321,6 +321,7 @@ class Index extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
+                    ref="table"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>

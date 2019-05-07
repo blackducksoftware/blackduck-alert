@@ -30,7 +30,6 @@ class DistributionConfiguration extends Component {
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
-        this.createChangeHandler = this.createChangeHandler.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -183,27 +182,6 @@ class DistributionConfiguration extends Component {
     }
 
     // FIXME this function is probably not necessary
-    createChangeHandler(negateCheckboxValue) {
-        return (event) => {
-            const { target } = event;
-            let targetValue = target.value;
-            if (target.type === 'checkbox') {
-                const { checked } = target;
-                if (negateCheckboxValue) {
-                    targetValue = (!checked).toString();
-                } else {
-                    targetValue = checked.toString();
-                }
-            }
-            const fieldModel = this.state.providerConfig;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, targetValue);
-            this.setState({
-                providerConfig: newState
-            });
-        };
-    }
-
-    // FIXME this function is probably not necessary
     createMultiSelectHandler(fieldKey) {
         return (selectedValues) => {
             if (selectedValues && selectedValues.length > 0) {
@@ -223,15 +201,20 @@ class DistributionConfiguration extends Component {
 
     renderProviderForm() {
         const { providerConfig, currentProvider, channelConfig } = this.state;
-        const updatedProviderFields = currentProvider.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
-        Object.assign(currentProvider, { fields: updatedProviderFields });
+        const updatedProviderFields = Object.assign({}, currentProvider);
+        const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT);
+        if (filterByProject) {
+            const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
+            Object.assign(updatedProviderFields, { fields: removePattern });
+        }
+        const removeProject = updatedProviderFields.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
+        Object.assign(updatedProviderFields, { fields: removeProject });
         return (
             <div>
-                <FieldsPanel descriptorFields={currentProvider.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
+                <FieldsPanel descriptorFields={updatedProviderFields.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
                     includeAllProjects={FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT)}
-                    handleChange={this.createChangeHandler(true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT)}
                     projects={this.props.projects}
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerConfig, KEY_CONFIGURED_PROJECT)}

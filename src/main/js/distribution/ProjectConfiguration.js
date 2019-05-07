@@ -204,13 +204,11 @@ ProjectConfiguration.propTypes = {
     providerName: PropTypes.string.isRequired,
     includeAllProjects: PropTypes.bool.isRequired,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
-    projectNamePattern: PropTypes.string,
     projects: PropTypes.arrayOf(PropTypes.any),
     fetching: PropTypes.bool.isRequired,
     errorMsg: PropTypes.string,
     fieldErrors: PropTypes.object,
     getProjects: PropTypes.func.isRequired,
-    handleChange: PropTypes.func.isRequired,
     handleProjectChanged: PropTypes.func.isRequired
 };
 

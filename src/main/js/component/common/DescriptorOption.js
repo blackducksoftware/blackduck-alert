@@ -14,9 +14,13 @@ function DescriptorOption(props) {
 }
 
 DescriptorOption.propTypes = {
-    icon: PropTypes.string.isRequired,
+    icon: PropTypes.string,
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
 };
+
+DescriptorOption.defaultProps = {
+    icon: null
+}
 
 export default DescriptorOption;
