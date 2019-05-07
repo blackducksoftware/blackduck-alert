@@ -22,17 +22,10 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
-import java.util.Set;
-
-import javax.validation.constraints.NotNull;
-
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
-import com.synopsys.integration.alert.provider.polaris.PolarisCollector;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 @Component
@@ -46,18 +39,9 @@ public class PolarisDescriptor extends ProviderDescriptor {
     public static final String POLARIS_URL_NAME = "polaris";
     public static final String POLARIS_DESCRIPTION = "This is the configuration to connect to the Polaris server. Configuring this will cause Alert to start pulling data from Polaris Issues.";
 
-    private final ObjectFactory<PolarisCollector> polarisCollector;
-
     @Autowired
-    public PolarisDescriptor(final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionUIConfig polarisDistributionUIConfig, final @NotNull PolarisProvider provider,
-        final ObjectFactory<PolarisCollector> polarisCollector) {
-        super(polarisGlobalUIConfig, polarisDistributionUIConfig, provider);
-        this.polarisCollector = polarisCollector;
-    }
-
-    @Override
-    public Set<MessageContentCollector> createTopicCollectors() {
-        return Set.of(polarisCollector.getObject());
+    public PolarisDescriptor(final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionUIConfig polarisDistributionUIConfig) {
+        super(PolarisProvider.COMPONENT_NAME, polarisGlobalUIConfig, polarisDistributionUIConfig);
     }
 
 }

@@ -27,7 +27,7 @@ import java.util.TreeSet;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 
 public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
     private final SortedSet<LinkableItem> componentData;
@@ -45,13 +45,13 @@ public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
     }
 
     public void addComponentNameItem(final String name, final String url) {
-        final LinkableItem newItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, name, url);
+        final LinkableItem newItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, name, url);
         newItem.setCollapsible(false);
         addComponentData(newItem);
     }
 
     public void addComponentVersionItem(final String version, final String url) {
-        addComponentData(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, version, url));
+        addComponentData(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, version, url));
     }
 
 }

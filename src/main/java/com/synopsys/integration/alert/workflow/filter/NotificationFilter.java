@@ -35,8 +35,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
@@ -52,12 +53,12 @@ import com.synopsys.integration.alert.database.api.JobConfigReader;
 public class NotificationFilter {
     private final JobConfigReader jobConfigReader;
     private final JsonExtractor jsonExtractor;
-    private final List<ProviderDescriptor> providerDescriptors;
+    private final List<Provider> providers;
 
     @Autowired
-    public NotificationFilter(final JsonExtractor jsonExtractor, final List<ProviderDescriptor> providerDescriptors, final JobConfigReader jobConfigReader) {
+    public NotificationFilter(final JsonExtractor jsonExtractor, final List<Provider> providers, final JobConfigReader jobConfigReader) {
         this.jsonExtractor = jsonExtractor;
-        this.providerDescriptors = providerDescriptors;
+        this.providers = providers;
         this.jobConfigReader = jobConfigReader;
     }
 
@@ -150,9 +151,11 @@ public class NotificationFilter {
 
     // TODO since this is used with the MessageContentAggregator we don't need to iterate again; this can be removed
     private List<ProviderContentType> getProviderContentTypes() {
-        return providerDescriptors
+        return providers
                    .parallelStream()
-                   .flatMap(descriptor -> descriptor.getProviderContentTypes().stream())
+                   .map(Provider::getProviderContent)
+                   .map(ProviderContent::getContentTypes)
+                   .flatMap(Set::stream)
                    .collect(Collectors.toList());
     }
 
@@ -196,7 +199,7 @@ public class NotificationFilter {
         return filterBuilderForAllValues;
     }
 
-    // FIXME this is extremely specific and we need a way to avoid it
+    // FIXME this is provider specific (but currently tightly coupled to distribution config) and we need a way to avoid it
     private boolean shouldFilter(final CommonDistributionConfiguration config) {
         return config.getFilterByProject();
     }
@@ -207,4 +210,5 @@ public class NotificationFilter {
                    .filter(filter)
                    .collect(Collectors.toList());
     }
+
 }

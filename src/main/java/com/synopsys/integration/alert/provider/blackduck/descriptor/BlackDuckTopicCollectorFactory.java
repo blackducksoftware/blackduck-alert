@@ -60,4 +60,5 @@ public class BlackDuckTopicCollectorFactory {
         collectorSet.add(licenseLimitTopicCollectorFactory.getObject());
         return collectorSet;
     }
+
 }

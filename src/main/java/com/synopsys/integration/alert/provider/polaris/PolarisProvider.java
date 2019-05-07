@@ -22,21 +22,21 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.DefaultEmailHandler;
+import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
@@ -49,12 +49,16 @@ public class PolarisProvider extends Provider {
     private final PolarisProjectSyncTask projectSyncTask;
     private final PolarisProperties polarisProperties;
 
+    private final ObjectFactory<PolarisCollector> polarisCollector;
+
     @Autowired
-    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask, final PolarisProperties polarisProperties, final DefaultEmailHandler defaultEmailHandler) {
-        super(PolarisProvider.COMPONENT_NAME, defaultEmailHandler);
+    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask, final PolarisProperties polarisProperties, final PolarisContent polarisContent, final DefaultEmailHandler defaultEmailHandler,
+        final ObjectFactory<PolarisCollector> polarisCollector) {
+        super(PolarisProvider.COMPONENT_NAME, polarisContent, defaultEmailHandler);
         this.taskManager = taskManager;
         this.projectSyncTask = projectSyncTask;
         this.polarisProperties = polarisProperties;
+        this.polarisCollector = polarisCollector;
     }
 
     @Override
@@ -74,13 +78,8 @@ public class PolarisProvider extends Provider {
     }
 
     @Override
-    public Set<ProviderContentType> getProviderContentTypes() {
-        return Set.of(PolarisProviderContentTypes.ISSUE_COUNT_INCREASED, PolarisProviderContentTypes.ISSUE_COUNT_DECREASED);
-    }
-
-    @Override
-    public Set<FormatType> getSupportedFormatTypes() {
-        return EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY);
+    public Set<MessageContentCollector> createTopicCollectors() {
+        return Set.of(polarisCollector.getObject());
     }
 
 }
