@@ -22,33 +22,14 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.Set;
-
-import javax.validation.constraints.NotNull;
-
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 
 public abstract class ProviderDescriptor extends Descriptor {
-    private final Provider provider;
-
-    public ProviderDescriptor(final UIConfig providerUiConfig, final UIConfig distributionUIConfig, @NotNull final Provider provider) {
-        super(provider.getName(), DescriptorType.PROVIDER);
-        this.provider = provider;
+    public ProviderDescriptor(final String providerName, final UIConfig providerUiConfig, final UIConfig distributionUIConfig) {
+        super(providerName, DescriptorType.PROVIDER);
         addGlobalUiConfig(providerUiConfig);
         addDistributionUiConfig(distributionUIConfig);
     }
 
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public Set<ProviderContentType> getProviderContentTypes() {
-        return getProvider().getProviderContentTypes();
-    }
-
-    public abstract Set<MessageContentCollector> createTopicCollectors();
 }

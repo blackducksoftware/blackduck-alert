@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -54,7 +54,7 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
 
     @Autowired
     public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.LICENSE_LIMIT));
+        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.LICENSE_LIMIT));
         this.blackDuckProperties = blackDuckProperties;
     }
 
