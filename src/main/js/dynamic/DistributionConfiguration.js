@@ -31,6 +31,7 @@ class DistributionConfiguration extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
+        this.flipFilterFlag = this.flipFilterFlag.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const { fields, context, name } = defaultDescriptor;
@@ -72,10 +73,12 @@ class DistributionConfiguration extends Component {
                     const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
                     const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
 
+                    const includeAllProjects = this.flipFilterFlag(providerModel);
+                    const updatedProviderConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FILTER_BY_PROJECT, includeAllProjects));
                     this.setState({
                         fieldErrors: {},
                         channelConfig: channelModel,
-                        providerConfig: providerModel,
+                        providerConfig: updatedProviderConfig,
                         currentChannel: newChannel,
                         currentProvider: newProvider
                     });
@@ -121,6 +124,11 @@ class DistributionConfiguration extends Component {
         }
     }
 
+    // FIXME remove this in 5.0.0 as we can change the filterByProject flag to be more appropriate
+    flipFilterFlag(config) {
+        return !FieldModelUtilities.getFieldModelBooleanValueOrDefault(config, KEY_FILTER_BY_PROJECT, false);
+    }
+
     handleClose() {
         this.setState({ show: false });
         this.props.onModalClose();
@@ -149,18 +157,14 @@ class DistributionConfiguration extends Component {
 
     buildJsonBody() {
         const { channelConfig, providerConfig } = this.state;
-        const configuration = Object.assign({}, {
+        const includeAllProjects = this.flipFilterFlag(providerConfig);
+        const updatedProviderConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(providerConfig, KEY_FILTER_BY_PROJECT, includeAllProjects));
+        return Object.assign({}, {
             fieldModels: [
                 channelConfig,
-                providerConfig
+                updatedProviderConfig
             ]
         });
-
-        const { jobId } = this.props;
-        if (jobId) {
-            Object.assign(configuration, { jobId });
-        }
-        return configuration;
     }
 
     handleTestSubmit(event) {
@@ -172,9 +176,11 @@ class DistributionConfiguration extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        const { jobId } = this.props;
 
         const jsonBody = this.buildJsonBody();
-        if (this.props.jobId) {
+        if (jobId) {
+            Object.assign(jsonBody, { jobId });
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);

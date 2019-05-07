@@ -119,7 +119,7 @@ export function hasAnyValuesExcludingId(fieldModel) {
 }
 
 export function updateFieldModelSingleValue(fieldModel, key, value) {
-    const copy = Object.assign({}, fieldModel);
+    const copy = JSON.parse(JSON.stringify(fieldModel));
     if (!copy.keyToValues) {
         copy.keyToValues = {};
     }
