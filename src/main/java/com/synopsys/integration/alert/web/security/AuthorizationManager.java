@@ -96,7 +96,7 @@ public class AuthorizationManager {
                                                .map(GrantedAuthority::getAuthority)
                                                .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
                                                .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
-            permissions = authorizationUtil.readPermissionsForRoles(roleNames);
+            permissions = authorizationUtil.mergePermissionsForRoles(roleNames);
             permissionCache.put(authentication.getPrincipal().hashCode(), permissions);
         }
         return permissions;

@@ -62,8 +62,10 @@ public class AuthorizationUtilityTest {
         final PermissionMatrixRelation userRelation_1 = new PermissionMatrixRelation(userRole.getId(), permission_1.getId(), access_read.getId());
         final PermissionMatrixRelation userRelation_2 = new PermissionMatrixRelation(userRole.getId(), permission_2.getId(), access_read.getId());
         final PermissionMatrixRelation userRelation_3 = new PermissionMatrixRelation(userRole.getId(), permission_2.getId(), access_execute.getId());
+        final List<Long> roleIds = List.of(adminRole.getId(), userRole.getId());
         Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(adminRole.getId()))).thenReturn(List.of(adminRelation_1, adminRelation_2, adminRelation_3, adminRelation_4));
         Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(userRole.getId()))).thenReturn(List.of(userRelation_1, userRelation_2, userRelation_3));
+        Mockito.when(permissionMatrixRepository.findAllByRoleIdIn(Mockito.eq(roleIds))).thenReturn(List.of(adminRelation_1, adminRelation_2, adminRelation_3, adminRelation_4, userRelation_1, userRelation_2, userRelation_3));
 
         Mockito.when(permissionKeyRepository.findById(Mockito.eq(permission_1.getId()))).thenReturn(Optional.of(permission_1));
         Mockito.when(permissionKeyRepository.findById(Mockito.eq(permission_2.getId()))).thenReturn(Optional.of(permission_2));
@@ -78,7 +80,7 @@ public class AuthorizationUtilityTest {
         // order matters here.  The userRole has less privileges so we want to test that the more restrictive privileges don't overwrite the admin privileges.  We want a union of the permissions
         final List<String> roles = List.of(adminRole.getRoleName(), userRole.getRoleName());
 
-        final PermissionMatrixModel matrixModel = authorizationUtility.readPermissionsForRoles(roles);
+        final PermissionMatrixModel matrixModel = authorizationUtility.mergePermissionsForRoles(roles);
 
         // admin read/write
         assertTrue(matrixModel.hasPermission(permissionKey_1, AccessOperation.READ));

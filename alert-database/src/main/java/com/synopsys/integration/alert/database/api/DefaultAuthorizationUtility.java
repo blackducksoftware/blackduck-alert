@@ -104,34 +104,32 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     }
 
     @Override
-    public PermissionMatrixModel readPermissionsForRoles(final Collection<String> roleNames) {
+    public PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames) {
         final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleName(roleNames);
-        final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
-        for (final RoleEntity role : roles) {
-            final PermissionMatrixModel model = readPermissionsForRole(role.getId());
-            final Map<String, EnumSet<AccessOperation>> rolePermissions = model.getPermissions();
-
-            for (final Map.Entry<String, EnumSet<AccessOperation>> entry : rolePermissions.entrySet()) {
-                permissionOperations.computeIfAbsent(entry.getKey(), ignored -> EnumSet.noneOf(AccessOperation.class)).addAll(entry.getValue());
-                permissionOperations.computeIfPresent(entry.getKey(), (key, accessOperations) -> accessOperations).addAll(entry.getValue());
-            }
-        }
-        return new PermissionMatrixModel(permissionOperations);
+        final List<Long> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
+        final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleIdIn(roleIds);
+        return readPermissionsForRole(permissions);
     }
 
     @Override
     public PermissionMatrixModel readPermissionsForRole(final Long roleId) {
         final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
+        return readPermissionsForRole(permissions);
+    }
+
+    private PermissionMatrixModel readPermissionsForRole(final List<PermissionMatrixRelation> permissions) {
         final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
 
-        for (final PermissionMatrixRelation relation : permissions) {
-            final Optional<PermissionKeyEntity> permissionKey = permissionKeyRepository.findById(relation.getPermissionKeyId());
-            final Optional<AccessOperationEntity> accessOperation = accessOperationRepository.findById(relation.getAccessOperationId());
-            permissionKey.ifPresent(key -> {
-                final String keyName = key.getKeyName();
-                permissionOperations.computeIfAbsent(keyName, ignored -> EnumSet.noneOf(AccessOperation.class));
-                accessOperation.ifPresent(operation -> permissionOperations.get(keyName).add(AccessOperation.valueOf(operation.getOperationName())));
-            });
+        if (null != permissions) {
+            for (final PermissionMatrixRelation relation : permissions) {
+                final Optional<PermissionKeyEntity> permissionKey = permissionKeyRepository.findById(relation.getPermissionKeyId());
+                final Optional<AccessOperationEntity> accessOperation = accessOperationRepository.findById(relation.getAccessOperationId());
+                permissionKey.ifPresent(key -> {
+                    final String keyName = key.getKeyName();
+                    permissionOperations.computeIfAbsent(keyName, ignored -> EnumSet.noneOf(AccessOperation.class));
+                    accessOperation.ifPresent(operation -> permissionOperations.get(keyName).add(AccessOperation.valueOf(operation.getOperationName())));
+                });
+            }
         }
 
         return new PermissionMatrixModel(permissionOperations);
