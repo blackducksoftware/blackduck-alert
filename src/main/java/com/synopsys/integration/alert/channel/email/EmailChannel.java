@@ -99,7 +99,7 @@ public class EmailChannel extends DistributionChannel {
         }
 
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", topicValue);
+            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", provider, topicValue);
             throw new AlertException(errorMessage);
         }
         try {
