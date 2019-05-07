@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -38,8 +37,7 @@ public class EmailAddressHandler {
     private final List<Provider> providers;
 
     @Autowired
-    public EmailAddressHandler(@Lazy final List<Provider> providers) {
-        // TODO does this need to be lazily initialized? I think not.
+    public EmailAddressHandler(final List<Provider> providers) {
         this.providers = providers;
     }
 
