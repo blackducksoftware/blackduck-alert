@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -28,6 +27,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
@@ -56,7 +56,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     private JsonExtractor jsonExtractor;
 
     @Autowired
-    private List<ProviderDescriptor> providerDescriptors;
+    private List<Provider> providers;
 
     @Autowired
     private DescriptorMocker descriptorMocker;
@@ -89,7 +89,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
         Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of(config));
 
-        defaultNotificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
+        defaultNotificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
 
         descriptorMocker.registerDescriptor(TEST_DESCRIPTOR_NAME, DescriptorType.CHANNEL);
         descriptorMocker.addFieldToDescriptor(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_KEY, TEST_DESCRIPTOR_FIELD_CONTEXT, Boolean.FALSE);
@@ -105,7 +105,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
         Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of());
 
-        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
+        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
         final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final Collection<AlertNotificationWrapper> filteredNotifications = notificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, List.of(applicableNotification));
         assertEquals(0, filteredNotifications.size());
@@ -119,7 +119,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
         Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of(config));
 
-        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
+        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
         final ConfigurationFieldModel fieldModel = createFieldModel(TEST_DESCRIPTOR_FIELD_KEY, "value");
         configurationAccessor.createConfiguration(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_CONTEXT, List.of(fieldModel));
 

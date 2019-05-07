@@ -22,37 +22,36 @@
  */
 package com.synopsys.integration.alert.channel.email;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.Provider;
 
 @Component
 public class EmailAddressHandler {
-    private final DescriptorMap descriptorMap;
+    private final List<Provider> providers;
 
     @Autowired
-    public EmailAddressHandler(@Lazy final DescriptorMap descriptorMap) {
-        this.descriptorMap = descriptorMap;
+    public EmailAddressHandler(final List<Provider> providers) {
+        this.providers = providers;
     }
 
-    public FieldAccessor updateEmailAddresses(final String provider, final MessageContentGroup contentGroup, final FieldAccessor originalAccessor) {
-        if (StringUtils.isBlank(provider)) {
+    public FieldAccessor updateEmailAddresses(final String providerName, final MessageContentGroup contentGroup, final FieldAccessor originalAccessor) {
+        if (StringUtils.isBlank(providerName)) {
             return originalAccessor;
         }
-        final Optional<ProviderDescriptor> descriptor = descriptorMap.getProviderDescriptor(provider);
-        return descriptor
-                   .map(ProviderDescriptor::getProvider)
+        return providers
+                   .stream()
+                   .filter(provider -> provider.getName().equals(providerName))
+                   .findFirst()
                    .map(Provider::getEmailHandler)
                    .map(emailHandler -> emailHandler.updateFieldAccessor(contentGroup, originalAccessor))
                    .orElse(originalAccessor);
     }
+
 }

@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -47,22 +47,24 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
     private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created.";
 
-    private final Provider provider;
+    private final ProviderContent providerContent;
 
-    public ProviderDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final Provider provider) {
+    public ProviderDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final ProviderContent providerContent) {
         super(label, label + " provider distribution setup.", urlName, fontAwesomeIcon);
-        this.provider = provider;
+        this.providerContent = providerContent;
     }
 
     @Override
     public List<ConfigField> createFields() {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES,
-            provider.getProviderContentTypes().stream()
+            providerContent.getContentTypes()
+                .stream()
                 .map(ProviderContentType::getNotificationType)
                 .map(LabelValueSelectOption::new)
                 .collect(Collectors.toList()), this::validateNotificationTypes);
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
-            provider.getSupportedFormatTypes().stream()
+            providerContent.getSupportedContentFormats()
+                .stream()
                 .map(FormatType::name)
                 .map(LabelValueSelectOption::new)
                 .collect(Collectors.toList()));
@@ -82,4 +84,5 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
         return List.of();
     }
+
 }

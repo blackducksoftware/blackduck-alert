@@ -22,25 +22,21 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.DefaultEmailHandler;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckTopicCollectorFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -56,14 +52,17 @@ public class BlackDuckProvider extends Provider {
     private final TaskManager taskManager;
     private final BlackDuckProperties blackDuckProperties;
 
+    private final BlackDuckTopicCollectorFactory topicCollectorFactory;
+
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final DefaultEmailHandler blackDuckEmailHandler, final TaskManager taskManager,
-        final BlackDuckProperties blackDuckProperties) {
-        super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final BlackDuckContent blackDuckContent, final DefaultEmailHandler blackDuckEmailHandler,
+        final TaskManager taskManager, final BlackDuckProperties blackDuckProperties, final BlackDuckTopicCollectorFactory topicCollectorFactory) {
+        super(BlackDuckProvider.COMPONENT_NAME, blackDuckContent, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.taskManager = taskManager;
         this.blackDuckProperties = blackDuckProperties;
+        this.topicCollectorFactory = topicCollectorFactory;
     }
 
     @Override
@@ -87,15 +86,8 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public Set<ProviderContentType> getProviderContentTypes() {
-        final Predicate<ProviderContentType> excludeBom = Predicate.isEqual(BlackDuckProviderContentTypes.BOM_EDIT);
-        final Predicate<ProviderContentType> filterExcludedTypes = excludeBom.negate();
-        return BlackDuckProviderContentTypes.ALL.stream().filter(filterExcludedTypes).sorted(Comparator.comparing(ProviderContentType::getNotificationType)).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    @Override
-    public Set<FormatType> getSupportedFormatTypes() {
-        return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
+    public Set<MessageContentCollector> createTopicCollectors() {
+        return topicCollectorFactory.createTopicCollectors();
     }
 
 }
