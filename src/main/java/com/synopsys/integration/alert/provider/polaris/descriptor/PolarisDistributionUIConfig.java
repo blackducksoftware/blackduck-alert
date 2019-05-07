@@ -29,14 +29,13 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 @Component
 public class PolarisDistributionUIConfig extends ProviderDistributionUIConfig {
 
     @Autowired
-    public PolarisDistributionUIConfig(final PolarisProvider provider) {
-        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON, provider);
+    public PolarisDistributionUIConfig(final PolarisContent providerContent) {
+        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON, providerContent);
     }
 
     @Override

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createJsonPath;
 import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createLongField;
@@ -30,18 +30,26 @@ import static com.synopsys.integration.alert.common.workflow.filter.field.JsonFi
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilitySourceQualifiedId;
 
-public class BlackDuckProviderContentTypes {
+@Component
+public class BlackDuckContent extends ProviderContent {
     //common fields
     public static final String JSON_FIELD_CONTENT = "content";
     public static final String JSON_FIELD_PROJECT_NAME = "projectName";
@@ -190,9 +198,11 @@ public class BlackDuckProviderContentTypes {
         RULE_VIOLATION_FIELD_LIST
     );
 
-    public static final List<ProviderContentType> ALL = List.of(BOM_EDIT, LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
+    private static final Set<ProviderContentType> ALL_CONTENT_TYPES = Set.of(BOM_EDIT, LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
+    private static final EnumSet<FormatType> SUPPORTED_CONTENT_FORMATS = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
 
-    private BlackDuckProviderContentTypes() {
-        // This class should not be instantiated
+    public BlackDuckContent() {
+        super(BlackDuckProvider.COMPONENT_NAME, ALL_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
     }
+
 }

@@ -24,14 +24,16 @@ package com.synopsys.integration.alert.common.provider;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 
 public abstract class Provider {
     private final String name;
+    private final ProviderContent providerContent;
     private final EmailHandler emailHandler;
 
-    public Provider(final String name, final EmailHandler emailHandler) {
+    public Provider(final String name, final ProviderContent providerContent, final EmailHandler emailHandler) {
         this.name = name;
+        this.providerContent = providerContent;
         this.emailHandler = emailHandler;
     }
 
@@ -43,11 +45,14 @@ public abstract class Provider {
 
     public abstract void destroy();
 
-    public abstract Set<ProviderContentType> getProviderContentTypes();
+    public abstract Set<MessageContentCollector> createTopicCollectors();
 
-    public abstract Set<FormatType> getSupportedFormatTypes();
+    public ProviderContent getProviderContent() {
+        return providerContent;
+    }
 
     public EmailHandler getEmailHandler() {
         return emailHandler;
     }
+
 }

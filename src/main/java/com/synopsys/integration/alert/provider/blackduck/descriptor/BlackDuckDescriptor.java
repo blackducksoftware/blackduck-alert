@@ -22,13 +22,10 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
@@ -42,17 +39,9 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String BLACKDUCK_ICON = "laptop";
     public static final String BLACKDUCK_DESCRIPTION = "This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.";
 
-    private final BlackDuckTopicCollectorFactory topicCollectorFactory;
-
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider,
-        final BlackDuckTopicCollectorFactory topicCollectorFactory) {
-        super(blackDuckProviderUIConfig, blackDuckDistributionUIConfig, provider);
-        this.topicCollectorFactory = topicCollectorFactory;
+    public BlackDuckDescriptor(final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig) {
+        super(BlackDuckProvider.COMPONENT_NAME, blackDuckProviderUIConfig, blackDuckDistributionUIConfig);
     }
 
-    @Override
-    public Set<MessageContentCollector> createTopicCollectors() {
-        return topicCollectorFactory.createTopicCollectors();
-    }
 }
