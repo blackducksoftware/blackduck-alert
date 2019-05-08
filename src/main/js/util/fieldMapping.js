@@ -15,8 +15,7 @@ function trimValue(items) {
     const { value } = items;
     const trimmedValue = (Array.isArray(value)) ? value[0] : value;
 
-    Object.assign(items, { value: trimmedValue });
-    return items;
+    return Object.assign(items, { value: trimmedValue });
 }
 
 function buildTextInput(items) {

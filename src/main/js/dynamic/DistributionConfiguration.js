@@ -97,16 +97,15 @@ class DistributionConfiguration extends Component {
             const newChannel = this.props.descriptors.find(descriptor => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const channelKeys = FieldMapping.retrieveKeys(newChannel.fields);
             const emptyChannelConfig = FieldModelUtilities.createEmptyFieldModel(channelKeys, newChannel.context, newChannel.name);
-            const updatedChannelConfig = {};
-            Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption));
+            const updatedChannelConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption));
             const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME);
             const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY);
             const provider = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME);
-            Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_NAME, name));
-            Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_FREQUENCY, frequency));
-            Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_PROVIDER_NAME, provider));
+            const keepName = Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_NAME, name));
+            const keepFrequency = Object.assign(keepName, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_FREQUENCY, frequency));
+            const keepProvider = Object.assign(keepFrequency, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_PROVIDER_NAME, provider));
             this.setState({
-                channelConfig: updatedChannelConfig,
+                channelConfig: keepProvider,
                 currentChannel: newChannel
             });
         }
@@ -180,8 +179,8 @@ class DistributionConfiguration extends Component {
 
         const jsonBody = this.buildJsonBody();
         if (jobId) {
-            Object.assign(jsonBody, { jobId });
-            this.props.updateDistributionJob(jsonBody);
+            const withId = Object.assign(jsonBody, { jobId });
+            this.props.updateDistributionJob(withId);
         } else {
             this.props.saveDistributionJob(jsonBody);
         }
@@ -209,15 +208,16 @@ class DistributionConfiguration extends Component {
         const { providerConfig, currentProvider, channelConfig } = this.state;
         const updatedProviderFields = Object.assign({}, currentProvider);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT);
+        const removeProject = updatedProviderFields.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
+        let removedFields = Object.assign(updatedProviderFields, { fields: removeProject });
         if (filterByProject) {
             const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
-            Object.assign(updatedProviderFields, { fields: removePattern });
+            removedFields = Object.assign(removedFields, { fields: removePattern });
         }
-        const removeProject = updatedProviderFields.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
-        Object.assign(updatedProviderFields, { fields: removeProject });
+
         return (
             <div>
-                <FieldsPanel descriptorFields={updatedProviderFields.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
+                <FieldsPanel descriptorFields={removedFields.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
                     includeAllProjects={filterByProject}

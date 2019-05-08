@@ -87,8 +87,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private Collection<LabelValueSelectOption> getProviderLabelValues() {
         return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                    .map(descriptor -> descriptor.getMetaData(ConfigContextEnum.DISTRIBUTION))
-                   .filter(Optional::isPresent)
-                   .map(Optional::get)
+                   .flatMap(Optional::stream)
                    .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName(), descriptorMetadata.getFontAwesomeIcon()))
                    .collect(Collectors.toSet());
     }
@@ -96,8 +95,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private Collection<LabelValueSelectOption> getChannelLabelValues() {
         return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
                    .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                   .filter(Optional::isPresent)
-                   .map(Optional::get)
+                   .flatMap(Optional::stream)
                    .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
                    .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelName(), channelDistributionUIConfig.getFontAwesomeIcon()))
                    .collect(Collectors.toSet());

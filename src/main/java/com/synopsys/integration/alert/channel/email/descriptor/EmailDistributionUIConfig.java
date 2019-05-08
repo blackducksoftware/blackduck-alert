@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +52,6 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     public List<ConfigField> createChannelDistributionFields() {
         final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, EMAIL_SUBJECT_LINE_DESCRIPTION);
         final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION);
-        return Arrays.asList(subjectLine, projectOwnerOnly);
+        return List.of(subjectLine, projectOwnerOnly);
     }
 }

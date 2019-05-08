@@ -114,7 +114,7 @@ class Index extends Component {
         return null;
     }
 
-    createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
+    createCustomModal(onModalClose) {
         return (
             <DistributionConfiguration
                 projects={this.state.projects}
@@ -125,9 +125,6 @@ class Index extends Component {
                     onModalClose();
                 }}
                 onSave={this.saveBtn}
-                columns={columns}
-                validateState={validateState}
-                ignoreEditable={ignoreEditable}
             />
         );
     }
