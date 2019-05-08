@@ -56,4 +56,5 @@ public class ProviderContentType extends Stringable {
                    .map(field -> (JsonField<String>) field)
                    .collect(Collectors.toList());
     }
+
 }

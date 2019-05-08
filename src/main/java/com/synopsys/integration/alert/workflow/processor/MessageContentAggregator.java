@@ -35,10 +35,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
@@ -48,13 +49,13 @@ import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 @Component
 public class MessageContentAggregator {
     private final JobConfigReader jobConfigReader;
-    private final List<ProviderDescriptor> providerDescriptors;
+    private final List<Provider> providers;
     private final NotificationFilter notificationFilter;
 
     @Autowired
-    public MessageContentAggregator(final JobConfigReader jobConfigReader, final List<ProviderDescriptor> providerDescriptors, final NotificationFilter notificationFilter) {
+    public MessageContentAggregator(final JobConfigReader jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter) {
         this.jobConfigReader = jobConfigReader;
-        this.providerDescriptors = providerDescriptors;
+        this.providers = providers;
         this.notificationFilter = notificationFilter;
     }
 
@@ -96,15 +97,15 @@ public class MessageContentAggregator {
     }
 
     private List<MessageContentGroup> collectTopics(final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
-        final Optional<ProviderDescriptor> providerDescriptor = getProviderDescriptorByName(jobConfiguration.getProviderName());
-        if (providerDescriptor.isPresent()) {
-            final Collection<AlertNotificationWrapper> notificationsForJob = filterNotifications(providerDescriptor.get(), jobConfiguration, notificationCollection);
+        final Optional<Provider> optionalProvider = getProviderByName(jobConfiguration.getProviderName());
+        if (optionalProvider.isPresent()) {
+            final Collection<AlertNotificationWrapper> notificationsForJob = filterNotifications(optionalProvider.get(), jobConfiguration, notificationCollection);
             if (notificationsForJob.isEmpty()) {
                 return List.of();
             }
 
             final FormatType formatType = jobConfiguration.getFormatType();
-            final Set<MessageContentCollector> providerMessageContentCollectors = providerDescriptor.get().createTopicCollectors();
+            final Set<MessageContentCollector> providerMessageContentCollectors = optionalProvider.get().createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
             notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
@@ -117,16 +118,18 @@ public class MessageContentAggregator {
         return List.of();
     }
 
-    private Optional<ProviderDescriptor> getProviderDescriptorByName(final String name) {
-        return providerDescriptors.stream()
-                   .filter(descriptor -> name.equals(descriptor.getName()))
+    private Optional<Provider> getProviderByName(final String name) {
+        return providers.stream()
+                   .filter(provider -> name.equals(provider.getName()))
                    .findFirst();
     }
 
-    private Collection<AlertNotificationWrapper> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
+    private Collection<AlertNotificationWrapper> filterNotifications(final Provider provider, final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
         final Predicate<AlertNotificationWrapper> providerFilter = notificationContent -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
         final Collection<AlertNotificationWrapper> providerNotifications = applyFilter(notificationCollection, providerFilter);
-        return notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
+
+        final ProviderContent providerContent = provider.getProviderContent();
+        return notificationFilter.extractApplicableNotifications(providerContent.getContentTypes(), jobConfiguration, providerNotifications);
     }
 
     private Map<String, MessageContentCollector> createCollectorMap(final Set<MessageContentCollector> providerMessageContentCollectors) {
@@ -147,4 +150,5 @@ public class MessageContentAggregator {
                    .filter(filter)
                    .collect(Collectors.toList());
     }
+
 }

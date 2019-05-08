@@ -24,35 +24,30 @@ package com.synopsys.integration.alert.common.provider;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.google.common.collect.ImmutableSet;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 
-public abstract class Provider {
-    private final String name;
-    private final ProviderContent providerContent;
-    private final EmailHandler emailHandler;
+public abstract class ProviderContent {
+    private final String providerName;
+    private final Set<ProviderContentType> providerContentTypes;
+    private final Set<FormatType> supportedContentFormats;
 
-    public Provider(final String name, final ProviderContent providerContent, final EmailHandler emailHandler) {
-        this.name = name;
-        this.providerContent = providerContent;
-        this.emailHandler = emailHandler;
+    public ProviderContent(final String providerName, final Set<ProviderContentType> providerContentTypes, final Set<FormatType> supportedContentFormats) {
+        this.providerName = providerName;
+        this.providerContentTypes = providerContentTypes;
+        this.supportedContentFormats = supportedContentFormats;
     }
 
-    public String getName() {
-        return name;
+    public String getProviderName() {
+        return providerName;
     }
 
-    public abstract void initialize();
-
-    public abstract void destroy();
-
-    public abstract Set<MessageContentCollector> createTopicCollectors();
-
-    public ProviderContent getProviderContent() {
-        return providerContent;
+    public Set<ProviderContentType> getContentTypes() {
+        return ImmutableSet.copyOf(providerContentTypes);
     }
 
-    public EmailHandler getEmailHandler() {
-        return emailHandler;
+    public Set<FormatType> getSupportedContentFormats() {
+        return ImmutableSet.copyOf(supportedContentFormats);
     }
 
 }

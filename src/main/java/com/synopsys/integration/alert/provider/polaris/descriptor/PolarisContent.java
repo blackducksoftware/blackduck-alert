@@ -20,17 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris;
+package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
+import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
-public class PolarisProviderContentTypes {
+@Component
+public class PolarisContent extends ProviderContent {
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_BRANCHES = "Branches";
     public static final String LABEL_ISSUE_TYPE = "Issue Type";
@@ -66,5 +74,9 @@ public class PolarisProviderContentTypes {
 
     public static final ProviderContentType ISSUE_COUNT_INCREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED.name(), POLARIS_FIELDS);
     public static final ProviderContentType ISSUE_COUNT_DECREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_DECREASED.name(), POLARIS_FIELDS);
+
+    public PolarisContent() {
+        super(PolarisProvider.COMPONENT_NAME, Set.of(ISSUE_COUNT_INCREASED, ISSUE_COUNT_DECREASED), EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY));
+    }
 
 }

@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -71,7 +70,7 @@ public class StartupManager {
     private final PurgeTask purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
-    private final List<ProviderDescriptor> providerDescriptorList;
+    private final List<Provider> providers;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
     private final ConfigurationAccessor configurationAccessor;
@@ -82,7 +81,7 @@ public class StartupManager {
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager,
+        final List<Provider> providers, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager,
         final TaskManager taskManager, final SAMLManager samlManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -91,7 +90,7 @@ public class StartupManager {
         this.purgeTask = purgeTask;
         this.phoneHomeTask = phoneHomeTask;
         this.alertStartupInitializer = alertStartupInitializer;
-        this.providerDescriptorList = providerDescriptorList;
+        this.providers = providers;
         this.systemStatusUtility = systemStatusUtility;
         this.systemValidator = systemValidator;
         this.configurationAccessor = configurationAccessor;
@@ -260,7 +259,7 @@ public class StartupManager {
 
     public void initializeProviders() {
         logger.info("Initializing providers...");
-        providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
+        providers.forEach(Provider::initialize);
     }
 
     public void initializeSAML() {
