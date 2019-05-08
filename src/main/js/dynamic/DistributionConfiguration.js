@@ -87,7 +87,7 @@ class DistributionConfiguration extends Component {
         }
     }
 
-    componentWillUpdate() {
+    componentDidUpdate() {
         const { channelConfig, currentChannel, currentProvider } = this.state;
 
         const selectedChannelOption = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_CHANNEL_NAME);
