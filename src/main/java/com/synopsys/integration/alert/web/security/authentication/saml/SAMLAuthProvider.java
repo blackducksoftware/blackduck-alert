@@ -30,6 +30,7 @@ import org.springframework.security.saml.SAMLAuthenticationProvider;
 import com.synopsys.integration.alert.web.security.AuthorizationManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
+
     private final AuthorizationManager authorizationManager;
 
     public SAMLAuthProvider(final AuthorizationManager authorizationManager) {
@@ -41,7 +42,7 @@ public class SAMLAuthProvider extends SAMLAuthenticationProvider {
         final Authentication currentAuth = super.authenticate(authentication);
         if (currentAuth.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
-            authorizationManager.loadPermissionsIntoCache();
+            authorizationManager.loadPermissionsIntoCache(currentAuth);
         }
         return currentAuth;
     }
