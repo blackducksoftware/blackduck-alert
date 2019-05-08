@@ -22,10 +22,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,9 +33,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.rest.model.UserModel;
-import com.synopsys.integration.alert.database.user.RoleEntity;
-import com.synopsys.integration.alert.database.user.RoleRepository;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRelation;
@@ -49,16 +45,17 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 public class DefaultUserAccessor {
     public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
+    private final DefaultAuthorizationUtility authorizationUtility;
 
     @Autowired
-    public DefaultUserAccessor(final UserRepository userRepository, final RoleRepository roleRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder) {
+    public DefaultUserAccessor(final UserRepository userRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder,
+        final DefaultAuthorizationUtility authorizationUtility) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
+        this.authorizationUtility = authorizationUtility;
     }
 
     public List<UserModel> getUsers() {
@@ -73,8 +70,8 @@ public class DefaultUserAccessor {
     private UserModel createModel(final UserEntity user) {
         final List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         final List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        final Set<String> rolesForUser = new LinkedHashSet<>(roleRepository.getRoleNames(roleIdsForUser));
-        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), rolesForUser);
+        final Set<UserRoleModel> roles = authorizationUtility.createRoleModels(roleIdsForUser);
+        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
     }
 
     public UserModel addOrUpdateUser(final UserModel user) {
@@ -84,22 +81,16 @@ public class DefaultUserAccessor {
     public UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded) {
         final String password = (passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword()));
         final UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
-        final Collection<String> roles = user.getRoles();
-        final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roles);
-        final List<UserRoleRelation> roleRelations = new LinkedList<>();
 
         final Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
+        Long userId = null;
         if (existingUser.isPresent()) {
-            final Long userId = existingUser.get().getId();
+            userId = existingUser.get().getId();
             userEntity.setId(userId);
-            userRoleRepository.deleteAllByUserId(userId);
         }
 
-        for (final RoleEntity role : roleEntities) {
-            roleRelations.add(new UserRoleRelation(userEntity.getId(), role.getId()));
-        }
+        authorizationUtility.updateUserRoles(userId, user.getRoles());
 
-        userRoleRepository.saveAll(roleRelations);
         return createModel(userRepository.save(userEntity));
     }
 
@@ -107,11 +98,11 @@ public class DefaultUserAccessor {
         return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet()));
     }
 
-    public boolean assignRoles(final String username, final Set<String> roles) {
+    public boolean assignRoles(final String username, final Set<Long> roles) {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), roles));
+            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roles)));
             assigned = model.getName().equals(username) && model.getRoles().size() == roles.size();
         }
         return assigned;

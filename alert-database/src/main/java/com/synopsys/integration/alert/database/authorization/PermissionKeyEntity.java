@@ -20,19 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.database.authorization;
 
-import java.util.Collection;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+@Entity
+@Table(schema = "alert", name = "permission_keys")
+public class PermissionKeyEntity extends DatabaseEntity {
+    @Column(name = "key_name")
+    private String keyName;
 
-    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
-    List<String> getRoleNames(final List<Long> roleIds);
+    public PermissionKeyEntity() {
+        // JPA requires default constructor definitions
+    }
 
-    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
-    List<RoleEntity> findRoleEntitiesByRoleNames(final Collection<String> roleIds);
+    public PermissionKeyEntity(final String keyName) {
+        this.keyName = keyName;
+    }
+
+    public String getKeyName() {
+        return keyName;
+    }
 }

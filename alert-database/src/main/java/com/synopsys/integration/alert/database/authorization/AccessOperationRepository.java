@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.database.authorization;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,11 +28,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+public interface AccessOperationRepository extends JpaRepository<AccessOperationEntity, Long> {
 
-    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
-    List<String> getRoleNames(final List<Long> roleIds);
+    @Query("SELECT DISTINCT entity.operationName FROM AccessOperationEntity entity WHERE entity.id IN (?1)")
+    List<String> getDistinctOperationNames(final List<Long> operationIds);
 
-    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
-    List<RoleEntity> findRoleEntitiesByRoleNames(final Collection<String> roleIds);
+    @Query("SELECT entity FROM AccessOperationEntity entity WHERE entity.operationName IN (?1)")
+    List<AccessOperationEntity> findOperationEntitiesByOperationName(final Collection<String> operationNames);
 }

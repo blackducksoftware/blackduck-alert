@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,19 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.common.enumeration;
 
-import java.util.Collection;
-import java.util.List;
+public enum PermissionKeys {
+    CONFIG_PROVIDER_BLACKDUCK("config.provider.blackduck"),
+    CONFIG_PROVIDER_POLARIS("config.provider.polaris"),
+    CONFIG_CHANNEL_EMAIL("config.channel.email"),
+    CONFIG_CHANNEL_HIPCHAT("config.channel.hipchat"),
+    CONFIG_CHANNEL_SLACK("config.channel.slack"),
+    CONFIG_DISTRIBUTION("config.distribution"),
+    CONFIG_COMPONENT_SCHEDULING("config.component.scheduling"),
+    CONFIG_COMPONENT_SETTINGS("config.component.settings"),
+    AUDIT_NOTIFICATIONS("audit.notifications"),
+    AUDIT_NOTIFICATIONS_RESEND("audit.notifications.resend");
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+    private final String dbKey;
 
-public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+    PermissionKeys(final String dbKey) {
+        this.dbKey = dbKey;
+    }
 
-    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
-    List<String> getRoleNames(final List<Long> roleIds);
-
-    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
-    List<RoleEntity> findRoleEntitiesByRoleNames(final Collection<String> roleIds);
+    public String getDatabaseKey() {
+        return dbKey;
+    }
 }

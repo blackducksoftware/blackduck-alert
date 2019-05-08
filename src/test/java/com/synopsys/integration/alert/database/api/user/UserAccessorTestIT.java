@@ -12,13 +12,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class UserAccessorTestIT extends AlertIntegrationTest {
@@ -88,8 +89,9 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         assertTrue(userModel.getRoles().isEmpty());
 
         final String another_role = "ANOTHER_ROLE";
-        final String admin_role = UserRole.ALERT_ADMIN_TEXT;
-        final Set<String> roles = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
+        final String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
+        final Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
+        final Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
         final UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());

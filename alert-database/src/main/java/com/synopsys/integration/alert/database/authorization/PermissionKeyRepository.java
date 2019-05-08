@@ -20,10 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.database.authorization;
 
-public enum UserRole {
-    ALERT_ADMIN;
+import java.util.Optional;
 
-    public static final String ALERT_ADMIN_TEXT = "ALERT_ADMIN";
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PermissionKeyRepository extends JpaRepository<PermissionKeyEntity, Long> {
+    Optional<PermissionKeyEntity> findByKeyName(String keyName);
 }

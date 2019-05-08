@@ -28,14 +28,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.rest.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.security.AuthorizationManager;
 import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -92,7 +92,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         final Optional<UserModel> userModel = userAccessor.getUser(userName);
         assertTrue(userModel.isPresent());
         final UserModel model = userModel.get();
-        assertFalse(model.hasRole(UserRole.ALERT_ADMIN_TEXT));
+        assertFalse(model.hasRole(AlertIntegrationTest.ROLE_ALERT_ADMIN));
         assertTrue(model.getRoles().isEmpty());
 
         userAccessor.deleteUser(userName);
@@ -124,7 +124,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertLDAPConfigurationException("LDAP CONFIG EXCEPTION"));
         final DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
-        final AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager);
+        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        final AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager, authorizationManager);
         final LoginActions loginActions = new LoginActions(authenticationProvider);
         final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
         assertFalse(authenticated);

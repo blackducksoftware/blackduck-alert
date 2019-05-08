@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1556732237461-1">
+        <insert tableName="ROLES" schemaName="ALERT">
+            <column name="ID" value="2"/>
+            <column name="ROLENAME" value="ALERT_JOB_MANAGER"/>
+        </insert>
+        <insert tableName="ROLES" schemaName="ALERT">
+            <column name="ID" value="3"/>
+            <column name="ROLENAME" value="ALERT_USER"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-2">
+        <createTable tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="ACCESS_OPERATION_KEY"/>
+            </column>
+            <column name="OPERATION_NAME" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-3">
+        <createTable tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="PERMISSION_KEYS_KEY"/>
+            </column>
+            <column name="KEY_NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-4">
+        <createTable tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERMISSION_KEY_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCESS_OPERATION_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                columnNames="ROLE_ID, PERMISSION_KEY_ID, ACCESS_OPERATION_ID"
+                constraintName="PERMISSION_MATRIX_KEY"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="ROLE_ID"
+                constraintName="FK_PERMISSION_ROLE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="ROLES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="PERMISSION_KEY_ID"
+                constraintName="FK_PERMISSION_KEY"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PERMISSION_KEYS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="ACCESS_OPERATION_ID"
+                constraintName="FK_PERMISSION_OPERATION"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="ACCESS_OPERATIONS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-5">
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="1"/>
+            <column name="OPERATION_NAME" value="CREATE"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="2"/>
+            <column name="OPERATION_NAME" value="DELETE"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="3"/>
+            <column name="OPERATION_NAME" value="READ"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="4"/>
+            <column name="OPERATION_NAME" value="WRITE"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="5"/>
+            <column name="OPERATION_NAME" value="EXECUTE"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-6">
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="1"/>
+            <column name="KEY_NAME" value="config.provider.blackduck"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="2"/>
+            <column name="KEY_NAME" value="config.provider.polaris"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="3"/>
+            <column name="KEY_NAME" value="config.channel.email"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="4"/>
+            <column name="KEY_NAME" value="config.channel.hipchat"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="5"/>
+            <column name="KEY_NAME" value="config.channel.slack"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="6"/>
+            <column name="KEY_NAME" value="config.distribution"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="7"/>
+            <column name="KEY_NAME" value="config.component.scheduling"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="8"/>
+            <column name="KEY_NAME" value="config.component.settings"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="9"/>
+            <column name="KEY_NAME" value="audit.notifications"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="10"/>
+            <column name="KEY_NAME" value="audit.notifications.resend"/>
+        </insert>
+    </changeSet>
+    <!-- ALERT_ADMIN PERMISSIONS -->
+    <changeSet author="psantos" id="1556732237461-7">
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="8"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="8"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="8"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="8"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="8"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="9"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="9"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="9"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="9"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="9"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="1"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+    </changeSet>
+    <!-- ALERT_JOB_MANAGER PERMISSIONS -->
+    <changeSet author="psantos" id="1556732237461-8">
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="1"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="2"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="4"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="9"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="2"/>
+            <column name="PERMISSION_KEY_ID" value="10"/>
+            <column name="ACCESS_OPERATION_ID" value="5"/>
+        </insert>
+    </changeSet>
+
+    <!-- ALERT_USER PERMISSIONS -->
+    <changeSet author="psantos" id="1556732237461-9">
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="1"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="2"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="3"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="4"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="5"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="6"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" value="3"/>
+            <column name="PERMISSION_KEY_ID" value="7"/>
+            <column name="ACCESS_OPERATION_ID" value="3"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

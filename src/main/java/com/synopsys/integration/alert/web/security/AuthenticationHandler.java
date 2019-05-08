@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
@@ -93,8 +94,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
@@ -115,13 +116,16 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties) {
+    AuthenticationHandler(final HttpPathManager httpPathManager, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties,
+        final AuthorizationManager authorizationManager) {
         this.httpPathManager = httpPathManager;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
+        this.authorizationManager = authorizationManager;
     }
 
     @Bean
@@ -136,6 +140,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+        final String[] allowedRoles = Arrays.stream(UserRole.values()).map(UserRole::name).collect(Collectors.toList()).toArray(new String[UserRole.values().length]);
         configureActiveMQProvider();
         configureWithSSL(http);
         configureH2Console(http);
@@ -146,7 +151,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-            .authorizeRequests().anyRequest().hasRole(UserRole.ALERT_ADMIN.name())
+            .authorizeRequests().anyRequest().hasAnyRole(allowedRoles)
             .and().logout().logoutSuccessUrl("/");
     }
 
@@ -284,7 +289,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        final SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider();
+        final SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider(authorizationManager);
         samlAuthenticationProvider.setForcePrincipalAsString(false);
         return samlAuthenticationProvider;
     }

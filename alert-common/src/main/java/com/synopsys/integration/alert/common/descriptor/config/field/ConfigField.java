@@ -41,20 +41,20 @@ public class ConfigField extends AlertSerializableModel {
     public static final String FIELD_PANEL_DEFAULT = "";
     public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);
     public static final ConfigValidationFunction NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
-
+    private final String description;
     private String key;
     private String label;
-    private final String description;
     private String type;
     private boolean required;
     private boolean sensitive;
+    private boolean readOnly;
     private String panel;
     private String header;
     private Set<String> requiredRelatedFields;
     private Set<String> disallowedRelatedFields;
     private transient ConfigValidationFunction validationFunction;
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel, final String header,
+    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final boolean readOnly, final String panel, final String header,
         final ConfigValidationFunction validationFunction) {
         this.key = key;
         this.label = label;
@@ -62,6 +62,7 @@ public class ConfigField extends AlertSerializableModel {
         this.type = type;
         this.required = required;
         this.sensitive = sensitive;
+        this.readOnly = readOnly;
         this.panel = panel;
         this.header = header;
         requiredRelatedFields = new HashSet<>();
@@ -70,19 +71,19 @@ public class ConfigField extends AlertSerializableModel {
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel) {
-        this(key, label, description, type, required, sensitive, panel, FIELD_HEADER_EMPTY, NO_VALIDATION);
+        this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, NO_VALIDATION);
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
-        this(key, label, description, type, required, sensitive, panel, FIELD_HEADER_EMPTY, validationFunction);
+        this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, validationFunction);
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive) {
-        this(key, label, description, type, required, sensitive, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, NO_VALIDATION);
+        this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, NO_VALIDATION);
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        this(key, label, description, type, required, sensitive, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, validationFunction);
+        this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, validationFunction);
     }
 
     public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
@@ -146,6 +147,14 @@ public class ConfigField extends AlertSerializableModel {
 
     public void setSensitive(final boolean sensitive) {
         this.sensitive = sensitive;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(final boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public String getPanel() {

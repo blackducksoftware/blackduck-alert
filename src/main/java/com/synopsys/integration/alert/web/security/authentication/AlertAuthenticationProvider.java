@@ -40,9 +40,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.rest.model.UserModel;
-import com.synopsys.integration.alert.database.user.UserRole;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.web.security.AuthorizationManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Component
@@ -50,11 +51,13 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final LdapManager ldapManager;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AlertAuthenticationProvider(final DaoAuthenticationProvider alertDatabaseAuthProvider, final LdapManager ldapManager) {
+    public AlertAuthenticationProvider(final DaoAuthenticationProvider alertDatabaseAuthProvider, final LdapManager ldapManager, final AuthorizationManager authorizationManager) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.ldapManager = ldapManager;
+        this.authorizationManager = authorizationManager;
     }
 
     @Override
@@ -69,6 +72,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         final Collection<? extends GrantedAuthority> authorities = isAuthorized(authenticationResult) ? authenticationResult.getAuthorities() : List.of();
         final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authenticationResult.getPrincipal(), authenticationResult.getCredentials(), authorities);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        authorizationManager.loadPermissionsIntoCache(authenticationToken);
         return authenticationToken;
     }
 
