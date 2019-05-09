@@ -160,6 +160,7 @@ class Index extends Component {
         let hasVulnerability = false;
         let hasIssueCountIncreased = false;
         let hasIssueCountDecreased = false;
+        let hasLicenseLimit = false;
 
 
         if (cell === 'RULE_VIOLATION') {
@@ -174,6 +175,8 @@ class Index extends Component {
             hasIssueCountIncreased = true;
         } else if (cell === 'ISSUE_COUNT_DECREASED') {
             hasIssueCountDecreased = true;
+        } else if (cell === 'LICENSE_LIMIT') {
+            hasLicenseLimit = true;
         }
 
 
@@ -187,6 +190,7 @@ class Index extends Component {
             hasVulnerability={hasVulnerability}
             hasIssueCountIncreased={hasIssueCountIncreased}
             hasIssueCountDecreased={hasIssueCountDecreased}
+            hasLicenseLimit={hasLicenseLimit}
         />);
     }
 
