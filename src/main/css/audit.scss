@@ -59,6 +59,18 @@
   color: $synopsys-color-platform-green;
 }
 
+.licenseLimit {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-light-gray;
+}
+
+.licenseLimitCrossOver {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-platform-red;
+}
+
 .inline {
   display: inline-block;
 }
