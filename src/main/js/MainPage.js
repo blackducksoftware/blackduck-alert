@@ -6,7 +6,6 @@ import Navigation from 'Navigation';
 import Audit from 'component/audit/Index';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
-import { getDescriptors } from 'store/actions/descriptors';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
@@ -16,10 +15,6 @@ class MainPage extends Component {
     constructor(props) {
         super(props);
         this.createRoutesForDescriptors = this.createRoutesForDescriptors.bind(this);
-    }
-
-    componentDidMount() {
-        this.props.getDescriptors();
     }
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
@@ -66,15 +61,10 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    getDescriptors: PropTypes.func.isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });
 
-const mapDispatchToProps = dispatch => ({
-    getDescriptors: () => dispatch(getDescriptors())
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));
+export default withRouter(connect(mapStateToProps, null)(MainPage));
