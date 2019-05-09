@@ -27,15 +27,20 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class LabelValueSelectOption extends AlertSerializableModel {
     private String label;
     private String value;
+    private String icon;
 
     public LabelValueSelectOption(final String labelAndValue) {
-        this.label = labelAndValue;
-        this.value = labelAndValue;
+        this(labelAndValue, labelAndValue);
     }
 
     public LabelValueSelectOption(final String label, final String value) {
+        this(label, value, null);
+    }
+
+    public LabelValueSelectOption(final String label, final String value, final String icon) {
         this.label = label;
         this.value = value;
+        this.icon = icon;
     }
 
     public String getLabel() {
@@ -52,5 +57,13 @@ public class LabelValueSelectOption extends AlertSerializableModel {
 
     public void setValue(final String value) {
         this.value = value;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(final String icon) {
+        this.icon = icon;
     }
 }

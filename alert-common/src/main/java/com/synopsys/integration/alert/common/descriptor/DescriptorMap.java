@@ -26,10 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -50,6 +53,13 @@ public class DescriptorMap {
 
     public Optional<Descriptor> getDescriptor(final String name) {
         return Optional.ofNullable(descriptorMapping.get(name));
+    }
+
+    public Set<Descriptor> getDescriptorByType(final DescriptorType descriptorType) {
+        return descriptorMapping.entrySet().stream()
+                   .map(Map.Entry::getValue)
+                   .filter(descriptor -> descriptor.getType() == descriptorType)
+                   .collect(Collectors.toSet());
     }
 
     public Optional<ChannelDescriptor> getChannelDescriptor(final String name) {
