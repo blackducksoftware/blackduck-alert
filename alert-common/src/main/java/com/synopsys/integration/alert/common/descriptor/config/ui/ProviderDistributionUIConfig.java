@@ -56,12 +56,12 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES,
+        final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES, false, true,
             providerContent.getContentTypes()
                 .stream()
                 .map(ProviderContentType::getNotificationType)
                 .map(LabelValueSelectOption::new)
-                .collect(Collectors.toList()), this::validateNotificationTypes);
+                .collect(Collectors.toList()));
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
             providerContent.getSupportedContentFormats()
                 .stream()

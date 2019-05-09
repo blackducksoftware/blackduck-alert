@@ -22,28 +22,13 @@ function assignDataFormat(cell, row) {
     return <div> {cellContent} </div>;
 }
 
-const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
-const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
 const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
-
-const fieldDescriptions = {
-    [KEY_PROJECT_NAME_PATTERN]: 'The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.',
-    [KEY_FILTER_BY_PROJECT]: 'If true, all projects will be included. Any notifications matching the configured notification types will be processed.'
-};
-
-const fieldNames = [
-    KEY_FILTER_BY_PROJECT,
-    KEY_PROJECT_NAME_PATTERN,
-    KEY_CONFIGURED_PROJECT
-];
-
 
 class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
         this.onRowSelected = this.onRowSelected.bind(this);
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
-        this.handleChange = this.handleChange.bind(this);
         this.state = {
             projectData: this.createProjectList(),
             includeAllProjects: this.props.includeAllProjects,
@@ -112,13 +97,6 @@ class ProjectConfiguration extends Component {
         })));
     }
 
-    handleChange(event) {
-        const { target } = event;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        this.setState({ includeAllProjects: value });
-        this.props.handleChange(event);
-    }
-
     createSelectedArray(selectedArray, row, isSelected) {
         if (isSelected) {
             const projectFound = selectedArray.find(project => project === row.name);
@@ -174,16 +152,6 @@ class ProjectConfiguration extends Component {
         let projectSelectionDiv = null;
         if (!this.state.includeAllProjects) {
             projectSelectionDiv = (<div>
-                <TextInput
-                    id={KEY_PROJECT_NAME_PATTERN}
-                    label="Project Name Pattern"
-                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_PROJECT_NAME_PATTERN)}
-                    name={KEY_PROJECT_NAME_PATTERN}
-                    value={this.props.projectNamePattern}
-                    onChange={this.props.handleChange}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROJECT_NAME_PATTERN)}
-                    errorValue={this.props.fieldErrors[KEY_PROJECT_NAME_PATTERN]}
-                />
                 <BootstrapTable
                     version="4"
                     data={this.state.projectData}
@@ -211,17 +179,6 @@ class ProjectConfiguration extends Component {
         }
         return (
             <div>
-                <CheckboxInput
-                    id={KEY_FILTER_BY_PROJECT}
-                    label="Include all projects"
-                    description={FieldModelUtilities.getFieldDescription(fieldDescriptions, KEY_FILTER_BY_PROJECT)}
-                    name={KEY_FILTER_BY_PROJECT}
-                    isChecked={this.state.includeAllProjects}
-                    onChange={this.handleChange}
-                    negateValue
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FILTER_BY_PROJECT)}
-                    errorValue={this.props.fieldErrors[KEY_FILTER_BY_PROJECT]}
-                />
                 {this.props.fieldErrors[KEY_CONFIGURED_PROJECT] && <label
                     className="fieldError"
                     name="projectTableErrors"
@@ -247,13 +204,11 @@ ProjectConfiguration.propTypes = {
     providerName: PropTypes.string.isRequired,
     includeAllProjects: PropTypes.bool.isRequired,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
-    projectNamePattern: PropTypes.string,
     projects: PropTypes.arrayOf(PropTypes.any),
     fetching: PropTypes.bool.isRequired,
     errorMsg: PropTypes.string,
     fieldErrors: PropTypes.object,
     getProjects: PropTypes.func.isRequired,
-    handleChange: PropTypes.func.isRequired,
     handleProjectChanged: PropTypes.func.isRequired
 };
 

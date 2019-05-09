@@ -57,6 +57,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getName()).thenReturn(BlackDuckProvider.COMPONENT_NAME);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
+        Mockito.when(blackDuckProvider.getName()).thenReturn(BlackDuckProvider.COMPONENT_NAME);
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
 

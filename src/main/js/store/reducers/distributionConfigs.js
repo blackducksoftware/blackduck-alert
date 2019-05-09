@@ -20,7 +20,7 @@ const initialState = {
     inProgress: false,
     success: false,
     testingConfig: false,
-    jobs: {},
+    job: {},
     error: {
         message: ''
     },

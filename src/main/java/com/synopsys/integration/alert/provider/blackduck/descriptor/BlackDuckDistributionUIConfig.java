@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
-    private static final String LABEL_FILTER_BY_PROJECT = "Filter by project";
+    private static final String LABEL_FILTER_BY_PROJECT = "Include all projects";
     private static final String LABEL_PROJECT_NAME_PATTERN = "Project name pattern";
     private static final String LABEL_PROJECTS = "Projects";
 
@@ -57,7 +57,7 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final ConfigField filterByProject = CheckboxConfigField.createRequired(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION);
+        final ConfigField filterByProject = CheckboxConfigField.create(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION);
         final ConfigField projectNamePattern = TextInputConfigField.create(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION, this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
