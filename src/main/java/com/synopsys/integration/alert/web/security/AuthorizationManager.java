@@ -44,6 +44,8 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 public class AuthorizationManager {
 
     private final AuthorizationUtil authorizationUtil;
+    // TODO store the role name in the map as the key not the authentication as the key.  It's a better implementation.
+    // TODO also check if there is an applicationListener for a session getting loaded to add the role permissions
     private final Map<Object, PermissionMatrixModel> permissionCache;
 
     @Autowired
