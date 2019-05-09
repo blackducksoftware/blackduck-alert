@@ -4,16 +4,13 @@ import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
-import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
-import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
-import JobAddModal from 'distribution/JobAddModal';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import DistributionConfiguration from 'dynamic/DistributionConfiguration';
 
 /**
  * Selects className based on field value
@@ -102,52 +99,34 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const { id, distributionType } = currentRowSelected;
-            if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL) {
-                return (<EmailJobConfiguration
-                    alertChannelName={distributionType}
-                    jobId={id}
+            const { id } = currentRowSelected;
+            return (
+                <DistributionConfiguration
                     handleCancel={this.cancelRowSelect}
-                    handleSaveBtnClick={this.saveBtn}
-                />);
-            } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT) {
-                return (<HipChatJobConfiguration
-                    alertChannelName={distributionType}
+                    onSave={this.saveBtn}
                     jobId={id}
-                    handleCancel={this.cancelRowSelect}
-                    handleSaveBtnClick={this.saveBtn}
+                    onModalClose={() => {
+                        this.props.fetchDistributionJobs();
+                        this.cancelRowSelect();
+                    }}
                 />);
-            } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK) {
-                return (<SlackJobConfiguration
-                    alertChannelName={distributionType}
-                    jobId={id}
-                    handleCancel={this.cancelRowSelect}
-                    handleSaveBtnClick={this.saveBtn}
-                />);
-            }
         }
         return null;
     }
 
-    cancelRowSelect() {
-        this.startAutoReloadIfConfigured();
-        this.setState({
-            currentRowSelected: null
-        });
-    }
-
-    saveBtn() {
-        this.startAutoReloadIfConfigured();
-        this.cancelRowSelect();
-        this.reloadJobs();
-    }
-
-    reloadJobs() {
-        this.props.fetchDistributionJobs();
-    }
-
-    cancelAutoReload() {
-        clearTimeout(this.timeout);
+    createCustomModal(onModalClose) {
+        return (
+            <DistributionConfiguration
+                projects={this.state.projects}
+                handleCancel={this.cancelRowSelect}
+                onModalClose={() => {
+                    this.props.fetchDistributionJobs();
+                    this.cancelRowSelect();
+                    onModalClose();
+                }}
+                onSave={this.saveBtn}
+            />
+        );
     }
 
     startAutoReload() {
@@ -156,29 +135,31 @@ class Index extends Component {
         this.timeout = setTimeout(() => this.reloadJobs(), 10000);
     }
 
+    cancelAutoReload() {
+        clearTimeout(this.timeout);
+    }
+
     startAutoReloadIfConfigured() {
         if (this.props.autoRefresh) {
             this.startAutoReload();
         }
     }
 
-    createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
-        return (
-            <JobAddModal
-                projects={this.state.projects}
-                includeAllProjects
-                handleCancel={this.cancelRowSelect}
-                onModalClose={() => {
-                    this.props.fetchDistributionJobs();
-                    this.startAutoReloadIfConfigured();
-                    onModalClose();
-                }}
-                onSave={onSave}
-                columns={columns}
-                validateState={validateState}
-                ignoreEditable={ignoreEditable}
-            />
-        );
+    saveBtn() {
+        this.cancelRowSelect();
+        this.reloadJobs();
+    }
+
+    reloadJobs() {
+        this.props.fetchDistributionJobs();
+    }
+
+    cancelRowSelect() {
+        this.startAutoReloadIfConfigured();
+        this.refs.table.cleanSelected();
+        this.setState({
+            currentRowSelected: null
+        });
     }
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
@@ -304,8 +285,11 @@ class Index extends Component {
             noDataText: 'No jobs configured',
             clearSearch: true,
             insertModal: this.createCustomModal,
-            handleConfirmDeleteRow: this.customJobConfigDeletionConfirm
+            handleConfirmDeleteRow: this.customJobConfigDeletionConfirm,
+            defaultSortName: 'name',
+            defaultSortOrder: 'asc'
         };
+
         const jobsSelectRowProp = {
             mode: 'checkbox',
             clickToSelect: true,
@@ -317,8 +301,9 @@ class Index extends Component {
             }
         };
 
-        let content = (
+        const content = (
             <div>
+                {this.getCurrentJobConfig(this.state.currentRowSelected)}
                 <BootstrapTable
                     version="4"
                     hover
@@ -333,6 +318,7 @@ class Index extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
+                    ref="table"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
@@ -353,10 +339,6 @@ class Index extends Component {
                 <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
-        const currentJobContent = this.getCurrentJobConfig(this.state.currentRowSelected);
-        if (currentJobContent !== null) {
-            content = currentJobContent;
-        }
         return (
             <div>
                 <JobDeleteModal

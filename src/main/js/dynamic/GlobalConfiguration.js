@@ -29,8 +29,7 @@ class GlobalConfiguration extends React.Component {
             currentKeys: fieldKeys,
             showTest: false,
             destinationName: ''
-        }
-        ;
+        };
     }
 
     componentDidMount() {
@@ -52,25 +51,13 @@ class GlobalConfiguration extends React.Component {
         }
     }
 
-    handleChange(event) {
-        const target = event.target;
-        if (target) {
-            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+    handleChange({ target }) {
+        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
 
-            this.setState({
-                currentConfig: newState
-            });
-        } else {
-            const { value, name } = event;
-            if (value && name) {
-                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, name, value);
-                this.setState({
-                    currentConfig: newState
-                });
-            }
-        }
-
+        this.setState({
+            currentConfig: newState
+        });
     }
 
     handleTest() {
