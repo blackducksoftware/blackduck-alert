@@ -77,11 +77,11 @@ public class SelectConfigField extends ConfigField {
 
     public static SelectConfigField createRequired(final String key, final String label, final String description, final boolean searchable, final boolean multiSelect, final Collection<LabelValueSelectOption> options,
         final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, true, false, searchable, multiSelect, options, validationFunction);
+        return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, options, validationFunction);
     }
 
     public static SelectConfigField createRequired(final String key, final String label, final String description, final boolean searchable, final boolean multiSelect, final Collection<LabelValueSelectOption> options) {
-        return new SelectConfigField(key, label, description, true, false, searchable, multiSelect, options);
+        return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, options);
     }
 
     public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final ConfigValidationFunction validationFunction) {
