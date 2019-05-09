@@ -69,6 +69,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
                                                                                                                                   .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
+                                                                                                                                  .sorted()
                                                                                                                                   .collect(Collectors.toList()));
 
         final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, getProviderLabelValues());
@@ -89,7 +90,8 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
                    .map(descriptor -> descriptor.getMetaData(ConfigContextEnum.DISTRIBUTION))
                    .flatMap(Optional::stream)
                    .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName(), descriptorMetadata.getFontAwesomeIcon()))
-                   .collect(Collectors.toSet());
+                   .sorted()
+                   .collect(Collectors.toList());
     }
 
     private Collection<LabelValueSelectOption> getChannelLabelValues() {
@@ -98,7 +100,8 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
                    .flatMap(Optional::stream)
                    .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
                    .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelName(), channelDistributionUIConfig.getFontAwesomeIcon()))
-                   .collect(Collectors.toSet());
+                   .sorted()
+                   .collect(Collectors.toList());
     }
 
 }
