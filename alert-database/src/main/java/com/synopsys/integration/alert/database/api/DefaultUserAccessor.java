@@ -98,12 +98,12 @@ public class DefaultUserAccessor {
         return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet()));
     }
 
-    public boolean assignRoles(final String username, final Set<Long> roles) {
+    public boolean assignRoles(final String username, final Set<Long> roleIds) {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roles)));
-            assigned = model.getName().equals(username) && model.getRoles().size() == roles.size();
+            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roleIds)));
+            assigned = model.getName().equals(username) && model.getRoles().size() == roleIds.size();
         }
         return assigned;
     }

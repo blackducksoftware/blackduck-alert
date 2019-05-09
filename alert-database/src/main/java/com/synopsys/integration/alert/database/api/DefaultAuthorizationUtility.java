@@ -41,9 +41,7 @@ import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.authorization.AccessOperationEntity;
 import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
-import com.synopsys.integration.alert.database.authorization.PermissionKeyEntity;
 import com.synopsys.integration.alert.database.authorization.PermissionKeyRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
@@ -75,8 +73,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     public Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds) {
         final Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (final Long roleId : roleIds) {
-            final Optional<String> roleName = getRoleName(roleId);
-            roleName.ifPresent(role -> userRoles.add(UserRoleModel.of(role, readPermissionsForRole(roleId))));
+            getRoleName(roleId).ifPresent(role -> userRoles.add(UserRoleModel.of(role, readPermissionsForRole(roleId))));
         }
         return userRoles;
     }
@@ -121,12 +118,10 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
 
         if (null != permissions) {
             for (final PermissionMatrixRelation relation : permissions) {
-                final Optional<PermissionKeyEntity> permissionKey = permissionKeyRepository.findById(relation.getPermissionKeyId());
-                final Optional<AccessOperationEntity> accessOperation = accessOperationRepository.findById(relation.getAccessOperationId());
-                permissionKey.ifPresent(key -> {
+                permissionKeyRepository.findById(relation.getPermissionKeyId()).ifPresent(key -> {
                     final String keyName = key.getKeyName();
                     permissionOperations.computeIfAbsent(keyName, ignored -> EnumSet.noneOf(AccessOperation.class));
-                    accessOperation.ifPresent(operation -> permissionOperations.get(keyName).add(AccessOperation.valueOf(operation.getOperationName())));
+                    accessOperationRepository.findById(relation.getAccessOperationId()).ifPresent(operation -> permissionOperations.get(keyName).add(AccessOperation.valueOf(operation.getOperationName())));
                 });
             }
         }

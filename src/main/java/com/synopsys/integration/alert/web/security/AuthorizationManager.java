@@ -88,10 +88,9 @@ public class AuthorizationManager {
     }
 
     public PermissionMatrixModel loadPermissionsIntoCache(final Authentication authentication) {
-        final PermissionMatrixModel permissions;
-        if (null == authentication || !authentication.isAuthenticated()) {
-            permissions = new PermissionMatrixModel(Map.of());
-        } else {
+        PermissionMatrixModel permissions = new PermissionMatrixModel(Map.of());
+
+        if (null != authentication || authentication.isAuthenticated()) {
             final List<String> roleNames = authentication.getAuthorities().stream()
                                                .map(GrantedAuthority::getAuthority)
                                                .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
