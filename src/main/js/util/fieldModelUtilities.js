@@ -126,7 +126,7 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
 
     if (!copy.keyToValues[key]) {
         copy.keyToValues[key] = {
-            values: [''],
+            values: [],
             isSet: false
         };
     } else if (!copy.keyToValues[key].values) {
@@ -149,7 +149,7 @@ export function updateFieldModelValues(fieldModel, key, values) {
 
     if (!copy.keyToValues[key]) {
         copy.keyToValues[key] = {
-            values: [''],
+            values: [],
             isSet: false
         };
     } else if (!copy.keyToValues[key].values) {
@@ -182,7 +182,7 @@ export function createEmptyFieldModelFromFieldObject(fieldObjects, context, desc
     emptySettings.keyToValues = {};
     Object.keys(fieldObjects).forEach((key) => {
         emptySettings.keyToValues[fieldObjects[key].key] = {
-            values: [''],
+            values: [],
             isSet: false
         };
     });
@@ -196,7 +196,7 @@ export function createEmptyFieldModel(fields, context, descriptorName) {
     emptySettings.keyToValues = {};
     Object.keys(fields).forEach((key) => {
         emptySettings.keyToValues[fields[key]] = {
-            values: [''],
+            values: [],
             isSet: false
         };
     });

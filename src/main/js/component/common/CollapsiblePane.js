@@ -28,7 +28,7 @@ class CollapsiblePane extends Component {
         const contentClass = shouldExpand ? 'shown' : 'hidden';
         const iconClass = shouldExpand ? 'fa-minus' : 'fa-plus';
         return (
-            <div key={this.props.title} className="collapsiblePanel">
+            <div className="collapsiblePanel">
                 <button
                     type="button"
                     className="btn btn-link"

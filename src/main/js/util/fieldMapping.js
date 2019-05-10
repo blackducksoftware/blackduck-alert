@@ -113,10 +113,6 @@ export function retrieveKeys(descriptorFields) {
 }
 
 export function createField(field, value, isSet, fieldError, onChange) {
-    let defaultValue = [''];
-    if (value) {
-        defaultValue = value;
-    }
     const {
         key, label, description, type
     } = field;
@@ -126,7 +122,7 @@ export function createField(field, value, isSet, fieldError, onChange) {
         name: key,
         description,
         label,
-        value: defaultValue,
+        value,
         isSet,
         onChange,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
