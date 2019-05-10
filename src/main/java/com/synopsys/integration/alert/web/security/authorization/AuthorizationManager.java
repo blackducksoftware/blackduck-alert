@@ -20,8 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security;
+package com.synopsys.integration.alert.web.security.authorization;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +40,13 @@ import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
 public class AuthorizationManager {
 
     private final AuthorizationUtil authorizationUtil;
-    // TODO store the role name in the map as the key not the authentication as the key.  It's a better implementation.
-    // TODO also check if there is an applicationListener for a session getting loaded to add the role permissions
-    private final Map<Object, PermissionMatrixModel> permissionCache;
+    private final Map<String, PermissionMatrixModel> permissionCache;
 
     @Autowired
     public AuthorizationManager(final AuthorizationUtil authorizationUtil) {
@@ -76,20 +76,6 @@ public class AuthorizationManager {
 
     public boolean currentUserHasPermission(final PermissionKeys permissionKey, final AccessOperation operation) {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final PermissionMatrixModel permissions;
-        if (permissionCache.containsKey(authentication.getPrincipal())) {
-            permissions = permissionCache.get(authentication.getPrincipal());
-        } else {
-            permissions = loadPermissionsIntoCache(authentication);
-        }
-        return permissions.hasPermission(permissionKey.getDatabaseKey(), operation);
-    }
-
-    public PermissionMatrixModel loadPermissionsIntoCache() {
-        return loadPermissionsIntoCache(SecurityContextHolder.getContext().getAuthentication());
-    }
-
-    public PermissionMatrixModel loadPermissionsIntoCache(final Authentication authentication) {
         PermissionMatrixModel permissions = new PermissionMatrixModel(Map.of());
 
         if (null != authentication || authentication.isAuthenticated()) {
@@ -98,15 +84,16 @@ public class AuthorizationManager {
                                                .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
                                                .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
             permissions = authorizationUtil.mergePermissionsForRoles(roleNames);
-            permissionCache.put(authentication.getPrincipal().hashCode(), permissions);
         }
-        return permissions;
+        return permissions.hasPermission(permissionKey.getDatabaseKey(), operation);
+    }
+
+    public void loadPermissionsIntoCache() {
+        Collection<UserRoleModel> roles = authorizationUtil.createRoleModels();
+        permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }
 
     public void removePermissionsFromCache() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication) {
-            permissionCache.remove(authentication.getPrincipal().hashCode());
-        }
+        permissionCache.clear();
     }
 }

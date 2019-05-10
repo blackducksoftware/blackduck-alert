@@ -29,6 +29,8 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixM
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 public interface AuthorizationUtil {
+    Set<UserRoleModel> createRoleModels();
+
     Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds);
 
     PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames);
