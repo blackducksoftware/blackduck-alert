@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,8 +32,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
@@ -61,12 +57,14 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                 .stream()
                 .map(ProviderContentType::getNotificationType)
                 .map(LabelValueSelectOption::new)
+                .sorted()
                 .collect(Collectors.toList()));
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
             providerContent.getSupportedContentFormats()
                 .stream()
                 .map(FormatType::name)
                 .map(LabelValueSelectOption::new)
+                .sorted()
                 .collect(Collectors.toList()));
 
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField);
@@ -75,14 +73,5 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     }
 
     public abstract List<ConfigField> createProviderDistributionFields();
-
-    private Collection<String> validateNotificationTypes(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final Collection<String> notificationTypes = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
-        if (notificationTypes == null || notificationTypes.isEmpty()) {
-            return List.of("Must have at least one notification type.");
-        }
-
-        return List.of();
-    }
 
 }
