@@ -54,7 +54,7 @@ export function loginError(errorMessage, errors) {
 
 export function clearLoginError() {
     return (dispatch) => {
-        dispatch(loggedOut())
+        dispatch(loggedOut());
     };
 }
 
