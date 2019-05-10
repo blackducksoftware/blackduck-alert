@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
-import FontAwesome from 'react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -25,7 +25,7 @@ class Navigation extends Component {
         return descriptorList.map(component =>
             (<li>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth /> {component.label}
+                    <FontAwesomeIcon icon={component.fontAwesomeIcon} fixedWidth /> {component.label}
                 </NavLink>
             </li>));
     }
@@ -55,19 +55,19 @@ class Navigation extends Component {
                         </li>
                         <li>
                             <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                                <FontAwesome name="truck" fixedWidth /> Distribution
+                                <FontAwesomeIcon icon="truck" fixedWidth /> Distribution
                             </NavLink>
                         </li>
                         <li className="divider" />
                         {components}
                         <li>
                             <NavLink to="/alert/general/audit" activeClassName="activeNav">
-                                <FontAwesome name="history" fixedWidth /> Audit
+                                <FontAwesomeIcon icon="history" fixedWidth /> Audit
                             </NavLink>
                         </li>
                         <li>
                             <NavLink to="/alert/general/about" activeClassName="activeNav">
-                                <FontAwesome name="info" fixedWidth /> About
+                                <FontAwesomeIcon icon="info" fixedWidth /> About
                             </NavLink>
                         </li>
                         <li className="logoutLink">
@@ -79,7 +79,7 @@ class Navigation extends Component {
                                     this.props.confirmLogout();
                                 }}
                             >
-                                <FontAwesome name="sign-out" fixedWidth /> Logout
+                                <FontAwesomeIcon icon="sign-out-alt" fixedWidth /> Logout
                             </a>
                         </li>
                     </ul>
