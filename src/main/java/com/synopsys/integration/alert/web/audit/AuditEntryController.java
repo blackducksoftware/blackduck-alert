@@ -36,13 +36,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @RestController
@@ -51,23 +53,32 @@ public class AuditEntryController extends BaseController {
     private final AuditEntryActions auditEntryActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AuditEntryController(final AuditEntryActions auditEntryActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
+    public AuditEntryController(final AuditEntryActions auditEntryActions, final ContentConverter contentConverter, final ResponseFactory responseFactory, final AuthorizationManager authorizationManager) {
         this.auditEntryActions = auditEntryActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
+        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping
-    public AlertPagedModel<AuditEntryModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+    public ResponseEntity<String> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
         @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
         @RequestParam(value = "sortOrder", required = false) final String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) final Boolean onlyShowSentNotifications) {
-        return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
+        if (!authorizationManager.hasReadPermission(PermissionKeys.AUDIT_NOTIFICATIONS)) {
+            return responseFactory.createForbiddenResponse();
+        }
+        final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(auditEntries));
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
+        if (!authorizationManager.hasReadPermission(PermissionKeys.AUDIT_NOTIFICATIONS)) {
+            return responseFactory.createForbiddenResponse();
+        }
         final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
         final String stringId = contentConverter.getStringValue(id);
         if (auditEntryModel.isPresent()) {
@@ -79,6 +90,9 @@ public class AuditEntryController extends BaseController {
 
     @GetMapping(value = "/job/{jobId}")
     public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final UUID jobId) {
+        if (!authorizationManager.hasReadPermission(PermissionKeys.AUDIT_NOTIFICATIONS)) {
+            return responseFactory.createForbiddenResponse();
+        }
         final Optional<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
         final String jobIdString = jobId.toString();
         if (jobAuditModel.isPresent()) {
@@ -90,11 +104,17 @@ public class AuditEntryController extends BaseController {
 
     @PostMapping(value = "/resend/{id}/")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId) {
+        if (!authorizationManager.hasExecutePermission(PermissionKeys.AUDIT_NOTIFICATIONS_RESEND)) {
+            return responseFactory.createForbiddenResponse();
+        }
         return resendNotification(notificationId, null);
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final UUID jobId) {
+        if (!authorizationManager.hasExecutePermission(PermissionKeys.AUDIT_NOTIFICATIONS_RESEND)) {
+            return responseFactory.createForbiddenResponse();
+        }
         return resendNotification(notificationId, jobId);
     }
 

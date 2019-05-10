@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.security.authorization;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +63,11 @@ public class AuthorizationManager {
         return currentUserHasPermission(permissionKey, AccessOperation.DELETE);
     }
 
+    public boolean hasAnyReadPermissions() {
+        return Arrays.stream(PermissionKeys.values())
+                   .anyMatch(permissionKey -> hasReadPermission(permissionKey));
+    }
+
     public boolean hasReadPermission(final PermissionKeys permissionKey) {
         return currentUserHasPermission(permissionKey, AccessOperation.READ);
     }
@@ -76,16 +82,17 @@ public class AuthorizationManager {
 
     public boolean currentUserHasPermission(final PermissionKeys permissionKey, final AccessOperation operation) {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PermissionMatrixModel permissions = new PermissionMatrixModel(Map.of());
 
-        if (null != authentication || authentication.isAuthenticated()) {
-            final List<String> roleNames = authentication.getAuthorities().stream()
-                                               .map(GrantedAuthority::getAuthority)
-                                               .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                                               .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
-            permissions = authorizationUtil.mergePermissionsForRoles(roleNames);
+        if (null == authentication || !authentication.isAuthenticated()) {
+            return false;
         }
-        return permissions.hasPermission(permissionKey.getDatabaseKey(), operation);
+        final String permissionDbKey = permissionKey.getDatabaseKey();
+        final List<String> roleNames = authentication.getAuthorities().stream()
+                                           .map(GrantedAuthority::getAuthority)
+                                           .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
+                                           .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
+        return roleNames.stream()
+                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionDbKey, operation));
     }
 
     public void loadPermissionsIntoCache() {

@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.AboutActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 
 public class AboutControllerTest {
     private final Gson gson = new Gson();
@@ -30,9 +31,11 @@ public class AboutControllerTest {
         final ResponseFactory responseFactory = new ResponseFactory();
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
-        final AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
+        Mockito.when(authorizationManager.hasAnyReadPermissions()).thenReturn(true);
+        final AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter, authorizationManager);
         final ResponseEntity<String> response = controller.about();
 
         final ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
@@ -54,9 +57,11 @@ public class AboutControllerTest {
 
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter, authorizationManager);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
+        Mockito.when(authorizationManager.hasAnyReadPermissions()).thenReturn(true);
 
         final ResponseEntity<String> response = aboutController.about();
         final ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
@@ -71,9 +76,11 @@ public class AboutControllerTest {
 
         final ResponseFactory responseFactory = new ResponseFactory();
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter, authorizationManager);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
+        Mockito.when(authorizationManager.hasAnyReadPermissions()).thenReturn(true);
 
         final ResponseEntity<String> response = aboutController.about();
         final ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
