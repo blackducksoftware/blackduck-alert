@@ -135,23 +135,11 @@ class DistributionConfiguration extends Component {
     }
 
     handleChannelChange({ target }) {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(this.state.channelConfig, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(this.state.channelConfig, name, updatedValue);
-
-        this.setState({
-            channelConfig: newState
-        });
+        FieldModelUtilities.handleChange(this, target, 'channelConfig');
     }
 
     handleProviderChange({ target }) {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(this.state.providerConfig, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(this.state.providerConfig, name, updatedValue);
-
-        this.setState({
-            providerConfig: newState
-        });
+        FieldModelUtilities.handleChange(this, target, 'providerConfig');
     }
 
     buildJsonBody() {

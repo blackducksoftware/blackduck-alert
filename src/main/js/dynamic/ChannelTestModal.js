@@ -25,8 +25,8 @@ class ChannelTestModal extends Component {
     handleSendTestMessage(event) {
         event.preventDefault();
         event.stopPropagation();
-        const destination = this.state.destination;
-        const fieldModel = this.props.fieldModel;
+        const { destination } = this.state;
+        const { fieldModel } = this.props;
         this.props.sendTestMessage(fieldModel, destination);
         this.handleHide();
     }

@@ -52,12 +52,7 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
-
-        this.setState({
-            currentConfig: newState
-        });
+        FieldModelUtilities.handleChange(this, target, 'currentConfig');
     }
 
     handleTest() {

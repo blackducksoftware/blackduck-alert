@@ -182,7 +182,7 @@ export function createEmptyFieldModelFromFieldObject(fieldObjects, context, desc
     emptySettings.keyToValues = {};
     Object.keys(fieldObjects).forEach((key) => {
         emptySettings.keyToValues[fieldObjects[key].key] = {
-            values: null,
+            values: [''],
             isSet: false
         };
     });
@@ -196,7 +196,7 @@ export function createEmptyFieldModel(fields, context, descriptorName) {
     emptySettings.keyToValues = {};
     Object.keys(fields).forEach((key) => {
         emptySettings.keyToValues[fields[key]] = {
-            values: null,
+            values: [''],
             isSet: false
         };
     });
@@ -218,4 +218,14 @@ export function checkModelOrCreateEmpty(fieldModel, fields) {
     }
     newModel.keyToValues = newKeyToValues;
     return newModel;
+}
+
+export function handleChange(self, target, stateName) {
+    const { type, name, value } = target;
+    const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+    const newState = Array.isArray(updatedValue) ? updateFieldModelValues(self.state[stateName], name, updatedValue) : updateFieldModelSingleValue(self.state[stateName], name, updatedValue);
+
+    self.setState({
+        [stateName]: newState
+    });
 }
