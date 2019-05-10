@@ -11,7 +11,7 @@ const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerabi
 const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
 const issueCountIncreasedIcon = <span key="issueCountIncreasing" alt="Issue Count Increased" className="fa fa-angle-double-up fa-lg issueCountIncreased" aria-hidden="true" />;
 const issueCountDecreasedIcon = <span key="issueCountDecreased" alt="Issue Count Decreased" className="fa fa-angle-double-down fa-lg issueCountDecreased" aria-hidden="true" />;
-const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa-stack fa-lg" aria-hidden="true"><i className="fa fa-database fa-sm licenseLimit fa-stack" /><i className="fa fa-ban fa-lg licenseLimitCrossOver fa-stack" /></span>;
+const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa fa-database licenseLimit" aria-hidden="true" />;
 
 const NotificationTypeLegend = ({
                                     hasPolicyViolation,
