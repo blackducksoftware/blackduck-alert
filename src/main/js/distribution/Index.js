@@ -185,7 +185,7 @@ class Index extends Component {
 
     createCustomButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
-        const fontAwesomeIcon = 'fa fa-refresh fa-fw';
+        const fontAwesomeIcon = 'fa fa-sync fa-fw';
         const insertOnClick = buttons.insertBtn.props.onClick;
         const deleteOnClick = buttons.deleteBtn.props.onClick;
         const reloadEntries = () => this.reloadJobs();
@@ -332,7 +332,7 @@ class Index extends Component {
 
                 {this.props.inProgress &&
                 <div className="progressIcon">
-                    <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                    <span className="fa fa-spinner fa-spin" aria-hidden="true" />
                 </div>
                 }
 

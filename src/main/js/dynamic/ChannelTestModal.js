@@ -53,7 +53,7 @@ class ChannelTestModal extends Component {
                     <button id="testSend" type="button" className="btn btn-primary" onClick={this.handleSendTestMessage}>Send Test Message</button>
                     {this.state.show &&
                     <div className="progressIcon">
-                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                        <span className="fa fa-spinner fa-spin" aria-hidden="true" />
                     </div>
                     }
                 </Modal.Footer>

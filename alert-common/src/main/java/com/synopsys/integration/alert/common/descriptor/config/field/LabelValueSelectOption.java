@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LabelValueSelectOption extends AlertSerializableModel {
+public class LabelValueSelectOption extends AlertSerializableModel implements Comparable<LabelValueSelectOption> {
     private String label;
     private String value;
     private String icon;
@@ -65,5 +65,10 @@ public class LabelValueSelectOption extends AlertSerializableModel {
 
     public void setIcon(final String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public int compareTo(final LabelValueSelectOption o) {
+        return getLabel().compareTo(o.getLabel());
     }
 }

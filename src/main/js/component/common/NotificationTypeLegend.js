@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-const policyViolationIcon = <span key="policyViolationIcon" alt="Policy Violation" className="fa fa-ban policyViolation" aria-hidden="true" />;
-const policyViolationClearedIcon = <span key="policyViolationClearedIcon" alt="Policy Violation Cleared" className="fa fa-eraser policyViolationCleared" aria-hidden="true" />;
-const policyViolationOverrideIcon = <span key="policyViolationOverrideIcon" alt="Policy Override" className="fa fa-exclamation-circle policyViolationOverride" aria-hidden="true" />;
-const highVulnerabilityIcon = <span key="highVulnerabilityIcon" alt="High Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
-const mediumVulnerabilityIcon = <span key="mediumVulnerabilityIcon" alt="Medium Vulnerability" className="fa fa-shield mediumVulnerability" aria-hidden="true" />;
-const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerability" className="fa fa-shield lowVulnerability" aria-hidden="true" />;
-const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
-const issueCountIncreasedIcon = <span key="issueCountIncreasing" alt="Issue Count Increased" className="fa fa-angle-double-up fa-lg issueCountIncreased" aria-hidden="true" />;
-const issueCountDecreasedIcon = <span key="issueCountDecreased" alt="Issue Count Decreased" className="fa fa-angle-double-down fa-lg issueCountDecreased" aria-hidden="true" />;
-const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa-stack fa-lg" aria-hidden="true"><i className="fa fa-database fa-sm licenseLimit fa-stack" /><i className="fa fa-ban fa-lg licenseLimitCrossOver fa-stack" /></span>;
+const policyViolationIcon = <span key="policyViolationIcon" alt="Policy Violation" className="fa fa-ban fa-fw policyViolation" aria-hidden="true" />;
+const policyViolationClearedIcon = <span key="policyViolationClearedIcon" alt="Policy Violation Cleared" className="fa fa-eraser fa-fw policyViolationCleared" aria-hidden="true" />;
+const policyViolationOverrideIcon = <span key="policyViolationOverrideIcon" alt="Policy Override" className="fa fa-exclamation-circle fa-fw policyViolationOverride" aria-hidden="true" />;
+const highVulnerabilityIcon = <span key="highVulnerabilityIcon" alt="High Vulnerability" className="fa fa-shield fa-fw highVulnerability" aria-hidden="true" />;
+const mediumVulnerabilityIcon = <span key="mediumVulnerabilityIcon" alt="Medium Vulnerability" className="fa fa-shield fa-fw mediumVulnerability" aria-hidden="true" />;
+const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerability" className="fa fa-shield fa-fw lowVulnerability" aria-hidden="true" />;
+const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield fa-fw highVulnerability" aria-hidden="true" />;
+const issueCountIncreasedIcon = <span key="issueCountIncreasing" alt="Issue Count Increased" className="fa fa-angle-double-up fa-lg fa-fw issueCountIncreased" aria-hidden="true" />;
+const issueCountDecreasedIcon = <span key="issueCountDecreased" alt="Issue Count Decreased" className="fa fa-angle-double-down fa-lg fa-fw issueCountDecreased" aria-hidden="true" />;
+const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa fa-database fa-fw licenseLimit" aria-hidden="true" />;
 
 const NotificationTypeLegend = ({
                                     hasPolicyViolation,

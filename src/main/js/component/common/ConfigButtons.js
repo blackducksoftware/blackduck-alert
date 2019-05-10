@@ -22,7 +22,7 @@ class ConfigButtons extends Component {
                     <div className="progressContainer">
                         <div className="progressIcon">
                             {performingAction &&
-                            <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                            <span className="fa fa-spinner fa-spin" aria-hidden="true" />
                             }
                         </div>
                     </div>

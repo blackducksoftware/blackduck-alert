@@ -105,7 +105,7 @@ class GlobalConfiguration extends React.Component {
                 <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
                 <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
-                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate={true}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <div>
                         <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>

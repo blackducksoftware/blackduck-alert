@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.controller.metadata.DescriptorController;
+import com.synopsys.integration.alert.web.controller.metadata.MetadataController;
 
 @Component
 public class HttpPathManager {
@@ -51,6 +53,7 @@ public class HttpPathManager {
     public static final String PATH_PASSWORD_RESET_ROOT = BaseController.BASE_PATH + "/resetPassword/**";
     public static final String PATH_SYSTEM_MESSAGES_LATEST = BaseController.BASE_PATH + "/system/messages/latest";
     public static final String PATH_SYSTEM_SETUP_INITIAL = BaseController.BASE_PATH + "/system/setup/initial";
+    public static final String PATH_METADATA = MetadataController.METADATA_BASE_PATH + DescriptorController.DESCRIPTORS_PATH;
 
     private static final String[] DEFAULT_PATHS = {
         PATH_ROOT,
@@ -68,7 +71,8 @@ public class HttpPathManager {
         PATH_PASSWORD_RESET,
         PATH_PASSWORD_RESET_ROOT,
         PATH_SYSTEM_MESSAGES_LATEST,
-        PATH_SYSTEM_SETUP_INITIAL
+        PATH_SYSTEM_SETUP_INITIAL,
+        PATH_METADATA
     };
 
     private static final String[] DEFAULT_SAML_PATHS = {
@@ -81,7 +85,8 @@ public class HttpPathManager {
         PATH_SAML_ROOT,
         PATH_ABOUT,
         PATH_SYSTEM_MESSAGES_LATEST,
-        PATH_SYSTEM_SETUP_INITIAL
+        PATH_SYSTEM_SETUP_INITIAL,
+        PATH_METADATA
     };
 
     private final Collection<String> allowedPaths;
@@ -119,7 +124,7 @@ public class HttpPathManager {
         final String[] allowedPathArray = new String[allowedPaths.size()];
         return allowedPaths.toArray(allowedPathArray);
     }
-    
+
     public String[] getSamlAllowedPaths() {
         final String[] allowedPathArray = new String[samlAllowedPaths.size()];
         return samlAllowedPaths.toArray(allowedPathArray);
