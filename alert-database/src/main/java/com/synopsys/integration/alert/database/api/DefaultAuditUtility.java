@@ -300,7 +300,7 @@ public class DefaultAuditUtility implements AuditUtility {
         }
         String status = null;
         if (null != auditEntryEntity.getStatus()) {
-            status = auditEntryEntity.getStatus();
+            status = AuditEntryStatus.valueOf(auditEntryEntity.getStatus()).getDisplayName();
         }
         return new AuditJobStatusModel(timeCreated, timeLastSent, status);
     }
