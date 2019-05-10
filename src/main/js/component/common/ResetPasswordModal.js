@@ -39,7 +39,7 @@ class ResetPasswordModal extends Component {
                 <button id="testSend" type="button" className="btn btn-primary" onClick={this.handlePasswordReset}>Reset Password</button>
                 <div className="progressIcon">
                     {this.props.resettingPassword &&
-                    <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                    <span className="fa fa-spinner fa-spin" aria-hidden="true" />
                     }
                     {!this.props.resettingPassword &&
                     <span>&nbsp;&nbsp;</span>

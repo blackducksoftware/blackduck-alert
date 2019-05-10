@@ -79,7 +79,7 @@ class LoginPage extends Component {
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
                                     <div className="progressIcon">
                                         {this.props.loggingIn &&
-                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                                        <span className="fa fa-spinner fa-spin" aria-hidden="true" />
                                         }
                                         {!this.props.loggingIn &&
                                         <span>&nbsp;&nbsp;</span>

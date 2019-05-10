@@ -11,7 +11,7 @@ const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) 
             handleButtonClicked(currentRowSelected);
         }}
     >
-        <span className="fa fa-refresh" />
+        <span className="fa fa-sync" />
     </button>
 );
 

@@ -270,7 +270,7 @@ class Index extends Component {
         if (row.content) {
             return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />);
         }
-        return (<div className="editJobButtonDisabled"><span className="fa fa-refresh" /></div>);
+        return (<div className="editJobButtonDisabled"><span className="fa fa-sync" /></div>);
     }
 
     createCustomButtonGroup(buttons) {
@@ -278,7 +278,7 @@ class Index extends Component {
             <ButtonGroup>
                 {!this.props.autoRefresh &&
                 <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
-                    <span className="fa fa-refresh fa-fw" aria-hidden="true" /> Refresh
+                    <span className="fa fa-sync fa-fw" aria-hidden="true" /> Refresh
                 </div>
                 }
             </ButtonGroup>
@@ -383,7 +383,7 @@ class Index extends Component {
                     </BootstrapTable>
 
                     {this.props.inProgress && <div className="progressIcon">
-                        <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
+                        <span className="fa fa-spinner fa-spin fa-fw" aria-hidden="true" />
                     </div>}
 
                     <p name="message">{this.props.message}</p>

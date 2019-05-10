@@ -171,7 +171,7 @@ class ProjectConfiguration extends Component {
                 </BootstrapTable>
 
                 {this.props.fetching &&
-                <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
+                <div className="progressIcon"><span className="fa fa-spinner fa-spin fa-fw" aria-hidden="true" />
                 </div>}
 
                 {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}
