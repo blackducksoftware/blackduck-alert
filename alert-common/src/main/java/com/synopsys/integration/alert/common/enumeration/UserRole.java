@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,19 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.common.enumeration;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
-
-    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
-    List<String> getRoleNames(final List<Long> roleIds);
-
-    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
-    List<RoleEntity> findRoleEntitiesByRoleNames(final Collection<String> roleIds);
+public enum UserRole {
+    ALERT_ADMIN,
+    ALERT_JOB_MANAGER,
+    ALERT_USER
 }

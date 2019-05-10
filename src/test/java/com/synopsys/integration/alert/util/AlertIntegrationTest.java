@@ -35,6 +35,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class AlertIntegrationTest {
+    public static final String ROLE_ALERT_ADMIN = "ALERT_ADMIN";
+
     @Autowired
     private DescriptorTypeRepository descriptorTypeRepository;
     @Autowired

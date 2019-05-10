@@ -32,13 +32,13 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.LoginActions;
+import com.synopsys.integration.alert.web.security.AuthorizationManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 public class AuthenticationControllerTestIT extends AlertIntegrationTest {
@@ -54,6 +54,8 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     protected AlertProperties alertProperties;
     @Autowired
     protected LdapManager ldapManager;
+    @Autowired
+    protected AuthorizationManager authorizationManager;
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -63,7 +65,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testLogout() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
@@ -85,7 +87,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     @Test
     public void userLogoutWithValidSessionTest() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository, authorizationManager);
         final HttpServletRequest request = new MockHttpServletRequest();
         final HttpSession session = request.getSession(true);
         session.setMaxInactiveInterval(30);
@@ -97,7 +99,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     @Test
     public void userLogoutWithInvalidSessionTest() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository, authorizationManager);
         final HttpServletRequest request = new MockHttpServletRequest();
 
         final ResponseEntity<String> response = loginHandler.logout(request);
@@ -108,7 +110,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     public void userLoginWithValidSessionTest() {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository, authorizationManager);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         final HttpSession session = request.getSession(true);
@@ -124,7 +126,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     public void userLoginWithInvalidSessionTest() {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository, authorizationManager);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         Mockito.when(loginActions.authenticateUser(Mockito.any())).thenReturn(false);
@@ -138,7 +140,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     public void userLoginWithBadCredentialsTest() {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository, authorizationManager);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
@@ -152,7 +154,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     public void userLoginWithExceptionTest() {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(loginActions, null, responseFactory, csrfTokenRepository, authorizationManager);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new IllegalArgumentException("Test exception for catch all"));
@@ -165,7 +167,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     @Test
     public void resetPasswordBlankTest() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository, authorizationManager);
 
         final ResponseEntity<String> response = loginHandler.resetPassword();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -177,7 +179,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         Mockito.doNothing().when(passwordResetService).resetPassword(Mockito.anyString());
 
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository, authorizationManager);
 
         final ResponseEntity<String> response = loginHandler.resetPassword("exampleUsername");
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -189,7 +191,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         Mockito.doThrow(new AlertDatabaseConstraintException("Test Exception")).when(passwordResetService).resetPassword(Mockito.anyString());
 
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository, authorizationManager);
 
         final ResponseEntity<String> response = loginHandler.resetPassword("exampleUsername");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -201,7 +203,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         Mockito.doThrow(new AlertException("Test Exception")).when(passwordResetService).resetPassword(Mockito.anyString());
 
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository);
+        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository, authorizationManager);
 
         final ResponseEntity<String> response = loginHandler.resetPassword("exampleUsername");
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

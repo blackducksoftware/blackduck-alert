@@ -48,6 +48,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
+import com.synopsys.integration.alert.web.security.AuthorizationManager;
 
 @RestController
 public class AuthenticationController extends BaseController {
@@ -57,13 +58,16 @@ public class AuthenticationController extends BaseController {
     private final PasswordResetService passwordResetService;
     private final ResponseFactory responseFactory;
     private final CsrfTokenRepository csrfTokenRepository;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AuthenticationController(final LoginActions loginActions, final PasswordResetService passwordResetService, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationController(final LoginActions loginActions, final PasswordResetService passwordResetService, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository,
+        final AuthorizationManager authorizationManager) {
         this.loginActions = loginActions;
         this.passwordResetService = passwordResetService;
         this.responseFactory = responseFactory;
         this.csrfTokenRepository = csrfTokenRepository;
+        this.authorizationManager = authorizationManager;
     }
 
     @PostMapping(value = "/logout")
@@ -72,6 +76,7 @@ public class AuthenticationController extends BaseController {
         if (session != null) {
             session.invalidate();
         }
+        authorizationManager.removePermissionsFromCache();
         SecurityContextHolder.clearContext();
 
         final HttpHeaders headers = new HttpHeaders();

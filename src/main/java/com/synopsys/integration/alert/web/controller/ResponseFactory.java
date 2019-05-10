@@ -53,6 +53,8 @@ public class ResponseFactory {
         return createMessageResponse(HttpStatus.NOT_FOUND, message);
     }
 
+    public ResponseEntity<String> createForbiddenResponse(final String message) {return createMessageResponse(HttpStatus.FORBIDDEN, message);}
+
     public ResponseEntity<String> createCreatedResponse(final String id, final String message) {
         return createMessageResponse(HttpStatus.CREATED, id, message);
     }

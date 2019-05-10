@@ -49,8 +49,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.user.UserRole;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
 @Transactional
@@ -71,14 +71,14 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + HipChatChannel.COMPONENT_NAME;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
@@ -96,14 +96,14 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
@@ -115,14 +115,14 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String jobId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "/" + jobId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
@@ -135,7 +135,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testUpdateConfig() throws Exception {
         final JobFieldModel fieldModel = createTestJobFieldModel();
         final Map<String, Collection<String>> fieldValueModels = new HashMap<>();
@@ -146,7 +146,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
         final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         fieldModel.setJobId(configId);
@@ -160,10 +160,10 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testSaveConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         final JobFieldModel fieldModel = createTestJobFieldModel();
@@ -178,11 +178,11 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testValidateConfig() throws Exception {
         final String urlPath = url + "/validate";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         final JobFieldModel fieldModel = createTestJobFieldModel();
@@ -195,12 +195,12 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
     // FIXME Will need to add all configurations to properly run a test check for hipchat.
     //    @Test
-    //    @WithMockUser(roles = UserRole.ALERT_ADMIN_TEXT)
+    //    @WithMockUser(roles = UserRoleModel.ALERT_ADMIN_TEXT)
     //    public void testTestConfig() throws Exception {
     //        registerDescriptor(hipChatDescriptor);
     //        final String urlPath = url + "/test";
     //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-    //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRole.ALERT_ADMIN_TEXT))
+    //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRoleModel.ALERT_ADMIN_TEXT))
     //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
     //
     //        final FieldModel fieldModel = createTestFieldModel();

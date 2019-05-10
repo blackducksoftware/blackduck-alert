@@ -37,30 +37,30 @@ public class SelectConfigField extends ConfigField {
     private boolean searchable;
     private boolean multiSelect;
 
-    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect,
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean readOnly, final boolean searchable, final boolean multiSelect,
         final Collection<LabelValueSelectOption> options) {
-        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
+        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
     }
 
-    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect,
+    public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean readOnly, final boolean searchable, final boolean multiSelect,
         final Collection<LabelValueSelectOption> options,
         final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, validationFunction);
+        super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, validationFunction);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
     }
 
     public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<LabelValueSelectOption> options) {
-        this(key, label, description, required, sensitive, true, false, options);
+        this(key, label, description, required, sensitive, false, true, false, options);
     }
 
     public SelectConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final Collection<LabelValueSelectOption> options,
         final ConfigValidationFunction validationFunction) {
-        this(key, label, description, required, sensitive, true, false, options, validationFunction);
+        this(key, label, description, required, sensitive, false, true, false, options, validationFunction);
     }
 
     public static SelectConfigField createEmpty(final String key, final String label, final String description) {
@@ -77,11 +77,11 @@ public class SelectConfigField extends ConfigField {
 
     public static SelectConfigField createRequired(final String key, final String label, final String description, final boolean searchable, final boolean multiSelect, final Collection<LabelValueSelectOption> options,
         final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, true, false, searchable, multiSelect, options, validationFunction);
+        return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, options, validationFunction);
     }
 
     public static SelectConfigField createRequired(final String key, final String label, final String description, final boolean searchable, final boolean multiSelect, final Collection<LabelValueSelectOption> options) {
-        return new SelectConfigField(key, label, description, true, false, searchable, multiSelect, options);
+        return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, options);
     }
 
     public static SelectConfigField createRequired(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final ConfigValidationFunction validationFunction) {

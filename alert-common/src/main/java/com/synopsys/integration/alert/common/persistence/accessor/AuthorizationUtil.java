@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,19 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.user;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
-public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+public interface AuthorizationUtil {
+    Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds);
 
-    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
-    List<String> getRoleNames(final List<Long> roleIds);
+    PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames);
 
-    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
-    List<RoleEntity> findRoleEntitiesByRoleNames(final Collection<String> roleIds);
+    PermissionMatrixModel readPermissionsForRole(final Long roleId);
+
+    void updateUserRoles(final Long userId, final Collection<UserRoleModel> roles);
+
 }
