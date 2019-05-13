@@ -37,13 +37,7 @@ class SetupPage extends Component {
     }
 
     handleChange({ target }) {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(this.state.settingsData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(this.state.settingsData, name, updatedValue);
-
-        this.setState({
-            settingsData: newState
-        });
+        FieldModelUtilities.handleChange(this, target, 'settingsData');
     }
 
     handleSubmit(evt) {

@@ -13,7 +13,6 @@ class FieldsPanel extends React.Component {
         this.initializeFieldMapping = this.initializeFieldMapping.bind(this);
         this.parsePanel = this.parsePanel.bind(this);
         this.parseHeader = this.parseHeader.bind(this);
-        this.createDefaultPanel = this.createDefaultPanel.bind(this);
         this.createPanel = this.createPanel.bind(this);
         this.createHeaders = this.createHeaders.bind(this);
         this.createFields = this.createFields.bind(this);
@@ -49,21 +48,11 @@ class FieldsPanel extends React.Component {
         return { [headerName]: foundHeader };
     }
 
-    createDefaultPanel(fieldMapping) {
-        return (
-            <div className="form-group">
-                <div className="col-sm-12">
-                    {this.createHeaders(fieldMapping)}
-                </div>
-            </div>
-        );
-    }
-
     createPanel(panelName, fieldMapping) {
         const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : <CollapsiblePane title={panelName}>{this.createHeaders(fieldMapping)}</CollapsiblePane>;
 
         return (
-            <div className="form-group">
+            <div key={panelName} className="form-group">
                 <div className="col-sm-12">
                     {panel}
                 </div>
@@ -75,7 +64,7 @@ class FieldsPanel extends React.Component {
         const fieldRenders = [];
         Object.keys(fieldMapping).forEach((key) => {
             if (key !== DEFAULT_PANEL) {
-                const header = (<h2>{key}</h2>);
+                const header = (<h2 key={key}>{key}</h2>);
                 fieldRenders.push(header);
             }
             const fields = this.createFields(fieldMapping[key]);

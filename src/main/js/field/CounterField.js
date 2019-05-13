@@ -46,7 +46,7 @@ CounterField.propTypes = {
 };
 
 CounterField.defaultProps = {
-    value: '0'
+    value: ''
 }
 
 export default CounterField;

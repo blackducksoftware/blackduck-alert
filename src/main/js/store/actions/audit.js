@@ -27,6 +27,8 @@ function auditDataFetched(totalPageCount, items) {
 }
 
 function auditDataFetchError(message) {
+    console.log('Logging audit error message');
+    console.log(message);
     return {
         type: AUDIT_FETCH_ERROR,
         message
@@ -88,7 +90,9 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
             } else {
                 dispatch(verifyLoginByStatus(response.status));
             }
-        }).catch(dispatch(auditDataFetchError(console.error)));
+        }).catch((error) => {
+            dispatch(auditDataFetchError(error));
+        });
     };
 }
 
