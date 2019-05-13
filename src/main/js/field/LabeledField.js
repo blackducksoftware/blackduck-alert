@@ -46,7 +46,7 @@ class LabeledField extends Component {
         }
 
         return (
-            <div className="form-group">
+            <div key={label} className="form-group">
                 <label className={labelClasses}>{label}</label>
                 {descriptionField}
                 {field}

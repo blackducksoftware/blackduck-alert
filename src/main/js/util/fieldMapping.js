@@ -11,20 +11,23 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
 
-function trimValue(items) {
+function extractFirstValue(items) {
     const { value } = items;
-    const trimmedValue = (Array.isArray(value)) ? value[0] : value;
+    return (Array.isArray(value)) ? value[0] : value;
+}
 
+function overwriteSingleValue(items) {
+    const trimmedValue = extractFirstValue(items);
     return Object.assign(items, { value: trimmedValue });
 }
 
 function buildTextInput(items) {
-    const trimmedValue = trimValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <TextInput {...trimmedValue} />;
 }
 
 function buildTextArea(items) {
-    const trimmedValue = trimValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <TextArea {...trimmedValue} />;
 }
 
@@ -55,12 +58,12 @@ function buildSelectInput(items, field) {
 }
 
 function buildPasswordInput(items) {
-    const trimmedValue = trimValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <PasswordInput {...trimmedValue} />;
 }
 
 function buildNumberInput(items) {
-    const trimmedValue = trimValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <NumberInput {...trimmedValue} />;
 }
 
@@ -72,14 +75,13 @@ function buildCheckboxInput(items) {
 }
 
 function buildReadOnlyField(items) {
-    const trimmedValue = trimValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <ReadOnlyField {...trimmedValue} />;
 }
 
 function buildCounterField(items, field) {
     const { countdown } = field;
-    const { value } = items;
-    const trimmedValue = (value.length > 0) && value[0];
+    const trimmedValue = extractFirstValue(items);
     Object.assign(items, { countdown, value: trimmedValue });
     return <CounterField {...items} />;
 }
@@ -115,6 +117,7 @@ export function createField(field, value, isSet, fieldError, onChange) {
         key, label, description, type
     } = field;
     const propMapping = {
+        key,
         id: key,
         name: key,
         description,

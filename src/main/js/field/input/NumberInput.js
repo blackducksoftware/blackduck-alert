@@ -24,13 +24,13 @@ NumberInput.propTypes = {
     readOnly: PropTypes.bool,
     inputClass: PropTypes.string,
     name: PropTypes.string,
-    value: PropTypes.number,
+    value: PropTypes.string,
     onChange: PropTypes.func
 };
 
 NumberInput.defaultProps = {
     id: 'id',
-    value: undefined,
+    value: '',
     readOnly: false,
     inputClass: 'form-control',
     name: 'name',

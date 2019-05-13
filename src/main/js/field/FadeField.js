@@ -9,25 +9,36 @@ class FadeField extends Component {
             showChildren: true,
             removeChildren: false
         };
+
+        this.displayTimer = null;
+        this.hideTimer = null;
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps) {
         if (this.props.children !== prevProps.children) {
+            clearTimeout(this.displayTimer);
+            clearTimeout(this.hideTimer);
+
             const self = this;
             // This will trigger the fade after the specified time
-            setTimeout(function () {
+            this.displayTimer = setTimeout(() => {
                 self.setState({
                     showChildren: false
                 });
             }, this.props.timeout);
 
             // This should remove the children after the fade
-            setTimeout(function () {
+            this.hideTimer = setTimeout(() => {
                 self.setState({
                     removeChildren: true
                 });
             }, this.props.timeout + 2000);
         }
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.displayTimer);
+        clearTimeout(this.hideTimer);
     }
 
     render() {

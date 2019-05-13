@@ -23,7 +23,7 @@ class AboutInfo extends React.Component {
         const tableOptions = {
             defaultSortName: 'label',
             defaultSortOrder: 'asc',
-            noDataText: 'No data found',
+            noDataText: 'No data found'
         };
         return (
             <div className="form-group">
@@ -44,10 +44,11 @@ class AboutInfo extends React.Component {
     }
 
     render() {
-        const { version, description, projectUrl, descriptors } = this.props;
+        const {
+            version, description, projectUrl, descriptors
+        } = this.props;
         const providerList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         const channelList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-        const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
         const providerTable = this.createDescriptorTable(providerList);
         const channelTable = this.createDescriptorTable(channelList);
         return (
@@ -56,7 +57,7 @@ class AboutInfo extends React.Component {
                 <div className="form-horizontal">
                     <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
-                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrlLink} />
+                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl} url={projectUrl} />
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Supported Providers</label>
