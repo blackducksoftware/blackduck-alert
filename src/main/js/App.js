@@ -22,7 +22,6 @@ import '../css/main.scss';
 
 class App extends Component {
     componentDidMount() {
-        this.props.getDescriptors();
         this.props.verifyLogin();
         this.props.getSettings();
     }
@@ -56,8 +55,7 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
-    systemInitialized: PropTypes.bool.isRequired,
-    getDescriptors: PropTypes.func.isRequired
+    systemInitialized: PropTypes.bool.isRequired
 };
 
 // Redux mappings to be used later....

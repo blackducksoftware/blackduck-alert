@@ -1,10 +1,10 @@
 import {
-    SYSTEM_LATEST_MESSAGES_FETCH_ERROR,
     SYSTEM_LATEST_MESSAGES_FETCHED,
     SYSTEM_LATEST_MESSAGES_FETCHING,
+    SYSTEM_SETUP_DESCRIPTOR_FETCHING,
+    SYSTEM_SETUP_DESCRIPTOR_FETCHED,
     SYSTEM_SETUP_FETCH_ERROR,
     SYSTEM_SETUP_FETCH_REDIRECTED,
-    SYSTEM_SETUP_FETCHED,
     SYSTEM_SETUP_FETCHING,
     SYSTEM_SETUP_HIDE_RESET_PASSWORD_MODAL,
     SYSTEM_SETUP_PASSWORD_RESETTING,
@@ -15,11 +15,10 @@ import {
     SYSTEM_SETUP_UPDATING
 } from 'store/actions/types';
 import { clearLoginError, loginError, verifyLoginByStatus } from 'store/actions/session';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';
+const SYSTEM_DESCRIPTOR_URL = '/alert/api/system/setup/descriptor';
 
 function fetchingLatestSystemMessages() {
     return {
@@ -38,9 +37,16 @@ function latestSystemMessagesFetched(latestMessages) {
     };
 }
 
-function latestSystemMessagesError() {
+function fetchingSystemDescriptor() {
     return {
-        type: SYSTEM_LATEST_MESSAGES_FETCH_ERROR
+        type: SYSTEM_SETUP_DESCRIPTOR_FETCHING
+    };
+}
+
+function systemDescriptorFetched(settingsDescriptor) {
+    return {
+        type: SYSTEM_SETUP_DESCRIPTOR_FETCHED,
+        settingsDescriptor
     };
 }
 
@@ -59,13 +65,6 @@ function fetchSetupRedirected() {
 function systemSetupShowConfig(settingsData) {
     return {
         type: SYSTEM_SETUP_SHOW_CONFIG,
-        settingsData
-    };
-}
-
-function systemSetupFetched(settingsData) {
-    return {
-        type: SYSTEM_SETUP_FETCHED,
         settingsData
     };
 }
@@ -132,7 +131,6 @@ export function getLatestMessages() {
     };
 }
 
-
 export function getInitialSystemSetup() {
     return (dispatch) => {
         dispatch(fetchingSystemSetup());
@@ -152,24 +150,21 @@ export function getInitialSystemSetup() {
     };
 }
 
-export function getSystemSetup() {
-    return (dispatch, getState) => {
-        dispatch(fetchingSystemSetup());
-        const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
-        request.then((response) => {
-            if (response.ok) {
-                response.json().then((body) => {
-                    if (body.length === 1) {
-                        dispatch(systemSetupFetched(body[0]));
-                    } else {
-                        dispatch(systemSetupFetchError('System Settings not found'));
-                    }
-                });
-            } else {
-                dispatch(systemSetupFetchError(response.statusText));
-            }
-        })
+export function getInitialSystemDescriptor() {
+    return (dispatch) => {
+        dispatch(fetchingSystemDescriptor());
+        fetch(SYSTEM_DESCRIPTOR_URL)
+            .then((response) => {
+                if (response.redirected) {
+                    dispatch(fetchSetupRedirected());
+                } else if (response.ok) {
+                    response.json().then((body) => {
+                        dispatch(systemDescriptorFetched(body));
+                    });
+                } else {
+                    dispatch(systemSetupFetchError(response.statusText));
+                }
+            })
             .catch(console.error);
     };
 }
@@ -213,34 +208,6 @@ export function saveInitialSystemSetup(setupData) {
     };
 }
 
-export function saveSystemSetup(setupData) {
-    return (dispatch, getState) => {
-        dispatch(updatingSystemSetup());
-        const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, setupData.id, setupData);
-        request.then((response) => {
-            if (response.ok) {
-                dispatch(systemSetupUpdated());
-            } else {
-                response.json().then((body) => {
-                    const jsonErrors = body.errors;
-                    const errors = {};
-                    if (jsonErrors) {
-                        Object.keys(jsonErrors).forEach((key) => {
-                            if (jsonErrors[key]) {
-                                const value = jsonErrors[key];
-                                errors[key] = value;
-                            }
-                        });
-                    }
-                    dispatch(systemSetupUpdateError(body.message, errors));
-                });
-            }
-        })
-            .catch(console.error);
-    };
-}
-
 export function sendPasswordResetEmail(username) {
     return (dispatch) => {
         dispatch(clearLoginError());
@@ -251,9 +218,8 @@ export function sendPasswordResetEmail(username) {
         }).then((response) => {
             dispatch(hideResetModal());
             if (!response.ok) {
-                response.json().then((body) =>
-                    dispatch(loginError(body.message, body.fieldErrors))
-                );
+                response.json().then(body =>
+                    dispatch(loginError(body.message, body.fieldErrors)));
             }
         }).catch(console.error);
     };

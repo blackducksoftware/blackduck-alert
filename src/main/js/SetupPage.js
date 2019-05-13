@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import { saveInitialSystemSetup } from 'store/actions/system';
+import { getInitialSystemDescriptor, getInitialSystemSetup, saveInitialSystemSetup } from 'store/actions/system';
 import PropTypes from 'prop-types';
 import StatusMessage from 'field/StatusMessage';
 import FieldsPanel from 'field/FieldsPanel';
@@ -21,17 +21,23 @@ class SetupPage extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        const { descriptors } = this.props;
-        const newDescriptors = nextProps.descriptors;
+    componentWillMount() {
+        this.props.getSettings();
+        this.props.getDescriptor();
+    }
 
-        if (descriptors.length === 0 && newDescriptors.length > 0) {
-            const settingsDescriptor = DescriptorUtilities.findDescriptorByNameAndContext(newDescriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)[0];
+    componentWillReceiveProps(nextProps) {
+        const currentStatus = this.props.updateStatus;
+        const { settingsDescriptor, updateStatus, settingsData } = nextProps;
+
+        if (updateStatus !== currentStatus && updateStatus === 'DESCRIPTOR_FETCHED') {
             const { fields } = settingsDescriptor;
-            const settingsData = FieldModelUtilities.createEmptyFieldModel(FieldMapping.retrieveKeys(fields), DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
             this.setState({
-                settingsData,
                 fields
+            });
+        } else if (updateStatus !== currentStatus && updateStatus === 'FETCHED') {
+            this.setState({
+                settingsData
             });
         }
     }
@@ -67,8 +73,11 @@ class SetupPage extends Component {
 }
 
 SetupPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    settingsDescriptor: PropTypes.object.isRequired,
+    settingsData: PropTypes.object.isRequired,
     saveSettings: PropTypes.func.isRequired,
+    getDescriptor: PropTypes.func.isRequired,
+    getSettings: PropTypes.func.isRequired,
     updateStatus: PropTypes.string,
     fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
@@ -83,17 +92,19 @@ SetupPage.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors.items,
+    settingsDescriptor: state.system.settingsDescriptor,
+    settingsData: state.system.settingsData,
     errorMessage: state.system.errorMessage,
     actionMessage: state.system.actionMessage,
-    fetchingSetupStatus: state.system.fetchingSetupStatus,
     updateStatus: state.system.updateStatus,
     currentSettingsData: state.system.settingsData,
     fieldErrors: state.system.error
 });
 
 const mapDispatchToProps = dispatch => ({
-    saveSettings: setupData => dispatch(saveInitialSystemSetup(setupData))
+    saveSettings: setupData => dispatch(saveInitialSystemSetup(setupData)),
+    getSettings: () => dispatch(getInitialSystemSetup()),
+    getDescriptor: () => dispatch(getInitialSystemDescriptor())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SetupPage);

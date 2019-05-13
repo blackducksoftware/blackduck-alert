@@ -9,12 +9,17 @@ import DistributionConfiguration from 'distribution/Index';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
+import { getDescriptors } from 'store/actions/descriptors';
 
 
 class MainPage extends Component {
     constructor(props) {
         super(props);
         this.createRoutesForDescriptors = this.createRoutesForDescriptors.bind(this);
+    }
+
+    componentDidMount() {
+        this.props.getDescriptors();
     }
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
@@ -61,10 +66,15 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    getDescriptors: PropTypes.func.isRequired
 };
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });
 
-export default withRouter(connect(mapStateToProps, null)(MainPage));
+const mapDispatchToProps = dispatch => ({
+    getDescriptors: () => dispatch(getDescriptors())
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));

@@ -2,7 +2,7 @@ import {
     SERIALIZE,
     SYSTEM_LATEST_MESSAGES_FETCH_ERROR,
     SYSTEM_LATEST_MESSAGES_FETCHED,
-    SYSTEM_LATEST_MESSAGES_FETCHING,
+    SYSTEM_LATEST_MESSAGES_FETCHING, SYSTEM_SETUP_DESCRIPTOR_FETCHED, SYSTEM_SETUP_DESCRIPTOR_FETCHING,
     SYSTEM_SETUP_FETCH_ERROR,
     SYSTEM_SETUP_FETCH_REDIRECTED,
     SYSTEM_SETUP_FETCHED,
@@ -25,6 +25,7 @@ const initialState = {
     errorMessage: null,
     actionMessage: null,
     settingsData: {},
+    settingsDescriptor: {},
     systemInitialized: true,
     showPasswordResetModal: false,
     error: {}
@@ -58,6 +59,26 @@ const config = (state = initialState, action) => {
                 resettingPassword: false,
                 fetchingSetupStatus: SYSTEM_SETUP_FETCHING,
                 updateStatus: 'FETCHING'
+            });
+        case SYSTEM_SETUP_DESCRIPTOR_FETCHING:
+            return Object.assign({}, state, {
+                actionMessage: null,
+                errorMessage: null,
+                resettingPassword: false,
+                fetchingSetupStatus: SYSTEM_SETUP_DESCRIPTOR_FETCHING,
+                settingsData: {},
+                settingsDescriptor: {},
+                updateStatus: 'DESCRIPTOR_FETCHING'
+            });
+        case SYSTEM_SETUP_DESCRIPTOR_FETCHED:
+            return Object.assign({}, state, {
+                actionMessage: null,
+                errorMessage: null,
+                resettingPassword: false,
+                fetchingSetupStatus: SYSTEM_SETUP_DESCRIPTOR_FETCHED,
+                updateStatus: 'DESCRIPTOR_FETCHED',
+                settingsDescriptor: action.settingsDescriptor,
+                error: {}
             });
         case SYSTEM_SETUP_FETCH_REDIRECTED:
             return Object.assign({}, state, {

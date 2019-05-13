@@ -93,7 +93,7 @@ public class SystemActions {
 
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
+        FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), valueMap);
 
         try {
             final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, SettingsDescriptor.SETTINGS_COMPONENT);

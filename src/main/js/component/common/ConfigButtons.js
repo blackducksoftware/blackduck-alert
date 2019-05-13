@@ -6,7 +6,9 @@ import GeneralButton from 'field/input/GeneralButton';
 
 class ConfigButtons extends Component {
     render() {
-        const { isFixed, performingAction, includeTest, onTestClick, testLabel, includeSave, submitLabel, includeCancel, onCancelClick, cancelLabel } = this.props;
+        const {
+            isFixed, performingAction, includeTest, onTestClick, testLabel, includeSave, submitLabel, includeCancel, onCancelClick, cancelLabel
+        } = this.props;
 
         let fixedStyle = null;
         if (isFixed) {

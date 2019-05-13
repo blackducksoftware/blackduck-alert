@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.controller;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,9 +43,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 
@@ -55,12 +59,15 @@ public class SystemController extends BaseController {
     private final SystemActions systemActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
+    private final SettingsDescriptor settingsDescriptor;
 
     @Autowired
-    public SystemController(final SystemActions systemActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
+    public SystemController(final SystemActions systemActions, final ContentConverter contentConverter, final ResponseFactory responseFactory,
+        final SettingsDescriptor settingsDescriptor) {
         this.systemActions = systemActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
+        this.settingsDescriptor = settingsDescriptor;
     }
 
     @GetMapping(value = "/system/messages/latest")
@@ -93,11 +100,9 @@ public class SystemController extends BaseController {
 
     @GetMapping(value = "/system/setup/initial")
     public ResponseEntity<String> getInitialSystemSetup(final HttpServletRequest request) {
-        final String contextPath = request.getServletContext().getContextPath();
-        if (systemActions.isSystemInitialized()) {
-            final HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", contextPath);
-            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        final Optional<ResponseEntity<String>> previousSetupResponse = checkForInitialSetup(request.getServletContext().getContextPath());
+        if (previousSetupResponse.isPresent()) {
+            return previousSetupResponse.get();
         }
 
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemActions.getCurrentSystemSetup()));
@@ -110,6 +115,27 @@ public class SystemController extends BaseController {
         }
 
         return saveSystemSettings(settingsToSave);
+    }
+
+    @GetMapping(value = "/system/setup/descriptor")
+    public ResponseEntity<String> getInitialSystemSetupDescriptor(final HttpServletRequest request) {
+        final Optional<ResponseEntity<String>> previousSetupResponse = checkForInitialSetup(request.getServletContext().getContextPath());
+        if (previousSetupResponse.isPresent()) {
+            return previousSetupResponse.get();
+        }
+
+        final DescriptorMetadata settingsData = settingsDescriptor.getMetaData(ConfigContextEnum.GLOBAL).orElse(null);
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(settingsData));
+    }
+
+    private Optional<ResponseEntity<String>> checkForInitialSetup(final String contextPath) {
+        if (systemActions.isSystemInitialized()) {
+            final HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", contextPath);
+            return Optional.of(new ResponseEntity(headers, HttpStatus.FOUND));
+        }
+
+        return Optional.empty();
     }
 
     private ResponseEntity<String> saveSystemSettings(final FieldModel model) {
