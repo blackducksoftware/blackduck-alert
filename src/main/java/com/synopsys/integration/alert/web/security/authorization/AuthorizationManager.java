@@ -37,6 +37,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -46,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 @Component
 public class AuthorizationManager {
 
+    public static final String CONFIG_KEY_PREFIX = "config";
     private final AuthorizationUtil authorizationUtil;
     private final Map<String, PermissionMatrixModel> permissionCache;
 
@@ -55,47 +57,81 @@ public class AuthorizationManager {
         permissionCache = new HashMap<>();
     }
 
-    public boolean hasCreatePermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.CREATE);
+    public static final String generateConfigPermissionKey(ConfigContextEnum context, String descriptorName) {
+        return String.format("config.%s.%s", context.name().toLowerCase(), descriptorName.trim().toLowerCase());
     }
 
-    public boolean hasDeletePermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.DELETE);
+    public final boolean hasAnyConfigDeletePermission() {
+        return Arrays.stream(PermissionKeys.values())
+                   .filter(permissionKey -> permissionKey.getDatabaseKey().startsWith(CONFIG_KEY_PREFIX))
+                   .anyMatch(permissionKey -> hasDeletePermission(permissionKey));
     }
 
-    public boolean hasAnyReadPermissions() {
+    public final boolean hasAnyReadPermissions() {
         return Arrays.stream(PermissionKeys.values())
                    .anyMatch(permissionKey -> hasReadPermission(permissionKey));
     }
 
-    public boolean hasReadPermission(final PermissionKeys permissionKey) {
+    public final boolean hasCreatePermission(final PermissionKeys permissionKey) {
+        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.CREATE);
+    }
+
+    public final boolean hasCreatePermission(final String permissionKey) {
+        return currentUserHasPermission(permissionKey, AccessOperation.CREATE);
+    }
+
+    public final boolean hasDeletePermission(final PermissionKeys permissionKey) {
+        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.DELETE);
+    }
+
+    public final boolean hasDeletePermission(final String permissionKey) {
+        return currentUserHasPermission(permissionKey, AccessOperation.DELETE);
+    }
+
+    public final boolean hasAnyConfigReadPermissions() {
+        return Arrays.stream(PermissionKeys.values())
+                   .filter(permissionKey -> permissionKey.getDatabaseKey().startsWith(CONFIG_KEY_PREFIX))
+                   .anyMatch(permissionKey -> hasReadPermission(permissionKey));
+    }
+
+    public final boolean hasReadPermission(final PermissionKeys permissionKey) {
+        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.READ);
+    }
+
+    public final boolean hasReadPermission(final String permissionKey) {
         return currentUserHasPermission(permissionKey, AccessOperation.READ);
     }
 
-    public boolean hasWritePermission(final PermissionKeys permissionKey) {
+    public final boolean hasWritePermission(final PermissionKeys permissionKey) {
+        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.WRITE);
+    }
+
+    public final boolean hasWritePermission(final String permissionKey) {
         return currentUserHasPermission(permissionKey, AccessOperation.WRITE);
     }
 
-    public boolean hasExecutePermission(final PermissionKeys permissionKey) {
+    public final boolean hasExecutePermission(final PermissionKeys permissionKey) {
+        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.EXECUTE);
+    }
+
+    public final boolean hasExecutePermission(final String permissionKey) {
         return currentUserHasPermission(permissionKey, AccessOperation.EXECUTE);
     }
 
-    public boolean currentUserHasPermission(final PermissionKeys permissionKey, final AccessOperation operation) {
+    private boolean currentUserHasPermission(final String permissionKey, final AccessOperation operation) {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (null == authentication || !authentication.isAuthenticated()) {
             return false;
         }
-        final String permissionDbKey = permissionKey.getDatabaseKey();
         final List<String> roleNames = authentication.getAuthorities().stream()
                                            .map(GrantedAuthority::getAuthority)
                                            .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
                                            .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
         return roleNames.stream()
-                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionDbKey, operation));
+                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
     }
 
-    public void loadPermissionsIntoCache() {
+    public final void loadPermissionsIntoCache() {
         Collection<UserRoleModel> roles = authorizationUtil.createRoleModels();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }

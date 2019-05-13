@@ -23,14 +23,18 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum PermissionKeys {
-    CONFIG_PROVIDER_BLACKDUCK("config.provider.blackduck"),
-    CONFIG_PROVIDER_POLARIS("config.provider.polaris"),
-    CONFIG_CHANNEL_EMAIL("config.channel.email"),
-    CONFIG_CHANNEL_HIPCHAT("config.channel.hipchat"),
-    CONFIG_CHANNEL_SLACK("config.channel.slack"),
+    CONFIG_GLOBAL_PROVIDER_BLACKDUCK("config.global.provider_blackduck"),
+    CONFIG_DISTRIBUTION_PROVIDER_BLACKDUCK("config.distribution.provider_blackduck"),
+    CONFIG_GLOBAL_PROVIDER_POLARIS("config.global.provider_polaris"),
+    CONFIG_DISTRIBUTION_PROVIDER_POLARIS("config.distribution.provider_polaris"),
+    CONFIG_CHANNEL_EMAIL("config.global.channel_email"),
+    CONFIG_DISTRIBUTION_CHANNEL_EMAIL("config.distribution.channel_email"),
+    CONFIG_GLOBAL_CHANNEL_HIPCHAT("config.global.channel_hipchat"),
+    CONFIG_DISTRIBUTION_CHANNEL_HIPCHAT("config.distribution.channel_hipchat"),
+    CONFIG_CHANNEL_SLACK("config.distribution.channel_slack"),
     CONFIG_DISTRIBUTION("config.distribution"),
-    CONFIG_COMPONENT_SCHEDULING("config.component.scheduling"),
-    CONFIG_COMPONENT_SETTINGS("config.component.settings"),
+    CONFIG_COMPONENT_SCHEDULING("config.global.component_scheduling"),
+    CONFIG_COMPONENT_SETTINGS("config.global.component_settings"),
     AUDIT_NOTIFICATIONS("audit.notifications"),
     AUDIT_NOTIFICATIONS_RESEND("audit.notifications.resend");
 
