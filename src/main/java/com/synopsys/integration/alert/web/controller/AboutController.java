@@ -54,10 +54,6 @@ public class AboutController extends BaseController {
 
     @GetMapping(value = "/about")
     public ResponseEntity<String> about() {
-        if (!authorizationManager.hasAnyReadPermissions()) {
-            return responseFactory.createForbiddenResponse();
-        }
-
         final Optional<AboutModel> optionalModel = aboutActions.getAboutModel();
         if (optionalModel.isPresent()) {
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
