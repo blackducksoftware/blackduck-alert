@@ -64,7 +64,7 @@ class FieldsPanel extends React.Component {
         const fieldRenders = [];
         Object.keys(fieldMapping).forEach((key) => {
             if (key !== DEFAULT_PANEL) {
-                const header = (<h2>{key}</h2>);
+                const header = (<h2 key={key}>{key}</h2>);
                 fieldRenders.push(header);
             }
             const fields = this.createFields(fieldMapping[key]);

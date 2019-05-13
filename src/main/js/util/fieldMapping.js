@@ -11,23 +11,23 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
 
-function trimValue(items) {
+function extractFirstValue(items) {
     const { value } = items;
     return (Array.isArray(value)) ? value[0] : value;
 }
 
-function insertTrimmedValue(items) {
-    const trimmedValue = trimValue(items);
+function overwriteSingleValue(items) {
+    const trimmedValue = extractFirstValue(items);
     return Object.assign(items, { value: trimmedValue });
 }
 
 function buildTextInput(items) {
-    const trimmedValue = insertTrimmedValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <TextInput {...trimmedValue} />;
 }
 
 function buildTextArea(items) {
-    const trimmedValue = insertTrimmedValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <TextArea {...trimmedValue} />;
 }
 
@@ -58,12 +58,12 @@ function buildSelectInput(items, field) {
 }
 
 function buildPasswordInput(items) {
-    const trimmedValue = insertTrimmedValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <PasswordInput {...trimmedValue} />;
 }
 
 function buildNumberInput(items) {
-    const trimmedValue = insertTrimmedValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <NumberInput {...trimmedValue} />;
 }
 
@@ -75,13 +75,13 @@ function buildCheckboxInput(items) {
 }
 
 function buildReadOnlyField(items) {
-    const trimmedValue = insertTrimmedValue(items);
+    const trimmedValue = overwriteSingleValue(items);
     return <ReadOnlyField {...trimmedValue} />;
 }
 
 function buildCounterField(items, field) {
     const { countdown } = field;
-    const trimmedValue = trimValue(items);
+    const trimmedValue = extractFirstValue(items);
     Object.assign(items, { countdown, value: trimmedValue });
     return <CounterField {...items} />;
 }
