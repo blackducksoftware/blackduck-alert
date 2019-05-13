@@ -101,438 +101,192 @@
     <changeSet author="psantos" id="1556732237461-6">
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="1"/>
-            <column name="KEY_NAME" value="config.provider.blackduck"/>
+            <column name="KEY_NAME" value="config.global.provider_blackduck"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="2"/>
-            <column name="KEY_NAME" value="config.provider.polaris"/>
+            <column name="KEY_NAME" value="config.distribution.provider_blackduck"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="3"/>
-            <column name="KEY_NAME" value="config.channel.email"/>
+            <column name="KEY_NAME" value="config.global.provider_polaris"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="4"/>
-            <column name="KEY_NAME" value="config.channel.hipchat"/>
+            <column name="KEY_NAME" value="config.distribution.provider_polaris"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="5"/>
-            <column name="KEY_NAME" value="config.channel.slack"/>
+            <column name="KEY_NAME" value="config.global.channel_email"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="6"/>
-            <column name="KEY_NAME" value="config.distribution"/>
+            <column name="KEY_NAME" value="config.distribution.channel_email"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="7"/>
-            <column name="KEY_NAME" value="config.component.scheduling"/>
+            <column name="KEY_NAME" value="config.global.channel_hipchat"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="8"/>
-            <column name="KEY_NAME" value="config.component.settings"/>
+            <column name="KEY_NAME" value="config.distribution.channel_hipchat"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="9"/>
-            <column name="KEY_NAME" value="audit.notifications"/>
+            <column name="KEY_NAME" value="config.distribution.channel_slack"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="10"/>
+            <column name="KEY_NAME" value="config.distribution"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="11"/>
+            <column name="KEY_NAME" value="config.global.component_scheduling"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="12"/>
+            <column name="KEY_NAME" value="config.global.component_settings"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="13"/>
+            <column name="KEY_NAME" value="audit.notifications"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="14"/>
             <column name="KEY_NAME" value="audit.notifications.resend"/>
         </insert>
     </changeSet>
     <!-- ALERT_ADMIN PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-7">
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="8"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="8"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="8"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="8"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="8"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="9"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="9"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="9"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="9"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="9"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="1"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.provider_blackduck');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.provider_blackduck');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.provider_polaris');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.provider_polaris');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.channel_email');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_email');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.channel_hipchat');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_hipchat');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_slack');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.component_scheduling');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.component_settings');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.notifications');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.notifications.resend');
+        </sql>
     </changeSet>
     <!-- ALERT_JOB_MANAGER PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-8">
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="1"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="2"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="4"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="9"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="2"/>
-            <column name="PERMISSION_KEY_ID" value="10"/>
-            <column name="ACCESS_OPERATION_ID" value="5"/>
-        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.provider_blackduck');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.provider_polaris');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.channel_email');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.channel_hipchat');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.channel_slack');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_blackduck','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_blackduck','EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_polaris', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_polaris', 'EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_email', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_email', 'EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_hipchat', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_hipchat', 'EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.component_scheduling', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.notifications','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.notifications.resend','EXECUTE');
+        </sql>
     </changeSet>
 
     <!-- ALERT_USER PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-9">
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="1"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="2"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="3"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="4"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="5"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="6"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" value="3"/>
-            <column name="PERMISSION_KEY_ID" value="7"/>
-            <column name="ACCESS_OPERATION_ID" value="3"/>
-        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.provider_blackduck', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.provider_blackduck', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.provider_polaris', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.provider_polaris', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.channel_email', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_email', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.channel_hipchat', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_hipchat', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_slack', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution', 'READ');
+        </sql>
     </changeSet>
 </databaseChangeLog>
