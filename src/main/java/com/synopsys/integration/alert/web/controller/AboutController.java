@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.AboutActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
-import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 
 @RestController
 public class AboutController extends BaseController {
@@ -42,14 +41,12 @@ public class AboutController extends BaseController {
     private final AboutActions aboutActions;
     private final ResponseFactory responseFactory;
     private final ContentConverter contentConverter;
-    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AboutController(final AboutActions aboutActions, final ResponseFactory responseFactory, final ContentConverter contentConverter, final AuthorizationManager authorizationManager) {
+    public AboutController(final AboutActions aboutActions, final ResponseFactory responseFactory, final ContentConverter contentConverter) {
         this.aboutActions = aboutActions;
         this.responseFactory = responseFactory;
         this.contentConverter = contentConverter;
-        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping(value = "/about")

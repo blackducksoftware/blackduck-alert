@@ -48,8 +48,9 @@ import com.synopsys.integration.alert.web.security.authorization.AuthorizationMa
 import com.synopsys.integration.exception.IntegrationException;
 
 @RestController
-@RequestMapping(BaseController.BASE_PATH + "/audit")
+@RequestMapping(AuditEntryController.AUDIT_BASE_PATH)
 public class AuditEntryController extends BaseController {
+    public static final String AUDIT_BASE_PATH = BaseController.BASE_PATH + "/audit";
     private final AuditEntryActions auditEntryActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;

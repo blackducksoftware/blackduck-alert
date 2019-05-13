@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.web.security.authorization;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +36,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -46,8 +44,6 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
 public class AuthorizationManager {
-
-    public static final String CONFIG_KEY_PREFIX = "config";
     private final AuthorizationUtil authorizationUtil;
     private final Map<String, PermissionMatrixModel> permissionCache;
 
@@ -57,19 +53,8 @@ public class AuthorizationManager {
         permissionCache = new HashMap<>();
     }
 
-    public static final String generateConfigPermissionKey(ConfigContextEnum context, String descriptorName) {
-        return String.format("config.%s.%s", context.name().toLowerCase(), descriptorName.trim().toLowerCase());
-    }
-
-    public final boolean hasAnyConfigDeletePermission() {
-        return Arrays.stream(PermissionKeys.values())
-                   .filter(permissionKey -> permissionKey.getDatabaseKey().startsWith(CONFIG_KEY_PREFIX))
-                   .anyMatch(permissionKey -> hasDeletePermission(permissionKey));
-    }
-
-    public final boolean hasAnyReadPermissions() {
-        return Arrays.stream(PermissionKeys.values())
-                   .anyMatch(permissionKey -> hasReadPermission(permissionKey));
+    public static final String generateConfigPermissionKey(String context, String descriptorName) {
+        return String.format("config.%s.%s", context.toLowerCase(), descriptorName.trim().toLowerCase());
     }
 
     public final boolean hasCreatePermission(final PermissionKeys permissionKey) {
@@ -86,12 +71,6 @@ public class AuthorizationManager {
 
     public final boolean hasDeletePermission(final String permissionKey) {
         return currentUserHasPermission(permissionKey, AccessOperation.DELETE);
-    }
-
-    public final boolean hasAnyConfigReadPermissions() {
-        return Arrays.stream(PermissionKeys.values())
-                   .filter(permissionKey -> permissionKey.getDatabaseKey().startsWith(CONFIG_KEY_PREFIX))
-                   .anyMatch(permissionKey -> hasReadPermission(permissionKey));
     }
 
     public final boolean hasReadPermission(final PermissionKeys permissionKey) {

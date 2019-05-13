@@ -74,7 +74,7 @@ public class ConfigController extends BaseController {
     @GetMapping
     public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         final List<FieldModel> models;
-        if (!authorizationManager.hasReadPermission(authorizationManager.generateConfigPermissionKey(context, descriptorName))) {
+        if (!authorizationManager.hasReadPermission(authorizationManager.generateConfigPermissionKey(context.name(), descriptorName))) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -94,9 +94,6 @@ public class ConfigController extends BaseController {
     @GetMapping("/{id}")
     public ResponseEntity<String> getConfig(@PathVariable final Long id) {
         final Optional<FieldModel> optionalModel;
-        if (!authorizationManager.hasAnyConfigReadPermissions()) {
-            return responseFactory.createForbiddenResponse();
-        }
         try {
             optionalModel = configActions.getConfigById(id);
         } catch (final AlertException e) {
@@ -105,7 +102,12 @@ public class ConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
+            FieldModel fieldModel = optionalModel.get();
+            final String permissionKey = AuthorizationManager.generateConfigPermissionKey(fieldModel.getContext(), fieldModel.getDescriptorName());
+            if (!authorizationManager.hasReadPermission(permissionKey)) {
+                return responseFactory.createForbiddenResponse();
+            }
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(fieldModel));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
@@ -116,7 +118,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(ConfigContextEnum.valueOf(restModel.getContext()), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasCreatePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -146,7 +148,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(ConfigContextEnum.valueOf(restModel.getContext()), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasWritePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -176,7 +178,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(ConfigContextEnum.valueOf(restModel.getContext()), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasCreatePermission(permissionKey) && !authorizationManager.hasWritePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -191,15 +193,21 @@ public class ConfigController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteConfig(@PathVariable final Long id) {
-        if (!authorizationManager.hasAnyConfigDeletePermission()) {
-            return responseFactory.createForbiddenResponse();
-        }
+
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
         final String stringId = contentConverter.getStringValue(id);
         try {
             if (configActions.doesConfigExist(id)) {
+                Optional<FieldModel> fieldModel = configActions.getConfigById(id);
+                if (fieldModel.isPresent()) {
+                    FieldModel model = fieldModel.get();
+                    final String permissionKey = authorizationManager.generateConfigPermissionKey(model.getContext(), model.getDescriptorName());
+                    if (!authorizationManager.hasDeletePermission(permissionKey)) {
+                        return responseFactory.createForbiddenResponse();
+                    }
+                }
                 configActions.deleteConfig(id);
                 return responseFactory.createAcceptedResponse(stringId, "Deleted");
             } else {
@@ -216,7 +224,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(ConfigContextEnum.valueOf(restModel.getContext()), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasExecutePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
