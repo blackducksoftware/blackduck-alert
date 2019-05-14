@@ -32,8 +32,12 @@ class MainPage extends Component {
         if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
-        const routeList = descriptorList.map(component => <Route key={component.urlName} path={`${uriPrefix}${component.urlName}`} render={() => <GlobalConfiguration key={component.name} descriptor={component} />} />);
-        return routeList;
+        return descriptorList.map(component =>
+            (<Route
+                key={component.descriptorMetadata.urlName}
+                path={`${uriPrefix}${component.descriptorMetadata.urlName}`}
+                render={() => <GlobalConfiguration key={component.descriptorMetadata.name} descriptor={component} />}
+            />));
     }
 
     render() {

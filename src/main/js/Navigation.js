@@ -13,16 +13,18 @@ class Navigation extends Component {
         this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
     }
 
-    createNavItemForDescriptors(decriptorType, context, uriPrefix) {
+    createNavItemForDescriptors(descriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
         if (!descriptors) {
             return null;
         }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, decriptorType, context);
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, descriptorType, context);
         if (!descriptorList) {
             return null;
         }
-        return descriptorList.map(component =>
+
+        const descriptorBodies = descriptorList.map(descriptor => descriptor.descriptorMetadata);
+        return descriptorBodies.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
                     <FontAwesomeIcon icon={component.fontAwesomeIcon} fixedWidth /> {component.label}
