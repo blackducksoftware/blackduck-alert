@@ -38,8 +38,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.LoginActions;
-import com.synopsys.integration.alert.web.security.AuthorizationManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
+import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 
 public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));

@@ -70,6 +70,16 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     }
 
     @Override
+    public Set<UserRoleModel> createRoleModels() {
+        List<RoleEntity> roleList = roleRepository.findAll();
+        final Set<UserRoleModel> userRoles = new LinkedHashSet<>();
+        for (RoleEntity entity : roleList) {
+            userRoles.add(UserRoleModel.of(entity.getRoleName(), readPermissionsForRole(entity.getId())));
+        }
+        return userRoles;
+    }
+
+    @Override
     public Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds) {
         final Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (final Long roleId : roleIds) {
@@ -95,25 +105,29 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
         }
     }
 
-    private Optional<String> getRoleName(final Long roleId) {
-        return roleRepository.findById(roleId).map(RoleEntity::getRoleName);
-    }
-
     @Override
     public PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames) {
         final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleNames(roleNames);
-        final List<Long> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
-        final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleIdIn(roleIds);
-        return readPermissionsForRole(permissions);
+        return readPermissionsForRole(roles);
     }
 
     @Override
     public PermissionMatrixModel readPermissionsForRole(final Long roleId) {
         final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
-        return readPermissionsForRole(permissions);
+        return this.createPermissionMatrix(permissions);
     }
 
-    private PermissionMatrixModel readPermissionsForRole(final List<PermissionMatrixRelation> permissions) {
+    private Optional<String> getRoleName(final Long roleId) {
+        return roleRepository.findById(roleId).map(RoleEntity::getRoleName);
+    }
+
+    private PermissionMatrixModel readPermissionsForRole(final List<RoleEntity> roles) {
+        final List<Long> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
+        final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleIdIn(roleIds);
+        return this.createPermissionMatrix(permissions);
+    }
+
+    private PermissionMatrixModel createPermissionMatrix(final List<PermissionMatrixRelation> permissions) {
         final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
 
         if (null != permissions) {

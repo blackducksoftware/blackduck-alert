@@ -265,5 +265,4 @@ public class StartupManager {
     public void initializeSAML() {
         samlManager.initializeSAML();
     }
-
 }

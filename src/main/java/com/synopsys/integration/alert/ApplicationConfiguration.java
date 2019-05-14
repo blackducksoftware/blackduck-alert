@@ -43,10 +43,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
@@ -139,5 +141,12 @@ public class ApplicationConfiguration {
     @Bean
     public PasswordEncoder defaultPasswordEncoder() {
         return new BCryptPasswordEncoder(16);
+    }
+
+    @Bean
+    public AuthorizationManager authorizationManager(final AuthorizationUtil authorizationUtil) {
+        AuthorizationManager authorizationManager = new AuthorizationManager(authorizationUtil);
+        authorizationManager.loadPermissionsIntoCache();
+        return authorizationManager;
     }
 }

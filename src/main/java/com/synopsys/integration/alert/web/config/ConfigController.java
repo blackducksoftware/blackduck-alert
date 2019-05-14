@@ -42,13 +42,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
@@ -60,17 +61,22 @@ public class ConfigController extends BaseController {
     private final ConfigActions configActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public ConfigController(final ConfigActions configActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
+    public ConfigController(final ConfigActions configActions, final ContentConverter contentConverter, final ResponseFactory responseFactory, final AuthorizationManager authorizationManager) {
         this.configActions = configActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
+        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping
     public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         final List<FieldModel> models;
+        if (!authorizationManager.hasReadPermission(authorizationManager.generateConfigPermissionKey(context.name(), descriptorName))) {
+            return responseFactory.createForbiddenResponse();
+        }
         try {
             models = configActions.getConfigs(context, descriptorName);
         } catch (final AlertException e) {
@@ -96,7 +102,12 @@ public class ConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
+            FieldModel fieldModel = optionalModel.get();
+            final String permissionKey = AuthorizationManager.generateConfigPermissionKey(fieldModel.getContext(), fieldModel.getDescriptorName());
+            if (!authorizationManager.hasReadPermission(permissionKey)) {
+                return responseFactory.createForbiddenResponse();
+            }
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(fieldModel));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
@@ -106,6 +117,10 @@ public class ConfigController extends BaseController {
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final FieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
+        }
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        if (!authorizationManager.hasCreatePermission(permissionKey)) {
+            return responseFactory.createForbiddenResponse();
         }
         try {
             return runPostConfig(restModel);
@@ -120,7 +135,6 @@ public class ConfigController extends BaseController {
         if (configActions.doesConfigExist(id)) {
             return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
         }
-
         try {
             final FieldModel updatedEntity = configActions.saveConfig(fieldModel);
             return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
@@ -134,7 +148,10 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        if (!authorizationManager.hasWritePermission(permissionKey)) {
+            return responseFactory.createForbiddenResponse();
+        }
         try {
             return runPutConfig(id, restModel);
         } catch (final AlertException e) {
@@ -161,6 +178,10 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        if (!authorizationManager.hasCreatePermission(permissionKey) && !authorizationManager.hasWritePermission(permissionKey)) {
+            return responseFactory.createForbiddenResponse();
+        }
         final String id = restModel.getId();
         try {
             final String responseMessage = configActions.validateConfig(restModel, new HashMap<>());
@@ -172,12 +193,21 @@ public class ConfigController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteConfig(@PathVariable final Long id) {
+
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
         final String stringId = contentConverter.getStringValue(id);
         try {
             if (configActions.doesConfigExist(id)) {
+                Optional<FieldModel> fieldModel = configActions.getConfigById(id);
+                if (fieldModel.isPresent()) {
+                    FieldModel model = fieldModel.get();
+                    final String permissionKey = authorizationManager.generateConfigPermissionKey(model.getContext(), model.getDescriptorName());
+                    if (!authorizationManager.hasDeletePermission(permissionKey)) {
+                        return responseFactory.createForbiddenResponse();
+                    }
+                }
                 configActions.deleteConfig(id);
                 return responseFactory.createAcceptedResponse(stringId, "Deleted");
             } else {
@@ -193,6 +223,10 @@ public class ConfigController extends BaseController {
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
+        }
+        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        if (!authorizationManager.hasExecutePermission(permissionKey)) {
+            return responseFactory.createForbiddenResponse();
         }
         final String id = restModel.getId();
         try {

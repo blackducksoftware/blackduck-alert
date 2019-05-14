@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.security.AuthorizationManager;
 import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -124,8 +123,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertLDAPConfigurationException("LDAP CONFIG EXCEPTION"));
         final DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
-        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        final AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager, authorizationManager);
+        final AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager);
         final LoginActions loginActions = new LoginActions(authenticationProvider);
         final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
         assertFalse(authenticated);

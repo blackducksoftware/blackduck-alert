@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
-import com.synopsys.integration.alert.web.security.AuthorizationManager;
+import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 
 @RestController
 public class AuthenticationController extends BaseController {
@@ -76,7 +76,6 @@ public class AuthenticationController extends BaseController {
         if (session != null) {
             session.invalidate();
         }
-        authorizationManager.removePermissionsFromCache();
         SecurityContextHolder.clearContext();
 
         final HttpHeaders headers = new HttpHeaders();

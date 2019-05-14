@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 public class ResponseFactory {
     public static final String EMPTY_ID = "-1L";
     public static final String MISSING_REQUEST_BODY = "Required request body is missing";
+    public static final String UNAUTHORIZED_REQUEST_MESSAGE = "User not authorized to perform the request";
 
     public ResponseEntity<String> createMessageResponse(final HttpStatus status, final String id, final String message) {
         final String responseBody = new ResponseBodyBuilder(id, message).build();
@@ -51,6 +52,10 @@ public class ResponseFactory {
 
     public ResponseEntity<String> createNotFoundResponse(final String message) {
         return createMessageResponse(HttpStatus.NOT_FOUND, message);
+    }
+
+    public ResponseEntity<String> createForbiddenResponse() {
+        return createForbiddenResponse(UNAUTHORIZED_REQUEST_MESSAGE);
     }
 
     public ResponseEntity<String> createForbiddenResponse(final String message) {return createMessageResponse(HttpStatus.FORBIDDEN, message);}
