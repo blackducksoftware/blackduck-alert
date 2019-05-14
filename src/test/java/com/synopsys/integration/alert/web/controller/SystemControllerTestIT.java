@@ -127,7 +127,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetLatestMessagesHandling() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> responseEntity = handler.getLatestSystemMessages();
         Mockito.verify(systemActions).getSystemMessagesSinceStartup();
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -137,7 +137,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesgetAll() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("", "");
         Mockito.verify(systemActions).getSystemMessages();
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -147,7 +147,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesGetAfter() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
         Mockito.verify(systemActions).getSystemMessagesAfter(Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -157,7 +157,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesGetBefore() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBefore(Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -167,7 +167,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesGetBetween() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -177,7 +177,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesBadDateRange() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("error parsing date ", 0));
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
@@ -187,7 +187,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetCurrentSetup() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
 
         final String contextPath = "context-path/";
         final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -206,7 +206,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetCurrentSetupInitialized() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final String contextPath = "context-path/";
         final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -226,7 +226,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
 
@@ -241,7 +241,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         fieldErrors.put("propertyKey", "error");
         Mockito.when(systemActions.saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap())).thenThrow(new AlertFieldException(fieldErrors));
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
         Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
@@ -257,7 +257,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         fieldErrors.put("propertyKey", "error");
         Mockito.when(systemActions.saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap())).thenThrow(new AlertException("Test exception"));
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
         Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
@@ -270,7 +270,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
         Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
