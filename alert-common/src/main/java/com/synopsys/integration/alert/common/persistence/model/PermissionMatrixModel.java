@@ -66,6 +66,15 @@ public class PermissionMatrixModel {
         return permissions.containsKey(permissionKey) && !permissions.get(permissionKey).isEmpty();
     }
 
+    public boolean isReadOnly(final String permissionKey) {
+        if (!permissions.containsKey(permissionKey)) {
+            return false;
+        }
+
+        EnumSet<AccessOperation> operations = permissions.get(permissionKey);
+        return operations.size() == 1 && operations.contains(AccessOperation.READ);
+    }
+
     public boolean isEmpty() {
         return permissions.isEmpty();
     }

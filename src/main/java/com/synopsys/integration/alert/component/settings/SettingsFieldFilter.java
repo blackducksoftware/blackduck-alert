@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,34 +20,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.filter;
+package com.synopsys.integration.alert.component.settings;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.filter.FieldsFilter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
-public abstract class FieldsFilter {
-    private final String descriptorName;
-    private final ConfigContextEnum context;
+@Component
+public class SettingsFieldFilter extends FieldsFilter {
+    private AuthorizationManager authorizationManager;
 
-    public FieldsFilter(final String descriptorName, final ConfigContextEnum context) {
-        this.descriptorName = descriptorName;
-        this.context = context;
+    @Autowired
+    public SettingsFieldFilter(final AuthorizationManager authorizationManager) {
+        super(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL);
+        this.authorizationManager = authorizationManager;
     }
 
-    public final String createPermissionKey() {
-        return AuthorizationManager.generateConfigPermissionKey(getContext().name(), getDescriptorName());
-    }
+    @Override
+    public List<ConfigField> filter(final List<ConfigField> fields) {
+        final String permissionKey = createPermissionKey();
+        if (!authorizationManager.hasPermissions(permissionKey)) {
+            return List.of();
+        }
 
-    public final String getDescriptorName() {
-        return descriptorName;
+        return fields;
     }
-
-    public final ConfigContextEnum getContext() {
-        return context;
-    }
-
-    public abstract List<ConfigField> filter(List<ConfigField> fields);
 }

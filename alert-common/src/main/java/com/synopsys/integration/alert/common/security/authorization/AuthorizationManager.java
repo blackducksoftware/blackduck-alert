@@ -63,6 +63,12 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && !permissionCache.get(name).hasPermissions(permissionKey));
     }
 
+    public final boolean isReadOnly(final String permissionKey) {
+        Collection<String> roleNames = getCurrentUserRoleNames();
+        return roleNames.stream()
+                   .allMatch(name -> permissionCache.containsKey(name) && !permissionCache.get(name).isReadOnly(permissionKey));
+    }
+
     public final boolean hasCreatePermission(final PermissionKeys permissionKey) {
         return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.CREATE);
     }
