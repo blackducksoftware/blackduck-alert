@@ -14,7 +14,6 @@ import AboutInfoFooter from 'component/AboutInfoFooter';
 import SetupPage from 'SetupPage';
 import { verifyLogin } from 'store/actions/session';
 import { getInitialSystemSetup } from 'store/actions/system';
-import { getDescriptors } from 'store/actions/descriptors';
 
 import LogoutPage from 'LogoutPage';
 import '../css/main.scss';
@@ -22,7 +21,6 @@ import '../css/main.scss';
 
 class App extends Component {
     componentDidMount() {
-        this.props.getDescriptors();
         this.props.verifyLogin();
         this.props.getSettings();
     }
@@ -56,8 +54,7 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
-    systemInitialized: PropTypes.bool.isRequired,
-    getDescriptors: PropTypes.func.isRequired
+    systemInitialized: PropTypes.bool.isRequired
 };
 
 // Redux mappings to be used later....
@@ -70,8 +67,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     verifyLogin: () => dispatch(verifyLogin()),
-    getSettings: () => dispatch(getInitialSystemSetup()),
-    getDescriptors: () => dispatch(getDescriptors())
+    getSettings: () => dispatch(getInitialSystemSetup())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
