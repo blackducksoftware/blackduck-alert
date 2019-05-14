@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security.authorization;
+package com.synopsys.integration.alert.common.security.authorization;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,6 +55,12 @@ public class AuthorizationManager {
 
     public static final String generateConfigPermissionKey(String context, String descriptorName) {
         return String.format("config.%s.%s", context.toLowerCase(), descriptorName.trim().toLowerCase());
+    }
+
+    public final boolean hasPermissions(final String permissionKey) {
+        Collection<String> roleNames = getCurrentUserRoleNames();
+        return roleNames.stream()
+                   .anyMatch(name -> permissionCache.containsKey(name) && !permissionCache.get(name).hasPermissions(permissionKey));
     }
 
     public final boolean hasCreatePermission(final PermissionKeys permissionKey) {
@@ -98,16 +104,20 @@ public class AuthorizationManager {
     }
 
     private boolean currentUserHasPermission(final String permissionKey, final AccessOperation operation) {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null == authentication || !authentication.isAuthenticated()) {
-            return false;
-        }
-        final List<String> roleNames = authentication.getAuthorities().stream()
-                                           .map(GrantedAuthority::getAuthority)
-                                           .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                                           .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
+        Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
+    }
+
+    private Collection<String> getCurrentUserRoleNames() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (null == authentication || !authentication.isAuthenticated()) {
+            return List.of();
+        }
+        return authentication.getAuthorities().stream()
+                   .map(GrantedAuthority::getAuthority)
+                   .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
+                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
     }
 
     public final void loadPermissionsIntoCache() {

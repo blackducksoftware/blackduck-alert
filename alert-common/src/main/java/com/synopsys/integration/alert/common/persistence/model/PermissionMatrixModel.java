@@ -61,4 +61,12 @@ public class PermissionMatrixModel {
     public boolean hasPermission(final String permissionKey, final AccessOperation operation) {
         return permissions.containsKey(permissionKey) && permissions.get(permissionKey).contains(operation);
     }
+
+    public boolean hasPermissions(final String permissionKey) {
+        return permissions.containsKey(permissionKey) && !permissions.get(permissionKey).isEmpty();
+    }
+
+    public boolean isEmpty() {
+        return permissions.isEmpty();
+    }
 }
