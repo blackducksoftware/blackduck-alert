@@ -21,9 +21,9 @@ function fetchingDescriptors() {
 function descriptorsFetched(descriptors) {
     if (descriptors) {
         const sortedList = descriptors.sort((first, second) => {
-            if (first.label < second.label) {
+            if (first.descriptorMetadata.label < second.descriptorMetadata.label) {
                 return -1;
-            } else if (first.label > second.label) {
+            } else if (first.descriptorMetadata.label > second.descriptorMetadata.label) {
                 return 1;
             }
             return 0;

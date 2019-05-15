@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.controller.metadata;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -36,23 +37,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.filter.FieldsFilter;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.web.model.RestrictedDescriptorMetadata;
 
 @RestController
 public class DescriptorController extends MetadataController {
     public static final String DESCRIPTORS_PATH = "/descriptors";
 
     private final Collection<Descriptor> descriptors;
+    private final Collection<FieldsFilter> fieldsFilters;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public DescriptorController(final Collection<Descriptor> descriptors) {
+    public DescriptorController(final Collection<Descriptor> descriptors, final Collection<FieldsFilter> fieldsFilters, final AuthorizationManager authorizationManager) {
         this.descriptors = descriptors;
+        this.fieldsFilters = fieldsFilters;
+        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping(DESCRIPTORS_PATH)
-    public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
+    public Set<RestrictedDescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
         Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
             filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getName()));
@@ -83,7 +92,7 @@ public class DescriptorController extends MetadataController {
                    .collect(Collectors.toSet());
     }
 
-    private Set<DescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
+    private Set<RestrictedDescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
         final ConfigContextEnum[] applicableContexts;
         if (context != null) {
             applicableContexts = new ConfigContextEnum[] { context };
@@ -91,14 +100,47 @@ public class DescriptorController extends MetadataController {
             applicableContexts = ConfigContextEnum.values();
         }
 
-        final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
+        final Set<RestrictedDescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
                 final Optional<DescriptorMetadata> optionalMetaData = descriptor.getMetaData(applicableContext);
-                optionalMetaData.ifPresent(descriptorMetadata::add);
+                optionalMetaData.flatMap(this::filterFieldsByPermissions).ifPresent(descriptorMetadata::add);
             }
         }
         return descriptorMetadata;
+    }
+
+    private Optional<RestrictedDescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
+        final String descriptorName = descriptorMetadata.getName();
+        final ConfigContextEnum context = descriptorMetadata.getContext();
+        final Optional<FieldsFilter> matchingFieldsFilter = fieldsFilters
+                                                                .stream()
+                                                                .filter(fieldsFilter -> fieldsFilter.getContext() == context && fieldsFilter.getDescriptorName().equals(descriptorName))
+                                                                .findFirst();
+        if (matchingFieldsFilter.isPresent()) {
+            final List<ConfigField> fields = descriptorMetadata.getFields();
+            final List<ConfigField> filteredFields = matchingFieldsFilter.get().filter(fields);
+            descriptorMetadata.setFields(filteredFields);
+        }
+
+        final String permissionKey = AuthorizationManager.generateConfigPermissionKey(context.name(), descriptorName);
+        return restrictMetaData(descriptorMetadata, permissionKey);
+    }
+
+    private Optional<RestrictedDescriptorMetadata> restrictMetaData(final DescriptorMetadata descriptorMetadata, final String permissionKey) {
+        final boolean hasReadPermission = authorizationManager.hasReadPermission(permissionKey);
+        if (!hasReadPermission) {
+            return Optional.empty();
+        }
+
+        final boolean hasExecutePermission = authorizationManager.hasExecutePermission(permissionKey);
+        final boolean hasCreatePermission = authorizationManager.hasCreatePermission(permissionKey);
+        final boolean hasWritePermission = authorizationManager.hasWritePermission(permissionKey);
+        final boolean hasDeletePermission = authorizationManager.hasDeletePermission(permissionKey);
+        final boolean isReadOnly = authorizationManager.isReadOnly(permissionKey);
+
+        final RestrictedDescriptorMetadata restrictedDescriptorMetadata = new RestrictedDescriptorMetadata(descriptorMetadata, hasCreatePermission && hasWritePermission, hasExecutePermission, hasDeletePermission, isReadOnly);
+        return Optional.of(restrictedDescriptorMetadata);
     }
 
 }

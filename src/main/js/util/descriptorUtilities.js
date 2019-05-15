@@ -23,7 +23,7 @@ export function findDescriptorByNameAndContext(descriptorList, descriptorName, c
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter(descriptor => descriptor.name === descriptorName && descriptor.context === context);
+    const resultList = descriptorList.filter(descriptor => descriptor.descriptorMetadata.name === descriptorName && descriptor.descriptorMetadata.context === context);
     if (!resultList) {
         return null;
     }
@@ -35,7 +35,7 @@ export function findDescriptorByTypeAndContext(descriptorList, descriptorType, c
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter(descriptor => descriptor.type === descriptorType && descriptor.context === context);
+    const resultList = descriptorList.filter(descriptor => descriptor.descriptorMetadata.type === descriptorType && descriptor.descriptorMetadata.context === context);
     if (!resultList) {
         return null;
     }

@@ -20,7 +20,7 @@ class GlobalConfiguration extends React.Component {
         this.handleTest = this.handleTest.bind(this);
         this.handleTestCancel = this.handleTestCancel.bind(this);
 
-        const { fields, name } = this.props.descriptor;
+        const { fields, name } = this.props.descriptor.descriptorMetadata;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
         const fieldModel = FieldModelUtilities.createEmptyFieldModelFromFieldObject(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
         this.state = {
@@ -39,7 +39,7 @@ class GlobalConfiguration extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
-            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
+            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.descriptorMetadata.name);
             this.setState({
                 currentConfig: newState
             });
@@ -56,7 +56,7 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFieldLabel } = this.state.currentDescriptor;
+        const { testFieldLabel } = this.state.currentDescriptor.descriptorMetadata;
         if (testFieldLabel) {
             this.setState({
                 showTest: true,
@@ -90,7 +90,7 @@ class GlobalConfiguration extends React.Component {
     render() {
         const {
             fontAwesomeIcon, label, description, fields, name, type
-        } = this.state.currentDescriptor;
+        } = this.state.currentDescriptor.descriptorMetadata;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
         const displayTest = type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT;
