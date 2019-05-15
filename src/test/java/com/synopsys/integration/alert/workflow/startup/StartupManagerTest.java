@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
@@ -65,7 +64,7 @@ public class StartupManagerTest {
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, proxyManager,
+        final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, proxyManager,
             taskManager);
 
         startupManager.logConfiguration();
@@ -84,7 +83,6 @@ public class StartupManagerTest {
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
-        final OnDemandTask onDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
         final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
@@ -97,7 +95,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
+        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
             proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
@@ -115,7 +113,6 @@ public class StartupManagerTest {
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
-        final OnDemandTask onDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
         final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
@@ -140,7 +137,7 @@ public class StartupManagerTest {
 
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
+        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
             proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
@@ -158,7 +155,6 @@ public class StartupManagerTest {
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
-        final OnDemandTask onDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
         final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
@@ -176,7 +172,7 @@ public class StartupManagerTest {
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
-        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
+        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
             proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
@@ -194,7 +190,6 @@ public class StartupManagerTest {
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
-        final OnDemandTask onDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
         final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
@@ -210,7 +205,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         // TODO enable SAML support
         // final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
+        final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
             proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
