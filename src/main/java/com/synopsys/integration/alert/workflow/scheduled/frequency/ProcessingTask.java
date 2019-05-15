@@ -35,20 +35,20 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final DefaultNotificationManager notificationManager;
+    private final NotificationManager notificationManager;
     private final NotificationProcessor notificationProcessor;
     private final EventManager eventManager;
     private ZonedDateTime lastRunTime;
 
-    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final DefaultNotificationManager notificationManager, final NotificationProcessor notificationProcessor,
+    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor,
         final EventManager eventManager) {
         super(taskScheduler, taskName);
         this.notificationManager = notificationManager;

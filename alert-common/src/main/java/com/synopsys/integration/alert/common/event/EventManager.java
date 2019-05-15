@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class EventManager {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public EventManager(final ContentConverter contentConverter, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
+    public EventManager(final ContentConverter contentConverter, @Lazy final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
         this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
