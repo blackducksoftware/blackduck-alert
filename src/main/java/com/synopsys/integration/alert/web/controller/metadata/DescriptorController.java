@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.filter.FieldsFilter;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -50,13 +49,11 @@ public class DescriptorController extends MetadataController {
     public static final String DESCRIPTORS_PATH = "/descriptors";
 
     private final Collection<Descriptor> descriptors;
-    private final Collection<FieldsFilter> fieldsFilters;
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public DescriptorController(final Collection<Descriptor> descriptors, final Collection<FieldsFilter> fieldsFilters, final AuthorizationManager authorizationManager) {
+    public DescriptorController(final Collection<Descriptor> descriptors, final AuthorizationManager authorizationManager) {
         this.descriptors = descriptors;
-        this.fieldsFilters = fieldsFilters;
         this.authorizationManager = authorizationManager;
     }
 
@@ -113,17 +110,13 @@ public class DescriptorController extends MetadataController {
     private Optional<RestrictedDescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
         final String descriptorName = descriptorMetadata.getName();
         final ConfigContextEnum context = descriptorMetadata.getContext();
-        final Optional<FieldsFilter> matchingFieldsFilter = fieldsFilters
-                                                                .stream()
-                                                                .filter(fieldsFilter -> fieldsFilter.getContext() == context && fieldsFilter.getDescriptorName().equals(descriptorName))
-                                                                .findFirst();
-        if (matchingFieldsFilter.isPresent()) {
-            final List<ConfigField> fields = descriptorMetadata.getFields();
-            final List<ConfigField> filteredFields = matchingFieldsFilter.get().filter(fields);
-            descriptorMetadata.setFields(filteredFields);
-        }
-
         final String permissionKey = AuthorizationManager.generateConfigPermissionKey(context.name(), descriptorName);
+
+        List<ConfigField> filteredFields = descriptorMetadata.getFields();
+        if (!authorizationManager.hasPermissions(permissionKey)) {
+            filteredFields = List.of();
+        }
+        descriptorMetadata.setFields(filteredFields);
         return restrictMetaData(descriptorMetadata, permissionKey);
     }
 

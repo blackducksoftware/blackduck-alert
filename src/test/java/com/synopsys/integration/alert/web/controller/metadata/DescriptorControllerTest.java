@@ -158,7 +158,7 @@ public class DescriptorControllerTest {
         Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasCreatePermission(Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasExecutePermission(Mockito.anyString());
-        return new DescriptorController(descriptors, List.of(), authorizationManager);
+        return new DescriptorController(descriptors, authorizationManager);
     }
 
     private Set<Descriptor> createComprehensiveSetOfDescriptors() {
