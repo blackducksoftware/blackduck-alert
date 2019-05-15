@@ -34,14 +34,14 @@ import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class DistributionChannel extends MessageReceiver {
+public abstract class DistributionChannel extends MessageReceiver<DistributionEvent> {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
     private final AuditUtility auditUtility;
     private final AlertProperties alertProperties;
     private final String distributionType;
 
     public DistributionChannel(final String distributionType, final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
-        super(gson);
+        super(gson, DistributionEvent.class);
         this.distributionType = distributionType;
         this.alertProperties = alertProperties;
         this.auditUtility = auditUtility;
