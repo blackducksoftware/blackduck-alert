@@ -10,12 +10,15 @@ import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
+import { LoadComponent } from 'dynamic/LoadComponent';
 
 
 class MainPage extends Component {
     constructor(props) {
         super(props);
+
         this.createRoutesForDescriptors = this.createRoutesForDescriptors.bind(this);
+        this.createConfigurationPage = this.createConfigurationPage.bind(this);
     }
 
     componentDidMount() {
@@ -32,8 +35,17 @@ class MainPage extends Component {
         if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
-        const routeList = descriptorList.map(component => <Route key={component.urlName} path={`${uriPrefix}${component.urlName}`} render={() => <GlobalConfiguration key={component.name} descriptor={component} />} />);
+        const routeList = descriptorList.map(component => this.createConfigurationPage(component, uriPrefix));
         return routeList;
+    }
+
+    async createConfigurationPage(component, uriPrefix) {
+        const { urlName, name, automaticallyGenerateUI, componentPath } = component;
+        if (automaticallyGenerateUI) {
+            return (<Route key={urlName} path={`${uriPrefix}${urlName}`} render={() => <LoadComponent resolve={() => import(componentPath)} />} />);
+        }
+
+        return (<Route key={urlName} path={`${uriPrefix}${urlName}`} render={() => <GlobalConfiguration key={name} descriptor={component} />} />);
     }
 
     render() {
