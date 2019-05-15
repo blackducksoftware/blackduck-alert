@@ -72,7 +72,7 @@ public class PermissionMatrixModel {
         }
 
         EnumSet<AccessOperation> operations = permissions.get(permissionKey);
-        return operations.size() == 1 && operations.contains(AccessOperation.READ);
+        return operations.contains(AccessOperation.READ) && !operations.contains(AccessOperation.CREATE) && !operations.contains(AccessOperation.WRITE);
     }
 
     public boolean isEmpty() {
