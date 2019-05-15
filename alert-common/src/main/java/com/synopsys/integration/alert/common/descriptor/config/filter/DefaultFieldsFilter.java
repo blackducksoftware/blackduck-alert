@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,22 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.scheduling;
+package com.synopsys.integration.alert.common.descriptor.config.filter;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.config.filter.DefaultFieldsFilter;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 
-@Component
-public class SchedulingFieldsFilter extends DefaultFieldsFilter {
+public class DefaultFieldsFilter extends FieldsFilter {
+    public DefaultFieldsFilter(final String descriptorName, final ConfigContextEnum context,
+        final AuthorizationManager authorizationManager) {
+        super(descriptorName, context, authorizationManager);
+    }
 
-    @Autowired
-    public SchedulingFieldsFilter(final AuthorizationManager authorizationManager) {
-        super(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, authorizationManager);
+    @Override
+    public List<ConfigField> excludeFields(final List<ConfigField> fields) {
+        return fields;
     }
 }
-

@@ -139,7 +139,7 @@ public class DescriptorController extends MetadataController {
         final boolean hasDeletePermission = authorizationManager.hasDeletePermission(permissionKey);
         final boolean isReadOnly = authorizationManager.isReadOnly(permissionKey);
 
-        final RestrictedDescriptorMetadata restrictedDescriptorMetadata = new RestrictedDescriptorMetadata(descriptorMetadata, hasCreatePermission && hasWritePermission, hasExecutePermission, hasDeletePermission, isReadOnly);
+        final RestrictedDescriptorMetadata restrictedDescriptorMetadata = new RestrictedDescriptorMetadata(descriptorMetadata, hasCreatePermission || hasWritePermission, hasExecutePermission, hasDeletePermission, isReadOnly);
         return Optional.of(restrictedDescriptorMetadata);
     }
 

@@ -22,27 +22,19 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.filter.FieldsFilter;
+import com.synopsys.integration.alert.common.descriptor.config.filter.DefaultFieldsFilter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 @Component
-public class SettingsFieldFilter extends FieldsFilter {
+public class SettingsFieldFilter extends DefaultFieldsFilter {
 
     @Autowired
     public SettingsFieldFilter(final AuthorizationManager authorizationManager) {
         super(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL, authorizationManager);
-    }
-
-    @Override
-    public List<ConfigField> excludeFields(final List<ConfigField> fields) {
-        return fields;
     }
 }
