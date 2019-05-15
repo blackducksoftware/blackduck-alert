@@ -22,16 +22,50 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionApi;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class PolarisDistributionDescriptorActionApi extends DescriptorActionApi {
+    private final ProviderDataAccessor polarisDataAccessor;
+
+    @Autowired
+    public PolarisDistributionDescriptorActionApi(final ProviderDataAccessor polarisDataAccessor) {
+        this.polarisDataAccessor = polarisDataAccessor;
+    }
+
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        // FIXME implement
+        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
+        final Optional<String> projectNamePattern = fieldAccessor.getString(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN);
+        if (projectNamePattern.isPresent()) {
+            validatePatternMatchesProject(projectNamePattern.get());
+        }
+    }
+
+    private void validatePatternMatchesProject(final String projectNamePattern) throws AlertFieldException {
+        final List<ProviderProject> polarisProjects = polarisDataAccessor.findByProviderName(PolarisProvider.COMPONENT_NAME);
+        final boolean noProjectsMatchPattern = polarisProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
+        if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
+            final Map<String, String> fieldErrors = new HashMap<>();
+            fieldErrors.put(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
+            throw new AlertFieldException(fieldErrors);
+        }
     }
 }
