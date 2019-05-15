@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -93,14 +94,11 @@ public class UpdateChecker {
     }
 
     private List<String> getVersionCandidates(final DockerTagsResponseModel tagsResponseModel) {
-        final List<String> versionCandidates = new LinkedList<>();
-        for (final DockerTagModel tagModel : tagsResponseModel.getResults()) {
-            final String versionName = tagModel.getName();
-            if (isProductionVersion(versionName)) {
-                versionCandidates.add(versionName);
-            }
-        }
-        return versionCandidates;
+        return tagsResponseModel.getResults()
+                   .stream()
+                   .map(DockerTagModel::getName)
+                   .filter(this::isProductionVersion)
+                   .collect(Collectors.toList());
     }
 
     private boolean isProductionVersion(final String version) {
