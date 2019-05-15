@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum SystemMessageType {
+    UPDATE_AVAILABLE,
     DEFAULT_ADMIN_USER_ERROR,
     ENCRYPTION_CONFIGURATION_ERROR,
     PROXY_CONFIGURATION_ERROR,
