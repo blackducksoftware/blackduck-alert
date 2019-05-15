@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.settings;
+package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.List;
 
@@ -31,14 +31,14 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.filter.FieldsFilter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 
 @Component
-public class SettingsFieldFilter extends FieldsFilter {
+public class SchedulingFieldsFilter extends FieldsFilter {
 
     @Autowired
-    public SettingsFieldFilter(final AuthorizationManager authorizationManager) {
-        super(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL, authorizationManager);
+    public SchedulingFieldsFilter(final AuthorizationManager authorizationManager) {
+        super(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, authorizationManager);
     }
 
     @Override
@@ -46,3 +46,4 @@ public class SettingsFieldFilter extends FieldsFilter {
         return fields;
     }
 }
+

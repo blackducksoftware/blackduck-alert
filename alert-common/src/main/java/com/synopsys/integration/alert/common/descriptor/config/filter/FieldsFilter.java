@@ -31,10 +31,12 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 public abstract class FieldsFilter {
     private final String descriptorName;
     private final ConfigContextEnum context;
+    private final AuthorizationManager authorizationManager;
 
-    public FieldsFilter(final String descriptorName, final ConfigContextEnum context) {
+    public FieldsFilter(final String descriptorName, final ConfigContextEnum context, final AuthorizationManager authorizationManager) {
         this.descriptorName = descriptorName;
         this.context = context;
+        this.authorizationManager = authorizationManager;
     }
 
     public final String createPermissionKey() {
@@ -49,5 +51,19 @@ public abstract class FieldsFilter {
         return context;
     }
 
-    public abstract List<ConfigField> filter(List<ConfigField> fields);
+    public final AuthorizationManager getAuthorizationManager() {
+        return authorizationManager;
+    }
+
+    public final List<ConfigField> filter(final List<ConfigField> fields) {
+        final String permissionKey = createPermissionKey();
+        if (!authorizationManager.hasPermissions(permissionKey)) {
+            return List.of();
+        }
+
+        return excludeFields(fields);
+    }
+
+    public abstract List<ConfigField> excludeFields(List<ConfigField> fields);
+
 }
