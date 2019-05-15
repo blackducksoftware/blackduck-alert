@@ -34,6 +34,11 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> {
     @Override
     public void handleEvent(final NotificationEvent event) {
         if (event.getDestination().equals(NotificationEvent.NOTIFICATION_EVENT_TYPE)) {
+            if (null == event.getNotificationIds() || event.getNotificationIds().isEmpty()) {
+                logger.warn("Can not process a notification event without notification Id's.");
+                return;
+            }
+            logger.info("Processing event for %s notifications.", event.getNotificationIds().size());
             final List<AlertNotificationWrapper> notifications = notificationManager.findByIds(event.getNotificationIds());
             final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
             eventManager.sendEvents(distributionEvents);
