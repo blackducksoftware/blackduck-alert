@@ -93,7 +93,8 @@ class GlobalConfiguration extends React.Component {
         } = this.state.currentDescriptor.descriptorMetadata;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
-        const displayTest = type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT;
+        const displayTest = this.state.currentDescriptor.showTest;
+        const displaySave = this.state.currentDescriptor.showSave;
 
         return (
             <div>
@@ -104,7 +105,7 @@ class GlobalConfiguration extends React.Component {
                     <div>
                         <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
-                    <ConfigButtons includeSave includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
+                    <ConfigButtons includeSave={displaySave} includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
                     <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
                 </form>
             </div>

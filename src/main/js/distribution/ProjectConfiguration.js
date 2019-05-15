@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { BootstrapTable, ReactBsTable, TableHeaderColumn } from 'react-bootstrap-table';
-
-import CheckboxInput from 'field/input/CheckboxInput';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getProjects } from 'store/actions/projects';
-import TextInput from 'field/input/TextInput';
-
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 function assignClassName(row, rowIdx) {
     return 'tableRow';
@@ -132,6 +127,23 @@ class ProjectConfiguration extends Component {
         return projectData;
     }
 
+    createRowSelectionProps() {
+        const { readOnly } = this.props;
+
+        if (readOnly) {
+            return {};
+        }
+
+        return {
+            mode: 'checkbox',
+            clickToSelect: true,
+            showOnlySelected: true,
+            selected: this.state.configuredProjects,
+            onSelect: this.onRowSelected,
+            onSelectAll: this.onRowSelectedAll
+        };
+    }
+
     render() {
         const projectTableOptions = {
             noDataText: 'No projects found',
@@ -140,14 +152,7 @@ class ProjectConfiguration extends Component {
             defaultSortOrder: 'asc'
         };
 
-        const projectsSelectRowProp = {
-            mode: 'checkbox',
-            clickToSelect: true,
-            showOnlySelected: true,
-            selected: this.state.configuredProjects,
-            onSelect: this.onRowSelected,
-            onSelectAll: this.onRowSelectedAll
-        };
+        const projectsSelectRowProp = this.createRowSelectionProps();
 
         let projectSelectionDiv = null;
         if (!this.state.includeAllProjects) {
@@ -197,7 +202,8 @@ ProjectConfiguration.defaultProps = {
     errorMsg: null,
     fieldErrors: {},
     includeAllProjects: true,
-    includeAllProjectsError: ''
+    includeAllProjectsError: '',
+    readOnly: false
 };
 
 ProjectConfiguration.propTypes = {
@@ -209,7 +215,8 @@ ProjectConfiguration.propTypes = {
     errorMsg: PropTypes.string,
     fieldErrors: PropTypes.object,
     getProjects: PropTypes.func.isRequired,
-    handleProjectChanged: PropTypes.func.isRequired
+    handleProjectChanged: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 const mapStateToProps = state => ({

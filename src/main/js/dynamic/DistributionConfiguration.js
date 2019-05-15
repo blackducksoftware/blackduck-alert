@@ -193,10 +193,14 @@ class DistributionConfiguration extends Component {
     }
 
     renderProviderForm() {
-        const { providerConfig, currentProvider, channelConfig } = this.state;
+        const { providerConfig, currentProvider, channelConfig, currentChannel } = this.state;
         const updatedProviderFields = Object.assign({}, currentProvider);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT);
         const removeProject = updatedProviderFields.descriptorMetadata.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
+        const displayTest = currentChannel.showTest;
+        const displaySave = currentChannel.showSave;
+        const isReadOnly = currentChannel.readOnly;
+
         let removedFields = Object.assign(updatedProviderFields, { descriptorMetadata: { fields: removeProject } });
         if (filterByProject) {
             const removePattern = updatedProviderFields.descriptorMetadata.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
@@ -214,8 +218,9 @@ class DistributionConfiguration extends Component {
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerConfig, KEY_CONFIGURED_PROJECT)}
                     projectNamePattern={FieldModelUtilities.getFieldModelSingleValueOrDefault(providerConfig, KEY_PROJECT_NAME_PATTERN, '')}
                     fieldErrors={this.props.fieldErrors}
+                    readOnly={isReadOnly}
                 />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest={displayTest} includeSave={displaySave} includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
         );
