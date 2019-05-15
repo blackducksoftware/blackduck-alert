@@ -90,13 +90,7 @@ public class DescriptorController extends MetadataController {
     }
 
     private Set<RestrictedDescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
-        final ConfigContextEnum[] applicableContexts;
-        if (context != null) {
-            applicableContexts = new ConfigContextEnum[] { context };
-        } else {
-            applicableContexts = ConfigContextEnum.values();
-        }
-
+        final ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
         final Set<RestrictedDescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
@@ -116,6 +110,7 @@ public class DescriptorController extends MetadataController {
         if (!authorizationManager.hasPermissions(permissionKey)) {
             filteredFields = List.of();
         }
+
         descriptorMetadata.setFields(filteredFields);
         return restrictMetaData(descriptorMetadata, permissionKey);
     }
@@ -131,6 +126,10 @@ public class DescriptorController extends MetadataController {
         final boolean hasWritePermission = authorizationManager.hasWritePermission(permissionKey);
         final boolean hasDeletePermission = authorizationManager.hasDeletePermission(permissionKey);
         final boolean isReadOnly = authorizationManager.isReadOnly(permissionKey);
+
+        if (authorizationManager.isReadOnly(permissionKey)) {
+            descriptorMetadata.getFields().stream().forEach(field -> field.setReadOnly(isReadOnly));
+        }
 
         final RestrictedDescriptorMetadata restrictedDescriptorMetadata = new RestrictedDescriptorMetadata(descriptorMetadata, hasCreatePermission || hasWritePermission, hasExecutePermission, hasDeletePermission, isReadOnly);
         return Optional.of(restrictedDescriptorMetadata);
