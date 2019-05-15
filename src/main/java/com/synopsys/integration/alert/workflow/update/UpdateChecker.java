@@ -22,11 +22,11 @@
  */
 package com.synopsys.integration.alert.workflow.update;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -109,8 +109,8 @@ public class UpdateChecker {
 
     private boolean isComprisedOfNumericTokens(final String version) {
         final String[] versionTokens = StringUtils.split(version, VERSION_SEPARATOR);
-        return Arrays
-                   .stream(versionTokens)
+        return Stream
+                   .of(versionTokens)
                    .allMatch(NumberUtils::isParsable);
     }
 
