@@ -43,6 +43,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -58,12 +60,15 @@ public class DefaultNotificationManager implements NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
+    private final EventManager eventManager;
 
     @Autowired
-    public DefaultNotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
+    public DefaultNotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository,
+        final EventManager eventManager) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -71,6 +76,10 @@ public class DefaultNotificationManager implements NotificationManager {
         final List<AlertNotificationWrapper> notificationContents = notifications.stream()
                                                                         .map(notification -> notificationContentRepository.save((NotificationContent) notification))
                                                                         .collect(Collectors.toList());
+        final List<Long> notificationIds = notificationContents.stream()
+                                               .map(AlertNotificationWrapper::getId)
+                                               .collect(Collectors.toList());
+        eventManager.sendEvent(new NotificationEvent(notificationIds));
         return notificationContents;
     }
 

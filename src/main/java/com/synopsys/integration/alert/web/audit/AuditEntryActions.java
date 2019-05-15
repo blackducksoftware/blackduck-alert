@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.channel.ChannelTemplateManager;
+import com.synopsys.integration.alert.channel.EventManager;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
@@ -57,16 +57,16 @@ public class AuditEntryActions {
     private final AuditUtility auditUtility;
     private final DefaultNotificationManager notificationManager;
     private final JobConfigReader jobConfigReader;
-    private final ChannelTemplateManager channelTemplateManager;
+    private final EventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final JobConfigReader jobConfigReader, final ChannelTemplateManager channelTemplateManager,
+    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final JobConfigReader jobConfigReader, final EventManager eventManager,
         final NotificationProcessor notificationProcessor) {
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;
         this.jobConfigReader = jobConfigReader;
-        this.channelTemplateManager = channelTemplateManager;
+        this.eventManager = eventManager;
         this.notificationProcessor = notificationProcessor;
     }
 
@@ -118,7 +118,7 @@ public class AuditEntryActions {
             final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             notificationIdToAuditId.put(notificationContent.getId(), auditId);
             event.setNotificationIdToAuditId(notificationIdToAuditId);
-            channelTemplateManager.sendEvent(event);
+            eventManager.sendEvent(event);
         });
         return get();
     }
