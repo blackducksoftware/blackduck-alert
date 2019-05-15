@@ -193,4 +193,14 @@ public class SlackChannel extends DistributionChannel {
         return json.toString();
     }
 
+    @Override
+    public String getName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
+    }
+
 }

@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.event;
 import java.util.List;
 
 public class NotificationEvent extends AlertEvent {
-    public static String NOTIFICATION_EVENT_TYPE = "notification_event";
+    public static final String NOTIFICATION_EVENT_TYPE = "notification_event";
     private final List<Long> notificationIds;
 
     public NotificationEvent(final List<Long> notificationIds) {

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationEvent;
@@ -38,8 +39,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationMa
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 
-@Component
-public class NotificationReceiver extends MessageReceiver<NotificationEvent> {
+@Component(value = NotificationReceiver.COMPONENT_NAME)
+public class NotificationReceiver extends MessageReceiver<NotificationEvent> implements AlertEventListener {
+    public static final String COMPONENT_NAME = "notification_receiver";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationManager notificationManager;
     private final NotificationProcessor notificationProcessor;
@@ -67,5 +70,15 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> {
         } else {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);
         }
+    }
+
+    @Override
+    public String getName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return NotificationEvent.NOTIFICATION_EVENT_TYPE;
     }
 }

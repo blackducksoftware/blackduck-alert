@@ -20,11 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel;
+package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
-
-import javax.jms.MessageListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,31 +32,28 @@ import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-
 @Configuration
-public class ChannelListener implements JmsListenerConfigurer {
-    private final Logger logger = LoggerFactory.getLogger(ChannelListener.class);
+public class EventListenerConfigurer implements JmsListenerConfigurer {
+    private final Logger logger = LoggerFactory.getLogger(EventListenerConfigurer.class);
 
-    private final List<ChannelDescriptor> channelDescriptorList;
+    private final List<AlertEventListener> alertEventListeners;
 
     @Autowired
-    public ChannelListener(final List<ChannelDescriptor> channelDescriptorList) {
-        this.channelDescriptorList = channelDescriptorList;
+    public EventListenerConfigurer(final List<AlertEventListener> alertEventListeners) {
+        this.alertEventListeners = alertEventListeners;
     }
 
     @Override
     public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        channelDescriptorList.forEach(descriptor -> {
-            final MessageListener channelListener = descriptor.getChannelListener();
-            if (channelListener != null) {
-                final String listenerId = createListenerId(descriptor.getName());
+        alertEventListeners.forEach(listener -> {
+            if (listener != null) {
+                final String listenerId = createListenerId(listener.getName());
                 logger.info("Registering JMS Listener: {}", listenerId);
                 final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
                 endpoint.setId(listenerId);
-                endpoint.setDestination(descriptor.getDestinationName());
-                endpoint.setMessageListener(channelListener);
+                endpoint.setDestination(listener.getDestinationName());
+                endpoint.setMessageListener(listener);
                 registrar.registerEndpoint(endpoint);
             }
         });
