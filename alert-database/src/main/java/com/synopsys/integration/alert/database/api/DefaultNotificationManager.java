@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.api;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -66,8 +67,11 @@ public class DefaultNotificationManager implements NotificationManager {
     }
 
     @Override
-    public AlertNotificationWrapper saveNotification(final AlertNotificationWrapper notification) {
-        return notificationContentRepository.save((NotificationContent) notification);
+    public List<AlertNotificationWrapper> saveAllNotifications(final Collection<AlertNotificationWrapper> notifications) {
+        final List<AlertNotificationWrapper> notificationContents = notifications.stream()
+                                                                        .map(notification -> notificationContentRepository.save((NotificationContent) notification))
+                                                                        .collect(Collectors.toList());
+        return notificationContents;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
