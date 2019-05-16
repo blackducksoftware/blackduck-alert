@@ -19,11 +19,19 @@ export const DESCRIPTOR_NAME = {
     PROVIDER_BLACKDUCK: 'provider_blackduck'
 }
 
+export const OPERATIONS = {
+    CREATE: "CREATE",
+    DELETE: "DELETE",
+    READ: "READ",
+    WRITE: "WRITE",
+    EXECUTE: "EXECUTE"
+}
+
 export function findDescriptorByNameAndContext(descriptorList, descriptorName, context) {
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter(descriptor => descriptor.descriptorMetadata.name === descriptorName && descriptor.descriptorMetadata.context === context);
+    const resultList = descriptorList.filter(descriptor => descriptor.name === descriptorName && descriptor.context === context);
     if (!resultList) {
         return null;
     }
@@ -35,7 +43,7 @@ export function findDescriptorByTypeAndContext(descriptorList, descriptorType, c
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter(descriptor => descriptor.descriptorMetadata.type === descriptorType && descriptor.descriptorMetadata.context === context);
+    const resultList = descriptorList.filter(descriptor => descriptor.type === descriptorType && descriptor.context === context);
     if (!resultList) {
         return null;
     }
@@ -59,5 +67,16 @@ export function findDescriptorFieldOptions(descriptor, fieldKey) {
         return field.options;
     }
     return [];
+}
+
+export function isOneOperationAssigned(descriptor, operationArray) {
+    if (!operationArray) {
+        return false;
+    }
+    return operationArray.find(operation => isOperationAssigned(descriptor, operation)) !== undefined;
+}
+
+export function isOperationAssigned(descriptor, operationName) {
+    return descriptor.operations.find(operation => operation === operationName) !== undefined;
 }
 

@@ -1,12 +1,4 @@
-import {
-    DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
-    DESCRIPTORS_DISTRIBUTION_FETCHED,
-    DESCRIPTORS_DISTRIBUTION_FETCHING,
-    DESCRIPTORS_DISTRIBUTION_RESET,
-    DESCRIPTORS_FETCH_ERROR,
-    DESCRIPTORS_FETCHED,
-    DESCRIPTORS_FETCHING
-} from 'store/actions/types';
+import { DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
@@ -21,9 +13,9 @@ function fetchingDescriptors() {
 function descriptorsFetched(descriptors) {
     if (descriptors) {
         const sortedList = descriptors.sort((first, second) => {
-            if (first.descriptorMetadata.label < second.descriptorMetadata.label) {
+            if (first.label < second.label) {
                 return -1;
-            } else if (first.descriptorMetadata.label > second.descriptorMetadata.label) {
+            } else if (first.label > second.label) {
                 return 1;
             }
             return 0;

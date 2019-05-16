@@ -23,8 +23,7 @@ class Navigation extends Component {
             return null;
         }
 
-        const descriptorBodies = descriptorList.map(descriptor => descriptor.descriptorMetadata);
-        return descriptorBodies.map(component =>
+        return descriptorList.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
                     <FontAwesomeIcon icon={component.fontAwesomeIcon} fixedWidth /> {component.label}

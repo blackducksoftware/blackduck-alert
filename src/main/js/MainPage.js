@@ -34,9 +34,9 @@ class MainPage extends Component {
         }
         return descriptorList.map(component =>
             (<Route
-                key={component.descriptorMetadata.urlName}
-                path={`${uriPrefix}${component.descriptorMetadata.urlName}`}
-                render={() => <GlobalConfiguration key={component.descriptorMetadata.name} descriptor={component} />}
+                key={component.urlName}
+                path={`${uriPrefix}${component.urlName}`}
+                render={() => <GlobalConfiguration key={component.name} descriptor={component} />}
             />));
     }
 

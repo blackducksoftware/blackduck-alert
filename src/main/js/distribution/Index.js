@@ -7,6 +7,7 @@ import DescriptorLabel from 'component/common/DescriptorLabel';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { OPERATIONS } from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
@@ -289,7 +290,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                return descriptorList.some(descriptor => descriptor.showSave);
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.CREATE));
             }
         }
         return false;
@@ -300,7 +301,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                return descriptorList.some(descriptor => descriptor.showDelete);
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.DELETE));
             }
         }
         return false;

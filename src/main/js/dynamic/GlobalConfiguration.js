@@ -8,6 +8,7 @@ import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
 import ChannelTestModal from 'dynamic/ChannelTestModal';
@@ -20,7 +21,7 @@ class GlobalConfiguration extends React.Component {
         this.handleTest = this.handleTest.bind(this);
         this.handleTestCancel = this.handleTestCancel.bind(this);
 
-        const { fields, name } = this.props.descriptor.descriptorMetadata;
+        const { fields, name } = this.props.descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
         const fieldModel = FieldModelUtilities.createEmptyFieldModelFromFieldObject(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
         this.state = {
@@ -39,7 +40,7 @@ class GlobalConfiguration extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
-            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.descriptorMetadata.name);
+            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
             this.setState({
                 currentConfig: newState
             });
@@ -56,7 +57,7 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFieldLabel } = this.state.currentDescriptor.descriptorMetadata;
+        const { testFieldLabel } = this.state.currentDescriptor;
         if (testFieldLabel) {
             this.setState({
                 showTest: true,
@@ -90,11 +91,11 @@ class GlobalConfiguration extends React.Component {
     render() {
         const {
             fontAwesomeIcon, label, description, fields, name, type
-        } = this.state.currentDescriptor.descriptorMetadata;
+        } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
-        const displayTest = this.state.currentDescriptor.showTest;
-        const displaySave = this.state.currentDescriptor.showSave;
+        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE);
+        const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
 
         return (
             <div>
