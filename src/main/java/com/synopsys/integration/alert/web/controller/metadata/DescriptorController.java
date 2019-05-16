@@ -94,7 +94,7 @@ public class DescriptorController extends MetadataController {
         final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
-                final Optional<DescriptorMetadata> optionalMetaData = descriptor.getMetaData(applicableContext);
+                final Optional<DescriptorMetadata> optionalMetaData = descriptor.createMetaData(applicableContext);
                 optionalMetaData.flatMap(this::filterFieldsByPermissions).ifPresent(descriptorMetadata::add);
             }
         }
