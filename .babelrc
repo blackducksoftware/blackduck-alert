@@ -1,10 +1,10 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "browsers": ["last 2 versions", "safari >= 9", "ie >= 11"]
-      }
-    }],
-    "react"],
-  "plugins": ["transform-object-rest-spread"]
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-syntax-dynamic-import"
+  ]
 }

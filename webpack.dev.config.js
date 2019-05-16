@@ -10,7 +10,7 @@ module.exports = {
         modules: [path.resolve(__dirname, 'src', 'main', 'js'), 'node_modules'],
         extensions: ['.js']
     },
-    entry: ['babel-polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
+    entry: ['@babel/polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
     devtool: 'sourcemaps',
     output: {
         path: buildDir,

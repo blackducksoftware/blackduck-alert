@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { BootstrapTable, ReactBsTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { Modal, Tab, Tabs } from 'react-bootstrap';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import TextInput from 'field/input/TextInput';
@@ -47,14 +47,16 @@ class Details extends Component {
         }
         let errorStackTrace = null;
         if (row.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="textArea" label="Stack Trace" readOnly name="errorStackTrace" value={row.errorStackTrace} />;
+            errorStackTrace = <TextArea inputClass="textArea" label="Stack Trace" readOnly name="errorStackTrace"
+                                        value={row.errorStackTrace} />;
         }
 
         return (<div className="inline">{errorMessage}{errorStackTrace}</div>);
     }
 
     resendButton(cell, row) {
-        return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />);
+        return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
+                                           buttonText="Re-send" />);
     }
 
     flattenJobsForTable(jsonArray = []) {
@@ -133,11 +135,18 @@ class Details extends Component {
                                         pagination
                                         search
                                     >
-                                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell" dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton} />
+                                        <TableHeaderColumn dataField="name" dataSort columnTitle
+                                                           columnClassName="tableCell">Distribution
+                                            Job</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell"
+                                                           dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle
+                                                           columnClassName="tableCell">Time Last
+                                            Sent</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell"
+                                                           dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="" width="48" expandable={false}
+                                                           columnClassName="tableCell" dataFormat={this.resendButton} />
                                         <TableHeaderColumn dataField="configId" hidden>Job Id</TableHeaderColumn>
                                         <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>
                                     </BootstrapTable>
@@ -145,7 +154,8 @@ class Details extends Component {
                             </Tab>
                             <Tab eventKey={2} title="Notification Content">
                                 <div className="tableContainer">
-                                    <TextArea inputClass="auditContentTextArea" sizeClass="col-sm-12" label="" readOnly name="notificationContent" value={jsonPrettyPrintContent} />
+                                    <TextArea inputClass="auditContentTextArea" sizeClass="col-sm-12" label="" readOnly
+                                              name="notificationContent" value={jsonPrettyPrintContent} />
                                 </div>
                             </Tab>
                         </Tabs>

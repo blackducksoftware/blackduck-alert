@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-export class LoadComponent extends React.Component {
+export class LoadComponent extends Component {
     constructor(props) {
         super(props);
 
@@ -9,17 +10,24 @@ export class LoadComponent extends React.Component {
         };
     }
 
+    // after the initial render, wait for module to load
     async componentDidMount() {
-        const { resolve } = this.props;
-        const { default: module } = await resolve();
+        // Comment here to improve webpack performance.
+        const { default: module } = await import(/* webpackMode: "eager" */ `component/${this.props.componentPath}.js`);
         this.setState({ module });
     }
 
     render() {
         const { module } = this.state;
 
-        if (!module) return <div>Loading module...</div>;
+        if (!module) return <div>Loading...</div>;
         if (module.view) return React.createElement(module.view);
-        return null;
+        return (<div>There was an error retrieving your page.</div>);
     }
 }
+
+LoadComponent.propTypes = {
+    componentPath: PropTypes.string.isRequired
+};
+
+export default LoadComponent;

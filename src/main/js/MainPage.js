@@ -10,7 +10,7 @@ import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
-import { LoadComponent } from 'dynamic/LoadComponent';
+import LoadComponent from 'dynamic/LoadComponent';
 
 
 class MainPage extends Component {
@@ -39,13 +39,23 @@ class MainPage extends Component {
         return routeList;
     }
 
-    async createConfigurationPage(component, uriPrefix) {
-        const { urlName, name, automaticallyGenerateUI, componentPath } = component;
-        if (automaticallyGenerateUI) {
-            return (<Route key={urlName} path={`${uriPrefix}${urlName}`} render={() => <LoadComponent resolve={() => import(componentPath)} />} />);
+    createConfigurationPage(component, uriPrefix) {
+        const {
+            urlName, name, automaticallyGenerateUI, componentPath
+        } = component;
+        if (!automaticallyGenerateUI) {
+            return (<Route
+                key={urlName}
+                path={`${uriPrefix}${urlName}`}
+                render={() => <LoadComponent componentPath={componentPath} />}
+            />);
         }
 
-        return (<Route key={urlName} path={`${uriPrefix}${urlName}`} render={() => <GlobalConfiguration key={name} descriptor={component} />} />);
+        return (<Route
+            key={urlName}
+            path={`${uriPrefix}${urlName}`}
+            render={() => <GlobalConfiguration key={name} descriptor={component} />}
+        />);
     }
 
     render() {
@@ -81,6 +91,7 @@ MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDescriptors: PropTypes.func.isRequired
 };
+
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });

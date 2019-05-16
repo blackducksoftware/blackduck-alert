@@ -89,7 +89,10 @@ class Index extends Component {
     }
 
     onSizePerPageListChange(sizePerPage) {
-        this.setState({ currentPage: 1, currentPageSize: sizePerPage });
+        this.setState({
+            currentPage: 1,
+            currentPageSize: sizePerPage
+        });
 
         this.reloadAuditEntries(1, sizePerPage);
     }
@@ -108,12 +111,18 @@ class Index extends Component {
     }
 
     onSortChange(sortName, sortOrder) {
-        this.setState({ sortField: sortName, sortOrder });
+        this.setState({
+            sortField: sortName,
+            sortOrder
+        });
         this.reloadAuditEntries(null, null, null, sortName, sortOrder);
     }
 
     onRowClick(row) {
-        this.setState({ currentRowSelected: row, showDetailModal: true });
+        this.setState({
+            currentRowSelected: row,
+            showDetailModal: true
+        });
     }
 
     setEntriesFromArray(jsonArray = []) {
@@ -268,7 +277,8 @@ class Index extends Component {
 
     resendButton(cell, row) {
         if (row.content) {
-            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />);
+            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
+                                               buttonText="Re-send" />);
         }
         return (<div className="editJobButtonDisabled"><span className="fa fa-sync" /></div>);
     }
@@ -277,7 +287,8 @@ class Index extends Component {
         return (
             <ButtonGroup>
                 {!this.props.autoRefresh &&
-                <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
+                <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton"
+                     onClick={this.refreshAuditEntries}>
                     <span className="fa fa-sync fa-fw" aria-hidden="true" /> Refresh
                 </div>
                 }
@@ -373,11 +384,17 @@ class Index extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="provider" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
-                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
-                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
-                        <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                        <TableHeaderColumn dataField="provider" dataSort columnClassName="tableCell"
+                                           dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell"
+                                           dataFormat={this.notificationTypeDataFormat}>Notification
+                            Types</TableHeaderColumn>
+                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time
+                            Retrieved</TableHeaderColumn>
+                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last
+                            Sent</TableHeaderColumn>
+                        <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell"
+                                           dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
