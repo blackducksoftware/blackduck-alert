@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.api;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -42,6 +44,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -57,17 +61,27 @@ public class DefaultNotificationManager implements NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
+    private final EventManager eventManager;
 
     @Autowired
-    public DefaultNotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
+    public DefaultNotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository,
+        @Lazy final EventManager eventManager) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
+        this.eventManager = eventManager;
     }
 
     @Override
-    public AlertNotificationWrapper saveNotification(final AlertNotificationWrapper notification) {
-        return notificationContentRepository.save((NotificationContent) notification);
+    public List<AlertNotificationWrapper> saveAllNotifications(final Collection<AlertNotificationWrapper> notifications) {
+        final List<AlertNotificationWrapper> notificationContents = notifications.stream()
+                                                                        .map(notification -> notificationContentRepository.save((NotificationContent) notification))
+                                                                        .collect(Collectors.toList());
+        final List<Long> notificationIds = notificationContents.stream()
+                                               .map(AlertNotificationWrapper::getId)
+                                               .collect(Collectors.toList());
+        eventManager.sendEvent(new NotificationEvent(notificationIds));
+        return notificationContents;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)

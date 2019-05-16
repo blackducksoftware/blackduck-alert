@@ -45,7 +45,7 @@ public class HipChatDescriptor extends ChannelDescriptor {
     @Autowired
     public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorActionApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
         final HipChatGlobalDescriptorActionApi hipChatGlobalRestApi, final HipChatGlobalUIConfig hipChatGlobalUIConfig) {
-        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig);
+        super(HipChatChannel.COMPONENT_NAME, channelListener, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig);
     }
 
 }

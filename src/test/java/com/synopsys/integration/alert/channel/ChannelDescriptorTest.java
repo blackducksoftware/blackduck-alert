@@ -112,7 +112,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         if (ConfigContextEnum.DISTRIBUTION == context) {
             global_config.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
         }
-        final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), getDescriptor().getDestinationName(), context.name(), fieldValueMap);
+        final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), context.name(), fieldValueMap);
         return model;
     }
 
@@ -131,7 +131,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         invalidValuesMap.putAll(createInvalidDistributionFieldMap());
 
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
+        final FieldModel model = new FieldModel("1L", ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
         return model;
     }
 
@@ -149,7 +149,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     public FieldModel createInvalidGlobalFieldModel() {
         final Map<String, String> invalidValuesMap = createInvalidGlobalFieldMap();
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.GLOBAL.name(), fieldModelMap);
+        final FieldModel model = new FieldModel("1L", ConfigContextEnum.GLOBAL.name(), fieldModelMap);
         return model;
     }
 
@@ -234,7 +234,6 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final DistributionEvent channelEvent = createChannelEvent();
         assertEquals(String.valueOf(distribution_config.getConfigurationId()), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
     }
 
     @Test
