@@ -31,29 +31,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final DefaultNotificationManager notificationManager;
+    private final NotificationManager notificationManager;
     private final NotificationProcessor notificationProcessor;
-    private final ChannelTemplateManager channelTemplateManager;
+    private final EventManager eventManager;
     private ZonedDateTime lastRunTime;
 
-    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final DefaultNotificationManager notificationManager, final NotificationProcessor notificationProcessor,
-        final ChannelTemplateManager channelTemplateManager) {
+    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor,
+        final EventManager eventManager) {
         super(taskScheduler, taskName);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
-        this.channelTemplateManager = channelTemplateManager;
+        this.eventManager = eventManager;
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
     }
 
@@ -73,9 +73,9 @@ public abstract class ProcessingTask extends ScheduledTask {
     @Override
     public void runTask() {
         final DateRange dateRange = getDateRange();
-        final List<AlertNotificationWrapper> modelList = read(dateRange);
-        final List<DistributionEvent> eventList = process(modelList);
-        channelTemplateManager.sendEvents(eventList);
+        final List<AlertNotificationWrapper> notificationList = read(dateRange);
+        final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
+        eventManager.sendEvents(distributionEvents);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
     }
 
@@ -97,14 +97,5 @@ public abstract class ProcessingTask extends ScheduledTask {
             logger.error("Error reading Digest Notification Data", ex);
         }
         return List.of();
-    }
-
-    public List<DistributionEvent> process(final List<AlertNotificationWrapper> notificationList) {
-        logger.info("Notifications to Process: {}", notificationList.size());
-        if (notificationList.isEmpty()) {
-            return List.of();
-        } else {
-            return notificationProcessor.processNotifications(getDigestType(), notificationList);
-        }
     }
 }

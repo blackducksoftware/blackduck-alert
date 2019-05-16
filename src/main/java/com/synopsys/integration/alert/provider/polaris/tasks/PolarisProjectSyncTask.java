@@ -209,7 +209,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private void persistNotifications(final Collection<AlertNotificationWrapper> notificationsToSave) {
         logger.info("Generating {} new notifications", notificationsToSave.size());
-        notificationsToSave.forEach(notificationManager::saveNotification);
+        notificationManager.saveAllNotifications(notificationsToSave);
     }
 
     private Set<PolarisIssueModel> updatePreviousCounts(final String projectHref, final Set<PolarisIssueModel> polarisIssueModels) throws AlertDatabaseConstraintException {

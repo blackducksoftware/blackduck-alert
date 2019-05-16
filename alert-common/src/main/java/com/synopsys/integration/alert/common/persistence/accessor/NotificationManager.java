@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 
 public interface NotificationManager {
-    AlertNotificationWrapper saveNotification(final AlertNotificationWrapper notification);
+    List<AlertNotificationWrapper> saveAllNotifications(final Collection<AlertNotificationWrapper> notifications);
 
     List<AlertNotificationWrapper> findByIds(final List<Long> notificationIds);
 

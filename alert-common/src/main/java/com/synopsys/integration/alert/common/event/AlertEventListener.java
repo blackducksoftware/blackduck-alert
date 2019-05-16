@@ -20,14 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.event;
 
-public enum SystemMessageType {
-    UPDATE_AVAILABLE,
-    DEFAULT_ADMIN_USER_ERROR,
-    ENCRYPTION_CONFIGURATION_ERROR,
-    PROXY_CONFIGURATION_ERROR,
-    BLACKDUCK_PROVIDER_URL_MISSING,
-    BLACKDUCK_PROVIDER_CONNECTIVITY,
-    BLACKDUCK_PROVIDER_LOCALHOST
+import javax.jms.MessageListener;
+
+public interface AlertEventListener extends MessageListener {
+    String getDestinationName();
+
 }

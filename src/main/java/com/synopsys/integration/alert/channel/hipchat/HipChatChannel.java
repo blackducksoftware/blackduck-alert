@@ -62,7 +62,7 @@ public class HipChatChannel extends DistributionChannel {
 
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
-        super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
+        super(gson, alertProperties, auditUtility);
         this.restChannelUtility = restChannelUtility;
     }
 
@@ -178,4 +178,8 @@ public class HipChatChannel extends DistributionChannel {
         return json.toString();
     }
 
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
+    }
 }
