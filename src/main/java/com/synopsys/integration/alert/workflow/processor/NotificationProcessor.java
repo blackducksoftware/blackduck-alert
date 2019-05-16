@@ -58,10 +58,10 @@ public class NotificationProcessor {
         logger.info("Notifications to Process: {}", notificationList.size());
         if (notificationList.isEmpty()) {
             return List.of();
-        } else {
-            final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
-            return notificationToEventConverter.convertToEvents(messageContentList);
         }
+        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
+        return notificationToEventConverter.convertToEvents(messageContentList);
+        
     }
 
     public List<DistributionEvent> processNotifications(final CommonDistributionConfiguration commonDistributionConfig, final List<AlertNotificationWrapper> notificationList) {
