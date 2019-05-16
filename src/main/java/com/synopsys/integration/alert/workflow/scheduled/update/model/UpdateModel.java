@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.update.model;
+package com.synopsys.integration.alert.workflow.scheduled.update.model;
 
 import org.apache.commons.lang3.StringUtils;
 

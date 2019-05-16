@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.update;
+package com.synopsys.integration.alert.workflow.scheduled.update;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -39,9 +39,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.ProxyManager;
-import com.synopsys.integration.alert.workflow.update.model.DockerTagModel;
-import com.synopsys.integration.alert.workflow.update.model.DockerTagsResponseModel;
-import com.synopsys.integration.alert.workflow.update.model.UpdateModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;

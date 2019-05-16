@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.update;
+package com.synopsys.integration.alert.workflow.scheduled.update;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.workflow.update.model.DockerTagsResponseModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;

@@ -58,7 +58,7 @@ import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
-import com.synopsys.integration.alert.workflow.update.UpdateNotifierTask;
+import com.synopsys.integration.alert.workflow.scheduled.update.UpdateNotifierTask;
 
 @Configuration
 public class StartupManager {

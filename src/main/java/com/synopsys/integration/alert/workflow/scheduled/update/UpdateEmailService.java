@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.update;
+package com.synopsys.integration.alert.workflow.scheduled.update;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.workflow.update.model.UpdateModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 
 @Component
 public class UpdateEmailService {

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.update;
+package com.synopsys.integration.alert.workflow.scheduled.update;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
-import com.synopsys.integration.alert.workflow.update.model.UpdateModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 
 @Component
 public class UpdateNotifierTask extends ScheduledTask {

@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.workflow.update;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,8 +14,9 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.workflow.update.model.DockerTagModel;
-import com.synopsys.integration.alert.workflow.update.model.DockerTagsResponseModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.DockerTagRetriever;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
+import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
@@ -47,15 +49,15 @@ public class DockerTagRetrieverTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    public void getTagsModelTestIT() throws IntegrationException {
+    public void getTagsModelTestIT() {
         final IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         final IntHttpClient intHttpClient = new IntHttpClient(intLogger, 10, true, ProxyInfo.NO_PROXY_INFO);
 
         final Request testRequest = new Request.Builder("https://google.com").build();
         try (final Response googleResponse = intHttpClient.execute(testRequest)) {
+            googleResponse.throwExceptionForError();
         } catch (final IntegrationException | IOException e) {
-            intLogger.warn("Could not connect. Skipping this test...");
-            return;
+            assumeTrue(null == e, "Could not connect. Skipping this test...");
         }
 
         final DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
