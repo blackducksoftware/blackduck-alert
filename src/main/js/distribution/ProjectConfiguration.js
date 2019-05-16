@@ -144,6 +144,16 @@ class ProjectConfiguration extends Component {
         };
     }
 
+    createTableData() {
+        const { readOnly } = this.props;
+
+        if (readOnly) {
+            return this.state.projectData.filter(project => this.props.configuredProjects.find(selectedProject => project.name === selectedProject));
+        }
+
+        return this.state.projectData;
+    }
+
     render() {
         const projectTableOptions = {
             noDataText: 'No projects found',
@@ -153,13 +163,13 @@ class ProjectConfiguration extends Component {
         };
 
         const projectsSelectRowProp = this.createRowSelectionProps();
-
+        const tableData = this.createTableData();
         let projectSelectionDiv = null;
         if (!this.state.includeAllProjects) {
             projectSelectionDiv = (<div>
                 <BootstrapTable
                     version="4"
-                    data={this.state.projectData}
+                    data={tableData}
                     containerClass="table"
                     hover
                     condensed

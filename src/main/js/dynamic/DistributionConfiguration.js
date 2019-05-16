@@ -228,7 +228,6 @@ class DistributionConfiguration extends Component {
 
     render() {
         const { channelConfig, currentProvider, currentChannel } = this.state;
-        console.log(this.state);
         const selectedProvider = (currentProvider.descriptorMetadata) ? currentProvider.descriptorMetadata.name : null;
 
         return (
