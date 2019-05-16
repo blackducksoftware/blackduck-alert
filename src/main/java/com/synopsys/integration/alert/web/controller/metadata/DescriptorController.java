@@ -39,10 +39,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.web.model.RestrictedDescriptorMetadata;
 
 @RestController
 public class DescriptorController extends MetadataController {
@@ -58,7 +58,7 @@ public class DescriptorController extends MetadataController {
     }
 
     @GetMapping(DESCRIPTORS_PATH)
-    public Set<RestrictedDescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
+    public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
         Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
             filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getName()));
@@ -89,9 +89,9 @@ public class DescriptorController extends MetadataController {
                    .collect(Collectors.toSet());
     }
 
-    private Set<RestrictedDescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
+    private Set<DescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
         final ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
-        final Set<RestrictedDescriptorMetadata> descriptorMetadata = new HashSet<>();
+        final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
                 final Optional<DescriptorMetadata> optionalMetaData = descriptor.getMetaData(applicableContext);
@@ -101,7 +101,7 @@ public class DescriptorController extends MetadataController {
         return descriptorMetadata;
     }
 
-    private Optional<RestrictedDescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
+    private Optional<DescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
         final String descriptorName = descriptorMetadata.getName();
         final ConfigContextEnum context = descriptorMetadata.getContext();
         final String permissionKey = AuthorizationManager.generateConfigPermissionKey(context.name(), descriptorName);
@@ -115,24 +115,22 @@ public class DescriptorController extends MetadataController {
         return restrictMetaData(descriptorMetadata, permissionKey);
     }
 
-    private Optional<RestrictedDescriptorMetadata> restrictMetaData(final DescriptorMetadata descriptorMetadata, final String permissionKey) {
+    private Optional<DescriptorMetadata> restrictMetaData(final DescriptorMetadata descriptorMetadata, final String permissionKey) {
         final boolean hasReadPermission = authorizationManager.hasReadPermission(permissionKey);
         if (!hasReadPermission) {
             return Optional.empty();
         }
 
-        final boolean hasExecutePermission = authorizationManager.hasExecutePermission(permissionKey);
-        final boolean hasCreatePermission = authorizationManager.hasCreatePermission(permissionKey);
-        final boolean hasWritePermission = authorizationManager.hasWritePermission(permissionKey);
-        final boolean hasDeletePermission = authorizationManager.hasDeletePermission(permissionKey);
+        Set<AccessOperation> operationSet = authorizationManager.getOperations(permissionKey);
         final boolean isReadOnly = authorizationManager.isReadOnly(permissionKey);
+        descriptorMetadata.setOperations(operationSet);
+        descriptorMetadata.setReadOnly(isReadOnly);
 
         if (authorizationManager.isReadOnly(permissionKey)) {
             descriptorMetadata.getFields().stream().forEach(field -> field.setReadOnly(isReadOnly));
         }
 
-        final RestrictedDescriptorMetadata restrictedDescriptorMetadata = new RestrictedDescriptorMetadata(descriptorMetadata, hasCreatePermission || hasWritePermission, hasExecutePermission, hasDeletePermission, isReadOnly);
-        return Optional.of(restrictedDescriptorMetadata);
+        return Optional.of(descriptorMetadata);
     }
 
 }
