@@ -77,10 +77,12 @@ public class DefaultNotificationManager implements NotificationManager {
         final List<AlertNotificationWrapper> notificationContents = notifications.stream()
                                                                         .map(notification -> notificationContentRepository.save((NotificationContent) notification))
                                                                         .collect(Collectors.toList());
-        final List<Long> notificationIds = notificationContents.stream()
-                                               .map(AlertNotificationWrapper::getId)
-                                               .collect(Collectors.toList());
-        eventManager.sendEvent(new NotificationEvent(notificationIds));
+        if (!notificationContents.isEmpty()) {
+            final List<Long> notificationIds = notificationContents.stream()
+                                                   .map(AlertNotificationWrapper::getId)
+                                                   .collect(Collectors.toList());
+            eventManager.sendEvent(new NotificationEvent(notificationIds));
+        }
         return notificationContents;
     }
 
