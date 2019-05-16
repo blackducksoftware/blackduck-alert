@@ -23,8 +23,10 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -40,6 +42,8 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private final boolean automaticallyGenerateUI;
     private List<ConfigField> fields;
     private String testFieldLabel;
+    private Set<AccessOperation> operations;
+    private boolean readOnly;
 
     public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final ConfigContextEnum context, final String fontAwesomeIcon, final List<ConfigField> fields,
         final String testFieldLabel, final DescriptorType type) {
@@ -58,6 +62,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.fields = fields;
         this.testFieldLabel = testFieldLabel;
+        this.operations = Set.of();
     }
 
     public String getLabel() {
@@ -106,5 +111,21 @@ public class DescriptorMetadata extends AlertSerializableModel {
 
     public void setTestFieldLabel(final String testFieldLabel) {
         this.testFieldLabel = testFieldLabel;
+    }
+
+    public Set<AccessOperation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(final Set<AccessOperation> operations) {
+        this.operations = operations;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(final boolean readOnly) {
+        this.readOnly = readOnly;
     }
 }

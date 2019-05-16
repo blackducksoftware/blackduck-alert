@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -107,6 +108,15 @@ public class AuthorizationManager {
 
     public final boolean hasExecutePermission(final String permissionKey) {
         return currentUserHasPermission(permissionKey, AccessOperation.EXECUTE);
+    }
+
+    public final Set<AccessOperation> getOperations(final String permissionKey) {
+        Collection<String> roleNames = getCurrentUserRoleNames();
+        return roleNames.stream()
+                   .filter(permissionCache::containsKey)
+                   .map(permissionCache::get)
+                   .flatMap(object -> object.getOperations(permissionKey).stream())
+                   .collect(Collectors.toSet());
     }
 
     private boolean currentUserHasPermission(final String permissionKey, final AccessOperation operation) {

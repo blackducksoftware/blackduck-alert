@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 
@@ -73,6 +74,13 @@ public class PermissionMatrixModel {
 
         EnumSet<AccessOperation> operations = permissions.get(permissionKey);
         return operations.contains(AccessOperation.READ) && !operations.contains(AccessOperation.CREATE) && !operations.contains(AccessOperation.WRITE);
+    }
+
+    public Set<AccessOperation> getOperations(final String permissionKey) {
+        if (!permissions.containsKey(permissionKey)) {
+            return Set.of();
+        }
+        return Set.copyOf(permissions.get(permissionKey));
     }
 
     public boolean isEmpty() {
