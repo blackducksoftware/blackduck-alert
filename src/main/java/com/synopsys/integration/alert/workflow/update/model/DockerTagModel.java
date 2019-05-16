@@ -44,6 +44,18 @@ public class DockerTagModel extends AlertSerializableModel {
     public DockerTagModel() {
     }
 
+    public DockerTagModel(final String name, final Long fullSize, final List<Object> images, final Long id, final Long repository, final Long creator, final Long lastUpdater, final String lastUpdated, final boolean v2) {
+        this.name = name;
+        this.fullSize = fullSize;
+        this.images = images;
+        this.id = id;
+        this.repository = repository;
+        this.creator = creator;
+        this.lastUpdater = lastUpdater;
+        this.lastUpdated = lastUpdated;
+        this.v2 = v2;
+    }
+
     public String getName() {
         return name;
     }

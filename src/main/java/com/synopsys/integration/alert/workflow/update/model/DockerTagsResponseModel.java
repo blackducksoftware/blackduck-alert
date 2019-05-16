@@ -44,6 +44,13 @@ public class DockerTagsResponseModel extends AlertSerializableModel {
     public DockerTagsResponseModel() {
     }
 
+    public DockerTagsResponseModel(final int count, final String next, final String previous, final List<DockerTagModel> results) {
+        this.count = count;
+        this.next = next;
+        this.previous = previous;
+        this.results = results;
+    }
+
     public int getCount() {
         return count;
     }
