@@ -46,7 +46,7 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
     @Override
     public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        alertEventListeners.forEach(listener -> {
+        for (final AlertEventListener listener : alertEventListeners) {
             if (listener != null) {
                 final String listenerId = createListenerId(listener.getName());
                 logger.info("Registering JMS Listener: {}", listenerId);
@@ -56,7 +56,7 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
                 endpoint.setMessageListener(listener);
                 registrar.registerEndpoint(endpoint);
             }
-        });
+        }
     }
 
     private String createListenerId(final String name) {

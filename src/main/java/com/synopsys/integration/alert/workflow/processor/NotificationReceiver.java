@@ -58,7 +58,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
 
     @Override
     public void handleEvent(final NotificationEvent event) {
-        if (event.getDestination().equals(NotificationEvent.NOTIFICATION_EVENT_TYPE)) {
+        if (NotificationEvent.NOTIFICATION_EVENT_TYPE.equals(event.getDestination())) {
             if (null == event.getNotificationIds() || event.getNotificationIds().isEmpty()) {
                 logger.warn("Can not process a notification event without notification Id's.");
                 return;
