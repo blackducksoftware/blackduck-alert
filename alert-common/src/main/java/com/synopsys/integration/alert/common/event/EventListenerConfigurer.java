@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel;
+package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
 
@@ -32,32 +32,32 @@ import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
-
 @Configuration
-public class ChannelListener implements JmsListenerConfigurer {
-    private final Logger logger = LoggerFactory.getLogger(ChannelListener.class);
+public class EventListenerConfigurer implements JmsListenerConfigurer {
+    private final Logger logger = LoggerFactory.getLogger(EventListenerConfigurer.class);
 
-    private final List<DistributionChannel> distributionChannelList;
+    private final List<AlertEventListener> alertEventListeners;
 
     @Autowired
-    public ChannelListener(final List<DistributionChannel> distributionChannelList) {
-        this.distributionChannelList = distributionChannelList;
+    public EventListenerConfigurer(final List<AlertEventListener> alertEventListeners) {
+        this.alertEventListeners = alertEventListeners;
     }
 
     @Override
     public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        distributionChannelList.forEach(distributionChannel -> {
-            final String destinationName = distributionChannel.getDestinationName();
-            final String listenerId = createListenerId(destinationName);
-            logger.info("Registering JMS Listener: {}", listenerId);
-            final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-            endpoint.setId(listenerId);
-            endpoint.setDestination(destinationName);
-            endpoint.setMessageListener(distributionChannel);
-            registrar.registerEndpoint(endpoint);
-        });
+        for (final AlertEventListener listener : alertEventListeners) {
+            if (listener != null) {
+                final String destinationName = listener.getDestinationName();
+                final String listenerId = createListenerId(destinationName);
+                logger.info("Registering JMS Listener: {}", listenerId);
+                final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+                endpoint.setId(listenerId);
+                endpoint.setDestination(destinationName);
+                endpoint.setMessageListener(listener);
+                registrar.registerEndpoint(endpoint);
+            }
+        }
     }
 
     private String createListenerId(final String name) {

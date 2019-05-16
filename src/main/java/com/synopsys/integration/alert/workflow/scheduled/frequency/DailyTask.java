@@ -26,9 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
+import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 
 @Component
@@ -38,8 +38,8 @@ public class DailyTask extends ProcessingTask {
     public static final int DEFAULT_HOUR_OF_DAY = 0;
 
     @Autowired
-    public DailyTask(final TaskScheduler taskScheduler, final DefaultNotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
-        super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
+    public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final EventManager eventManager) {
+        super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, eventManager);
     }
 
     @Override

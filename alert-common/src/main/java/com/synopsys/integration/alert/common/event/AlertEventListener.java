@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,19 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.hipchat.actions;
+package com.synopsys.integration.alert.common.event;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import javax.jms.MessageListener;
 
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+public interface AlertEventListener extends MessageListener {
+    String getDestinationName();
 
-@Component
-public class HipChatDistributionTestAction extends ChannelDistributionTestAction {
-
-    @Autowired
-    public HipChatDistributionTestAction(final HipChatChannel hipChatChannel) {
-        super(hipChatChannel);
-    }
 }

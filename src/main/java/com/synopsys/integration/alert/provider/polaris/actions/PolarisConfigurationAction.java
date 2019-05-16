@@ -32,9 +32,10 @@ import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 public class PolarisConfigurationAction extends ConfigurationAction {
 
     @Autowired
-    public PolarisConfigurationAction(final PolarisGlobalApiAction polarisGlobalApiAction, final PolarisGlobalTestAction polarisGlobalTestAction) {
+    public PolarisConfigurationAction(final PolarisGlobalApiAction polarisGlobalApiAction, final PolarisGlobalTestAction polarisGlobalTestAction, final PolarisDistributionTestAction polarisDistributionTestAction) {
         super(PolarisProvider.COMPONENT_NAME);
         addGlobalApiAction(polarisGlobalApiAction);
         addGlobalTestAction(polarisGlobalTestAction);
+        addDistributionTestAction(polarisDistributionTestAction);
     }
 }

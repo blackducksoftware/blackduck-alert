@@ -57,7 +57,6 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManag
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.synopsys.integration.alert.workflow.scheduled.update.UpdateNotifierTask;
 
 @Configuration
@@ -67,7 +66,6 @@ public class StartupManager {
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
-    private final OnDemandTask onDemandTask;
     private final PurgeTask purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final UpdateNotifierTask updateNotifierTask;
@@ -82,13 +80,12 @@ public class StartupManager {
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final UpdateNotifierTask updateNotifierTask, final AlertStartupInitializer alertStartupInitializer,
+        final DailyTask dailyTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final UpdateNotifierTask updateNotifierTask, final AlertStartupInitializer alertStartupInitializer,
         final List<Provider> providers, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager,
         final TaskManager taskManager, final SAMLManager samlManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
-        this.onDemandTask = onDemandTask;
         this.purgeTask = purgeTask;
         this.phoneHomeTask = phoneHomeTask;
         this.updateNotifierTask = updateNotifierTask;
@@ -219,7 +216,6 @@ public class StartupManager {
         final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
         taskManager.registerTask(dailyTask);
         taskManager.registerTask(purgeTask);
-        taskManager.registerTask(onDemandTask);
         taskManager.registerTask(phoneHomeTask);
         taskManager.registerTask(updateNotifierTask);
 
@@ -227,15 +223,12 @@ public class StartupManager {
         taskManager.scheduleCronTask(purgeDataCron, purgeTask.getTaskName());
         taskManager.scheduleCronTask(PhoneHomeTask.CRON_EXPRESSION, phoneHomeTask.getTaskName());
         taskManager.scheduleCronTask(UpdateNotifierTask.CRON_EXPRESSION, updateNotifierTask.getTaskName());
-        taskManager.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS, onDemandTask.getTaskName());
 
         final String dailyDigestNextRun = taskManager.getNextRunTime(dailyTask.getTaskName()).orElse("");
-        final String onDemandNextRun = taskManager.getNextRunTime(onDemandTask.getTaskName()).orElse("");
         final String purgeNextRun = taskManager.getNextRunTime(purgeTask.getTaskName()).orElse("");
         final String phoneHomeNextRun = taskManager.getNextRunTime(phoneHomeTask.getTaskName()).orElse("");
 
         logger.info("Daily Digest next run:     {}", dailyDigestNextRun);
-        logger.info("On Demand next run:        {}", onDemandNextRun);
         logger.info("Purge Old Data next run:   {}", purgeNextRun);
         logger.debug("Phone home next run:       {}", phoneHomeNextRun);
     }

@@ -74,7 +74,7 @@ public class SlackChannel extends DistributionChannel {
 
     @Autowired
     public SlackChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
-        super(COMPONENT_NAME, gson, alertProperties, auditUtility);
+        super(gson, alertProperties, auditUtility);
         this.restChannelUtility = restChannelUtility;
     }
 
@@ -299,6 +299,11 @@ public class SlackChannel extends DistributionChannel {
         }
 
         return message.length() - 1;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
     }
 
 }
