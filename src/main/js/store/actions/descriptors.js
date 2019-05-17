@@ -1,12 +1,4 @@
-import {
-    DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
-    DESCRIPTORS_DISTRIBUTION_FETCHED,
-    DESCRIPTORS_DISTRIBUTION_FETCHING,
-    DESCRIPTORS_DISTRIBUTION_RESET,
-    DESCRIPTORS_FETCH_ERROR,
-    DESCRIPTORS_FETCHED,
-    DESCRIPTORS_FETCHING
-} from 'store/actions/types';
+import { DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
@@ -64,6 +56,6 @@ export function getDescriptors() {
                     dispatch(descriptorsFetched(json));
                 }
             });
-        }).catch(dispatch(descriptorsError(console.error)));
+        }).catch(dispatch(descriptorsError(console.error())));
     };
 }
