@@ -13,12 +13,12 @@ class Navigation extends Component {
         this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
     }
 
-    createNavItemForDescriptors(decriptorType, context, uriPrefix) {
+    createNavItemForDescriptors(descriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
         if (!descriptors) {
             return null;
         }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, decriptorType, context);
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, descriptorType, context);
         if (!descriptorList) {
             return null;
         }
@@ -60,11 +60,6 @@ class Navigation extends Component {
                         </li>
                         <li className="divider" />
                         {components}
-                        <li>
-                            <NavLink to="/alert/general/audit" activeClassName="activeNav">
-                                <FontAwesomeIcon icon="history" fixedWidth /> Audit
-                            </NavLink>
-                        </li>
                         <li>
                             <NavLink to="/alert/general/about" activeClassName="activeNav">
                                 <FontAwesomeIcon icon="info" fixedWidth /> About

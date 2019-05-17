@@ -1,4 +1,8 @@
 {
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "allowImportExportEverywhere": true
+  },
   "extends": "airbnb",
   "plugins": [
     "react",

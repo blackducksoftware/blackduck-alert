@@ -15,15 +15,14 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 
 public class ChannelDistributionUIConfigTest {
 
     @Test
-    public void createCommonConfigFieldsTest() throws AlertDatabaseConstraintException {
+    public void createCommonConfigFieldsTest() {
         final DescriptorMap descriptorAccessor = Mockito.mock(DescriptorMap.class);
         final Descriptor descriptor = Mockito.mock(Descriptor.class);
-        final DescriptorMetadata descriptorMetadata = new DescriptorMetadata("", "", "", "", DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "", false, List.of(), "");
+        final DescriptorMetadata descriptorMetadata = new DescriptorMetadata("", "", "", "", DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "", true, "", List.of(), "");
         Mockito.when(descriptor.getMetaData(Mockito.any())).thenReturn(Optional.of(descriptorMetadata));
         Mockito.when(descriptorAccessor.getDescriptorByType(DescriptorType.CHANNEL)).thenReturn(Set.of(descriptor));
 
