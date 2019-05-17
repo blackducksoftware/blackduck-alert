@@ -138,15 +138,22 @@ public class PolarisApiHelper {
 
     private Map<String, Integer> mapIssueTypeToCount(final String projectId, final String branchId, final List<IssueV0Resource> queryIssues) throws IntegrationException {
         final Map<String, Integer> issueTypeCounts = new HashMap<>();
+        final Map<String, String> issueTypeMap = new HashMap<>();
         for (final IssueV0Resource queryIssue : queryIssues) {
-            final String issueKey = queryIssue.getAttributes().getIssueKey();
-            final IssueResourcesSingle populatedIssueResource = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
             final String subTool = queryIssue.getAttributes().getSubTool();
-            final String issueType = issueService
-                                         .getIssueTypeFromPopulatedIssueResources(populatedIssueResource)
-                                         .map(IssueTypeV0Resource::getAttributes)
-                                         .map(IssueTypeV0Attributes::getName)
-                                         .orElse(subTool);
+            final String issueType;
+            if (issueTypeMap.containsKey(subTool)) {
+                issueType = issueTypeMap.get(subTool);
+            } else {
+                final String issueKey = queryIssue.getAttributes().getIssueKey();
+                final IssueResourcesSingle populatedIssueResource = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
+                issueType = issueService
+                                .getIssueTypeFromPopulatedIssueResources(populatedIssueResource)
+                                .map(IssueTypeV0Resource::getAttributes)
+                                .map(IssueTypeV0Attributes::getName)
+                                .orElse(subTool);
+                issueTypeMap.put(subTool, issueType);
+            }
             if (!issueTypeCounts.containsKey(issueType)) {
                 issueTypeCounts.put(issueType, 0);
             }
