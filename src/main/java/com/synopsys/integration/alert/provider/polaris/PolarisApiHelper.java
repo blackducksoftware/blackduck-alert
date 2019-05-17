@@ -141,30 +141,26 @@ public class PolarisApiHelper {
         final Map<String, String> issueTypeMap = new HashMap<>();
         for (final IssueV0Resource queryIssue : queryIssues) {
             final String subTool = queryIssue.getAttributes().getSubTool();
+            final String issueType;
             if (issueTypeMap.containsKey(subTool)) {
-                final String issueType = issueTypeMap.get(subTool);
-                updateIssueTypeCounts(issueTypeCounts, issueType);
+                issueType = issueTypeMap.get(subTool);
             } else {
                 final String issueKey = queryIssue.getAttributes().getIssueKey();
                 final IssueResourcesSingle populatedIssueResource = issueService.getIssueForProjectBranchAndIssueKeyWithDefaultIncluded(projectId, branchId, issueKey);
-                final String issueType = issueService
-                                             .getIssueTypeFromPopulatedIssueResources(populatedIssueResource)
-                                             .map(IssueTypeV0Resource::getAttributes)
-                                             .map(IssueTypeV0Attributes::getName)
-                                             .orElse(subTool);
+                issueType = issueService
+                                .getIssueTypeFromPopulatedIssueResources(populatedIssueResource)
+                                .map(IssueTypeV0Resource::getAttributes)
+                                .map(IssueTypeV0Attributes::getName)
+                                .orElse(subTool);
                 issueTypeMap.put(subTool, issueType);
-                updateIssueTypeCounts(issueTypeCounts, issueType);
             }
+            if (!issueTypeCounts.containsKey(issueType)) {
+                issueTypeCounts.put(issueType, 0);
+            }
+            final Integer tempCount = issueTypeCounts.get(issueType);
+            issueTypeCounts.put(issueType, tempCount + 1);
         }
         return issueTypeCounts;
-    }
-
-    private void updateIssueTypeCounts(final Map<String, Integer> issueTypeCounts, final String issueType) {
-        if (!issueTypeCounts.containsKey(issueType)) {
-            issueTypeCounts.put(issueType, 0);
-        }
-        final Integer tempCount = issueTypeCounts.get(issueType);
-        issueTypeCounts.put(issueType, tempCount + 1);
     }
 
     private Optional<String> getEmailForRoleAssignedUser(final RoleAssignmentResources populatedRoleAssignments, final RoleAssignmentResource roleAssignment) throws IntegrationException {
