@@ -32,20 +32,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 
 public interface NotificationContentRepository extends JpaRepository<NotificationContent, Long> {
     @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
-    List<AlertNotificationWrapper> findByCreatedAtBetween(final Date startDate, final Date endDate);
+    List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate);
 
     @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
-    List<AlertNotificationWrapper> findByCreatedAtBefore(final Date date);
+    List<NotificationContent> findByCreatedAtBefore(final Date date);
 
     @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
-    Page<AlertNotificationWrapper> findAllSentNotifications(final Pageable pageable);
+    Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
     @Query(value = "SELECT DISTINCT "
-                       + "notificationRow.id, notificationRow.createdAt, notificationRow.provider, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content "
+                       + "new NotificationContent(notificationRow.id, notificationRow.createdAt, notificationRow.provider, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
                        + "FROM NotificationContent notificationRow "
                        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
@@ -61,10 +60,10 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")
-    Page<AlertNotificationWrapper> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
+    Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
     @Query(value = "SELECT DISTINCT "
-                       + "notificationRow.id, notificationRow.createdAt, notificationRow.provider, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content "
+                       + "new NotificationContent(notificationRow.id, notificationRow.createdAt , notificationRow.provider, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
                        + "FROM NotificationContent notificationRow "
                        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
@@ -83,6 +82,6 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )"
                        + ")")
-    Page<AlertNotificationWrapper> findMatchingSentNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
+    Page<NotificationContent> findMatchingSentNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
 }
