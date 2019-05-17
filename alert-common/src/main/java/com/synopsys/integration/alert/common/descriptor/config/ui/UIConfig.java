@@ -71,7 +71,7 @@ public abstract class UIConfig extends AlertSerializableModel {
     }
 
     public boolean autoGenerateUI() {
-        return StringUtils.isBlank(getComponentPath());
+        return StringUtils.isNotBlank(getComponentPath());
     }
 
     public String getComponentPath() {

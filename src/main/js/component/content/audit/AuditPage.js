@@ -7,15 +7,15 @@ import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
-import AuditDetails from 'component/audit/Details';
+import AuditDetails from 'component/content/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import '../../../css/audit.scss';
+import '../../../../css/audit.scss';
 
 
-class Index extends Component {
+class AuditPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -410,7 +410,7 @@ class Index extends Component {
     }
 }
 
-Index.defaultProps = {
+AuditPage.defaultProps = {
     inProgress: false,
     message: '',
     autoRefresh: true,
@@ -420,7 +420,7 @@ Index.defaultProps = {
     items: []
 };
 
-Index.propTypes = {
+AuditPage.propTypes = {
     inProgress: PropTypes.bool,
     message: PropTypes.string,
     autoRefresh: PropTypes.bool,
@@ -447,4 +447,4 @@ const mapDispatchToProps = dispatch => ({
     resendNotification: (notificationId, commonConfigId, totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(resendNotification(notificationId, commonConfigId, totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default connect(mapStateToProps, mapDispatchToProps)(AuditPage);

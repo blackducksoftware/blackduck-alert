@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'Navigation';
-import Audit from 'component/audit/Index';
+import AuditPage from 'component/content/audit/AuditPage';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
-import LoadComponent from 'dynamic/LoadComponent';
+import DescriptorContentLoader from 'component/DescriptorContentLoader';
 
 
 class MainPage extends Component {
@@ -43,11 +43,12 @@ class MainPage extends Component {
         const {
             urlName, name, automaticallyGenerateUI, componentPath
         } = component;
-        if (!automaticallyGenerateUI) {
+        if (automaticallyGenerateUI) {
+            console.log("component: ", component);
             return (<Route
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <LoadComponent componentPath={componentPath} />}
+                render={() => <DescriptorContentLoader componentPath={componentPath} />}
             />);
         }
 
@@ -77,7 +78,7 @@ class MainPage extends Component {
                     {channels}
                     <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
                     {components}
-                    <Route path="/alert/general/audit" component={Audit} />
+                    <Route path="/alert/general/audit" component={AuditPage} />
                     <Route path="/alert/general/about" component={AboutInfo} />
                 </div>
                 <div className="modalsArea">
