@@ -23,8 +23,8 @@ import org.springframework.data.domain.PageRequest;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
+import com.synopsys.integration.alert.channel.event.ChannelEventManager;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -88,7 +88,7 @@ public class AuditEntryActionsTest {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        final EventManager eventManager = Mockito.mock(EventManager.class);
+        final ChannelEventManager eventManager = Mockito.mock(ChannelEventManager.class);
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         final MockNotificationContent mockNotificationEntity = new MockNotificationContent();

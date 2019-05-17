@@ -23,28 +23,22 @@
 package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 
 @Component
 public class EventManager {
     private final JmsTemplate jmsTemplate;
-    private final AuditUtility auditUtility;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public EventManager(final ContentConverter contentConverter, @Lazy final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
+    public EventManager(final ContentConverter contentConverter, final JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
-        this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
     }
 
@@ -56,20 +50,17 @@ public class EventManager {
     }
 
     @Transactional
-    public boolean sendEvent(final AlertEvent event) {
+    public void sendEvent(final AlertEvent event) {
         final String destination = event.getDestination();
-        if (event instanceof DistributionEvent) {
-            final DistributionEvent distributionEvent = (DistributionEvent) event;
-            final UUID jobId = UUID.fromString(distributionEvent.getConfigId());
-            final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
-            distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
-            final String jsonMessage = contentConverter.getJsonString(distributionEvent);
-            jmsTemplate.convertAndSend(destination, jsonMessage);
-        } else {
-            final String jsonMessage = contentConverter.getJsonString(event);
-            jmsTemplate.convertAndSend(destination, jsonMessage);
-        }
-        return true;
+        final String jsonMessage = contentConverter.getJsonString(event);
+        jmsTemplate.convertAndSend(destination, jsonMessage);
     }
 
+    public JmsTemplate getJmsTemplate() {
+        return jmsTemplate;
+    }
+
+    public ContentConverter getContentConverter() {
+        return contentConverter;
+    }
 }

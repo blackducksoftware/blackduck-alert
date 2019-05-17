@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.channel.event;
 
 import java.util.Date;
 import java.util.List;
@@ -11,20 +11,25 @@ import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.event.ContentEvent;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.rest.RestConstants;
 
-public class EventManagerTest {
+public class ChannelEventManagerTest {
 
     @Test
     public void testSendEvents() {
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
+        final ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
@@ -36,10 +41,11 @@ public class EventManagerTest {
 
     @Test
     public void testNotAbstractChannelEvent() {
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
+        final ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
         final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
