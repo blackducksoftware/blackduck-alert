@@ -61,11 +61,6 @@ class Navigation extends Component {
                         <li className="divider" />
                         {components}
                         <li>
-                            <NavLink to="/alert/general/audit" activeClassName="activeNav">
-                                <FontAwesomeIcon icon="history" fixedWidth /> Audit
-                            </NavLink>
-                        </li>
-                        <li>
                             <NavLink to="/alert/general/about" activeClassName="activeNav">
                                 <FontAwesomeIcon icon="info" fixedWidth /> About
                             </NavLink>
