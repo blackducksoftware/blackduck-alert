@@ -88,7 +88,7 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
             } else {
                 dispatch(verifyLoginByStatus(response.status));
             }
-        }).catch(dispatch(auditDataFetchError(console.error)));
+        }).catch(dispatch(auditDataFetchError(console.error())));
     };
 }
 

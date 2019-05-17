@@ -91,8 +91,14 @@ class BaseJobConfiguration extends Component {
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
         this.updateProviderModel = this.updateProviderModel.bind(this);
 
-        const channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
+        let channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
 
+        if (this.props.descriptors) {
+            const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            if (providers && providers.length === 1) {
+                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME, providers[0].name);
+            }
+        }
         let providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
         providerModel = this.updateProviderModel(FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME), providerModel);
 

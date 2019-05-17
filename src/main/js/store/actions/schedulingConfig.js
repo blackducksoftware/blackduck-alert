@@ -87,7 +87,7 @@ export function getSchedulingConfig() {
                 dispatch(verifyLoginByStatus(response.status));
             }
         })
-            .catch(dispatch(schedulingConfigFetchError(console.error)));
+            .catch(dispatch(schedulingConfigFetchError(console.error())));
     };
 }
 
