@@ -92,6 +92,14 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertImagesDir);
     }
 
+    public String getAlertImagesDirPath() {
+        final String imagesDirectory = getAlertImagesDir();
+        if (StringUtils.isNotBlank(imagesDirectory)) {
+            return imagesDirectory + "/synopsys.png";
+        }
+        return System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
+    }
+
     public Boolean getH2ConsoleEnabled() {
         return h2ConsoleEnabled;
     }

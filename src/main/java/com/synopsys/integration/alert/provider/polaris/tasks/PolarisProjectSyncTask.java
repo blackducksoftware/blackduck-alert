@@ -37,7 +37,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -66,7 +65,7 @@ import com.synopsys.integration.polaris.common.service.BranchService;
 import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 import com.synopsys.integration.polaris.common.service.ProjectService;
 
-@Component
+//@Component
 public class PolarisProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "polaris-project-sync-task";
 
@@ -209,7 +208,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private void persistNotifications(final Collection<AlertNotificationWrapper> notificationsToSave) {
         logger.info("Generating {} new notifications", notificationsToSave.size());
-        notificationsToSave.forEach(notificationManager::saveNotification);
+        notificationManager.saveAllNotifications(notificationsToSave);
     }
 
     private Set<PolarisIssueModel> updatePreviousCounts(final String projectHref, final Set<PolarisIssueModel> polarisIssueModels) throws AlertDatabaseConstraintException {

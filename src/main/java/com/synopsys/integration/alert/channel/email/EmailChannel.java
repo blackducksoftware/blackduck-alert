@@ -66,7 +66,7 @@ public class EmailChannel extends DistributionChannel {
     @Autowired
     public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
         final EmailAddressHandler emailAddressHandler) {
-        super(EmailChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
+        super(gson, alertProperties, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
         this.polarisProperties = polarisProperties;
         this.emailAddressHandler = emailAddressHandler;
@@ -158,4 +158,8 @@ public class EmailChannel extends DistributionChannel {
         return userDirectory + DIRECTORY_EMAIL_IMAGE_RESOURCES + imageFileName;
     }
 
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
+    }
 }

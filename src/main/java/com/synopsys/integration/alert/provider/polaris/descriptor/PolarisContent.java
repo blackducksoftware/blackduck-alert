@@ -27,8 +27,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
@@ -37,7 +35,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
-@Component
+//@Component
 public class PolarisContent extends ProviderContent {
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_BRANCHES = "Branches";

@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
@@ -40,7 +39,7 @@ import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
-@Component(PolarisProvider.COMPONENT_NAME)
+//@Component(PolarisProvider.COMPONENT_NAME)
 public class PolarisProvider extends Provider {
     public static final String COMPONENT_NAME = "provider_polaris";
     private final Logger logger = LoggerFactory.getLogger(getClass());

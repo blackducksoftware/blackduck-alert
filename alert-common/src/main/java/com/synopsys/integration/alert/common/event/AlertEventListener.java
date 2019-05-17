@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,21 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris.actions;
+package com.synopsys.integration.alert.common.event;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.jms.MessageListener;
 
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+public interface AlertEventListener extends MessageListener {
+    String getDestinationName();
 
-//@Component
-public class PolarisConfigurationAction extends ConfigurationAction {
-
-    @Autowired
-    public PolarisConfigurationAction(final PolarisGlobalApiAction polarisGlobalApiAction, final PolarisGlobalTestAction polarisGlobalTestAction, final PolarisDistributionTestAction polarisDistributionTestAction) {
-        super(PolarisProvider.COMPONENT_NAME);
-        addGlobalApiAction(polarisGlobalApiAction);
-        addGlobalTestAction(polarisGlobalTestAction);
-        addDistributionTestAction(polarisDistributionTestAction);
-    }
 }

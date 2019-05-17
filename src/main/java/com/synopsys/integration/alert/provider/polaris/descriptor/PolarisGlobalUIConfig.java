@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -37,7 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
-@Component
+//@Component
 public class PolarisGlobalUIConfig extends UIConfig {
     public static final String LABEL_POLARIS_URL = "Url";
     public static final String LABEL_POLARIS_ACCESS_TOKEN = "Access Token";

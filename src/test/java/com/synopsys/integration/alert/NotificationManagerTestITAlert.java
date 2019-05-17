@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -201,7 +202,10 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Test
     public void testSave() {
         final AlertNotificationWrapper notificationContent = createNotificationContent();
-        final AlertNotificationWrapper savedModel = notificationManager.saveNotification(notificationContent);
+        final List<AlertNotificationWrapper> savedModels = notificationManager.saveAllNotifications(List.of(notificationContent));
+        assertNotNull(savedModels);
+        assertFalse(savedModels.isEmpty());
+        final AlertNotificationWrapper savedModel = savedModels.get(0);
         assertNotNull(savedModel.getId());
         assertNotificationModel(notificationContent, savedModel);
     }
@@ -209,8 +213,8 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Test
     public void testFindByIds() {
         final AlertNotificationWrapper notification = createNotificationContent();
-        final AlertNotificationWrapper savedModel = notificationManager.saveNotification(notification);
-        final List<Long> notificationIds = Arrays.asList(savedModel.getId());
+        final List<AlertNotificationWrapper> savedModels = notificationManager.saveAllNotifications(List.of(notification));
+        final List<Long> notificationIds = savedModels.stream().map(AlertNotificationWrapper::getId).collect(Collectors.toList());
         final List<AlertNotificationWrapper> notificationList = notificationManager.findByIds(notificationIds);
 
         assertEquals(1, notificationList.size());
@@ -219,7 +223,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Test
     public void testFindByIdsInvalidIds() {
         AlertNotificationWrapper model = createNotificationContent();
-        model = notificationManager.saveNotification(model);
+        model = notificationManager.saveAllNotifications(List.of(model)).get(0);
 
         final List<Long> notificationIds = Arrays.asList(model.getId() + 10, model.getId() + 20, model.getId() + 30);
         final List<AlertNotificationWrapper> notificationModelList = notificationManager.findByIds(notificationIds);
@@ -233,16 +237,16 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         final Date endDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(3));
         AlertNotificationWrapper entity = createNotificationContent(createdAt);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
         createdAt = createDate(time.plusMinutes(1));
         final AlertNotificationWrapper entityToFind1 = createNotificationContent(createdAt);
         createdAt = createDate(time.plusMinutes(5));
         final AlertNotificationWrapper entityToFind2 = createNotificationContent(createdAt);
         createdAt = createDate(time.plusHours(3));
         entity = createNotificationContent(createdAt);
-        notificationManager.saveNotification(entity);
-        notificationManager.saveNotification(entityToFind1);
-        notificationManager.saveNotification(entityToFind2);
+        notificationManager.saveAllNotifications(List.of(entity));
+        notificationManager.saveAllNotifications(List.of(entityToFind1));
+        notificationManager.saveAllNotifications(List.of(entityToFind2));
 
         final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
@@ -258,11 +262,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         final Date endDate = createDate(time.plusHours(1));
         final Date createdAtEarlier = createDate(time.minusHours(5));
         NotificationContent entity = createNotificationContent(createdAtEarlier);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
 
         final Date createdAtLater = createDate(time.plusHours(3));
         entity = createNotificationContent(createdAtLater);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
 
         final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
@@ -275,10 +279,10 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         Date searchDate = createDate(time.plusHours(1));
         final Date createdAt = createDate(time.minusHours(5));
         NotificationContent entity = createNotificationContent(createdAt);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
         final Date createdAtLaterThanSearch = createDate(time.plusHours(3));
         entity = createNotificationContent(createdAtLaterThanSearch);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
 
         List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBefore(searchDate);
 
@@ -294,10 +298,10 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         final LocalDateTime time = LocalDateTime.now();
         final Date createdAt = createDate(time.minusDays(5));
         AlertNotificationWrapper entity = createNotificationContent(createdAt);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
         final Date createdAtLaterThanSearch = createDate(time.plusDays(3));
         entity = createNotificationContent(createdAtLaterThanSearch);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
 
         List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
 
@@ -314,16 +318,16 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         final Date endDate = createDate(time.plusHours(1));
         final Date createdAt = createDate(time.minusHours(3));
         NotificationContent entity = createNotificationContent(createdAt);
-        notificationManager.saveNotification(entity);
+        notificationManager.saveAllNotifications(List.of(entity));
         Date createdAtInRange = createDate(time.plusMinutes(1));
         final NotificationContent entityToFind1 = createNotificationContent(createdAtInRange);
         createdAtInRange = createDate(time.plusMinutes(5));
         final NotificationContent entityToFind2 = createNotificationContent(createdAtInRange);
         final Date createdAtLater = createDate(time.plusHours(3));
         entity = createNotificationContent(createdAtLater);
-        notificationManager.saveNotification(entity);
-        notificationManager.saveNotification(entityToFind1);
-        notificationManager.saveNotification(entityToFind2);
+        notificationManager.saveAllNotifications(List.of(entity));
+        notificationManager.saveAllNotifications(List.of(entityToFind1));
+        notificationManager.saveAllNotifications(List.of(entityToFind2));
 
         final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
         assertEquals(4, notificationContentRepository.count());
@@ -336,8 +340,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Test
     public void testDeleteNotification() {
         final AlertNotificationWrapper notificationEntity = createNotificationContent();
-        final AlertNotificationWrapper savedModel = notificationManager.saveNotification(notificationEntity);
-
+        final AlertNotificationWrapper savedModel = notificationManager.saveAllNotifications(List.of(notificationEntity)).get(0);
         assertEquals(1, notificationContentRepository.count());
 
         notificationManager.deleteNotification(savedModel);

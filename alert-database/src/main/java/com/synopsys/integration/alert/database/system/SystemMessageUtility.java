@@ -87,4 +87,5 @@ public class SystemMessageUtility {
     public void deleteSystemMessages(final List<SystemMessage> messagesToDelete) {
         systemMessageRepository.deleteAll(messagesToDelete);
     }
+
 }

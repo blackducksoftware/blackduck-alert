@@ -7,6 +7,11 @@ dependencies {
     // This needs to be declared as api in order to annotate
     // the Application.java with the datasource
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    // Connection Pool
+    // https://www.baeldung.com/hibernate-c3p0
+    // https://www.codejava.net/frameworks/hibernate/solved-jdbcconnectionexception-unable-to-acquire-jdbc-connection-with-hibernate-and-mysql
+    runtimeClasspath 'org.hibernate:hibernate-c3p0:5.4.2.Final'
 
     implementation project(':alert-common')
 }

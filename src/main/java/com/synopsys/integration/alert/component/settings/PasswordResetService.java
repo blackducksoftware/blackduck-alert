@@ -85,13 +85,7 @@ public class PasswordResetService {
 
     private void handleSendAndUpdateDatabase(final EmailProperties emailProperties, final Map<String, Object> templateFields, final String emailAddress, final String username, final String tempPassword) throws AlertException {
         try {
-            final String imagesDirectory = alertProperties.getAlertImagesDir();
-            final String imageDirectoryPath;
-            if (StringUtils.isNotBlank(imagesDirectory)) {
-                imageDirectoryPath = imagesDirectory + "/synopsys.png";
-            } else {
-                imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
-            }
+            final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
 
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
             final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties);

@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -164,7 +165,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         final List<NotificationView> notifications = read(dateRange);
         if (!notifications.isEmpty()) {
             final List<NotificationView> sortedNotifications = sort(notifications);
-            final List<NotificationContent> contentList = process(sortedNotifications);
+            final List<AlertNotificationWrapper> contentList = process(sortedNotifications);
             write(contentList);
             latestNotificationCreatedAtDate = getLatestNotificationCreatedAtDate(sortedNotifications);
         }
@@ -209,7 +210,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         return blackDuckService.getResponses(ApiDiscovery.NOTIFICATIONS_LINK_RESPONSE, requestBuilder, true);
     }
 
-    protected List<NotificationContent> process(final List<NotificationView> notifications) {
+    protected List<AlertNotificationWrapper> process(final List<NotificationView> notifications) {
         logger.info("Processing accumulated notifications");
         return notifications
                    .stream()
@@ -217,9 +218,9 @@ public class BlackDuckAccumulator extends ScheduledTask {
                    .collect(Collectors.toList());
     }
 
-    protected void write(final List<NotificationContent> contentList) {
+    protected void write(final List<AlertNotificationWrapper> contentList) {
         logger.info("Writing Notifications...");
-        contentList.forEach(notificationManager::saveNotification);
+        notificationManager.saveAllNotifications(contentList);
     }
 
     private List<NotificationView> sort(final List<NotificationView> notifications) {

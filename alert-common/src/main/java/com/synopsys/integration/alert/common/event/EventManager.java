@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,30 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel;
+package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.event.AlertEvent;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 
 @Component
-public class ChannelTemplateManager {
+public class EventManager {
     private final JmsTemplate jmsTemplate;
-    private final DefaultAuditUtility auditUtility;
+    private final AuditUtility auditUtility;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final ContentConverter contentConverter, final DefaultAuditUtility auditUtility, final JmsTemplate jmsTemplate) {
+    public EventManager(final ContentConverter contentConverter, @Lazy final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
         this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
