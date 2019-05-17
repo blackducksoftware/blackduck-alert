@@ -136,13 +136,11 @@ class Details extends Component {
                                         search
                                     >
                                         <TableHeaderColumn dataField="name" dataSort columnTitle
-                                                           columnClassName="tableCell">Distribution
-                                            Job</TableHeaderColumn>
+                                                           columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                                         <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell"
                                                            dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
                                         <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle
-                                                           columnClassName="tableCell">Time Last
-                                            Sent</TableHeaderColumn>
+                                                           columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
                                         <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell"
                                                            dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
                                         <TableHeaderColumn dataField="" width="48" expandable={false}
