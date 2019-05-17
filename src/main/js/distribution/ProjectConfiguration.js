@@ -206,6 +206,7 @@ class ProjectConfiguration extends Component {
 }
 
 ProjectConfiguration.defaultProps = {
+    providerName: '',
     projects: [],
     configuredProjects: [],
     projectNamePattern: '',
@@ -217,7 +218,7 @@ ProjectConfiguration.defaultProps = {
 };
 
 ProjectConfiguration.propTypes = {
-    providerName: PropTypes.string.isRequired,
+    providerName: PropTypes.string,
     includeAllProjects: PropTypes.bool.isRequired,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
     projects: PropTypes.arrayOf(PropTypes.any),

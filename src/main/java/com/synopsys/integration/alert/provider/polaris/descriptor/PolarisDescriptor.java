@@ -23,12 +23,11 @@
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
-@Component
+//@Component
 public class PolarisDescriptor extends ProviderDescriptor {
     public static final String KEY_POLARIS_URL = "polaris.url";
     public static final String KEY_POLARIS_ACCESS_TOKEN = "polaris.access.token";

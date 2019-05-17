@@ -63,7 +63,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 logger.warn("Can not process a notification event without notification Id's.");
                 return;
             }
-            logger.info("Processing event for %s notifications.", event.getNotificationIds().size());
+            logger.info("Processing event for {} notifications.", event.getNotificationIds().size());
             final List<AlertNotificationWrapper> notifications = notificationManager.findByIds(event.getNotificationIds());
             final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
             eventManager.sendEvents(distributionEvents);

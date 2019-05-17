@@ -27,7 +27,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -37,7 +36,7 @@ import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.tasks.PolarisProjectSyncTask;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
-@Component
+//@Component
 public class PolarisGlobalApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;

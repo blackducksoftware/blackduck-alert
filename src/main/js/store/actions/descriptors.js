@@ -56,6 +56,8 @@ export function getDescriptors() {
                     dispatch(descriptorsFetched(json));
                 }
             });
-        }).catch(dispatch(descriptorsError(console.error)));
+        }).catch((error) => {
+            dispatch(descriptorsError(error));
+        });
     };
 }
