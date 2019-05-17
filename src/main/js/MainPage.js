@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'Navigation';
-import AuditPage from 'dynamic/loading/audit/AuditPage';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
@@ -77,7 +76,6 @@ class MainPage extends Component {
                     {channels}
                     <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
                     {components}
-                    <Route path="/alert/general/audit" component={AuditPage} />
                     <Route path="/alert/general/about" component={AboutInfo} />
                 </div>
                 <div className="modalsArea">
