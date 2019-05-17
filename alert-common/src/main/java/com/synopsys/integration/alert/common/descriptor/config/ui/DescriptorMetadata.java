@@ -38,12 +38,12 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private final ConfigContextEnum context;
     private final String fontAwesomeIcon;
     private final boolean automaticallyGenerateUI;
-    private final String componentPath;
+    private final String componentNamespace;
     private List<ConfigField> fields;
     private String testFieldLabel;
 
     public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon,
-        final boolean automaticallyGenerateUI, final String componentPath, final List<ConfigField> fields, final String testFieldLabel) {
+        final boolean automaticallyGenerateUI, final String componentNamespace, final List<ConfigField> fields, final String testFieldLabel) {
         this.label = label;
         this.urlName = urlName;
         this.name = name;
@@ -52,7 +52,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.context = context;
         this.fontAwesomeIcon = fontAwesomeIcon;
         this.automaticallyGenerateUI = automaticallyGenerateUI;
-        this.componentPath = componentPath;
+        this.componentNamespace = componentNamespace;
         this.fields = fields;
         this.testFieldLabel = testFieldLabel;
     }
@@ -89,8 +89,8 @@ public class DescriptorMetadata extends AlertSerializableModel {
         return automaticallyGenerateUI;
     }
 
-    public String getComponentPath() {
-        return componentPath;
+    public String getComponentNamespace() {
+        return componentNamespace;
     }
 
     public List<ConfigField> getFields() {

@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'Navigation';
-import AuditPage from 'component/content/audit/AuditPage';
+import AuditPage from 'dynamic/loading/audit/AuditPage';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
-import DescriptorContentLoader from 'component/DescriptorContentLoader';
+import DescriptorContentLoader from 'dynamic/loading/DescriptorContentLoader';
 
 
 class MainPage extends Component {
@@ -41,14 +41,13 @@ class MainPage extends Component {
 
     createConfigurationPage(component, uriPrefix) {
         const {
-            urlName, name, automaticallyGenerateUI, componentPath
+            urlName, name, automaticallyGenerateUI, componentNamespace
         } = component;
         if (automaticallyGenerateUI) {
-            console.log("component: ", component);
             return (<Route
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <DescriptorContentLoader componentPath={componentPath} />}
+                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} />}
             />);
         }
 

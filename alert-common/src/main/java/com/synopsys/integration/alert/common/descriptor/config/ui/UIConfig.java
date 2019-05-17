@@ -34,14 +34,14 @@ public abstract class UIConfig extends AlertSerializableModel {
     private final String description;
     private final String urlName;
     private final String fontAwesomeIcon;
-    private final String componentPath;
+    private final String componentNamespace;
 
-    protected UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon, final String componentPath) {
+    protected UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon, final String componentNamespace) {
         this.label = label;
         this.description = description;
         this.urlName = urlName;
         this.fontAwesomeIcon = fontAwesomeIcon;
-        this.componentPath = componentPath;
+        this.componentNamespace = componentNamespace;
     }
 
     public UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon) {
@@ -71,10 +71,10 @@ public abstract class UIConfig extends AlertSerializableModel {
     }
 
     public boolean autoGenerateUI() {
-        return StringUtils.isNotBlank(getComponentPath());
+        return StringUtils.isNotBlank(getComponentNamespace());
     }
 
-    public String getComponentPath() {
-        return componentPath;
+    public String getComponentNamespace() {
+        return componentNamespace;
     }
 }
