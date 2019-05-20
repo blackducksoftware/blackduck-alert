@@ -14,9 +14,11 @@ export const DESCRIPTOR_NAME = {
     CHANNEL_EMAIL: 'channel_email',
     CHANNEL_HIPCHAT: 'channel_hipchat',
     CHANNEL_SLACK: 'channel_slack',
+    COMPONENT_AUDIT: 'component_audit',
     COMPONENT_SCHEDULING: 'component_scheduling',
     COMPONENT_SETTINGS: 'component_settings',
-    PROVIDER_BLACKDUCK: 'provider_blackduck'
+    PROVIDER_BLACKDUCK: 'provider_blackduck',
+    PROVIDER_POLARIS: 'provider_polaris'
 }
 
 export const OPERATIONS = {
