@@ -54,12 +54,8 @@ public class AuthorizationManager {
         permissionCache = new HashMap<>();
     }
 
-    public static final String generateConfigPermissionKey(final String context, final String descriptorName) {
-        return generateGroupPermissionKey("config", context, descriptorName);
-    }
-
-    public static final String generateGroupPermissionKey(final String group, final String context, final String descriptorName) {
-        return String.format("%s.%s.%s", group.trim().toLowerCase(), context.trim().toLowerCase(), descriptorName.trim().toLowerCase());
+    public static final String generatePermissionKey(final String context, final String descriptorName) {
+        return String.format("%s.%s", context.trim().toLowerCase(), descriptorName.trim().toLowerCase());
     }
 
     public final Set<AccessOperation> getOperations(final String permissionKey) {

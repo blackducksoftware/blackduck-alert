@@ -104,7 +104,7 @@ public class DescriptorController extends MetadataController {
     private Optional<DescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
         final String descriptorName = descriptorMetadata.getName();
         final ConfigContextEnum context = descriptorMetadata.getContext();
-        final String permissionKey = AuthorizationManager.generateConfigPermissionKey(context.name(), descriptorName);
+        final String permissionKey = AuthorizationManager.generatePermissionKey(context.name(), descriptorName);
 
         List<ConfigField> filteredFields = descriptorMetadata.getFields();
         if (!authorizationManager.hasPermissions(permissionKey)) {

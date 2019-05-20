@@ -74,7 +74,7 @@ public class ConfigController extends BaseController {
     @GetMapping
     public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         final List<FieldModel> models;
-        if (!authorizationManager.hasReadPermission(authorizationManager.generateConfigPermissionKey(context.name(), descriptorName))) {
+        if (!authorizationManager.hasReadPermission(authorizationManager.generatePermissionKey(context.name(), descriptorName))) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -103,7 +103,7 @@ public class ConfigController extends BaseController {
 
         if (optionalModel.isPresent()) {
             FieldModel fieldModel = optionalModel.get();
-            final String permissionKey = AuthorizationManager.generateConfigPermissionKey(fieldModel.getContext(), fieldModel.getDescriptorName());
+            final String permissionKey = AuthorizationManager.generatePermissionKey(fieldModel.getContext(), fieldModel.getDescriptorName());
             if (!authorizationManager.hasReadPermission(permissionKey)) {
                 return responseFactory.createForbiddenResponse();
             }
@@ -118,7 +118,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generatePermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasCreatePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -148,7 +148,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generatePermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasWritePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -178,7 +178,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generatePermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasCreatePermission(permissionKey) && !authorizationManager.hasWritePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -203,7 +203,7 @@ public class ConfigController extends BaseController {
                 Optional<FieldModel> fieldModel = configActions.getConfigById(id);
                 if (fieldModel.isPresent()) {
                     FieldModel model = fieldModel.get();
-                    final String permissionKey = authorizationManager.generateConfigPermissionKey(model.getContext(), model.getDescriptorName());
+                    final String permissionKey = authorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName());
                     if (!authorizationManager.hasDeletePermission(permissionKey)) {
                         return responseFactory.createForbiddenResponse();
                     }
@@ -224,7 +224,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String permissionKey = authorizationManager.generateConfigPermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        final String permissionKey = authorizationManager.generatePermissionKey(restModel.getContext(), restModel.getDescriptorName());
         if (!authorizationManager.hasExecutePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
