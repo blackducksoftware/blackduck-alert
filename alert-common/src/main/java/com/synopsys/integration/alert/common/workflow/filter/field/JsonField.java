@@ -23,8 +23,10 @@
 package com.synopsys.integration.alert.common.workflow.filter.field;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
@@ -40,7 +42,7 @@ public class JsonField<T> extends Stringable {
 
     private final TypeRef<List<T>> typeRef;
     private final FieldContentIdentifier contentIdentifier;
-    private final List<JsonPath> configNameMappings;
+    private final List<String> configKeyMappings;
     private final JsonPath jsonPath;
 
     private final String fieldName;
@@ -51,13 +53,13 @@ public class JsonField<T> extends Stringable {
         this(typeRef, jsonPath, fieldName, contentIdentifier, label, null);
     }
 
-    protected JsonField(final TypeRef<List<T>> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
+    protected JsonField(final TypeRef<List<T>> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<String> configKeyMappings) {
         this.fieldName = fieldName;
         this.label = label;
         this.typeRef = typeRef;
         this.jsonPath = jsonPath;
         this.contentIdentifier = contentIdentifier;
-        this.configNameMappings = configNameMappings;
+        this.configKeyMappings = configKeyMappings;
         this.optional = false;
     }
 
@@ -83,7 +85,7 @@ public class JsonField<T> extends Stringable {
         return optionalStringField;
     }
 
-    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
+    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<String> configNameMappings) {
         return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
     }
 
@@ -107,8 +109,11 @@ public class JsonField<T> extends Stringable {
         return contentIdentifier;
     }
 
-    public Optional<List<JsonPath>> getConfigNameMappings() {
-        return Optional.ofNullable(configNameMappings);
+    public List<String> getConfigKeyMappings() {
+        if (CollectionUtils.isNotEmpty(configKeyMappings)) {
+            return Collections.unmodifiableList(configKeyMappings);
+        }
+        return List.of();
     }
 
     public TypeRef<List<T>> getTypeRef() {
@@ -122,4 +127,5 @@ public class JsonField<T> extends Stringable {
     public boolean isOfType(final Type type) {
         return typeRef.getType().getTypeName().contains(type.getTypeName());
     }
+
 }

@@ -5,19 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 
 public class JsonExtractorTest {
     private final Gson gson = new Gson();
@@ -67,36 +63,6 @@ public class JsonExtractorTest {
         assertEquals(Arrays.asList(value1, value2), values);
     }
 
-    @Test
-    public void getValuesFromConfig() {
-        final Long id = 1L;
-        final Long distributionConfigId = 1L;
-        final String distributionType = "generic";
-        final String name = "example";
-        final String providerName = "some provider";
-        final String frequency = "REAL_TIME";
-        final String filterByProject = "true";
-        final String projectNamePattern = "projectNamePattern";
-        final List<String> configuredProjects = Arrays.asList("project1", "project2", "project3");
-        final List<String> notificationTypes = Arrays.asList("type1", "type2");
-
-        final CommonDistributionConfiguration commonDistributionConfig = new CommonDistributionConfiguration(
-            MockConfigurationModelFactory.createCommonJobConfigModel(UUID.randomUUID(), id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects,
-                notificationTypes, FormatType.DEFAULT.name()));
-
-        final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.name")));
-        final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
-        assertEquals(Arrays.asList(name), nameValues);
-
-        final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.configuredProjects[*]")));
-        final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
-        assertEquals(configuredProjects.size(), configuredProjectValues.size());
-
-        final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.notificationTypes[*]")));
-        final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
-        assertEquals(notificationTypes.size(), notificationTypeValues.size());
-    }
-
     private class DummyClass extends Object {
         public String dummyVariable;
 
@@ -105,4 +71,5 @@ public class JsonExtractorTest {
             return dummyVariable != null && DummyClass.class.isAssignableFrom(obj.getClass()) && dummyVariable.equals(((DummyClass) obj).dummyVariable);
         }
     }
+    
 }
