@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
@@ -78,7 +77,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         assertEquals(10, count);
         final Date startDate = RestConstants.parseDateString("2017-10-12T01:30:59.000Z");
         final Date endDate = RestConstants.parseDateString("2017-10-30T16:59:59.000Z");
-        final List<AlertNotificationWrapper> foundEntityList = repository.findByCreatedAtBetween(startDate, endDate);
+        final List<NotificationContent> foundEntityList = repository.findByCreatedAtBetween(startDate, endDate);
         assertEquals(5, foundEntityList.size());
 
         foundEntityList.forEach(entity -> {
