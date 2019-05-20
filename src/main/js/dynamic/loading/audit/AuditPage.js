@@ -10,6 +10,7 @@ import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
 import AuditDetails from 'dynamic/loading/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { OPERATIONS } from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import '../../../../css/audit.scss';
@@ -49,6 +50,7 @@ class AuditPage extends Component {
         this.onSortChange = this.onSortChange.bind(this);
         this.handleCloseDetails = this.handleCloseDetails.bind(this);
         this.onRowClick = this.onRowClick.bind(this);
+        this.isResendAllowed = this.isResendAllowed.bind(this);
     }
 
     componentDidMount() {
@@ -276,11 +278,23 @@ class AuditPage extends Component {
     }
 
     resendButton(cell, row) {
-        if (row.content) {
+        if (this.isResendAllowed() && row.content) {
             return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
                                                buttonText="Re-send" />);
         }
         return (<div className="editJobButtonDisabled"><span className="fa fa-sync" /></div>);
+    }
+
+    isResendAllowed() {
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_AUDIT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            if (descriptorList) {
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.EXECUTE));
+            }
+        }
+
+        return false;
     }
 
     createCustomButtonGroup(buttons) {

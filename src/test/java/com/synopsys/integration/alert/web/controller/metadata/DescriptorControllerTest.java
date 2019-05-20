@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -17,10 +18,11 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public class DescriptorControllerTest {
     private final Set<Descriptor> descriptors = createComprehensiveSetOfDescriptors();
-    private final DescriptorController controller = new DescriptorController(descriptors);
+    private final DescriptorController controller = createDescriptorController();
 
     @Test
     public void getDescriptorsWithNoParametersTest() {
@@ -146,6 +148,17 @@ public class DescriptorControllerTest {
         final ConfigContextEnum context1 = ConfigContextEnum.GLOBAL;
         final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName1, type1.name(), context1.name());
         assertEquals(1, descriptorMetadata1.size());
+    }
+
+    private DescriptorController createDescriptorController() {
+        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasCreatePermission(Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasExecutePermission(Mockito.anyString());
+        return new DescriptorController(descriptors, authorizationManager);
     }
 
     private Set<Descriptor> createComprehensiveSetOfDescriptors() {

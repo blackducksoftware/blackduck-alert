@@ -47,8 +47,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationU
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 

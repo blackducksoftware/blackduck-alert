@@ -10,7 +10,7 @@ function noOptionsMessage() {
 class SelectInput extends Component {
     render() {
         const {
-            onChange, id, inputClass, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components, selectSpacingClass
+            onChange, id, inputClass, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components, selectSpacingClass, readOnly
         } = this.props;
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
         let closeOnSelect = true;
@@ -32,6 +32,7 @@ class SelectInput extends Component {
                 closeMenuOnSelect={closeOnSelect}
                 components={components}
                 noOptionsMessage={noOptionsMessage}
+                isDisabled={readOnly}
             />
         </div>);
         return (

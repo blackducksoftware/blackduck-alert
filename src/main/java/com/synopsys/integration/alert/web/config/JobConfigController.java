@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,16 +50,21 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
-import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
 public class JobConfigController extends BaseController {
     public static final String JOB_CONFIGURATION_PATH = ConfigController.CONFIGURATION_PATH + "/job";
-
+    private static final String[] REQUIRED_PERMISSION_KEYS = { PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_EMAIL.getDatabaseKey(),
+        PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_HIPCHAT.getDatabaseKey(),
+        PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_SLACK.getDatabaseKey(),
+        PermissionKeys.CONFIG_DISTRIBUTION_PROVIDER_BLACKDUCK.getDatabaseKey(),
+        PermissionKeys.CONFIG_DISTRIBUTION_PROVIDER_POLARIS.getDatabaseKey()
+    };
     private final Logger logger = LoggerFactory.getLogger(JobConfigController.class);
 
     private final JobConfigActions jobConfigActions;
@@ -76,12 +82,21 @@ public class JobConfigController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> getJobs() {
-        if (!authorizationManager.hasReadPermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
+        if (!authorizationManager.anyReadPermission(REQUIRED_PERMISSION_KEYS)) {
             return responseFactory.createForbiddenResponse();
         }
-        final List<JobFieldModel> models;
+        final List<JobFieldModel> models = new LinkedList<>();
         try {
-            models = jobConfigActions.getAllJobs();
+            List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
+
+            for (JobFieldModel jobModel : allModels) {
+                boolean includeJob = jobModel.getFieldModels().stream()
+                                         .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                         .allMatch(permissionKey -> authorizationManager.hasReadPermission(permissionKey));
+                if (includeJob) {
+                    models.add(jobModel);
+                }
+            }
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database.");
@@ -92,9 +107,6 @@ public class JobConfigController extends BaseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getJob(@PathVariable final UUID id) {
-        if (!authorizationManager.hasReadPermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
-            return responseFactory.createForbiddenResponse();
-        }
         final Optional<JobFieldModel> optionalModel;
         try {
             optionalModel = jobConfigActions.getJobById(id);
@@ -104,6 +116,13 @@ public class JobConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
+            JobFieldModel fieldModel = optionalModel.get();
+            boolean missingPermission = fieldModel.getFieldModels().stream()
+                                            .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                            .anyMatch(permissionKey -> !authorizationManager.hasReadPermission(permissionKey));
+            if (missingPermission) {
+                return responseFactory.createForbiddenResponse();
+            }
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
         }
 
@@ -112,7 +131,10 @@ public class JobConfigController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        if (!authorizationManager.hasCreatePermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
+        boolean missingPermission = restModel.getFieldModels().stream()
+                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                        .anyMatch(permissionKey -> !authorizationManager.hasCreatePermission(permissionKey));
+        if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
         if (restModel == null) {
@@ -142,7 +164,10 @@ public class JobConfigController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
-        if (!authorizationManager.hasWritePermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
+        boolean missingPermission = restModel.getFieldModels().stream()
+                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                        .anyMatch(permissionKey -> !authorizationManager.hasWritePermission(permissionKey));
+        if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
         if (restModel == null) {
@@ -172,15 +197,24 @@ public class JobConfigController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteConfig(@PathVariable final UUID id) {
-        if (!authorizationManager.hasDeletePermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
-            return responseFactory.createForbiddenResponse();
-        }
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
         final String stringId = contentConverter.getStringValue(id);
         try {
             if (jobConfigActions.doesJobExist(id)) {
+                Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
+
+                if (optionalModel.isPresent()) {
+                    JobFieldModel jobFieldModel = optionalModel.get();
+                    boolean missingPermission = jobFieldModel.getFieldModels().stream()
+                                                    .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                                    .anyMatch(permissionKey -> !authorizationManager.hasDeletePermission(permissionKey));
+                    if (missingPermission) {
+                        return responseFactory.createForbiddenResponse();
+                    }
+                }
+
                 jobConfigActions.deleteJobById(id);
                 return responseFactory.createAcceptedResponse(stringId, "Deleted");
             } else {
@@ -194,13 +228,17 @@ public class JobConfigController extends BaseController {
 
     @PostMapping("/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        if (!authorizationManager.hasCreatePermission(PermissionKeys.CONFIG_DISTRIBUTION)
-                && !authorizationManager.hasWritePermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
-            return responseFactory.createForbiddenResponse();
-        }
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
+
+        boolean missingPermission = restModel.getFieldModels().stream()
+                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                        .anyMatch(permission -> !authorizationManager.hasCreatePermission(permission) && !authorizationManager.hasWritePermission(permission));
+        if (missingPermission) {
+            return responseFactory.createForbiddenResponse();
+        }
+
         final String id = restModel.getJobId();
         try {
             final String responseMessage = jobConfigActions.validateJob(restModel);
@@ -212,12 +250,17 @@ public class JobConfigController extends BaseController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
-        if (!authorizationManager.hasExecutePermission(PermissionKeys.CONFIG_DISTRIBUTION)) {
-            return responseFactory.createForbiddenResponse();
-        }
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
+
+        boolean missingPermission = restModel.getFieldModels().stream()
+                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                        .anyMatch(permissionKey -> !authorizationManager.hasExecutePermission(permissionKey));
+        if (missingPermission) {
+            return responseFactory.createForbiddenResponse();
+        }
+
         final String id = restModel.getJobId();
         try {
             final String responseMessage = jobConfigActions.testJob(restModel, destination);

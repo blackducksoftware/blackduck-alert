@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
@@ -193,10 +194,14 @@ class DistributionConfiguration extends Component {
     }
 
     renderProviderForm() {
-        const { providerConfig, currentProvider, channelConfig } = this.state;
+        const { providerConfig, currentProvider, channelConfig, currentChannel } = this.state;
         const updatedProviderFields = Object.assign({}, currentProvider);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT);
         const removeProject = updatedProviderFields.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
+        const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
+        const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
+        const isReadOnly = currentChannel.readOnly;
+
         let removedFields = Object.assign(updatedProviderFields, { fields: removeProject });
         if (filterByProject) {
             const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
@@ -214,8 +219,9 @@ class DistributionConfiguration extends Component {
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerConfig, KEY_CONFIGURED_PROJECT)}
                     projectNamePattern={FieldModelUtilities.getFieldModelSingleValueOrDefault(providerConfig, KEY_PROJECT_NAME_PATTERN, '')}
                     fieldErrors={this.props.fieldErrors}
+                    readOnly={isReadOnly}
                 />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest={displayTest} includeSave={displaySave} includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
         );
@@ -223,7 +229,7 @@ class DistributionConfiguration extends Component {
 
     render() {
         const { channelConfig, currentProvider, currentChannel } = this.state;
-        const selectedProvider = currentProvider && currentProvider.name;
+        const selectedProvider = (currentProvider) ? currentProvider.name : null;
 
         return (
             <div

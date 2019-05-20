@@ -101,192 +101,160 @@
     <changeSet author="psantos" id="1556732237461-6">
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="1"/>
-            <column name="KEY_NAME" value="config.global.provider_blackduck"/>
+            <column name="KEY_NAME" value="global.provider_blackduck"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="2"/>
-            <column name="KEY_NAME" value="config.distribution.provider_blackduck"/>
+            <column name="KEY_NAME" value="distribution.provider_blackduck"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="3"/>
-            <column name="KEY_NAME" value="config.global.provider_polaris"/>
+            <column name="KEY_NAME" value="global.provider_polaris"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="4"/>
-            <column name="KEY_NAME" value="config.distribution.provider_polaris"/>
+            <column name="KEY_NAME" value="distribution.provider_polaris"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="5"/>
-            <column name="KEY_NAME" value="config.global.channel_email"/>
+            <column name="KEY_NAME" value="global.channel_email"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="6"/>
-            <column name="KEY_NAME" value="config.distribution.channel_email"/>
+            <column name="KEY_NAME" value="distribution.channel_email"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="7"/>
-            <column name="KEY_NAME" value="config.global.channel_hipchat"/>
+            <column name="KEY_NAME" value="global.channel_hipchat"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="8"/>
-            <column name="KEY_NAME" value="config.distribution.channel_hipchat"/>
+            <column name="KEY_NAME" value="distribution.channel_hipchat"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="9"/>
-            <column name="KEY_NAME" value="config.distribution.channel_slack"/>
+            <column name="KEY_NAME" value="distribution.channel_slack"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="10"/>
-            <column name="KEY_NAME" value="config.distribution"/>
+            <column name="KEY_NAME" value="global.component_scheduling"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="11"/>
-            <column name="KEY_NAME" value="config.global.component_scheduling"/>
+            <column name="KEY_NAME" value="global.component_settings"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="12"/>
-            <column name="KEY_NAME" value="config.global.component_settings"/>
-        </insert>
-        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="13"/>
-            <column name="KEY_NAME" value="audit.notifications"/>
-        </insert>
-        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="14"/>
-            <column name="KEY_NAME" value="audit.notifications.resend"/>
+            <column name="KEY_NAME" value="global.component_audit"/>
         </insert>
     </changeSet>
     <!-- ALERT_ADMIN PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-7">
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.provider_blackduck');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.provider_blackduck');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.provider_blackduck');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.provider_blackduck');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.provider_polaris');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.provider_polaris');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.provider_polaris');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.provider_polaris');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.channel_email');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.channel_email');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_email');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_email');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.channel_hipchat');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.channel_hipchat');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_hipchat');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_hipchat');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_slack');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_slack');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_scheduling');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.component_scheduling');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_settings');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.component_settings');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.notifications');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.notifications.resend');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_audit');
         </sql>
     </changeSet>
     <!-- ALERT_JOB_MANAGER PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-8">
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.provider_blackduck');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.provider_blackduck');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.provider_polaris');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.provider_polaris');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_email');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.channel_email');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_hipchat');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.channel_hipchat');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_slack');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.channel_slack');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_blackduck','READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_blackduck','READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_blackduck','EXECUTE');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_blackduck','EXECUTE');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_polaris', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_polaris', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_polaris', 'EXECUTE');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.provider_polaris', 'EXECUTE');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_email', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_email', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_email', 'EXECUTE');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_email', 'EXECUTE');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_hipchat', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_hipchat', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_hipchat', 'EXECUTE');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.channel_hipchat', 'EXECUTE');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.component_scheduling', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.component_scheduling', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.component_audit','READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.notifications','READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.notifications.resend','EXECUTE');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.component_audit','EXECUTE');
         </sql>
     </changeSet>
 
     <!-- ALERT_USER PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-9">
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.provider_blackduck', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.provider_blackduck', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.provider_blackduck', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.provider_polaris', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.provider_polaris', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_email', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.provider_polaris', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_hipchat', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.channel_email', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_email', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.channel_hipchat', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_hipchat', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_slack', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_slack', 'READ');
         </sql>
     </changeSet>
 </databaseChangeLog>

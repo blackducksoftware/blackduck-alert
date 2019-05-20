@@ -22,6 +22,7 @@ class Navigation extends Component {
         if (!descriptorList) {
             return null;
         }
+
         return descriptorList.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">

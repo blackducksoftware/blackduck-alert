@@ -22,8 +22,10 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 
@@ -38,27 +40,35 @@ public class PermissionMatrixModel {
         return permissions;
     }
 
-    public boolean hasCreatePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.CREATE);
-    }
-
-    public boolean hasDeletePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.DELETE);
-    }
-
-    public boolean hasReadPermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.READ);
-    }
-
-    public boolean hasWritePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.WRITE);
-    }
-
-    public boolean hasExecutePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.EXECUTE);
-    }
-
     public boolean hasPermission(final String permissionKey, final AccessOperation operation) {
         return permissions.containsKey(permissionKey) && permissions.get(permissionKey).contains(operation);
+    }
+
+    public boolean hasPermissions(final String permissionKey) {
+        return permissions.containsKey(permissionKey) && !permissions.get(permissionKey).isEmpty();
+    }
+
+    public boolean anyPermissionMatch(final AccessOperation operation, final String... permissionKeys) {
+        return Arrays.stream(permissionKeys).filter(key -> permissions.containsKey(key)).anyMatch(key -> permissions.get(key).contains(operation));
+    }
+
+    public boolean isReadOnly(final String permissionKey) {
+        if (!permissions.containsKey(permissionKey)) {
+            return false;
+        }
+
+        EnumSet<AccessOperation> operations = permissions.get(permissionKey);
+        return operations.contains(AccessOperation.READ) && !operations.contains(AccessOperation.CREATE) && !operations.contains(AccessOperation.WRITE);
+    }
+
+    public Set<AccessOperation> getOperations(final String permissionKey) {
+        if (!permissions.containsKey(permissionKey)) {
+            return Set.of();
+        }
+        return Set.copyOf(permissions.get(permissionKey));
+    }
+
+    public boolean isEmpty() {
+        return permissions.isEmpty();
     }
 }
