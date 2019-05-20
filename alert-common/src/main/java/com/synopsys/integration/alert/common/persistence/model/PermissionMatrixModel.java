@@ -24,10 +24,8 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 
@@ -51,9 +49,7 @@ public class PermissionMatrixModel {
     }
 
     public boolean anyPermissionMatch(final AccessOperation operation, final String... permissionKeys) {
-        List<String> existingPermissions = Arrays.stream(permissionKeys).filter(key -> permissions.containsKey(key)).collect(Collectors.toList());
-
-        return !existingPermissions.isEmpty() && existingPermissions.stream().anyMatch(key -> permissions.get(key).contains(operation));
+        return Arrays.stream(permissionKeys).filter(key -> permissions.containsKey(key)).anyMatch(key -> permissions.get(key).contains(operation));
     }
 
     public boolean isReadOnly(final String permissionKey) {
