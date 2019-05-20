@@ -67,7 +67,6 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
 
 @Component
 public class DefaultAuditUtility implements AuditUtility {
@@ -241,7 +240,7 @@ public class DefaultAuditUtility implements AuditUtility {
             jobAuditModels.add(new JobAuditModel(id, configId, distributionConfigName, eventType, auditJobStatusModel, errorMessage, errorStackTrace));
         }
         final String id = contentConverter.getStringValue(notificationContentEntry.getId());
-        final NotificationConfig notificationConfig = populateConfigFromEntity((NotificationContent) notificationContentEntry);
+        final NotificationConfig notificationConfig = populateConfigFromEntity(notificationContentEntry);
 
         String overallStatusDisplayName = null;
         if (null != overallStatus) {
@@ -261,7 +260,10 @@ public class DefaultAuditUtility implements AuditUtility {
 
     private List<AuditEntryModel> convertToAuditEntryModelFromNotificationsSorted(final List<AlertNotificationWrapper> notificationContentEntries, final Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter,
         final String sortField, final String sortOrder) {
-        final List<AuditEntryModel> auditEntryModels = notificationContentEntries.stream().map(notificationToAuditEntryConverter).collect(Collectors.toList());
+        final List<AuditEntryModel> auditEntryModels = notificationContentEntries
+                                                           .stream()
+                                                           .map(notificationToAuditEntryConverter)
+                                                           .collect(Collectors.toList());
         if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent") || sortField.equalsIgnoreCase("overallStatus")) {
             // We do this sorting here because lastSent is not a field in the NotificationContent entity and overallStatus is not stored in the database
             boolean ascendingOrder = false;
@@ -316,8 +318,7 @@ public class DefaultAuditUtility implements AuditUtility {
         return auditPage;
     }
 
-    private NotificationConfig populateConfigFromEntity(final NotificationContent notificationContent) {
-        final NotificationContent notificationEntity = notificationContent;
+    private NotificationConfig populateConfigFromEntity(final AlertNotificationWrapper notificationEntity) {
         final String id = contentConverter.getStringValue(notificationEntity.getId());
         final String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
         final String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());

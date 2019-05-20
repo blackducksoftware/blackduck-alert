@@ -61,6 +61,16 @@ public class NotificationContent extends DatabaseEntity implements AlertNotifica
         // JPA requires default constructor definitions
     }
 
+    // Reserved for queries
+    public NotificationContent(final Long id, final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content) {
+        this.setId(id);
+        this.createdAt = createdAt;
+        this.provider = provider;
+        this.providerCreationTime = providerCreationTime;
+        this.notificationType = notificationType;
+        this.content = content;
+    }
+
     public NotificationContent(final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content) {
         this.createdAt = createdAt;
         this.provider = provider;

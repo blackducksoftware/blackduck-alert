@@ -88,7 +88,8 @@ public class DefaultNotificationManager implements NotificationManager {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<AlertNotificationWrapper> findAll(final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
         if (onlyShowSentNotifications) {
-            return notificationContentRepository.findAllSentNotifications(pageRequest);
+            final Page<NotificationContent> allSentNotifications = notificationContentRepository.findAllSentNotifications(pageRequest);
+            return safelyConvertToGenericPage(allSentNotifications);
         }
         return safelyConvertToGenericPage(notificationContentRepository.findAll(pageRequest));
     }
@@ -96,11 +97,14 @@ public class DefaultNotificationManager implements NotificationManager {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<AlertNotificationWrapper> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
         final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
+
+        final Page<NotificationContent> matchingNotifications;
         if (onlyShowSentNotifications) {
-            return notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
+            matchingNotifications = notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
         } else {
-            return notificationContentRepository.findMatchingNotification(lcSearchTerm, pageRequest);
+            matchingNotifications = notificationContentRepository.findMatchingNotification(lcSearchTerm, pageRequest);
         }
+        return safelyConvertToGenericPage(matchingNotifications);
     }
 
     @Override
@@ -118,13 +122,15 @@ public class DefaultNotificationManager implements NotificationManager {
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationWrapper> findByCreatedAtBetween(final Date startDate, final Date endDate) {
-        return notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
+        final List<NotificationContent> byCreatedAtBetween = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
+        return safelyConvertToGenericList(byCreatedAtBetween);
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationWrapper> findByCreatedAtBefore(final Date date) {
-        return notificationContentRepository.findByCreatedAtBefore(date);
+        final List<NotificationContent> byCreatedAtBefore = notificationContentRepository.findByCreatedAtBefore(date);
+        return safelyConvertToGenericList(byCreatedAtBefore);
     }
 
     @Override
@@ -187,7 +193,7 @@ public class DefaultNotificationManager implements NotificationManager {
     }
 
     private List<AlertNotificationWrapper> safelyConvertToGenericList(final List<NotificationContent> notificationContents) {
-        final List<AlertNotificationWrapper> wrappers = new ArrayList<>();
+        final List<AlertNotificationWrapper> wrappers = new ArrayList<>(notificationContents.size());
         notificationContents.forEach(wrappers::add);
         return wrappers;
     }
