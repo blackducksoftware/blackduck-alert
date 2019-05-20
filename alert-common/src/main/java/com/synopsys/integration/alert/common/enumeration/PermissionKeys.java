@@ -31,12 +31,10 @@ public enum PermissionKeys {
     CONFIG_DISTRIBUTION_CHANNEL_EMAIL("config.distribution.channel_email"),
     CONFIG_GLOBAL_CHANNEL_HIPCHAT("config.global.channel_hipchat"),
     CONFIG_DISTRIBUTION_CHANNEL_HIPCHAT("config.distribution.channel_hipchat"),
-    CONFIG_CHANNEL_SLACK("config.distribution.channel_slack"),
-    CONFIG_DISTRIBUTION("config.distribution"),
+    CONFIG_DISTRIBUTION_CHANNEL_SLACK("config.distribution.channel_slack"),
     CONFIG_COMPONENT_SCHEDULING("config.global.component_scheduling"),
     CONFIG_COMPONENT_SETTINGS("config.global.component_settings"),
-    AUDIT_NOTIFICATIONS("audit.notifications"),
-    AUDIT_NOTIFICATIONS_RESEND("audit.notifications.resend");
+    AUDIT_COMPONENT("audit.global.component_audit");
 
     private final String dbKey;
 

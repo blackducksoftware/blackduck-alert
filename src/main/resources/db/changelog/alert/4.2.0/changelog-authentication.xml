@@ -137,23 +137,15 @@
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="10"/>
-            <column name="KEY_NAME" value="config.distribution"/>
-        </insert>
-        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="11"/>
             <column name="KEY_NAME" value="config.global.component_scheduling"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="12"/>
+            <column name="ID" value="11"/>
             <column name="KEY_NAME" value="config.global.component_settings"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="13"/>
-            <column name="KEY_NAME" value="audit.notifications"/>
-        </insert>
-        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="14"/>
-            <column name="KEY_NAME" value="audit.notifications.resend"/>
+            <column name="ID" value="12"/>
+            <column name="KEY_NAME" value="audit.global.component_audit"/>
         </insert>
     </changeSet>
     <!-- ALERT_ADMIN PERMISSIONS -->
@@ -186,26 +178,17 @@
             CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution.channel_slack');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.distribution');
-        </sql>
-        <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.component_scheduling');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','config.global.component_settings');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.notifications');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.notifications.resend');
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','audit.global.component_audit');
         </sql>
     </changeSet>
     <!-- ALERT_JOB_MANAGER PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-8">
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution');
-        </sql>
         <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','config.distribution.provider_blackduck');
         </sql>
@@ -249,44 +232,29 @@
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','config.global.component_scheduling', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.notifications','READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.global.component_audit','READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.notifications.resend','EXECUTE');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','audit.global.component_audit','EXECUTE');
         </sql>
     </changeSet>
 
     <!-- ALERT_USER PERMISSIONS -->
     <changeSet author="psantos" id="1556732237461-9">
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.provider_blackduck', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.provider_blackduck', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.provider_polaris', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.provider_polaris', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.channel_email', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_email', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.global.channel_hipchat', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_hipchat', 'READ');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution.channel_slack', 'READ');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','config.distribution', 'READ');
         </sql>
     </changeSet>
 </databaseChangeLog>

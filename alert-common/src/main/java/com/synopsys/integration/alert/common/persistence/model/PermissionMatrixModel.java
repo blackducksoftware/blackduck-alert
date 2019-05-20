@@ -22,9 +22,12 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 
@@ -39,32 +42,18 @@ public class PermissionMatrixModel {
         return permissions;
     }
 
-    public boolean hasCreatePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.CREATE);
-    }
-
-    public boolean hasDeletePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.DELETE);
-    }
-
-    public boolean hasReadPermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.READ);
-    }
-
-    public boolean hasWritePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.WRITE);
-    }
-
-    public boolean hasExecutePermission(final String permissionKey) {
-        return hasPermission(permissionKey, AccessOperation.EXECUTE);
-    }
-
     public boolean hasPermission(final String permissionKey, final AccessOperation operation) {
         return permissions.containsKey(permissionKey) && permissions.get(permissionKey).contains(operation);
     }
 
     public boolean hasPermissions(final String permissionKey) {
         return permissions.containsKey(permissionKey) && !permissions.get(permissionKey).isEmpty();
+    }
+
+    public boolean anyPermissionMatch(final AccessOperation operation, final String... permissionKeys) {
+        List<String> existingPermissions = Arrays.stream(permissionKeys).filter(key -> permissions.containsKey(key)).collect(Collectors.toList());
+
+        return !existingPermissions.isEmpty() && existingPermissions.stream().anyMatch(key -> permissions.get(key).contains(operation));
     }
 
     public boolean isReadOnly(final String permissionKey) {

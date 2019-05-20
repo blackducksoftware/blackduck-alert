@@ -54,8 +54,21 @@ public class AuthorizationManager {
         permissionCache = new HashMap<>();
     }
 
-    public static final String generateConfigPermissionKey(String context, String descriptorName) {
-        return String.format("config.%s.%s", context.toLowerCase(), descriptorName.trim().toLowerCase());
+    public static final String generateConfigPermissionKey(final String context, final String descriptorName) {
+        return generateGroupPermissionKey("config", context, descriptorName);
+    }
+
+    public static final String generateGroupPermissionKey(final String group, final String context, final String descriptorName) {
+        return String.format("%s.%s.%s", group.trim().toLowerCase(), context.trim().toLowerCase(), descriptorName.trim().toLowerCase());
+    }
+
+    public final Set<AccessOperation> getOperations(final String permissionKey) {
+        Collection<String> roleNames = getCurrentUserRoleNames();
+        return roleNames.stream()
+                   .filter(permissionCache::containsKey)
+                   .map(permissionCache::get)
+                   .flatMap(object -> object.getOperations(permissionKey).stream())
+                   .collect(Collectors.toSet());
     }
 
     public final boolean hasPermissions(final String permissionKey) {
@@ -70,56 +83,45 @@ public class AuthorizationManager {
                    .allMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).isReadOnly(permissionKey));
     }
 
-    public final boolean hasCreatePermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.CREATE);
+    public final boolean anyReadPermission(final String... permissionKeys) {
+        return currentUserAnyPermission(AccessOperation.READ, permissionKeys);
     }
 
     public final boolean hasCreatePermission(final String permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.CREATE);
-    }
-
-    public final boolean hasDeletePermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.DELETE);
+        return currentUserHasPermission(AccessOperation.CREATE, permissionKey);
     }
 
     public final boolean hasDeletePermission(final String permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.DELETE);
+        return currentUserHasPermission(AccessOperation.DELETE, permissionKey);
     }
 
     public final boolean hasReadPermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.READ);
+        return currentUserHasPermission(AccessOperation.READ, permissionKey.getDatabaseKey());
     }
 
     public final boolean hasReadPermission(final String permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.READ);
-    }
-
-    public final boolean hasWritePermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.WRITE);
+        return currentUserHasPermission(AccessOperation.READ, permissionKey);
     }
 
     public final boolean hasWritePermission(final String permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.WRITE);
+        return currentUserHasPermission(AccessOperation.WRITE, permissionKey);
     }
 
     public final boolean hasExecutePermission(final PermissionKeys permissionKey) {
-        return currentUserHasPermission(permissionKey.getDatabaseKey(), AccessOperation.EXECUTE);
+        return currentUserHasPermission(AccessOperation.EXECUTE, permissionKey.getDatabaseKey());
     }
 
     public final boolean hasExecutePermission(final String permissionKey) {
-        return currentUserHasPermission(permissionKey, AccessOperation.EXECUTE);
+        return currentUserHasPermission(AccessOperation.EXECUTE, permissionKey);
     }
 
-    public final Set<AccessOperation> getOperations(final String permissionKey) {
+    private boolean currentUserAnyPermission(final AccessOperation operation, final String... permissionKeys) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
-                   .filter(permissionCache::containsKey)
-                   .map(permissionCache::get)
-                   .flatMap(object -> object.getOperations(permissionKey).stream())
-                   .collect(Collectors.toSet());
+                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).anyPermissionMatch(operation, permissionKeys));
     }
 
-    private boolean currentUserHasPermission(final String permissionKey, final AccessOperation operation) {
+    private boolean currentUserHasPermission(final AccessOperation operation, final String permissionKey) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
@@ -139,9 +141,5 @@ public class AuthorizationManager {
     public final void loadPermissionsIntoCache() {
         Collection<UserRoleModel> roles = authorizationUtil.createRoleModels();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
-    }
-
-    public void removePermissionsFromCache() {
-        permissionCache.clear();
     }
 }
