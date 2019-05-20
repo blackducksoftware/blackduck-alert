@@ -63,7 +63,8 @@ public class AuthorizationManager {
         return roleNames.stream()
                    .filter(permissionCache::containsKey)
                    .map(permissionCache::get)
-                   .flatMap(object -> object.getOperations(permissionKey).stream())
+                   .map(object -> object.getOperations(permissionKey))
+                   .flatMap(Collection::stream)
                    .collect(Collectors.toSet());
     }
 

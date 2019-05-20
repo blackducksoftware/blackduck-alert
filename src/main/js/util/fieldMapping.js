@@ -24,7 +24,7 @@ function overwriteSingleValue(items) {
 function buildTextInput(items, field) {
     const trimmedValue = overwriteSingleValue(items);
     const { readOnly } = field;
-    const isReadOnly = convertStringtoBoolean(readOnly);
+    const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(trimmedValue, { readOnly: isReadOnly });
     return <TextInput {...trimmedValue} />;
 }
@@ -32,7 +32,7 @@ function buildTextInput(items, field) {
 function buildTextArea(items, field) {
     const trimmedValue = overwriteSingleValue(items);
     const { readOnly } = field;
-    const isReadOnly = convertStringtoBoolean(readOnly);
+    const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(trimmedValue, { readOnly: isReadOnly });
     return <TextArea {...trimmedValue} />;
 }
@@ -44,7 +44,7 @@ function buildSelectInput(items, field) {
     const { searchable, multiSelect, options, readOnly } = field;
 
     const selectValue = options.filter(option => value.includes(option.value));
-    const isReadOnly = convertStringtoBoolean(readOnly);
+    const isReadOnly = convertStringToBoolean(readOnly);
     const typeOptionLabel = props => (
         <Option {...props}>
             <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
@@ -66,7 +66,7 @@ function buildSelectInput(items, field) {
 function buildPasswordInput(items, field) {
     const trimmedValue = overwriteSingleValue(items);
     const { readOnly } = field;
-    const isReadOnly = convertStringtoBoolean(readOnly);
+    const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(trimmedValue, { readOnly: isReadOnly });
     return <PasswordInput {...trimmedValue} />;
 }
@@ -74,16 +74,16 @@ function buildPasswordInput(items, field) {
 function buildNumberInput(items, field) {
     const trimmedValue = overwriteSingleValue(items);
     const { readOnly } = field;
-    const isReadOnly = convertStringtoBoolean(readOnly);
+    const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(trimmedValue, { readOnly: isReadOnly });
     return <NumberInput {...trimmedValue} />;
 }
 
 function buildCheckboxInput(items, field) {
     const { value } = items;
-    const checkedValue = convertStringtoBoolean(value);
+    const checkedValue = convertStringToBoolean(value);
     const { readOnly } = field;
-    const isReadOnly = convertStringtoBoolean(readOnly);
+    const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, { isChecked: checkedValue, readOnly: isReadOnly });
     return <CheckboxInput {...items} />;
 }
@@ -102,7 +102,7 @@ function buildCounterField(items, field) {
     return <CounterField {...items} />;
 }
 
-function convertStringtoBoolean(value) {
+function convertStringToBoolean(value) {
     return value.toString().toLowerCase() === 'true';
 }
 
