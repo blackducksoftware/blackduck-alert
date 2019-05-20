@@ -34,8 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.channel.event.ChannelEventManager;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
@@ -57,11 +57,11 @@ public class AuditEntryActions {
     private final AuditUtility auditUtility;
     private final DefaultNotificationManager notificationManager;
     private final JobConfigReader jobConfigReader;
-    private final EventManager eventManager;
+    private final ChannelEventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final JobConfigReader jobConfigReader, final EventManager eventManager,
+    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final JobConfigReader jobConfigReader, final ChannelEventManager eventManager,
         final NotificationProcessor notificationProcessor) {
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;

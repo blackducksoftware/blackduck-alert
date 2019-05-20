@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -32,12 +34,18 @@ public abstract class UIConfig extends AlertSerializableModel {
     private final String description;
     private final String urlName;
     private final String fontAwesomeIcon;
+    private final String componentNamespace;
 
-    public UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon) {
+    protected UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon, final String componentNamespace) {
         this.label = label;
         this.description = description;
         this.urlName = urlName;
         this.fontAwesomeIcon = fontAwesomeIcon;
+        this.componentNamespace = componentNamespace;
+    }
+
+    public UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon) {
+        this(label, description, urlName, fontAwesomeIcon, "");
     }
 
     public abstract List<ConfigField> createFields();
@@ -62,4 +70,11 @@ public abstract class UIConfig extends AlertSerializableModel {
         return fontAwesomeIcon;
     }
 
+    public boolean autoGenerateUI() {
+        return StringUtils.isNotBlank(getComponentNamespace());
+    }
+
+    public String getComponentNamespace() {
+        return componentNamespace;
+    }
 }

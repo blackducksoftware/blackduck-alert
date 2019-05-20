@@ -30,10 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.event.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -46,10 +46,10 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationManager notificationManager;
     private final NotificationProcessor notificationProcessor;
-    private final EventManager eventManager;
+    private final ChannelEventManager eventManager;
 
     @Autowired
-    public NotificationReceiver(final Gson gson, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final EventManager eventManager) {
+    public NotificationReceiver(final Gson gson, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelEventManager eventManager) {
         super(gson, NotificationEvent.class);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;

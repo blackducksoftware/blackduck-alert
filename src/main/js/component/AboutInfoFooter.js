@@ -11,8 +11,6 @@ import '../../css/footer.scss';
 import '../../css/messages.scss';
 import '../../css/logos.scss';
 
-//import { synopsys_black } from 'Index.js';
-
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {

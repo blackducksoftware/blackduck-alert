@@ -3,19 +3,21 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'Navigation';
-import Audit from 'component/audit/Index';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
+import DescriptorContentLoader from 'dynamic/loading/DescriptorContentLoader';
 
 
 class MainPage extends Component {
     constructor(props) {
         super(props);
+
         this.createRoutesForDescriptors = this.createRoutesForDescriptors.bind(this);
+        this.createConfigurationPage = this.createConfigurationPage.bind(this);
     }
 
     componentDidMount() {
@@ -32,12 +34,27 @@ class MainPage extends Component {
         if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
-        return descriptorList.map(component =>
-            (<Route
-                key={component.urlName}
-                path={`${uriPrefix}${component.urlName}`}
-                render={() => <GlobalConfiguration key={component.name} descriptor={component} />}
-            />));
+        const routeList = descriptorList.map(component => this.createConfigurationPage(component, uriPrefix));
+        return routeList;
+    }
+
+    createConfigurationPage(component, uriPrefix) {
+        const {
+            urlName, name, automaticallyGenerateUI, componentNamespace
+        } = component;
+        if (automaticallyGenerateUI) {
+            return (<Route
+                key={urlName}
+                path={`${uriPrefix}${urlName}`}
+                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} />}
+            />);
+        }
+
+        return (<Route
+            key={urlName}
+            path={`${uriPrefix}${urlName}`}
+            render={() => <GlobalConfiguration key={name} descriptor={component} />}
+        />);
     }
 
     render() {
@@ -59,7 +76,6 @@ class MainPage extends Component {
                     {channels}
                     <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
                     {components}
-                    <Route path="/alert/general/audit" component={Audit} />
                     <Route path="/alert/general/about" component={AboutInfo} />
                 </div>
                 <div className="modalsArea">
@@ -73,6 +89,7 @@ MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDescriptors: PropTypes.func.isRequired
 };
+
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });
