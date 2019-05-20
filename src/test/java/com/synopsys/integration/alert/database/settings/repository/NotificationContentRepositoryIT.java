@@ -4,48 +4,81 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
 public class NotificationContentRepositoryIT extends AlertIntegrationTest {
-
     @Autowired
-    private NotificationContentRepository repository;
+    private NotificationContentRepository notificationContentRepository;
+    @Autowired
+    private AuditEntryRepository auditEntryRepository;
+    @Autowired
+    private DefaultAuditUtility defaultAuditUtility;
+    @Autowired
+    private DefaultConfigurationAccessor defaultConfigurationAccessor;
 
     @BeforeEach
     public void init() {
-        repository.deleteAllInBatch();
-        repository.flush();
+        notificationContentRepository.deleteAllInBatch();
+        auditEntryRepository.deleteAllInBatch();
+        notificationContentRepository.flush();
     }
 
     @AfterEach
     public void cleanup() {
-        repository.deleteAllInBatch();
+        notificationContentRepository.deleteAllInBatch();
+        auditEntryRepository.deleteAllInBatch();
     }
 
     @Test
     public void testSaveEntity() throws Exception {
         final NotificationContent entity = createEntity(RestConstants.formatDate(new Date()));
-        final NotificationContent savedEntity = repository.save(entity);
-        final long count = repository.count();
+        final NotificationContent savedEntity = notificationContentRepository.save(entity);
+        final long count = notificationContentRepository.count();
         assertEquals(1, count);
-        final Optional<NotificationContent> foundEntityOptional = repository.findById(savedEntity.getId());
+        final Optional<NotificationContent> foundEntityOptional = notificationContentRepository.findById(savedEntity.getId());
         final NotificationContent foundEntity = foundEntityOptional.get();
         assertEquals(entity.getCreatedAt(), foundEntity.getCreatedAt());
         assertEquals(entity.getNotificationType(), foundEntity.getNotificationType());
@@ -73,11 +106,11 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         createEntity("2017-10-31T16:00:00.000Z");
         createEntity("2017-10-31T17:00:00.000Z");
         createEntity("2017-10-31T18:00:00.000Z");
-        final long count = repository.count();
+        final long count = notificationContentRepository.count();
         assertEquals(10, count);
         final Date startDate = RestConstants.parseDateString("2017-10-12T01:30:59.000Z");
         final Date endDate = RestConstants.parseDateString("2017-10-30T16:59:59.000Z");
-        final List<NotificationContent> foundEntityList = repository.findByCreatedAtBetween(startDate, endDate);
+        final List<NotificationContent> foundEntityList = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
         assertEquals(5, foundEntityList.size());
 
         foundEntityList.forEach(entity -> {
@@ -86,16 +119,102 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         });
     }
 
+    // Only re-enable for performance testing
+    @Test
+    @Disabled
+    @Tags(value = {
+        @Tag(TestTags.DEFAULT_INTEGRATION),
+        @Tag(TestTags.DEFAULT_PERFORMANCE),
+        @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
+    })
+    public void findMatchingNotificationTest() throws ParseException, AlertDatabaseConstraintException {
+        notificationQueryTest(notificationContentRepository::findMatchingNotification);
+    }
+
+    // Only re-enable for performance testing
+    @Test
+    @Disabled
+    @Tags(value = {
+        @Tag(TestTags.DEFAULT_INTEGRATION),
+        @Tag(TestTags.DEFAULT_PERFORMANCE),
+        @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
+    })
+    public void findMatchingSentNotificationTest() throws ParseException, AlertDatabaseConstraintException {
+        notificationQueryTest(notificationContentRepository::findMatchingSentNotification);
+    }
+
+    public void notificationQueryTest(final BiFunction<String, Pageable, Page<NotificationContent>> queryFunction) throws ParseException, AlertDatabaseConstraintException {
+        final String searchTerm = "searchTerm";
+        final int numberToCreate = 1000;
+        final Number numberOfSearchTermMatches = initializeNotificationRepo(searchTerm, numberToCreate);
+
+        final Instant beforeQueryInstant = Instant.now();
+        final Page<NotificationContent> matchingNotifications = queryFunction.apply(searchTerm, Pageable.unpaged());
+        final Instant afterQueryInstant = Instant.now();
+
+        final Duration queryDuration = Duration.between(beforeQueryInstant, afterQueryInstant);
+        final Long durationInSeconds = queryDuration.toSeconds();
+        System.out.println("Duration (in seconds): " + durationInSeconds);
+
+        assertEquals(numberOfSearchTermMatches, matchingNotifications.getTotalElements());
+    }
+
+    private Long initializeNotificationRepo(final String searchTerm, final int numberToCreate) throws ParseException, AlertDatabaseConstraintException {
+        final List<NotificationContent> notifications = new ArrayList<>(numberToCreate);
+        long searchableCount = 0;
+
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(RestConstants.JSON_DATE_FORMAT);
+
+        for (int i = 0; i < numberToCreate; i++) {
+            final Date newDate = new Date();
+            final String dateString = simpleDateFormat.format(newDate);
+
+            final NotificationContent entity;
+            if (i % 31 == 0) {
+                entity = createEntity(dateString, searchTerm);
+                searchableCount++;
+            } else {
+                entity = createEntity(dateString);
+            }
+            notifications.add(entity);
+        }
+
+        final List<NotificationContent> savedNotifications = notificationContentRepository.saveAll(notifications);
+
+        final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT);
+        fieldModel.setFieldValue("false");
+        final ConfigurationJobModel configJob = defaultConfigurationAccessor.createJob(Set.of(BlackDuckProvider.COMPONENT_NAME), Set.of(fieldModel));
+
+        for (final NotificationContent notification : savedNotifications) {
+            final MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());
+            defaultAuditUtility.createAuditEntry(Map.of(), configJob.getJobId(), messageContentGroup);
+        }
+
+        auditEntryRepository.flush();
+
+        return searchableCount;
+    }
+
     private NotificationContent createEntity(final String dateString) throws ParseException {
+        return createEntity(dateString, "NOTIFICATION CONTENT HERE");
+    }
+
+    private NotificationContent createEntity(final String dateString, final String content) throws ParseException {
         final Date createdAt = RestConstants.parseDateString(dateString);
         final Date providerCreationTime = createdAt;
         final String provider = "provider_1";
         final String notificationType = "type_1";
-        final String content = "NOTIFICATION CONTENT HERE";
         final NotificationContent entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
-        final NotificationContent savedEntity = repository.save(entity);
+        final NotificationContent savedEntity = notificationContentRepository.save(entity);
         return savedEntity;
     }
 
-    // TODO Add tests to also verify our complex queries work properly (findMatchingNotification and findMatchingSentNotification)
+    private MessageContentGroup createMessageGroup(final Long notificationId) {
+        final TreeSet<CategoryItem> categoryItems = new TreeSet<>();
+        final CategoryKey categoryKey = CategoryKey.from("notification", notificationId.toString());
+        categoryItems.add(new CategoryItem(categoryKey, ItemOperation.UPDATE, notificationId, new TreeSet<>()));
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent("topic", "topic value", categoryItems);
+        return MessageContentGroup.singleton(aggregateMessageContent);
+    }
+
 }

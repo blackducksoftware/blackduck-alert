@@ -98,13 +98,14 @@ public class DefaultNotificationManager implements NotificationManager {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<AlertNotificationWrapper> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
         final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
+
+        final Page<NotificationContent> matchingNotifications;
         if (onlyShowSentNotifications) {
-            final Page<NotificationContent> matchingSentNotification = notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
-            return safelyConvertToGenericPage(matchingSentNotification);
+            matchingNotifications = notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
         } else {
-            final Page<NotificationContent> matchingNotification = notificationContentRepository.findMatchingNotification(lcSearchTerm, pageRequest);
-            return safelyConvertToGenericPage(matchingNotification);
+            matchingNotifications = notificationContentRepository.findMatchingNotification(lcSearchTerm, pageRequest);
         }
+        return safelyConvertToGenericPage(matchingNotifications);
     }
 
     @Override
