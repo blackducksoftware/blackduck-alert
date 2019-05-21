@@ -178,10 +178,16 @@
             CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_slack');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_scheduling');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_scheduling','READ');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_settings');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_scheduling','WRITE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_settings','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_settings','WRITE');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_audit');
