@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -62,7 +63,6 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
-import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
@@ -124,7 +124,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(PermissionKeys.AUDIT_NOTIFICATIONS))).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(PermissionKeys.AUDIT_COMPONENT))).thenReturn(true);
         AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         ResponseEntity<String> response = auditEntryController.get(null, null, null, null, null, true);
@@ -171,7 +171,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(PermissionKeys.AUDIT_NOTIFICATIONS))).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(PermissionKeys.AUDIT_COMPONENT))).thenReturn(true);
         AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         final ResponseEntity<String> jobAuditModelResponse = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
@@ -200,7 +200,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(PermissionKeys.AUDIT_NOTIFICATIONS_RESEND))).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(PermissionKeys.AUDIT_COMPONENT))).thenReturn(true);
         AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         final ResponseEntity<String> invalidIdResponse = auditEntryController.post(-1L, null);

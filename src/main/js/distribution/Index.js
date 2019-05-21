@@ -7,6 +7,7 @@ import DescriptorLabel from 'component/common/DescriptorLabel';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { OPERATIONS } from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
@@ -67,6 +68,8 @@ class Index extends Component {
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
         this.onJobDeleteClose = this.onJobDeleteClose.bind(this);
         this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
+        this.canCreateJobs = this.canCreateJobs.bind(this);
+        this.canDeleteJobs = this.canDeleteJobs.bind(this);
 
         this.state = {
             currentRowSelected: null,
@@ -186,8 +189,8 @@ class Index extends Component {
     createCustomButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const fontAwesomeIcon = 'fa fa-sync fa-fw';
-        const insertOnClick = buttons.insertBtn.props.onClick;
-        const deleteOnClick = buttons.deleteBtn.props.onClick;
+        const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
+        const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         const reloadEntries = () => this.reloadJobs();
         let refreshButton = null;
         if (!this.props.autoRefresh) {
@@ -199,14 +202,18 @@ class Index extends Component {
         }
         return (
             <div>
-                <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
+                {buttons.insertBtn
+                && <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
                     <span className="fa fa-plus" />
                     New
                 </InsertButton>
-                <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                }
+                {buttons.deleteBtn
+                && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
                     <span className="fa fa-trash" />
                     Delete
                 </DeleteButton>
+                }
                 {refreshButton}
             </div>
         );
@@ -278,6 +285,28 @@ class Index extends Component {
         return tableData;
     }
 
+    canCreateJobs() {
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            if (descriptorList) {
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.CREATE));
+            }
+        }
+        return false;
+    }
+
+    canDeleteJobs() {
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            if (descriptorList) {
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.DELETE));
+            }
+        }
+        return false;
+    }
+
     render() {
         const tableData = this.createTableData(this.props.jobs);
         const jobTableOptions = {
@@ -301,6 +330,9 @@ class Index extends Component {
             }
         };
 
+        const canCreate = this.canCreateJobs();
+        const canDelete = this.canDeleteJobs();
+
         const content = (
             <div>
                 {this.getCurrentJobConfig(this.state.currentRowSelected)}
@@ -310,8 +342,8 @@ class Index extends Component {
                     condensed
                     data={tableData}
                     containerClass="table"
-                    insertRow
-                    deleteRow
+                    insertRow={canCreate}
+                    deleteRow={canDelete}
                     selectRow={jobsSelectRowProp}
                     options={jobTableOptions}
                     search
@@ -341,7 +373,7 @@ class Index extends Component {
         );
         return (
             <div>
-                <JobDeleteModal
+                {canDelete && <JobDeleteModal
                     createTableData={this.createTableData}
                     onModalSubmit={this.onJobDeleteSubmit}
                     onModalClose={this.onJobDeleteClose}
@@ -351,7 +383,7 @@ class Index extends Component {
                     statusColumnClassNameFormat={statusColumnClassNameFormat}
                     jobs={this.state.jobsToDelete}
                     show={this.state.showDeleteModal}
-                />
+                />}
 
                 <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
                 <div className="pull-right">

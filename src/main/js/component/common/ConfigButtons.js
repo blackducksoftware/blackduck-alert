@@ -5,12 +5,69 @@ import SubmitButton from 'field/input/SubmitButton';
 import GeneralButton from 'field/input/GeneralButton';
 
 class ConfigButtons extends Component {
+
+    createTestButton() {
+        const { includeTest, onTestClick, testLabel } = this.props;
+        if (includeTest) {
+            return (<div style={{
+                display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
+            }}
+            >
+                <GeneralButton id="generalButton" onClick={onTestClick}>{testLabel}</GeneralButton>
+            </div>);
+        }
+        return null;
+    }
+
+    createSaveButton() {
+        const { includeSave, submitLabel } = this.props;
+
+        if (includeSave) {
+            return <SubmitButton id="submitButton">{submitLabel}</SubmitButton>
+        }
+        return null;
+
+    }
+
+    createCancelButton() {
+        const { includeCancel, onCancelClick, cancelLabel } = this.props;
+
+        if (includeCancel) {
+            return <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>
+        }
+        return null;
+    }
+
+    createButtonContent() {
+        const {
+            isFixed, performingAction
+        } = this.props;
+        const testButton = this.createTestButton();
+        const saveButton = this.createSaveButton();
+        const cancelButton = this.createCancelButton();
+        const buttonContainerClass = isFixed ? '' : 'configButtonContainer';
+        return (
+            <div className={buttonContainerClass}>
+                <div className="progressContainer">
+                    <div className="progressIcon">
+                        {performingAction &&
+                        <span className="fa fa-spinner fa-spin" aria-hidden="true" />
+                        }
+                    </div>
+                </div>
+                {testButton}
+                {saveButton}
+                {cancelButton}
+            </div>
+        );
+    }
+
     render() {
         const {
-            isFixed, performingAction, includeTest, onTestClick, testLabel, includeSave, submitLabel, includeCancel, onCancelClick, cancelLabel
+            isFixed
         } = this.props;
 
-        let fixedStyle = null;
+        let fixedStyle = '';
         if (isFixed) {
             fixedStyle = 'fixedButtonGroup';
         }
@@ -21,27 +78,7 @@ class ConfigButtons extends Component {
                 <div className="fixedButtonGroupBuffer" />
                 }
                 <div className={wrapperStyles}>
-                    <div className="progressContainer">
-                        <div className="progressIcon">
-                            {performingAction &&
-                            <span className="fa fa-spinner fa-spin" aria-hidden="true" />
-                            }
-                        </div>
-                    </div>
-                    {includeTest &&
-                    <div style={{
-                        display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
-                    }}
-                    >
-                        <GeneralButton id="generalButton" onClick={onTestClick}>{testLabel}</GeneralButton>
-                    </div>
-                    }
-                    {includeSave &&
-                    <SubmitButton id="submitButton">{submitLabel}</SubmitButton>
-                    }
-                    {includeCancel &&
-                    <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>
-                    }
+                    {this.createButtonContent()}
                 </div>
             </div>
         );

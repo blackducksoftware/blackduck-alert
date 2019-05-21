@@ -23,7 +23,7 @@ public class ChannelDistributionUIConfigTest {
         final DescriptorMap descriptorAccessor = Mockito.mock(DescriptorMap.class);
         final Descriptor descriptor = Mockito.mock(Descriptor.class);
         final DescriptorMetadata descriptorMetadata = new DescriptorMetadata("", "", "", "", DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "", true, "", List.of(), "");
-        Mockito.when(descriptor.getMetaData(Mockito.any())).thenReturn(Optional.of(descriptorMetadata));
+        Mockito.when(descriptor.createMetaData(Mockito.any())).thenReturn(Optional.of(descriptorMetadata));
         Mockito.when(descriptorAccessor.getDescriptorByType(DescriptorType.CHANNEL)).thenReturn(Set.of(descriptor));
 
         final ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(descriptorAccessor);

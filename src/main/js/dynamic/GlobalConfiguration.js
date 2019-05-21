@@ -8,6 +8,7 @@ import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
 import ChannelTestModal from 'dynamic/ChannelTestModal';
@@ -93,7 +94,8 @@ class GlobalConfiguration extends React.Component {
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
-        const displayTest = type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT;
+        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE);
+        const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
 
         return (
             <div>
@@ -104,7 +106,7 @@ class GlobalConfiguration extends React.Component {
                     <div>
                         <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
                     </div>
-                    <ConfigButtons includeSave includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
+                    <ConfigButtons includeSave={displaySave} includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
                     <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
                 </form>
             </div>

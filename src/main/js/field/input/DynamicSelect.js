@@ -5,7 +5,7 @@ import LabeledField from 'field/LabeledField';
 
 function DynamicSelectInput(props) {
     const {
-        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass
+        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass, readOnly
     } = props;
 
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
@@ -34,6 +34,7 @@ function DynamicSelectInput(props) {
             isMulti={multiSelect}
             closeMenuOnSelect={!multiSelect}
             components={components}
+            isDisabled={readOnly}
         />
     </div>);
     return (

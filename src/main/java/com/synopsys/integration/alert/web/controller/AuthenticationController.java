@@ -45,10 +45,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
-import com.synopsys.integration.alert.web.security.authorization.AuthorizationManager;
 
 @RestController
 public class AuthenticationController extends BaseController {

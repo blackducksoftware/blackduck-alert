@@ -67,7 +67,7 @@ public abstract class Descriptor extends AlertSerializableModel {
         return Optional.ofNullable(uiConfigs.get(actionApiType));
     }
 
-    public Optional<DescriptorMetadata> getMetaData(final ConfigContextEnum context) {
+    public Optional<DescriptorMetadata> createMetaData(final ConfigContextEnum context) {
         return getUIConfig(context).map(uiConfig -> createMetaData(uiConfig, context));
     }
 

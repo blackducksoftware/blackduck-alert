@@ -87,7 +87,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     private Collection<LabelValueSelectOption> getProviderLabelValues() {
         return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
-                   .map(descriptor -> descriptor.getMetaData(ConfigContextEnum.DISTRIBUTION))
+                   .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                    .flatMap(Optional::stream)
                    .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName(), descriptorMetadata.getFontAwesomeIcon()))
                    .sorted()

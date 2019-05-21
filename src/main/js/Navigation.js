@@ -13,7 +13,7 @@ class Navigation extends Component {
         this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
     }
 
-    createNavItemForDescriptors(descriptorType, context, uriPrefix) {
+    createNavItemForDescriptors(descriptorType, context, uriPrefix, header) {
         const { descriptors } = this.props;
         if (!descriptors) {
             return null;
@@ -22,17 +22,25 @@ class Navigation extends Component {
         if (!descriptorList) {
             return null;
         }
-        return descriptorList.map(component =>
+
+        const contentList = descriptorList.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
                     <FontAwesomeIcon icon={component.fontAwesomeIcon} fixedWidth /> {component.label}
                 </NavLink>
             </li>));
+
+        if (contentList && contentList.length > 0) {
+            contentList.unshift(<li className="navHeader">
+                {header}
+            </li>);
+        }
+        return contentList;
     }
 
     render() {
-        const channelGlobals = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
-        const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
+        const channelGlobals = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/', 'Channels');
+        const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/', 'Providers');
         const components = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
         return (
@@ -42,13 +50,7 @@ class Navigation extends Component {
                 </div>
                 <div className="navigationContent">
                     <ul>
-                        <li className="navHeader">
-                            Providers
-                        </li>
                         {providers}
-                        <li className="navHeader">
-                            Channels
-                        </li>
                         {channelGlobals}
                         <li className="navHeader">
                             Jobs
