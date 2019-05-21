@@ -281,13 +281,22 @@ form.form-horizontal.loginForm {
 }
 
 .progressContainer {
+  display: inline-block;
   width: 30px;
   height: 30px;
+  margin: 0px;
+  border-radius: 3px;
+  border: 1px solid transparent;
 }
 
 .progressIcon {
   display: inline;
   margin: 0 10px;
+}
+
+.configButtonContainer {
+  display: block;
+  margin: 0px auto;
 }
 
 .missingBlackDuckData {
@@ -324,3 +333,4 @@ form.form-horizontal.loginForm {
 .pull-right {
   float: right;
 }
+
