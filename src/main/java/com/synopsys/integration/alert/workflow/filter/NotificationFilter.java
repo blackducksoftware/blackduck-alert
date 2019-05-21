@@ -28,14 +28,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
@@ -130,6 +134,13 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
+    private <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
+        return notificationList
+                   .parallelStream()
+                   .filter(filter)
+                   .collect(Collectors.toList());
+    }
+
     private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfiguration> distributionConfigs) {
         return distributionConfigs
                    .parallelStream()
@@ -140,10 +151,7 @@ public class NotificationFilter {
     private Map<String, List<AlertNotificationWrapper>> getNotificationsByType(final Set<String> notificationTypes, final Collection<AlertNotificationWrapper> notifications) {
         final Map<String, List<AlertNotificationWrapper>> notificationsByType = new HashMap<>();
         notificationTypes.parallelStream().forEach(type -> {
-            final List<AlertNotificationWrapper> applicableNotifications = notifications
-                                                                               .stream()
-                                                                               .filter(notification -> type.equals(notification.getNotificationType()))
-                                                                               .collect(Collectors.toList());
+            final List<AlertNotificationWrapper> applicableNotifications = applyFilter(notifications, notification -> type.equals(notification.getNotificationType()));
             notificationsByType.put(type, applicableNotifications);
         });
         return notificationsByType;
@@ -180,14 +188,51 @@ public class NotificationFilter {
 
     private Predicate<AlertNotificationWrapper> createJobFilter(final Collection<JsonField> filterableFields, final CommonDistributionConfiguration config) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
-        if (shouldFilter(config)) {
-            for (final JsonField field : filterableFields) {
-                final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field, config);
-                final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
-                filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
-            }
+        for (final JsonField field : filterableFields) {
+            final JsonFilterBuilder fieldFilter = createFieldFilter(field, config);
+            filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
         }
         return filterBuilder.buildPredicate();
+    }
+
+    private JsonFilterBuilder createFieldFilter(final JsonField field, final CommonDistributionConfiguration config) {
+        JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
+
+        final List<String> configKeyMappings = field.getConfigKeyMappings();
+        final Optional<ConfigurationFieldModel> optionalConditionalField = getConditionalField(configKeyMappings, config);
+        if (optionalConditionalField.isPresent()) {
+            final boolean isConditionMet = optionalConditionalField
+                                               .flatMap(ConfigurationFieldModel::getFieldValue)
+                                               .filter(BooleanUtils::toBoolean)
+                                               .isPresent();
+            if (isConditionMet) {
+                final ConfigurationFieldModel conditionalField = optionalConditionalField.get();
+                final List<String> relevantKeys = configKeyMappings
+                                                      .stream()
+                                                      .filter(mapping -> !mapping.equals(conditionalField.getFieldKey()))
+                                                      .collect(Collectors.toList());
+                final JsonFilterBuilder newFilterBuilder = createFilterBuilderForKeys(relevantKeys, field, config);
+                filterBuilder = new AndFieldFilterBuilder(filterBuilder, newFilterBuilder);
+            }
+        } else {
+            // There is no conditional, but the config is still filterable.
+            final JsonFilterBuilder newFilterBuilder = createFilterBuilderForKeys(configKeyMappings, field, config);
+            filterBuilder = new AndFieldFilterBuilder(filterBuilder, newFilterBuilder);
+        }
+        return filterBuilder;
+    }
+
+    private JsonFilterBuilder createFilterBuilderForKeys(final List<String> relevantKeys, final JsonField field, final CommonDistributionConfiguration config) {
+        JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_FALSE;
+        for (final String relevantKey : relevantKeys) {
+            final JsonFilterBuilder fieldFilter = config
+                                                      .getField(relevantKey)
+                                                      .map(ConfigurationFieldModel::getFieldValues)
+                                                      .map(values -> createFilterBuilderForAllValues(field, values))
+                                                      .orElse(DefaultFilterBuilders.ALWAYS_FALSE);
+            filterBuilder = new OrFieldFilterBuilder(filterBuilder, fieldFilter);
+        }
+        return filterBuilder;
     }
 
     private JsonFilterBuilder createFilterBuilderForAllValues(final JsonField field, final Collection<String> applicableValues) {
@@ -199,16 +244,25 @@ public class NotificationFilter {
         return filterBuilderForAllValues;
     }
 
-    // FIXME this is provider specific (but currently tightly coupled to distribution config) and we need a way to avoid it
-    private boolean shouldFilter(final CommonDistributionConfiguration config) {
-        return config.getFilterByProject();
+    private Optional<ConfigurationFieldModel> getConditionalField(final List<String> configKeyMappings, final CommonDistributionConfiguration config) {
+        for (final String configKey : configKeyMappings) {
+            final Optional<ConfigurationFieldModel> optionalConfigField = config.getField(configKey);
+            if (optionalConfigField.isPresent()) {
+                final ConfigurationFieldModel configField = optionalConfigField.get();
+                final Collection<String> values = configField.getFieldValues();
+                final boolean isBooleanField = values
+                                                   .stream()
+                                                   .allMatch(this::isBoolean);
+                if (isBooleanField) {
+                    return optionalConfigField;
+                }
+            }
+        }
+        return Optional.empty();
     }
 
-    private <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
-        return notificationList
-                   .parallelStream()
-                   .filter(filter)
-                   .collect(Collectors.toList());
+    private boolean isBoolean(final String value) {
+        return StringUtils.isNotBlank(value) && (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"));
     }
 
 }

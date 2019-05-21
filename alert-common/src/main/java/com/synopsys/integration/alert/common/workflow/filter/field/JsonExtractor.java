@@ -28,7 +28,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -46,7 +45,6 @@ import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 
 @Component
 public class JsonExtractor {
@@ -90,16 +88,6 @@ public class JsonExtractor {
             fieldToValuesMap.put(field, values);
         }
         return new JsonFieldAccessor(fieldToValuesMap);
-    }
-
-    public <T> List<T> getValuesFromConfig(final JsonField<T> field, final CommonDistributionConfiguration config) {
-        final Optional<List<JsonPath>> mappings = field.getConfigNameMappings();
-        final List<T> values = new ArrayList<>();
-        mappings.ifPresent(mapping ->
-                               mapping.forEach(jsonPath ->
-                                                   values.addAll(getValuesFromObject(field.getTypeRef(), jsonPath, config, field.isOptional())))
-        );
-        return values;
     }
 
     public <T> List<T> getValuesFromJson(final JsonField<T> field, final String json) {

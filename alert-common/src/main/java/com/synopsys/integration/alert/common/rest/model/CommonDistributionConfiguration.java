@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -117,6 +118,10 @@ public class CommonDistributionConfiguration extends Configuration {
 
     public void addFields(final Map<String, ConfigurationFieldModel> newFields) {
         getFieldAccessor().addFields(newFields);
+    }
+
+    public Optional<ConfigurationFieldModel> getField(final String fieldKey) {
+        return getFieldAccessor().getField(fieldKey);
     }
 
 }

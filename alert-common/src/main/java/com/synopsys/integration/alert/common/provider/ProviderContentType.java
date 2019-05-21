@@ -51,7 +51,7 @@ public class ProviderContentType extends Stringable {
     public List<JsonField<String>> getFilterableFields() {
         return notificationFields
                    .parallelStream()
-                   .filter(field -> field.getConfigNameMappings().isPresent())
+                   .filter(field -> !field.getConfigKeyMappings().isEmpty())
                    .filter(field -> field.isOfType(String.class))
                    .map(field -> (JsonField<String>) field)
                    .collect(Collectors.toList());

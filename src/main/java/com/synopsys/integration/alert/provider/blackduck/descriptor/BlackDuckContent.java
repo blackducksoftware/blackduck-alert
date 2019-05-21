@@ -28,7 +28,6 @@ import static com.synopsys.integration.alert.common.workflow.filter.field.JsonFi
 import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createOptionalStringField;
 import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createStringField;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -41,6 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -50,7 +50,7 @@ import com.synopsys.integration.blackduck.api.manual.component.VulnerabilitySour
 
 @Component
 public class BlackDuckContent extends ProviderContent {
-    //common fields
+    // common fields
     public static final String JSON_FIELD_CONTENT = "content";
     public static final String JSON_FIELD_PROJECT_NAME = "projectName";
     public static final String JSON_FIELD_PROJECT_VERSION_NAME = "projectVersionName";
@@ -60,10 +60,7 @@ public class BlackDuckContent extends ProviderContent {
     public static final String JSON_FIELD_COMPONENT_VERSION_NAME = "componentVersionName";
     public static final String JSON_FIELD_COMPONENT_VERSION = "componentVersion";
 
-    public static final String CONFIG_MAPPING_PROJECT_NAME_PATTERN = "projectNamePattern";
-    public static final String CONFIG_MAPPING_CONFIGURED_PROJECTS = "configuredProjects[*]";
-
-    //license limit fields
+    // license limit fields
     public static final String JSON_FIELD_MESSAGE = "message";
     public static final String JSON_FIELD_MARKETING_URL = "marketingPageUrl";
     public static final String JSON_FIELD_CODE_SIZE = "usedCodeSize";
@@ -116,7 +113,7 @@ public class BlackDuckContent extends ProviderContent {
 
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
         NotificationType.LICENSE_LIMIT.name(),
-        Arrays.asList(
+        List.of(
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_MESSAGE), JSON_FIELD_MESSAGE, FieldContentIdentifier.TOPIC, LABEL_LICENSE_LIMIT_MESSAGE),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_MARKETING_URL), JSON_FIELD_MARKETING_URL, FieldContentIdentifier.TOPIC_URL,
                 LABEL_LICENSE_LIMIT_MESSAGE + JsonField.LABEL_URL_SUFFIX),
@@ -128,9 +125,9 @@ public class BlackDuckContent extends ProviderContent {
 
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
         NotificationType.POLICY_OVERRIDE.name(),
-        Arrays.asList(
+        List.of(
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                Arrays.asList(createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
+                List.of(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN)),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
                 LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
@@ -154,9 +151,9 @@ public class BlackDuckContent extends ProviderContent {
 
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
         NotificationType.VULNERABILITY.name(),
-        Arrays.asList(
+        List.of(
             createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                Arrays.asList(createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
+                List.of(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN)),
             createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC,
                 LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
@@ -178,9 +175,9 @@ public class BlackDuckContent extends ProviderContent {
         )
     );
 
-    private static final List<JsonField<?>> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
+    private static final List<JsonField<?>> RULE_VIOLATION_FIELD_LIST = List.of(
         createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-            Arrays.asList(createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
+            List.of(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN)),
         createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
         createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
             LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
