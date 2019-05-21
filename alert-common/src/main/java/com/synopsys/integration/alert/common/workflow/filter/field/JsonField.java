@@ -85,8 +85,8 @@ public class JsonField<T> extends Stringable {
         return optionalStringField;
     }
 
-    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<String> configNameMappings) {
-        return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
+    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<String> configKeyMappings) {
+        return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label, configKeyMappings);
     }
 
     public static JsonPath createJsonPath(final String pattern, final String... fields) {

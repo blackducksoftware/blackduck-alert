@@ -117,6 +117,7 @@ public class SlackChannel extends DistributionChannel {
                 .getSubTopic()
                 .map(subTopic -> createLinkableItemString(subTopic, true))
                 .ifPresent(subTopicBuilder::append);
+            subTopicBuilder.append(SLACK_LINE_SEPARATOR);
             subTopicBuilder.append("- - - - - - - - - - - - - - - - - - - -");
             subTopicBuilder.append(SLACK_LINE_SEPARATOR);
             messagePieces.add(subTopicBuilder.toString());
