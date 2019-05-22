@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.jira;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -34,6 +36,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component(value = JiraChannel.COMPONENT_NAME)
 public class JiraChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_jira";
+    private static final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
 
     public JiraChannel(final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
         super(gson, alertProperties, auditUtility);
@@ -41,7 +44,7 @@ public class JiraChannel extends DistributionChannel {
 
     @Override
     public void sendMessage(final DistributionEvent event) throws IntegrationException {
-
+        logger.info("Received event to send to Jira {}", event);
     }
 
     @Override

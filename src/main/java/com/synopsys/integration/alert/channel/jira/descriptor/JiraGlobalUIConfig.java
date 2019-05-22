@@ -27,10 +27,20 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class JiraGlobalUIConfig extends UIConfig {
+
+    public static final String LABEL_URL = "Url";
+    public static final String LABEL_USER_NAME = "Username";
+    public static final String LABEL_ACCESS_TOKEN = "Access Token";
+
+    public static final String DESCRIPTION_URL = "";
+    public static final String DESCRIPTION_USER_NAME = "";
+    public static final String DESCRIPTION_ACCESS_TOKEN = "";
 
     public JiraGlobalUIConfig() {
         super(JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_DESCRIPTION, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON);
@@ -38,6 +48,10 @@ public class JiraGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        return List.of();
+        final ConfigField jiraUrl = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL);
+        final ConfigField jiraUserName = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_USERNAME, LABEL_USER_NAME, DESCRIPTION_USER_NAME);
+        final ConfigField jiraAccessToken = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN);
+
+        return List.of(jiraUrl, jiraUserName, jiraAccessToken);
     }
 }

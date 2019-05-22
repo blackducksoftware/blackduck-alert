@@ -20,27 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.descriptor;
+package com.synopsys.integration.alert.channel.jira.actions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.JiraChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
-public class JiraDescriptor extends ChannelDescriptor {
-    public static final String KEY_JIRA_URL = "jira.url";
-    public static final String KEY_JIRA_USERNAME = "jira.user.name";
-    public static final String KEY_JIRA_ACCESS_TOKEN = "jira.access.token";
-
-    public static final String JIRA_LABEL = "Jira";
-    public static final String JIRA_URL = "jira";
-    public static final String JIRA_ICON = "jira";
-    public static final String JIRA_DESCRIPTION = "This page allows you to configure the Jira server that Alert will send issue updates to.";
-
+public class JiraConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraDescriptor(final JiraGlobalUIConfig globalUIConfig, final JiraDistributionUIConfig distributionUIConfig) {
-        super(JiraChannel.COMPONENT_NAME, distributionUIConfig, globalUIConfig);
+    public JiraConfigurationAction(final JiraGlobalTestAction globalTestAction) {
+        super(JiraChannel.COMPONENT_NAME);
+        addGlobalTestAction(globalTestAction);
     }
 }
