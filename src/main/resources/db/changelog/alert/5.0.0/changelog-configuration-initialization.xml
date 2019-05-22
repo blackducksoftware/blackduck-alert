@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- REGISTERED_DESCRIPTORS: required to register fields -->
+    <changeSet author="psantos" id="1558524516692-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <column name="NAME" type="VARCHAR(255)" value="channel_jira"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
+        </insert>
+    </changeSet>
+    <!-- Register Global Black Duck Fields. Changelog Extension: 4. -->
+    <changeSet author="psantos" id="1558524516692-2">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.url', FALSE, 'channel_jira', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.user.name', TRUE, 'channel_jira', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.access.token', TRUE, 'channel_jira', 'GLOBAL');
+        </sql>
+    </changeSet>
+</databaseChangeLog>
