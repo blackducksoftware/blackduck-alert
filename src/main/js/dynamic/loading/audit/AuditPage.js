@@ -12,6 +12,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import '../../../../css/audit.scss';
 
@@ -282,7 +283,7 @@ class AuditPage extends Component {
             return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
                                                buttonText="Re-send" />);
         }
-        return (<div className="editJobButtonDisabled"><span className="fa fa-sync" /></div>);
+        return (<div className="editJobButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
     }
 
     isResendAllowed() {
@@ -303,7 +304,10 @@ class AuditPage extends Component {
                 {!this.props.autoRefresh &&
                 <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton"
                      onClick={this.refreshAuditEntries}>
-                    <span className="fa fa-sync fa-fw" aria-hidden="true" /> Refresh
+                    <span>
+                        <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                        Refresh
+                    </span>
                 </div>
                 }
             </ButtonGroup>
@@ -411,7 +415,9 @@ class AuditPage extends Component {
                     </BootstrapTable>
 
                     {this.props.inProgress && <div className="progressIcon">
-                        <span className="fa fa-spinner fa-spin fa-fw" aria-hidden="true" />
+                        <span className="fa-layers fa-fw">
+                            <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                        </span>
                     </div>}
 
                     <p name="message">{this.props.message}</p>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class EditTableCellFormatter extends Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class EditTableCellFormatter extends Component {
         }
 
         return (
-            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><span className="fa fa-pencil-alt" /></button>
+            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><FontAwesomeIcon icon="pencil-alt" className="alert-icon" /></button>
         );
     }
 }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import CancelButton from 'field/input/CancelButton';
 import SubmitButton from 'field/input/SubmitButton';
 import GeneralButton from 'field/input/GeneralButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ConfigButtons extends Component {
 
@@ -51,7 +52,7 @@ class ConfigButtons extends Component {
                 <div className="progressContainer">
                     <div className="progressIcon">
                         {performingAction &&
-                        <span className="fa fa-spinner fa-spin" aria-hidden="true" />
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                         }
                     </div>
                 </div>

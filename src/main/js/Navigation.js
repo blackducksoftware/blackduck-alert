@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 class Navigation extends Component {
     constructor(props) {
@@ -26,9 +26,10 @@ class Navigation extends Component {
         const contentList = descriptorList.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesomeIcon icon={component.fontAwesomeIcon} fixedWidth /> {component.label}
+                    <FontAwesomeIcon icon={component.fontAwesomeIcon} size="lg" fixedWidth /> {component.label}
                 </NavLink>
-            </li>));
+            </li>)
+        );
 
         if (contentList && contentList.length > 0) {
             contentList.unshift(<li className="navHeader">
@@ -57,14 +58,14 @@ class Navigation extends Component {
                         </li>
                         <li>
                             <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                                <FontAwesomeIcon icon="truck" fixedWidth /> Distribution
+                                <FontAwesomeIcon icon="truck" className="alert-icon" size="lg" fixedWidth /> Distribution
                             </NavLink>
                         </li>
                         <li className="divider" />
                         {components}
                         <li>
                             <NavLink to="/alert/general/about" activeClassName="activeNav">
-                                <FontAwesomeIcon icon="info" fixedWidth /> About
+                                <FontAwesomeIcon icon="info" className="alert-icon" size="lg" fixedWidth /> About
                             </NavLink>
                         </li>
                         <li className="logoutLink">
@@ -76,7 +77,7 @@ class Navigation extends Component {
                                     this.props.confirmLogout();
                                 }}
                             >
-                                <FontAwesomeIcon icon="sign-out-alt" fixedWidth /> Logout
+                                <FontAwesomeIcon icon="sign-out-alt" className="alert-icon" size="lg" fixedWidth /> Logout
                             </a>
                         </li>
                     </ul>

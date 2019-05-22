@@ -1,23 +1,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import '../../../css/messages.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SystemMessage extends Component {
     getIcon() {
         const { severity } = this.props;
-        const errorIcon = 'fa fa-exclamation-triangle ';
+        const errorIcon = 'exclamation-triangle ';
         if (severity === 'ERROR') {
-            return `${errorIcon} errorStatus`;
+            return `${errorIcon}`;
         } else if (severity === 'WARNING') {
-            return `${errorIcon} warningStatus`;
+            return `${errorIcon}`;
         }
-        return 'fa fa-check-circle validStatus';
+        return 'check-circle';
+    }
+
+    getClassName() {
+        const { severity } = this.props;
+        if (severity === 'ERROR') {
+            return 'errorStatus';
+        } else if (severity === 'WARNING') {
+            return 'warningStatus';
+        }
+        return 'validStatus';
     }
 
     render() {
         const { createdAt, content, severity } = this.props;
         return (<div className="messageHeader">
-            <span className={this.getIcon()} aria-hidden="true" title={severity} /><span className="messageDate">{createdAt}</span>
+            <FontAwesomeIcon icon={this.getIcon()} className={`alert-icon ${this.getClassName()}`} size="lg" title={severity} /><span className="messageDate">{createdAt}</span>
             <div>{content}</div>
         </div>);
     }

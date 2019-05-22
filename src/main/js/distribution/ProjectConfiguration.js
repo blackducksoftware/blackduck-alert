@@ -3,13 +3,19 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getProjects } from 'store/actions/projects';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function assignClassName(row, rowIdx) {
     return 'tableRow';
 }
 
 function assignDataFormat(cell, row) {
-    const cellContent = (row.missing) ? <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> : cell;
+    const cellContent = (row.missing) ? <span className="missingBlackDuckData">
+        <span className="fa-layers fa-fw">
+            <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
+        </span> </span>
+        : cell;
+
 
     if (cell) {
         return <div title={cell.toString()}> {cellContent} </div>;
@@ -186,7 +192,10 @@ class ProjectConfiguration extends Component {
                 </BootstrapTable>
 
                 {this.props.fetching &&
-                <div className="progressIcon"><span className="fa fa-spinner fa-spin fa-fw" aria-hidden="true" />
+                <div className="progressIcon">
+                    <span className="fa-layers fa-fw">
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                    </span>
                 </div>}
 
                 {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}

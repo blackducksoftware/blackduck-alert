@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function DescriptorLabel(props) {
     const { descriptor, keyPrefix } = props;
-    const icon = `fa fa-${descriptor.fontAwesomeIcon} fa-fw`;
     const elementKey = `${keyPrefix}-${descriptor.label}`;
     const cellText = descriptor.label;
     return (
         <div className="inline">
-            <span key={elementKey} className={icon} aria-hidden="true" />
+            <FontAwesomeIcon key={elementKey} icon={descriptor.fontAwesomeIcon} className="alert-icon" size="lg" />
             {cellText}
         </div>);
 }

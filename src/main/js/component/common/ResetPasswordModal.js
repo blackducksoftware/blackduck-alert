@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import TextInput from 'field/input/TextInput';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ResetPasswordModal extends Component {
     constructor(props) {
@@ -39,7 +40,7 @@ class ResetPasswordModal extends Component {
                 <button id="testSend" type="button" className="btn btn-primary" onClick={this.handlePasswordReset}>Reset Password</button>
                 <div className="progressIcon">
                     {this.props.resettingPassword &&
-                    <span className="fa fa-spinner fa-spin" aria-hidden="true" />
+                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                     }
                     {!this.props.resettingPassword &&
                     <span>&nbsp;&nbsp;</span>
