@@ -33,14 +33,13 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class JiraGlobalUIConfig extends UIConfig {
-
     public static final String LABEL_URL = "Url";
     public static final String LABEL_USER_NAME = "Username";
     public static final String LABEL_ACCESS_TOKEN = "Access Token";
 
-    public static final String DESCRIPTION_URL = "";
-    public static final String DESCRIPTION_USER_NAME = "";
-    public static final String DESCRIPTION_ACCESS_TOKEN = "";
+    public static final String DESCRIPTION_URL = "The URL of the Jira server.";
+    public static final String DESCRIPTION_USER_NAME = "The user name used to log into the Jira server that has generated the access token.";
+    public static final String DESCRIPTION_ACCESS_TOKEN = "The access token used to send API requests to the Jira server.";
 
     public JiraGlobalUIConfig() {
         super(JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_DESCRIPTION, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON);
