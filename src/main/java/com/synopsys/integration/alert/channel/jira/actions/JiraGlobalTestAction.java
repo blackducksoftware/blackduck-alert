@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.actions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
@@ -30,8 +32,10 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JiraGlobalTestAction extends TestAction {
+    public static final Logger logger = LoggerFactory.getLogger(JiraGlobalTestAction.class);
+
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-
+        logger.info("Test config invoked {}", testConfig);
     }
 }
