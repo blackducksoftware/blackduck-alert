@@ -23,7 +23,7 @@ class EditTableCellFormatter extends Component {
         }
 
         return (
-            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><FontAwesomeIcon icon="pencil-alt" className="alert-icon" /></button>
+            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><FontAwesomeIcon icon="pencil-alt" className="alert-icon" size="lg" /></button>
         );
     }
 }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Overlay from 'react-bootstrap/Overlay';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as IconUtility from 'util/iconUtility';
 
 class ConfigurationLabel extends Component {
     constructor(props) {
@@ -49,7 +50,7 @@ class ConfigurationLabel extends Component {
         return (
             <div className="d-inline-flex col-sm-4">
                 <h1>
-                    <FontAwesomeIcon icon={fontAwesomeIcon} className="alert-icon" size="lg" fixedWidth />
+                    <FontAwesomeIcon icon={IconUtility.createIconPath(fontAwesomeIcon)} className="alert-icon" size="lg" fixedWidth />
                     {configurationName}
                     {descriptionField}
                 </h1>

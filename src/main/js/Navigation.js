@@ -6,6 +6,7 @@ import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import * as IconUtility from 'util/iconUtility';
 
 class Navigation extends Component {
     constructor(props) {
@@ -26,7 +27,7 @@ class Navigation extends Component {
         const contentList = descriptorList.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesomeIcon icon={component.fontAwesomeIcon} size="lg" fixedWidth /> {component.label}
+                    <FontAwesomeIcon icon={IconUtility.createIconPath(component.fontAwesomeIcon)} size="lg" fixedWidth /> {component.label}
                 </NavLink>
             </li>)
         );

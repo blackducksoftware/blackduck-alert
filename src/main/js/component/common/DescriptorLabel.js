@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as IconUtility from 'util/iconUtility';
 
 function DescriptorLabel(props) {
     const { descriptor, keyPrefix } = props;
@@ -8,7 +9,7 @@ function DescriptorLabel(props) {
     const cellText = descriptor.label;
     return (
         <div className="inline">
-            <FontAwesomeIcon key={elementKey} icon={descriptor.fontAwesomeIcon} className="alert-icon" size="lg" />
+            <FontAwesomeIcon key={elementKey} icon={IconUtility.createIconPath(descriptor.fontAwesomeIcon)} className="alert-icon" size="lg" />
             {cellText}
         </div>);
 }

@@ -7,6 +7,7 @@ import { getAboutInfo } from 'store/actions/about';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as IconUtility from 'util/iconUtility';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -15,7 +16,7 @@ class AboutInfo extends React.Component {
 
     iconColumnRenderer(cell) {
         const keyText = `aboutIconKey-${cell}`;
-        return (<FontAwesomeIcon key={keyText} icon={cell} className="alert-icon" size="lg" />);
+        return (<FontAwesomeIcon key={keyText} icon={IconUtility.createIconPath(cell)} className="alert-icon" size="lg" />);
     }
 
     createDescriptorTable(tableData) {
