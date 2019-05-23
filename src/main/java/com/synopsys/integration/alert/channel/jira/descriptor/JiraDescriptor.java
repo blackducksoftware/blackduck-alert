@@ -36,7 +36,7 @@ public class JiraDescriptor extends ChannelDescriptor {
 
     public static final String JIRA_LABEL = "Jira";
     public static final String JIRA_URL = "jira";
-    public static final String JIRA_ICON = "jira";
+    public static final String JIRA_ICON = "fab,jira";
     public static final String JIRA_DESCRIPTION = "This page allows you to configure the Jira server that Alert will send issue updates to.";
 
     @Autowired

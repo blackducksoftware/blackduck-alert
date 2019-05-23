@@ -36,7 +36,7 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     public static final String SLACK_LABEL = "Slack";
     public static final String SLACK_URL = "slack";
-    public static final String SLACK_ICON = "slack";
+    public static final String SLACK_ICON = "fab,slack";
 
     @Autowired
     public SlackDescriptor(final SlackUIConfig slackUIConfig) {
