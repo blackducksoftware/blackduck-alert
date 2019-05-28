@@ -34,6 +34,10 @@ public class JiraDescriptor extends ChannelDescriptor {
     public static final String KEY_JIRA_USERNAME = "jira.user.name";
     public static final String KEY_JIRA_ACCESS_TOKEN = "jira.access.token";
 
+    public static final String KEY_ADD_COMMENTS = "jira.add.comments";
+    public static final String KEY_ISSUE_CREATOR = "jira.issue.creator";
+    public static final String KEY_JIRA_PROJECT_NAME = "jira.project.name";
+
     public static final String JIRA_LABEL = "Jira Cloud";
     public static final String JIRA_URL = "jira";
     // brands are in the fab icon set use the / character to delimit the icon set.
