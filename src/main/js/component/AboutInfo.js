@@ -6,6 +6,8 @@ import ReadOnlyField from 'field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as IconUtility from 'util/iconUtility';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -13,10 +15,8 @@ class AboutInfo extends React.Component {
     }
 
     iconColumnRenderer(cell) {
-        const altText = cell;
         const keyText = `aboutIconKey-${cell}`;
-        const classNameText = `fa fa-${cell}`;
-        return (<span key={keyText} alt={altText} className={classNameText} aria-hidden="true" />);
+        return (<FontAwesomeIcon key={keyText} icon={IconUtility.createIconPath(cell)} className="alert-icon" size="lg" />);
     }
 
     createDescriptorTable(tableData) {

@@ -8,6 +8,7 @@ import Header from 'component/common/Header';
 import { login } from 'store/actions/session';
 import { hideResetModal, sendPasswordResetEmail, showResetModal } from 'store/actions/system';
 import ResetPasswordModal from './component/common/ResetPasswordModal';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class LoginPage extends Component {
     constructor(props) {
@@ -79,7 +80,7 @@ class LoginPage extends Component {
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
                                     <div className="progressIcon">
                                         {this.props.loggingIn &&
-                                        <span className="fa fa-spinner fa-spin" aria-hidden="true" />
+                                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                                         }
                                         {!this.props.loggingIn &&
                                         <span>&nbsp;&nbsp;</span>

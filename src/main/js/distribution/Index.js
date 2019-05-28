@@ -12,6 +12,7 @@ import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import DistributionConfiguration from 'dynamic/DistributionConfiguration';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * Selects className based on field value
@@ -188,7 +189,6 @@ class Index extends Component {
 
     createCustomButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
-        const fontAwesomeIcon = 'fa fa-sync fa-fw';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         const reloadEntries = () => this.reloadJobs();
@@ -196,7 +196,7 @@ class Index extends Component {
         if (!this.props.autoRefresh) {
             refreshButton = (
                 <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
-                    <span className={fontAwesomeIcon} aria-hidden="true" />Refresh
+                    <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
                 </button>
             );
         }
@@ -204,13 +204,13 @@ class Index extends Component {
             <div>
                 {buttons.insertBtn
                 && <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
-                    <span className="fa fa-plus" />
+                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     New
                 </InsertButton>
                 }
                 {buttons.deleteBtn
                 && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
-                    <span className="fa fa-trash" />
+                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                     Delete
                 </DeleteButton>
                 }
@@ -364,7 +364,7 @@ class Index extends Component {
 
                 {this.props.inProgress &&
                 <div className="progressIcon">
-                    <span className="fa fa-spinner fa-spin" aria-hidden="true" />
+                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                 </div>
                 }
 

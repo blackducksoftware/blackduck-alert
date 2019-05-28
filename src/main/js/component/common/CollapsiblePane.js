@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class CollapsiblePane extends Component {
     constructor(props) {
@@ -26,14 +27,14 @@ class CollapsiblePane extends Component {
         }
 
         const contentClass = shouldExpand ? 'shown' : 'hidden';
-        const iconClass = shouldExpand ? 'fa-minus' : 'fa-plus';
+        const iconClass = shouldExpand ? 'minus' : 'plus';
         return (
             <div className="collapsiblePanel">
                 <button
                     type="button"
                     className="btn btn-link"
                     onClick={this.toggleDisplay}>
-                    <span className={`fa ${iconClass} icon`} aria-hidden="true" />
+                    <FontAwesomeIcon icon={iconClass} className='icon' size="lg" />
                     {this.props.title}
                 </button>
                 <div className={contentClass}>

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Overlay from 'react-bootstrap/Overlay';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as IconUtility from 'util/iconUtility';
 
 class ConfigurationLabel extends Component {
     constructor(props) {
@@ -22,12 +23,14 @@ class ConfigurationLabel extends Component {
             descriptionField = (
                 <div className="d-inline-flex">
                     <span
-                        className="fa fa-question-circle configurationDescriptionIcon"
+                        className="configurationDescriptionIcon"
                         onClick={() => this.setState({ showDescription: !showDescription })}
                         ref={(icon) => {
                             this.target = icon;
                         }}
-                    />
+                    >
+                        <FontAwesomeIcon icon="question-circle" className="alert-icon" size="lg" />
+                    </span>
                     <Overlay
                         rootClose
                         placement="bottom"
@@ -47,7 +50,7 @@ class ConfigurationLabel extends Component {
         return (
             <div className="d-inline-flex col-sm-4">
                 <h1>
-                    <FontAwesomeIcon icon={fontAwesomeIcon} fixedWidth />
+                    <FontAwesomeIcon icon={IconUtility.createIconPath(fontAwesomeIcon)} className="alert-icon" size="lg" fixedWidth />
                     {configurationName}
                     {descriptionField}
                 </h1>

@@ -12,9 +12,9 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/blackducksoftware/blackduck-alert.git",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.8.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@fortawesome/free-brands-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "bootstrap": "^4.3.1",
     "enzyme": "^3.7.0",

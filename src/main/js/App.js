@@ -3,21 +3,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
-import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
-import '@fortawesome/fontawesome-free/js/all.js';
-import '@fortawesome/fontawesome-free/js/v4-shims.js';
-
 import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
 import SetupPage from 'SetupPage';
 import { verifyLogin } from 'store/actions/session';
 import { getInitialSystemSetup } from 'store/actions/system';
-
+import * as IconUtility from 'util/iconUtility';
 import LogoutPage from 'LogoutPage';
 import '../css/main.scss';
 
+IconUtility.loadIconData();
 
 class App extends Component {
     componentDidMount() {

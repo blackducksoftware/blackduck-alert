@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) => (
     <button
@@ -11,7 +12,7 @@ const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) 
             handleButtonClicked(currentRowSelected);
         }}
     >
-        <span className="fa fa-sync" />
+        <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
     </button>
 );
 

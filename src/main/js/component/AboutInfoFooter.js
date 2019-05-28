@@ -10,6 +10,7 @@ import { getLatestMessages } from 'store/actions/system';
 import '../../css/footer.scss';
 import '../../css/messages.scss';
 import '../../css/logos.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class AboutInfoFooter extends React.Component {
@@ -46,9 +47,9 @@ class AboutInfoFooter extends React.Component {
     getFontAwesomeIcon() {
         const { latestMessages } = this.props;
         if (this.hasErrorMessages(latestMessages) || this.hasWarninigMessages(latestMessages)) {
-            return 'fa fa-exclamation-triangle';
+            return 'exclamation-triangle';
         }
-        return 'fa fa-check-circle';
+        return 'check-circle';
     }
 
     getIconColor() {
@@ -114,7 +115,7 @@ class AboutInfoFooter extends React.Component {
                     }}
                     onClick={this.handleOverlayButton}
                 >
-                    <div className={iconColor}><span className={iconClassName} /></div>
+                    <div className={iconColor}><FontAwesomeIcon icon={iconClassName} className="alert-icon" size="lg" /></div>
                 </div>
                 {overlayComponent}
             </div>

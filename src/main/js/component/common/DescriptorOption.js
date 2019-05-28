@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as IconUtility from 'util/iconUtility';
 
 function DescriptorOption(props) {
-    const fontAwesomeIcon = `fa fa-${props.icon} fa-fw`;
-    const formattedIcon = (<span key={`icon-${props.value}`} className={fontAwesomeIcon} aria-hidden="true" />);
+    const formattedIcon = (<FontAwesomeIcon key={`icon-${props.value}`} icon={IconUtility.createIconPath(props.icon)} className="alert-icon" size="lg" />);
     const icon = props.icon != null ? formattedIcon : null;
     return (
         <div>
