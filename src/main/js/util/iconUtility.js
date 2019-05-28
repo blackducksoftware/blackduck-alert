@@ -1,3 +1,11 @@
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+
+export function loadIconData() {
+    library.add(fas, fab);
+}
+
 // Because Font Awesome now has different icon sets we need to create an array that includes the icon set.
 // the default set is fas the solid icons.  Brands are in the fab set.
 // if the parameter to this function contains a '/' we construct an array from the string splitting on '/' to denote the icon set.
