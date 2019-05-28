@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.startup;
+package com.synopsys.integration.alert.workflow.startup.component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.ProxyManager;
@@ -52,7 +53,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
-public class SystemValidator {
+@Order(2)
+public class SystemValidator extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(SystemValidator.class);
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
@@ -72,6 +74,11 @@ public class SystemValidator {
         this.systemMessageUtility = systemMessageUtility;
         this.userAccessor = userAccessor;
         this.proxyManager = proxyManager;
+    }
+
+    @Override
+    public void run() {
+        validate();
     }
 
     public boolean validate() {

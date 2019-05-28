@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
+import com.synopsys.integration.alert.workflow.startup.component.AlertStartupInitializer;
 
 public class AlertStartupInitializerTest {
 

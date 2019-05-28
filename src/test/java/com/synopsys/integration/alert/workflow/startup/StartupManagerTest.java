@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.update.UpdateNotifierTask;
+import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
