@@ -57,7 +57,7 @@ public class StartupManager {
     public void startup() {
         logger.info("Alert Starting...");
         systemStatusUtility.startupOccurred();
-        startupComponents.forEach(StartupComponent::run);
+        startupComponents.forEach(StartupComponent::initializeComponent);
     }
 
 }
