@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -39,15 +37,11 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
-import com.synopsys.integration.blackduck.service.model.RequestFactory;
+import com.synopsys.integration.blackduck.configuration.ConnectionResult;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
-import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.request.Response;
 
 @Component
 public class BlackDuckGlobalTestAction extends TestAction {
@@ -75,17 +69,9 @@ public class BlackDuckGlobalTestAction extends TestAction {
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);
 
         final BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
-        final BlackDuckServerVerifier blackDuckServerVerifier = new BlackDuckServerVerifier();
-        blackDuckServerVerifier.verifyIsBlackDuckServer(blackDuckServerConfig.getBlackDuckUrl(), blackDuckServerConfig.getProxyInfo(), blackDuckServerConfig.isAlwaysTrustServerCertificate(), blackDuckServerConfig.getTimeout());
-
-        final BlackDuckHttpClient blackDuckHttpClient = blackDuckServerConfig.createBlackDuckHttpClient(blackDuckServerConfigBuilder.getLogger());
-        final Request authRequest = RequestFactory.createCommonGetRequest(url);
-        try (final Response response = blackDuckHttpClient.execute(authRequest)) {
-            if (response.isStatusCodeError()) {
-                throw new IntegrationRestException(response.getStatusCode(), response.getStatusMessage(), response.getContentString(), "Connection error");
-            }
-        } catch (final IOException ioException) {
-            throw new IntegrationException(ioException.getMessage(), ioException);
+        final ConnectionResult connectionResult = blackDuckServerConfig.attemptConnection(new Slf4jIntLogger(logger));
+        if (connectionResult.isFailure()) {
+            throw new IntegrationRestException(connectionResult.getHttpStatusCode(), connectionResult.getFailureMessage().orElse(""), null, String.format("Can not connect to: %s. %s", url, connectionResult.getFailureMessage().orElse("")));
         }
     }
 
