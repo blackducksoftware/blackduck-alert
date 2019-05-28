@@ -10,7 +10,7 @@
             <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
         </insert>
     </changeSet>
-    <!-- Register Global Black Duck Fields. Changelog Extension: 4. -->
+    <!-- Register Global Jira Cloud Fields. -->
     <changeSet author="psantos" id="1558524516692-2">
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('jira.url', FALSE, 'channel_jira', 'GLOBAL');
@@ -20,6 +20,18 @@
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('jira.access.token', TRUE, 'channel_jira', 'GLOBAL');
+        </sql>
+    </changeSet>
+    <!-- Register Distribution Jira Cloud Fields. -->
+    <changeSet author="psantos" id="1558524516692-3">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.add.comments', FALSE, 'channel_jira', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.issue.creator', FALSE, 'channel_jira', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.project.name', FALSE, 'channel_jira', 'DISTRIBUTION');
         </sql>
     </changeSet>
 </databaseChangeLog>

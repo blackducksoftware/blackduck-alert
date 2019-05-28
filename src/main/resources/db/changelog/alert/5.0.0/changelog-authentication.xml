@@ -3,11 +3,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1558524156152-1">
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="13"/>
             <column name="KEY_NAME" value="global.channel_jira"/>
         </insert>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
-            <column name="ID" value="14"/>
             <column name="KEY_NAME" value="distribution.channel_jira"/>
         </insert>
     </changeSet>
@@ -35,7 +33,7 @@
     <!-- ALERT_USER PERMISSIONS -->
     <changeSet author="psantos" id="1558524156152-4">
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.provider_blackduck', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_jira', 'READ');
         </sql>
     </changeSet>
 </databaseChangeLog>
