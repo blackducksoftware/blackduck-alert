@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +103,7 @@ public class ConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            FieldModel fieldModel = optionalModel.get();
+            final FieldModel fieldModel = optionalModel.get();
             final String permissionKey = AuthorizationManager.generatePermissionKey(fieldModel.getContext(), fieldModel.getDescriptorName());
             if (!authorizationManager.hasReadPermission(permissionKey)) {
                 return responseFactory.createForbiddenResponse();
@@ -200,9 +201,9 @@ public class ConfigController extends BaseController {
         final String stringId = contentConverter.getStringValue(id);
         try {
             if (configActions.doesConfigExist(id)) {
-                Optional<FieldModel> fieldModel = configActions.getConfigById(id);
+                final Optional<FieldModel> fieldModel = configActions.getConfigById(id);
                 if (fieldModel.isPresent()) {
-                    FieldModel model = fieldModel.get();
+                    final FieldModel model = fieldModel.get();
                     final String permissionKey = authorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName());
                     if (!authorizationManager.hasDeletePermission(permissionKey)) {
                         return responseFactory.createForbiddenResponse();
@@ -234,7 +235,11 @@ public class ConfigController extends BaseController {
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
+            String message = e.getHttpStatusMessage();
+            if (StringUtils.isNotBlank(e.getMessage())) {
+                message = message + " : " + e.getMessage();
+            }
+            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (final AlertMethodNotAllowedException e) {

@@ -41,6 +41,7 @@ import com.synopsys.integration.blackduck.configuration.ConnectionResult;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
@@ -69,9 +70,13 @@ public class BlackDuckGlobalTestAction extends TestAction {
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);
 
         final BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
-        final ConnectionResult connectionResult = blackDuckServerConfig.attemptConnection(new Slf4jIntLogger(logger));
+        final ConnectionResult connectionResult = blackDuckServerConfig.attemptConnection(intLogger);
         if (connectionResult.isFailure()) {
-            throw new IntegrationRestException(connectionResult.getHttpStatusCode(), connectionResult.getFailureMessage().orElse(""), null, String.format("Can not connect to: %s. %s", url, connectionResult.getFailureMessage().orElse("")));
+            if (RestConstants.UNAUTHORIZED_401 == connectionResult.getHttpStatusCode()) {
+                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Invalid credential(s) for: %s", url), null, "");
+            } else {
+                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, connectionResult.getFailureMessage().orElse(""));
+            }
         }
     }
 
