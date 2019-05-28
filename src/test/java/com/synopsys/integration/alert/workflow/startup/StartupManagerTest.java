@@ -40,7 +40,7 @@ public class StartupManagerTest {
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final CronJobsStartupComponent cronJobsStartupComponent = new CronJobsStartupComponent(baseConfigurationAccessor, taskManager, purgeTask, dailyTask, phoneHomeTask, updateNotifierTask);
-        cronJobsStartupComponent.run();
+        cronJobsStartupComponent.initialize();
 
         Mockito.verify(baseConfigurationAccessor).createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
     }
@@ -75,7 +75,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
 
         final CronJobsStartupComponent cronJobsStartupComponent = new CronJobsStartupComponent(baseConfigurationAccessor, taskManager, purgeTask, dailyTask, phoneHomeTask, updateNotifierTask);
-        cronJobsStartupComponent.run();
+        cronJobsStartupComponent.initialize();
 
         Mockito.verify(baseConfigurationAccessor, Mockito.times(0)).updateConfiguration(Mockito.anyLong(), Mockito.anyCollection());
     }
@@ -103,7 +103,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.updateConfiguration(Mockito.anyLong(), Mockito.anyCollection())).thenReturn(schedulingModel);
 
         final CronJobsStartupComponent cronJobsStartupComponent = new CronJobsStartupComponent(baseConfigurationAccessor, taskManager, purgeTask, dailyTask, phoneHomeTask, updateNotifierTask);
-        cronJobsStartupComponent.run();
+        cronJobsStartupComponent.initialize();
 
         Mockito.verify(baseConfigurationAccessor).updateConfiguration(Mockito.anyLong(), Mockito.anyCollection());
     }
@@ -129,7 +129,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final CronJobsStartupComponent cronJobsStartupComponent = new CronJobsStartupComponent(baseConfigurationAccessor, taskManager, purgeTask, dailyTask, phoneHomeTask, updateNotifierTask);
-        cronJobsStartupComponent.run();
+        cronJobsStartupComponent.initialize();
 
         Mockito.verify(baseConfigurationAccessor).createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
     }

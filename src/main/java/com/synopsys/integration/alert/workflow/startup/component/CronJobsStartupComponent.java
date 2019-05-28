@@ -72,7 +72,7 @@ public class CronJobsStartupComponent extends StartupComponent {
     }
 
     @Override
-    public void run() {
+    public void initialize() {
         List<ConfigurationModel> schedulingConfigs;
         try {
             schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT);

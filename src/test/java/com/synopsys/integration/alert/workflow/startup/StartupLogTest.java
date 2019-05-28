@@ -47,7 +47,7 @@ public class StartupLogTest {
         final TestBlackDuckProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         final ConfigurationLogger configurationLogger = new ConfigurationLogger(proxyManager, mockTestGlobalProperties, testAlertProperties);
 
-        configurationLogger.run();
+        configurationLogger.initialize();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
         assertTrue(outputLogger.isLineContainingText("BlackDuck API Token:           **********"));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Timeout:             300"));

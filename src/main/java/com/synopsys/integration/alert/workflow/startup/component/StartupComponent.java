@@ -31,9 +31,9 @@ public abstract class StartupComponent {
     public void initializeComponent() {
         final String runningStartupComponentLog = String.format("Running startup component: %s", getClass().getSimpleName());
         logger.info(runningStartupComponentLog);
-        run();
+        initialize();
     }
 
-    public abstract void run();
+    protected abstract void initialize();
 
 }
