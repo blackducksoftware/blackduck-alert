@@ -43,7 +43,7 @@ public class PhoneHomeTest {
         final Descriptor descriptor = Mockito.mock(Descriptor.class);
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(TEST_DESCRIPTOR_NAME, descriptor));
 
-        final PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, bdProperties, aboutReader, configurationAccessor, descriptorMap);
+        final PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, bdProperties, aboutReader, configurationAccessor, descriptorMap, null);
 
         try {
             phoneHomeTask.run();

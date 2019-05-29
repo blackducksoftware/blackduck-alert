@@ -39,7 +39,7 @@ public class SAMLStartupComponent extends StartupComponent {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         samlManager.initializeSAML();
     }
 }

@@ -42,7 +42,8 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
@@ -52,7 +53,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
 
 @Component
-public class PhoneHomeTask extends ScheduledTask {
+public class PhoneHomeTask extends StartupScheduledTask {
     public static final String TASK_NAME = "phonehome";
     public static final String ARTIFACT_ID = "blackduck-alert";
     public static final Long DEFAULT_TIMEOUT = 10L;
@@ -65,8 +66,9 @@ public class PhoneHomeTask extends ScheduledTask {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap) {
-        super(taskScheduler, TASK_NAME);
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
+        final TaskManager taskManager) {
+        super(taskScheduler, TASK_NAME, taskManager);
         this.blackDuckProperties = blackDuckProperties;
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
@@ -96,6 +98,11 @@ public class PhoneHomeTask extends ScheduledTask {
                 phoneHomeExecutor.shutdownNow();
             }
         }
+    }
+
+    @Override
+    public String scheduleCronExpression() {
+        return CRON_EXPRESSION;
     }
 
     private Map<String, String> getChannelMetaData() {

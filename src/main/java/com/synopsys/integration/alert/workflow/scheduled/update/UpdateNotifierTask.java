@@ -29,12 +29,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 
 @Component
-public class UpdateNotifierTask extends ScheduledTask {
+public class UpdateNotifierTask extends StartupScheduledTask {
     public static final String TASK_NAME = "updatenotifier";
     public static final String CRON_EXPRESSION = "0 0 12 1/1 * ?";
 
@@ -43,8 +44,8 @@ public class UpdateNotifierTask extends ScheduledTask {
     private final UpdateEmailService updateEmailService;
 
     @Autowired
-    public UpdateNotifierTask(final TaskScheduler taskScheduler, final UpdateChecker updateChecker, final SystemMessageUtility systemMessageUtility, final UpdateEmailService updateEmailService) {
-        super(taskScheduler, TASK_NAME);
+    public UpdateNotifierTask(final TaskScheduler taskScheduler, final UpdateChecker updateChecker, final SystemMessageUtility systemMessageUtility, final UpdateEmailService updateEmailService, final TaskManager taskManager) {
+        super(taskScheduler, TASK_NAME, taskManager);
         this.updateChecker = updateChecker;
         this.systemMessageUtility = systemMessageUtility;
         this.updateEmailService = updateEmailService;
@@ -57,6 +58,11 @@ public class UpdateNotifierTask extends ScheduledTask {
             addSystemMessage(updateModel);
             updateEmailService.sendUpdateEmail(updateModel);
         }
+    }
+
+    @Override
+    public String scheduleCronExpression() {
+        return CRON_EXPRESSION;
     }
 
     private void addSystemMessage(final UpdateModel updateModel) {

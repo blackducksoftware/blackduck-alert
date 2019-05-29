@@ -77,7 +77,7 @@ public class SystemValidator extends StartupComponent {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         validate();
     }
 

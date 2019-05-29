@@ -77,7 +77,7 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         try {
             initializeConfigs();
         } catch (final Exception e) {

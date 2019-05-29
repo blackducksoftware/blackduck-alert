@@ -55,7 +55,7 @@ public class ConfigurationLogger extends StartupComponent {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         final Optional<String> proxyHost = proxyManager.getProxyHost();
         final Optional<String> proxyPort = proxyManager.getProxyPort();
         final Optional<String> proxyUsername = proxyManager.getProxyUsername();

@@ -41,7 +41,7 @@ public class ProviderInitializer extends StartupComponent {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         providers.forEach(Provider::initialize);
     }
 }
