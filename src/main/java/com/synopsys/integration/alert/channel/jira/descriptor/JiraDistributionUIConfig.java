@@ -42,8 +42,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     public static final String LABEL_JIRA_PROJECT = "Jira Project";
 
-    public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change to the ticket due to the job processing.";
-    public static final String DESCRIPTION_ISSUE_CREATOR = "The user name of the Jira Cloud user to assign to the issue creator field of the Jira ticket.";
+    public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
+    public static final String DESCRIPTION_ISSUE_CREATOR = "The user name of the Jira Cloud user to assign as the issue creator field of the Jira ticket.";
     public static final String DESCRIPTION_JIRA_PROJECT = "The name of the Jira Project this job creates and/or updates Jira tickets";
 
     @Autowired
