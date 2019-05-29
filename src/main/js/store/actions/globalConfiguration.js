@@ -216,7 +216,7 @@ export function testConfig(config, destination) {
                         case 400:
                             return dispatch(testFailed(data.message, data.errors));
                         case 401:
-                            return dispatch(testFailed('There was a problem testing your configuration.'));
+                            return dispatch(testFailed(`There was a problem testing your configuration. ${data.message}`));
                         default:
                             return dispatch(testFailed(data.message));
                     }
