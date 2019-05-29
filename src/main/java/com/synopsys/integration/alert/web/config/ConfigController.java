@@ -234,10 +234,11 @@ public class ConfigController extends BaseController {
             final String responseMessage = configActions.testConfig(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
-            logger.error(e.getMessage(), e);
+            final String exceptionMessage = e.getMessage();
+            logger.error(exceptionMessage, e);
             String message = e.getHttpStatusMessage();
-            if (StringUtils.isNotBlank(e.getMessage())) {
-                message += " : " + e.getMessage();
+            if (StringUtils.isNotBlank(exceptionMessage)) {
+                message += " : " + exceptionMessage;
             }
             return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
         } catch (final AlertFieldException e) {
