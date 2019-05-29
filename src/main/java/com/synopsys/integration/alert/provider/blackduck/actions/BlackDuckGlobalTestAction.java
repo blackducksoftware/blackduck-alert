@@ -74,9 +74,8 @@ public class BlackDuckGlobalTestAction extends TestAction {
         if (connectionResult.isFailure()) {
             if (RestConstants.UNAUTHORIZED_401 == connectionResult.getHttpStatusCode()) {
                 throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Invalid credential(s) for: %s", url), null, "");
-            } else {
-                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, connectionResult.getFailureMessage().orElse(""));
             }
+            throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, connectionResult.getFailureMessage().orElse(""));
         }
     }
 

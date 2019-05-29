@@ -237,7 +237,7 @@ public class ConfigController extends BaseController {
             logger.error(e.getMessage(), e);
             String message = e.getHttpStatusMessage();
             if (StringUtils.isNotBlank(e.getMessage())) {
-                message = message + " : " + e.getMessage();
+                message += " : " + e.getMessage();
             }
             return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
         } catch (final AlertFieldException e) {
