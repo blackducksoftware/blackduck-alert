@@ -76,6 +76,6 @@ public class DailyTask extends ProcessingTask {
             logger.error("Error connecting to DB", e);
         }
 
-        return null;
+        return String.format(CRON_FORMAT, DEFAULT_HOUR_OF_DAY);
     }
 }

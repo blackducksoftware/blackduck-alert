@@ -92,7 +92,7 @@ public class PurgeTask extends StartupScheduledTask {
             logger.error("Error connecting to DB", e);
         }
 
-        return null;
+        return String.format(CRON_FORMAT, DEFAULT_FREQUENCY);
     }
 
     @Override
