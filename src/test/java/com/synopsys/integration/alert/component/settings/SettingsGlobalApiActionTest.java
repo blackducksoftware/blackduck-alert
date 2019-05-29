@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsUICo
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
-import com.synopsys.integration.alert.workflow.startup.SystemValidator;
+import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
 
 public class SettingsGlobalApiActionTest {
 

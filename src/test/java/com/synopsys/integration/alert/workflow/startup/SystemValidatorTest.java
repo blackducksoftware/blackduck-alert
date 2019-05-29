@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;

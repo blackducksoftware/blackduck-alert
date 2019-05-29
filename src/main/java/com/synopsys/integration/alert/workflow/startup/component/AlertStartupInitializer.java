@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.startup;
+package com.synopsys.integration.alert.workflow.startup.component;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +55,8 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 
 @Component
-public class AlertStartupInitializer {
+@Order(1)
+public class AlertStartupInitializer extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final Environment environment;
     private final DescriptorMap descriptorMap;
@@ -74,7 +76,16 @@ public class AlertStartupInitializer {
         this.fieldModelProcessor = fieldModelProcessor;
     }
 
-    public void initializeConfigs() throws IllegalArgumentException, SecurityException {
+    @Override
+    protected void initialize() {
+        try {
+            initializeConfigs();
+        } catch (final Exception e) {
+            logger.error("Error inserting startup values", e);
+        }
+    }
+
+    private void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info("** --------------------------------- **");
         logger.info("Initializing descriptors with environment variables...");
         final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();

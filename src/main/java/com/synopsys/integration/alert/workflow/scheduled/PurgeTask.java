@@ -26,21 +26,32 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 
 @Component
-public class PurgeTask extends ScheduledTask {
+public class PurgeTask extends StartupScheduledTask {
     public static final String TASK_NAME = "purge-task";
     public static final String CRON_FORMAT = "0 0 0 1/%s * ?";
     public static final int DEFAULT_FREQUENCY = 3;
@@ -48,13 +59,16 @@ public class PurgeTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
     private final DefaultNotificationManager notificationManager;
     private final SystemMessageUtility systemMessageUtility;
+    private final ConfigurationAccessor configurationAccessor;
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(final TaskScheduler taskScheduler, final DefaultNotificationManager notificationManager, final SystemMessageUtility systemMessageUtility) {
-        super(taskScheduler, TASK_NAME);
+    public PurgeTask(final TaskScheduler taskScheduler, final DefaultNotificationManager notificationManager, final SystemMessageUtility systemMessageUtility, final TaskManager taskManager,
+        final ConfigurationAccessor configurationAccessor) {
+        super(taskScheduler, TASK_NAME, taskManager);
         this.notificationManager = notificationManager;
         this.systemMessageUtility = systemMessageUtility;
+        this.configurationAccessor = configurationAccessor;
         this.dayOffset = 1;
     }
 
@@ -62,6 +76,28 @@ public class PurgeTask extends ScheduledTask {
     public void runTask() {
         purgeNotifications();
         purgeSystemMessages();
+    }
+
+    @Override
+    public String scheduleCronExpression() {
+        try {
+            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT);
+            final String purgeSavedCronValue = schedulingConfigs.stream()
+                                                   .findFirst()
+                                                   .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
+                                                   .flatMap(ConfigurationFieldModel::getFieldValue)
+                                                   .orElse(String.valueOf(DEFAULT_FREQUENCY));
+            return String.format(CRON_FORMAT, purgeSavedCronValue);
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Error connecting to DB", e);
+        }
+
+        return String.format(CRON_FORMAT, DEFAULT_FREQUENCY);
+    }
+
+    @Override
+    public void postTaskStartup() {
+        CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
     public void setDayOffset(final int dayOffset) {
@@ -106,5 +142,27 @@ public class PurgeTask extends ScheduledTask {
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
         return Date.from(zonedDate.toInstant());
+    }
+
+    private Boolean purgeOldData() {
+        try {
+            logger.info("Begin startup purge of old data");
+            final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL).stream().findFirst();
+            if (configurationModel.isPresent()) {
+                final Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
+                                                           .map(SchedulingConfiguration::getDataFrequencyDays)
+                                                           .map(frequency -> NumberUtils.toInt(frequency, DEFAULT_FREQUENCY))
+                                                           .orElse(DEFAULT_FREQUENCY);
+                setDayOffset(purgeDataFrequencyDays);
+                run();
+                resetDayOffset();
+                return Boolean.TRUE;
+            }
+        } catch (final Exception ex) {
+            logger.error("Error occurred purging data on startup", ex);
+        } finally {
+            logger.info("Finished startup purge of old data");
+        }
+        return Boolean.FALSE;
     }
 }

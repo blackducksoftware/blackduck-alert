@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
-import com.synopsys.integration.alert.workflow.startup.SystemValidator;
+import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
