@@ -43,11 +43,11 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
-    private static final String LABEL_FILTER_BY_PROJECT = "Include all projects";
+    private static final String LABEL_FILTER_BY_PROJECT = "Filter by project";
     private static final String LABEL_PROJECT_NAME_PATTERN = "Project name pattern";
     private static final String LABEL_PROJECTS = "Projects";
 
-    private static final String BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION = "If true, all projects will be included. Any notifications matching the configured notification types will be processed.";
+    private static final String BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION = "If false, all projects will be included. Any notifications matching the configured notification types will be processed.";
     private static final String BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";
 
     @Autowired
