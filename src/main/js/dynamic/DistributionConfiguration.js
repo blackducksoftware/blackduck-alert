@@ -6,7 +6,12 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import {
+    getDistributionJob,
+    saveDistributionJob,
+    testDistributionJob,
+    updateDistributionJob
+} from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -32,7 +37,6 @@ class DistributionConfiguration extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
-        this.flipFilterFlag = this.flipFilterFlag.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const { fields, context, name } = defaultDescriptor;
@@ -74,12 +78,10 @@ class DistributionConfiguration extends Component {
                     const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
                     const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
 
-                    const includeAllProjects = this.flipFilterFlag(providerModel);
-                    const updatedProviderConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FILTER_BY_PROJECT, includeAllProjects));
                     this.setState({
                         fieldErrors: {},
                         channelConfig: channelModel,
-                        providerConfig: updatedProviderConfig,
+                        providerConfig: providerModel,
                         currentChannel: newChannel,
                         currentProvider: newProvider
                     });
@@ -124,11 +126,6 @@ class DistributionConfiguration extends Component {
         }
     }
 
-    // FIXME remove this in 5.0.0 as we can change the filterByProject flag to be more appropriate
-    flipFilterFlag(config) {
-        return !FieldModelUtilities.getFieldModelBooleanValueOrDefault(config, KEY_FILTER_BY_PROJECT, false);
-    }
-
     handleClose() {
         this.setState({ show: false });
         this.props.onModalClose();
@@ -145,12 +142,10 @@ class DistributionConfiguration extends Component {
 
     buildJsonBody() {
         const { channelConfig, providerConfig } = this.state;
-        const includeAllProjects = this.flipFilterFlag(providerConfig);
-        const updatedProviderConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(providerConfig, KEY_FILTER_BY_PROJECT, includeAllProjects));
         return Object.assign({}, {
             fieldModels: [
                 channelConfig,
-                updatedProviderConfig
+                providerConfig
             ]
         });
     }
@@ -194,7 +189,9 @@ class DistributionConfiguration extends Component {
     }
 
     renderProviderForm() {
-        const { providerConfig, currentProvider, channelConfig, currentChannel } = this.state;
+        const {
+            providerConfig, currentProvider, channelConfig, currentChannel
+        } = this.state;
         const updatedProviderFields = Object.assign({}, currentProvider);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT);
         const removeProject = updatedProviderFields.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
@@ -203,17 +200,22 @@ class DistributionConfiguration extends Component {
         const isReadOnly = currentChannel.readOnly;
 
         let removedFields = Object.assign(updatedProviderFields, { fields: removeProject });
-        if (filterByProject) {
+        if (!filterByProject) {
             const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
             removedFields = Object.assign(removedFields, { fields: removePattern });
         }
 
         return (
             <div>
-                <FieldsPanel descriptorFields={removedFields.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
+                <FieldsPanel
+                    descriptorFields={removedFields.fields}
+                    currentConfig={providerConfig}
+                    fieldErrors={this.props.fieldErrors}
+                    handleChange={this.handleProviderChange}
+                />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
-                    includeAllProjects={filterByProject}
+                    includeAllProjects={!filterByProject}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT)}
                     projects={this.props.projects}
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerConfig, KEY_CONFIGURED_PROJECT)}
@@ -221,7 +223,16 @@ class DistributionConfiguration extends Component {
                     fieldErrors={this.props.fieldErrors}
                     readOnly={isReadOnly}
                 />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest={displayTest} includeSave={displaySave} includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
+                <ConfigButtons
+                    cancelId="job-cancel"
+                    submitId="job-submit"
+                    includeTest={displayTest}
+                    includeSave={displaySave}
+                    includeCancel
+                    onTestClick={this.handleTestSubmit}
+                    onCancelClick={this.handleClose}
+                    isFixed={false}
+                />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
         );
@@ -244,7 +255,12 @@ class DistributionConfiguration extends Component {
                     </Modal.Header>
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
-                            <FieldsPanel descriptorFields={currentChannel.fields} currentConfig={channelConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChannelChange} />
+                            <FieldsPanel
+                                descriptorFields={currentChannel.fields}
+                                currentConfig={channelConfig}
+                                fieldErrors={this.props.fieldErrors}
+                                handleChange={this.handleChannelChange}
+                            />
                             {selectedProvider && this.renderProviderForm()}
                         </form>
                     </Modal.Body>
