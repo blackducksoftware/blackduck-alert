@@ -37,12 +37,15 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
+    public static final String KEY_FILTER_BY_PROJECT = "channel.common.filter.by.project";
+    public static final String KEY_PROJECT_NAME_PATTERN = "channel.common.project.name.pattern";
+    public static final String KEY_CONFIGURED_PROJECT = "channel.common.configured.project";
+
     private static final String LABEL_FILTER_BY_PROJECT = "Filter by project";
     private static final String LABEL_PROJECT_NAME_PATTERN = "Project name pattern";
     private static final String LABEL_PROJECTS = "Projects";
@@ -57,12 +60,12 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final ConfigField filterByProject = CheckboxConfigField.create(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION);
-        final ConfigField projectNamePattern = TextInputConfigField.create(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION, this::validateProjectNamePattern);
+        final ConfigField filterByProject = CheckboxConfigField.create(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, BLACKDUCK_FILTER_BY_PROJECT_DESCRIPTION);
+        final ConfigField projectNamePattern = TextInputConfigField.create(KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, BLACKDUCK_PROJECT_NAME_PATTERN_DESCRIPTION, this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = SelectConfigField.createEmpty(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, "", this::validateConfiguredProject);
+        final ConfigField configuredProject = SelectConfigField.createEmpty(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, "", this::validateConfiguredProject);
         return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 
@@ -80,8 +83,8 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     private Collection<String> validateConfiguredProject(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
-        final boolean filterByProject = fieldModel.getFieldValueModel(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
-        final String projectNamePattern = fieldModel.getFieldValueModel(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
+        final boolean filterByProject = fieldModel.getFieldValueModel(KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
+        final String projectNamePattern = fieldModel.getFieldValueModel(KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
         final boolean missingProject = (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern);
         if (filterByProject && missingProject) {
             return List.of("You must select at least one project.");

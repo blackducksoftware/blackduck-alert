@@ -52,15 +52,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -75,16 +77,16 @@ public class DefaultAuditUtility implements AuditUtility {
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
-    private final JobConfigReader jobConfigReader;
+    private final ConfigurationAccessor configurationAccessor;
     private final DefaultNotificationManager notificationManager;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JobConfigReader jobConfigReader,
+    public DefaultAuditUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final ConfigurationAccessor configurationAccessor,
         final DefaultNotificationManager notificationManager, final ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
-        this.jobConfigReader = jobConfigReader;
+        this.configurationAccessor = configurationAccessor;
         this.notificationManager = notificationManager;
         this.contentConverter = contentConverter;
     }
@@ -224,7 +226,12 @@ public class DefaultAuditUtility implements AuditUtility {
             final String errorMessage = auditEntryEntity.getErrorMessage();
             final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            final Optional<CommonDistributionConfiguration> commonConfig = jobConfigReader.getPopulatedJobConfig(commonConfigId);
+            Optional<ConfigurationJobModel> commonConfig = Optional.empty();
+            try {
+                commonConfig = configurationAccessor.getJobById(commonConfigId);
+            } catch (final AlertDatabaseConstraintException e) {
+                logger.error("There was an issue accessing the job.");
+            }
             String distributionConfigName = null;
             String eventType = null;
             if (commonConfig.isPresent()) {

@@ -35,8 +35,8 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -52,7 +52,7 @@ public class PolarisDistributionTestAction extends TestAction {
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
-        final Optional<String> projectNamePattern = fieldAccessor.getString(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN);
+        final Optional<String> projectNamePattern = fieldAccessor.getString(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {
             validatePatternMatchesProject(projectNamePattern.get());
         }
@@ -63,7 +63,7 @@ public class PolarisDistributionTestAction extends TestAction {
         final boolean noProjectsMatchPattern = polarisProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             final Map<String, String> fieldErrors = new HashMap<>();
-            fieldErrors.put(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
+            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
             throw new AlertFieldException(fieldErrors);
         }
     }

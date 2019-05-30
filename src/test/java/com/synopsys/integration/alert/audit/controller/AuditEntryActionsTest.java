@@ -25,6 +25,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.channel.event.ChannelEventManager;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -32,7 +34,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
@@ -84,16 +85,16 @@ public class AuditEntryActionsTest {
     }
 
     @Test
-    public void testResendNotificationException() {
+    public void testResendNotificationException() throws AlertDatabaseConstraintException {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final ChannelEventManager eventManager = Mockito.mock(ChannelEventManager.class);
-        final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
+        final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         final MockNotificationContent mockNotificationEntity = new MockNotificationContent();
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
-        Mockito.when(jobConfigReader.getPopulatedJobConfig(Mockito.any())).thenReturn(null);
+        Mockito.when(jobConfigReader.getJobById(Mockito.any())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
         final DefaultNotificationManager notificationManager = new DefaultNotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, eventManager);
@@ -111,7 +112,7 @@ public class AuditEntryActionsTest {
     }
 
     @Test
-    public void testPagedRequest() {
+    public void testPagedRequest() throws AlertDatabaseConstraintException {
         final int totalPages = 2;
         final int currentPage = 0;
         final int pageSize = 2;
@@ -137,7 +138,7 @@ public class AuditEntryActionsTest {
 
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
+        final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
 
         final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
@@ -145,7 +146,7 @@ public class AuditEntryActionsTest {
         final ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
             "filterByProject", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), "formatType");
 
-        Mockito.doReturn(Optional.of(configuration)).when(jobConfigReader).getPopulatedJobConfig(Mockito.any());
+        Mockito.doReturn(Optional.of(configuration)).when(jobConfigReader).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
 
         final DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, contentConverter);
@@ -164,7 +165,7 @@ public class AuditEntryActionsTest {
     }
 
     @Test
-    public void testPagedRequestEmptyList() {
+    public void testPagedRequestEmptyList() throws AlertDatabaseConstraintException {
         final int totalPages = 1;
         final int currentPage = 1;
         final int pageSize = 1;
@@ -184,14 +185,14 @@ public class AuditEntryActionsTest {
 
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
+        final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
 
         final ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
             "filterByProject", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), "formatType");
 
-        Mockito.doReturn(Optional.of(configuration)).when(jobConfigReader).getPopulatedJobConfig(Mockito.any());
+        Mockito.doReturn(Optional.of(configuration)).when(jobConfigReader).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
 
         final DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, contentConverter);

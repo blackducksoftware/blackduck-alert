@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +24,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -176,10 +176,10 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         final ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), Set.of(configField1, configField2));
         assertEquals(job.getJobId(), updatedJob.getJobId());
 
-        final Map<String, ConfigurationFieldModel> originalFieldMap = job.createKeyToFieldMap();
-        final Map<String, ConfigurationFieldModel> newFieldMap = updatedJob.createKeyToFieldMap();
-        assertEquals(newValue, newFieldMap.get(configField1.getFieldKey()).getFieldValue().orElseThrow());
-        assertEquals(originalFieldMap.get(configField2.getFieldKey()), newFieldMap.get(configField2.getFieldKey()));
+        final FieldAccessor originalFieldMap = job.getFieldAccessor();
+        final FieldAccessor newFieldMap = updatedJob.getFieldAccessor();
+        assertEquals(newValue, newFieldMap.getString(configField1.getFieldKey()).orElseThrow());
+        assertEquals(originalFieldMap.getString(configField2.getFieldKey()), newFieldMap.getString(configField2.getFieldKey()));
     }
 
     @Test

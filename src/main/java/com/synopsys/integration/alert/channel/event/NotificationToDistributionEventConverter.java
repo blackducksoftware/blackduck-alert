@@ -38,8 +38,8 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
@@ -52,14 +52,14 @@ public class NotificationToDistributionEventConverter {
         this.configurationAccessor = configurationAccessor;
     }
 
-    public List<DistributionEvent> convertToEvents(final Map<CommonDistributionConfiguration, List<MessageContentGroup>> messageContentMap) {
+    public List<DistributionEvent> convertToEvents(final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentMap) {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
-        for (final Map.Entry<CommonDistributionConfiguration, List<MessageContentGroup>> entry : messageContentMap.entrySet()) {
+        for (final Map.Entry<ConfigurationJobModel, List<MessageContentGroup>> entry : messageContentMap.entrySet()) {
             for (final MessageContentGroup contentGroup : entry.getValue()) {
-                final CommonDistributionConfiguration config = entry.getKey();
+                final ConfigurationJobModel config = entry.getKey();
                 final String descriptorName = config.getChannelName();
                 final Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
-                config.addFields(globalFields);
+                config.getFieldAccessor().addFields(globalFields);
                 distributionEvents.add(createChannelEvent(config, contentGroup));
             }
         }
@@ -77,9 +77,9 @@ public class NotificationToDistributionEventConverter {
         }
     }
 
-    private DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final MessageContentGroup contentGroup) {
-        return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
-            commmonDistributionConfig.getFormatType().name(), contentGroup, commmonDistributionConfig.getFieldAccessor());
+    private DistributionEvent createChannelEvent(final ConfigurationJobModel commonDistributionConfig, final MessageContentGroup contentGroup) {
+        return new DistributionEvent(commonDistributionConfig.getJobId().toString(), commonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(),
+            commonDistributionConfig.getFormatType().name(), contentGroup, commonDistributionConfig.getFieldAccessor());
     }
 
 }

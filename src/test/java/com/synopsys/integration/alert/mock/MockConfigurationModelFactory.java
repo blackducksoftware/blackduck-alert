@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,13 +21,15 @@ import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
@@ -60,6 +63,12 @@ public class MockConfigurationModelFactory {
         final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", SlackChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
+    }
+
+    public static ConfigurationJobModel createDistributionJob(final Collection<ConfigurationFieldModel> configurationFieldModels) {
+        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.DISTRIBUTION);
+        configurationFieldModels.forEach(configurationModel::put);
+        return new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
     }
 
     public static List<ConfigurationFieldModel> createEmailDistributionFieldsProjectOwnerOnly() {
@@ -99,9 +108,9 @@ public class MockConfigurationModelFactory {
 
         final ConfigurationFieldModel notificationTypes = createFieldModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, List.of(NotificationType.VULNERABILITY.toString(), NotificationType.RULE_VIOLATION.toString()));
         final ConfigurationFieldModel formatType = createFieldModel(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.DEFAULT.toString());
-        final ConfigurationFieldModel filterByProject = createFieldModel(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, "true");
-        final ConfigurationFieldModel projectNamePattern = createFieldModel(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
-        final ConfigurationFieldModel configuredProject = createFieldModel(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
+        final ConfigurationFieldModel filterByProject = createFieldModel(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, "true");
+        final ConfigurationFieldModel projectNamePattern = createFieldModel(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
+        final ConfigurationFieldModel configuredProject = createFieldModel(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
 
         fields.add(notificationTypes);
         fields.add(formatType);
@@ -144,9 +153,9 @@ public class MockConfigurationModelFactory {
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationTypes);
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType);
 
-        mockField(fieldList, configurationModel, CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT, filterByProject);
-        mockField(fieldList, configurationModel, CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN, projectNamePattern);
-        mockField(fieldList, configurationModel, CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, configuredProjects);
+        mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject);
+        mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, projectNamePattern);
+        mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, configuredProjects);
 
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(id);
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
@@ -163,7 +172,8 @@ public class MockConfigurationModelFactory {
 
         final ConfigurationModel configurationModel = createCommonConfigModel(id, descriptorId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapFieldKeyToFields(configurationModel.getCopyOfFieldList());
-        Mockito.when(configurationJobModel.createKeyToFieldMap()).thenReturn(fieldModelMap);
+        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModelMap);
+        Mockito.when(configurationJobModel.getFieldAccessor()).thenReturn(fieldAccessor);
 
         return configurationJobModel;
     }
