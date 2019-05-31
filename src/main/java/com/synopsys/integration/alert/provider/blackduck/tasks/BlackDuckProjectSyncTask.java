@@ -171,7 +171,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                                                       .filter(projectView -> configuredProjects.contains(projectView.getName()))
                                                       .collect(Collectors.toSet());
         for (final ProjectView projectView : matchingProjects) {
-            logger.info("Adding user to Project {}", projectView.getName());
+            logger.debug("Adding user to Project {}", projectView.getName());
             projectUsersService.addUserToProject(projectView, currentUser);
         }
     }
