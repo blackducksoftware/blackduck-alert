@@ -38,48 +38,48 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
-import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class MessageContentAggregator {
-    private final JobConfigReader jobConfigReader;
+    private final ConfigurationAccessor jobConfigReader;
     private final List<Provider> providers;
     private final NotificationFilter notificationFilter;
 
     @Autowired
-    public MessageContentAggregator(final JobConfigReader jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter) {
+    public MessageContentAggregator(final ConfigurationAccessor jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter) {
         this.jobConfigReader = jobConfigReader;
         this.providers = providers;
         this.notificationFilter = notificationFilter;
     }
 
-    public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final Collection<AlertNotificationWrapper> notificationList) {
+    public Map<ConfigurationJobModel, List<MessageContentGroup>> processNotifications(final Collection<AlertNotificationWrapper> notificationList) {
         if (notificationList.isEmpty()) {
             return Map.of();
         }
 
-        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedJobConfigs();
+        final List<ConfigurationJobModel> distributionConfigs = jobConfigReader.getAllJobs();
         if (distributionConfigs.isEmpty()) {
             return Map.of();
         }
         return processNotifications(distributionConfigs, notificationList);
     }
 
-    public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final FrequencyType frequency, final Collection<AlertNotificationWrapper> notificationList) {
+    public Map<ConfigurationJobModel, List<MessageContentGroup>> processNotifications(final FrequencyType frequency, final Collection<AlertNotificationWrapper> notificationList) {
         if (notificationList.isEmpty()) {
             return Map.of();
         }
 
-        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedJobConfigs()
-                                                                              .stream()
-                                                                              .filter(commonDistributionConfiguration -> frequency.equals(commonDistributionConfiguration.getFrequencyType()))
-                                                                              .collect(Collectors.toList());
+        final List<ConfigurationJobModel> distributionConfigs = jobConfigReader.getAllJobs()
+                                                                    .stream()
+                                                                    .filter(commonDistributionConfiguration -> frequency.equals(commonDistributionConfiguration.getFrequencyType()))
+                                                                    .collect(Collectors.toList());
         if (distributionConfigs.isEmpty()) {
             return Map.of();
         }
@@ -87,7 +87,7 @@ public class MessageContentAggregator {
         return processNotifications(distributionConfigs, notificationList);
     }
 
-    public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final List<CommonDistributionConfiguration> distributionConfigs, final Collection<AlertNotificationWrapper> notificationList) {
+    public Map<ConfigurationJobModel, List<MessageContentGroup>> processNotifications(final List<ConfigurationJobModel> distributionConfigs, final Collection<AlertNotificationWrapper> notificationList) {
         if (notificationList.isEmpty()) {
             return Map.of();
         }
@@ -96,7 +96,7 @@ public class MessageContentAggregator {
                    .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
-    private List<MessageContentGroup> collectTopics(final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
+    private List<MessageContentGroup> collectTopics(final ConfigurationJobModel jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
         final Optional<Provider> optionalProvider = getProviderByName(jobConfiguration.getProviderName());
         if (optionalProvider.isPresent()) {
             final Collection<AlertNotificationWrapper> notificationsForJob = filterNotifications(optionalProvider.get(), jobConfiguration, notificationCollection);
@@ -124,7 +124,7 @@ public class MessageContentAggregator {
                    .findFirst();
     }
 
-    private Collection<AlertNotificationWrapper> filterNotifications(final Provider provider, final CommonDistributionConfiguration jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
+    private Collection<AlertNotificationWrapper> filterNotifications(final Provider provider, final ConfigurationJobModel jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
         final Predicate<AlertNotificationWrapper> providerFilter = notificationContent -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
         final Collection<AlertNotificationWrapper> providerNotifications = applyFilter(notificationCollection, providerFilter);
 

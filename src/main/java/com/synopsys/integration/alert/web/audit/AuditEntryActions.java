@@ -39,13 +39,13 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -56,12 +56,12 @@ public class AuditEntryActions {
 
     private final AuditUtility auditUtility;
     private final DefaultNotificationManager notificationManager;
-    private final JobConfigReader jobConfigReader;
+    private final ConfigurationAccessor jobConfigReader;
     private final ChannelEventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final JobConfigReader jobConfigReader, final ChannelEventManager eventManager,
+    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final ConfigurationAccessor jobConfigReader, final ChannelEventManager eventManager,
         final NotificationProcessor notificationProcessor) {
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;
@@ -101,7 +101,7 @@ public class AuditEntryActions {
                                                                  .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
         final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
-            final CommonDistributionConfiguration commonDistributionConfig = jobConfigReader.getPopulatedJobConfig(commonConfigId).orElseThrow(() -> {
+            final ConfigurationJobModel commonDistributionConfig = jobConfigReader.getJobById(commonConfigId).orElseThrow(() -> {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 return new AlertJobMissingException("The Distribution Job with this id could not be found.", commonConfigId);
             });

@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -36,7 +37,6 @@ import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -181,7 +181,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
 
         final List<NotificationContent> savedNotifications = notificationContentRepository.saveAll(notifications);
 
-        final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT);
+        final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         fieldModel.setFieldValue("false");
         final ConfigurationJobModel configJob = defaultConfigurationAccessor.createJob(Set.of(BlackDuckProvider.COMPONENT_NAME), Set.of(fieldModel));
 

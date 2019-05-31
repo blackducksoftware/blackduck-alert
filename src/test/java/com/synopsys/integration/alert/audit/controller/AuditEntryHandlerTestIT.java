@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,6 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -125,7 +125,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(PermissionKeys.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
+        final AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         ResponseEntity<String> response = auditEntryController.get(null, null, null, null, null, true);
         AlertPagedModel<AuditEntryModel> auditEntries = gson.fromJson(response.getBody(), AlertPagedModel.class);
@@ -147,9 +147,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
-        final Map<String, ConfigurationFieldModel> keyToFieldMap = configurationJobModel.createKeyToFieldMap();
-        assertEquals(keyToFieldMap.get(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getEventType());
-        assertEquals(keyToFieldMap.get(ChannelDistributionUIConfig.KEY_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getName());
+        final FieldAccessor keyToFieldMap = configurationJobModel.getFieldAccessor();
+        assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).get(), auditEntry.getJobs().get(0).getEventType());
+        assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_NAME).get(), auditEntry.getJobs().get(0).getName());
 
         final NotificationConfig notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
@@ -172,7 +172,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(PermissionKeys.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
+        final AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         final ResponseEntity<String> jobAuditModelResponse = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
         assertNotNull(jobAuditModelResponse);
@@ -201,7 +201,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(PermissionKeys.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
+        final AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         final ResponseEntity<String> invalidIdResponse = auditEntryController.post(-1L, null);
         assertEquals(HttpStatus.GONE, invalidIdResponse.getStatusCode());

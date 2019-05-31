@@ -38,11 +38,11 @@ import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.DefaultEmailHandler;
@@ -67,7 +67,7 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
             emailAddresses.add(destination);
         }
 
-        final Boolean filterByProject = fieldAccessor.getString(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT)
+        final Boolean filterByProject = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT)
                                             .map(Boolean::parseBoolean)
                                             .orElse(Boolean.FALSE);
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
@@ -98,9 +98,9 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     private Set<ProviderProject> retrieveProviderProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject, final String providerName) {
         final List<ProviderProject> providerProjects = providerDataAccessor.findByProviderName(providerName);
         if (filterByProject) {
-            final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
+            final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
-            final String projectNamePattern = fieldAccessor.getString(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN).orElse("");
+            final String projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse("");
             return providerProjects
                        .stream()
                        .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
@@ -133,7 +133,7 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
             } else {
                 errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
             }
-            fieldErrors.put(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT, errorMessage);
+            fieldErrors.put(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, errorMessage);
             throw new AlertFieldException(fieldErrors);
         }
         return emailAddresses;

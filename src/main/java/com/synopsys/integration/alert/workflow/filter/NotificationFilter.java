@@ -39,28 +39,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.filter.builder.AndFieldFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.builder.DefaultFilterBuilders;
 import com.synopsys.integration.alert.common.workflow.filter.builder.JsonFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.builder.OrFieldFilterBuilder;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
-import com.synopsys.integration.alert.database.api.JobConfigReader;
 
 @Component
 public class NotificationFilter {
-    private final JobConfigReader jobConfigReader;
+    private final ConfigurationAccessor jobConfigReader;
     private final JsonExtractor jsonExtractor;
     private final List<Provider> providers;
 
     @Autowired
-    public NotificationFilter(final JsonExtractor jsonExtractor, final List<Provider> providers, final JobConfigReader jobConfigReader) {
+    public NotificationFilter(final JsonExtractor jsonExtractor, final List<Provider> providers, final ConfigurationAccessor jobConfigReader) {
         this.jsonExtractor = jsonExtractor;
         this.providers = providers;
         this.jobConfigReader = jobConfigReader;
@@ -71,15 +71,15 @@ public class NotificationFilter {
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
     public Collection<AlertNotificationWrapper> extractApplicableNotifications(final FrequencyType frequency, final Collection<AlertNotificationWrapper> notificationList) {
-        final List<CommonDistributionConfiguration> unfilteredDistributionConfigs = jobConfigReader.getPopulatedJobConfigs();
+        final List<ConfigurationJobModel> unfilteredDistributionConfigs = jobConfigReader.getAllJobs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return List.of();
         }
 
-        final List<CommonDistributionConfiguration> distributionConfigs = unfilteredDistributionConfigs
-                                                                              .parallelStream()
-                                                                              .filter(config -> frequency.equals(config.getFrequencyType()))
-                                                                              .collect(Collectors.toList());
+        final List<ConfigurationJobModel> distributionConfigs = unfilteredDistributionConfigs
+                                                                    .parallelStream()
+                                                                    .filter(config -> frequency.equals(config.getFrequencyType()))
+                                                                    .collect(Collectors.toList());
 
         if (distributionConfigs.isEmpty()) {
             return List.of();
@@ -111,7 +111,7 @@ public class NotificationFilter {
      * Creates a java.util.Collection of NotificationContent objects that are applicable for at least one Distribution Job.
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
-    public Collection<AlertNotificationWrapper> extractApplicableNotifications(final Set<ProviderContentType> providerContentTypes, final CommonDistributionConfiguration jobConfiguration,
+    public Collection<AlertNotificationWrapper> extractApplicableNotifications(final Set<ProviderContentType> providerContentTypes, final ConfigurationJobModel jobConfiguration,
         final Collection<AlertNotificationWrapper> notificationList) {
         final Set<String> configuredNotificationTypes = new HashSet<>(jobConfiguration.getNotificationTypes());
         if (configuredNotificationTypes.isEmpty()) {
@@ -141,7 +141,7 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
-    private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfiguration> distributionConfigs) {
+    private Set<String> getConfiguredNotificationTypes(final List<ConfigurationJobModel> distributionConfigs) {
         return distributionConfigs
                    .parallelStream()
                    .flatMap(config -> config.getNotificationTypes().stream())
@@ -175,18 +175,18 @@ public class NotificationFilter {
                    .collect(Collectors.toSet());
     }
 
-    private Predicate<AlertNotificationWrapper> createFilter(final Collection<JsonField> filterableFields, final Collection<CommonDistributionConfiguration> distributionConfigs) {
+    private Predicate<AlertNotificationWrapper> createFilter(final Collection<JsonField> filterableFields, final Collection<ConfigurationJobModel> distributionConfigs) {
         if (filterableFields.isEmpty()) {
             return DefaultFilterBuilders.ALWAYS_TRUE.buildPredicate();
         }
         Predicate<AlertNotificationWrapper> orPredicate = DefaultFilterBuilders.ALWAYS_FALSE.buildPredicate();
-        for (final CommonDistributionConfiguration config : distributionConfigs) {
+        for (final ConfigurationJobModel config : distributionConfigs) {
             orPredicate = orPredicate.or(createJobFilter(filterableFields, config));
         }
         return orPredicate;
     }
 
-    private Predicate<AlertNotificationWrapper> createJobFilter(final Collection<JsonField> filterableFields, final CommonDistributionConfiguration config) {
+    private Predicate<AlertNotificationWrapper> createJobFilter(final Collection<JsonField> filterableFields, final ConfigurationJobModel config) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
         for (final JsonField field : filterableFields) {
             final JsonFilterBuilder fieldFilter = createFieldFilter(field, config);
@@ -195,7 +195,7 @@ public class NotificationFilter {
         return filterBuilder.buildPredicate();
     }
 
-    private JsonFilterBuilder createFieldFilter(final JsonField field, final CommonDistributionConfiguration config) {
+    private JsonFilterBuilder createFieldFilter(final JsonField field, final ConfigurationJobModel config) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
 
         final List<String> configKeyMappings = field.getConfigKeyMappings();
@@ -222,10 +222,11 @@ public class NotificationFilter {
         return filterBuilder;
     }
 
-    private JsonFilterBuilder createFilterBuilderForKeys(final List<String> relevantKeys, final JsonField field, final CommonDistributionConfiguration config) {
+    private JsonFilterBuilder createFilterBuilderForKeys(final List<String> relevantKeys, final JsonField field, final ConfigurationJobModel config) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_FALSE;
         for (final String relevantKey : relevantKeys) {
             final JsonFilterBuilder fieldFilter = config
+                                                      .getFieldAccessor()
                                                       .getField(relevantKey)
                                                       .map(ConfigurationFieldModel::getFieldValues)
                                                       .map(values -> createFilterBuilderForAllValues(field, values))
@@ -244,9 +245,9 @@ public class NotificationFilter {
         return filterBuilderForAllValues;
     }
 
-    private Optional<ConfigurationFieldModel> getConditionalField(final List<String> configKeyMappings, final CommonDistributionConfiguration config) {
+    private Optional<ConfigurationFieldModel> getConditionalField(final List<String> configKeyMappings, final ConfigurationJobModel config) {
         for (final String configKey : configKeyMappings) {
-            final Optional<ConfigurationFieldModel> optionalConfigField = config.getField(configKey);
+            final Optional<ConfigurationFieldModel> optionalConfigField = config.getFieldAccessor().getField(configKey);
             if (optionalConfigField.isPresent()) {
                 final ConfigurationFieldModel configField = optionalConfigField.get();
                 final Collection<String> values = configField.getFieldValues();
