@@ -26,12 +26,12 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
@@ -52,7 +52,7 @@ public class PolarisContent extends ProviderContent {
     public static final String JSON_FIELD_NEW_TOTAL = "newTotal";
 
     private static final JsonField<String> PROJECT_NAME_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC,
-        LABEL_PROJECT_NAME, List.of(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN));
+        LABEL_PROJECT_NAME, List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN));
     private static final JsonField<String> PROJECT_LINK_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_PROJECT_LINK), JSON_FIELD_PROJECT_LINK, FieldContentIdentifier.TOPIC_URL,
         LABEL_PROJECT_NAME + JsonField.LABEL_URL_SUFFIX);
     private static final JsonField<String> BRANCHES_FIELD = JsonField.createStringField(JsonField.createJsonPath(JsonField.FORMAT_SINGLE_REPLACEMENT, JSON_FIELD_DESCRIPTION), JSON_FIELD_DESCRIPTION, FieldContentIdentifier.SUB_TOPIC,

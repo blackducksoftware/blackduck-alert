@@ -49,7 +49,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
@@ -235,7 +234,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
         final Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
-            formatType, BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject, BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames);
+            formatType, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames);
         final FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
 
         return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
@@ -265,7 +264,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                 frequencyField = configurationModel.getField(ChannelDistributionUIConfig.KEY_FREQUENCY);
             }
             if (filterByProjectField.isEmpty()) {
-                filterByProjectField = configurationModel.getField(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+                filterByProjectField = configurationModel.getField(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
             }
         }
 

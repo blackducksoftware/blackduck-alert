@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
@@ -108,9 +107,9 @@ public class MockConfigurationModelFactory {
 
         final ConfigurationFieldModel notificationTypes = createFieldModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, List.of(NotificationType.VULNERABILITY.toString(), NotificationType.RULE_VIOLATION.toString()));
         final ConfigurationFieldModel formatType = createFieldModel(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.DEFAULT.toString());
-        final ConfigurationFieldModel filterByProject = createFieldModel(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, "true");
-        final ConfigurationFieldModel projectNamePattern = createFieldModel(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
-        final ConfigurationFieldModel configuredProject = createFieldModel(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
+        final ConfigurationFieldModel filterByProject = createFieldModel(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, "true");
+        final ConfigurationFieldModel projectNamePattern = createFieldModel(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
+        final ConfigurationFieldModel configuredProject = createFieldModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
 
         fields.add(notificationTypes);
         fields.add(formatType);
@@ -153,9 +152,9 @@ public class MockConfigurationModelFactory {
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationTypes);
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType);
 
-        mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject);
-        mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, projectNamePattern);
-        mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, configuredProjects);
+        mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject);
+        mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, projectNamePattern);
+        mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, configuredProjects);
 
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(id);
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);

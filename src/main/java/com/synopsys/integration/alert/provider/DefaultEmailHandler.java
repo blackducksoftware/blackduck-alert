@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -47,7 +48,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.EmailHandler;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 
 @Component
 public class DefaultEmailHandler extends EmailHandler {
@@ -113,10 +113,10 @@ public class DefaultEmailHandler extends EmailHandler {
                                         .map(AggregateMessageContent::getSubTopic)
                                         .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
-            final Boolean filterByProject = fieldAccessor.getBoolean(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            final Boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
             List<String> associatedProjects = List.of();
             if (filterByProject) {
-                final Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+                final Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
                 associatedProjects = new ArrayList<>(allConfiguredProjects);
             } else {
                 final Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);

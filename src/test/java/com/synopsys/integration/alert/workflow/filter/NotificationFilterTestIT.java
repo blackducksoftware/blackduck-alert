@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -73,9 +72,9 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final ConfigurationFieldModel notificationType = distributionJob.getFieldAccessor().getField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
                                                              .orElse(ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
         notificationType.setFieldValues(List.of(TEST_CONFIG_NOTIFICATION_TYPE));
-        final ConfigurationFieldModel project = distributionJob.getFieldAccessor().getField(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).orElse(ConfigurationFieldModel.create(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT));
+        final ConfigurationFieldModel project = distributionJob.getFieldAccessor().getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT).orElse(ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT));
         project.setFieldValues(List.of(TEST_CONFIG_PROJECT_NAME));
-        distributionJob.getFieldAccessor().addFields(Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, project));
+        distributionJob.getFieldAccessor().addFields(Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, project));
 
         final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
         MockConfigurationModelFactory.createDistributionJob(fieldList);
