@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +38,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -147,13 +149,13 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     private Set<String> retrieveAllProjectsInJobs(final Set<ProviderProject> foundProjects) {
         final Set<String> configuredProjectNames = new HashSet<>();
         for (final ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
-            final CommonDistributionConfiguration commonDistributionConfiguration = new CommonDistributionConfiguration(configurationJobModel.getJobId(), configurationJobModel.createKeyToFieldMap());
-            final String projectNamePattern = commonDistributionConfiguration.getProjectNamePattern();
+            final FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
+            final String projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse("");
             if (StringUtils.isNotBlank(projectNamePattern)) {
                 final Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(projectNamePattern::matches).collect(Collectors.toSet());
                 configuredProjectNames.addAll(matchedProjectNames);
             }
-            final Set<String> configuredProjects = commonDistributionConfiguration.getConfiguredProjects();
+            final Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             configuredProjectNames.addAll(configuredProjects);
         }
 

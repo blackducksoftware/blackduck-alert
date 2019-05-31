@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
@@ -41,7 +41,7 @@ public class BlackDuckProjectSyncTaskTest {
         final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         final MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
 
-        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT);
+        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
         configurationFieldModel.setFieldValues(List.of("project", "project2"));
         final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.DISTRIBUTION);
         configurationModel.put(configurationFieldModel);
