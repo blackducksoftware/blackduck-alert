@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,8 +38,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -58,12 +62,15 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
     private final ProviderDataAccessor blackDuckDataAccessor;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderDataAccessor blackDuckDataAccessor,
+        final ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckDataAccessor = blackDuckDataAccessor;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -77,6 +84,8 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                 final ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
+                final Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(currentDataMap.keySet());
+                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
 
                 final Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectUsersService);
 
@@ -89,7 +98,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         }
     }
 
-    public Map<ProviderProject, ProjectView> getCurrentData(final List<ProjectView> projectViews, final BlackDuckService blackDuckService) {
+    private Map<ProviderProject, ProjectView> getCurrentData(final List<ProjectView> projectViews, final BlackDuckService blackDuckService) {
         final Map<ProviderProject, ProjectView> projectMap = new ConcurrentHashMap<>();
         projectViews
             .parallelStream()
@@ -133,6 +142,34 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                 }
             });
         return projectToEmailAddresses;
+    }
+
+    private Set<String> retrieveAllProjectsInJobs(final Set<ProviderProject> foundProjects) {
+        final Set<String> configuredProjectNames = new HashSet<>();
+        for (final ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
+            final CommonDistributionConfiguration commonDistributionConfiguration = new CommonDistributionConfiguration(configurationJobModel.getJobId(), configurationJobModel.createKeyToFieldMap());
+            final String projectNamePattern = commonDistributionConfiguration.getProjectNamePattern();
+            if (StringUtils.isNotBlank(projectNamePattern)) {
+                final Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(projectNamePattern::matches).collect(Collectors.toSet());
+                configuredProjectNames.addAll(matchedProjectNames);
+            }
+            final Set<String> configuredProjects = commonDistributionConfiguration.getConfiguredProjects();
+            configuredProjectNames.addAll(configuredProjects);
+        }
+
+        return configuredProjectNames;
+    }
+
+    private void updateBlackDuckProjectPermissions(final Set<String> configuredProjects, final List<ProjectView> projectViews, final ProjectUsersService projectUsersService, final BlackDuckService blackDuckService)
+        throws IntegrationException {
+        final UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
+        final Set<ProjectView> matchingProjects = projectViews.parallelStream()
+                                                      .filter(projectView -> configuredProjects.contains(projectView.getName()))
+                                                      .collect(Collectors.toSet());
+        for (final ProjectView projectView : matchingProjects) {
+            logger.info("Adding user to Project {}", projectView.getName());
+            projectUsersService.addUserToProject(projectView, currentUser);
+        }
     }
 
 }
