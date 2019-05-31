@@ -54,6 +54,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
@@ -79,15 +80,17 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
             final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
             if (optionalBlackDuckHttpClient.isPresent()) {
                 final BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
+                BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
+                ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
-                final ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
                 final Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(currentDataMap.keySet());
-                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
-
                 final Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectUsersService);
+
+                blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
+                projectUsersService = blackDuckServicesFactory.createProjectUsersService();
+                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
 
                 blackDuckDataAccessor.updateProjectAndUserData(BlackDuckProvider.COMPONENT_NAME, projectToEmailAddresses);
             } else {
