@@ -22,16 +22,12 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.net.IDN;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -56,20 +52,37 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.item.BlackDuckPolicyLinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final BlackDuckBucketService bucketService;
+    private final BlackDuckService blackDuckService;
+    private final BlackDuckBucket blackDuckBucket;
 
     @Autowired
-    public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
+    public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED));
+        final Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
+                                                                                .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
+
+        blackDuckService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckService).orElse(null);
+        bucketService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckBucketService).orElse(null);
+        blackDuckBucket = new BlackDuckBucket();
     }
 
     @Override
@@ -91,7 +104,16 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                              .findFirst()
                                              .orElse("");
 
-        final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionUrl);
+        final String projectVersionComponentLink = "";
+        try {
+            final ProjectVersionView projectVersionView = blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
+            bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+            final String projectVersionComponentLinkprojectVersionComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
+        } catch (final IntegrationException e) {
+            logger.error("There was a problem retrieving the Project Version link.", e);
+        }
+
+        final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
         for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
             final PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
 
@@ -124,15 +146,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final String projectVersionUrl) {
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
         for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
-            String projectVersionLink = projectVersionUrl;
-            try {
-                final String projectVersionWithComponentLink = String.format("%s?q:componentName=%s", projectVersionUrl, componentVersionStatus.getComponentName());
-                final URL encodedUrl = new URL(projectVersionWithComponentLink);
-                final URI uri = new URI(encodedUrl.getProtocol(), encodedUrl.getUserInfo(), IDN.toASCII(encodedUrl.getHost()), encodedUrl.getPort(), encodedUrl.getPath(), encodedUrl.getQuery(), encodedUrl.getRef());
-                projectVersionLink = uri.toASCIIString();
-            } catch (final MalformedURLException | URISyntaxException e) {
-                logger.error("There was a problem parsing the project version URL", e);
-            }
+            final String projectVersionLink = String.format("%s?q:componentName=%s", projectVersionUrl, componentVersionStatus.getComponentName());
             final PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus, policyItems);
             BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
             if (blackDuckPolicyLinkableItem == null) {
