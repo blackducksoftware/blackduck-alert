@@ -104,11 +104,11 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                              .findFirst()
                                              .orElse("");
 
-        final String projectVersionComponentLink = "";
+        String projectVersionComponentLink = "";
         try {
             final ProjectVersionView projectVersionView = blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
             bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
-            final String projectVersionComponentLinkprojectVersionComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
+            projectVersionComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
         } catch (final IntegrationException e) {
             logger.error("There was a problem retrieving the Project Version link.", e);
         }
