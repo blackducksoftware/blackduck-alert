@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -47,31 +45,14 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentPr
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Optional<BlackDuckBucketService> bucketService;
-    private final Optional<BlackDuckService> blackDuckService;
-    private final BlackDuckBucket blackDuckBucket;
 
     @Autowired
     public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.POLICY_OVERRIDE));
-
-        final Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
-                                                                                .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
-
-        blackDuckService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckService);
-        bucketService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckBucketService);
-        blackDuckBucket = new BlackDuckBucket();
+        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.POLICY_OVERRIDE), blackDuckProperties);
     }
 
     @Override
@@ -92,18 +73,8 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         final String projectVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX).stream().findFirst().orElse("");
         final String componentName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_NAME).stream().findFirst().orElse("");
 
-        Optional<LinkableItem> componentVersionItem = Optional.empty();
-        try {
-            if (blackDuckService.isPresent() && bucketService.isPresent()) {
-                final ProjectVersionView projectVersionView = blackDuckService.get().getResponse(projectVersionUrl, ProjectVersionView.class);
-                bucketService.get().addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
-                final String vulnerableComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
-                final String projectVersionComponentLink = String.format("%s?q=componentName:%s", vulnerableComponentLink, componentName);
-                componentVersionItem = componentVersionName.map(name -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, name, projectVersionComponentLink));
-            }
-        } catch (final IntegrationException e) {
-            logger.error("There was a problem retrieving the Project Version link.", e);
-        }
+        final String generatedLink = getProjectQueryLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK, componentName).orElse(null);
+        final Optional<LinkableItem> componentVersionItem = componentVersionName.map(name -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, name, generatedLink));
 
         final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
         applicableItems.addAll(componentItems);

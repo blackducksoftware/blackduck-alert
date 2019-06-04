@@ -59,30 +59,15 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Optional<BlackDuckBucketService> bucketService;
-    private final Optional<BlackDuckService> blackDuckService;
-    private final BlackDuckBucket blackDuckBucket;
 
     @Autowired
     public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED));
-        final Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
-                                                                                .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
-
-        blackDuckService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckService);
-        bucketService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckBucketService);
-        blackDuckBucket = new BlackDuckBucket();
+        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
     }
 
     @Override
@@ -104,16 +89,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                              .findFirst()
                                              .orElse("");
 
-        String projectVersionComponentLink = "";
-        try {
-            if (blackDuckService.isPresent() && bucketService.isPresent()) {
-                final ProjectVersionView projectVersionView = blackDuckService.get().getResponse(projectVersionUrl, ProjectVersionView.class);
-                bucketService.get().addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
-                projectVersionComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
-            }
-        } catch (final IntegrationException e) {
-            logger.error("There was a problem retrieving the Project Version link.", e);
-        }
+        final Optional<String> projectVersionComponentLink = getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
 
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
         for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
@@ -145,10 +121,10 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     }
 
     private Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> createPolicyComponentToLinkableItemMapping(final Collection<ComponentVersionStatus> componentVersionStatuses, final Map<String, PolicyInfo> policyItems,
-        final String projectVersionUrl) {
+        final Optional<String> projectVersionUrl) {
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
         for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
-            final String projectVersionLink = String.format("%s?q=componentName:%s", projectVersionUrl, componentVersionStatus.getComponentName());
+            final String projectVersionLink = projectVersionUrl.flatMap(url -> getProjectQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
             final PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus, policyItems);
             BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
             if (blackDuckPolicyLinkableItem == null) {
