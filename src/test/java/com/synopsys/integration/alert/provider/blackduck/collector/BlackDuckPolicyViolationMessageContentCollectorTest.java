@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -16,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
@@ -31,6 +33,7 @@ import com.synopsys.integration.alert.common.workflow.processor.DigestMessageCon
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollapser;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -142,7 +145,9 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     }
 
     private BlackDuckPolicyViolationCollector createPolicyViolationCollector() {
-        return new BlackDuckPolicyViolationCollector(jsonExtractor, messageContentProcessorList);
+        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any(Logger.class))).thenReturn(Optional.empty());
+        return new BlackDuckPolicyViolationCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
