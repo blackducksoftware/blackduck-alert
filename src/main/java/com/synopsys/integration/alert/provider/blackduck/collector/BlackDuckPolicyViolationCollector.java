@@ -70,8 +70,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final BlackDuckBucketService bucketService;
-    private final BlackDuckService blackDuckService;
+    private final Optional<BlackDuckBucketService> bucketService;
+    private final Optional<BlackDuckService> blackDuckService;
     private final BlackDuckBucket blackDuckBucket;
 
     @Autowired
@@ -80,8 +80,8 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
                                                                                 .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
 
-        blackDuckService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckService).orElse(null);
-        bucketService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckBucketService).orElse(null);
+        blackDuckService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckService);
+        bucketService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckBucketService);
         blackDuckBucket = new BlackDuckBucket();
     }
 
@@ -106,9 +106,11 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
         String projectVersionComponentLink = "";
         try {
-            final ProjectVersionView projectVersionView = blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
-            bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
-            projectVersionComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
+            if (blackDuckService.isPresent() && bucketService.isPresent()) {
+                final ProjectVersionView projectVersionView = blackDuckService.get().getResponse(projectVersionUrl, ProjectVersionView.class);
+                bucketService.get().addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+                projectVersionComponentLink = projectVersionView.getFirstLink(ProjectVersionView.COMPONENTS_LINK).orElse("");
+            }
         } catch (final IntegrationException e) {
             logger.error("There was a problem retrieving the Project Version link.", e);
         }
@@ -146,7 +148,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final String projectVersionUrl) {
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
         for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
-            final String projectVersionLink = String.format("%s?q:componentName=%s", projectVersionUrl, componentVersionStatus.getComponentName());
+            final String projectVersionLink = String.format("%s?q=componentName:%s", projectVersionUrl, componentVersionStatus.getComponentName());
             final PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus, policyItems);
             BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
             if (blackDuckPolicyLinkableItem == null) {
