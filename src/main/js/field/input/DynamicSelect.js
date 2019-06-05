@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import LabeledField from 'field/LabeledField';
 
+function noOptionsMessage() {
+    return null;
+}
+
 function DynamicSelectInput(props) {
     const {
         onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass, readOnly
@@ -35,6 +39,7 @@ function DynamicSelectInput(props) {
             closeMenuOnSelect={!multiSelect}
             components={components}
             isDisabled={readOnly}
+            noOptionsMessage={noOptionsMessage}
         />
     </div>);
     return (
