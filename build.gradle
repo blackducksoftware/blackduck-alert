@@ -228,7 +228,7 @@ task updateNpmVersion(type: Task) {
     final def packageJsonFile = new File("${projectDir}/package.json")
     def packageSlurper = new JsonSlurper()
     def packageJson = packageSlurper.parse file("${projectDir}/package.json")
-    if (packageJson.version !== version) {
+    if (packageJson.version != version) {
         packageJson.version = version
 
         final def updatedPackageJson = JsonOutput.toJson(packageJson)
