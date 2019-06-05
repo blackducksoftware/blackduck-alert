@@ -38,7 +38,7 @@ public class JiraGlobalUIConfig extends UIConfig {
     public static final String LABEL_ACCESS_TOKEN = "Access Token";
 
     public static final String DESCRIPTION_URL = "The URL of the Jira server.";
-    public static final String DESCRIPTION_USER_NAME = "The user name used to log into the Jira server that has generated the access token.";
+    public static final String DESCRIPTION_USER_NAME = "The email used to log into the Jira server that has generated the access token.";
     public static final String DESCRIPTION_ACCESS_TOKEN = "The access token used to send API requests to the Jira server.";
 
     public JiraGlobalUIConfig() {
@@ -48,7 +48,7 @@ public class JiraGlobalUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField jiraUrl = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL);
-        final ConfigField jiraUserName = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_USERNAME, LABEL_USER_NAME, DESCRIPTION_USER_NAME);
+        final ConfigField jiraUserName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_USERNAME, LABEL_USER_NAME, DESCRIPTION_USER_NAME);
         final ConfigField jiraAccessToken = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN);
 
         return List.of(jiraUrl, jiraUserName, jiraAccessToken);
