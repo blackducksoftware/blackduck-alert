@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.UriSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -59,20 +60,21 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         blackDuckBucket = new BlackDuckBucket();
     }
 
-    public Optional<String> getProjectQueryLink(final String projectVersionUrl, final String link, final String componentName) {
+    public Optional<String> getProjectComponentQueryLink(final String projectVersionUrl, final String link, final String componentName) {
         final Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
-        return projectLink.flatMap(optionalProjectLink -> getProjectQueryLink(optionalProjectLink, componentName));
+        return projectLink.flatMap(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
     }
 
-    public Optional<String> getProjectQueryLink(final String projectLink, final String componentName) {
+    public Optional<String> getProjectComponentQueryLink(final String projectLink, final String componentName) {
         return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
     }
 
     public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
         if (blackDuckService.isPresent() && bucketService.isPresent()) {
             try {
-                final ProjectVersionView projectVersionView = blackDuckService.get().getResponse(projectVersionUrl, ProjectVersionView.class);
-                bucketService.get().addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+                final UriSingleResponse<ProjectVersionView> uriSingleResponse = new UriSingleResponse(projectVersionUrl, ProjectVersionView.class);
+                final ProjectVersionView projectVersionView = (blackDuckBucket.contains(uriSingleResponse.getUri())) ? blackDuckBucket.get(uriSingleResponse) : blackDuckService.get().getResponse(projectVersionUrl, ProjectVersionView.class);
+                bucketService.get().addToTheBucket(blackDuckBucket, List.of(uriSingleResponse));
                 return projectVersionView.getFirstLink(link);
             } catch (final IntegrationException e) {
                 logger.error("There was a problem retrieving the Project Version link.", e);
