@@ -54,7 +54,7 @@ public class PolarisGlobalTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
@@ -86,5 +86,6 @@ public class PolarisGlobalTestAction extends TestAction {
         } catch (final IOException ioException) {
             throw new AlertException(ioException);
         }
+        return "Successfully connected to Polaris server.";
     }
 }

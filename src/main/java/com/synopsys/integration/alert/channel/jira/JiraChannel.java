@@ -22,10 +22,11 @@
  */
 package com.synopsys.integration.alert.channel.jira;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -45,12 +46,12 @@ import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelField
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestModel;
+import com.synopsys.integration.jira.common.cloud.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
-import com.synopsys.integration.jira.common.model.EntityProperty;
 
 @Component(value = JiraChannel.COMPONENT_NAME)
 public class JiraChannel extends DistributionChannel {
@@ -62,9 +63,7 @@ public class JiraChannel extends DistributionChannel {
     }
 
     @Override
-    public void sendMessage(final DistributionEvent event) throws IntegrationException {
-        logger.info("Received event to send to Jira {}", event);
-
+    public String sendMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
         final MessageContentGroup content = event.getContent();
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
@@ -75,14 +74,23 @@ public class JiraChannel extends DistributionChannel {
         final String projectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse("");
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(projectName);
         final String projectId = projectsResponseModel.getProjects().stream().findFirst().map(ProjectComponent::getId).orElseThrow(() -> new AlertException("Expected to be passed a project name."));
-        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(content, "Bug", projectId);
-        final List<EntityProperty> properties = new LinkedList<>();
-        properties.add(new EntityProperty("TestKey", "hashed value"));
-        if (doesIssueExist(issueSearchService)) {
-            issueService.updateIssue(new IssueRequestModel(fieldsBuilder, Map.of(), properties));
+        final String issueType = "Bug";
+        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(content, issueType, projectId);
+        final Optional<IssueResponseModel> existingIssueResponseModel = retrieveExistingIssue(issueSearchService);
+        final String issueKey;
+        if (existingIssueResponseModel.isPresent()) {
+            final IssueResponseModel issueResponseModel = existingIssueResponseModel.get();
+            issueKey = issueResponseModel.getKey();
+            issueService.updateIssue(new IssueRequestModel(fieldsBuilder, Map.of(), List.of()));
         } else {
-            issueService.createIssue(new IssueCreationRequestModel("", "", "", fieldsBuilder, properties));
+            final String username = jiraProperties.getUsername();
+            final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
+            if (issue == null || StringUtils.isBlank(issue.getKey())) {
+                throw new AlertException("There was an problem when creating this issue.");
+            }
+            issueKey = issue.getKey();
         }
+        return String.format("Successfully created Jira Cloud issue at %s/browse/%s", jiraProperties.getUrl(), issueKey);
     }
 
     @Override
@@ -91,8 +99,8 @@ public class JiraChannel extends DistributionChannel {
     }
 
     // TODO Use the issue search service to check if an issue already exists
-    private boolean doesIssueExist(final IssueSearchService issueSearchService) throws IntegrationException {
-        return false;
+    private Optional<IssueResponseModel> retrieveExistingIssue(final IssueSearchService issueSearchService) throws IntegrationException {
+        return Optional.empty();
     }
 
     // TODO create the content of the Jira issue.

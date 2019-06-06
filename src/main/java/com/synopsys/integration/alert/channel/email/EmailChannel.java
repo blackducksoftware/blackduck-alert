@@ -73,7 +73,7 @@ public class EmailChannel extends DistributionChannel {
     }
 
     @Override
-    public void sendMessage(final DistributionEvent event) throws IntegrationException {
+    public String sendMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
 
         final Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
@@ -88,10 +88,10 @@ public class EmailChannel extends DistributionChannel {
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
         final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
-        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent());
+        return sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent());
     }
 
-    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final MessageContentGroup content)
+    public String sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final MessageContentGroup content)
         throws IntegrationException {
         String topicValue = null;
         if (!content.isEmpty()) {
@@ -140,6 +140,7 @@ public class EmailChannel extends DistributionChannel {
         } catch (final IOException ex) {
             throw new AlertException(ex);
         }
+        return "Successfully sent Email message";
     }
 
     private String createEnhancedSubjectLine(final String originalSubjectLine, final String providerProjectName) {

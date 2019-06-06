@@ -49,7 +49,7 @@ public class JiraGlobalTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
@@ -63,5 +63,6 @@ public class JiraGlobalTestAction extends TestAction {
         } catch (final IntegrationException e) {
             throw new AlertException("Was not able to retrieve User from Jira cloud instance: " + e.getMessage());
         }
+        return "Successfully connected to Jira Cloud instance.";
     }
 }

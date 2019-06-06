@@ -239,8 +239,8 @@ public class JobConfigActions {
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(testConfig);
                 }
-                testAction.testConfig(testConfig);
-                return "Successfully sent test message.";
+                return testAction.testConfig(testConfig);
+                //                return "Successfully sent test message.";
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
