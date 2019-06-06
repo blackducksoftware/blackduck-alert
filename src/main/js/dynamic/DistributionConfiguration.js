@@ -6,12 +6,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import {
-    getDistributionJob,
-    saveDistributionJob,
-    testDistributionJob,
-    updateDistributionJob
-} from 'store/actions/distributionConfigs';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -159,10 +154,10 @@ class DistributionConfiguration extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        const { jobId } = this.props;
+        const { jobId, isUpdatingJob } = this.props;
 
         const jsonBody = this.buildJsonBody();
-        if (jobId) {
+        if (isUpdatingJob) {
             const withId = Object.assign(jsonBody, { jobId });
             this.props.updateDistributionJob(withId);
         } else {
@@ -288,7 +283,8 @@ DistributionConfiguration.propTypes = {
     updateDistributionJob: PropTypes.func.isRequired,
     testDistributionJob: PropTypes.func.isRequired,
     saveDistributionJob: PropTypes.func.isRequired,
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    isUpdatingJob: PropTypes.bool
 };
 
 DistributionConfiguration.defaultProps = {
@@ -300,7 +296,8 @@ DistributionConfiguration.defaultProps = {
     saving: false,
     success: false,
     fieldErrors: {},
-    configurationMessage: ''
+    configurationMessage: '',
+    isUpdatingJob: false
 };
 
 const mapDispatchToProps = dispatch => ({

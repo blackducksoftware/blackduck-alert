@@ -19,11 +19,11 @@ class EditTableCellFormatter extends Component {
         if (buttonClass) {
             buttonClass = `${buttonClass} tableButton`;
         } else {
-            buttonClass = 'btn btn-link editJobButton';
+            buttonClass = 'btn btn-link jobIconButton';
         }
 
         return (
-            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><FontAwesomeIcon icon="pencil-alt" className="alert-icon" size="lg" /></button>
+            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><FontAwesomeIcon icon={this.props.buttonIconName} className="alert-icon" size="lg" /></button>
         );
     }
 }
@@ -31,12 +31,12 @@ class EditTableCellFormatter extends Component {
 EditTableCellFormatter.propTypes = {
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired,
-    buttonClass: PropTypes.string,
-    buttonText: PropTypes.string
+    buttonText: PropTypes.string.isRequired,
+    buttonIconName: PropTypes.string.isRequired,
+    buttonClass: PropTypes.string
 };
 
 EditTableCellFormatter.defaultProps = {
-    buttonText: 'Edit',
     buttonClass: null
 };
 
