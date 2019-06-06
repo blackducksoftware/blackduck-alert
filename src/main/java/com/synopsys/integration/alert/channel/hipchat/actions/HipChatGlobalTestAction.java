@@ -80,7 +80,7 @@ public class HipChatGlobalTestAction extends TestAction {
         final String htmlMessage = "This is a test message sent by Alert.";
         final Request testRequest = hipChatChannel.createRequest(configuredApiUrl, apiKey, parsedRoomId, Boolean.TRUE, "red", htmlMessage);
         restChannelUtility.sendMessageRequest(intHttpClient, testRequest, "test");
-        return "Successfully tested HipChat server";
+        return "Successfully connected to HipChat server";
     }
 
     private void testApiKeyAndApiUrlConnection(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {

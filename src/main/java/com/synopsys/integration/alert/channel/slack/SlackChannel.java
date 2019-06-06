@@ -82,7 +82,7 @@ public class SlackChannel extends DistributionChannel {
     public String sendMessage(final DistributionEvent event) throws IntegrationException {
         final List<Request> requests = createRequests(event);
         restChannelUtility.sendMessage(requests, event.getDestination());
-        return "Slack Success";
+        return "Successfully sent Slack message.";
     }
 
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {

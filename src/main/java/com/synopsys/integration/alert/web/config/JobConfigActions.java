@@ -240,7 +240,6 @@ public class JobConfigActions {
                     providerTestAction.get().testConfig(testConfig);
                 }
                 return testAction.testConfig(testConfig);
-                //                return "Successfully sent test message.";
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
