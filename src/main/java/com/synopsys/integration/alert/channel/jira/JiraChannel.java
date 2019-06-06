@@ -99,7 +99,7 @@ public class JiraChannel extends DistributionChannel {
         if (existingIssueResponseModel.isPresent()) {
             final IssueResponseModel issueResponseModel = existingIssueResponseModel.get();
             issueKey = issueResponseModel.getKey();
-
+            updateIssue(issueService, fieldsBuilder, issueResponseModel);
         } else {
             final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
             final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
