@@ -24,7 +24,6 @@ class StatusMessage extends Component {
 
     render() {
         const { errorMessage, actionMessage } = this.props;
-        const self = this;
         const onErrorClose = () => {
             this.setState({ showError: false });
         };
