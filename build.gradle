@@ -80,7 +80,7 @@ dependencies {
     implementation project(':alert-database')
 
     implementation 'com.synopsys.integration:polaris-common:0.12.0'
-    implementation 'com.synopsys.integration:int-jira-common:0.0.1-SNAPSHOT'
+    implementation 'com.synopsys.integration:int-jira-common:0.0.2'
 
     // Spring
     implementation 'org.springframework:spring-webmvc'
@@ -130,6 +130,7 @@ distributions {
 // run alert locally
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 // disable the test task when running the alert server to speed up startup time.
 gradle.taskGraph.whenReady { graph ->
@@ -224,9 +225,25 @@ task cleanBundles(type: Delete) {
 
 tasks.clean.finalizedBy(cleanBundles)
 
+task updateNpmVersion(type: Task) {
+    final def packageJsonFile = new File("${projectDir}/package.json")
+    def packageSlurper = new JsonSlurper()
+    def packageJson = packageSlurper.parse file("${projectDir}/package.json")
+    if (packageJson.version != version) {
+        packageJson.version = version
+
+        final def updatedPackageJson = JsonOutput.toJson(packageJson)
+
+        packageJsonFile.delete()
+        packageJsonFile << JsonOutput.prettyPrint(updatedPackageJson)
+    }
+}
+
 npm_run() {
     args = ['build']
 }
+
+tasks.npm_run.mustRunAfter(updateNpmVersion)
 
 task webpack(type: Exec) {
     inputs.file("package-lock.json")
