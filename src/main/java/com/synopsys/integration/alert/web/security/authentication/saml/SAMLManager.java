@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 public class SAMLManager {
-    public static Logger logger = LoggerFactory.getLogger(SAMLManager.class);
+    public static final Logger logger = LoggerFactory.getLogger(SAMLManager.class);
     private final SAMLContext samlContext;
     private final ParserPool parserPool;
     private final ExtendedMetadata extendedMetadata;

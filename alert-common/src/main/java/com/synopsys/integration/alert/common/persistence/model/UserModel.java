@@ -52,7 +52,7 @@ public class UserModel extends AlertSerializableModel {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
-        if (null == roles && roles.isEmpty()) {
+        if (null == roles || roles.isEmpty()) {
             this.roleNames = Set.of();
         } else {
             this.roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
