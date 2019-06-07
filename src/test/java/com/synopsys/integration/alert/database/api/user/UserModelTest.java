@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.database.api.user;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -31,6 +32,47 @@ public class UserModelTest {
         assertEquals(expectedEmail, userModel.getEmailAddress());
         assertEquals(expectedRoles.size(), userModel.getRoles().size());
         assertTrue(userModel.hasRole(UserRole.ALERT_ADMIN.name()));
+        assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
+        assertFalse(userModel.isExpired());
+        assertFalse(userModel.isLocked());
+        assertFalse(userModel.isPasswordExpired());
+        assertTrue(userModel.isEnabled());
+    }
+
+    @Test
+    public void testUserModelNullRoles() {
+        final String expectedUserName = "expectedUser";
+        final String expectedPassword = "expectedPassword";
+        final String expectedEmail = "expectedEmail";
+        final Set<String> roleNames = null;
+        final Set<UserRoleModel> expectedRoles = null;
+        final UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+
+        assertEquals(expectedUserName, userModel.getName());
+        assertEquals(expectedPassword, userModel.getPassword());
+        assertEquals(expectedEmail, userModel.getEmailAddress());
+        assertNull(userModel.getRoles());
+        assertFalse(userModel.hasRole(UserRole.ALERT_ADMIN.name()));
+        assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
+        assertFalse(userModel.isExpired());
+        assertFalse(userModel.isLocked());
+        assertFalse(userModel.isPasswordExpired());
+        assertTrue(userModel.isEnabled());
+    }
+
+    @Test
+    public void testUserModelEmptyRoles() {
+        final String expectedUserName = "expectedUser";
+        final String expectedPassword = "expectedPassword";
+        final String expectedEmail = "expectedEmail";
+        final Set<UserRoleModel> expectedRoles = new LinkedHashSet<>();
+        final UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+
+        assertEquals(expectedUserName, userModel.getName());
+        assertEquals(expectedPassword, userModel.getPassword());
+        assertEquals(expectedEmail, userModel.getEmailAddress());
+        assertTrue(userModel.getRoles().isEmpty());
+        assertFalse(userModel.hasRole(UserRole.ALERT_ADMIN.name()));
         assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
         assertFalse(userModel.isExpired());
         assertFalse(userModel.isLocked());
