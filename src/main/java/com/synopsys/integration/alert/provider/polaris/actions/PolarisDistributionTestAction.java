@@ -50,12 +50,13 @@ public class PolarisDistributionTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {
             validatePatternMatchesProject(projectNamePattern.get());
         }
+        return "Successfully tested Polaris provider fields";
     }
 
     private void validatePatternMatchesProject(final String projectNamePattern) throws AlertFieldException {

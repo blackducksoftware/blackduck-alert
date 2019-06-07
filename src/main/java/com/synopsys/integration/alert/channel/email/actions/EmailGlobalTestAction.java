@@ -56,7 +56,7 @@ public class EmailGlobalTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
         Set<String> emailAddresses = Set.of();
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
@@ -78,7 +78,7 @@ public class EmailGlobalTestAction extends TestAction {
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", categoryItems);
-        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", MessageContentGroup.singleton(messageContent));
+        return emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", MessageContentGroup.singleton(messageContent));
     }
 
 }

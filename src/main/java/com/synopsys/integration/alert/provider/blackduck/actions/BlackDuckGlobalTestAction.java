@@ -55,7 +55,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
@@ -79,6 +79,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
             }
             throw new AlertException(String.format("Could not connect to: %s. %s", url, connectionResult.getFailureMessage().orElse("")));
         }
+        return "Successfully connected to BlackDuck server.";
     }
 
     public void validateBlackDuckConfiguration(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) throws AlertException {
