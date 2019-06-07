@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class CountdownConfigField extends ConfigField {
-    public Long countdown;
+    private Long countdown;
 
     public CountdownConfigField(final String key, final String label, final String description, final String panel, final Long countdown) {
         super(key, label, description, FieldType.COUNTDOWN.getFieldTypeName(), false, false, panel);
@@ -34,5 +34,13 @@ public class CountdownConfigField extends ConfigField {
 
     public static CountdownConfigField create(final String key, final String label, final String description, final Long countdown) {
         return new CountdownConfigField(key, label, description, "", countdown);
+    }
+
+    public Long getCountdown() {
+        return countdown;
+    }
+
+    public void setCountdown(final Long countdown) {
+        this.countdown = countdown;
     }
 }

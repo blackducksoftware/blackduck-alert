@@ -137,9 +137,7 @@ public class JobConfigController extends BaseController {
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
-        if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
-        }
+
         try {
             return runPostConfig(restModel);
         } catch (final AlertException e) {
@@ -169,9 +167,6 @@ public class JobConfigController extends BaseController {
                                         .anyMatch(permissionKey -> !authorizationManager.hasWritePermission(permissionKey));
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
-        }
-        if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
         try {
