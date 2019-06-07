@@ -283,7 +283,7 @@ class AuditPage extends Component {
             return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
                                                buttonText="Re-send" />);
         }
-        return (<div className="editJobButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
+        return (<div className="jobIconButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
     }
 
     isResendAllowed() {

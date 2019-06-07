@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
+import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
@@ -51,6 +51,11 @@ function frequencyColumnDataFormat(cell) {
     );
 }
 
+const jobModificationState = {
+    EDIT: 'EDIT',
+    COPY: 'COPY'
+}
+
 class Index extends Component {
     constructor(props) {
         super(props);
@@ -62,6 +67,8 @@ class Index extends Component {
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.editButtonClicked = this.editButtonClicked.bind(this);
         this.editButtonClick = this.editButtonClick.bind(this);
+        this.copyButtonClicked = this.copyButtonClicked.bind(this);
+        this.copyButtonClick = this.copyButtonClick.bind(this);
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
         this.reloadJobs = this.reloadJobs.bind(this);
         this.saveBtn = this.saveBtn.bind(this);
@@ -76,7 +83,8 @@ class Index extends Component {
             currentRowSelected: null,
             jobsToDelete: [],
             showDeleteModal: false,
-            nextDelete: null
+            nextDelete: null,
+            modificationState: jobModificationState.EDIT
         };
         this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
     }
@@ -97,11 +105,13 @@ class Index extends Component {
         this.setState({
             showDeleteModal: false,
             nextDelete: null,
-            jobsToDelete: []
+            jobsToDelete: [],
+            modificationState: jobModificationState.EDIT
         });
     }
 
-    getCurrentJobConfig(currentRowSelected) {
+    getCurrentJobConfig() {
+        const { currentRowSelected, modificationState } = this.state;
         if (currentRowSelected != null) {
             const { id } = currentRowSelected;
             return (
@@ -109,6 +119,7 @@ class Index extends Component {
                     handleCancel={this.cancelRowSelect}
                     onSave={this.saveBtn}
                     jobId={id}
+                    isUpdatingJob={jobModificationState.EDIT === modificationState}
                     onModalClose={() => {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
@@ -162,7 +173,8 @@ class Index extends Component {
         this.startAutoReloadIfConfigured();
         this.refs.table.cleanSelected();
         this.setState({
-            currentRowSelected: null
+            currentRowSelected: null,
+            modificationState: jobModificationState.EDIT
         });
     }
 
@@ -173,19 +185,34 @@ class Index extends Component {
         this.setState({
             showDeleteModal: true,
             nextDelete: next,
-            jobsToDelete: matchingJobs
+            jobsToDelete: matchingJobs,
+            modificationState: jobModificationState.EDIT
         });
     }
 
     editButtonClicked(currentRowSelected) {
         this.cancelAutoReload();
-        this.setState({ currentRowSelected });
+        this.setState({
+            currentRowSelected,
+            modificationState: jobModificationState.EDIT
+        });
     }
 
     editButtonClick(cell, row) {
-        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} />;
+        return <IconTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
     }
 
+    copyButtonClicked(currentRowSelected) {
+        this.cancelAutoReload();
+        this.setState({
+            currentRowSelected,
+            modificationState: jobModificationState.COPY
+        });
+    }
+
+    copyButtonClick(cell, row) {
+        return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+    }
 
     createCustomButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
@@ -335,7 +362,7 @@ class Index extends Component {
 
         const content = (
             <div>
-                {this.getCurrentJobConfig(this.state.currentRowSelected)}
+                {this.getCurrentJobConfig()}
                 <BootstrapTable
                     version="4"
                     hover
@@ -360,6 +387,7 @@ class Index extends Component {
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
                     <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} />
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} />
                 </BootstrapTable>
 
                 {this.props.inProgress &&
