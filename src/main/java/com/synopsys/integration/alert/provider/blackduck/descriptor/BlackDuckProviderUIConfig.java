@@ -54,7 +54,7 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     public List<ConfigField> createFields() {
         final ConfigField blackDuckUrl = TextInputConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION);
         final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, this::validateAPIToken);
-        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION);
+        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION).addDefaultValue("300");
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
     }

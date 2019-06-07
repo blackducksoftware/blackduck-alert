@@ -21,6 +21,11 @@ function overwriteSingleValue(items) {
     return Object.assign(items, { value: trimmedValue });
 }
 
+function convertStringToBoolean(value) {
+    return value.toString()
+        .toLowerCase() === 'true';
+}
+
 function buildTextInput(items, field) {
     const trimmedValue = overwriteSingleValue(items);
     const { readOnly } = field;
@@ -41,7 +46,9 @@ const { Option, SingleValue } = components;
 
 function buildSelectInput(items, field) {
     const { value } = items;
-    const { searchable, multiSelect, options, readOnly } = field;
+    const {
+        searchable, multiSelect, options, readOnly
+    } = field;
 
     const selectValue = options.filter(option => value.includes(option.value));
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -58,7 +65,15 @@ function buildSelectInput(items, field) {
     );
 
     Object.assign(items, {
-        value: selectValue, searchable, multiSelect, readOnly: isReadOnly, options, components: { Option: typeOptionLabel, SingleValue: typeLabel }
+        value: selectValue,
+        searchable,
+        multiSelect,
+        readOnly: isReadOnly,
+        options,
+        components: {
+            Option: typeOptionLabel,
+            SingleValue: typeLabel
+        }
     });
     return <SelectInput {...items} />;
 }
@@ -84,7 +99,10 @@ function buildCheckboxInput(items, field) {
     const checkedValue = convertStringToBoolean(value);
     const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
-    Object.assign(items, { isChecked: checkedValue, readOnly: isReadOnly });
+    Object.assign(items, {
+        isChecked: checkedValue,
+        readOnly: isReadOnly
+    });
     return <CheckboxInput {...items} />;
 }
 
@@ -98,12 +116,11 @@ function buildReadOnlyField(items, field) {
 function buildCounterField(items, field) {
     const { countdown } = field;
     const trimmedValue = extractFirstValue(items);
-    Object.assign(items, { countdown, value: trimmedValue });
+    Object.assign(items, {
+        countdown,
+        value: trimmedValue
+    });
     return <CounterField {...items} />;
-}
-
-function convertStringToBoolean(value) {
-    return value.toString().toLowerCase() === 'true';
 }
 
 export const FIELDS = {
@@ -124,10 +141,11 @@ export function getField(fieldType, props, field) {
 
 export function retrieveKeys(descriptorFields) {
     const fieldKeys = [];
-    Object.keys(descriptorFields).forEach((key) => {
-        const fieldKey = descriptorFields[key].key;
-        fieldKeys.push(fieldKey);
-    });
+    Object.keys(descriptorFields)
+        .forEach((key) => {
+            const fieldKey = descriptorFields[key].key;
+            fieldKeys.push(fieldKey);
+        });
 
     return fieldKeys;
 }
