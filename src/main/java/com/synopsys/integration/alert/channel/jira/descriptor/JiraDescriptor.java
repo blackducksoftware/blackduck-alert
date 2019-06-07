@@ -37,6 +37,9 @@ public class JiraDescriptor extends ChannelDescriptor {
     public static final String KEY_ADD_COMMENTS = "channel.jira.cloud.add.comments";
     public static final String KEY_ISSUE_CREATOR = "channel.jira.cloud.issue.creator";
     public static final String KEY_JIRA_PROJECT_NAME = "channel.jira.cloud.project.name";
+    public static final String KEY_ISSUE_TYPE = "channel.jira.cloud.issue.type";
+    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.cloud.resolve.workflow";
+    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.cloud.reopen.workflow";
 
     public static final String JIRA_LABEL = "Jira Cloud";
     public static final String JIRA_URL = "jira";

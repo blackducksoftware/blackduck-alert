@@ -38,10 +38,11 @@ public abstract class TestAction {
         return testConfigModel;
     }
 
-    public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;
+    public abstract String testConfig(final TestConfigModel testConfig) throws IntegrationException;
 
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Test message sent by Alert", null);
         return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new TreeSet<>());
     }
+
 }

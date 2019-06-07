@@ -43,10 +43,10 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
         final DistributionEvent event = createChannelTestEvent(testConfigModel.getConfigId().orElse(null), fieldAccessor);
-        distributionChannel.sendMessage(event);
+        return distributionChannel.sendMessage(event);
     }
 
     public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) {

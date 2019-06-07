@@ -59,4 +59,7 @@ public abstract class MessageReceiver<T> implements MessageListener {
         }
     }
 
+    public Gson getGson() {
+        return gson;
+    }
 }

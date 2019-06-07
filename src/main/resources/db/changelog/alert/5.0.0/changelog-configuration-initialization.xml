@@ -16,7 +16,7 @@
             CALL DEFINE_FIELD('jira.cloud.url', FALSE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('jira.cloud.user.name', TRUE, 'channel_jira_cloud', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.cloud.user.name', FALSE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('jira.cloud.access.token', TRUE, 'channel_jira_cloud', 'GLOBAL');
@@ -32,6 +32,27 @@
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.jira.cloud.project.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.issue.type', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.resolve.workflow', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.reopen.workflow', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
         </sql>
     </changeSet>
 </databaseChangeLog>

@@ -67,9 +67,10 @@ public class HipChatChannel extends DistributionChannel {
     }
 
     @Override
-    public void sendMessage(final DistributionEvent event) throws IntegrationException {
+    public String sendMessage(final DistributionEvent event) throws IntegrationException {
         final List<Request> requests = createRequests(event);
         restChannelUtility.sendMessage(requests, event.getDestination());
+        return "Successfully sent HipChat message";
     }
 
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {

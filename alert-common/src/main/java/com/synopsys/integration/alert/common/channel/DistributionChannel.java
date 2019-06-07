@@ -82,6 +82,6 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
         }
     }
 
-    public abstract void sendMessage(final DistributionEvent event) throws IntegrationException;
+    public abstract String sendMessage(final DistributionEvent event) throws IntegrationException;
 
 }

@@ -62,7 +62,7 @@ public class HipChatGlobalTestAction extends TestAction {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final String apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY).orElseThrow(() -> new AlertException("ERROR: Missing API key in the global HipChat config."));
         final String configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElseThrow(() -> new AlertException("ERROR: Missing the server URL in the global HipChat config."));
@@ -80,6 +80,7 @@ public class HipChatGlobalTestAction extends TestAction {
         final String htmlMessage = "This is a test message sent by Alert.";
         final Request testRequest = hipChatChannel.createRequest(configuredApiUrl, apiKey, parsedRoomId, Boolean.TRUE, "red", htmlMessage);
         restChannelUtility.sendMessageRequest(intHttpClient, testRequest, "test");
+        return "Successfully connected to HipChat server";
     }
 
     private void testApiKeyAndApiUrlConnection(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {
