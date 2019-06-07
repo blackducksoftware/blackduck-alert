@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 @Component
 public class BlackDuckProviderUIConfig extends UIConfig {
@@ -54,7 +55,8 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     public List<ConfigField> createFields() {
         final ConfigField blackDuckUrl = TextInputConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION);
         final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, this::validateAPIToken);
-        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION).addDefaultValue("300");
+        final String defaultTimeout = String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT);
+        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION).addDefaultValue(defaultTimeout);
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
     }
