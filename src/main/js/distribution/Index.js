@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
+import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
@@ -199,7 +199,7 @@ class Index extends Component {
     }
 
     editButtonClick(cell, row) {
-        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
+        return <IconTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
     }
 
     copyButtonClicked(currentRowSelected) {
@@ -211,7 +211,7 @@ class Index extends Component {
     }
 
     copyButtonClick(cell, row) {
-        return <EditTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+        return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
     }
 
     createCustomButtonGroup(buttons) {

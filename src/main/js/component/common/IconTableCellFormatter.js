@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-class EditTableCellFormatter extends Component {
+class IconTableCellFormatter extends Component {
     constructor(props) {
         super(props);
         this.onClick = this.onClick.bind(this);
@@ -28,7 +28,7 @@ class EditTableCellFormatter extends Component {
     }
 }
 
-EditTableCellFormatter.propTypes = {
+IconTableCellFormatter.propTypes = {
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired,
     buttonText: PropTypes.string.isRequired,
@@ -36,8 +36,8 @@ EditTableCellFormatter.propTypes = {
     buttonClass: PropTypes.string
 };
 
-EditTableCellFormatter.defaultProps = {
+IconTableCellFormatter.defaultProps = {
     buttonClass: null
 };
 
-export default EditTableCellFormatter;
+export default IconTableCellFormatter;
