@@ -38,8 +38,8 @@ public class JiraGlobalUIConfig extends UIConfig {
     public static final String LABEL_ACCESS_TOKEN = "Access Token";
 
     public static final String DESCRIPTION_URL = "The URL of the Jira Cloud server.";
-    public static final String DESCRIPTION_USER_NAME = "The email address used to log into the Jira server that has generated the access token.";
-    public static final String DESCRIPTION_ACCESS_TOKEN = "The access token used to send API requests to the Jira server.";
+    public static final String DESCRIPTION_USER_NAME = "The email address used to log into the Jira Cloud server that has generated the access token.";
+    public static final String DESCRIPTION_ACCESS_TOKEN = "The access token used to send API requests to the Jira Cloud server.";
 
     public JiraGlobalUIConfig() {
         super(JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_DESCRIPTION, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON);
