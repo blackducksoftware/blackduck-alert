@@ -23,11 +23,11 @@ class GlobalConfiguration extends React.Component {
 
         const { fields, name } = this.props.descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
-        const fieldModel = FieldModelUtilities.createEmptyFieldModelFromFieldObject(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
+        const fieldModel = FieldModelUtilities.createEmptyFieldModel(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
         this.state = {
             currentConfig: fieldModel,
             currentDescriptor: this.props.descriptor,
-            currentKeys: fieldKeys,
+            currentFields: fields,
             showTest: false,
             destinationName: ''
         };
@@ -40,12 +40,12 @@ class GlobalConfiguration extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
-            const newState = FieldModelUtilities.createEmptyFieldModel(this.state.currentKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
+            const newState = FieldModelUtilities.createFieldModelWithDefaults(this.state.currentFields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
             this.setState({
                 currentConfig: newState
             });
         } else if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const fieldModel = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentConfig, this.state.currentKeys);
+            const fieldModel = FieldModelUtilities.checkModelOrCreateModelWithDefaults(this.props.currentConfig, this.state.currentFields);
             this.setState({
                 currentConfig: fieldModel
             });
@@ -90,7 +90,7 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields, name, type
+            fontAwesomeIcon, label, description, fields
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
@@ -99,15 +99,35 @@ class GlobalConfiguration extends React.Component {
 
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon={fontAwesomeIcon} configurationName={label} description={description} />
+                <ConfigurationLabel
+                    fontAwesomeIcon={fontAwesomeIcon}
+                    configurationName={label}
+                    description={description}
+                />
                 <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <div>
-                        <FieldsPanel descriptorFields={fields} currentConfig={currentConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
+                        <FieldsPanel
+                            descriptorFields={fields}
+                            currentConfig={currentConfig}
+                            fieldErrors={this.props.fieldErrors}
+                            handleChange={this.handleChange}
+                        />
                     </div>
-                    <ConfigButtons includeSave={displaySave} includeTest={displayTest} type="submit" onTestClick={this.handleTest} />
-                    <ChannelTestModal sendTestMessage={this.props.testConfig} showTestModal={this.state.showTest} handleCancel={this.handleTestCancel} destinationName={this.state.destinationName} fieldModel={currentConfig} />
+                    <ConfigButtons
+                        includeSave={displaySave}
+                        includeTest={displayTest}
+                        type="submit"
+                        onTestClick={this.handleTest}
+                    />
+                    <ChannelTestModal
+                        sendTestMessage={this.props.testConfig}
+                        showTestModal={this.state.showTest}
+                        handleCancel={this.handleTestCancel}
+                        destinationName={this.state.destinationName}
+                        fieldModel={currentConfig}
+                    />
                 </form>
             </div>
         );
