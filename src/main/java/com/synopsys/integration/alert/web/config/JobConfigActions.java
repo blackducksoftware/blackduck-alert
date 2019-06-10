@@ -40,8 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -144,13 +144,15 @@ public class JobConfigActions {
     public JobFieldModel updateJob(final UUID id, final JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {
         validateJob(jobFieldModel);
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+        final Set<FieldModel> jobFieldModels = jobFieldModel.getFieldModels();
+        for (final FieldModel fieldModel : jobFieldModels) {
             final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
             final Long fieldModelId = contentConverter.getLongValue(beforeUpdateEventFieldModel.getId());
             final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
-        final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
+        final Set<String> descriptorNames = jobFieldModels.stream().map(FieldModel::getDescriptorName).collect(Collectors.toSet());
+        final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                        .stream()
