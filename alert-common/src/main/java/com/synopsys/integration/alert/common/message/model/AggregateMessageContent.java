@@ -48,7 +48,10 @@ public class AggregateMessageContent extends LinkableItem {
         super(name, value, url);
         this.subTopic = subTopic;
         this.categoryItems = categoryItems;
-        this.messageContentKey = MessageContentKey.from(name, value, subTopic.getName(), subTopic.getValue());
+
+        final String subTopicName = getSubTopic().map(LinkableItem::getName).orElse(null);
+        final String subTopicValue = getSubTopic().map(LinkableItem::getValue).orElse(null);
+        this.messageContentKey = MessageContentKey.from(name, value, subTopicName, subTopicValue);
     }
 
     public Optional<LinkableItem> getSubTopic() {
