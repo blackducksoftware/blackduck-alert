@@ -79,7 +79,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         assertFalse(topicContentMap.isEmpty());
         assertEquals(1, topicContentMap.size());
         assertTrue(topicContentMap.containsKey(jobConfig));
-        assertEquals(4, topicContentMap.get(jobConfig).size());
+        assertEquals(3, topicContentMap.get(jobConfig).size());
     }
 
     @Test
@@ -176,4 +176,5 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     private AlertNotificationWrapper createNotification(final String providerName, final String notificationContent, final NotificationType type) {
         return new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
     }
+
 }
