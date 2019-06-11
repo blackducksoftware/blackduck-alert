@@ -41,7 +41,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
     private final SortedSet<LinkableItem> items;
     private final Long notificationId;
 
-    private Comparator<CategoryItem> categoryItemComparator;
+    private transient Comparator<CategoryItem> categoryItemComparator;
 
     private static SortedSet<LinkableItem> singleton(final LinkableItem item) {
         final SortedSet<LinkableItem> sortedSet = new TreeSet<>();
