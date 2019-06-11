@@ -55,7 +55,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         final Optional<BlackDuckServicesFactory> blackDuckServicesFactoryOptional = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
                                                                                         .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
         isValidServer = blackDuckServicesFactoryOptional.isPresent();
-        blackDuckServicesFactory = blackDuckServicesFactoryOptional.get();
+        blackDuckServicesFactory = blackDuckServicesFactoryOptional.orElse(null);
         bucketService = blackDuckServicesFactoryOptional.map(BlackDuckServicesFactory::createBlackDuckBucketService).orElse(null);
         blackDuckBucket = new BlackDuckBucket();
     }
