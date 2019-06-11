@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -62,12 +61,12 @@ import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector {
+public class BlackDuckRuleViolationCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
+    public BlackDuckRuleViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, messageContentProcessorList, List.of(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
     }
 
     @Override
@@ -124,7 +123,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Optional<String> projectVersionUrl) {
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
         for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
-            final String projectVersionLink = projectVersionUrl.flatMap(url -> getProjectComponentQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
+            final String projectVersionLink = projectVersionUrl.map(url -> getProjectComponentQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
             final PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus, policyItems);
             BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
             if (blackDuckPolicyLinkableItem == null) {

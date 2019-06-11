@@ -32,19 +32,19 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckRuleViolationCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 
 @Component
 public class BlackDuckTopicCollectorFactory {
     private final ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory;
-    private final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckRuleViolationCollector> policyViolationTopicCollectorFactory;
     private final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory;
     private final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory;
 
     @Autowired
     public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory,
-        final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory,
+        final ObjectFactory<BlackDuckRuleViolationCollector> policyViolationTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory,
         final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory) {
         this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
         this.policyViolationTopicCollectorFactory = policyViolationTopicCollectorFactory;

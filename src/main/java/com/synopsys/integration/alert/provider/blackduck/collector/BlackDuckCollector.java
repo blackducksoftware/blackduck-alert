@@ -34,9 +34,7 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.api.UriSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
@@ -46,35 +44,37 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 // Created this class as a parent because of the ObjectFactory bean that is used with Collectors which destroys the bean after use. These services need to be destroyed after usage.
 public abstract class BlackDuckCollector extends MessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Optional<BlackDuckBucketService> bucketService;
-    private final Optional<BlackDuckService> blackDuckService;
+    private final BlackDuckServicesFactory blackDuckServicesFactory;
+    private final BlackDuckBucketService bucketService;
     private final BlackDuckBucket blackDuckBucket;
+    private final boolean isValidServer;
 
     public BlackDuckCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes);
 
-        final Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
-                                                                                .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
-        blackDuckService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckService);
-        bucketService = blackDuckServicesFactory.map(BlackDuckServicesFactory::createBlackDuckBucketService);
+        final Optional<BlackDuckServicesFactory> blackDuckServicesFactoryOptional = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
+                                                                                        .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
+        isValidServer = blackDuckServicesFactoryOptional.isPresent();
+        blackDuckServicesFactory = blackDuckServicesFactoryOptional.get();
+        bucketService = blackDuckServicesFactoryOptional.map(BlackDuckServicesFactory::createBlackDuckBucketService).orElse(null);
         blackDuckBucket = new BlackDuckBucket();
     }
 
     public Optional<String> getProjectComponentQueryLink(final String projectVersionUrl, final String link, final String componentName) {
         final Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
-        return projectLink.flatMap(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
+        return projectLink.map(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
     }
 
-    public Optional<String> getProjectComponentQueryLink(final String projectLink, final String componentName) {
-        return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
+    public String getProjectComponentQueryLink(final String projectLink, final String componentName) {
+        return String.format("%s?q=componentName:%s", projectLink, componentName);
     }
 
     public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
-        if (blackDuckService.isPresent() && bucketService.isPresent()) {
+        if (isValidServer) {
             try {
-                final UriSingleResponse<ProjectVersionView> uriSingleResponse = new UriSingleResponse(projectVersionUrl, ProjectVersionView.class);
-                final ProjectVersionView projectVersionView = (blackDuckBucket.contains(uriSingleResponse.getUri())) ? blackDuckBucket.get(uriSingleResponse) : blackDuckService.get().getResponse(projectVersionUrl, ProjectVersionView.class);
-                bucketService.get().addToTheBucket(blackDuckBucket, List.of(uriSingleResponse));
+                bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+                //FIXME this next line should be removed and a new method should be added in the bucket to allow a future to be returned and used
+                final ProjectVersionView projectVersionView = blackDuckBucket.get(projectVersionUrl, ProjectVersionView.class);
                 return projectVersionView.getFirstLink(link);
             } catch (final IntegrationException e) {
                 logger.error("There was a problem retrieving the Project Version link.", e);
@@ -84,15 +84,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.empty();
     }
 
-    public Optional<BlackDuckBucketService> getBucketService() {
-        return bucketService;
+    public boolean isValidServer() {
+        return isValidServer;
     }
 
-    public Optional<BlackDuckService> getBlackDuckService() {
-        return blackDuckService;
-    }
-
-    public BlackDuckBucket getBlackDuckBucket() {
-        return blackDuckBucket;
+    public BlackDuckServicesFactory getBlackDuckServicesFactory() {
+        return blackDuckServicesFactory;
     }
 }

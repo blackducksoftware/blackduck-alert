@@ -119,8 +119,8 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
     @Test
     public void insertionExceptionTest() throws Exception {
-        final BlackDuckPolicyViolationCollector collector = createPolicyViolationCollector();
-        final BlackDuckPolicyViolationCollector spiedCollector = Mockito.spy(collector);
+        final BlackDuckRuleViolationCollector collector = createPolicyViolationCollector();
+        final BlackDuckRuleViolationCollector spiedCollector = Mockito.spy(collector);
         final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
@@ -144,10 +144,10 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         test(collector, notificationContent);
     }
 
-    private BlackDuckPolicyViolationCollector createPolicyViolationCollector() {
+    private BlackDuckRuleViolationCollector createPolicyViolationCollector() {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any(Logger.class))).thenReturn(Optional.empty());
-        return new BlackDuckPolicyViolationCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
+        return new BlackDuckRuleViolationCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {

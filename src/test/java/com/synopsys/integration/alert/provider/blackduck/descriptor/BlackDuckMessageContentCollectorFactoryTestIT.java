@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckRuleViolationCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -21,7 +21,7 @@ public class BlackDuckMessageContentCollectorFactoryTestIT extends AlertIntegrat
     @Autowired
     private ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory;
     @Autowired
-    private ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory;
+    private ObjectFactory<BlackDuckRuleViolationCollector> policyViolationTopicCollectorFactory;
     @Autowired
     private ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory;
     @Autowired
