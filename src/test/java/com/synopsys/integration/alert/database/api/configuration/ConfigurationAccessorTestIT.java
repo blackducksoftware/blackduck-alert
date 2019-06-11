@@ -173,7 +173,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
         final String newValue = "newValue";
         configField1.setFieldValue(newValue);
-        final ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), Set.of(configField1, configField2));
+        final ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), Set.of(DESCRIPTOR_NAME), Set.of(configField1, configField2));
         assertEquals(job.getJobId(), updatedJob.getJobId());
 
         final FieldAccessor originalFieldMap = job.getFieldAccessor();
@@ -185,7 +185,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     @Test
     public void updateJobWithNullIdTest() {
         try {
-            configurationAccessor.updateJob(null, Set.of());
+            configurationAccessor.updateJob(null, Set.of(), Set.of());
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("The job id cannot be null", e.getMessage());

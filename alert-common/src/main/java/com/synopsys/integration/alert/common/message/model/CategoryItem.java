@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,8 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
     private final SortedSet<LinkableItem> items;
     private final Long notificationId;
 
+    private Comparator<CategoryItem> categoryItemComparator;
+
     private static SortedSet<LinkableItem> singleton(final LinkableItem item) {
         final SortedSet<LinkableItem> sortedSet = new TreeSet<>();
         sortedSet.add(item);
@@ -55,6 +58,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
         this.operation = operation;
         this.notificationId = notificationId;
         this.items = items;
+        this.categoryItemComparator = null;
     }
 
     public CategoryKey getCategoryKey() {
@@ -89,10 +93,21 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
         return map;
     }
 
-    @Override
-    public int compareTo(final CategoryItem otherItem) {
+    public Comparator<CategoryItem> createComparator() {
         // If the other fields are equal the item order shouldn't matter.
-        return CompareToBuilder.reflectionCompare(this, otherItem, "items");
+        return (thisItem, otherItem) -> CompareToBuilder.reflectionCompare(thisItem, otherItem, "items");
+    }
+
+    public void setComparator(final Comparator<CategoryItem> categoryItemComparator) {
+        this.categoryItemComparator = categoryItemComparator;
+    }
+
+    @Override
+    public final int compareTo(final CategoryItem otherItem) {
+        if (null == categoryItemComparator) {
+            categoryItemComparator = createComparator();
+        }
+        return categoryItemComparator.compare(this, otherItem);
     }
 
 }
