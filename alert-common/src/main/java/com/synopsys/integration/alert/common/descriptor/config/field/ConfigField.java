@@ -52,6 +52,7 @@ public class ConfigField extends AlertSerializableModel {
     private String header;
     private Set<String> requiredRelatedFields;
     private Set<String> disallowedRelatedFields;
+    private Set<String> defaultValues;
     private transient ConfigValidationFunction validationFunction;
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final boolean readOnly, final String panel, final String header,
@@ -68,6 +69,7 @@ public class ConfigField extends AlertSerializableModel {
         requiredRelatedFields = new HashSet<>();
         disallowedRelatedFields = new HashSet<>();
         this.validationFunction = validationFunction;
+        defaultValues = new HashSet<>();
     }
 
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel) {
@@ -207,6 +209,24 @@ public class ConfigField extends AlertSerializableModel {
 
     public void setValidationFunction(final ConfigValidationFunction validationFunction) {
         this.validationFunction = validationFunction;
+    }
+
+    public ConfigField addDefaultValue(final String value) {
+        defaultValues.add(value);
+        return this;
+    }
+
+    public ConfigField addDefaultValues(final Set<String> values) {
+        defaultValues.addAll(values);
+        return this;
+    }
+
+    public Set<String> getDefaultValues() {
+        return defaultValues;
+    }
+
+    public void setDefaultValues(final Set<String> defaultValues) {
+        this.defaultValues = defaultValues;
     }
 
     private void validateRequiredField(final FieldValueModel fieldToValidate, final Collection<String> errors) {

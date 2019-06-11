@@ -93,8 +93,7 @@ class DistributionConfiguration extends Component {
 
         if (selectedChannelOption && prevChannelName !== selectedChannelOption) {
             const newChannel = this.props.descriptors.find(descriptor => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            const channelKeys = FieldMapping.retrieveKeys(newChannel.fields);
-            const emptyChannelConfig = FieldModelUtilities.createEmptyFieldModel(channelKeys, newChannel.context, newChannel.name);
+            const emptyChannelConfig = FieldModelUtilities.createFieldModelWithDefaults(newChannel.fields, newChannel.context, newChannel.name);
             const updatedChannelConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption));
             const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME);
             const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY);
@@ -112,8 +111,7 @@ class DistributionConfiguration extends Component {
 
         if (selectedProviderOption && prevProviderName !== selectedProviderOption) {
             const newProvider = this.props.descriptors.find(descriptor => descriptor.name === selectedProviderOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            const providerKeys = FieldMapping.retrieveKeys(newProvider.fields);
-            const emptyProviderConfig = FieldModelUtilities.createEmptyFieldModel(providerKeys, newProvider.context, newProvider.name);
+            const emptyProviderConfig = FieldModelUtilities.createFieldModelWithDefaults(newProvider.fields, newProvider.context, newProvider.name);
             this.setState({
                 providerConfig: emptyProviderConfig,
                 currentProvider: newProvider
