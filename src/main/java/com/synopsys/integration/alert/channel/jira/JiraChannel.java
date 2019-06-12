@@ -105,22 +105,19 @@ public class JiraChannel extends DistributionChannel {
         final Set<String> issueKeys = new HashSet<>();
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElseThrow(() -> new AlertException("Expected to be passed a provider."));
         final LinkableItem commonTopic = content.getCommonTopic();
-        final String commonTopicName = commonTopic.getName();
-        final String commonTopicValue = commonTopic.getValue();
         for (final AggregateMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
-            final String messageName = messageContent.getName();
-            final String messageValue = messageContent.getValue();
             for (final CategoryItem categoryItem : messageContent.getCategoryItems()) {
-                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(content, issueType, projectId);
                 final String trackingComment = createTrackingComment(categoryItem, providerName);
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, trackingComment);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
                     issueKeys.add(issueComponent.getKey());
-                    updateIssue(issueService, fieldsBuilder, issueComponent);
+                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId);
+                    updateIssue(issueService, issueComponent);
                 } else {
                     final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
+                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId);
                     final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
                     if (issue == null || StringUtils.isBlank(issue.getKey())) {
                         throw new AlertException("There was an problem when creating this issue.");
@@ -145,13 +142,10 @@ public class JiraChannel extends DistributionChannel {
         return issuesByComment.getIssues().stream().findFirst();
     }
 
-    // TODO create the content of the Jira issue.
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(final MessageContentGroup message, final String issueType, final String projectId) {
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(final CategoryItem categoryItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        final List<AggregateMessageContent> subContent = message.getSubContent();
-        final String description = subContent.stream().findFirst().flatMap(AggregateMessageContent::getSubTopic).map(LinkableItem::getValue).orElse("Empty");
-        final String title = message.getCommonTopic().getValue();
-        fieldsBuilder.setSummary(title);
+        final String description = createDescription(commonTopic, subTopic, categoryItem);
+        fieldsBuilder.setSummary(createTrackingComment(categoryItem, "Alert"));
         fieldsBuilder.setDescription(description);
         fieldsBuilder.setIssueType(issueType);
         fieldsBuilder.setProject(projectId);
@@ -159,18 +153,75 @@ public class JiraChannel extends DistributionChannel {
         return fieldsBuilder;
     }
 
-    private void updateIssue(final IssueService issueService, final IssueRequestModelFieldsBuilder fieldsBuilder, final IssueComponent issueComponent) throws IntegrationException {
+    private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem) {
+        final StringBuilder description = new StringBuilder();
+        description.append(commonTopic.getName());
+        description.append(":");
+        description.append(commonTopic.getValue());
+        description.append("\n");
+        if (subTopic.isPresent()) {
+            final LinkableItem linkableItem = subTopic.get();
+            description.append(linkableItem.getName());
+            description.append(": ");
+            final String value = linkableItem.getValue();
+            final Optional<String> optionalUrl = linkableItem.getUrl();
+            if (optionalUrl.isPresent()) {
+                final String url = optionalUrl.get();
+                description.append("[");
+                description.append(value);
+                description.append("](");
+                description.append(url);
+                description.append(")");
+            } else {
+                description.append(value);
+            }
+            description.append("\n");
+        }
+        description.append(createDescriptionItems(categoryItem));
+        return description.toString();
+    }
+
+    private String createDescriptionItems(final CategoryItem categoryItem) {
+        final StringBuilder description = new StringBuilder();
+        final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
+
+        for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
+            final String itemName = entry.getKey();
+            final List<String> itemValues = entry.getValue().stream().map(LinkableItem::getValue).collect(Collectors.toList());
+            description.append(itemName);
+            description.append(":");
+            if (itemValues.size() > 1) {
+                for (final String value : itemValues) {
+                    description.append("[");
+                    description.append(value);
+                    description.append("]");
+                }
+            } else {
+                for (final String value : itemValues) {
+                    description.append(value);
+                }
+            }
+            description.append("\n");
+        }
+
+        return description.toString();
+    }
+
+    private void updateIssue(final IssueService issueService, final IssueComponent issueComponent) throws IntegrationException {
+        final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         issueService.updateIssue(new IssueRequestModel(fieldsBuilder, Map.of(), List.of()));
     }
 
     private void addCreationComment(final IssueService issueService, final String issueKey, final String comment) throws IntegrationException {
-        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, String.format("Alert key (DO NOT DELETE): %s", comment));
+        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, String.format("Alert key (DO NOT DELETE OR MODIFY): %s", comment));
         issueService.addComment(issueCommentRequestModel);
     }
 
     private String createTrackingComment(final CategoryItem categoryItem, final String providerName) {
         final CategoryKey categoryKey = categoryItem.getCategoryKey();
-        return String.format("%s:%s", providerName, categoryKey.getKey());
+        final String operationName = categoryItem.getOperation().name();
+        final String operationRemovedKey = categoryKey.getKey().replace("_" + operationName, "");
+        return String.format("%s:%s", providerName, operationRemovedKey);
     }
 
     private String createSuccessMessage(final Collection<String> issueKeys, final String jiraUrl) {
