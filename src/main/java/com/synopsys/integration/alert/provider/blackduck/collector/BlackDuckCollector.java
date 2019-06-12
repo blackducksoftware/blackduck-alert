@@ -61,8 +61,8 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     }
 
     public Optional<String> getProjectComponentQueryLink(final String projectVersionUrl, final String link, final String componentName) {
-        final Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
-        return projectLink.map(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
+        final Optional<String> optionalProjectLink = getProjectLink(projectVersionUrl, link);
+        return optionalProjectLink.map(projectLink -> getProjectComponentQueryLink(projectLink, componentName));
     }
 
     public String getProjectComponentQueryLink(final String projectLink, final String componentName) {
