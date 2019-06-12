@@ -19,6 +19,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -179,7 +180,8 @@ public class EmailGlobalTestActionTest {
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
-        final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, null, auditUtility, emailAddressHandler);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, null, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         //////////////////////////////////////
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 

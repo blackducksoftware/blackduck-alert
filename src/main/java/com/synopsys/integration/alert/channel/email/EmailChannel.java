@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.email;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -62,14 +62,16 @@ public class EmailChannel extends DistributionChannel {
     private final BlackDuckProperties blackDuckProperties;
     private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
+    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
     public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
-        final EmailAddressHandler emailAddressHandler) {
+        final EmailAddressHandler emailAddressHandler, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
         super(gson, alertProperties, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
         this.polarisProperties = polarisProperties;
         this.emailAddressHandler = emailAddressHandler;
+        this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
     @Override
@@ -102,43 +104,39 @@ public class EmailChannel extends DistributionChannel {
             final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", provider, topicValue);
             throw new AlertException(errorMessage);
         }
-        try {
-            final HashMap<String, Object> model = new HashMap<>();
-            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
+        final HashMap<String, Object> model = new HashMap<>();
+        final Map<String, String> contentIdsToFilePaths = new HashMap<>();
 
-            final String providerUrl;
-            final String providerName;
-            if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
-                final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
-                providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
-                providerName = "Black Duck";
-            } else if (PolarisProvider.COMPONENT_NAME.equals(provider)) {
-                final Optional<String> optionalProviderUrl = polarisProperties.getUrl();
-                providerUrl = optionalProviderUrl.map(StringUtils::trimToEmpty).orElse("#");
-                providerName = "Polaris";
-            } else {
-                providerUrl = null;
-                providerName = null;
-            }
+        final String providerUrl;
+        final String providerName;
+        if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
+            final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
+            providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
+            providerName = "Black Duck";
+        } else if (PolarisProvider.COMPONENT_NAME.equals(provider)) {
+            final Optional<String> optionalProviderUrl = polarisProperties.getUrl();
+            providerUrl = optionalProviderUrl.map(StringUtils::trimToEmpty).orElse("#");
+            providerName = "Polaris";
+        } else {
+            providerUrl = null;
+            providerName = null;
+        }
 
-            model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
-            model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
+        model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
+        model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
 
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
-            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
-            emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
-            if (!model.isEmpty()) {
-                final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
-                emailService.sendEmailMessage(emailTarget);
-            }
-        } catch (final IOException ex) {
-            throw new AlertException(ex);
+        final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties, freemarkerTemplatingService);
+        emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
+        if (!model.isEmpty()) {
+            final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
+            emailService.sendEmailMessage(emailTarget);
         }
         return "Successfully sent Email message";
     }

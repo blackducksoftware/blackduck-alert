@@ -13,10 +13,11 @@ import javax.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.util.TestProperties;
 
 public class EmailMessagingServiceTest {
@@ -26,7 +27,8 @@ public class EmailMessagingServiceTest {
         final TestProperties testProperties = new TestProperties();
         final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
-        final EmailMessagingService emailMessagingService = new EmailMessagingService("", emailProperties);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final EmailMessagingService emailMessagingService = new EmailMessagingService("", emailProperties, freemarkerTemplatingService);
 
         final Session mockSession = Mockito.mock(Session.class);
         final Transport mockTransport = Mockito.mock(Transport.class);

@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled.update;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
@@ -62,13 +62,16 @@ public class UpdateEmailService {
     private final SettingsKeyAccessor settingsKeyAccessor;
     private final DefaultUserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
+    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
-    public UpdateEmailService(final AlertProperties alertProperties, final SettingsKeyAccessor settingsKeyAccessor, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor) {
+    public UpdateEmailService(final AlertProperties alertProperties, final SettingsKeyAccessor settingsKeyAccessor, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor,
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
+        this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
     public void sendUpdateEmail(final UpdateModel updateModel) {
@@ -118,13 +121,11 @@ public class UpdateEmailService {
             final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
 
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties);
+            final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties, freemarkerTemplatingService);
             emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
 
             final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
             emailService.sendEmailMessage(passwordResetEmail);
-        } catch (final IOException ioException) {
-            throw new AlertException("Problem sending version update email.", ioException);
         } catch (final Exception genericException) {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }

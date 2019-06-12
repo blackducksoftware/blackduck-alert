@@ -22,9 +22,13 @@
  */
 package com.synopsys.integration.alert.channel.jira;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,21 +40,25 @@ import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.cloud.model.components.IssueFieldsComponent;
+import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueResponseModel;
+import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
@@ -93,23 +101,38 @@ public class JiraChannel extends DistributionChannel {
         if (!matchingIssueTypeFound) {
             throw new AlertException("Could not find Issue type on Jira Cloud instance: " + issueType);
         }
-        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(content, issueType, projectId);
-        final Optional<IssueResponseModel> existingIssueResponseModel = retrieveExistingIssue(issueSearchService);
-        final String issueKey;
-        if (existingIssueResponseModel.isPresent()) {
-            final IssueResponseModel issueResponseModel = existingIssueResponseModel.get();
-            issueKey = issueResponseModel.getKey();
-            updateIssue(issueService, fieldsBuilder, issueResponseModel);
-        } else {
-            final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-            final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
-            if (issue == null || StringUtils.isBlank(issue.getKey())) {
-                throw new AlertException("There was an problem when creating this issue.");
+
+        final Set<String> issueKeys = new HashSet<>();
+        final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElseThrow(() -> new AlertException("Expected to be passed a provider."));
+        final LinkableItem commonTopic = content.getCommonTopic();
+        final String commonTopicName = commonTopic.getName();
+        final String commonTopicValue = commonTopic.getValue();
+        for (final AggregateMessageContent messageContent : content.getSubContent()) {
+            final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
+            final String messageName = messageContent.getName();
+            final String messageValue = messageContent.getValue();
+            for (final CategoryItem categoryItem : messageContent.getCategoryItems()) {
+                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(content, issueType, projectId);
+                final String trackingComment = createTrackingComment(categoryItem, providerName);
+                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, trackingComment);
+                if (existingIssueComponent.isPresent()) {
+                    final IssueComponent issueComponent = existingIssueComponent.get();
+                    issueKeys.add(issueComponent.getKey());
+                    updateIssue(issueService, fieldsBuilder, issueComponent);
+                } else {
+                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
+                    final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
+                    if (issue == null || StringUtils.isBlank(issue.getKey())) {
+                        throw new AlertException("There was an problem when creating this issue.");
+                    }
+                    final String issueKey = issue.getKey();
+                    addCreationComment(issueService, issueKey, trackingComment);
+                    issueKeys.add(issueKey);
+                }
+
             }
-            issueKey = issue.getKey();
-            addCreationComment(issueService, issueKey, content);
         }
-        return String.format("Successfully created Jira Cloud issue at %s/browse/%s", jiraProperties.getUrl(), issueKey);
+        return createSuccessMessage(issueKeys, jiraProperties.getUrl());
     }
 
     @Override
@@ -117,9 +140,9 @@ public class JiraChannel extends DistributionChannel {
         return COMPONENT_NAME;
     }
 
-    // TODO Use the issue search service to check if an issue already exists
-    private Optional<IssueResponseModel> retrieveExistingIssue(final IssueSearchService issueSearchService) throws IntegrationException {
-        return Optional.empty();
+    private Optional<IssueComponent> retrieveExistingIssue(final IssueSearchService issueSearchService, final String commentToSearchFor) throws IntegrationException {
+        final IssueSearchResponseModel issuesByComment = issueSearchService.findIssuesByComment(commentToSearchFor);
+        return issuesByComment.getIssues().stream().findFirst();
     }
 
     // TODO create the content of the Jira issue.
@@ -136,16 +159,22 @@ public class JiraChannel extends DistributionChannel {
         return fieldsBuilder;
     }
 
-    private void updateIssue(final IssueService issueService, final IssueRequestModelFieldsBuilder fieldsBuilder, final IssueResponseModel issueResponseModel) throws IntegrationException {
-        final IssueFieldsComponent fields = issueResponseModel.getFields();
+    private void updateIssue(final IssueService issueService, final IssueRequestModelFieldsBuilder fieldsBuilder, final IssueComponent issueComponent) throws IntegrationException {
         issueService.updateIssue(new IssueRequestModel(fieldsBuilder, Map.of(), List.of()));
     }
 
-    // TODO hash the comment value so that we can reference it again in the future.
-    private void addCreationComment(final IssueService issueService, final String issueKey, final MessageContentGroup message) throws IntegrationException {
-        final String value = message.getCommonTopic().getValue();
-        final String commentToHash = String.format("%s:%s", COMPONENT_NAME, value);
-        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, String.format("Alert key (DO NOT DELETE): %s", commentToHash), null, null, List.of());
+    private void addCreationComment(final IssueService issueService, final String issueKey, final String comment) throws IntegrationException {
+        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, String.format("Alert key (DO NOT DELETE): %s", comment));
         issueService.addComment(issueCommentRequestModel);
+    }
+
+    private String createTrackingComment(final CategoryItem categoryItem, final String providerName) {
+        final CategoryKey categoryKey = categoryItem.getCategoryKey();
+        return String.format("%s:%s", providerName, categoryKey.getKey());
+    }
+
+    private String createSuccessMessage(final Collection<String> issueKeys, final String jiraUrl) {
+        final String concatenatedKeys = issueKeys.stream().collect(Collectors.joining(","));
+        return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
     }
 }

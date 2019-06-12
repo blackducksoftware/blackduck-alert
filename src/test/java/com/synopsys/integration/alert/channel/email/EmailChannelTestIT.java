@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -61,7 +62,8 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
 
-        final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, testBlackDuckProperties, testPolarisProperties, auditUtility, emailAddressHandler);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, testBlackDuckProperties, testPolarisProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
         final Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         final String subjectLine = "Integration test subject line";
@@ -87,7 +89,8 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     public void sendEmailNullGlobalTest() {
         try {
-            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null);
+            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null, freemarkerTemplatingService);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 
