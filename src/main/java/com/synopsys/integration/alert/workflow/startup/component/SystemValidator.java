@@ -48,8 +48,10 @@ import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
+import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
@@ -188,7 +190,6 @@ public class SystemValidator extends StartupComponent {
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         try {
-            final BlackDuckServerVerifier verifier = new BlackDuckServerVerifier();
             ProxyInfo proxyInfo;
             try {
                 proxyInfo = proxyManager.createProxyInfo();
@@ -215,8 +216,20 @@ public class SystemValidator extends StartupComponent {
                     logger.warn("  -> BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
                     systemMessageUtility.addSystemMessage("BlackDuck Provider Using localhost", SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
                 }
-                verifier.verifyIsBlackDuckServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
-                logger.info("  -> BlackDuck Provider Valid!");
+                final IntLogger intLogger = new Slf4jIntLogger(logger);
+                final Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
+                if (blackDuckServerConfig.isPresent()) {
+                    final Boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
+                    if (canConnect) {
+                        logger.info("  -> BlackDuck Provider Valid!");
+                    } else {
+                        final String message = "Can not connect to the BlackDuck server with the current configuration.";
+                        connectivityWarning(systemMessageUtility, message);
+                    }
+                } else {
+                    final String message = "The BlackDuck configuration is not valid.";
+                    connectivityWarning(systemMessageUtility, message);
+                }
             }
         } catch (final MalformedURLException | IntegrationException | AlertRuntimeException ex) {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
@@ -224,5 +237,10 @@ public class SystemValidator extends StartupComponent {
             systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         }
         return true;
+    }
+
+    private void connectivityWarning(final SystemMessageUtility systemMessageUtility, final String message) {
+        logger.warn(message);
+        systemMessageUtility.addSystemMessage(message, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
     }
 }
