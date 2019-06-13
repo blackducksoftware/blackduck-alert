@@ -140,7 +140,7 @@ public class JiraChannel extends DistributionChannel {
                 } else {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
                         final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-                        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId);
+                        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId, providerName);
                         final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
@@ -184,20 +184,46 @@ public class JiraChannel extends DistributionChannel {
         return key;
     }
 
+    // FIXME this needs to also use the jira project and issue type when searching.
     private Optional<IssueComponent> retrieveExistingIssue(final IssueSearchService issueSearchService, final String commentToSearchFor) throws IntegrationException {
         final IssueSearchResponseModel issuesByComment = issueSearchService.findIssuesByComment(commentToSearchFor);
         return issuesByComment.getIssues().stream().findFirst();
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(final CategoryItem categoryItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId) {
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(final CategoryItem categoryItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId, final String provider) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
+        final String title = createTitle(provider, commonTopic, subTopic, categoryItem);
         final String description = createDescription(commonTopic, subTopic, categoryItem);
-        fieldsBuilder.setSummary(createTrackingComment(categoryItem, "Alert"));
+        fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
         fieldsBuilder.setIssueType(issueType);
         fieldsBuilder.setProject(projectId);
 
         return fieldsBuilder;
+    }
+
+    private String createTitle(final String provider, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem) {
+        final StringBuilder title = new StringBuilder();
+        title.append("Alert: Provider|");
+        title.append(provider);
+        title.append(", ");
+        title.append(commonTopic.getName());
+        title.append("|");
+        title.append(commonTopic.getValue());
+        title.append(", ");
+
+        if (subTopic.isPresent()) {
+            final LinkableItem subTopicItem = subTopic.get();
+            title.append(subTopicItem.getName());
+            title.append("|");
+            title.append(subTopicItem.getValue());
+            title.append(", ");
+        }
+
+        // FIXME this needs to be changed to contain appropriate values from the category item instead of just the key.
+        final String categoryKey = categoryItem.getCategoryKey().getKey();
+        title.append(categoryKey);
+        return title.toString();
     }
 
     private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem) {
