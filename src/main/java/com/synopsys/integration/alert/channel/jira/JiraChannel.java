@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUI
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -52,8 +53,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestModel;
@@ -61,6 +64,7 @@ import com.synopsys.integration.jira.common.cloud.model.response.IssueResponseMo
 import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.PageOfProjectsResponseModel;
+import com.synopsys.integration.jira.common.cloud.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
@@ -108,25 +112,35 @@ public class JiraChannel extends DistributionChannel {
         for (final AggregateMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
             for (final CategoryItem categoryItem : messageContent.getCategoryItems()) {
+                final ItemOperation operation = categoryItem.getOperation();
                 final String trackingComment = createTrackingComment(categoryItem, providerName);
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, trackingComment);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
-                    issueKeys.add(issueComponent.getKey());
-                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId);
-                    updateIssue(issueService, issueComponent);
-                } else {
-                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId);
-                    final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
-                    if (issue == null || StringUtils.isBlank(issue.getKey())) {
-                        throw new AlertException("There was an problem when creating this issue.");
+                    if (ItemOperation.DELETE.equals(operation)) {
+                        final String resolveTransition = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).orElse(JiraDistributionUIConfig.DEFAULT_RESOLVE_WORKFLOW_TRANSITION);
+                        final String issueKey = transitionIssue(issueService, issueComponent, resolveTransition);
+                        issueKeys.add(issueKey);
+                    } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                        final String openTransition = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).orElse(JiraDistributionUIConfig.DEFAULT_OPEN_WORKFLOW_TRANSITION);
+                        final String issueKey = transitionIssue(issueService, issueComponent, openTransition);
+                        issueKeys.add(issueKey);
                     }
-                    final String issueKey = issue.getKey();
-                    addCreationComment(issueService, issueKey, trackingComment);
-                    issueKeys.add(issueKey);
+                } else {
+                    if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                        final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
+                        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId);
+                        final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
+                        if (issue == null || StringUtils.isBlank(issue.getKey())) {
+                            throw new AlertException("There was an problem when creating this issue.");
+                        }
+                        final String issueKey = issue.getKey();
+                        addCreationComment(issueService, issueKey, trackingComment);
+                        issueKeys.add(issueKey);
+                    } else {
+                        logger.warn("Expected to find an existing issue with comment '{}' but none existed.", trackingComment);
+                    }
                 }
-
             }
         }
         return createSuccessMessage(issueKeys, jiraProperties.getUrl());
@@ -135,6 +149,23 @@ public class JiraChannel extends DistributionChannel {
     @Override
     public String getDestinationName() {
         return COMPONENT_NAME;
+    }
+
+    private String transitionIssue(final IssueService issueService, final IssueComponent issueComponent, final String transition) throws IntegrationException {
+        final String key = issueComponent.getKey();
+        final TransitionsResponseModel transitions = issueService.getTransitions(key);
+        final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
+        if (firstTransitionByName.isPresent()) {
+            final TransitionComponent issueTransition = firstTransitionByName.get();
+            final String transitionId = issueTransition.getId();
+            final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
+            final IssueRequestModel issueRequestModel = new IssueRequestModel(key, new IdComponent(transitionId), fieldsBuilder, Map.of(), List.of());
+            issueService.transitionIssue(issueRequestModel);
+        } else {
+            logger.warn("Was unable to find given transition {}.", transition);
+        }
+
+        return key;
     }
 
     private Optional<IssueComponent> retrieveExistingIssue(final IssueSearchService issueSearchService, final String commentToSearchFor) throws IntegrationException {
@@ -207,17 +238,25 @@ public class JiraChannel extends DistributionChannel {
         return description.toString();
     }
 
-    private void updateIssue(final IssueService issueService, final IssueComponent issueComponent) throws IntegrationException {
-        final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        issueService.updateIssue(new IssueRequestModel(fieldsBuilder, Map.of(), List.of()));
-    }
-
     private void addCreationComment(final IssueService issueService, final String issueKey, final String comment) throws IntegrationException {
-        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, String.format("Alert key (DO NOT DELETE OR MODIFY): %s", comment));
+        final StringBuilder generatedComment = new StringBuilder();
+        generatedComment.append("------------------- Generated key for Alert. DO NOT DELETE OR EDIT -------------------");
+        generatedComment.append("\n");
+        generatedComment.append("Generated key: ");
+        generatedComment.append(comment);
+        generatedComment.append("\n");
+        generatedComment.append("----------------------------------------------------------------------------------------");
+        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, generatedComment.toString());
         issueService.addComment(issueCommentRequestModel);
     }
 
     private String createTrackingComment(final CategoryItem categoryItem, final String providerName) {
+        /*
+         FIXME category key won't work as tracking key (Policy override generates a different key than policy violation and thus won't update issues correctly).
+          provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version_Policy Overridden by_System Administrator'
+          vs
+          provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version
+        */
         final CategoryKey categoryKey = categoryItem.getCategoryKey();
         final String operationName = categoryItem.getOperation().name();
         final String operationRemovedKey = categoryKey.getKey().replace("_" + operationName, "");

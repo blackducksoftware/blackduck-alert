@@ -53,6 +53,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "The transition to be made when re-opening an issue.";
 
     public static final String DEFAULT_ISSUE_TYPE = "Task";
+    public static final String DEFAULT_RESOLVE_WORKFLOW_TRANSITION = "Resolve Issue";
+    public static final String DEFAULT_OPEN_WORKFLOW_TRANSITION = "Reopen Issue";
 
     @Autowired
     public JiraDistributionUIConfig(@Lazy final DescriptorMap descriptorMap) {
@@ -66,8 +68,9 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
         final ConfigField jiraProjectName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT);
 
         final ConfigField issueType = TextInputConfigField.createRequired(JiraDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).addDefaultValue(DEFAULT_ISSUE_TYPE);
-        final ConfigField resolveWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
-        final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION);
+        final ConfigField resolveWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION)
+                                                .addDefaultValue(DEFAULT_RESOLVE_WORKFLOW_TRANSITION);
+        final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION).addDefaultValue(DEFAULT_OPEN_WORKFLOW_TRANSITION);
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);
     }
