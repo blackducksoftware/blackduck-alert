@@ -108,6 +108,7 @@ public class JiraChannel extends DistributionChannel {
 
         final Set<String> issueKeys = new HashSet<>();
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElseThrow(() -> new AlertException("Expected to be passed a provider."));
+        final Boolean commentOnIssue = fieldAccessor.getBoolean(JiraDescriptor.KEY_ADD_COMMENTS).orElse(false);
         final LinkableItem commonTopic = content.getCommonTopic();
         for (final AggregateMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
@@ -118,13 +119,23 @@ public class JiraChannel extends DistributionChannel {
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
                     if (ItemOperation.DELETE.equals(operation)) {
-                        final String resolveTransition = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).orElse(JiraDistributionUIConfig.DEFAULT_RESOLVE_WORKFLOW_TRANSITION);
+                        final Optional<String> resolveTransition = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
                         final String issueKey = transitionIssue(issueService, issueComponent, resolveTransition);
                         issueKeys.add(issueKey);
+                        if (commentOnIssue) {
+                            // FIXME update this code to be provider specific and provider useful information.
+                            final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "DELETED PLACEHOLDER TEXT");
+                            issueService.addComment(issueCommentRequestModel);
+                        }
                     } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                        final String openTransition = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).orElse(JiraDistributionUIConfig.DEFAULT_OPEN_WORKFLOW_TRANSITION);
+                        final Optional<String> openTransition = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
                         final String issueKey = transitionIssue(issueService, issueComponent, openTransition);
                         issueKeys.add(issueKey);
+                        if (commentOnIssue) {
+                            // FIXME update this code to be provider specific and provider useful information.
+                            final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "ADDED/UPDATED PLACEHOLDER TEXT");
+                            issueService.addComment(issueCommentRequestModel);
+                        }
                     }
                 } else {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
@@ -151,18 +162,23 @@ public class JiraChannel extends DistributionChannel {
         return COMPONENT_NAME;
     }
 
-    private String transitionIssue(final IssueService issueService, final IssueComponent issueComponent, final String transition) throws IntegrationException {
+    private String transitionIssue(final IssueService issueService, final IssueComponent issueComponent, final Optional<String> optionalTransition) throws IntegrationException {
         final String key = issueComponent.getKey();
-        final TransitionsResponseModel transitions = issueService.getTransitions(key);
-        final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
-        if (firstTransitionByName.isPresent()) {
-            final TransitionComponent issueTransition = firstTransitionByName.get();
-            final String transitionId = issueTransition.getId();
-            final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-            final IssueRequestModel issueRequestModel = new IssueRequestModel(key, new IdComponent(transitionId), fieldsBuilder, Map.of(), List.of());
-            issueService.transitionIssue(issueRequestModel);
+        if (optionalTransition.isPresent()) {
+            final TransitionsResponseModel transitions = issueService.getTransitions(key);
+            final String transition = optionalTransition.get();
+            final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
+            if (firstTransitionByName.isPresent()) {
+                final TransitionComponent issueTransition = firstTransitionByName.get();
+                final String transitionId = issueTransition.getId();
+                final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
+                final IssueRequestModel issueRequestModel = new IssueRequestModel(key, new IdComponent(transitionId), fieldsBuilder, Map.of(), List.of());
+                issueService.transitionIssue(issueRequestModel);
+            } else {
+                logger.warn("Was unable to find given transition {}.", transition);
+            }
         } else {
-            logger.warn("Was unable to find given transition {}.", transition);
+            logger.debug("No transition selected, ignoring issue state change.");
         }
 
         return key;
