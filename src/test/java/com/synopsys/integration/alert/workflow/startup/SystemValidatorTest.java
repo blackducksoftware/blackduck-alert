@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -54,7 +56,7 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         final SystemValidator spiedSystemValidator = Mockito.spy(systemValidator);
 
         spiedSystemValidator.validate();
@@ -63,14 +65,12 @@ public class SystemValidatorTest {
 
     @Test
     public void testValidateEncryptionProperties() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Not Initialized"));
@@ -78,15 +78,13 @@ public class SystemValidatorTest {
 
     @Test
     public void testValidateEncryptionPropertiesSuccess() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Initialized"));
@@ -103,7 +101,7 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }
@@ -112,14 +110,10 @@ public class SystemValidatorTest {
     public void testvalidateBlackDuckProviderNullURL() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl(null);
-        systemValidator.validateBlackDuckProvider();
+        blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause: Black Duck URL missing..."));
     }
@@ -127,19 +121,13 @@ public class SystemValidatorTest {
     @Test
     public void testvalidateBlackDuckProviderLocalhostURL() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
-
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        systemValidator.validateBlackDuckProvider();
+        blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
@@ -154,13 +142,9 @@ public class SystemValidatorTest {
 
         final TestBlackDuckProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
         spiedGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, spiedGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
-        systemValidator.validateBlackDuckProvider();
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, spiedGlobalProperties, systemMessageUtility);
+        blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
@@ -172,15 +156,10 @@ public class SystemValidatorTest {
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
-
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        systemValidator.validateBlackDuckProvider();
+        blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
         assertTrue(outputLogger.isLineContainingText("Can not connect to the BlackDuck server with the current configuration."));
@@ -193,14 +172,9 @@ public class SystemValidatorTest {
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
-
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
-        systemValidator.validateBlackDuckProvider();
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
+        blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Valid!"));
     }
@@ -228,12 +202,9 @@ public class SystemValidatorTest {
         testGlobalProperties.setBlackDuckUrl("Black Duck URL");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         testGlobalProperties.setBlackDuckTimeout(1);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = new SystemValidator(testAlertProperties, testGlobalProperties, encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
-        systemValidator.validateBlackDuckProvider();
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
+        blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause:"));
     }
 }
