@@ -14,6 +14,8 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -114,8 +116,7 @@ public class SystemValidatorTest {
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl(null);
         blackDuckValidator.validate();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause: Black Duck URL missing..."));
+        Mockito.verify(systemMessageUtility).addSystemMessage(Mockito.eq("Black Duck Provider invalid: URL missing"), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING));
     }
 
     @Test
@@ -128,9 +129,7 @@ public class SystemValidatorTest {
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
         blackDuckValidator.validate();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
+        Mockito.verify(systemMessageUtility).addSystemMessage(Mockito.eq("Black Duck Provider Using localhost"), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST));
     }
 
     @Test
@@ -145,9 +144,9 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, spiedGlobalProperties, systemMessageUtility);
         blackDuckValidator.validate();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
+        Mockito.verify(systemMessageUtility).addSystemMessage(Mockito.eq("Black Duck Provider Using localhost"), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST));
+        Mockito.verify(systemMessageUtility)
+            .addSystemMessage(Mockito.eq("Can not connect to the Black Duck server with the current configuration."), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY));
     }
 
     @Test
@@ -160,9 +159,9 @@ public class SystemValidatorTest {
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
         blackDuckValidator.validate();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("Can not connect to the BlackDuck server with the current configuration."));
+        Mockito.verify(systemMessageUtility).addSystemMessage(Mockito.eq("Black Duck Provider Using localhost"), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST));
+        Mockito.verify(systemMessageUtility)
+            .addSystemMessage(Mockito.eq("Can not connect to the Black Duck server with the current configuration."), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY));
     }
 
     @Test
@@ -175,8 +174,7 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         blackDuckValidator.validate();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Valid!"));
+        Mockito.verify(systemMessageUtility, Mockito.times(0)).addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
     }
 
     @Test
@@ -205,6 +203,6 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         blackDuckValidator.validate();
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause:"));
+        Mockito.verify(systemMessageUtility, Mockito.times(0)).addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
     }
 }
