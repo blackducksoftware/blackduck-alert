@@ -34,10 +34,12 @@ import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.builder.IntegrationBuilder;
 
 public class ProviderMessageContent implements Buildable {
-    private LinkableItem provider;
-    private LinkableItem topic;
-    private LinkableItem subTopic;
-    private Set<ComponentItem> componentItems;
+    private static final String LABEL_PROVIDER = "Provider";
+
+    private final LinkableItem provider;
+    private final LinkableItem topic;
+    private final LinkableItem subTopic;
+    private final Set<ComponentItem> componentItems;
 
     public ProviderMessageContent(final LinkableItem provider, final LinkableItem topic, final LinkableItem subTopic, final Set<ComponentItem> componentItems) {
         this.provider = provider;
@@ -66,9 +68,9 @@ public class ProviderMessageContent implements Buildable {
         return componentItems;
     }
 
+    // TODO IntegrationBuilder seems geared toward UI error messages. We should have complete control over everything we build, so is this the right approach?
     public static class Builder extends IntegrationBuilder<ProviderMessageContent> {
         private String providerName;
-        private String providerValue;
         private String providerUrl;
         private String topicName;
         private String topicValue;
@@ -76,12 +78,12 @@ public class ProviderMessageContent implements Buildable {
         private String subTopicName;
         private String subTopicValue;
         private String subTopicUrl;
-        private Set<ComponentItem> componentItems = new LinkedHashSet<>();
+        private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
 
         @Override
         protected ProviderMessageContent buildWithoutValidation() {
-            LinkableItem provider = new LinkableItem(providerName, providerValue, providerUrl);
-            LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
+            final LinkableItem provider = new LinkableItem(LABEL_PROVIDER, providerName, providerUrl);
+            final LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
             LinkableItem subTopic = null;
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
@@ -95,15 +97,13 @@ public class ProviderMessageContent implements Buildable {
 
         }
 
-        public Builder applyProvider(final String providerName, final String providerValue) {
+        public Builder applyProvider(final String providerName) {
             this.providerName = providerName;
-            this.providerValue = providerValue;
             return this;
         }
 
-        public Builder applyProvider(final String providerName, final String providerValue, final String providerUrl) {
+        public Builder applyProvider(final String providerName, final String providerUrl) {
             this.providerName = providerName;
-            this.providerValue = providerValue;
             this.providerUrl = providerUrl;
             return this;
         }

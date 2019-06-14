@@ -36,28 +36,42 @@ import com.synopsys.integration.builder.Buildable;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.builder.IntegrationBuilder;
 
-public class ComponentItem extends LinkableItem implements Buildable {
+public class ComponentItem implements Buildable {
     private static final String KEY_SEPARATOR = "_";
-    private String category;
-    private String componentKey;
-    private ItemOperation operation;
-    private Long notificationId;
-    private LinkableItem subComponent;
-    private Set<LinkableItem> items;
 
-    public ComponentItem(final String name, final String value, final String url, final String category, final String componentKey, final ItemOperation operation, final Long notificationId, final LinkableItem subComponent,
-        final Set<LinkableItem> items) {
-        super(name, value, url);
+    private final LinkableItem component;
+    private final LinkableItem subComponent;
+    private final Set<LinkableItem> componentAttributes;
+    private final String category;
+    private final String componentKey;
+    private final ItemOperation operation;
+    private final Long notificationId;
+
+    public ComponentItem(final LinkableItem component, final LinkableItem subComponent, final Set<LinkableItem> componentAttributes, final String category, final String componentKey, final ItemOperation operation,
+        final Long notificationId) {
+        this.component = component;
+        this.subComponent = subComponent;
+        this.componentAttributes = componentAttributes;
         this.category = category;
         this.componentKey = componentKey;
         this.operation = operation;
         this.notificationId = notificationId;
-        this.subComponent = subComponent;
-        this.items = items;
     }
 
     public static final Builder newBuilder() {
         return new Builder();
+    }
+
+    public LinkableItem getComponent() {
+        return component;
+    }
+
+    public LinkableItem getSubComponent() {
+        return subComponent;
+    }
+
+    public Set<LinkableItem> getComponentAttributes() {
+        return componentAttributes;
     }
 
     public String getCategory() {
@@ -76,14 +90,7 @@ public class ComponentItem extends LinkableItem implements Buildable {
         return notificationId;
     }
 
-    public LinkableItem getSubComponent() {
-        return subComponent;
-    }
-
-    public Set<LinkableItem> getItems() {
-        return items;
-    }
-
+    // TODO IntegrationBuilder seems geared toward UI error messages. We should have complete control over everything we build, so is this the right approach?
     public static class Builder extends IntegrationBuilder<ComponentItem> {
         private String category;
         private String componentKey;
@@ -96,10 +103,15 @@ public class ComponentItem extends LinkableItem implements Buildable {
         private String subComponentUrl;
         private ItemOperation operation;
         private Long notificationId;
-        private Set<LinkableItem> items = new LinkedHashSet<>();
+        private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
 
         @Override
         protected ComponentItem buildWithoutValidation() {
+            LinkableItem component = null;
+            if (StringUtils.isNotBlank(componentName) && StringUtils.isNotBlank(componentValue)) {
+                component = new LinkableItem(componentName, componentValue, componentUrl);
+            }
+
             LinkableItem subComponent = null;
             if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
                 subComponent = new LinkableItem(subComponentName, subComponentValue, subComponentUrl);
@@ -109,15 +121,20 @@ public class ComponentItem extends LinkableItem implements Buildable {
             if (StringUtils.isNotBlank(componentKey)) {
                 key = componentKey;
             } else {
-                List<String> keyParts = new LinkedList<>(componentKeyParts);
+                final List<String> keyParts = new LinkedList<>(componentKeyParts);
                 key = String.join(KEY_SEPARATOR, keyParts);
             }
-            return new ComponentItem(componentName, componentValue, componentUrl, category, key, operation, notificationId, subComponent, items);
+            return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);
         }
 
         @Override
         protected void validate(final BuilderStatus builderStatus) {
-
+            if (StringUtils.isBlank(componentName)) {
+                builderStatus.addErrorMessage("Component name required");
+            }
+            if (StringUtils.isBlank(componentValue)) {
+                builderStatus.addErrorMessage("Component name required");
+            }
         }
 
         public Builder applyComponentData(final String componentName, final String componentValue) {
@@ -184,13 +201,13 @@ public class ComponentItem extends LinkableItem implements Buildable {
             return this;
         }
 
-        public Builder applyItem(final LinkableItem item) {
-            this.items.add(item);
+        public Builder applyComponentAttribute(final LinkableItem componentAttribute) {
+            this.componentAttributes.add(componentAttribute);
             return this;
         }
 
-        public Builder applyAllItems(final Collection<LinkableItem> items) {
-            this.items.addAll(items);
+        public Builder applyAllComponentAttributes(final Collection<LinkableItem> componentAttributes) {
+            this.componentAttributes.addAll(componentAttributes);
             return this;
         }
     }
