@@ -1,3 +1,25 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (c) 2019 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.provider.blackduck;
 
 import java.net.MalformedURLException;
@@ -38,7 +60,7 @@ public class BlackDuckValidator extends ProviderValidator {
 
     @Override
     public boolean validate() {
-        logger.info("Validating BlackDuck Provider...");
+        logger.info("Validating Black Duck Provider...");
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
@@ -46,42 +68,41 @@ public class BlackDuckValidator extends ProviderValidator {
 
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (blackDuckUrlOptional.isEmpty()) {
-                logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
-                final String errorMessage = "BlackDuck Provider invalid: URL missing";
+                logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
+                final String errorMessage = "Black Duck Provider invalid: URL missing";
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
                 final Integer timeout = blackDuckProperties.getBlackDuckTimeout();
-                logger.debug("  -> BlackDuck Provider URL found validating: {}", blackDuckUrlString);
-                logger.debug("  -> BlackDuck Provider Trust Cert: {}", trustCertificate);
-                logger.debug("  -> BlackDuck Provider Timeout: {}", timeout);
+                logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
+                logger.debug("  -> Black Duck Provider Trust Cert: {}", trustCertificate);
+                logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
                 final URL blackDuckUrl = new URL(blackDuckUrlString);
                 if ("localhost".equals(blackDuckUrl.getHost())) {
-                    logger.warn("  -> BlackDuck Provider Using localhost...");
+                    logger.warn("  -> Black Duck Provider Using localhost...");
                     final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
-                    logger.warn("  -> BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
-                    systemMessageUtility.addSystemMessage("BlackDuck Provider Using localhost", SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
+                    logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
+                    systemMessageUtility.addSystemMessage("Black Duck Provider Using localhost", SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
                 }
                 final IntLogger intLogger = new Slf4jIntLogger(logger);
                 final Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
                 if (blackDuckServerConfig.isPresent()) {
                     final Boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
                     if (canConnect) {
-                        logger.info("  -> BlackDuck Provider Valid!");
+                        logger.info("  -> Black Duck Provider Valid!");
                     } else {
-                        final String message = "Can not connect to the BlackDuck server with the current configuration.";
+                        final String message = "Can not connect to the Black Duck server with the current configuration.";
                         connectivityWarning(systemMessageUtility, message);
                     }
                 } else {
-                    final String message = "The BlackDuck configuration is not valid.";
+                    final String message = "The Black Duck configuration is not valid.";
                     connectivityWarning(systemMessageUtility, message);
                 }
             }
         } catch (final MalformedURLException | IntegrationException | AlertRuntimeException ex) {
-            logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
-            logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
-            systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
+            logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
+            logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
         }
         return true;
     }

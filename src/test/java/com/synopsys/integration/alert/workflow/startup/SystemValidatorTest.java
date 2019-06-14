@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
@@ -110,6 +112,7 @@ public class SystemValidatorTest {
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
+        testGlobalProperties.setBlackDuckUrl(null);
         blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause: Black Duck URL missing..."));
@@ -118,7 +121,9 @@ public class SystemValidatorTest {
     @Test
     public void testvalidateBlackDuckProviderLocalhostURL() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
@@ -131,11 +136,14 @@ public class SystemValidatorTest {
     @Test
     public void testvalidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
+
         final TestBlackDuckProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
         spiedGlobalProperties.setBlackDuckUrl("https://localhost:443");
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
+        final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, spiedGlobalProperties, systemMessageUtility);
         blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
@@ -145,21 +153,25 @@ public class SystemValidatorTest {
     @Test
     public void testValidateHubInvalidProvider() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
         blackDuckValidator.validate();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause:"));
+        assertTrue(outputLogger.isLineContainingText("Can not connect to the BlackDuck server with the current configuration."));
     }
 
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testValidateHubValidProvider() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
         blackDuckValidator.validate();
