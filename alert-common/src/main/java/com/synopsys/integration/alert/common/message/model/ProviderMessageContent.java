@@ -29,27 +29,20 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.builder.Buildable;
-import com.synopsys.integration.builder.BuilderStatus;
-import com.synopsys.integration.builder.IntegrationBuilder;
 
 public class ProviderMessageContent implements Buildable {
-    private static final String LABEL_PROVIDER = "Provider";
-
     private final LinkableItem provider;
     private final LinkableItem topic;
     private final LinkableItem subTopic;
     private final Set<ComponentItem> componentItems;
 
-    public ProviderMessageContent(final LinkableItem provider, final LinkableItem topic, final LinkableItem subTopic, final Set<ComponentItem> componentItems) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, Set<ComponentItem> componentItems) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
         this.componentItems = componentItems;
-    }
-
-    public static final Builder newBuilder() {
-        return new ProviderMessageContent.Builder();
     }
 
     public LinkableItem getProvider() {
@@ -68,8 +61,9 @@ public class ProviderMessageContent implements Buildable {
         return componentItems;
     }
 
-    // TODO IntegrationBuilder seems geared toward UI error messages. We should have complete control over everything we build, so is this the right approach?
-    public static class Builder extends IntegrationBuilder<ProviderMessageContent> {
+    public class Builder {
+        private static final String LABEL_PROVIDER = "Provider";
+
         private String providerName;
         private String providerUrl;
         private String topicName;
@@ -80,8 +74,11 @@ public class ProviderMessageContent implements Buildable {
         private String subTopicUrl;
         private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
 
-        @Override
-        protected ProviderMessageContent buildWithoutValidation() {
+        public ProviderMessageContent build() throws AlertException {
+            if (null == providerName || null == topicName || null == topicValue) {
+                throw new AlertException("Missing required field(s)");
+            }
+
             final LinkableItem provider = new LinkableItem(LABEL_PROVIDER, providerName, providerUrl);
             final LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
             LinkableItem subTopic = null;
@@ -90,11 +87,6 @@ public class ProviderMessageContent implements Buildable {
             }
 
             return new ProviderMessageContent(provider, topic, subTopic, componentItems);
-        }
-
-        @Override
-        protected void validate(final BuilderStatus builderStatus) {
-
         }
 
         public Builder applyProvider(final String providerName) {
@@ -158,5 +150,7 @@ public class ProviderMessageContent implements Buildable {
             this.componentItems.addAll(componentItems);
             return this;
         }
+
     }
+
 }

@@ -32,9 +32,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.builder.Buildable;
-import com.synopsys.integration.builder.BuilderStatus;
-import com.synopsys.integration.builder.IntegrationBuilder;
 
 public class ComponentItem implements Buildable {
     private static final String KEY_SEPARATOR = "_";
@@ -47,8 +46,7 @@ public class ComponentItem implements Buildable {
     private final ItemOperation operation;
     private final Long notificationId;
 
-    public ComponentItem(final LinkableItem component, final LinkableItem subComponent, final Set<LinkableItem> componentAttributes, final String category, final String componentKey, final ItemOperation operation,
-        final Long notificationId) {
+    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, String category, String componentKey, ItemOperation operation, Long notificationId) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
@@ -56,10 +54,6 @@ public class ComponentItem implements Buildable {
         this.componentKey = componentKey;
         this.operation = operation;
         this.notificationId = notificationId;
-    }
-
-    public static final Builder newBuilder() {
-        return new Builder();
     }
 
     public LinkableItem getComponent() {
@@ -90,8 +84,7 @@ public class ComponentItem implements Buildable {
         return notificationId;
     }
 
-    // TODO IntegrationBuilder seems geared toward UI error messages. We should have complete control over everything we build, so is this the right approach?
-    public static class Builder extends IntegrationBuilder<ComponentItem> {
+    public class Builder {
         private String category;
         private String componentKey;
         private List<String> componentKeyParts = new LinkedList<>();
@@ -105,13 +98,12 @@ public class ComponentItem implements Buildable {
         private Long notificationId;
         private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
 
-        @Override
-        protected ComponentItem buildWithoutValidation() {
-            LinkableItem component = null;
-            if (StringUtils.isNotBlank(componentName) && StringUtils.isNotBlank(componentValue)) {
-                component = new LinkableItem(componentName, componentValue, componentUrl);
+        public ComponentItem build() throws AlertException {
+            if (null == componentName || null == componentValue || null == category || componentKeyParts.isEmpty() || null == operation || null == notificationId) {
+                throw new AlertException("Missing required field(s)");
             }
 
+            final LinkableItem component = new LinkableItem(componentName, componentValue, componentUrl);
             LinkableItem subComponent = null;
             if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
                 subComponent = new LinkableItem(subComponentName, subComponentValue, subComponentUrl);
@@ -125,16 +117,6 @@ public class ComponentItem implements Buildable {
                 key = String.join(KEY_SEPARATOR, keyParts);
             }
             return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);
-        }
-
-        @Override
-        protected void validate(final BuilderStatus builderStatus) {
-            if (StringUtils.isBlank(componentName)) {
-                builderStatus.addErrorMessage("Component name required");
-            }
-            if (StringUtils.isBlank(componentValue)) {
-                builderStatus.addErrorMessage("Component name required");
-            }
         }
 
         public Builder applyComponentData(final String componentName, final String componentValue) {
@@ -210,5 +192,7 @@ public class ComponentItem implements Buildable {
             this.componentAttributes.addAll(componentAttributes);
             return this;
         }
+
     }
+
 }
