@@ -90,11 +90,12 @@ public class JiraChannel extends DistributionChannel {
         final ProjectService projectService = jiraCloudServiceFactory.createProjectService();
         final String projectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse("");
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(projectName);
-        final String projectId = projectsResponseModel.getProjects()
-                                     .stream()
-                                     .findFirst()
-                                     .map(ProjectComponent::getId)
-                                     .orElseThrow(() -> new AlertException("Expected to be passed an existing project name."));
+        final ProjectComponent projectComponent = projectsResponseModel.getProjects()
+                                                      .stream()
+                                                      .findFirst()
+                                                      .orElseThrow(() -> new AlertException("Expected to be passed an existing project name."));
+        final String projectId = projectComponent.getId();
+        final String projectKey = projectComponent.getKey();
         final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
         final IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
         final boolean matchingIssueTypeFound = issueTypeService.getAllIssueTypes()
@@ -113,8 +114,8 @@ public class JiraChannel extends DistributionChannel {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
             for (final CategoryItem categoryItem : messageContent.getCategoryItems()) {
                 final ItemOperation operation = categoryItem.getOperation();
-                final String trackingComment = createTrackingComment(categoryItem, providerName);
-                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, trackingComment);
+                final String trackingMessage = createTrackingKey(categoryItem, providerName);
+                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, projectKey, issueType, trackingMessage);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
                     if (ItemOperation.DELETE.equals(operation)) {
@@ -145,10 +146,10 @@ public class JiraChannel extends DistributionChannel {
                             throw new AlertException("There was an problem when creating this issue.");
                         }
                         final String issueKey = issue.getKey();
-                        addCreationComment(issueService, issueKey, trackingComment);
+                        addCreationComment(issueService, issueKey);
                         issueKeys.add(issueKey);
                     } else {
-                        logger.warn("Expected to find an existing issue with comment '{}' but none existed.", trackingComment);
+                        logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingMessage);
                     }
                 }
             }
@@ -183,16 +184,15 @@ public class JiraChannel extends DistributionChannel {
         return key;
     }
 
-    // FIXME this needs to also use the jira project and issue type when searching.
-    private Optional<IssueComponent> retrieveExistingIssue(final IssueSearchService issueSearchService, final String commentToSearchFor) throws IntegrationException {
-        final IssueSearchResponseModel issuesByComment = issueSearchService.findIssuesByComment(commentToSearchFor);
-        return issuesByComment.getIssues().stream().findFirst();
+    private Optional<IssueComponent> retrieveExistingIssue(final IssueSearchService issueSearchService, final String projectKey, final String issueType, final String itemToSearchFor) throws IntegrationException {
+        final IssueSearchResponseModel issuesByDescription = issueSearchService.findIssuesByDescription(projectKey, issueType, itemToSearchFor);
+        return issuesByDescription.getIssues().stream().findFirst();
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(final CategoryItem categoryItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId, final String provider) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         final String title = createTitle(provider, commonTopic, subTopic, categoryItem);
-        final String description = createDescription(commonTopic, subTopic, categoryItem);
+        final String description = createDescription(commonTopic, subTopic, categoryItem, provider);
         fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
         fieldsBuilder.setIssueType(issueType);
@@ -225,7 +225,7 @@ public class JiraChannel extends DistributionChannel {
         return title.toString();
     }
 
-    private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem) {
+    private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem, final String providerName) {
         final StringBuilder description = new StringBuilder();
         description.append(commonTopic.getName());
         description.append(":");
@@ -238,6 +238,7 @@ public class JiraChannel extends DistributionChannel {
             final String value = linkableItem.getValue();
             final Optional<String> optionalUrl = linkableItem.getUrl();
             if (optionalUrl.isPresent()) {
+                // FIXME the URL is not properly being created
                 final String url = optionalUrl.get();
                 description.append("[");
                 description.append(value);
@@ -250,6 +251,11 @@ public class JiraChannel extends DistributionChannel {
             description.append("\n");
         }
         description.append(createDescriptionItems(categoryItem));
+
+        description.append("\n------------------- Generated key for Alert. DO NOT DELETE OR EDIT -------------------\nGenerated key: ");
+        description.append(createTrackingKey(categoryItem, providerName));
+        description.append("\n----------------------------------------------------------------------------------------");
+
         return description.toString();
     }
 
@@ -279,19 +285,12 @@ public class JiraChannel extends DistributionChannel {
         return description.toString();
     }
 
-    private void addCreationComment(final IssueService issueService, final String issueKey, final String comment) throws IntegrationException {
-        final StringBuilder generatedComment = new StringBuilder();
-        generatedComment.append("------------------- Generated key for Alert. DO NOT DELETE OR EDIT -------------------");
-        generatedComment.append("\n");
-        generatedComment.append("Generated key: ");
-        generatedComment.append(comment);
-        generatedComment.append("\n");
-        generatedComment.append("----------------------------------------------------------------------------------------");
-        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, generatedComment.toString());
+    private void addCreationComment(final IssueService issueService, final String issueKey) throws IntegrationException {
+        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "This issue has been created by Alert.");
         issueService.addComment(issueCommentRequestModel);
     }
 
-    private String createTrackingComment(final CategoryItem categoryItem, final String providerName) {
+    private String createTrackingKey(final CategoryItem categoryItem, final String providerName) {
         /*
          FIXME category key won't work as tracking key (Policy override generates a different key than policy violation and thus won't update issues correctly).
           provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version_Policy Overridden by_System Administrator'
