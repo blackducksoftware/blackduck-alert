@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,16 +34,29 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.builder.Buildable;
 
 public class ProviderMessageContent implements Buildable {
+    private static final String KEY_SEPARATOR = "_";
     private final LinkableItem provider;
     private final LinkableItem topic;
     private final LinkableItem subTopic;
+    private final String contentKey;
     private final Set<ComponentItem> componentItems;
 
-    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, Set<ComponentItem> componentItems) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, String contentKey, Set<ComponentItem> componentItems) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
+        this.contentKey = contentKey;
         this.componentItems = componentItems;
+    }
+
+    public static final String generateContentKey(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue) {
+        final List<String> keyParts;
+        if (StringUtils.isNotBlank(subTopicName)) {
+            keyParts = List.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
+        } else {
+            keyParts = List.of(providerName, topicName, topicValue);
+        }
+        return String.join(KEY_SEPARATOR, keyParts);
     }
 
     public LinkableItem getProvider() {
@@ -57,13 +71,18 @@ public class ProviderMessageContent implements Buildable {
         return Optional.ofNullable(subTopic);
     }
 
+    public String getContentKey() {
+        return contentKey;
+    }
+
     public Set<ComponentItem> getComponentItems() {
         return componentItems;
     }
 
-    public class Builder {
+    public static class Builder {
         private static final String LABEL_PROVIDER = "Provider";
 
+        private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
         private String providerName;
         private String providerUrl;
         private String topicName;
@@ -72,7 +91,6 @@ public class ProviderMessageContent implements Buildable {
         private String subTopicName;
         private String subTopicValue;
         private String subTopicUrl;
-        private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
 
         public ProviderMessageContent build() throws AlertException {
             if (null == providerName || null == topicName || null == topicValue) {
@@ -86,7 +104,11 @@ public class ProviderMessageContent implements Buildable {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
             }
 
-            return new ProviderMessageContent(provider, topic, subTopic, componentItems);
+            return new ProviderMessageContent(provider, topic, subTopic, generateContentKey(), componentItems);
+        }
+
+        public String generateContentKey() {
+            return ProviderMessageContent.generateContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue);
         }
 
         public Builder applyProvider(final String providerName) {

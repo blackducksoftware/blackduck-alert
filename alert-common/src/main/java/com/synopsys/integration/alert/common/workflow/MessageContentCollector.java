@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.workflow;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,11 +42,13 @@ import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageContentKey;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
@@ -60,6 +63,7 @@ public abstract class MessageContentCollector {
     private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
     private final Set<String> supportedNotificationTypes;
     private final List<AggregateMessageContent> collectedContent;
+    private final Map<String, ProviderMessageContent.Builder> messageBuilderMap;
 
     public MessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
         this.jsonExtractor = jsonExtractor;
@@ -67,6 +71,7 @@ public abstract class MessageContentCollector {
         this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
         this.supportedNotificationTypes = contentTypes.stream().map(ProviderContentType::getNotificationType).collect(Collectors.toSet());
         this.collectedContent = new Vector<>();
+        this.messageBuilderMap = new HashMap<>();
     }
 
     public Set<String> getSupportedNotificationTypes() {
@@ -78,10 +83,16 @@ public abstract class MessageContentCollector {
             final List<JsonField<?>> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
             final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
+            final List<ProviderMessageContent.Builder> providerContents = getProviderContentsOrCreateIfDoesNotExist(notification.getProvider(), jsonFieldAccessor, notificationFields);
+            // TODO implement when appropriate
+            //            for (final ProviderMessageContent.Builder builder : providerContents) {
+            //                builder.applyAllComponentItems(getComponentItems(jsonFieldAccessor, notificationFields, notification));
+            //            }
             for (final AggregateMessageContent content : contents) {
                 addCategoryItems(content.getCategoryItems(), jsonFieldAccessor, notificationFields, notification);
                 addContent(content);
             }
+
         } catch (final IllegalArgumentException ex) {
             final String message = String.format("Error inserting notification into collector: %s", notification);
             logger.error(message, ex);
@@ -89,6 +100,12 @@ public abstract class MessageContentCollector {
     }
 
     public List<MessageContentGroup> collect(final FormatType format) {
+        List<ProviderMessageContent> contentList = messageBuilderMap.values().stream()
+                                                       .map(this::buildMessageContent)
+                                                       .filter(Optional::isPresent)
+                                                       .map(Optional::get)
+                                                       .collect(Collectors.toList());
+
         if (messageContentProcessorMap.containsKey(format)) {
             final MessageContentProcessor processor = messageContentProcessorMap.get(format);
             return processor.process(collectedContent);
@@ -97,7 +114,19 @@ public abstract class MessageContentCollector {
         }
     }
 
+    private Optional<ProviderMessageContent> buildMessageContent(ProviderMessageContent.Builder builder) {
+        try {
+            return Optional.of(builder.build());
+        } catch (AlertException ex) {
+            logger.error("Error building message content continuing on", ex);
+            return Optional.empty();
+        }
+    }
+
     protected abstract void addCategoryItems(SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
+
+    // TODO implement in collector classes when appropriate
+    //protected abstract Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);
@@ -225,6 +254,40 @@ public abstract class MessageContentCollector {
         return aggregateMessageContentsForNotifications;
     }
 
+    private List<ProviderMessageContent.Builder> getProviderContentsOrCreateIfDoesNotExist(String providerName, JsonFieldAccessor accessor, List<JsonField<?>> notificationFields) {
+        final List<ProviderMessageContent.Builder> buildersForNotifications = new ArrayList<>();
+
+        final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
+        if (topicItems.isEmpty()) {
+            return List.of();
+        }
+        final List<LinkableItem> subTopicItems = getSubTopicItems(accessor, notificationFields);
+        // for the number of topics assume there is an equal number of sub topics and the order is the same.this seems fragile at the moment.
+        final int count = topicItems.size();
+        for (int index = 0; index < count; index++) {
+            final LinkableItem topicItem = topicItems.get(index);
+
+            LinkableItem subTopic = null;
+            if (!subTopicItems.isEmpty()) {
+                subTopic = subTopicItems.get(index);
+            }
+
+            final ProviderMessageContent.Builder foundContent = findContentBuilder(providerName, topicItem, subTopic);
+
+            if (null != foundContent) {
+                buildersForNotifications.add(foundContent);
+            } else {
+                ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
+                builder.applyTopic(topicItem.getName(), topicItem.getValue());
+                if (null != subTopic) {
+                    builder.applySubTopic(subTopic.getName(), subTopic.getValue());
+                }
+                buildersForNotifications.add(builder);
+            }
+        }
+        return buildersForNotifications;
+    }
+
     private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final SortedSet<CategoryItem> categoryItems) {
         if (subTopic.isPresent()) {
             return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems);
@@ -258,6 +321,18 @@ public abstract class MessageContentCollector {
             }
         }
         return null;
+    }
+
+    private ProviderMessageContent.Builder findContentBuilder(String providerName, LinkableItem topicItem, final LinkableItem subTopicItem) {
+        String subTopicName = null;
+        String subTopicValue = null;
+        if (null != subTopicItem) {
+            subTopicName = subTopicItem.getName();
+            subTopicValue = subTopicItem.getValue();
+        }
+
+        String key = ProviderMessageContent.generateContentKey(providerName, topicItem.getName(), topicItem.getValue(), subTopicName, subTopicValue);
+        return messageBuilderMap.get(key);
     }
 
     private Optional<JsonField<?>> getFieldForContentIdentifier(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
