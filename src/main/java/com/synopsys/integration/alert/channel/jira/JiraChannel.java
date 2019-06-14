@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -76,8 +75,8 @@ public class JiraChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_jira_cloud";
     private static final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
 
-    public JiraChannel(final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
-        super(gson, alertProperties, auditUtility);
+    public JiraChannel(final Gson gson, final AuditUtility auditUtility) {
+        super(gson, auditUtility);
     }
 
     @Override

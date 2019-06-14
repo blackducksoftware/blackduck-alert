@@ -63,15 +63,17 @@ public class EmailChannel extends DistributionChannel {
     private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
+    private final AlertProperties alertProperties;
 
     @Autowired
     public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
         final EmailAddressHandler emailAddressHandler, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
-        super(gson, alertProperties, auditUtility);
+        super(gson, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
         this.polarisProperties = polarisProperties;
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
+        this.alertProperties = alertProperties;
     }
 
     @Override
@@ -132,7 +134,7 @@ public class EmailChannel extends DistributionChannel {
         model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
-        final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties, freemarkerTemplatingService);
+        final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
         if (!model.isEmpty()) {
             final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
@@ -149,7 +151,7 @@ public class EmailChannel extends DistributionChannel {
     }
 
     private String getImagePath(final String imageFileName) {
-        final String imagesDirectory = getAlertProperties().getAlertImagesDir();
+        final String imagesDirectory = alertProperties.getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/" + imageFileName;
         }

@@ -40,7 +40,7 @@ public class PasswordResetServiceTest {
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(invalidUsername))).thenReturn(Optional.empty());
 
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(null);
         final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService);
         try {
             passwordResetService.resetPassword(invalidUsername);
@@ -57,7 +57,7 @@ public class PasswordResetServiceTest {
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(null);
         final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService);
         try {
             passwordResetService.resetPassword(username);
@@ -77,7 +77,7 @@ public class PasswordResetServiceTest {
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(null);
         final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService);
         try {
             passwordResetService.resetPassword(username);
@@ -118,7 +118,7 @@ public class PasswordResetServiceTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final TestAlertProperties alertProperties = new TestAlertProperties();
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
         final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService);
         passwordResetService.resetPassword(username);
     }
@@ -152,7 +152,7 @@ public class PasswordResetServiceTest {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("invalid dir");
 
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
         final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService);
         try {
             passwordResetService.resetPassword(username);

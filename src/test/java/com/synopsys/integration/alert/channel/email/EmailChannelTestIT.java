@@ -62,7 +62,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
 
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
         final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, testBlackDuckProperties, testPolarisProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
         final Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
@@ -89,8 +89,7 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     public void sendEmailNullGlobalTest() {
         try {
-            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null, freemarkerTemplatingService);
+            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
 

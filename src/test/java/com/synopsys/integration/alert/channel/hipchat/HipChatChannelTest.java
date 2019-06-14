@@ -61,8 +61,8 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, auditUtility, restChannelUtility, freemarkerTemplatingService);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtility, freemarkerTemplatingService);
 
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName());
         final Boolean notify = false;
@@ -88,8 +88,7 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void createRequestThrowsExceptionWhenRoomIdIsNullTest() {
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, freemarkerTemplatingService);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null);
         IntegrationException intException = null;
         try {
             final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -108,8 +107,7 @@ public class HipChatChannelTest extends ChannelTest {
     @Test
     public void createRequestThrowsExceptionForTemplateTest() throws Exception {
         final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, auditUtility, null, freemarkerTemplatingService);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
@@ -147,8 +145,8 @@ public class HipChatChannelTest extends ChannelTest {
         final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
         Mockito.doReturn(null).when(restChannelUtilitySpy).getIntHttpClient();
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
@@ -176,8 +174,8 @@ public class HipChatChannelTest extends ChannelTest {
         final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
         Mockito.doReturn(null).when(restChannelUtilitySpy).getIntHttpClient();
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
 
         final AggregateMessageContent messageContent = createLargeMessageContent();
 

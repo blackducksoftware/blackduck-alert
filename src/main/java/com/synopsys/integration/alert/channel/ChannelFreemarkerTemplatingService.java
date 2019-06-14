@@ -30,9 +30,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertConstants;
+import com.synopsys.integration.alert.common.AlertProperties;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -42,8 +44,15 @@ import freemarker.template.TemplateExceptionHandler;
 @Component
 public class ChannelFreemarkerTemplatingService {
     private final Logger logger = LoggerFactory.getLogger(ChannelFreemarkerTemplatingService.class);
+    private final AlertProperties alertProperties;
 
-    public String getTemplatePath(final String templatesDirectory, final String channelDirectory) {
+    @Autowired
+    public ChannelFreemarkerTemplatingService(final AlertProperties alertProperties) {
+        this.alertProperties = alertProperties;
+    }
+
+    public String getTemplatePath(final String channelDirectory) {
+        final String templatesDirectory = alertProperties.getAlertTemplatesDir();
         if (StringUtils.isNotBlank(templatesDirectory)) {
             return String.format("%s/%s", templatesDirectory, channelDirectory);
         }

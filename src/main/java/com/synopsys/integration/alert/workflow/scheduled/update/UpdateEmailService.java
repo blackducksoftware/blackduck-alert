@@ -121,7 +121,7 @@ public class UpdateEmailService {
             final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
 
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties, freemarkerTemplatingService);
+            final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
             emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
 
             final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);

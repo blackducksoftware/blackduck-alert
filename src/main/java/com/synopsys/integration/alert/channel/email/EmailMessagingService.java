@@ -65,12 +65,10 @@ public class EmailMessagingService {
 
     private final EmailProperties emailProperties;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
-    private final String templatesDirectory;
 
-    public EmailMessagingService(final String templatesDirectory, final EmailProperties emailProperties, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+    public EmailMessagingService(final EmailProperties emailProperties, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
         this.emailProperties = emailProperties;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
-        this.templatesDirectory = templatesDirectory;
     }
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws AlertException {
@@ -88,7 +86,7 @@ public class EmailMessagingService {
 
             final Map<String, Object> model = emailTarget.getModel();
             final Session session = createMailSession(emailProperties);
-            final String emailPath = freemarkerTemplatingService.getTemplatePath(templatesDirectory, "email");
+            final String emailPath = freemarkerTemplatingService.getTemplatePath("email");
             final Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(emailPath);
             final Template emailTemplate = templateDirectory.getTemplate(templateName);
             final String html = freemarkerTemplatingService.getResolvedTemplate(model, emailTemplate);

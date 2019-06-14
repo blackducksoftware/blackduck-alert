@@ -180,7 +180,7 @@ public class EmailGlobalTestActionTest {
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
         final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, null, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         //////////////////////////////////////
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);

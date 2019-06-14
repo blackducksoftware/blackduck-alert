@@ -152,8 +152,8 @@ public class HipChatGlobalTestActionTest {
         final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         Mockito.when(restConnectionFactory.createIntHttpClient()).thenReturn(intHttpClient);
         final RestChannelUtility restChannelUtility = new RestChannelUtility(restConnectionFactory);
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, restChannelUtility, freemarkerTemplatingService);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(null);
+        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, restChannelUtility, freemarkerTemplatingService);
         final HipChatChannel hipChatChannelSpy = Mockito.spy(hipChatChannel);
         ////////////////////////////////////////
 
@@ -198,8 +198,8 @@ public class HipChatGlobalTestActionTest {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService();
-        final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), testAlertProperties, auditUtility, restChannelUtility, freemarkerTemplatingService);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
+        final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), auditUtility, restChannelUtility, freemarkerTemplatingService);
 
         ////////////////////////////////////////
 

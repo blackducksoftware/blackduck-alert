@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.AlertConstants;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -64,9 +63,9 @@ public class HipChatChannel extends DistributionChannel {
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility,
+    public HipChatChannel(final Gson gson, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility,
         final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
-        super(gson, alertProperties, auditUtility);
+        super(gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
@@ -150,8 +149,7 @@ public class HipChatChannel extends DistributionChannel {
 
     private String createHtmlMessage(final MessageContentGroup contentGroup) throws AlertException {
         try {
-            final String templatesDirectory = getAlertProperties().getAlertTemplatesDir();
-            final String templateDirectoryPath = freemarkerTemplatingService.getTemplatePath(templatesDirectory, "hipchat");
+            final String templateDirectoryPath = freemarkerTemplatingService.getTemplatePath("hipchat");
 
             final HashMap<String, Object> model = new HashMap<>();
             model.put("content", contentGroup);
