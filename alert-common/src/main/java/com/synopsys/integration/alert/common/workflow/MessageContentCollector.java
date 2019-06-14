@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageContentKey;
@@ -331,7 +332,7 @@ public abstract class MessageContentCollector {
             subTopicValue = subTopicItem.getValue();
         }
 
-        String key = ProviderMessageContent.generateContentKey(providerName, topicItem.getName(), topicItem.getValue(), subTopicName, subTopicValue);
+        String key = ContentKey.of(providerName, topicItem.getName(), topicItem.getValue(), subTopicName, subTopicValue).getValue();
         return messageBuilderMap.get(key);
     }
 

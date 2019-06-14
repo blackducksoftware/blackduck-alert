@@ -116,7 +116,7 @@ public class ComponentItem implements Buildable {
                 final List<String> keyParts = new LinkedList<>(componentKeyParts);
                 keyParts.add(componentName);
                 keyParts.add(componentValue);
-                if (StringUtils.isNotBlank(subComponentName)) {
+                if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
                     keyParts.add(subComponentName);
                     keyParts.add(subComponentValue);
                 }

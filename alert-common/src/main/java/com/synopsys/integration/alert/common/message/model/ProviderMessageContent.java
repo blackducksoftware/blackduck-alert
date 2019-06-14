@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,25 +37,15 @@ public class ProviderMessageContent implements Buildable {
     private final LinkableItem provider;
     private final LinkableItem topic;
     private final LinkableItem subTopic;
-    private final String contentKey;
+    private final ContentKey contentKey;
     private final Set<ComponentItem> componentItems;
 
-    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, String contentKey, Set<ComponentItem> componentItems) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, Set<ComponentItem> componentItems) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
         this.contentKey = contentKey;
         this.componentItems = componentItems;
-    }
-
-    public static final String generateContentKey(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue) {
-        final List<String> keyParts;
-        if (StringUtils.isNotBlank(subTopicName)) {
-            keyParts = List.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
-        } else {
-            keyParts = List.of(providerName, topicName, topicValue);
-        }
-        return String.join(KEY_SEPARATOR, keyParts);
     }
 
     public LinkableItem getProvider() {
@@ -71,7 +60,7 @@ public class ProviderMessageContent implements Buildable {
         return Optional.ofNullable(subTopic);
     }
 
-    public String getContentKey() {
+    public ContentKey getContentKey() {
         return contentKey;
     }
 
@@ -103,12 +92,8 @@ public class ProviderMessageContent implements Buildable {
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
             }
-
-            return new ProviderMessageContent(provider, topic, subTopic, generateContentKey(), componentItems);
-        }
-
-        public String generateContentKey() {
-            return ProviderMessageContent.generateContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue);
+            ContentKey key = ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
+            return new ProviderMessageContent(provider, topic, subTopic, key, componentItems);
         }
 
         public Builder applyProvider(final String providerName) {
