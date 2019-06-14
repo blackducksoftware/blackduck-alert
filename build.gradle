@@ -32,6 +32,7 @@ project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 version = '5.0.0-SNAPSHOT'
 
+
 apply plugin: 'idea'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
