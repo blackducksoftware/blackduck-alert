@@ -29,25 +29,20 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.builder.Buildable;
-import com.synopsys.integration.builder.BuilderStatus;
-import com.synopsys.integration.builder.IntegrationBuilder;
 
 public class ProviderMessageContent implements Buildable {
-    private LinkableItem provider;
-    private LinkableItem topic;
-    private LinkableItem subTopic;
-    private Set<ComponentItem> componentItems;
+    private final LinkableItem provider;
+    private final LinkableItem topic;
+    private final LinkableItem subTopic;
+    private final Set<ComponentItem> componentItems;
 
-    public ProviderMessageContent(final LinkableItem provider, final LinkableItem topic, final LinkableItem subTopic, final Set<ComponentItem> componentItems) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, Set<ComponentItem> componentItems) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
         this.componentItems = componentItems;
-    }
-
-    public static final Builder newBuilder() {
-        return new ProviderMessageContent.Builder();
     }
 
     public LinkableItem getProvider() {
@@ -66,9 +61,10 @@ public class ProviderMessageContent implements Buildable {
         return componentItems;
     }
 
-    public static class Builder extends IntegrationBuilder<ProviderMessageContent> {
+    public class Builder {
+        private static final String LABEL_PROVIDER = "Provider";
+
         private String providerName;
-        private String providerValue;
         private String providerUrl;
         private String topicName;
         private String topicValue;
@@ -76,12 +72,15 @@ public class ProviderMessageContent implements Buildable {
         private String subTopicName;
         private String subTopicValue;
         private String subTopicUrl;
-        private Set<ComponentItem> componentItems = new LinkedHashSet<>();
+        private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
 
-        @Override
-        protected ProviderMessageContent buildWithoutValidation() {
-            LinkableItem provider = new LinkableItem(providerName, providerValue, providerUrl);
-            LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
+        public ProviderMessageContent build() throws AlertException {
+            if (null == providerName || null == topicName || null == topicValue) {
+                throw new AlertException("Missing required field(s)");
+            }
+
+            final LinkableItem provider = new LinkableItem(LABEL_PROVIDER, providerName, providerUrl);
+            final LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
             LinkableItem subTopic = null;
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
@@ -90,20 +89,13 @@ public class ProviderMessageContent implements Buildable {
             return new ProviderMessageContent(provider, topic, subTopic, componentItems);
         }
 
-        @Override
-        protected void validate(final BuilderStatus builderStatus) {
-
-        }
-
-        public Builder applyProvider(final String providerName, final String providerValue) {
+        public Builder applyProvider(final String providerName) {
             this.providerName = providerName;
-            this.providerValue = providerValue;
             return this;
         }
 
-        public Builder applyProvider(final String providerName, final String providerValue, final String providerUrl) {
+        public Builder applyProvider(final String providerName, final String providerUrl) {
             this.providerName = providerName;
-            this.providerValue = providerValue;
             this.providerUrl = providerUrl;
             return this;
         }
@@ -158,5 +150,7 @@ public class ProviderMessageContent implements Buildable {
             this.componentItems.addAll(componentItems);
             return this;
         }
+
     }
+
 }
