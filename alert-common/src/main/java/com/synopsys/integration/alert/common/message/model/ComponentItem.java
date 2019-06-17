@@ -84,7 +84,8 @@ public class ComponentItem implements Buildable {
         return notificationId;
     }
 
-    public class Builder {
+    public static class Builder {
+        private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
         private String category;
         private String componentKey;
         private List<String> componentKeyParts = new LinkedList<>();
@@ -96,7 +97,6 @@ public class ComponentItem implements Buildable {
         private String subComponentUrl;
         private ItemOperation operation;
         private Long notificationId;
-        private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
 
         public ComponentItem build() throws AlertException {
             if (null == componentName || null == componentValue || null == category || componentKeyParts.isEmpty() || null == operation || null == notificationId) {
@@ -114,6 +114,12 @@ public class ComponentItem implements Buildable {
                 key = componentKey;
             } else {
                 final List<String> keyParts = new LinkedList<>(componentKeyParts);
+                keyParts.add(componentName);
+                keyParts.add(componentValue);
+                if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
+                    keyParts.add(subComponentName);
+                    keyParts.add(subComponentValue);
+                }
                 key = String.join(KEY_SEPARATOR, keyParts);
             }
             return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);

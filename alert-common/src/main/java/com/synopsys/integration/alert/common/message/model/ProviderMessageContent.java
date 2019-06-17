@@ -33,15 +33,18 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.builder.Buildable;
 
 public class ProviderMessageContent implements Buildable {
+    private static final String KEY_SEPARATOR = "_";
     private final LinkableItem provider;
     private final LinkableItem topic;
     private final LinkableItem subTopic;
+    private final ContentKey contentKey;
     private final Set<ComponentItem> componentItems;
 
-    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, Set<ComponentItem> componentItems) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, Set<ComponentItem> componentItems) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
+        this.contentKey = contentKey;
         this.componentItems = componentItems;
     }
 
@@ -57,13 +60,18 @@ public class ProviderMessageContent implements Buildable {
         return Optional.ofNullable(subTopic);
     }
 
+    public ContentKey getContentKey() {
+        return contentKey;
+    }
+
     public Set<ComponentItem> getComponentItems() {
         return componentItems;
     }
 
-    public class Builder {
+    public static class Builder {
         private static final String LABEL_PROVIDER = "Provider";
 
+        private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
         private String providerName;
         private String providerUrl;
         private String topicName;
@@ -72,7 +80,6 @@ public class ProviderMessageContent implements Buildable {
         private String subTopicName;
         private String subTopicValue;
         private String subTopicUrl;
-        private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
 
         public ProviderMessageContent build() throws AlertException {
             if (null == providerName || null == topicName || null == topicValue) {
@@ -85,8 +92,8 @@ public class ProviderMessageContent implements Buildable {
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
             }
-
-            return new ProviderMessageContent(provider, topic, subTopic, componentItems);
+            ContentKey key = ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
+            return new ProviderMessageContent(provider, topic, subTopic, key, componentItems);
         }
 
         public Builder applyProvider(final String providerName) {
