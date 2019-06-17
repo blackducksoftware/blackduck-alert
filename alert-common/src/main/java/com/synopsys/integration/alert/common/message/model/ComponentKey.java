@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,21 @@ public class ComponentKey extends AlertSerializableModel {
     private final String subComponentName;
     private final String subComponentValue;
     private final String additionalData;
+
+    public static String generateAdditionalDataString(Collection<LinkableItem> componentAttributes) {
+        StringBuilder additionalData = new StringBuilder();
+        for (LinkableItem attribute : componentAttributes) {
+            if (attribute.isPartOfKey()) {
+                if (additionalData.length() > 0) {
+                    additionalData.append(", ");
+                }
+                additionalData.append(attribute.getName());
+                additionalData.append(": ");
+                additionalData.append(attribute.getValue());
+            }
+        }
+        return additionalData.toString();
+    }
 
     public ComponentKey(final String category, final String componentName, final String componentValue, final String subComponentName, final String subComponentValue, final String additionalData) {
         this.category = category;
@@ -52,7 +68,7 @@ public class ComponentKey extends AlertSerializableModel {
 
     @Override
     public boolean equals(final Object otherObject) {
-        if (otherObject != null && otherObject instanceof ComponentKey) {
+        if (otherObject instanceof ComponentKey) {
             ComponentKey otherKey = (ComponentKey) otherObject;
             return this.getKey().equals(otherKey.getKey());
         }
