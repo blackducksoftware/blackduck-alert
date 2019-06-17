@@ -45,7 +45,8 @@ import com.synopsys.integration.alert.common.message.model.AggregateMessageConte
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
@@ -125,9 +126,9 @@ public class SlackChannelTest extends ChannelTest {
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
-        final AggregateMessageContent content = Mockito.mock(AggregateMessageContent.class);
+        final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
-        Mockito.when(content.getValue()).thenReturn("Value");
+        Mockito.when(content.getTopic().getValue()).thenReturn("Value");
         Mockito.when(event.getContent()).thenReturn(contentGroup);
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
