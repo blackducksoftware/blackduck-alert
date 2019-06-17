@@ -30,39 +30,49 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertConstants;
-import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.AlertProperties;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
+@Component
 public class ChannelFreemarkerTemplatingService {
     private final Logger logger = LoggerFactory.getLogger(ChannelFreemarkerTemplatingService.class);
-    private final String templateDirectory;
-    private final Configuration configuration;
+    private final AlertProperties alertProperties;
 
-    public ChannelFreemarkerTemplatingService(final String templateDirectory) throws IOException {
-        this.templateDirectory = templateDirectory;
-        this.configuration = createFreemarkerConfig();
+    @Autowired
+    public ChannelFreemarkerTemplatingService(final AlertProperties alertProperties) {
+        this.alertProperties = alertProperties;
     }
 
-    public Configuration createFreemarkerConfig() throws IOException {
+    public String getTemplatePath(final String channelDirectory) {
+        final String templatesDirectory = alertProperties.getAlertTemplatesDir();
+        if (StringUtils.isNotBlank(templatesDirectory)) {
+            return String.format("%s/%s", templatesDirectory, channelDirectory);
+        }
+        return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), channelDirectory);
+    }
+
+    public Configuration createFreemarkerConfig(final String templateDirectory) throws IOException {
         final Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         cfg.setLogTemplateExceptions(false);
 
-        final File templateLoadingDirectory = findTemplateDirectory();
+        final File templateLoadingDirectory = findTemplateDirectory(templateDirectory);
         if (templateLoadingDirectory != null) {
             cfg.setDirectoryForTemplateLoading(templateLoadingDirectory);
         }
         return cfg;
     }
 
-    private File findTemplateDirectory() {
+    private File findTemplateDirectory(final String templateDirectory) {
         try {
             File templateDir = null;
             final String appHomeDir = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
@@ -79,22 +89,9 @@ public class ChannelFreemarkerTemplatingService {
         }
     }
 
-    public String getResolvedTemplate(final Map<String, Object> model, final String templateName) throws IOException, TemplateException {
+    public String getResolvedTemplate(final Map<String, Object> model, final Template template) throws IOException, TemplateException {
         final StringWriter stringWriter = new StringWriter();
-        final Template template = configuration.getTemplate(templateName);
         template.process(model, stringWriter);
         return stringWriter.toString();
     }
-
-    public String getResolvedSubjectLine(final Map<String, Object> model) throws IOException, TemplateException {
-        String subjectLine = (String) model.get(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey());
-        if (StringUtils.isBlank(subjectLine)) {
-            subjectLine = "Default Subject Line - please define one";
-        }
-        final Template subjectLineTemplate = new Template("subjectLineTemplate", subjectLine, configuration);
-        final StringWriter stringWriter = new StringWriter();
-        subjectLineTemplate.process(model, stringWriter);
-        return stringWriter.toString();
-    }
-
 }

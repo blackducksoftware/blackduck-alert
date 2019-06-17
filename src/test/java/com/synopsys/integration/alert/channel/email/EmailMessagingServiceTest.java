@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.channel.email;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,20 +12,24 @@ import javax.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 
 public class EmailMessagingServiceTest {
 
     @Test
-    public void sendAuthenticatedMessage() throws IOException, MessagingException, AlertException {
+    public void sendAuthenticatedMessage() throws MessagingException, AlertException {
         final TestProperties testProperties = new TestProperties();
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
-        final EmailMessagingService emailMessagingService = new EmailMessagingService("", emailProperties);
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
+        final EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
 
         final Session mockSession = Mockito.mock(Session.class);
         final Transport mockTransport = Mockito.mock(Transport.class);

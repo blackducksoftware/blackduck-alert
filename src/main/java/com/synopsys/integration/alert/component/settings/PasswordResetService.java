@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
@@ -55,12 +55,15 @@ public class PasswordResetService {
     private final AlertProperties alertProperties;
     private final DefaultUserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
+    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
-    public PasswordResetService(final AlertProperties alertProperties, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor) {
+    public PasswordResetService(final AlertProperties alertProperties, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor,
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
         this.alertProperties = alertProperties;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
+        this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
     public void resetPassword(final String username) throws AlertException {
@@ -88,15 +91,13 @@ public class PasswordResetService {
             final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
 
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties);
+            final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
             emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
 
             final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
             emailService.sendEmailMessage(passwordResetEmail);
             // Only change the password if there isn't an issue with sending the email
             userAccessor.changeUserPassword(username, tempPassword);
-        } catch (final IOException ioException) {
-            throw new AlertException("Problem sending password reset email.", ioException);
         } catch (final Exception genericException) {
             throw new AlertException("Problem sending password reset email. " + StringUtils.defaultIfBlank(genericException.getMessage(), ""), genericException);
         }

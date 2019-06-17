@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.AlertConstants;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -51,6 +50,8 @@ import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 @Component(value = HipChatChannel.COMPONENT_NAME)
@@ -59,11 +60,14 @@ public class HipChatChannel extends DistributionChannel {
     public static final int MESSAGE_SIZE_LIMIT = 8000;
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
     private final RestChannelUtility restChannelUtility;
+    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
-        super(gson, alertProperties, auditUtility);
+    public HipChatChannel(final Gson gson, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility,
+        final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+        super(gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
+        this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
     @Override
@@ -145,19 +149,14 @@ public class HipChatChannel extends DistributionChannel {
 
     private String createHtmlMessage(final MessageContentGroup contentGroup) throws AlertException {
         try {
-            final String templatesDirectory = getAlertProperties().getAlertTemplatesDir();
-            final String templateDirectoryPath;
-            if (StringUtils.isNotBlank(templatesDirectory)) {
-                templateDirectoryPath = templatesDirectory + "/hipchat";
-            } else {
-                templateDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/hipchat/templates";
-            }
-            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
+            final String templateDirectoryPath = freemarkerTemplatingService.getTemplatePath("hipchat");
 
             final HashMap<String, Object> model = new HashMap<>();
             model.put("content", contentGroup);
 
-            return freemarkerTemplatingService.getResolvedTemplate(model, "message_content.ftl");
+            final Configuration freemarkerConfig = freemarkerTemplatingService.createFreemarkerConfig(templateDirectoryPath);
+            final Template template = freemarkerConfig.getTemplate("message_content.ftl");
+            return freemarkerTemplatingService.getResolvedTemplate(model, template);
         } catch (final IOException | TemplateException e) {
             throw new AlertException(e);
         }
