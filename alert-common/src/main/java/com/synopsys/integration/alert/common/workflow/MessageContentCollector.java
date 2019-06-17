@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -85,10 +86,10 @@ public abstract class MessageContentCollector {
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
             final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
             final List<ProviderMessageContent.Builder> providerContents = getProviderContentsOrCreateIfDoesNotExist(notification.getProvider(), jsonFieldAccessor, notificationFields);
-            // TODO implement when appropriate
-            //            for (final ProviderMessageContent.Builder builder : providerContents) {
-            //                builder.applyAllComponentItems(getComponentItems(jsonFieldAccessor, notificationFields, notification));
-            //            }
+
+            for (final ProviderMessageContent.Builder builder : providerContents) {
+                builder.applyAllComponentItems(getComponentItems(jsonFieldAccessor, notificationFields, notification));
+            }
             for (final AggregateMessageContent content : contents) {
                 addCategoryItems(content.getCategoryItems(), jsonFieldAccessor, notificationFields, notification);
                 addContent(content);
@@ -126,8 +127,7 @@ public abstract class MessageContentCollector {
 
     protected abstract void addCategoryItems(SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
 
-    // TODO implement in collector classes when appropriate
-    //protected abstract Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent);
+    protected abstract Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);

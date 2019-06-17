@@ -125,6 +125,15 @@ public class ComponentItem implements Buildable {
             return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);
         }
 
+        public Builder applyComponentData(LinkableItem component) {
+            if (null != component) {
+                this.componentName = component.getName();
+                this.componentValue = component.getValue();
+                this.componentUrl = component.getUrl().orElse(null);
+            }
+            return this;
+        }
+
         public Builder applyComponentData(final String componentName, final String componentValue) {
             this.componentName = componentName;
             this.componentValue = componentValue;
@@ -140,6 +149,15 @@ public class ComponentItem implements Buildable {
 
         public Builder applyComponentUrl(final String componentUrl) {
             this.componentUrl = componentUrl;
+            return this;
+        }
+
+        public Builder applySubComponent(LinkableItem subComponent) {
+            if (null != subComponent) {
+                this.subComponentName = subComponent.getName();
+                this.subComponentValue = subComponent.getValue();
+                this.subComponentUrl = subComponent.getUrl().orElse(null);
+            }
             return this;
         }
 

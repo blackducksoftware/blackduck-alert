@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -30,8 +31,10 @@ import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
@@ -51,6 +54,7 @@ public class PolarisCollector extends MessageContentCollector {
         super(jsonExtractor, messageContentProcessorList, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
     }
 
+    // TODO remove this method
     @Override
     protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
@@ -84,6 +88,52 @@ public class PolarisCollector extends MessageContentCollector {
         final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
         final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
         categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), linkableItems));
+    }
+
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
+        final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
+        final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
+                                                                       .stream()
+                                                                       .filter(field -> PolarisContent.LABEL_ISSUE_TYPE.equals(field.getLabel()))
+                                                                       .findFirst();
+        ComponentItem.Builder builder = new ComponentItem.Builder();
+        final SortedSet<LinkableItem> attributes = new TreeSet<>();
+        if (optionalIssueTypeField.isPresent()) {
+            final JsonField<String> issueTypeField = optionalIssueTypeField.get();
+            final String issueType = jsonFieldAccessor.getFirst(issueTypeField).orElse("<unknown>");
+            final LinkableItem issueTypeItem = new LinkableItem(issueTypeField.getLabel(), issueType);
+            issueTypeItem.setSummarizable(true);
+            issueTypeItem.setCountable(true);
+            attributes.add(issueTypeItem);
+            builder.applyComponentData(issueTypeItem);
+        }
+
+        for (final JsonField<Integer> field : countFields) {
+            final String label = field.getLabel();
+            final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
+            final LinkableItem countItem = new LinkableItem(label, currentCount.toString());
+            if (PolarisContent.JSON_FIELD_CHANGED_COUNT.equals(label)) {
+                countItem.setSummarizable(true);
+                countItem.setCountable(true);
+                countItem.setNumericValueFlag(true);
+            }
+            attributes.add(countItem);
+        }
+
+        final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
+        final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
+        builder.applyAllComponentAttributes(attributes)
+            .applyCategory(notificationContent.getNotificationType())
+            .applyComponentKey(key.getKey())
+            .applyOperation(operation)
+            .applyNotificationId(notificationContent.getId());
+
+        try {
+            ComponentItem item = builder.build();
+            return List.of(item);
+        } catch (AlertException ex) {
+            return List.of();
+        }
     }
 
     private ItemOperation getOperationFromNotificationType(final String notificationType) {
