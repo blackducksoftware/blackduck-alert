@@ -59,6 +59,7 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
+    // FIXME This does not filter by provider. This works fine for now but will cause bugs in the future when we have multiple providers. Will probably need to modify our tables
     public FieldAccessor updateEmailAddresses(final MessageContentGroup contentGroup, final FieldAccessor originalAccessor) {
         final Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         final Set<String> emailAddresses = new HashSet<>(allEmailAddresses);

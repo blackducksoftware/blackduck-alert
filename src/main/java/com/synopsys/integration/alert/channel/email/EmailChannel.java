@@ -83,6 +83,7 @@ public class EmailChannel extends DistributionChannel {
             throw new AlertException("ERROR: Missing global config.");
         }
 
+        // FIXME this should update addresses based on Provider event.getProvider()
         final FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getContent(), fieldAccessor);
 
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
