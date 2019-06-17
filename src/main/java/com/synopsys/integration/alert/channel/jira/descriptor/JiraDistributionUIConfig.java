@@ -49,10 +49,12 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String DESCRIPTION_ISSUE_CREATOR = "The user name of the Jira Cloud user to assign as the issue creator field of the Jira ticket.";
     public static final String DESCRIPTION_JIRA_PROJECT = "The name of the Jira Project this job creates and/or updates Jira tickets";
     public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Cloud.";
-    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "The transition to be made when resolving an issue.";
-    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "The transition to be made when re-opening an issue.";
+    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (Case sensitive), it will be used when resolving an issue.";
+    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (Case sensitive), it will be used when re-opening an issue.";
 
     public static final String DEFAULT_ISSUE_TYPE = "Task";
+    public static final String DEFAULT_RESOLVE_WORKFLOW_TRANSITION = "Resolve Issue";
+    public static final String DEFAULT_OPEN_WORKFLOW_TRANSITION = "Reopen Issue";
 
     @Autowired
     public JiraDistributionUIConfig(@Lazy final DescriptorMap descriptorMap) {
@@ -66,8 +68,9 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
         final ConfigField jiraProjectName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT);
 
         final ConfigField issueType = TextInputConfigField.createRequired(JiraDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).addDefaultValue(DEFAULT_ISSUE_TYPE);
-        final ConfigField resolveWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
-        final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION);
+        final ConfigField resolveWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION)
+                                                .addDefaultValue(DEFAULT_RESOLVE_WORKFLOW_TRANSITION);
+        final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION).addDefaultValue(DEFAULT_OPEN_WORKFLOW_TRANSITION);
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);
     }

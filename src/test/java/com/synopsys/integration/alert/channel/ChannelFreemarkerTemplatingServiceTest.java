@@ -1,37 +1,35 @@
 package com.synopsys.integration.alert.channel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.HashMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.AlertConstants;
-import com.synopsys.integration.alert.util.ResourceLoader;
-
-import freemarker.template.TemplateException;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 
 public class ChannelFreemarkerTemplatingServiceTest {
 
     @Test
-    public void testDirectoryFileException() throws IOException {
-        System.setProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME, "noooone");
-        try {
-            @SuppressWarnings("unused") final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(".\\-abdc~2345-9;2");
-            fail();
-        } catch (final IOException e) {
-            assertTrue(true);
-        }
+    public void testExpectedDirectoryPaths() {
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final String directory = "directory";
+        testAlertProperties.setAlertTemplatesDir(directory);
+        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
+
+        final String testChannel = "testChannel";
+
+        final String templatePath = channelFreemarkerTemplatingService.getTemplatePath(testChannel);
+        assertEquals(directory + "/" + testChannel, templatePath);
     }
 
     @Test
-    public void testSubjectLine() throws IOException, TemplateException {
-        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(ResourceLoader.DEFAULT_BLACK_DUCK_TEMPLATE_LOCATION);
-        final String subjectLine = channelFreemarkerTemplatingService.getResolvedSubjectLine(new HashMap<>());
+    public void testEmptyDirectoryPath() {
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        testAlertProperties.setAlertTemplatesDir("");
+        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
 
-        assertEquals("Default Subject Line - please define one", subjectLine);
+        final String testChannel = "testChannel";
+        final String templatePathMissingDirectory = channelFreemarkerTemplatingService.getTemplatePath(testChannel);
+        final String userDirectory = System.getProperties().getProperty("user.dir");
+        assertEquals(userDirectory + "/src/main/resources/" + testChannel + "/templates", templatePathMissingDirectory);
     }
 }
