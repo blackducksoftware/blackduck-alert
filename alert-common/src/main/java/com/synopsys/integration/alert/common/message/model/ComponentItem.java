@@ -22,11 +22,15 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +62,8 @@ public class ComponentItem implements Buildable {
         return component;
     }
 
-    public LinkableItem getSubComponent() {
-        return subComponent;
+    public Optional<LinkableItem> getSubComponent() {
+        return Optional.ofNullable(subComponent);
     }
 
     public Set<LinkableItem> getComponentAttributes() {
@@ -80,6 +84,22 @@ public class ComponentItem implements Buildable {
 
     public Long getNotificationId() {
         return notificationId;
+    }
+
+    /**
+     * Intended to be used for display purposes (such as freemarker templates).
+     * @return A map from the name of a LinkableItem to all the LinkableItems with that name.
+     */
+    public Map<String, List<LinkableItem>> getItemsOfSameName() {
+        final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
+        if (null == componentAttributes || componentAttributes.isEmpty()) {
+            return map;
+        }
+        for (final LinkableItem item : componentAttributes) {
+            final String name = item.getName();
+            map.computeIfAbsent(name, ignored -> new ArrayList<>()).add(item);
+        }
+        return map;
     }
 
     public static class Builder {
@@ -106,18 +126,8 @@ public class ComponentItem implements Buildable {
                 subComponent = new LinkableItem(subComponentName, subComponentValue, subComponentUrl);
             }
 
-            StringBuilder additionalData = new StringBuilder();
-            for (LinkableItem attribute : componentAttributes) {
-                if (attribute.isPartOfKey()) {
-                    if (additionalData.length() > 0) {
-                        additionalData.append(", ");
-                    }
-                    additionalData.append(attribute.getName());
-                    additionalData.append(": ");
-                    additionalData.append(attribute.getValue());
-                }
-            }
-            ComponentKey key = new ComponentKey(category, componentName, componentValue, subComponentName, subComponentValue, additionalData.toString());
+            final String additionalDataString = ComponentKey.generateAdditionalDataString(componentAttributes);
+            ComponentKey key = new ComponentKey(category, componentName, componentValue, subComponentName, subComponentValue, additionalDataString);
             return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);
         }
 
