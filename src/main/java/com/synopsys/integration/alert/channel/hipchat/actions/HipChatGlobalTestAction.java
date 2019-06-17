@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
+import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;

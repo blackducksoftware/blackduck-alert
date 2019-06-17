@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -29,7 +28,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
@@ -53,13 +51,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final String polarisUrl = properties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
         Mockito.when(testPolarisProperties.getUrl()).thenReturn(Optional.ofNullable(polarisUrl));
 
-        final DefaultEmailHandler blackDuckEmailHandler = new DefaultEmailHandler(Mockito.mock(DefaultProviderDataAccessor.class));
-        final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(blackDuckProvider.getName()).thenReturn(BlackDuckProvider.COMPONENT_NAME);
-        Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
-        Mockito.when(blackDuckProvider.getName()).thenReturn(BlackDuckProvider.COMPONENT_NAME);
-
-        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
+        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
 
         final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, testBlackDuckProperties, testPolarisProperties, auditUtility, emailAddressHandler);
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());

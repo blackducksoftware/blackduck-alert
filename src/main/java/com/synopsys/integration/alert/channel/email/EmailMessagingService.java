@@ -49,7 +49,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.synopsys.integration.alert.channel.util.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.email.template.MimeMultipartBuilder;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;

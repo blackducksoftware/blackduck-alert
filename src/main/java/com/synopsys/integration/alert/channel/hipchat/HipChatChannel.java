@@ -37,9 +37,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.synopsys.integration.alert.channel.util.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
+import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;

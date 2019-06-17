@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.channel.util.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.util.ResourceLoader;
 
