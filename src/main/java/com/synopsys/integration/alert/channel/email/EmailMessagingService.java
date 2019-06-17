@@ -55,23 +55,20 @@ import com.synopsys.integration.alert.channel.email.template.MimeMultipartBuilde
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
+    public static final String EMAIL_SUBJECT_LINE_TEMPLATE = "subjectLineTemplate";
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final EmailProperties emailProperties;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final String templatesDirectory, final EmailProperties emailProperties) throws IOException {
+    public EmailMessagingService(final EmailProperties emailProperties, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
         this.emailProperties = emailProperties;
-        final String templateDirectoryPath;
-        if (StringUtils.isNotBlank(templatesDirectory)) {
-            templateDirectoryPath = templatesDirectory + "/email";
-        } else {
-            templateDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates";
-        }
-        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
+        this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws AlertException {
@@ -89,7 +86,10 @@ public class EmailMessagingService {
 
             final Map<String, Object> model = emailTarget.getModel();
             final Session session = createMailSession(emailProperties);
-            final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
+            final String emailPath = freemarkerTemplatingService.getTemplatePath("email");
+            final Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(emailPath);
+            final Template emailTemplate = templateDirectory.getTemplate(templateName);
+            final String html = freemarkerTemplatingService.getResolvedTemplate(model, emailTemplate);
 
             final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
             mimeMultipartBuilder.addHtmlContent(html);
@@ -97,7 +97,12 @@ public class EmailMessagingService {
             mimeMultipartBuilder.addEmbeddedImages(emailTarget.getContentIdsToFilePaths());
             final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
 
-            final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
+            String subjectLine = (String) model.get(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey());
+            if (StringUtils.isBlank(subjectLine)) {
+                subjectLine = "Default Subject Line - please define one";
+            }
+            final Template subjectLineTemplate = new Template(EMAIL_SUBJECT_LINE_TEMPLATE, subjectLine, templateDirectory);
+            final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedTemplate(model, subjectLineTemplate);
             final List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
             sendMessages(emailProperties, session, messages);
         } catch (final MessagingException | IOException | TemplateException ex) {
