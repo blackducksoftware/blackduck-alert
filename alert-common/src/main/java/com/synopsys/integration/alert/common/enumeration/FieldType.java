@@ -30,7 +30,8 @@ public enum FieldType {
     NUMBER_INPUT("NumberInput"),
     CHECKBOX_INPUT("CheckboxInput"),
     READ_ONLY("ReadOnlyField"),
-    COUNTDOWN("CountdownField");
+    COUNTDOWN("CountdownField"),
+    ENDPOINT("EndpointField");
 
     private final String fieldTypeName;
 
