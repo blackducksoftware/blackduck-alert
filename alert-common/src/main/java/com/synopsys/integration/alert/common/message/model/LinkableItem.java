@@ -41,6 +41,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private boolean countable;
     private boolean isNumericValue;
     private boolean summarizable;
+    private boolean isPartOfKey;
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
@@ -54,6 +55,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.countable = false;
         this.isNumericValue = false;
         this.summarizable = false;
+        this.isPartOfKey = false;
     }
 
     public String getName() {
@@ -104,6 +106,14 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     public void setSummarizable(final boolean summarizable) {
         this.summarizable = summarizable;
+    }
+
+    public boolean isPartOfKey() {
+        return isPartOfKey;
+    }
+
+    public void setPartOfKey(final boolean partOfKey) {
+        isPartOfKey = partOfKey;
     }
 
     @Override

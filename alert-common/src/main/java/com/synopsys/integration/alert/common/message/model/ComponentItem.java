@@ -36,17 +36,15 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.builder.Buildable;
 
 public class ComponentItem implements Buildable {
-    private static final String KEY_SEPARATOR = "_";
-
     private final LinkableItem component;
     private final LinkableItem subComponent;
     private final Set<LinkableItem> componentAttributes;
     private final String category;
-    private final String componentKey;
+    private final ComponentKey componentKey;
     private final ItemOperation operation;
     private final Long notificationId;
 
-    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, String category, String componentKey, ItemOperation operation, Long notificationId) {
+    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
@@ -72,7 +70,7 @@ public class ComponentItem implements Buildable {
         return category;
     }
 
-    public String getComponentKey() {
+    public ComponentKey getComponentKey() {
         return componentKey;
     }
 
@@ -87,7 +85,6 @@ public class ComponentItem implements Buildable {
     public static class Builder {
         private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
         private String category;
-        private String componentKey;
         private List<String> componentKeyParts = new LinkedList<>();
         private String componentName;
         private String componentValue;
@@ -109,19 +106,18 @@ public class ComponentItem implements Buildable {
                 subComponent = new LinkableItem(subComponentName, subComponentValue, subComponentUrl);
             }
 
-            final String key;
-            if (StringUtils.isNotBlank(componentKey)) {
-                key = componentKey;
-            } else {
-                final List<String> keyParts = new LinkedList<>(componentKeyParts);
-                keyParts.add(componentName);
-                keyParts.add(componentValue);
-                if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
-                    keyParts.add(subComponentName);
-                    keyParts.add(subComponentValue);
+            StringBuilder additionalData = new StringBuilder();
+            for (LinkableItem attribute : componentAttributes) {
+                if (attribute.isPartOfKey()) {
+                    if (additionalData.length() > 0) {
+                        additionalData.append(", ");
+                    }
+                    additionalData.append(attribute.getName());
+                    additionalData.append(": ");
+                    additionalData.append(attribute.getValue());
                 }
-                key = String.join(KEY_SEPARATOR, keyParts);
             }
+            ComponentKey key = new ComponentKey(category, componentName, componentValue, subComponentName, subComponentValue, additionalData.toString());
             return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);
         }
 
@@ -191,12 +187,6 @@ public class ComponentItem implements Buildable {
             return this;
         }
 
-        // this takes precedence over the component key prefix parts. If this is set this is used.
-        public Builder applyComponentKey(final String componentKey) {
-            this.componentKey = componentKey;
-            return this;
-        }
-
         public Builder applyOperation(final ItemOperation operation) {
             this.operation = operation;
             return this;
@@ -208,6 +198,12 @@ public class ComponentItem implements Buildable {
         }
 
         public Builder applyComponentAttribute(final LinkableItem componentAttribute) {
+            this.componentAttributes.add(componentAttribute);
+            return this;
+        }
+
+        public Builder applyComponentAttribute(final LinkableItem componentAttribute, boolean isPartOfKey) {
+            componentAttribute.setPartOfKey(isPartOfKey);
             this.componentAttributes.add(componentAttribute);
             return this;
         }
