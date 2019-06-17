@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -38,16 +37,10 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public abstract class DistributionChannel extends MessageReceiver<DistributionEvent> implements AlertEventListener {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
     private final AuditUtility auditUtility;
-    private final AlertProperties alertProperties;
 
-    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility) {
+    public DistributionChannel(final Gson gson, final AuditUtility auditUtility) {
         super(gson, DistributionEvent.class);
-        this.alertProperties = alertProperties;
         this.auditUtility = auditUtility;
-    }
-
-    public AlertProperties getAlertProperties() {
-        return alertProperties;
     }
 
     @Override
