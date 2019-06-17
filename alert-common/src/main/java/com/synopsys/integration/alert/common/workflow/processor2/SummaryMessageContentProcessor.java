@@ -88,7 +88,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         final List<ComponentItem> summarizedCategoryItems = new LinkedList<>();
         for (final ComponentItem componentItem : componentItemsForOperation) {
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(componentItemsForOperation, componentItem.getComponentAttributes());
-            final CategoryKey categoryKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
+            // FIXME is this required for collapsing?
+            //  final ComponentKey componentKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
 
             ComponentItem newComponentItem = null;
             try {
@@ -96,7 +97,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             } catch (AlertException e) {
                 // FIXME handle exception
             }
-            // final ComponentItem newComponentItem = new CategoryItem(categoryKey, operation, categoryItem.getNotificationId(), summarizedLinkableItems);
             summarizedCategoryItems.add(newComponentItem);
         }
 
@@ -183,7 +183,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                 } catch (AlertException e) {
                     // FIXME handle exception
                 }
-                // updatedCategoryItem = new CategoryItem(componentKey, currentItem.getOperation(), currentItem.getNotificationId(), collapsedLinkableItems);
             }
             keyToItem.put(componentKey, updatedCategoryItem);
         }
@@ -244,6 +243,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                    .count();
     }
 
+    // TODO determine if something like this is still necessary
     private CategoryKey createCategoryKeyFromLinkableItems(final Collection<LinkableItem> linkableItems) {
         final List<String> itemNameValueSequence = new LinkedList<>();
         for (final LinkableItem item : linkableItems) {

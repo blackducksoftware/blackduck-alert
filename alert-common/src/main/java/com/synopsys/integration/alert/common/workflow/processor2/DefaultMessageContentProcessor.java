@@ -51,7 +51,7 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
                     final ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
                     messageGroups.computeIfAbsent(groupedMessageEntry.getKey(), ignored -> new MessageContentGroup()).add(newMessage);
                 } catch (AlertException e) {
-                    // TODO log?
+                    // FIXME handle exception
                 }
             }
         }
@@ -88,8 +88,7 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
             ComponentItem newComponentItem = null;
             try {
                 newComponentItem = createNewComponentItem(componentItem, componentItem.getOperation(), notificationId, linkableItems);
-                // final ComponentItem newCategoryItem = new ComponentItem(componentKey, componentItem.getOperation(), notificationId, linkableItems);
-                // FIXME newCategoryItem.setComparator(categoryItem.createComparator());
+                // FIXME newComponentItem.setComparator(componentItem.createComparator());
                 keyToItems.put(componentKey, newComponentItem);
             } catch (AlertException e) {
                 // FIXME handle exception
