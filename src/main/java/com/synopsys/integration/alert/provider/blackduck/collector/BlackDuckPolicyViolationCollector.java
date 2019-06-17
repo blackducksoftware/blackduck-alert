@@ -45,7 +45,6 @@ import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -53,7 +52,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.item.BlackDuckPolicyLinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
@@ -70,41 +69,6 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     @Autowired
     public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
-    }
-
-    @Override
-    protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
-        final ItemOperation operation = getOperationFromNotification(notificationContent);
-        if (operation == null) {
-            return;
-        }
-
-        final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
-        final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<ComponentVersionStatus>() {});
-        final List<JsonField<String>> stringFields = getStringFields(notificationFields);
-
-        final Map<String, PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckContent.LABEL_POLICY_INFO_LIST).stream()
-                                                        .collect(Collectors.toMap(PolicyInfo::getPolicy, Function.identity()));
-        final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckContent.LABEL_COMPONENT_VERSION_STATUS);
-        final String projectVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, stringFields, BlackDuckContent.LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX)
-                                             .stream()
-                                             .findFirst()
-                                             .orElse("");
-
-        final Optional<String> projectVersionComponentLink = getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
-
-        final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
-        for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
-            final PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
-
-            final SortedSet<LinkableItem> linkablePolicyItems = policyComponentMapping.getPolicies()
-                                                                    .stream()
-                                                                    .map(this::createPolicyLinkableItem)
-                                                                    .collect(Collectors.toCollection(TreeSet::new));
-            final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
-            final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getComponentData();
-            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
-        }
     }
 
     protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {

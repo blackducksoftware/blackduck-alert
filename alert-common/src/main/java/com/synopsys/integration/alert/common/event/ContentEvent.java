@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 
 public class ContentEvent extends AlertEvent {
     private final String createdAt;

@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +42,10 @@ import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
@@ -111,7 +110,7 @@ public class SlackChannel extends DistributionChannel {
         topicBuilder.append(SLACK_LINE_SEPARATOR);
         messagePieces.add(topicBuilder.toString());
 
-        for (final AggregateMessageContent messageContent : messageContentGroup.getSubContent()) {
+        for (final ProviderMessageContent messageContent : messageContentGroup.getSubContent()) {
             final StringBuilder subTopicBuilder = new StringBuilder();
             messageContent
                 .getSubTopic()
@@ -122,8 +121,8 @@ public class SlackChannel extends DistributionChannel {
             subTopicBuilder.append(SLACK_LINE_SEPARATOR);
             messagePieces.add(subTopicBuilder.toString());
 
-            final SortedSet<CategoryItem> categoryItems = messageContent.getCategoryItems();
-            for (final CategoryItem categoryItem : categoryItems) {
+            final Collection<ComponentItem> categoryItems = messageContent.getComponentItems();
+            for (final ComponentItem categoryItem : categoryItems) {
                 final StringBuilder categoryItemBuilder = new StringBuilder();
                 categoryItemBuilder.append("Type: ");
                 categoryItemBuilder.append(categoryItem.getOperation());

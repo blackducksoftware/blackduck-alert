@@ -22,10 +22,8 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import java.util.TreeSet;
-
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -40,9 +38,11 @@ public abstract class TestAction {
 
     public abstract String testConfig(final TestConfigModel testConfig) throws IntegrationException;
 
-    public AggregateMessageContent createTestNotificationContent() {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Test message sent by Alert", null);
-        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new TreeSet<>());
+    public ProviderMessageContent createTestNotificationContent() throws AlertException {
+        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
+        builder.applyTopic("testTopic", "Alert Test Message");
+        builder.applySubTopic("subTopic", "Test message sent by Alert");
+        return builder.build();
     }
 
 }

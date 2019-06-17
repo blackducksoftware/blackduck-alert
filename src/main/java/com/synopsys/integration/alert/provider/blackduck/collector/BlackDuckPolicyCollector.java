@@ -26,21 +26,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
@@ -49,21 +44,6 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
 
     public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
-    }
-
-    // TODO remove this method
-    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
-        final List<String> categoryKeyParts = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
-        final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);
-
-        updatePolicyItems(policyItems);
-        for (final LinkableItem item : applicableItems) {
-            final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-            item.setPartOfKey(true);
-            linkableItems.add(item);
-            linkableItems.addAll(policyItems);
-            addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
-        }
     }
 
     protected Optional<ComponentItem> addApplicableItems(Long notificationId, LinkableItem componentLinkableItem, LinkableItem componentVersionItem, Set<LinkableItem> policyItems, ItemOperation operation) {

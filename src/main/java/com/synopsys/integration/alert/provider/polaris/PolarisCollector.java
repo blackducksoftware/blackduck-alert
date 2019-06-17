@@ -32,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -41,7 +39,7 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
@@ -52,42 +50,6 @@ public class PolarisCollector extends MessageContentCollector {
     @Autowired
     public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
         super(jsonExtractor, messageContentProcessorList, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
-    }
-
-    // TODO remove this method
-    @Override
-    protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
-        final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
-        final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
-                                                                       .stream()
-                                                                       .filter(field -> PolarisContent.LABEL_ISSUE_TYPE.equals(field.getLabel()))
-                                                                       .findFirst();
-
-        final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-        if (optionalIssueTypeField.isPresent()) {
-            final JsonField<String> issueTypeField = optionalIssueTypeField.get();
-            final String issueType = jsonFieldAccessor.getFirst(issueTypeField).orElse("<unknown>");
-            final LinkableItem issueTypeItem = new LinkableItem(issueTypeField.getLabel(), issueType);
-            issueTypeItem.setSummarizable(true);
-            issueTypeItem.setCountable(true);
-            linkableItems.add(issueTypeItem);
-        }
-
-        for (final JsonField<Integer> field : countFields) {
-            final String label = field.getLabel();
-            final Integer currentCount = jsonFieldAccessor.getFirst(field).orElse(0);
-            final LinkableItem countItem = new LinkableItem(label, currentCount.toString());
-            if (PolarisContent.JSON_FIELD_CHANGED_COUNT.equals(label)) {
-                countItem.setSummarizable(true);
-                countItem.setCountable(true);
-                countItem.setNumericValueFlag(true);
-            }
-            linkableItems.add(countItem);
-        }
-
-        final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
-        final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
-        categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), linkableItems));
     }
 
     protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {

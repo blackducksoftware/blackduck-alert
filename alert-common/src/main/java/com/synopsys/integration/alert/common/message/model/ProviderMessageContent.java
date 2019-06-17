@@ -97,6 +97,10 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
             return new ProviderMessageContent(provider, topic, subTopic, key, componentItems);
         }
 
+        public ContentKey getCurrentContentKey() {
+            return ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
+        }
+
         public Builder applyProvider(final String providerName) {
             this.providerName = providerName;
             return this;
