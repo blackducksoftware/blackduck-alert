@@ -26,7 +26,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class ContentKey {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class ContentKey extends AlertSerializableModel {
     private static final String KEY_SEPARATOR = "_";
     private String providerName;
     private String topicName;

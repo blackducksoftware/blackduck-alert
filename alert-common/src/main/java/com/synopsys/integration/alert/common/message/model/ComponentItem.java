@@ -37,9 +37,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
-public class ComponentItem implements Buildable {
+public class ComponentItem extends AlertSerializableModel implements Buildable {
     private final LinkableItem component;
     private final LinkableItem subComponent;
     private final Set<LinkableItem> componentAttributes;

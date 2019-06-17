@@ -30,9 +30,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
-public class ProviderMessageContent implements Buildable {
+public class ProviderMessageContent extends AlertSerializableModel implements Buildable {
     private static final String KEY_SEPARATOR = "_";
     private final LinkableItem provider;
     private final LinkableItem topic;
