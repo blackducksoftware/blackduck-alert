@@ -103,8 +103,7 @@ public abstract class MessageContentCollector {
     public List<MessageContentGroup> collect(final FormatType format) {
         List<ProviderMessageContent> contentList = messageBuilderMap.values().stream()
                                                        .map(this::buildMessageContent)
-                                                       .filter(Optional::isPresent)
-                                                       .map(Optional::get)
+                                                       .flatMap(Optional::stream)
                                                        .collect(Collectors.toList());
 
         if (messageContentProcessorMap.containsKey(format)) {
