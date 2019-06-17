@@ -29,12 +29,10 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 public abstract class Provider {
     private final String name;
     private final ProviderContent providerContent;
-    private final EmailHandler emailHandler;
 
-    public Provider(final String name, final ProviderContent providerContent, final EmailHandler emailHandler) {
+    public Provider(final String name, final ProviderContent providerContent) {
         this.name = name;
         this.providerContent = providerContent;
-        this.emailHandler = emailHandler;
     }
 
     public String getName() {
@@ -49,10 +47,6 @@ public abstract class Provider {
 
     public ProviderContent getProviderContent() {
         return providerContent;
-    }
-
-    public EmailHandler getEmailHandler() {
-        return emailHandler;
     }
 
 }
