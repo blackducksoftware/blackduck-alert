@@ -24,19 +24,25 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
@@ -51,6 +57,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
     private final BlackDuckProperties blackDuckProperties;
+    private Logger logger = LoggerFactory.getLogger(BlackDuckLicenseLimitCollector.class);
 
     @Autowired
     public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
@@ -72,6 +79,34 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
             final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
             categoryItems.add(new CategoryItem(key, ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
         }
+    }
+
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
+        List<ComponentItem> items = new LinkedList<>();
+        final List<JsonField<Long>> longFields = getLongFields(notificationFields);
+
+        final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
+        for (final JsonField<Long> field : longFields) {
+            final Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
+            optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
+        }
+        if (!linkableItems.isEmpty()) {
+            linkableItems.forEach(item -> item.setSummarizable(true));
+
+            try {
+                ComponentItem.Builder builder = new ComponentItem.Builder();
+                builder.applyComponentData("", "")
+                    .applyAllComponentAttributes(linkableItems)
+                    .applyOperation(ItemOperation.UPDATE)
+                    .applyCategory(notificationContent.getNotificationType())
+                    .applyNotificationId(notificationContent.getId());
+                items.add(builder.build());
+            } catch (AlertException ex) {
+                logger.error("Error building license limit component item ", ex);
+            }
+        }
+
+        return items;
     }
 
     @Override

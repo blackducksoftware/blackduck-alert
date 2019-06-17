@@ -23,6 +23,9 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
@@ -92,4 +96,48 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         }
     }
 
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
+        List<ComponentItem> items = new LinkedList<>();
+        final ItemOperation operation = ItemOperation.DELETE;
+        final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
+        final List<LinkableItem> policyItems = getItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_NAME);
+        policyItems.forEach(policyItem -> policyItem.setCollapsible(true));
+        final List<LinkableItem> policySeverity = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_SEVERITY_NAME);
+        policySeverity.forEach(severityItem -> {
+            severityItem.setPartOfKey(true);
+            severityItem.setSummarizable(true);
+        });
+
+        final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
+        final Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
+
+        final Optional<String> componentVersionName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_VERSION_NAME).stream().findFirst();
+        final String projectVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX).stream().findFirst().orElse("");
+        final String componentName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_NAME).stream().findFirst().orElse("");
+        final String generatedLink = getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK, componentName).orElse(null);
+
+        final Optional<LinkableItem> componentVersionItem = componentVersionName.map(name -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, name, generatedLink));
+        final String linkForComponentName = (componentVersionName.isPresent()) ? null : generatedLink;
+        final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, componentName, linkForComponentName);
+
+        final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
+        applicableItems.addAll(policySeverity);
+
+        Optional<LinkableItem> nameItem = Optional.empty();
+        if (firstName.isPresent() && lastName.isPresent()) {
+            final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
+            LinkableItem overrideBy = new LinkableItem(BlackDuckContent.LABEL_POLICY_OVERRIDE_BY, value);
+            nameItem = Optional.of(overrideBy);
+        }
+
+        for (final LinkableItem policyItem : policyItems) {
+            Set<LinkableItem> attributeSet = new LinkedHashSet<>();
+            attributeSet.addAll(policySeverity);
+            nameItem.ifPresent(attributeSet::add);
+            attributeSet.add(policyItem);
+            Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), componentItem, componentVersionItem.orElse(null), attributeSet, operation);
+            item.ifPresent(items::add);
+        }
+        return items;
+    }
 }

@@ -105,7 +105,7 @@ public class PolarisCollector extends MessageContentCollector {
             issueTypeItem.setSummarizable(true);
             issueTypeItem.setCountable(true);
             attributes.add(issueTypeItem);
-            builder.applyComponentData(issueTypeItem);
+            builder.applyComponentAttribute(issueTypeItem);
         }
 
         for (final JsonField<Integer> field : countFields) {
@@ -120,11 +120,9 @@ public class PolarisCollector extends MessageContentCollector {
             attributes.add(countItem);
         }
 
-        final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
         final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
         builder.applyAllComponentAttributes(attributes)
             .applyCategory(notificationContent.getNotificationType())
-            .applyComponentKey(key.getKey())
             .applyOperation(operation)
             .applyNotificationId(notificationContent.getId());
 
