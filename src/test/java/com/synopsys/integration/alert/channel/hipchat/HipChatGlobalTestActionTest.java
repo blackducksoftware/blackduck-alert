@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.channel.hipchat.actions.HipChatGlobalTestA
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -151,7 +152,8 @@ public class HipChatGlobalTestActionTest {
         final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         Mockito.when(restConnectionFactory.createIntHttpClient()).thenReturn(intHttpClient);
         final RestChannelUtility restChannelUtility = new RestChannelUtility(restConnectionFactory);
-        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, restChannelUtility);
+        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
+        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, restChannelUtility, freemarkerTemplatingService);
         final HipChatChannel hipChatChannelSpy = Mockito.spy(hipChatChannel);
         ////////////////////////////////////////
 
@@ -196,8 +198,8 @@ public class HipChatGlobalTestActionTest {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-
-        final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), testAlertProperties, auditUtility, restChannelUtility);
+        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
+        final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), auditUtility, restChannelUtility, freemarkerTemplatingService);
 
         ////////////////////////////////////////
 

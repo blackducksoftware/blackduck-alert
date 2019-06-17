@@ -40,7 +40,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -73,8 +72,8 @@ public class SlackChannel extends DistributionChannel {
     private final RestChannelUtility restChannelUtility;
 
     @Autowired
-    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
-        super(gson, alertProperties, auditUtility);
+    public SlackChannel(final Gson gson, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
+        super(gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
     }
 
