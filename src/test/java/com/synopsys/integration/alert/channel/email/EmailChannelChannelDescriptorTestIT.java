@@ -130,6 +130,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public DistributionEvent createChannelEvent() throws AlertException {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
                                                    .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();

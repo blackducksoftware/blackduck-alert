@@ -28,7 +28,9 @@ public class ContentEventTest {
     @Test
     public void getContentTest() throws Exception {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder().applyTopic("testTopic", "topic")
+        final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
+                                                   .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);

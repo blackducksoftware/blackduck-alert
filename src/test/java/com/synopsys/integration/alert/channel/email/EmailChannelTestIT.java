@@ -90,7 +90,9 @@ public class EmailChannelTestIT extends ChannelTest {
         try {
             final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-            final ProviderMessageContent content = new ProviderMessageContent.Builder().applyTopic("testTopic", "topic")
+            final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                       .applyProvider("testProvider")
+                                                       .applyTopic("testTopic", "topic")
                                                        .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                        .build();
 

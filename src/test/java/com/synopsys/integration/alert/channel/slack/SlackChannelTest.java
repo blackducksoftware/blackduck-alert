@@ -181,6 +181,7 @@ public class SlackChannelTest extends ChannelTest {
                                                 .build();
 
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
                                                    .applyTopic("Message Content", "Slack Unit Test from Alert")
                                                    .applyComponentItem(componentItem)
                                                    .build();
@@ -218,6 +219,7 @@ public class SlackChannelTest extends ChannelTest {
                                                 .build();
 
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
                                                    .applyTopic("Message Content", "Slack Unit Test from Alert")
                                                    .applyComponentItem(componentItem)
                                                    .build();
@@ -263,6 +265,7 @@ public class SlackChannelTest extends ChannelTest {
                                                   .build();
 
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
                                                    .applyTopic("Message Content", "Slack Unit Test from Alert")
                                                    .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
                                                    .build();
@@ -307,6 +310,7 @@ public class SlackChannelTest extends ChannelTest {
                                                   .build();
 
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
                                                    .applyTopic("Message Content", "Slack Unit Test from Alert")
                                                    .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
                                                    .build();
@@ -332,6 +336,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                          .applyProvider("testProvider")
                                                           .applyTopic("testTopic", "")
                                                           .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                           .build();

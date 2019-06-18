@@ -31,7 +31,9 @@ public class ChannelEventManagerTest {
         final ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder().applyTopic("testTopic", "topic")
+        final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
+                                                   .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
         final FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
@@ -48,7 +50,9 @@ public class ChannelEventManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder().applyTopic("testTopic", "topic")
+        final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
+                                                   .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
         final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
