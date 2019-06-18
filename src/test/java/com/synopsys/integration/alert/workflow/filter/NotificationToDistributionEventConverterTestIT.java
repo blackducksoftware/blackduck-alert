@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -27,7 +27,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     private ConfigurationAccessor configurationAccessor;
 
     @Test
-    public void convertToEventsTest() {
+    public void convertToEventsTest() throws Exception {
         final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentMap = new HashMap<>();
         final List<MessageContentGroup> messageContentGroups = new ArrayList<>();
@@ -62,8 +62,8 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
         return MockConfigurationModelFactory.createDistributionJob(fields);
     }
 
-    private AggregateMessageContent createMessageContent(final String value) {
-        return new AggregateMessageContent("Name", value, new TreeSet<>());
+    private ProviderMessageContent createMessageContent(final String value) throws AlertException {
+        return new ProviderMessageContent.Builder().applyProvider("testProvider").applyTopic("Name", value).build();
     }
 
 }

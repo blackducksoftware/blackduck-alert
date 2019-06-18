@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.BiFunction;
 
 import org.junit.jupiter.api.AfterEach;
@@ -30,11 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
@@ -127,7 +125,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         @Tag(TestTags.DEFAULT_PERFORMANCE),
         @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
     })
-    public void findMatchingNotificationTest() throws ParseException, AlertDatabaseConstraintException {
+    public void findMatchingNotificationTest() throws ParseException, AlertException {
         notificationQueryTest(notificationContentRepository::findMatchingNotification);
     }
 
@@ -139,11 +137,11 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         @Tag(TestTags.DEFAULT_PERFORMANCE),
         @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
     })
-    public void findMatchingSentNotificationTest() throws ParseException, AlertDatabaseConstraintException {
+    public void findMatchingSentNotificationTest() throws ParseException, AlertException {
         notificationQueryTest(notificationContentRepository::findMatchingSentNotification);
     }
 
-    public void notificationQueryTest(final BiFunction<String, Pageable, Page<NotificationContent>> queryFunction) throws ParseException, AlertDatabaseConstraintException {
+    public void notificationQueryTest(final BiFunction<String, Pageable, Page<NotificationContent>> queryFunction) throws ParseException, AlertException {
         final String searchTerm = "searchTerm";
         final int numberToCreate = 1000;
         final Number numberOfSearchTermMatches = initializeNotificationRepo(searchTerm, numberToCreate);
@@ -159,7 +157,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         assertEquals(numberOfSearchTermMatches, matchingNotifications.getTotalElements());
     }
 
-    private Long initializeNotificationRepo(final String searchTerm, final int numberToCreate) throws ParseException, AlertDatabaseConstraintException {
+    private Long initializeNotificationRepo(final String searchTerm, final int numberToCreate) throws ParseException, AlertException {
         final List<NotificationContent> notifications = new ArrayList<>(numberToCreate);
         long searchableCount = 0;
 
@@ -209,12 +207,18 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         return savedEntity;
     }
 
-    private MessageContentGroup createMessageGroup(final Long notificationId) {
-        final TreeSet<CategoryItem> categoryItems = new TreeSet<>();
-        final CategoryKey categoryKey = CategoryKey.from("notification", notificationId.toString());
-        categoryItems.add(new CategoryItem(categoryKey, ItemOperation.UPDATE, notificationId, new TreeSet<>()));
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent("topic", "topic value", categoryItems);
-        return MessageContentGroup.singleton(aggregateMessageContent);
+    private MessageContentGroup createMessageGroup(final Long notificationId) throws AlertException {
+        ComponentItem componentItem = new ComponentItem.Builder()
+                                          .applyComponentData("", "")
+                                          .applyOperation(ItemOperation.UPDATE)
+                                          .applyNotificationId(notificationId)
+                                          .build();
+        final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
+                                                   .applyTopic("testTopic", "")
+                                                   .applyAllComponentItems(List.of(componentItem))
+                                                   .build();
+        return MessageContentGroup.singleton(content);
     }
 
 }

@@ -3,14 +3,12 @@ package com.synopsys.integration.alert.database.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -18,11 +16,11 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -31,11 +29,11 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 public class AuditEntryAccessorTest {
 
     @Test
-    public void createAuditEntryTest() {
+    public void createAuditEntryTest() throws Exception {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
-        final AggregateMessageContent content = createMessageContent();
+        final ProviderMessageContent content = createMessageContent();
         final UUID commonConfigUUID = UUID.randomUUID();
         final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         final Long auditID = 10L;
@@ -55,11 +53,11 @@ public class AuditEntryAccessorTest {
     }
 
     @Test
-    public void createAuditEntryNullEntryIdTest() {
+    public void createAuditEntryNullEntryIdTest() throws Exception {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
-        final AggregateMessageContent content = createMessageContent();
+        final ProviderMessageContent content = createMessageContent();
         final UUID commonConfigUUID = UUID.randomUUID();
         final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         savedAuditEntryEntity.setId(10L);
@@ -116,7 +114,7 @@ public class AuditEntryAccessorTest {
         assertEquals("error", entity.getErrorMessage());
     }
 
-    public AggregateMessageContent createMessageContent() {
+    public ProviderMessageContent createMessageContent() throws AlertException {
         final LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
         final LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
 
@@ -125,17 +123,35 @@ public class AuditEntryAccessorTest {
         final LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
         final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
-        final CategoryItem categoryItem1 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.ADD, 1L, new TreeSet<>(Arrays.asList(linkableItem1, linkableItem2)));
-        final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, new TreeSet<>(Collections.singletonList(linkableItem2)));
-        final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, new TreeSet<>(Arrays.asList(linkableItem3, linkableItem4, linkableItem5)));
+        final ComponentItem componentItem_1 = new ComponentItem.Builder()
+                                                  .setComponentKeyPrefix("TYPE", "data1", "data2")
+                                                  .applyOperation(ItemOperation.ADD)
+                                                  .applyNotificationId(1L)
+                                                  .applyComponentAttribute(linkableItem1)
+                                                  .applyComponentAttribute(linkableItem2)
+                                                  .build();
+        final ComponentItem componentItem_2 = new ComponentItem.Builder()
+                                                  .setComponentKeyPrefix("TYPE", "data1", "data2")
+                                                  .applyOperation(ItemOperation.UPDATE)
+                                                  .applyNotificationId(2L)
+                                                  .applyComponentAttribute(linkableItem2)
+                                                  .build();
+        final ComponentItem componentItem_3 = new ComponentItem.Builder()
+                                                  .setComponentKeyPrefix("TYPE", "data1", "data2")
+                                                  .applyOperation(ItemOperation.DELETE)
+                                                  .applyNotificationId(1L)
+                                                  .applyComponentAttribute(linkableItem3)
+                                                  .applyComponentAttribute(linkableItem4)
+                                                  .applyComponentAttribute(linkableItem5)
+                                                  .build();
+
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
-        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
-        categoryItems.add(categoryItem1);
-        categoryItems.add(categoryItem2);
-        categoryItems.add(categoryItem3);
-
-        return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, categoryItems);
+        return new ProviderMessageContent.Builder()
+                   .applyTopic("Topic", "audit utility test", "https://google.com")
+                   .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+                   .applyAllComponentItems(List.of(componentItem_1, componentItem_2, componentItem_3))
+                   .build();
     }
 
     private void mockAuditRepositorySave(final AuditEntryRepository auditEntryRepository, final AuditEntryEntity savedAuditEntryEntity) {

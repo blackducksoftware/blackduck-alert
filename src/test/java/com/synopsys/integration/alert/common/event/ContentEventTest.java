@@ -2,13 +2,11 @@ package com.synopsys.integration.alert.common.event;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.TreeSet;
-
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 
 public class ContentEventTest {
     private static final String TOPIC = "TOPIC";
@@ -28,10 +26,14 @@ public class ContentEventTest {
     }
 
     @Test
-    public void getContentTest() {
+    public void getContentTest() throws Exception {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
-        final MessageContentGroup contentGroup = MessageContentGroup.singleton(messageContent);
+        final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider")
+                                                   .applyTopic("testTopic", "topic")
+                                                   .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                                   .build();
+        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
         assertEquals(contentGroup, event.getContent());
     }

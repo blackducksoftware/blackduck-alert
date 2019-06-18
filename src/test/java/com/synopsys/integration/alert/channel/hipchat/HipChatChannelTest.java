@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -34,9 +33,10 @@ import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
@@ -64,7 +64,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtility, freemarkerTemplatingService);
 
-        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName());
+        final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName());
         final Boolean notify = false;
         final String color = "random";
 
@@ -87,12 +87,15 @@ public class HipChatChannelTest extends ChannelTest {
     }
 
     @Test
-    public void createRequestThrowsExceptionWhenRoomIdIsNullTest() {
+    public void createRequestThrowsExceptionWhenRoomIdIsNullTest() throws Exception {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null);
         IntegrationException intException = null;
         try {
             final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-            final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+            final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                              .applyTopic("testTopic", "", null)
+                                                              .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+                                                              .build();
 
             final FieldAccessor fieldAccessor = new FieldAccessor(new HashMap<>());
             final DistributionEvent event = new DistributionEvent(
@@ -110,7 +113,10 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                          .applyTopic("testTopic", "", null)
+                                                          .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+                                                          .build();
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
@@ -149,7 +155,10 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                          .applyTopic("testTopic", "", null)
+                                                          .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+                                                          .build();
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
@@ -177,7 +186,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
 
-        final AggregateMessageContent messageContent = createLargeMessageContent();
+        final ProviderMessageContent messageContent = createLargeMessageContent();
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
@@ -194,12 +203,12 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.verify(restChannelUtilitySpy, Mockito.times(4)).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
     }
 
-    private AggregateMessageContent createLargeMessageContent() {
-        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Chunked Request");
+    private ProviderMessageContent createLargeMessageContent() throws AlertException {
+        final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Chunked Request");
         int count = 0;
         while (gson.toJson(messageContent).length() < HipChatChannel.MESSAGE_SIZE_LIMIT * 3) {
             final LinkableItem newItem = new LinkableItem("Name " + count++, "Relatively long value #" + count + " with some trailing text for good measure...", "https://google.com");
-            messageContent.getCategoryItems().iterator().next().getItems().add(newItem);
+            messageContent.getComponentItems().iterator().next().getComponentAttributes().add(newItem);
         }
         return messageContent;
     }

@@ -24,37 +24,44 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     public static final String CATEGORY_TYPE = "policy";
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
     }
 
-    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
-        final List<String> categoryKeyParts = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
-        final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);
+    protected Optional<ComponentItem> addApplicableItems(Long notificationId, LinkableItem componentLinkableItem, LinkableItem componentVersionItem, Set<LinkableItem> policyItems, ItemOperation operation) {
+        try {
+            updatePolicyItems(policyItems);
+            ComponentItem.Builder builder = new ComponentItem.Builder();
+            builder.applyComponentData(componentLinkableItem)
+                .applySubComponent(componentVersionItem)
+                .applyAllComponentAttributes(policyItems)
+                .applyCategory(CATEGORY_TYPE)
+                .applyOperation(operation)
+                .applyNotificationId(notificationId);
 
-        updatePolicyItems(policyItems);
-        for (final LinkableItem item : applicableItems) {
-            final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-            linkableItems.add(item);
-            linkableItems.addAll(policyItems);
-            addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
+            return Optional.of(builder.build());
+        } catch (Exception ex) {
+            logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentLinkableItem);
+            logger.error("Error building policy component cause ", ex);
+            return Optional.empty();
         }
     }
 

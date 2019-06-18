@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -22,13 +21,13 @@ import org.springframework.core.io.ClassPathResource;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
-import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollapser;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.DefaultMessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.DigestMessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentCollapser;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -86,7 +85,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addCategoryItems(Mockito.any(SortedSet.class), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
+            .getComponentItems(Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
         spiedCollector.insert(n0);
         final List<MessageContentGroup> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());

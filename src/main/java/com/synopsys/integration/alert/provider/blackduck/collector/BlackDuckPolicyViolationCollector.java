@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,14 +45,14 @@ import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.item.BlackDuckPolicyLinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
@@ -70,12 +71,12 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
     }
 
-    @Override
-    protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         final ItemOperation operation = getOperationFromNotification(notificationContent);
         if (operation == null) {
-            return;
+            return List.of();
         }
+        List<ComponentItem> items = new LinkedList<>();
 
         final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
         final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<ComponentVersionStatus>() {});
@@ -94,15 +95,17 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
         for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
             final PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
+            final BlackDuckPolicyLinkableItem policyComponentData = policyComponentToLinkableItem.getValue();
 
             final SortedSet<LinkableItem> linkablePolicyItems = policyComponentMapping.getPolicies()
                                                                     .stream()
                                                                     .map(this::createPolicyLinkableItem)
                                                                     .collect(Collectors.toCollection(TreeSet::new));
-            final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
-            final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getComponentData();
-            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
+
+            Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), policyComponentData.getComponentItem().orElse(null), policyComponentData.getComponentVersion().orElse(null), linkablePolicyItems, operation);
+            item.ifPresent(items::add);
         }
+        return items;
     }
 
     private ItemOperation getOperationFromNotification(final AlertNotificationWrapper notificationContent) {
