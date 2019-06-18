@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -75,12 +76,17 @@ public class EmailGlobalTestAction extends TestAction {
         final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from the Alert global email configuration.", null);
         set.add(linkableItem);
         ComponentItem.Builder componentBuilder = new ComponentItem.Builder();
-        componentBuilder.applyComponentData("", "")
+        componentBuilder
+            .applyComponentData("", "")
+            .applyCategory("email test")
+            .applyOperation(ItemOperation.ADD)
             .applyNotificationId(1L)
             .applyComponentAttribute(linkableItem);
 
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder.applyTopic("Message Content", "Test from Alert")
+        builder
+            .applyProvider("Test Provider")
+            .applyTopic("Message Content", "Test from Alert")
             .applyAllComponentItems(List.of(componentBuilder.build()));
 
         final ProviderMessageContent messageContent = builder.build();
