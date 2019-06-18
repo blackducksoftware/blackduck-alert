@@ -40,8 +40,9 @@ public abstract class TestAction {
 
     public ProviderMessageContent createTestNotificationContent() throws AlertException {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder.applyTopic("testTopic", "Alert Test Message");
-        builder.applySubTopic("subTopic", "Test message sent by Alert");
+        builder.applyProvider("Alert");
+        builder.applyTopic("Test Topic", "Alert Test Message");
+        builder.applySubTopic("Test SubTopic", "Test message sent by Alert");
         return builder.build();
     }
 

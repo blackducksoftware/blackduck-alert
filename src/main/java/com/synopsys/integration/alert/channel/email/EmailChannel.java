@@ -41,13 +41,12 @@ import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailChannel.COMPONENT_NAME)
@@ -109,20 +108,9 @@ public class EmailChannel extends DistributionChannel {
         final HashMap<String, Object> model = new HashMap<>();
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
 
-        final String providerUrl;
-        final String providerName;
-        if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
-            final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
-            providerUrl = optionalBlackDuckUrl.map(StringUtils::trimToEmpty).orElse("#");
-            providerName = "Black Duck";
-        } else if (PolarisProvider.COMPONENT_NAME.equals(provider)) {
-            final Optional<String> optionalProviderUrl = polarisProperties.getUrl();
-            providerUrl = optionalProviderUrl.map(StringUtils::trimToEmpty).orElse("#");
-            providerName = "Polaris";
-        } else {
-            providerUrl = null;
-            providerName = null;
-        }
+        final LinkableItem comonProvider = content.getComonProvider();
+        final String providerName = comonProvider.getValue();
+        final String providerUrl = comonProvider.getUrl().orElse("#");
 
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);

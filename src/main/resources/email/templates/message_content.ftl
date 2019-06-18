@@ -3,11 +3,13 @@
 <#macro displayCount type size>
     <p class="bold indented">${size} ${type}</p>
 </#macro>
+
 <#macro moreItems size>
     <#if size gt 10>
         <p>${size - 10} more</p>
     </#if>
 </#macro>
+
 <div style="display:inline-block;width:100%;">
     <div>
         <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: bold;font-size: 24px;color: #4A4A4A;">ALERT</span>
@@ -22,6 +24,7 @@
     <br />
     <br />
 </#if>
+
 <#macro printLink linkableItem>
     <#assign url = linkableItem.getUrl()/>
     <#if url.isPresent()>
@@ -47,16 +50,23 @@
     </#if>
 </#macro>
 
-<#macro printCategoryData categoryItem>
-    <#if categoryItem??>
-        <#assign linkableItemsMap = categoryItem.getItemsOfSameName()/>
-        <#if categoryItem.operation?? >
-            <br />Type: ${categoryItem.operation}
-            <!-- <br/>Number of Changes: ${linkableItemsMap?values?size} -->
-            <br />
-        <#else>
+<#macro printComponentData componentItem>
+    <br />
+    <#if componentItem??>
+        Category: ${componentItem.getCategory()}
+        <br />
+        Operation: ${componentItem.getOperation()}
+        <br />
+
+        <@printLinkableItem componentItem.getComponent()/>
+        <br />
+        <#assign subComponent = componentItem.getSubComponent()/>
+        <#if subComponent.isPresent() >
+            <@printLinkableItem subComponent.get()/>
             <br />
         </#if>
+
+        <#assign linkableItemsMap = componentItem.getItemsOfSameName()/>
         <#list linkableItemsMap as itemKey, linkableItems>
             <@printList itemKey, linkableItems/>
             <br />
@@ -69,17 +79,17 @@
         <strong>
             <@printLinkableItem content.commonTopic/>
         </strong>
-        <#list content.subContent as aggregateMessageContent>
+        <#list content.subContent as providerMessageContent>
             <strong>
-                <#if aggregateMessageContent.subTopic.isPresent()>
+                <#if providerMessageContent.subTopic.isPresent()>
                     <br />
-                    <@printLinkableItem aggregateMessageContent.subTopic.get()/>
+                    <@printLinkableItem providerMessageContent.subTopic.get()/>
                 </#if>
             </strong>
             <br />- - - - - - - - - - - - - - - - - - - -
-            <#if aggregateMessageContent.categoryItems??>
-                <#list aggregateMessageContent.categoryItems as categoryItem>
-                    <@printCategoryData categoryItem/>
+            <#if providerMessageContent.componentItems??>
+                <#list providerMessageContent.componentItems as componentItem>
+                    <@printComponentData componentItem/>
                 </#list>
             <#else>
                 <br /><i>A notification was received, but it was empty.</i>

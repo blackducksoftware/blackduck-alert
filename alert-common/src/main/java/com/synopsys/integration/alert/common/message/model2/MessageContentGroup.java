@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class MessageContentGroup extends AlertSerializableModel {
     private final List<ProviderMessageContent> subContent;
 
+    private LinkableItem comonProvider;
     private LinkableItem commonTopic;
 
     public static MessageContentGroup singleton(final ProviderMessageContent message) {
@@ -49,11 +50,12 @@ public class MessageContentGroup extends AlertSerializableModel {
     }
 
     public boolean applies(final ProviderMessageContent message) {
-        return null != commonTopic && commonTopic.getValue().equals(message.getTopic().getValue());
+        return null == commonTopic || commonTopic.getValue().equals(message.getTopic().getValue());
     }
 
     public void add(final ProviderMessageContent message) {
         if (null == commonTopic) {
+            this.comonProvider = message.getProvider();
             this.commonTopic = message.getTopic();
         } else if (!commonTopic.getValue().equals(message.getTopic().getValue())) {
             throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getTopic().getValue()));
@@ -67,6 +69,10 @@ public class MessageContentGroup extends AlertSerializableModel {
 
     public List<ProviderMessageContent> getSubContent() {
         return subContent;
+    }
+
+    public LinkableItem getComonProvider() {
+        return comonProvider;
     }
 
     public LinkableItem getCommonTopic() {
