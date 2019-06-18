@@ -25,13 +25,12 @@ package com.synopsys.integration.alert.common.workflow.processor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
-@Component
+//@Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {
     private final DefaultMessageContentProcessor defaultMessageContentProcessor;
     private final MessageContentCollapser messageContentCollapser;

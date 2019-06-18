@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -40,7 +41,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
-//@Component
+@Component
 public class MessageContentCollapser {
     private final Map<ItemOperation, BiFunction<Map<ComponentKey, ComponentItem>, ComponentItem, Void>> operationFunctionMap;
 
