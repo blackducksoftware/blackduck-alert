@@ -6,9 +6,7 @@ import TextInput from 'field/input/TextInput';
 import SubmitButton from 'field/input/SubmitButton';
 import Header from 'component/common/Header';
 import { login } from 'store/actions/session';
-import { hideResetModal, sendPasswordResetEmail, showResetModal } from 'store/actions/system';
-import ResetPasswordModal from './component/common/ResetPasswordModal';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -65,18 +63,8 @@ class LoginPage extends Component {
                                 onChange={this.handleChange}
                                 value={this.state.password}
                             />
-
                             <div className="row">
                                 <div className="col-sm-12 text-right">
-                                    <a
-                                        href="#"
-                                        onClick={(evt) => {
-                                            evt.preventDefault();
-                                            this.props.showResetModal();
-                                        }}
-                                    >Reset Password
-                                    </a>
-                                    <span>&nbsp;&nbsp;&nbsp;</span>
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
                                     <div className="progressIcon">
                                         {this.props.loggingIn &&
@@ -87,16 +75,6 @@ class LoginPage extends Component {
                                         }
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <ResetPasswordModal
-                                    showResetModal={this.props.showPasswordResetModal}
-                                    cancelResetModal={this.props.hideResetModal}
-                                    resetPassword={(resetUsername) => {
-                                        this.props.resetPassword(resetUsername);
-                                    }}
-                                    resettingPassword={this.props.resettingPassword}
-                                />
                             </div>
                         </form>
                     </div>
@@ -109,12 +87,7 @@ class LoginPage extends Component {
 LoginPage.propTypes = {
     login: PropTypes.func.isRequired,
     loggingIn: PropTypes.bool.isRequired,
-    errorMessage: PropTypes.string,
-    showResetModal: PropTypes.func.isRequired,
-    showPasswordResetModal: PropTypes.bool.isRequired,
-    hideResetModal: PropTypes.func.isRequired,
-    resetPassword: PropTypes.func.isRequired,
-    resettingPassword: PropTypes.bool.isRequired
+    errorMessage: PropTypes.string
 };
 
 LoginPage.defaultProps = {
@@ -124,16 +97,11 @@ LoginPage.defaultProps = {
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
     loggingIn: state.session.fetching,
-    errorMessage: state.session.errorMessage,
-    resettingPassword: state.system.resettingPassword,
-    showPasswordResetModal: state.system.showPasswordResetModal
+    errorMessage: state.session.errorMessage
 });
 
 const mapDispatchToProps = dispatch => ({
-    login: (username, password) => dispatch(login(username, password)),
-    resetPassword: resetUsername => dispatch(sendPasswordResetEmail(resetUsername)),
-    showResetModal: () => dispatch(showResetModal()),
-    hideResetModal: () => dispatch(hideResetModal())
+    login: (username, password) => dispatch(login(username, password))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
