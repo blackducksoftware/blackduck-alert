@@ -7,7 +7,7 @@ import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
-import AuditDetails from 'dynamic/loading/audit/Details';
+import AuditDetails from 'dynamic/loaded/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
@@ -283,7 +283,8 @@ class AuditPage extends Component {
             return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
                                                buttonText="Re-send" />);
         }
-        return (<div className="jobIconButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
+        return (<div className="jobIconButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+        </div>);
     }
 
     isResendAllowed() {
@@ -405,9 +406,12 @@ class AuditPage extends Component {
                         <TableHeaderColumn dataField="provider" dataSort columnClassName="tableCell"
                                            dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell"
-                                           dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
-                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
-                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
+                                           dataFormat={this.notificationTypeDataFormat}>Notification
+                            Types</TableHeaderColumn>
+                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time
+                            Retrieved</TableHeaderColumn>
+                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last
+                            Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell"
                                            dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />

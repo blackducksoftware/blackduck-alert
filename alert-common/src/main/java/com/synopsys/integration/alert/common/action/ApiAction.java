@@ -53,4 +53,8 @@ public abstract class ApiAction {
         return fieldModel;
     }
 
+    public FieldModel beforeValidate(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
 }

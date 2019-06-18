@@ -122,6 +122,12 @@ public class FieldModelProcessor {
                    .orElse(fieldModel);
     }
 
+    public FieldModel performBeforeValidate(final FieldModel fieldModel) {
+        return retrieveApiAction(fieldModel)
+                   .map(apiAction -> apiAction.beforeSaveAction(fieldModel))
+                   .orElse(fieldModel);
+    }
+
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
         return retrieveTestAction(fieldModel.getDescriptorName(), fieldModel.getContext());
     }

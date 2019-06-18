@@ -138,7 +138,8 @@ public class ConfigActions {
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+        final FieldModel processedFieldModel = fieldModelProcessor.performBeforeValidate(fieldModel);
+        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(processedFieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }

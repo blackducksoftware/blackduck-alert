@@ -197,7 +197,8 @@ public class JobConfigActions {
     public String validateJob(final JobFieldModel jobFieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+            final FieldModel processedFieldModel = fieldModelProcessor.performBeforeValidate(fieldModel);
+            fieldErrors.putAll(fieldModelProcessor.validateFieldModel(processedFieldModel));
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

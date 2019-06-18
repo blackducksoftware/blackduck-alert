@@ -9,7 +9,7 @@ import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
-import DescriptorContentLoader from 'dynamic/loading/DescriptorContentLoader';
+import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 
 
 class MainPage extends Component {

@@ -47,11 +47,15 @@ class ChannelTestModal extends Component {
                     <Modal.Title>Test Your Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <TextInput id="destinationName" label={this.props.destinationName} name="destinationName" value={this.state.destination} onChange={this.handleChange} />
+                    <TextInput id="destinationName" label={this.props.destinationName} name="destinationName"
+                               value={this.state.destination} onChange={this.handleChange} />
                 </Modal.Body>
                 <Modal.Footer>
-                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel</button>
-                    <button id="testSend" type="button" className="btn btn-primary" onClick={this.handleSendTestMessage}>Send Test Message</button>
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
+                    </button>
+                    <button id="testSend" type="button" className="btn btn-primary"
+                            onClick={this.handleSendTestMessage}>Send Test Message
+                    </button>
                     {this.state.show &&
                     <div className="progressIcon">
                         <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
@@ -73,6 +77,6 @@ ChannelTestModal.propTypes = {
 
 ChannelTestModal.defaultProps = {
     showTestModal: false
-}
+};
 
 export default ChannelTestModal;

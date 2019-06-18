@@ -10,6 +10,7 @@ import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
+import EndpointField from '../field/EndpointField';
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -123,6 +124,24 @@ function buildCounterField(items, field) {
     return <CounterField {...items} />;
 }
 
+function buildEndpointField(items, field) {
+    const { value } = items;
+    const {
+        buttonLabel, endpoint, successBox, subFields
+    } = field;
+    const checkedValue = convertStringToBoolean(value);
+    Object.assign(items, {
+        value: checkedValue
+    });
+    return (<EndpointField
+        fields={subFields}
+        buttonLabel={buttonLabel}
+        endpoint={endpoint}
+        successBox={successBox}
+        {...items}
+    />);
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -131,7 +150,8 @@ export const FIELDS = {
     NumberInput: buildNumberInput,
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
-    CountdownField: buildCounterField
+    CountdownField: buildCounterField,
+    EndpointField: buildEndpointField
 };
 
 export function getField(fieldType, props, field) {
@@ -150,10 +170,14 @@ export function retrieveKeys(descriptorFields) {
     return fieldKeys;
 }
 
-export function createField(field, value, isSet, fieldError, onChange) {
+export function createField(field, currentConfig, fieldError, onChange) {
     const {
         key, label, description, type
     } = field;
+
+    const value = FieldModelUtilities.getFieldModelValues(currentConfig, key);
+    const isSet = FieldModelUtilities.isFieldModelValueSet(currentConfig, key);
+
     const propMapping = {
         key,
         id: key,
@@ -164,7 +188,8 @@ export function createField(field, value, isSet, fieldError, onChange) {
         isSet,
         onChange,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
-        errorValue: fieldError
+        errorValue: fieldError,
+        currentConfig
     };
 
     return getField(type, propMapping, field);
