@@ -22,10 +22,10 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,19 +38,21 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
-public class ComponentItem extends AlertSerializableModel implements Buildable {
+public class ComponentItem extends AlertSerializableModel implements Buildable, Comparable<ComponentItem> {
     private final LinkableItem component;
     private final LinkableItem subComponent;
     private final Set<LinkableItem> componentAttributes;
+    private final Integer priority;
     private final String category;
     private final ComponentKey componentKey;
     private final ItemOperation operation;
     private final Long notificationId;
 
-    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId) {
+    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, Integer priority, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
+        this.priority = priority;
         this.category = category;
         this.componentKey = componentKey;
         this.operation = operation;
@@ -69,6 +71,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return componentAttributes;
     }
 
+    public Integer getPriority() {
+        return priority;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -85,9 +91,16 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return notificationId;
     }
 
+    @Override
+    public final int compareTo(final ComponentItem otherItem) {
+        if (null == otherItem) {
+            throw new NullPointerException("Other item cannot be null");
+        }
+        return 0;
+    }
+
     /**
      * Intended to be used for display purposes (such as freemarker templates).
-     * @return A map from the name of a LinkableItem to all the LinkableItems with that name.
      */
     public Map<String, List<LinkableItem>> getItemsOfSameName() {
         final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
@@ -96,13 +109,14 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         }
         for (final LinkableItem item : componentAttributes) {
             final String name = item.getName();
-            map.computeIfAbsent(name, ignored -> new ArrayList<>()).add(item);
+            map.computeIfAbsent(name, ignored -> new LinkedList<>()).add(item);
         }
         return map;
     }
 
     public static class Builder {
-        private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
+        private final Set<LinkableItem> componentAttributes = new HashSet<>();
+        private Integer priority;
         private String category;
         private String componentName;
         private String componentValue;
@@ -126,7 +140,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
             final String additionalDataString = ComponentKey.generateAdditionalDataString(componentAttributes);
             ComponentKey key = new ComponentKey(category, componentName, componentValue, subComponentName, subComponentValue, additionalDataString);
-            return new ComponentItem(component, subComponent, componentAttributes, category, key, operation, notificationId);
+            return new ComponentItem(component, subComponent, componentAttributes, priority, category, key, operation, notificationId);
         }
 
         public Builder applyComponentData(LinkableItem component) {
@@ -180,6 +194,11 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder addSubComponentUrl(final String subComponentUrl) {
             this.subComponentUrl = subComponentUrl;
+            return this;
+        }
+
+        public Builder applyPriority(Integer priority) {
+            this.priority = priority;
             return this;
         }
 
