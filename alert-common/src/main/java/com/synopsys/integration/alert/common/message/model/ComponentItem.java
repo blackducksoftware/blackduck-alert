@@ -23,11 +23,9 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -106,7 +104,6 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     public static class Builder {
         private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
         private String category;
-        private List<String> componentKeyParts = new LinkedList<>();
         private String componentName;
         private String componentValue;
         private String componentUrl;
@@ -117,7 +114,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private Long notificationId;
 
         public ComponentItem build() throws AlertException {
-            if (null == componentName || null == componentValue || null == category || componentKeyParts.isEmpty() || null == operation || null == notificationId) {
+            if (null == componentName || null == componentValue || null == category || null == operation || null == notificationId) {
                 throw new AlertException("Missing required field(s)");
             }
 
@@ -188,13 +185,6 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder applyCategory(final String category) {
             this.category = category;
-            return this;
-        }
-
-        // if the component key isn't set then the component key is constructed by joining these parts with a separator character and the subtopic name and value.
-        // This method replaces the key parts
-        public Builder setComponentKeyPrefix(final String... keyParts) {
-            this.componentKeyParts = new LinkedList<>(Arrays.asList(keyParts));
             return this;
         }
 

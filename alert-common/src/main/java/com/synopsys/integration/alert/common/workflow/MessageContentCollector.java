@@ -227,7 +227,9 @@ public abstract class MessageContentCollector {
                 buildersForNotifications.add(foundContent);
             } else {
                 ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-                builder.applyTopic(topicItem.getName(), topicItem.getValue());
+                //TODO get the provider URL as well if possible and add it here.
+                builder.applyProvider(providerName)
+                    .applyTopic(topicItem.getName(), topicItem.getValue());
                 if (null != subTopic) {
                     builder.applySubTopic(subTopic.getName(), subTopic.getValue());
                 }
