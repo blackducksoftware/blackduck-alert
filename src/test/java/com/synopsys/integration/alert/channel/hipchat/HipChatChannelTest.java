@@ -114,6 +114,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                          .applyProvider("Test Provider")
                                                           .applyTopic("testTopic", "", null)
                                                           .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
                                                           .build();
@@ -156,6 +157,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                          .applyProvider("Test Provider")
                                                           .applyTopic("testTopic", "", null)
                                                           .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
                                                           .build();

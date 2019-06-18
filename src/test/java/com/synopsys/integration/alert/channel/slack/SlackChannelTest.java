@@ -103,7 +103,9 @@ public class SlackChannelTest extends ChannelTest {
 
         final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
-        Mockito.when(content.getTopic().getValue()).thenReturn("Value");
+        final LinkableItem topicItem = Mockito.mock(LinkableItem.class);
+        Mockito.when(topicItem.getValue()).thenReturn("Value");
+        Mockito.when(content.getTopic()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
         try {
             channel.createRequests(event);
@@ -126,7 +128,9 @@ public class SlackChannelTest extends ChannelTest {
 
         final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
-        Mockito.when(content.getTopic().getValue()).thenReturn("Value");
+        final LinkableItem topicItem = Mockito.mock(LinkableItem.class);
+        Mockito.when(topicItem.getValue()).thenReturn("Value");
+        Mockito.when(content.getTopic()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
 
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
@@ -148,7 +152,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
         final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
-        Mockito.when(content.getTopic().getValue()).thenReturn(null);
+        Mockito.when(content.getTopic()).thenReturn(Mockito.mock(LinkableItem.class));
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
@@ -174,7 +178,8 @@ public class SlackChannelTest extends ChannelTest {
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue"));
         final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .setComponentKeyPrefix("type", "key")
+                                                .applyComponentData("", "")
+                                                .applyCategory("category")
                                                 .applyOperation(ItemOperation.ADD)
                                                 .applyNotificationId(1L)
                                                 .applyAllComponentAttributes(items)
@@ -212,7 +217,8 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue", "url"));
 
         final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .setComponentKeyPrefix("type", "key")
+                                                .applyComponentData("", "")
+                                                .applyCategory("category")
                                                 .applyOperation(ItemOperation.ADD)
                                                 .applyNotificationId(1L)
                                                 .applyAllComponentAttributes(items)
@@ -251,14 +257,16 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue_2"));
 
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("type", "Key1")
+                                                  .applyComponentData("", "")
+                                                  .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
                                                   .applyNotificationId(1L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
 
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("type", "Key2")
+                                                  .applyComponentData("", "")
+                                                  .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
                                                   .applyNotificationId(2L)
                                                   .applyAllComponentAttributes(items)
@@ -296,14 +304,16 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue_1", "itemUrl"));
         items.add(new LinkableItem("itemName", "itemvalue_2", "itemUrl"));
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("type", "Key1")
+                                                  .applyComponentData("", "")
+                                                  .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
                                                   .applyNotificationId(1L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
 
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("type", "Key2")
+                                                  .applyComponentData("", "")
+                                                  .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
                                                   .applyNotificationId(2L)
                                                   .applyAllComponentAttributes(items)

@@ -12,6 +12,8 @@
 package com.synopsys.integration.alert.channel;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -62,20 +64,23 @@ public class ChannelTest {
         ComponentItem.Builder componentBuilder3 = new ComponentItem.Builder();
 
         componentBuilder1
-            .setComponentKeyPrefix("data1", "data2")
+            .applyComponentData("component", "componentValue")
+            .applyCategory("category")
             .applyNotificationId(1L)
             .applyOperation(ItemOperation.ADD)
             .applyComponentAttribute(linkableItem1)
             .applyComponentAttribute(linkableItem2);
 
         componentBuilder2
-            .setComponentKeyPrefix("data1", "data2")
+            .applyComponentData("component", "componentValue")
+            .applyCategory("category")
             .applyNotificationId(2L)
             .applyOperation(ItemOperation.UPDATE)
             .applyComponentAttribute(linkableItem2);
 
         componentBuilder3
-            .setComponentKeyPrefix("data1", "data2")
+            .applyComponentData("component", "componentValue")
+            .applyCategory("category")
             .applyNotificationId(1L)
             .applyOperation(ItemOperation.DELETE)
             .applyComponentAttribute(linkableItem3)
@@ -84,13 +89,15 @@ public class ChannelTest {
 
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
-        final SortedSet<ComponentItem> items = new TreeSet<>();
+        final Collection<ComponentItem> items = new LinkedList<>();
         items.add(componentBuilder1.build());
         items.add(componentBuilder2.build());
         items.add(componentBuilder3.build());
 
         ProviderMessageContent.Builder providerBuilder = new ProviderMessageContent.Builder();
-        providerBuilder.applyTopic("Topic", testName, "https://google.com")
+        providerBuilder
+            .applyProvider("Test Provider")
+            .applyTopic("Topic", testName, "https://google.com")
             .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
             .applyAllComponentItems(items);
 

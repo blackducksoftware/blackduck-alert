@@ -124,20 +124,17 @@ public class AuditEntryAccessorTest {
         final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("TYPE", "data1", "data2")
                                                   .applyOperation(ItemOperation.ADD)
                                                   .applyNotificationId(1L)
                                                   .applyComponentAttribute(linkableItem1)
                                                   .applyComponentAttribute(linkableItem2)
                                                   .build();
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("TYPE", "data1", "data2")
                                                   .applyOperation(ItemOperation.UPDATE)
                                                   .applyNotificationId(2L)
                                                   .applyComponentAttribute(linkableItem2)
                                                   .build();
         final ComponentItem componentItem_3 = new ComponentItem.Builder()
-                                                  .setComponentKeyPrefix("TYPE", "data1", "data2")
                                                   .applyOperation(ItemOperation.DELETE)
                                                   .applyNotificationId(1L)
                                                   .applyComponentAttribute(linkableItem3)
