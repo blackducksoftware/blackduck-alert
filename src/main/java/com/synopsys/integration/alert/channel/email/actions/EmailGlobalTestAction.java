@@ -73,12 +73,12 @@ public class EmailGlobalTestAction extends TestAction {
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final SortedSet<LinkableItem> set = new TreeSet<>();
-        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from the Alert global email configuration.", null);
+        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from Alert.", null);
         set.add(linkableItem);
         ComponentItem.Builder componentBuilder = new ComponentItem.Builder();
         componentBuilder
-            .applyComponentData("", "")
-            .applyCategory("email test")
+            .applyComponentData("Component", "Global Email Configuration")
+            .applyCategory("Test")
             .applyOperation(ItemOperation.ADD)
             .applyNotificationId(1L)
             .applyComponentAttribute(linkableItem);
@@ -90,7 +90,7 @@ public class EmailGlobalTestAction extends TestAction {
             .applyAllComponentItems(List.of(componentBuilder.build()));
 
         final ProviderMessageContent messageContent = builder.build();
-        return emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", MessageContentGroup.singleton(messageContent));
+        return emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", MessageContentGroup.singleton(messageContent));
     }
 
 }

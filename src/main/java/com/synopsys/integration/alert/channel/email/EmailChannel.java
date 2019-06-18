@@ -91,30 +91,29 @@ public class EmailChannel extends DistributionChannel {
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
         final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
-        return sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent());
+        return sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());
     }
 
-    public String sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final MessageContentGroup content)
+    public String sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String formatType, final MessageContentGroup content)
         throws IntegrationException {
         String topicValue = null;
         if (!content.isEmpty()) {
             topicValue = content.getCommonTopic().getValue();
         }
 
+        final LinkableItem comonProvider = content.getComonProvider();
+        final String providerName = comonProvider.getValue();
+        final String providerUrl = comonProvider.getUrl().orElse("#");
+
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", provider, topicValue);
+            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", providerName, topicValue);
             throw new AlertException(errorMessage);
         }
         final HashMap<String, Object> model = new HashMap<>();
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
 
-        final LinkableItem comonProvider = content.getComonProvider();
-        final String providerName = comonProvider.getValue();
-        final String providerUrl = comonProvider.getUrl().orElse("#");
-
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-
         model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);

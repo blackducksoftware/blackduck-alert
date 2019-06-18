@@ -190,21 +190,21 @@ public class SlackChannel extends DistributionChannel {
     }
 
     private String createLinkableItemString(final LinkableItem linkableItem, final boolean bold) {
-        String format = "%s: <%s|%s>";
-        if (bold) {
-            format = String.format("*%s*", format);
-        }
-
         final String name = createSlackString(linkableItem.getName());
         final String value = createSlackString(linkableItem.getValue());
         final Optional<String> optionalUrl = linkableItem.getUrl();
+
+        String formattedString;
         if (optionalUrl.isPresent()) {
-            return String.format(format, name, optionalUrl.get(), value);
+            formattedString = String.format("%s: <%s|%s>", name, optionalUrl.get(), value);
+        } else {
+            formattedString = String.format("%s: %s", name, value);
         }
+
         if (bold) {
-            return String.format("*%s: %s*", name, value);
+            return String.format("*%s*", formattedString);
         }
-        return String.format("%s: %s", name, value);
+        return formattedString;
     }
 
     private String createSlackString(final String unencodedString) {
