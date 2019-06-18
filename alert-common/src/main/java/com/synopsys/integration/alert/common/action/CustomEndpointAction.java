@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,22 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.actions;
+package com.synopsys.integration.alert.common.action;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.Map;
 
-import com.synopsys.integration.alert.channel.jira.JiraChannel;
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
-@Component
-public class JiraConfigurationAction extends ConfigurationAction {
+public abstract class CustomEndpointAction {
 
-    @Autowired
-    public JiraConfigurationAction(final JiraGlobalTestAction globalTestAction, final JiraDistributionTestAction jiraDistributionTestAction, final JiraGlobalApiAction jiraGlobalApiAction) {
-        super(JiraChannel.COMPONENT_NAME);
-        addGlobalTestAction(globalTestAction);
-        addDistributionTestAction(jiraDistributionTestAction);
-        addGlobalApiAction(jiraGlobalApiAction);
-    }
+    public abstract String performAction(Map<String, FieldValueModel> config) throws AlertException;
+
 }

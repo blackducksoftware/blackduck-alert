@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
 import PopUp from './PopUp';
 import LabeledField from './LabeledField';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 class EndpointField extends Component {
     constructor(props) {
@@ -12,23 +13,27 @@ class EndpointField extends Component {
         this.flipShowModal = this.flipShowModal.bind(this);
 
         this.state = {
-            endpoint: this.props.endpoint,
-            currentConfig: this.props.currentConfig,
             showModal: false
         };
     }
 
-    // Hits endpoint with data from pop up modal and current config
+    // Hits endpoint with data from pop up modal (if exists) and current config
     onSendClick(popupData) {
-        console.log(`Send clicked to location: ${this.state.endpoint}`);
-        console.log(popupData);
-        console.log(this.state.currentConfig);
+        const { currentConfig, endpoint } = this.state;
+        const mergedData = FieldModelUtilities.combineFieldModels(currentConfig, popupData);
+        console.log(`Send to location: ${endpoint}`);
+        console.log(mergedData);
     }
 
     flipShowModal() {
-        this.setState({
-            showModal: !this.state.showModal
-        });
+        const { fields } = this.props;
+        if (fields.length > 0) {
+            this.setState({
+                showModal: !this.state.showModal
+            });
+        } else {
+            this.onSendClick({});
+        }
     }
 
     render() {

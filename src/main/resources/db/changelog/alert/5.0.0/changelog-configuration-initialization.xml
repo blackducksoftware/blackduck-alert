@@ -21,6 +21,9 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('jira.cloud.access.token', TRUE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.cloud.configure.plugin', FALSE, 'channel_jira_cloud', 'GLOBAL');
+        </sql>
     </changeSet>
     <!-- Register Distribution Jira Cloud Fields. -->
     <changeSet author="psantos" id="1558524516692-3">
