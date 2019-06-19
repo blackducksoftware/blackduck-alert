@@ -95,7 +95,7 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
     public boolean equals(final Object otherObject) {
         if (otherObject instanceof ComponentKey) {
             ComponentKey otherKey = (ComponentKey) otherObject;
-            return this.getKey().equals(otherKey.getKey());
+            return this.compareTo(otherKey) == 0;
         }
         return false;
     }
