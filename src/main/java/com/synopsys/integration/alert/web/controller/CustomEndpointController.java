@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,23 +33,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.action.CustomEndpointAction;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @RestController
-@RequestMapping(value = CustomEndpointController.CUSTOM_ENDPOINT_URL)
+@RequestMapping(CustomEndpointManager.CUSTOM_ENDPOINT_URL)
 public class CustomEndpointController {
-    public static final String CUSTOM_ENDPOINT_URL = BaseController.BASE_PATH + "/custom";
 
-    private final List<ConfigurationAction> configurationActions;
+    private final CustomEndpointManager customEndpointManager;
     private final ResponseFactory responseFactory;
 
     @Autowired
-    public CustomEndpointController(final List<ConfigurationAction> configurationActions, final ResponseFactory responseFactory) {
-        this.configurationActions = configurationActions;
+    public CustomEndpointController(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory) {
+        this.customEndpointManager = customEndpointManager;
         this.responseFactory = responseFactory;
     }
 
@@ -60,21 +55,8 @@ public class CustomEndpointController {
         if (StringUtils.isBlank(key)) {
             return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
         }
-        final String descriptorName = restModel.getDescriptorName();
-        final Optional<ConfigurationAction> actions = configurationActions.stream()
-                                                          .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
-                                                          .findFirst();
-        if (actions.isPresent()) {
-            final CustomEndpointAction customEndpointAction = actions.get().getCustomEndpointAction(key);
-            final String id = restModel.getId();
-            final Map<String, FieldValueModel> keyToValues = restModel.getKeyToValues();
-            try {
-                final String endpointResponse = customEndpointAction.performAction(keyToValues);
-                responseFactory.createOkResponse(id, endpointResponse);
-            } catch (final AlertException e) {
-                return responseFactory.createBadRequestResponse(id, e.getMessage());
-            }
-        }
-        return responseFactory.createBadRequestResponse("", "Did not find related ConfigurationAction.");
+
+        final Map<String, FieldValueModel> keyToValues = restModel.getKeyToValues();
+        return customEndpointManager.performFunction(key, keyToValues);
     }
 }

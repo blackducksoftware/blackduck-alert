@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
-import PopUp from './PopUp';
-import LabeledField from './LabeledField';
+import PopUp from 'field/PopUp';
+import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 class EndpointField extends Component {
@@ -21,6 +21,7 @@ class EndpointField extends Component {
     onSendClick(popupData) {
         const { currentConfig, endpoint } = this.state;
         const mergedData = FieldModelUtilities.combineFieldModels(currentConfig, popupData);
+
         console.log(`Send to location: ${endpoint}`);
         console.log(mergedData);
     }
