@@ -4,6 +4,8 @@ import GeneralButton from 'field/input/GeneralButton';
 import PopUp from 'field/PopUp';
 import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import { connect } from 'react-redux';
 
 class EndpointField extends Component {
     constructor(props) {
@@ -17,13 +19,33 @@ class EndpointField extends Component {
         };
     }
 
-    // Hits endpoint with data from pop up modal (if exists) and current config
     onSendClick(popupData) {
-        const { currentConfig, endpoint } = this.state;
+        const {
+            fieldKey, csrfToken, onChange, currentConfig, endpoint
+        } = this.props;
         const mergedData = FieldModelUtilities.combineFieldModels(currentConfig, popupData);
 
-        console.log(`Send to location: ${endpoint}`);
-        console.log(mergedData);
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
+        request.then((response) => {
+            if (response.ok) {
+                const target = {
+                    name: [fieldKey],
+                    checked: true,
+                    type: 'checkbox'
+                };
+                onChange({ target });
+            } else {
+                response.json()
+                    .then(() => {
+                        const target = {
+                            name: [fieldKey],
+                            checked: false,
+                            type: 'checkbox'
+                        };
+                        onChange({ target });
+                    });
+            }
+        });
     }
 
     flipShowModal() {
@@ -39,15 +61,15 @@ class EndpointField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, value, id, name, successBox
+            buttonLabel, fields, value, fieldKey, name, successBox
         } = this.props;
 
         const endpointField = (
             <div>
-                <GeneralButton id={id} onClick={this.flipShowModal}>{buttonLabel}</GeneralButton>
+                <GeneralButton id={fieldKey} onClick={this.flipShowModal}>{buttonLabel}</GeneralButton>
                 {successBox &&
                 <input
-                    id={`${id}-confirmation`}
+                    id={`${fieldKey}-confirmation`}
                     type="checkbox"
                     name={name}
                     checked={value}
@@ -78,9 +100,11 @@ EndpointField.propTypes = {
     endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
+    fieldKey: PropTypes.string.isRequired,
+    csrfToken: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
     fields: PropTypes.array,
     value: PropTypes.bool,
-    id: PropTypes.string,
     name: PropTypes.string,
     successBox: PropTypes.bool.isRequired
 };
@@ -88,8 +112,11 @@ EndpointField.propTypes = {
 EndpointField.defaultProps = {
     value: false,
     fields: [],
-    id: '',
     name: ''
 };
 
-export default EndpointField;
+const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken
+});
+
+export default connect(mapStateToProps, null)(EndpointField);

@@ -29,7 +29,7 @@ public class CustomEndpointManager {
 
     public ResponseEntity<String> performFunction(final String endpointKey, final Map<String, FieldValueModel> fieldModelValues) {
         if (!containsFunction(endpointKey)) {
-            return new ResponseEntity("Not functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity("No functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
         }
 
         return endpointFunctions.get(endpointKey).apply(fieldModelValues);

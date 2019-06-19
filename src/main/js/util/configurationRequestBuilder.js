@@ -1,16 +1,21 @@
-export const CONFIG_API_URL = '/alert/api/configuration';
-export const JOB_API_URL = '/alert/api/configuration/job';
+export const ALERT_API_URL = '/alert/api';
+export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
+export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
 
 export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
-    const queryParams = Object.assign({}, { context, descriptorName });
-    const parameters = [];
-    Object.keys(queryParams).forEach((key) => {
-        const value = queryParams[key];
-        if (value) {
-            const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-            parameters.push(parameterString);
-        }
+    const queryParams = Object.assign({}, {
+        context,
+        descriptorName
     });
+    const parameters = [];
+    Object.keys(queryParams)
+        .forEach((key) => {
+            const value = queryParams[key];
+            if (value) {
+                const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+                parameters.push(parameterString);
+            }
+        });
     const queryString = parameters.join('&');
     const url = `${apiUrl}?${queryString}`;
     return fetch(url, {

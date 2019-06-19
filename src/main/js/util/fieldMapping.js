@@ -127,7 +127,7 @@ function buildCounterField(items, field) {
 function buildEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, endpoint, successBox, subFields
+        buttonLabel, endpoint, successBox, subFields, key
     } = field;
     const checkedValue = convertStringToBoolean(value);
     Object.assign(items, {
@@ -138,6 +138,7 @@ function buildEndpointField(items, field) {
         buttonLabel={buttonLabel}
         endpoint={endpoint}
         successBox={successBox}
+        fieldKey={key}
         {...items}
     />);
 }

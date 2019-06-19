@@ -124,7 +124,7 @@ public class FieldModelProcessor {
 
     public FieldModel performBeforeValidate(final FieldModel fieldModel) {
         return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.beforeSaveAction(fieldModel))
+                   .map(apiAction -> apiAction.beforeValidate(fieldModel))
                    .orElse(fieldModel);
     }
 
