@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class ComponentKey extends AlertSerializableModel {
+public class ComponentKey extends AlertSerializableModel implements Comparable<ComponentKey> {
     private static final char KEY_SEPARATOR = '_';
 
     private final String category;
@@ -38,6 +38,15 @@ public class ComponentKey extends AlertSerializableModel {
     private final String subComponentName;
     private final String subComponentValue;
     private final String additionalData;
+
+    public ComponentKey(final String category, final String componentName, final String componentValue, final String subComponentName, final String subComponentValue, final String additionalData) {
+        this.category = category;
+        this.componentName = componentName;
+        this.componentValue = componentValue;
+        this.subComponentName = subComponentName;
+        this.subComponentValue = subComponentValue;
+        this.additionalData = additionalData;
+    }
 
     public static String generateAdditionalDataString(Collection<LinkableItem> componentAttributes) {
         StringBuilder additionalData = new StringBuilder();
@@ -54,17 +63,11 @@ public class ComponentKey extends AlertSerializableModel {
         return additionalData.toString();
     }
 
-    public ComponentKey(final String category, final String componentName, final String componentValue, final String subComponentName, final String subComponentValue, final String additionalData) {
-        this.category = category;
-        this.componentName = componentName;
-        this.componentValue = componentValue;
-        this.subComponentName = subComponentName;
-        this.subComponentValue = subComponentValue;
-        this.additionalData = additionalData;
-    }
-
     public String getKey() {
-        final List<String> keyParts = List.of(this.category, componentName, componentValue, subComponentName, subComponentValue, additionalData);
+        List<String> keyParts = List.of(category, componentName, componentValue, additionalData);
+        if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
+            keyParts = List.of(category, componentName, componentValue, subComponentName, subComponentValue, additionalData);
+        }
         return StringUtils.join(keyParts, KEY_SEPARATOR);
     }
 
@@ -97,4 +100,11 @@ public class ComponentKey extends AlertSerializableModel {
         return false;
     }
 
+    @Override
+    public int compareTo(final ComponentKey other) {
+        if (null == other) {
+            throw new NullPointerException("Other component key cannot be null");
+        }
+        return this.getKey().compareTo(other.getKey());
+    }
 }

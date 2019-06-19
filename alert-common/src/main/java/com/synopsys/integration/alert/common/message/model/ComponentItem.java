@@ -34,24 +34,23 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
-public class ComponentItem extends AlertSerializableModel implements Buildable, Comparable<ComponentItem> {
+public class ComponentItem extends AlertSerializableModel implements Buildable {
     private final LinkableItem component;
     private final LinkableItem subComponent;
     private final Set<LinkableItem> componentAttributes;
-    private final Integer priority;
+    private final ComponentItemPriority priority;
     private final String category;
     private final ComponentKey componentKey;
     private final ItemOperation operation;
     private final Long notificationId;
-    private final transient Comparator<ComponentItem> comparator;
 
-    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, Integer priority, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId,
-        Comparator<ComponentItem> comparator) {
+    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, ComponentItemPriority priority, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
@@ -60,7 +59,12 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         this.componentKey = componentKey;
         this.operation = operation;
         this.notificationId = notificationId;
-        this.comparator = comparator;
+    }
+
+    public static Comparator<ComponentItem> createDefaultComparator() {
+        return Comparator.comparing(ComponentItem::getComponentKey)
+                   .thenComparing(ComponentItem::getOperation)
+                   .thenComparing(ComponentItem::getPriority);
     }
 
     public LinkableItem getComponent() {
@@ -75,8 +79,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         return componentAttributes;
     }
 
-    public Optional<Integer> getPriority() {
-        return Optional.ofNullable(priority);
+    public ComponentItemPriority getPriority() {
+        return priority;
     }
 
     public String getCategory() {
@@ -110,14 +114,9 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         return map;
     }
 
-    @Override
-    public final int compareTo(final ComponentItem otherItem) {
-        return comparator.compare(this, otherItem);
-    }
-
     public static class Builder {
         private final Set<LinkableItem> componentAttributes = new HashSet<>();
-        private Integer priority;
+        private ComponentItemPriority priority;
         private String category;
         private String componentName;
         private String componentValue;
@@ -141,16 +140,12 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
 
             final String additionalDataString = ComponentKey.generateAdditionalDataString(componentAttributes);
             ComponentKey key = new ComponentKey(category, componentName, componentValue, subComponentName, subComponentValue, additionalDataString);
-            Comparator<ComponentItem> comparator = createComparator();
-            return new ComponentItem(component, subComponent, componentAttributes, priority, category, key, operation, notificationId, comparator);
-        }
+            ComponentItemPriority componentPriority = ComponentItemPriority.STANDARD;
+            if (null != priority) {
+                componentPriority = priority;
+            }
 
-        private Comparator<ComponentItem> createComparator() {
-            return Comparator.comparing(ComponentItem::getComponent)
-                       .thenComparing(ComponentItem::getSubComponent, OptionalComparator.of())
-                       .thenComparing(ComponentItem::getOperation)
-                       .thenComparing(ComponentItem::getCategory)
-                       .thenComparing(ComponentItem::getPriority, OptionalComparator.of());
+            return new ComponentItem(component, subComponent, componentAttributes, componentPriority, category, key, operation, notificationId);
         }
 
         public Builder applyComponentData(LinkableItem component) {
@@ -207,7 +202,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
             return this;
         }
 
-        public Builder applyPriority(Integer priority) {
+        public Builder applyPriority(ComponentItemPriority priority) {
             this.priority = priority;
             return this;
         }
@@ -244,30 +239,4 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         }
 
     }
-
-    // since java doesn't have support for comparing optionals at the moment needed to adapt this solution.
-    // https://stackoverflow.com/questions/29570118/comparator-for-optionalt
-    private static final class OptionalComparator<T extends Comparable> implements Comparator<Optional<T>> {
-        private OptionalComparator() {
-
-        }
-
-        public static final <T extends Comparable> OptionalComparator<T> of() {
-            return new OptionalComparator<>();
-        }
-
-        @Override
-        public int compare(final Optional<T> leftOptional, final Optional<T> rightOptional) {
-            if (leftOptional.isPresent() && rightOptional.isPresent()) {
-                return leftOptional.get().compareTo(rightOptional.get());
-            } else if (leftOptional.isPresent()) {
-                return 1;
-            } else if (rightOptional.isPresent()) {
-                return -1;
-            } else {
-                return 0;
-            }
-        }
-    }
-
 }
