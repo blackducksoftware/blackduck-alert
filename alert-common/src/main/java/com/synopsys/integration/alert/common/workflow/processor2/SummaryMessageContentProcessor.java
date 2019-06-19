@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKey;
@@ -75,7 +76,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return messageGroups;
     }
 
-    // TODO does sorting matter?
     private ProviderMessageContent summarize(final ProviderMessageContent message) {
         final Set<ComponentItem> originalComponentItems = message.getComponentItems();
         if (null == originalComponentItems) {
@@ -84,7 +84,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
         final Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = sortByOperation(originalComponentItems);
 
-        final SortedSet<ComponentItem> summarizedComponentItems = new TreeSet<>();
+        final Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
         for (final Map.Entry<ItemOperation, LinkedHashSet<ComponentItem>> sortedEntry : itemsByOperation.entrySet()) {
             final LinkedHashSet<ComponentItem> summarizedComponentItemsForOperation = createSummarizedComponentItems(sortedEntry.getKey(), sortedEntry.getValue());
             summarizedComponentItems.addAll(summarizedComponentItemsForOperation);
@@ -93,8 +93,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         try {
             return createNewMessage(message, summarizedComponentItems);
         } catch (AlertException e) {
-            // FIXME handle exception
-            return null;
+            // If this happens, it means there is a bug in the Collector logic.
+            throw new AlertRuntimeException(e);
         }
     }
 
@@ -113,13 +113,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             // FIXME is this required for collapsing?
             //  final ComponentKey componentKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
 
-            ComponentItem newComponentItem = null;
             try {
-                newComponentItem = createNewComponentItem(componentItem, operation, componentItem.getNotificationId(), summarizedLinkableItems);
+                ComponentItem newComponentItem = createNewComponentItem(componentItem, operation, componentItem.getNotificationId(), summarizedLinkableItems);
+                summarizedCategoryItems.add(newComponentItem);
             } catch (AlertException e) {
-                // FIXME handle exception
+                // If this happens, it means there is a bug in the Collector logic.
+                throw new AlertRuntimeException(e);
             }
-            summarizedCategoryItems.add(newComponentItem);
         }
 
         return collapseDuplicateComponentItems(summarizedCategoryItems);

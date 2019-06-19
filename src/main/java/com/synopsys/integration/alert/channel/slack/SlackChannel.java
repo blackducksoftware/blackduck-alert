@@ -135,8 +135,10 @@ public class SlackChannel extends DistributionChannel {
                 componentItem
                     .getSubComponent()
                     .map(subComponent -> createLinkableItemString(subComponent, false))
-                    .ifPresent(categoryItemBuilder::append);
-                subTopicBuilder.append(SLACK_LINE_SEPARATOR);
+                    .ifPresent(linkableItemString -> {
+                        categoryItemBuilder.append(linkableItemString);
+                        categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                    });
 
                 final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
                 for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {

@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.workflow.processor2;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -48,7 +47,7 @@ public abstract class MessageContentProcessor {
 
     public abstract List<MessageContentGroup> process(final List<ProviderMessageContent> messages);
 
-    protected ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Set<ComponentItem> componentItems) throws AlertException {
+    protected ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
         LinkableItem provider = oldMessage.getProvider();
         LinkableItem topic = oldMessage.getTopic();
         Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();

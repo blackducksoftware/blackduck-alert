@@ -62,9 +62,7 @@ public class MessageContentCollapser {
             message.getComponentItems().forEach(item -> processOperation(categoryDataCache, item));
 
             final Optional<ProviderMessageContent> collapsedContent = rebuildTopic(message, categoryDataCache.values());
-            if (collapsedContent.isPresent()) {
-                collapsedMessages.add(collapsedContent.get());
-            }
+            collapsedContent.ifPresent(collapsedMessages::add);
         }
 
         return collapsedMessages;
