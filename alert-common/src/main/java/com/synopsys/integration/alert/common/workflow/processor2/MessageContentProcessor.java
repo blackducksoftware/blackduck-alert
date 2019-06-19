@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -63,7 +62,7 @@ public abstract class MessageContentProcessor {
                    .build();
     }
 
-    protected ComponentItem createNewComponentItem(ComponentItem oldItem, ItemOperation operation, Long notificationId, Collection<LinkableItem> componentAttributes) throws AlertException {
+    protected ComponentItem createNewComponentItem(ComponentItem oldItem, Collection<LinkableItem> componentAttributes) throws AlertException {
         LinkableItem component = oldItem.getComponent();
         final Optional<LinkableItem> subComponent = oldItem.getSubComponent();
         String subComponentName = subComponent.map(LinkableItem::getName).orElse(null);
@@ -73,8 +72,8 @@ public abstract class MessageContentProcessor {
                    .applyCategory(oldItem.getCategory())
                    .applyComponentData(component.getName(), component.getValue(), component.getUrl().orElse(null))
                    .applySubComponent(subComponentName, subComponentValue, subComponentUrl)
-                   .applyOperation(operation)
-                   .applyNotificationId(notificationId)
+                   .applyOperation(oldItem.getOperation())
+                   .applyNotificationId(oldItem.getNotificationId())
                    .applyAllComponentAttributes(componentAttributes)
                    .build();
     }
