@@ -29,8 +29,6 @@ public enum PermissionKeys {
     CONFIG_DISTRIBUTION_PROVIDER_POLARIS("distribution.provider_polaris"),
     CONFIG_CHANNEL_EMAIL("global.channel_email"),
     CONFIG_DISTRIBUTION_CHANNEL_EMAIL("distribution.channel_email"),
-    CONFIG_GLOBAL_CHANNEL_HIPCHAT("global.channel_hipchat"),
-    CONFIG_DISTRIBUTION_CHANNEL_HIPCHAT("distribution.channel_hipchat"),
     CONFIG_DISTRIBUTION_CHANNEL_SLACK("distribution.channel_slack"),
     CONFIG_COMPONENT_SCHEDULING("global.component_scheduling"),
     CONFIG_COMPONENT_SETTINGS("global.component_settings"),

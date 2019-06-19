@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
@@ -200,9 +198,6 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testDistributionConfig() {
-        // Hip Chat public api is currently end of life; need an on premise installation to test
-        assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
-
         final FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
 
         final String destination = createTestConfigDestination();
@@ -218,8 +213,6 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testGlobalConfig() {
-        // Hip Chat public api is currently end of life; need an on premise installation to test
-        assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
         final ConfigurationModel configurationModel = global_config.orElse(null);
         final FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
         try {

@@ -60,7 +60,6 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JobConfigController extends BaseController {
     public static final String JOB_CONFIGURATION_PATH = ConfigController.CONFIGURATION_PATH + "/job";
     private static final String[] REQUIRED_PERMISSION_KEYS = { PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_EMAIL.getDatabaseKey(),
-        PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_HIPCHAT.getDatabaseKey(),
         PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_SLACK.getDatabaseKey(),
         PermissionKeys.CONFIG_DISTRIBUTION_PROVIDER_BLACKDUCK.getDatabaseKey(),
         PermissionKeys.CONFIG_DISTRIBUTION_PROVIDER_POLARIS.getDatabaseKey()
@@ -87,10 +86,10 @@ public class JobConfigController extends BaseController {
         }
         final List<JobFieldModel> models = new LinkedList<>();
         try {
-            List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
+            final List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
 
-            for (JobFieldModel jobModel : allModels) {
-                boolean includeJob = jobModel.getFieldModels().stream()
+            for (final JobFieldModel jobModel : allModels) {
+                final boolean includeJob = jobModel.getFieldModels().stream()
                                          .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                          .allMatch(permissionKey -> authorizationManager.hasReadPermission(permissionKey));
                 if (includeJob) {
@@ -116,8 +115,8 @@ public class JobConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            JobFieldModel fieldModel = optionalModel.get();
-            boolean missingPermission = fieldModel.getFieldModels().stream()
+            final JobFieldModel fieldModel = optionalModel.get();
+            final boolean missingPermission = fieldModel.getFieldModels().stream()
                                             .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                             .anyMatch(permissionKey -> !authorizationManager.hasReadPermission(permissionKey));
             if (missingPermission) {
@@ -131,7 +130,7 @@ public class JobConfigController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        boolean missingPermission = restModel.getFieldModels().stream()
+        final boolean missingPermission = restModel.getFieldModels().stream()
                                         .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                         .anyMatch(permissionKey -> !authorizationManager.hasCreatePermission(permissionKey));
         if (missingPermission) {
@@ -162,7 +161,7 @@ public class JobConfigController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
-        boolean missingPermission = restModel.getFieldModels().stream()
+        final boolean missingPermission = restModel.getFieldModels().stream()
                                         .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                         .anyMatch(permissionKey -> !authorizationManager.hasWritePermission(permissionKey));
         if (missingPermission) {
@@ -198,11 +197,11 @@ public class JobConfigController extends BaseController {
         final String stringId = contentConverter.getStringValue(id);
         try {
             if (jobConfigActions.doesJobExist(id)) {
-                Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
+                final Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
 
                 if (optionalModel.isPresent()) {
-                    JobFieldModel jobFieldModel = optionalModel.get();
-                    boolean missingPermission = jobFieldModel.getFieldModels().stream()
+                    final JobFieldModel jobFieldModel = optionalModel.get();
+                    final boolean missingPermission = jobFieldModel.getFieldModels().stream()
                                                     .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                                     .anyMatch(permissionKey -> !authorizationManager.hasDeletePermission(permissionKey));
                     if (missingPermission) {
@@ -227,7 +226,7 @@ public class JobConfigController extends BaseController {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        boolean missingPermission = restModel.getFieldModels().stream()
+        final boolean missingPermission = restModel.getFieldModels().stream()
                                         .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                         .anyMatch(permission -> !authorizationManager.hasCreatePermission(permission) && !authorizationManager.hasWritePermission(permission));
         if (missingPermission) {
@@ -249,7 +248,7 @@ public class JobConfigController extends BaseController {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        boolean missingPermission = restModel.getFieldModels().stream()
+        final boolean missingPermission = restModel.getFieldModels().stream()
                                         .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                         .anyMatch(permissionKey -> !authorizationManager.hasExecutePermission(permissionKey));
         if (missingPermission) {

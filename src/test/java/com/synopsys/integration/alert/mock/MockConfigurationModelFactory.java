@@ -15,8 +15,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -32,22 +30,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
-    public static List<ConfigurationFieldModel> createHipChatDistributionFields() {
-        final List<ConfigurationFieldModel> fields = new ArrayList<>();
-
-        final ConfigurationFieldModel color = createFieldModel(HipChatDescriptor.KEY_COLOR, "RED");
-        final ConfigurationFieldModel notify = createFieldModel(HipChatDescriptor.KEY_NOTIFY, "false");
-        final ConfigurationFieldModel room = createFieldModel(HipChatDescriptor.KEY_ROOM_ID, "4056783");
-
-        fields.add(color);
-        fields.add(notify);
-        fields.add(room);
-
-        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("HipChat Test Job", HipChatChannel.COMPONENT_NAME);
-        fields.addAll(commonFields);
-        return fields;
-    }
-
     public static List<ConfigurationFieldModel> createSlackDistributionFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
