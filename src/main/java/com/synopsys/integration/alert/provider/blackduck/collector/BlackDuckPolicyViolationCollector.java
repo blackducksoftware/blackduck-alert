@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,6 +42,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
+import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -97,13 +96,13 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             final PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
             final BlackDuckPolicyLinkableItem policyComponentData = policyComponentToLinkableItem.getValue();
 
-            final SortedSet<LinkableItem> linkablePolicyItems = policyComponentMapping.getPolicies()
-                                                                    .stream()
-                                                                    .map(this::createPolicyLinkableItem)
-                                                                    .collect(Collectors.toCollection(TreeSet::new));
-
-            Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), policyComponentData.getComponentItem().orElse(null), policyComponentData.getComponentVersion().orElse(null), linkablePolicyItems, operation);
-            item.ifPresent(items::add);
+            for (PolicyInfo policyInfo : policyComponentMapping.getPolicies()) {
+                ComponentItemPriority priority = mapSeverityToPriority(policyInfo.getSeverity());
+                LinkableItem policyItem = createPolicyLinkableItem(policyInfo);
+                Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), policyComponentData.getComponentItem().orElse(null), policyComponentData.getComponentVersion().orElse(null),
+                    List.of(policyItem), operation, priority);
+                item.ifPresent(items::add);
+            }
         }
         return items;
     }
@@ -166,19 +165,6 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         }
 
         return blackDuckPolicyLinkableItem;
-    }
-
-    private LinkableItem createPolicyLinkableItem(final PolicyInfo policyInfo) {
-        final String policyName = policyInfo.getPolicyName();
-        final String severity = policyInfo.getSeverity();
-        String displayName = policyName;
-        if (StringUtils.isNotBlank(severity)) {
-            displayName = String.format("%s (%s)", policyName, severity);
-        }
-        final LinkableItem linkableItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, displayName, null);
-        linkableItem.setCollapsible(true);
-        linkableItem.setSummarizable(true);
-        return linkableItem;
     }
 
     private class PolicyComponentMapping extends AlertSerializableModel {
