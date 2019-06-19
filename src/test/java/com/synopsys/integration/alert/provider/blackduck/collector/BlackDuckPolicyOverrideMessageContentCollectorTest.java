@@ -62,6 +62,10 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final NotificationContent n1 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         final NotificationContent n2 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
 
+        n0.setId(1L);
+        n1.setId(2L);
+        n2.setId(3L);
+
         final BlackDuckPolicyCollector collector = createCollector();
 
         int categoryCount = 1;
