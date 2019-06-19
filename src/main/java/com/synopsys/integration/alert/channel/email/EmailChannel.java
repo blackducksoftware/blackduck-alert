@@ -33,9 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -62,12 +62,12 @@ public class EmailChannel extends DistributionChannel {
     private final BlackDuckProperties blackDuckProperties;
     private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
-    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
+    private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final AlertProperties alertProperties;
 
     @Autowired
     public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
-        final EmailAddressHandler emailAddressHandler, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+        final EmailAddressHandler emailAddressHandler, final FreemarkerTemplatingService freemarkerTemplatingService) {
         super(gson, auditUtility);
         this.blackDuckProperties = blackDuckProperties;
         this.polarisProperties = polarisProperties;
@@ -87,7 +87,8 @@ public class EmailChannel extends DistributionChannel {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        final FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getProvider(), event.getContent(), fieldAccessor);
+        // FIXME this should update addresses based on Provider event.getProvider()
+        final FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getContent(), fieldAccessor);
 
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);

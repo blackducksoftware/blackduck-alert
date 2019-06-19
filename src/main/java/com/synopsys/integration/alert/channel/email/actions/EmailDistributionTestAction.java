@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
@@ -45,18 +46,17 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.DefaultEmailHandler;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionTestAction extends ChannelDistributionTestAction {
-    private final DefaultEmailHandler emailHandler;
+    private final EmailAddressHandler emailAddressHandler;
     private final DefaultProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailDistributionTestAction(final EmailChannel emailChannel, final DefaultProviderDataAccessor providerDataAccessor, final DefaultEmailHandler emailHandler) {
+    public EmailDistributionTestAction(final EmailChannel emailChannel, final EmailAddressHandler emailAddressHandler, final DefaultProviderDataAccessor providerDataAccessor) {
         super(emailChannel);
-        this.emailHandler = emailHandler;
+        this.emailAddressHandler = emailAddressHandler;
         this.providerDataAccessor = providerDataAccessor;
     }
 
@@ -118,7 +118,7 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
         final Set<String> emailAddresses = new HashSet<>();
         final Set<String> projectsWithoutEmails = new HashSet<>();
         for (final ProviderProject project : providerProjects) {
-            final Set<String> emailsForProject = emailHandler.getEmailAddressesForProject(project, projectOwnerOnly);
+            final Set<String> emailsForProject = emailAddressHandler.getEmailAddressesForProject(project, projectOwnerOnly);
             if (emailsForProject.isEmpty()) {
                 projectsWithoutEmails.add(project.getName());
             }
