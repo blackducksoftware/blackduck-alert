@@ -25,12 +25,13 @@ package com.synopsys.integration.alert.common.workflow.processor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
-//@Component
+@Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {
     private final DefaultMessageContentProcessor defaultMessageContentProcessor;
     private final MessageContentCollapser messageContentCollapser;
@@ -43,8 +44,8 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
     }
 
     @Override
-    public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
+    public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
+        final List<ProviderMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
         return defaultMessageContentProcessor.process(collapsedMessages);
     }
 

@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor2.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 
@@ -63,6 +63,7 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
         this.blackDuckProperties = blackDuckProperties;
     }
 
+    @Override
     protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         List<ComponentItem> items = new LinkedList<>();
         final List<JsonField<Long>> longFields = getLongFields(notificationFields);
