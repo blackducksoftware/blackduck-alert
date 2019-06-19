@@ -63,7 +63,15 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
         return additionalData.toString();
     }
 
-    public String getKey() {
+    public String getCategoryKey() {
+        List<String> keyParts = List.of(category, componentName, componentValue);
+        if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
+            keyParts = List.of(category, componentName, componentValue, subComponentName, subComponentValue);
+        }
+        return StringUtils.join(keyParts, KEY_SEPARATOR);
+    }
+
+    public String getFullKey() {
         List<String> keyParts = List.of(category, componentName, componentValue, additionalData);
         if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
             keyParts = List.of(category, componentName, componentValue, subComponentName, subComponentValue, additionalData);
@@ -71,7 +79,7 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
         return StringUtils.join(keyParts, KEY_SEPARATOR);
     }
 
-    public String prettyPrint() {
+    public String prettyPrint(boolean includeAdditionalData) {
         StringBuilder prettyPrintBuilder = new StringBuilder();
         prettyPrintBuilder.append(category);
         prettyPrintBuilder.append(" - ");
@@ -84,7 +92,7 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
             prettyPrintBuilder.append(": ");
             prettyPrintBuilder.append(subComponentValue);
         }
-        if (StringUtils.isNotBlank(additionalData)) {
+        if (includeAdditionalData && StringUtils.isNotBlank(additionalData)) {
             prettyPrintBuilder.append(", ");
             prettyPrintBuilder.append(additionalData);
         }
@@ -105,6 +113,6 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
         if (null == other) {
             throw new NullPointerException("Other component key cannot be null");
         }
-        return this.getKey().compareTo(other.getKey());
+        return this.getFullKey().compareTo(other.getFullKey());
     }
 }

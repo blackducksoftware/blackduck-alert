@@ -221,7 +221,7 @@ public class JiraChannel extends DistributionChannel {
         }
 
         // FIXME this needs to be changed to contain appropriate values from the category item instead of just the key.
-        final String categoryKey = componentItem.getComponentKey().getKey();
+        final String categoryKey = componentItem.getComponentKey().getFullKey();
         title.append(categoryKey);
         return title.toString();
     }
@@ -300,7 +300,7 @@ public class JiraChannel extends DistributionChannel {
         */
         final ComponentKey categoryKey = categoryItem.getComponentKey();
         final String operationName = categoryItem.getOperation().name();
-        final String operationRemovedKey = categoryKey.getKey().replace("_" + operationName, "");
+        final String operationRemovedKey = categoryKey.getFullKey().replace("_" + operationName, "");
         return String.format("%s:%s", providerName, operationRemovedKey);
     }
 

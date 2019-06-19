@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -55,7 +54,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private final MessageContentCollapser messageContentCollapser;
 
     @Autowired
-    public SummaryMessageContentProcessor(final MessageContentCollapser messageContentCollapser) {
+    public SummaryMessageContentProcessor(MessageContentCollapser messageContentCollapser) {
         super(FormatType.SUMMARY);
         this.messageContentCollapser = messageContentCollapser;
     }
@@ -64,16 +63,17 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
         final List<ProviderMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
 
-        final List<MessageContentGroup> messageGroups = new ArrayList<>();
+        final List<MessageContentGroup> newGroups = new ArrayList<>();
+
         for (final ProviderMessageContent message : collapsedMessages) {
             final ProviderMessageContent summarizedMessage = summarize(message);
-            messageGroups
+            newGroups
                 .stream()
                 .filter(group -> group.applies(summarizedMessage))
                 .findAny()
-                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> messageGroups.add(MessageContentGroup.singleton(summarizedMessage)));
+                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> newGroups.add(MessageContentGroup.singleton(summarizedMessage)));
         }
-        return messageGroups;
+        return newGroups;
     }
 
     private ProviderMessageContent summarize(final ProviderMessageContent message) {
@@ -114,7 +114,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             //  final ComponentKey componentKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
 
             try {
-                ComponentItem newComponentItem = createNewComponentItem(componentItem, operation, componentItem.getNotificationId(), summarizedLinkableItems);
+                ComponentItem newComponentItem = createNewComponentItem(componentItem, summarizedLinkableItems);
                 summarizedCategoryItems.add(newComponentItem);
             } catch (AlertException e) {
                 // If this happens, it means there is a bug in the Collector logic.
@@ -201,7 +201,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
                 final SortedSet<LinkableItem> collapsedLinkableItems = collapseDuplicateLinkableItems(combinedLinkableItems);
                 try {
-                    updatedCategoryItem = createNewComponentItem(currentItem, currentItem.getOperation(), currentItem.getNotificationId(), collapsedLinkableItems);
+                    updatedCategoryItem = createNewComponentItem(currentItem, collapsedLinkableItems);
                 } catch (AlertException e) {
                     // FIXME handle exception
                 }
@@ -263,21 +263,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                    .stream()
                    .filter(item -> itemName.equals(item.getName()))
                    .count();
-    }
-
-    // TODO determine if something like this is still necessary
-    private CategoryKey createCategoryKeyFromLinkableItems(final Collection<LinkableItem> linkableItems) {
-        final List<String> itemNameValueSequence = new LinkedList<>();
-        for (final LinkableItem item : linkableItems) {
-            if (!item.isSummarizable()) {
-                continue;
-            }
-            itemNameValueSequence.add(item.getName());
-            if (!item.isNumericValue()) {
-                itemNameValueSequence.add(item.getValue());
-            }
-        }
-        return CategoryKey.from("summary", itemNameValueSequence);
     }
 
     private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {
