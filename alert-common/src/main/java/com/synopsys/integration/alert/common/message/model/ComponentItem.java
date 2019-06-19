@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -47,8 +48,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
     private final ComponentKey componentKey;
     private final ItemOperation operation;
     private final Long notificationId;
+    private final transient Comparator<ComponentItem> comparator;
 
-    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, Integer priority, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId) {
+    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, Integer priority, String category, ComponentKey componentKey, ItemOperation operation, Long notificationId,
+        Comparator<ComponentItem> comparator) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
@@ -57,6 +60,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         this.componentKey = componentKey;
         this.operation = operation;
         this.notificationId = notificationId;
+        this.comparator = comparator;
     }
 
     public LinkableItem getComponent() {
@@ -71,8 +75,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         return componentAttributes;
     }
 
-    public Integer getPriority() {
-        return priority;
+    public Optional<Integer> getPriority() {
+        return Optional.ofNullable(priority);
     }
 
     public String getCategory() {
@@ -91,14 +95,6 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
         return notificationId;
     }
 
-    @Override
-    public final int compareTo(final ComponentItem otherItem) {
-        if (null == otherItem) {
-            throw new NullPointerException("Other item cannot be null");
-        }
-        return 0;
-    }
-
     /**
      * Intended to be used for display purposes (such as freemarker templates).
      */
@@ -112,6 +108,11 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
             map.computeIfAbsent(name, ignored -> new LinkedList<>()).add(item);
         }
         return map;
+    }
+
+    @Override
+    public final int compareTo(final ComponentItem otherItem) {
+        return comparator.compare(this, otherItem);
     }
 
     public static class Builder {
@@ -140,7 +141,16 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
 
             final String additionalDataString = ComponentKey.generateAdditionalDataString(componentAttributes);
             ComponentKey key = new ComponentKey(category, componentName, componentValue, subComponentName, subComponentValue, additionalDataString);
-            return new ComponentItem(component, subComponent, componentAttributes, priority, category, key, operation, notificationId);
+            Comparator<ComponentItem> comparator = createComparator();
+            return new ComponentItem(component, subComponent, componentAttributes, priority, category, key, operation, notificationId, comparator);
+        }
+
+        private Comparator<ComponentItem> createComparator() {
+            return Comparator.comparing(ComponentItem::getComponent)
+                       .thenComparing(ComponentItem::getSubComponent, OptionalComparator.of())
+                       .thenComparing(ComponentItem::getOperation)
+                       .thenComparing(ComponentItem::getCategory)
+                       .thenComparing(ComponentItem::getPriority, OptionalComparator.of());
         }
 
         public Builder applyComponentData(LinkableItem component) {
@@ -233,6 +243,31 @@ public class ComponentItem extends AlertSerializableModel implements Buildable, 
             return this;
         }
 
+    }
+
+    // since java doesn't have support for comparing optionals at the moment needed to adapt this solution.
+    // https://stackoverflow.com/questions/29570118/comparator-for-optionalt
+    private static final class OptionalComparator<T extends Comparable> implements Comparator<Optional<T>> {
+        private OptionalComparator() {
+
+        }
+
+        public static final <T extends Comparable> OptionalComparator<T> of() {
+            return new OptionalComparator<>();
+        }
+
+        @Override
+        public int compare(final Optional<T> leftOptional, final Optional<T> rightOptional) {
+            if (leftOptional.isPresent() && rightOptional.isPresent()) {
+                return leftOptional.get().compareTo(rightOptional.get());
+            } else if (leftOptional.isPresent()) {
+                return 1;
+            } else if (rightOptional.isPresent()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
     }
 
 }
