@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -79,18 +80,24 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         }
     }
 
-    protected LinkableItem createPolicyLinkableItem(final PolicyInfo policyInfo) {
+    protected Collection<LinkableItem> createPolicyLinkableItems(final PolicyInfo policyInfo) {
         final String policyName = policyInfo.getPolicyName();
         final String severity = policyInfo.getSeverity();
-        String displayName = policyName;
+        final ArrayList<LinkableItem> itemList = new ArrayList<>(2);
+        final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
+        policyNameItem.setCollapsible(true);
+        policyNameItem.setSummarizable(true);
+        policyNameItem.setCountable(true);
+        itemList.add(policyNameItem);
         if (StringUtils.isNotBlank(severity)) {
-            displayName = String.format("%s (%s)", policyName, severity);
+            final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
+            severityItem.setPartOfKey(true);
+            severityItem.setCollapsible(false);
+            severityItem.setSummarizable(true);
+            severityItem.setCountable(false);
+            itemList.add(severityItem);
         }
-        final LinkableItem linkableItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, displayName, null);
-        linkableItem.setCollapsible(true);
-        linkableItem.setSummarizable(true);
-        linkableItem.setCountable(true);
-        return linkableItem;
+        return itemList;
     }
 
     protected ComponentItemPriority mapSeverityToPriority(String severity) {
