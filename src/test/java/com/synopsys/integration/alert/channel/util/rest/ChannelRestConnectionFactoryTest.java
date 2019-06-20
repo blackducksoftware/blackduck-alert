@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.rest;
+package com.synopsys.integration.alert.channel.util.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.rest.client.IntHttpClient;

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel;
+package com.synopsys.integration.alert.channel.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +42,12 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 @Component
-public class ChannelFreemarkerTemplatingService {
-    private final Logger logger = LoggerFactory.getLogger(ChannelFreemarkerTemplatingService.class);
+public class FreemarkerTemplatingService {
+    private final Logger logger = LoggerFactory.getLogger(FreemarkerTemplatingService.class);
     private final AlertProperties alertProperties;
 
     @Autowired
-    public ChannelFreemarkerTemplatingService(final AlertProperties alertProperties) {
+    public FreemarkerTemplatingService(final AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }
 

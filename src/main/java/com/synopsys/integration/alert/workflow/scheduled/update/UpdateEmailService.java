@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -62,11 +62,11 @@ public class UpdateEmailService {
     private final SettingsKeyAccessor settingsKeyAccessor;
     private final DefaultUserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
-    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
+    private final FreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
     public UpdateEmailService(final AlertProperties alertProperties, final SettingsKeyAccessor settingsKeyAccessor, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor,
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+        final FreemarkerTemplatingService freemarkerTemplatingService) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;

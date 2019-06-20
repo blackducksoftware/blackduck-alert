@@ -37,9 +37,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
+import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -60,11 +60,11 @@ public class HipChatChannel extends DistributionChannel {
     public static final int MESSAGE_SIZE_LIMIT = 8000;
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
     private final RestChannelUtility restChannelUtility;
-    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
+    private final FreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
     public HipChatChannel(final Gson gson, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility,
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+        final FreemarkerTemplatingService freemarkerTemplatingService) {
         super(gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
         this.freemarkerTemplatingService = freemarkerTemplatingService;

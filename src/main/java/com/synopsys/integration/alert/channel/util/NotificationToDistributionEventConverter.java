@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.event;
+package com.synopsys.integration.alert.channel.util;
 
 import java.util.ArrayList;
 import java.util.Date;
