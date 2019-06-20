@@ -1,23 +1,37 @@
 {
-  "jiraEntityProperties": [
-    {
-      "key": "jira-issue-alert-indexing",
-      "name": {
-        "value": "Alert index",
-        "i18n": "alert.index"
-      },
-      "entityType": "issue",
-      "keyConfigurations": [
-        {
-          "propertyKey": "alert",
-          "extractions": [
-            {
-              "objectName": "key",
-              "type": "string"
-            }
-          ]
-        }
-      ]
-    }
+  "name": "Synopsys Alert Plugin",
+  "description": "Plugin required to run Alert with your Jira Cloud instance. This plugin indexes properties so that we can properly track issues we've created.",
+  "key": "synopsys.alert.plugin.property.index",
+  "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
+  "authentication": {
+    "type": "none"
+  },
+  "apiVersion": 1,
+  "modules": {
+    "jiraEntityProperties": [
+      {
+        "key": "alert-jira-issue-indexing",
+        "name": {
+          "value": "Alert index",
+          "i18n": "alert.index"
+        },
+        "entityType": "issue",
+        "keyConfigurations": [
+          {
+            "propertyKey": "alertKey",
+            "extractions": [
+              {
+                "objectName": "key",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "scopes": [
+    "READ",
+    "WRITE"
   ]
 }
