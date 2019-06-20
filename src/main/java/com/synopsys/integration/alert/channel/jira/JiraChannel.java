@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKey;
+import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -221,7 +221,7 @@ public class JiraChannel extends DistributionChannel {
         }
 
         // FIXME this needs to be changed to contain appropriate values from the category item instead of just the key.
-        final String categoryKey = componentItem.getComponentKey().getFullKey();
+        final String categoryKey = componentItem.getComponentKey().getDeepKey();
         title.append(categoryKey);
         return title.toString();
     }
@@ -298,9 +298,9 @@ public class JiraChannel extends DistributionChannel {
           vs
           provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version
         */
-        final ComponentKey categoryKey = categoryItem.getComponentKey();
+        final ComponentKeys categoryKey = categoryItem.getComponentKey();
         final String operationName = categoryItem.getOperation().name();
-        final String operationRemovedKey = categoryKey.getFullKey().replace("_" + operationName, "");
+        final String operationRemovedKey = categoryKey.getDeepKey().replace("_" + operationName, "");
         return String.format("%s:%s", providerName, operationRemovedKey);
     }
 

@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class ComponentKey extends AlertSerializableModel implements Comparable<ComponentKey> {
+public class ComponentKeys extends AlertSerializableModel implements Comparable<ComponentKeys> {
     private static final char KEY_SEPARATOR = '_';
 
     private final String category;
@@ -39,7 +39,7 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
     private final String subComponentValue;
     private final String additionalData;
 
-    public ComponentKey(final String category, final String componentName, final String componentValue, final String subComponentName, final String subComponentValue, final String additionalData) {
+    public ComponentKeys(final String category, final String componentName, final String componentValue, final String subComponentName, final String subComponentValue, final String additionalData) {
         this.category = category;
         this.componentName = componentName;
         this.componentValue = componentValue;
@@ -63,7 +63,7 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
         return additionalData.toString();
     }
 
-    public String getCategoryKey() {
+    public String getShallowKey() {
         List<String> keyParts = List.of(category, componentName, componentValue);
         if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
             keyParts = List.of(category, componentName, componentValue, subComponentName, subComponentValue);
@@ -71,7 +71,7 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
         return StringUtils.join(keyParts, KEY_SEPARATOR);
     }
 
-    public String getFullKey() {
+    public String getDeepKey() {
         List<String> keyParts = List.of(category, componentName, componentValue, additionalData);
         if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
             keyParts = List.of(category, componentName, componentValue, subComponentName, subComponentValue, additionalData);
@@ -101,18 +101,19 @@ public class ComponentKey extends AlertSerializableModel implements Comparable<C
 
     @Override
     public boolean equals(final Object otherObject) {
-        if (otherObject instanceof ComponentKey) {
-            ComponentKey otherKey = (ComponentKey) otherObject;
-            return this.compareTo(otherKey) == 0;
+        if (otherObject instanceof ComponentKeys) {
+            ComponentKeys otherKey = (ComponentKeys) otherObject;
+            return 0 == this.compareTo(otherKey);
         }
         return false;
     }
 
     @Override
-    public int compareTo(final ComponentKey other) {
+    public int compareTo(final ComponentKeys other) {
         if (null == other) {
             throw new NullPointerException("Other component key cannot be null");
         }
-        return this.getFullKey().compareTo(other.getFullKey());
+        return this.getDeepKey().compareTo(other.getDeepKey());
     }
+
 }

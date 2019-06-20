@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKey;
+import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -101,7 +100,7 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
             final String key = generateKey(componentItem.getComponentKey(), componentAttributes);
             final ComponentItem oldItem = keyToItems.get(key);
 
-            final Set<LinkableItem> linkableItems = new TreeSet<>();
+            final Set<LinkableItem> linkableItems = new LinkedHashSet<>();
             if (null != oldItem) {
                 linkableItems.addAll(oldItem.getComponentAttributes());
                 linkableItems.addAll(componentAttributes);
@@ -120,9 +119,9 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
         return sortComponentItems(keyToItems.values());
     }
 
-    private String generateKey(ComponentKey componentKey, Collection<LinkableItem> componentAttributes) {
+    private String generateKey(ComponentKeys componentKey, Collection<LinkableItem> componentAttributes) {
         StringBuilder keyBuilder = new StringBuilder();
-        keyBuilder.append(componentKey.getCategoryKey());
+        keyBuilder.append(componentKey.getShallowKey());
         componentAttributes
             .stream()
             .filter(item -> !item.isCollapsible())

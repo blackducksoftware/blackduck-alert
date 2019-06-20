@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.common.message.model;
 
 public interface Summarizable {
+    boolean isCollapsible();
+
     boolean isCountable();
 
     boolean isNumericValue();
