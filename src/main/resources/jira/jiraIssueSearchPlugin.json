@@ -1,4 +1,4 @@
 {
-  "pluginUri": "",
+  "pluginUri": "https://raw.githubusercontent.com/blackducksoftware/blackduck-alert/efcef92/src/main/resources/jira/jiraEntityProperties.json",
   "pluginName": "Alert issue property indexer"
 }
