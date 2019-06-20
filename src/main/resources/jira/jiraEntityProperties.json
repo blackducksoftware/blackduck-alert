@@ -1,0 +1,23 @@
+{
+  "jiraEntityProperties": [
+    {
+      "key": "jira-issue-alert-indexing",
+      "name": {
+        "value": "Alert index",
+        "i18n": "alert.index"
+      },
+      "entityType": "issue",
+      "keyConfigurations": [
+        {
+          "propertyKey": "alert",
+          "extractions": [
+            {
+              "objectName": "key",
+              "type": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

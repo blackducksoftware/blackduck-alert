@@ -45,6 +45,12 @@ public class JiraProperties {
         username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElse(null);
     }
 
+    public JiraProperties(final String url, final String accessToken, final String username) {
+        this.url = url;
+        this.accessToken = accessToken;
+        this.username = username;
+    }
+
     public JiraServerConfig createJiraServerConfig() throws AlertException {
         final JiraServerConfigBuilder jiraServerConfigBuilder = new JiraServerConfigBuilder();
 
