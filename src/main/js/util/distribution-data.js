@@ -5,7 +5,6 @@
 export const jobTypes = [
     { label: '', value: '' },
     { label: 'Group Email', value: 'channel_email' },
-    { label: 'HipChat', value: 'channel_hipchat' },
     { label: 'Slack', value: 'channel_slack' }
 ];
 

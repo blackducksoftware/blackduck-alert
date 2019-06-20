@@ -123,7 +123,6 @@ distributions {
         contents {
             from('src/main/resources/email/images/') { into 'images/' }
             from('src/main/resources/email/templates/') { into 'templates/email' }
-            from('src/main/resources/hipchat/templates/') { into 'templates/hipchat' }
         }
     }
 }

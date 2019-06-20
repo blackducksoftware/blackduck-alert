@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.jayway.jsonpath.JsonPath;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -115,8 +115,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
 
-        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), hipChatFields);
+        final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), slackFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
@@ -162,8 +162,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
     @Test
     public void getGetAuditInfoForJobIT() throws Exception {
-        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
+        final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(SlackChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, slackFields);
         final UUID jobID = UUID.randomUUID();
         final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
@@ -187,8 +187,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
-        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), hipChatFields);
+        final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), slackFields);
 
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
