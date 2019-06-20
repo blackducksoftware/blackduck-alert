@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.message.model2.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 public class ContentEventTest {
     private static final String TOPIC = "TOPIC";
