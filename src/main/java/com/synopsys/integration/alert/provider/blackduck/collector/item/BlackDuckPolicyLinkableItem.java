@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 
 // TODO refactor class
 // 1. rename to BlackDuckPolicyComponentContainer
@@ -37,6 +38,7 @@ public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
     private final SortedSet<LinkableItem> componentData;
     private LinkableItem componentItem;
     private LinkableItem componentVersion;
+    private ComponentVersionStatus componentVersionStatus;
 
     public BlackDuckPolicyLinkableItem() {
         componentData = new TreeSet<>();
@@ -68,5 +70,13 @@ public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
 
     public Optional<LinkableItem> getComponentVersion() {
         return Optional.ofNullable(componentVersion);
+    }
+
+    public ComponentVersionStatus getComponentVersionStatus() {
+        return componentVersionStatus;
+    }
+
+    public void setComponentVersionStatus(final ComponentVersionStatus componentVersionStatus) {
+        this.componentVersionStatus = componentVersionStatus;
     }
 }

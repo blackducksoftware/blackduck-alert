@@ -25,17 +25,21 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.UriSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -82,6 +86,28 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         }
 
         return Optional.empty();
+    }
+
+    public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
+        if (getBucketService().isPresent()) {
+            try {
+                getBucketService().get().addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
+                return Optional.ofNullable(getBlackDuckBucket().get(bomComponentUrl, VersionBomComponentView.class));
+            } catch (final IntegrationException ie) {
+                logger.error("Error retrieving bom component/", ie);
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<LinkableItem> getLicenseLinkableItems(final VersionBomComponentView bomComponentView) {
+        return bomComponentView.getLicenses().stream().map(licenseView -> {
+            LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay(), licenseView.getLicense());
+            item.setSummarizable(true);
+            item.setCollapsible(true);
+            return item;
+        }).collect(Collectors.toList());
     }
 
     public Optional<BlackDuckBucketService> getBucketService() {

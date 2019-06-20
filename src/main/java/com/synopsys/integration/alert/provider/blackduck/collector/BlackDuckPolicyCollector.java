@@ -80,7 +80,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         }
     }
 
-    protected Collection<LinkableItem> createPolicyLinkableItems(final PolicyInfo policyInfo) {
+    protected Collection<LinkableItem> createPolicyLinkableItems(PolicyInfo policyInfo, String bomComponentUrl) {
         final String policyName = policyInfo.getPolicyName();
         final String severity = policyInfo.getSeverity();
         final ArrayList<LinkableItem> itemList = new ArrayList<>(2);
@@ -97,6 +97,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
             severityItem.setCountable(false);
             itemList.add(severityItem);
         }
+        getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getLicenseLinkableItems(bomComponent).forEach(itemList::add));
         return itemList;
     }
 

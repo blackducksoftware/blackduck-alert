@@ -99,7 +99,8 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
             for (PolicyInfo policyInfo : policyComponentMapping.getPolicies()) {
                 ComponentItemPriority priority = mapSeverityToPriority(policyInfo.getSeverity());
-                Collection<LinkableItem> policyLinkableItems = createPolicyLinkableItems(policyInfo);
+                Collection<LinkableItem> policyLinkableItems = createPolicyLinkableItems(policyInfo, policyComponentData.getComponentVersionStatus().getBomComponent());
+
                 Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), policyComponentData.getComponentItem().orElse(null), policyComponentData.getComponentVersion().orElse(null),
                     policyLinkableItems, operation, priority);
                 item.ifPresent(items::add);
@@ -134,6 +135,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 blackDuckPolicyLinkableItem = createBlackDuckPolicyLinkableItem(componentVersionStatus, projectVersionLink);
             } else {
                 blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionStatus.getComponentVersionName(), projectVersionLink);
+                blackDuckPolicyLinkableItem.setComponentVersionStatus(componentVersionStatus);
             }
             policyComponentToLinkableItemMapping.put(policyComponentMapping, blackDuckPolicyLinkableItem);
         }
@@ -157,6 +159,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final String componentVersionName = componentVersionStatus.getComponentVersionName();
         if (StringUtils.isNotBlank(componentVersionName)) {
             blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionName, projectVersionWithComponentLink);
+            blackDuckPolicyLinkableItem.setComponentVersionStatus(componentVersionStatus);
         }
 
         final String componentName = componentVersionStatus.getComponentName();
