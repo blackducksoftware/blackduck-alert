@@ -46,6 +46,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 // Created this class as a parent because of the ObjectFactory bean that is used with Collectors which destroys the bean after use. These services need to be destroyed after usage.
 public abstract class BlackDuckCollector extends MessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    // FIXME we should never store fields as optional
     private final Optional<BlackDuckBucketService> bucketService;
     private final Optional<BlackDuckService> blackDuckService;
     private final BlackDuckBucket blackDuckBucket;
