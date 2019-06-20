@@ -29,8 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -81,8 +79,6 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         final String linkForComponentName = (componentVersionName.isPresent()) ? null : generatedLink;
         final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, componentName, linkForComponentName);
 
-        final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
-
         Optional<LinkableItem> nameItem = Optional.empty();
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
@@ -94,7 +90,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
             ComponentItemPriority priority = mapSeverityToPriority(policyItem.getSeverity());
             Set<LinkableItem> attributeSet = new LinkedHashSet<>();
             nameItem.ifPresent(attributeSet::add);
-            attributeSet.add(createPolicyLinkableItem(policyItem));
+            attributeSet.addAll(createPolicyLinkableItems(policyItem));
             Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), componentItem, componentVersionItem.orElse(null), attributeSet, operation, priority);
             item.ifPresent(items::add);
         }
