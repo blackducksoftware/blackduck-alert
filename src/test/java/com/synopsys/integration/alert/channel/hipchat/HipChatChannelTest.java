@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.ProxyManager;
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.rest.RestChannelUtility;
+import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -61,7 +61,7 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
+        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtility, freemarkerTemplatingService);
 
         final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName());
@@ -152,7 +152,7 @@ public class HipChatChannelTest extends ChannelTest {
         final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
         Mockito.doReturn(null).when(restChannelUtilitySpy).getIntHttpClient();
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
+        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -185,7 +185,7 @@ public class HipChatChannelTest extends ChannelTest {
         final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessageRequest(Mockito.any(), Mockito.any(), Mockito.anyString());
         Mockito.doReturn(null).when(restChannelUtilitySpy).getIntHttpClient();
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(alertProperties);
+        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditUtility, restChannelUtilitySpy, freemarkerTemplatingService);
 
         final ProviderMessageContent messageContent = createLargeMessageContent();

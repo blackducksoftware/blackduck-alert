@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -19,9 +18,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -35,8 +34,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.DefaultEmailHandler;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -175,12 +172,8 @@ public class EmailGlobalTestActionTest {
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
 
-        final DefaultEmailHandler blackDuckEmailHandler = new DefaultEmailHandler(Mockito.mock(DefaultProviderDataAccessor.class));
-        final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
-
-        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(List.of(blackDuckProvider));
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testAlertProperties);
+        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
+        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
         final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, null, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         //////////////////////////////////////
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);

@@ -30,11 +30,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -55,11 +55,11 @@ public class PasswordResetService {
     private final AlertProperties alertProperties;
     private final DefaultUserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
-    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
+    private final FreemarkerTemplatingService freemarkerTemplatingService;
 
     @Autowired
     public PasswordResetService(final AlertProperties alertProperties, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor,
-        final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+        final FreemarkerTemplatingService freemarkerTemplatingService) {
         this.alertProperties = alertProperties;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;

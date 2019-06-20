@@ -9,12 +9,13 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.channel.rest;
+package com.synopsys.integration.alert.channel.util.rest;
 
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelTest;
+import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
