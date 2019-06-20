@@ -148,7 +148,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
 
         assertFalse("No ComponentItems with a category found", categories.isEmpty());
         assertEquals(1, categories.size());
-        assertTrue("Policy category not found", categories.contains("policy"));
+        assertTrue("Policy category not found", categories.contains("Policy"));
     }
 }
 

@@ -133,7 +133,6 @@ public class ComponentItemTest {
 
         Comparator<ComponentItem> comparator = ComponentItem.createDefaultComparator();
         int compareResult = comparator.compare(componentItem_1, componentItem_2);
-        int priorityCompare = ComponentItemPriority.STANDARD.compareTo(ComponentItemPriority.LOW);
         assertEquals(1, compareResult);
 
     }
@@ -164,10 +163,10 @@ public class ComponentItemTest {
 
         Comparator<ComponentItem> comparator = ComponentItem.createDefaultComparator();
         int compareResult = comparator.compare(componentItem_1, componentItem_2);
-        assertTrue(compareResult < 0);
+        assertTrue(compareResult > 0);
 
         int reversedCompareResult = comparator.compare(componentItem_2, componentItem_1);
-        assertTrue(reversedCompareResult > 0);
+        assertTrue(reversedCompareResult < 0);
     }
 
     @Test
