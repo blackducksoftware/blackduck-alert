@@ -33,8 +33,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -72,10 +72,10 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
+        final ConfigurationJobModel emptyConfigurationModel = addJob(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
-        final String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + HipChatChannel.COMPONENT_NAME;
+        final String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + SlackChannel.COMPONENT_NAME;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -97,7 +97,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
+        final ConfigurationJobModel emptyConfigurationModel = addJob(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "/" + configId;
@@ -116,7 +116,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
+        final ConfigurationJobModel emptyConfigurationModel = addJob(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String jobId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "/" + jobId;
@@ -141,7 +141,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (final FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, fieldValueModels);
+        final ConfigurationJobModel emptyConfigurationModel = addJob(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, fieldValueModels);
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
         final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
@@ -192,36 +192,17 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    // FIXME Will need to add all configurations to properly run a test check for hipchat.
-    //    @Test
-    //    @WithMockUser(roles = UserRoleModel.ALERT_ADMIN_TEXT)
-    //    public void testTestConfig() throws Exception {
-    //        registerDescriptor(hipChatDescriptor);
-    //        final String urlPath = url + "/test";
-    //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-    //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(UserRoleModel.ALERT_ADMIN_TEXT))
-    //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
-    //
-    //        final FieldModel fieldModel = createTestFieldModel();
-    //
-    //        request.content(gson.toJson(fieldModel));
-    //        request.contentType(contentType);
-    //
-    //        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
-    //        unregisterDescriptor(hipChatDescriptor);
-    //    }
-
     private JobFieldModel createTestJobFieldModel() {
-        final String descriptorName = HipChatChannel.COMPONENT_NAME;
+        final String descriptorName = SlackChannel.COMPONENT_NAME;
         final String context = ConfigContextEnum.DISTRIBUTION.name();
 
-        final FieldValueModel roomId = new FieldValueModel(List.of("123"), true);
+        final FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
         final FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         final FieldValueModel name = new FieldValueModel(List.of("name"), true);
         final FieldValueModel provider = new FieldValueModel(List.of(BlackDuckProvider.COMPONENT_NAME), true);
         final FieldValueModel channel = new FieldValueModel(List.of("channel_email"), true);
 
-        final Map<String, FieldValueModel> fields = Map.of(HipChatDescriptor.KEY_ROOM_ID, roomId, ChannelDistributionUIConfig.KEY_NAME, name, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
+        final Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName, ChannelDistributionUIConfig.KEY_NAME, name, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
         final FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
 
@@ -250,15 +231,15 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final Optional<ConfigurationJobModel> configurationModelOptional = getConfigurationAccessor().getJobById(id);
         assertTrue(configurationModelOptional.isPresent());
 
-        Optional<ConfigurationFieldModel> roomIdField = Optional.empty();
+        Optional<ConfigurationFieldModel> slackChannelNameField = Optional.empty();
         Optional<ConfigurationFieldModel> frequencyField = Optional.empty();
         Optional<ConfigurationFieldModel> filterByProjectField = Optional.empty();
 
         final ConfigurationJobModel configurationJobModel = configurationModelOptional.get();
 
         for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-            if (roomIdField.isEmpty()) {
-                roomIdField = configurationModel.getField(HipChatDescriptor.KEY_ROOM_ID);
+            if (slackChannelNameField.isEmpty()) {
+                slackChannelNameField = configurationModel.getField(SlackDescriptor.KEY_CHANNEL_NAME);
             }
             if (frequencyField.isEmpty()) {
                 frequencyField = configurationModel.getField(ChannelDistributionUIConfig.KEY_FREQUENCY);
@@ -268,11 +249,11 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             }
         }
 
-        assertTrue(roomIdField.isPresent());
+        assertTrue(slackChannelNameField.isPresent());
         assertTrue(frequencyField.isPresent());
         assertTrue(filterByProjectField.isPresent());
 
-        assertEquals("123", roomIdField.get().getFieldValue().orElse(""));
+        assertEquals("channelName", slackChannelNameField.get().getFieldValue().orElse(""));
         assertEquals(FrequencyType.DAILY.name(), frequencyField.get().getFieldValue().orElse(""));
         assertEquals("false", filterByProjectField.get().getFieldValue().orElse(""));
     }

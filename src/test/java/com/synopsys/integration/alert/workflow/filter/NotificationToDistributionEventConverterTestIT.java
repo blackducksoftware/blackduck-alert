@@ -37,7 +37,6 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
         messageContentGroups.add(contentGroup2);
 
         messageContentMap.put(createEmailConfig(), messageContentGroups);
-        messageContentMap.put(createHipChatConfig(), messageContentGroups);
         messageContentMap.put(createSlackConfig(), messageContentGroups);
 
         final List<DistributionEvent> events = converter.convertToEvents(messageContentMap);
@@ -46,12 +45,6 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private ConfigurationJobModel createEmailConfig() {
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
-        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
-        return MockConfigurationModelFactory.createDistributionJob(fields);
-    }
-
-    private ConfigurationJobModel createHipChatConfig() {
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatDistributionFields();
         fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         return MockConfigurationModelFactory.createDistributionJob(fields);
     }
