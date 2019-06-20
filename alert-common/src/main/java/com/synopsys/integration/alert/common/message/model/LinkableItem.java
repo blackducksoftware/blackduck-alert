@@ -31,7 +31,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
-    private static final List<String> EXCLUDED_FIELDS = List.of("collapsible", "countable", "isNumericValue", "summarizable");
+    private static final List<String> EXCLUDED_FIELDS = List.of("collapsible", "countable", "isNumericValue", "summarizable", "isPartOfKey");
 
     private final String name;
     private final String value;
@@ -73,6 +73,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return Optional.empty();
     }
 
+    @Override
     public boolean isCollapsible() {
         return collapsible;
     }
@@ -118,10 +119,17 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     @Override
     public int compareTo(final LinkableItem otherItem) {
-        if (collapsible && !otherItem.collapsible) {
-            return 1;
+        if (!this.getName().equals(otherItem.getName())) {
+            if (!this.isCollapsible() && otherItem.isCollapsible()) {
+                return -1;
+            } else if (this.isCollapsible() && !otherItem.isCollapsible()) {
+                return 1;
+            } else if (this.isPartOfKey() && !otherItem.isPartOfKey()) {
+                return -1;
+            } else if (!this.isPartOfKey() && otherItem.isPartOfKey()) {
+                return 1;
+            }
         }
-
         return CompareToBuilder.reflectionCompare(this, otherItem, EXCLUDED_FIELDS);
     }
 

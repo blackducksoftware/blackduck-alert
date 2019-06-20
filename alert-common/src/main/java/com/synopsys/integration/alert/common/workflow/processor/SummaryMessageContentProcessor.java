@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKey;
+import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -189,10 +189,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     private LinkedHashSet<ComponentItem> collapseDuplicateComponentItems(final List<ComponentItem> componentItems) {
-        final LinkedHashMap<ComponentKey, ComponentItem> keyToItem = new LinkedHashMap<>();
+        final LinkedHashMap<ComponentKeys, ComponentItem> keyToItem = new LinkedHashMap<>();
         for (final ComponentItem currentItem : componentItems) {
             ComponentItem updatedCategoryItem = currentItem;
-            final ComponentKey componentKey = currentItem.getComponentKey();
+            final ComponentKeys componentKey = currentItem.getComponentKey();
             if (keyToItem.containsKey(componentKey)) {
                 final ComponentItem oldCategoryItem = keyToItem.get(componentKey);
                 final Set<LinkableItem> oldLinkableItems = oldCategoryItem.getComponentAttributes();

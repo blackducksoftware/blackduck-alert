@@ -70,6 +70,7 @@ public abstract class MessageContentProcessor {
         String subComponentUrl = subComponent.flatMap(LinkableItem::getUrl).orElse(null);
         return new ComponentItem.Builder()
                    .applyCategory(oldItem.getCategory())
+                   .applyPriority(oldItem.getPriority())
                    .applyComponentData(component.getName(), component.getValue(), component.getUrl().orElse(null))
                    .applySubComponent(subComponentName, subComponentValue, subComponentUrl)
                    .applyOperation(oldItem.getOperation())
