@@ -49,7 +49,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.email.template.MimeMultipartBuilder;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -64,9 +64,9 @@ public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final EmailProperties emailProperties;
-    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
+    private final FreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final EmailProperties emailProperties, final ChannelFreemarkerTemplatingService freemarkerTemplatingService) {
+    public EmailMessagingService(final EmailProperties emailProperties, final FreemarkerTemplatingService freemarkerTemplatingService) {
         this.emailProperties = emailProperties;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
     }

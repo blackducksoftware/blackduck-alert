@@ -155,9 +155,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private ConfigurationJobModel createCommonDistributionConfiguration(final List<String> projectNames, final List<String> notificationTypes) {
-        final List<ConfigurationFieldModel> hipChatDistributionFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        hipChatDistributionFields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
-        final ConfigurationJobModel distributionJob = MockConfigurationModelFactory.createDistributionJob(hipChatDistributionFields);
+        final List<ConfigurationFieldModel> slackDistributionFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        slackDistributionFields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
+        final ConfigurationJobModel distributionJob = MockConfigurationModelFactory.createDistributionJob(slackDistributionFields);
         final ConfigurationFieldModel notificationType = distributionJob.getFieldAccessor().getField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
                                                              .orElse(ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
         notificationType.setFieldValues(notificationTypes);

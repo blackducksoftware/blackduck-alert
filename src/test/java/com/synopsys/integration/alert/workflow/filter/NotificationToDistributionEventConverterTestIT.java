@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
+import com.synopsys.integration.alert.channel.util.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -37,7 +37,6 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
         messageContentGroups.add(contentGroup2);
 
         messageContentMap.put(createEmailConfig(), messageContentGroups);
-        messageContentMap.put(createHipChatConfig(), messageContentGroups);
         messageContentMap.put(createSlackConfig(), messageContentGroups);
 
         final List<DistributionEvent> events = converter.convertToEvents(messageContentMap);
@@ -46,12 +45,6 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private ConfigurationJobModel createEmailConfig() {
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
-        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
-        return MockConfigurationModelFactory.createDistributionJob(fields);
-    }
-
-    private ConfigurationJobModel createHipChatConfig() {
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatDistributionFields();
         fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         return MockConfigurationModelFactory.createDistributionJob(fields);
     }
