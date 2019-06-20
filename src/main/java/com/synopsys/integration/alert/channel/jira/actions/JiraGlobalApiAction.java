@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +53,17 @@ public class JiraGlobalApiAction extends ApiAction {
         this.configurationAccessor = configurationAccessor;
     }
 
+    // FIXME this feels like the wrong thing to do. Figure out how to keep the UI updated with the endpoint field.
     @Override
     public FieldModel beforeValidate(final FieldModel fieldModel) {
-        // FIXME this feels like the wrong thing to do. Figure out how to keep the UI updated with the endpoint field.
+
+        final String stringId = fieldModel.getId();
+        if (StringUtils.isBlank(stringId)) {
+            return fieldModel;
+        }
 
         final String jiraCloudUrl = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_URL).orElse("");
-        final Long id = Long.parseLong(fieldModel.getId());
+        final Long id = Long.parseLong(stringId);
         try {
             final boolean removedFlag = removeSetupPluginFromDB(id, jiraCloudUrl);
             if (removedFlag) {

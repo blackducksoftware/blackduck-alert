@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,17 +85,21 @@ public class JiraCustomEndpoint {
         try {
             final JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             final JiraCloudHttpClient httpClient = jiraServicesCloudFactory.getHttpClient();
-            final String pluginToken = retrievePluginToken(httpClient);
-            final Response response = uploadJiraPlugin(httpClient, pluginToken);
+            final String url = jiraProperties.getUrl();
+            final String username = jiraProperties.getUsername();
+            final String accessToken = jiraProperties.getAccessToken();
+            final String pluginToken = retrievePluginToken(httpClient, url, username, accessToken);
+            final Request request = uploadJiraPlugin(url, username, accessToken, pluginToken);
+            final Response response = httpClient.execute(request);
             if (response.isStatusCodeError()) {
                 return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
             return responseFactory.createOkResponse("", "Successfully created Alert plugin on Jira Cloud server.");
         } catch (final IntegrationException e) {
-            logger.error("There was an issue connecting to ");
+            logger.error("There was an issue connecting to Jira Cloud", e);
             return responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
         } catch (final IOException e) {
-            logger.error("There was a problem reading the plugin file {}", e);
+            logger.error("There was a problem reading the plugin file", e);
             return responseFactory.createInternalServerErrorResponse("", "There was a problem reading the plugin file: " + e.getMessage());
         }
     }
@@ -131,28 +136,35 @@ public class JiraCustomEndpoint {
         return accessToken;
     }
 
-    private String retrievePluginToken(final JiraCloudHttpClient jiraHttpClient) throws IntegrationException {
-        final Request.Builder requestBuilder = createBasicRequestBuilder(jiraHttpClient);
+    private String retrievePluginToken(final JiraCloudHttpClient jiraHttpClient, final String url, final String username, final String accessToken) throws IntegrationException {
+        // token=$(curl -sI -H "Accept: application/vnd.atl.plugins.installed+json" "$url?os_authType=basic" | grep upm-token | cut -d: -f2- | tr -d '[[:space:]]');
+        final Request.Builder requestBuilder = createBasicRequestBuilder(url, username, accessToken);
         requestBuilder.addQueryParameter("os_authType", "basic");
+        requestBuilder.method(HttpMethod.GET);
+        requestBuilder.addAdditionalHeader("Accept", "application/vnd.atl.plugins.installed+json");
         final Response response = jiraHttpClient.execute(requestBuilder.build());
         return response.getHeaderValue("upm-token");
     }
 
-    private Response uploadJiraPlugin(final JiraCloudHttpClient jiraHttpClient, final String pluginToken) throws IntegrationException, IOException {
-        final String pluginJson = ResourceUtil.getResourceAsString(JiraCustomEndpoint.class, "jira/jiraIssueSearchPlugin.json", Charsets.UTF_8);
-        final Request.Builder requestBuilder = createBasicRequestBuilder(jiraHttpClient);
+    private Request uploadJiraPlugin(final String url, final String username, final String accessToken, final String pluginToken) throws IOException {
+        // curl -X POST -v -d '{ "pluginUri" : "&lt;addon-base-url&gt;/atlassian-connect.json"}' -H "Content-type: application/vnd.atl.plugins.remote.install+json" "$url?token=$token"
+        final String pluginJson = ResourceUtil.getResourceAsString(JiraCustomEndpoint.class, "/jira/jiraIssueSearchPlugin.json", Charsets.UTF_8);
+        final Request.Builder requestBuilder = createBasicRequestBuilder(url, username, accessToken);
         requestBuilder.addQueryParameter("token", pluginToken);
+        requestBuilder.method(HttpMethod.POST);
         requestBuilder.addAdditionalHeader("Content-Type", "application/vnd.atl.plugins.install.uri+json");
         requestBuilder.addAdditionalHeader("Accept", "application/json");
         requestBuilder.bodyContent(new StringBodyContent(pluginJson));
-        return jiraHttpClient.execute(requestBuilder.build());
+        return requestBuilder.build();
     }
 
-    private Request.Builder createBasicRequestBuilder(final JiraCloudHttpClient jiraHttpClient) {
+    private Request.Builder createBasicRequestBuilder(final String baseUrl, final String username, final String accessToken) {
         final Request.Builder requestBuilder = Request.newBuilder();
-        requestBuilder.method(HttpMethod.POST);
-        requestBuilder.uri(jiraHttpClient.getBaseUrl() + JIRA_PLUGIN_URL);
-        requestBuilder.additionalHeaders(jiraHttpClient.getCommonRequestHeaders());
+
+        requestBuilder.uri(baseUrl + JIRA_PLUGIN_URL);
+        final byte[] authorizationBytes = String.format("%s:%s", username, accessToken).getBytes(Charsets.UTF_8);
+        final String authorization = String.format("Basic %s", Base64.encodeBase64String(authorizationBytes));
+        requestBuilder.addAdditionalHeader("authorization", authorization);
         return requestBuilder;
     }
 
