@@ -105,6 +105,7 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_VULNERABILITY_NEW = "New Vulnerabilities";
     public static final String LABEL_VULNERABILITY_UPDATED = "Updated Vulnerabilities";
     public static final String LABEL_VULNERABILITY_DELETED = "Deleted Vulnerabilities";
+    public static final String LABEL_VULNERABILITIES = "Vulnerabilities";
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
 
     public static final String LABEL_BOM_COMPONENT = "Bom Component";
