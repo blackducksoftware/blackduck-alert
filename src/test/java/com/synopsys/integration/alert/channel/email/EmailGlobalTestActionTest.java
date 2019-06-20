@@ -113,14 +113,12 @@ public class EmailGlobalTestActionTest {
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         final ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
         final ArgumentCaptor<String> subjectLine = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<String> provider = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<MessageContentGroup> content = ArgumentCaptor.forClass(MessageContentGroup.class);
 
         Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), format.capture(), content.capture());
         assertTrue(emailAddresses.getValue().isEmpty());
         assertEquals("Test from Alert", subjectLine.getValue());
-        assertEquals("Global Configuration", provider.getValue());
         assertEquals("", format.getValue());
     }
 
@@ -153,14 +151,12 @@ public class EmailGlobalTestActionTest {
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         final ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
         final ArgumentCaptor<String> subjectLine = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<String> provider = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<MessageContentGroup> content = ArgumentCaptor.forClass(MessageContentGroup.class);
 
         Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), format.capture(), content.capture());
         assertEquals("fake@synopsys.com", emailAddresses.getValue().iterator().next());
         assertEquals("Test from Alert", subjectLine.getValue());
-        assertEquals("Global Configuration", provider.getValue());
         assertEquals("", format.getValue());
     }
 

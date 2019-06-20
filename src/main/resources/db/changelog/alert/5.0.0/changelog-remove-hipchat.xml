@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="jrichard" id="1560948151336-1">
+       <delete schemaName="ALERT"
+               tableName="DESCRIPTOR_CONFIGS">
+            <where>ID IN
+                    (SELECT CONFIG_ID FROM ALERT.CONFIG_GROUPS WHERE JOB_ID IN
+                        (SELECT JOB_ID FROM ALERT.CONFIG_GROUPS WHERE CONFIG_ID IN
+                            (SELECT CONFIG_ID FROM ALERT.FIELD_VALUES WHERE FIELD_VALUE = 'channel_hipchat')
+                        )
+                    )
+            </where>
+        </delete>
+    </changeSet>
+    <changeSet author="jrichard" id="1560948151336-2">
+        <delete schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <where>NAME = 'channel_hipchat'</where>
+        </delete>
+    </changeSet>
+    <changeSet author="jrichard" id="1560948151336-3">
+       <delete schemaName="ALERT"
+               tableName="DEFINED_FIELDS">
+            <where>SOURCE_KEY LIKE '%hipchat%'</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>
