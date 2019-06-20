@@ -200,7 +200,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         final FieldValueModel name = new FieldValueModel(List.of("name"), true);
         final FieldValueModel provider = new FieldValueModel(List.of(BlackDuckProvider.COMPONENT_NAME), true);
-        final FieldValueModel channel = new FieldValueModel(List.of("channel_email"), true);
+        final FieldValueModel channel = new FieldValueModel(List.of("channel_slack"), true);
 
         final Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName, ChannelDistributionUIConfig.KEY_NAME, name, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
