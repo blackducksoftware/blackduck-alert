@@ -131,7 +131,8 @@ function buildEndpointField(items, field) {
     } = field;
     const checkedValue = convertStringToBoolean(value);
     Object.assign(items, {
-        value: checkedValue
+        value: checkedValue,
+        className: 'form-control'
     });
     return (<EndpointField
         fields={subFields}

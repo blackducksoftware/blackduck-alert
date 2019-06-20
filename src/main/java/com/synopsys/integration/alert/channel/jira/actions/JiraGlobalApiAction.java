@@ -56,7 +56,6 @@ public class JiraGlobalApiAction extends ApiAction {
     // FIXME this feels like the wrong thing to do. Figure out how to keep the UI updated with the endpoint field.
     @Override
     public FieldModel beforeValidate(final FieldModel fieldModel) {
-
         final String stringId = fieldModel.getId();
         if (StringUtils.isBlank(stringId)) {
             return fieldModel;
@@ -72,7 +71,7 @@ public class JiraGlobalApiAction extends ApiAction {
                 fieldModel.setKeyToValues(keyToValues);
             }
         } catch (final AlertDatabaseConstraintException e) {
-            logger.error("There was a problem accessing the DB when update Jira values: {}", e.getMessage());
+            logger.error("There was a problem accessing the DB when updating Jira values: {}", e.getMessage());
         }
 
         return super.beforeUpdateAction(fieldModel);
@@ -87,9 +86,9 @@ public class JiraGlobalApiAction extends ApiAction {
             if (!oldUrl.equals(jiraCloudUrl)) {
                 final List<ConfigurationFieldModel> fieldsCopy = configurationModel.getCopyOfFieldList()
                                                                      .stream()
-                                                                     .filter(configurationFieldModel -> configurationFieldModel.getFieldKey().equals(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN))
+                                                                     .filter(configurationFieldModel -> !configurationFieldModel.getFieldKey().equals(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN))
                                                                      .collect(Collectors.toList());
-                configurationAccessor.updateConfiguration(configurationModel.getDescriptorId(), fieldsCopy);
+                configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldsCopy);
                 return true;
             }
         }

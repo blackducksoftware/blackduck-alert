@@ -65,16 +65,19 @@ class EndpointField extends Component {
         } = this.props;
 
         const endpointField = (
-            <div>
+            <div className="d-inline-flex p-2 col-sm-8">
                 <GeneralButton id={fieldKey} onClick={this.flipShowModal}>{buttonLabel}</GeneralButton>
                 {successBox &&
-                <input
-                    id={`${fieldKey}-confirmation`}
-                    type="checkbox"
-                    name={name}
-                    checked={value}
-                    readOnly
-                />
+                <div className="d-inline-flex p-2 checkbox">
+                    <input
+                        className="form-control"
+                        id={`${fieldKey}-confirmation`}
+                        type="checkbox"
+                        name={name}
+                        checked={value}
+                        readOnly
+                    />
+                </div>
                 }
             </div>
         );
