@@ -174,7 +174,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private AlertNotificationWrapper createNotification(final String providerName, final String notificationContent, final NotificationType type) {
-        return new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
+        NotificationContent notification = new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
+        notification.setId(1L);
+        return notification;
     }
 
 }
