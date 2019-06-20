@@ -201,9 +201,14 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel name = new FieldValueModel(List.of("name"), true);
         final FieldValueModel provider = new FieldValueModel(List.of(BlackDuckProvider.COMPONENT_NAME), true);
         final FieldValueModel channel = new FieldValueModel(List.of("channel_slack"), true);
+        final FieldValueModel webhook = new FieldValueModel(List.of("slack_webhook_url"), true);
 
-        final Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName, ChannelDistributionUIConfig.KEY_NAME, name, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
-            ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
+        final Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
+            SlackDescriptor.KEY_WEBHOOK, webhook,
+            ChannelDistributionUIConfig.KEY_NAME, name,
+            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
+            ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
+            ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
         final FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
 
         final String bdDescriptorName = BlackDuckProvider.COMPONENT_NAME;
