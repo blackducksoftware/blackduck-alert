@@ -123,28 +123,37 @@ public class AuditEntryAccessorTest {
         final LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
         final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
+        final String category = "category";
+
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
                                                   .applyOperation(ItemOperation.ADD)
                                                   .applyNotificationId(1L)
+                                                  .applyComponentData("component", "component_1")
                                                   .applyComponentAttribute(linkableItem1)
                                                   .applyComponentAttribute(linkableItem2)
+                                                  .applyCategory(category)
                                                   .build();
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
                                                   .applyOperation(ItemOperation.UPDATE)
                                                   .applyNotificationId(2L)
+                                                  .applyComponentData("component", "component_2")
                                                   .applyComponentAttribute(linkableItem2)
+                                                  .applyCategory(category)
                                                   .build();
         final ComponentItem componentItem_3 = new ComponentItem.Builder()
                                                   .applyOperation(ItemOperation.DELETE)
                                                   .applyNotificationId(1L)
+                                                  .applyComponentData("component", "component_1")
                                                   .applyComponentAttribute(linkableItem3)
                                                   .applyComponentAttribute(linkableItem4)
                                                   .applyComponentAttribute(linkableItem5)
+                                                  .applyCategory(category)
                                                   .build();
 
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
         return new ProviderMessageContent.Builder()
+                   .applyProvider("provider")
                    .applyTopic("Topic", "audit utility test", "https://google.com")
                    .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
                    .applyAllComponentItems(List.of(componentItem_1, componentItem_2, componentItem_3))

@@ -27,6 +27,7 @@ public class EventManagerTest {
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("provider")
                                                    .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
@@ -44,6 +45,7 @@ public class EventManagerTest {
         final EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("provider")
                                                    .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
