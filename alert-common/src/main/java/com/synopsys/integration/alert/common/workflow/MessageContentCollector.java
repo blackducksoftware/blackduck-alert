@@ -232,9 +232,9 @@ public abstract class MessageContentCollector {
                 ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
                 builder
                     .applyProvider(providerItem.getValue(), providerItem.getUrl().orElse(null))
-                    .applyTopic(topicItem.getName(), topicItem.getValue());
+                    .applyTopic(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null));
                 if (null != subTopic) {
-                    builder.applySubTopic(subTopic.getName(), subTopic.getValue());
+                    builder.applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null));
                 }
                 buildersForNotifications.add(builder);
             }
