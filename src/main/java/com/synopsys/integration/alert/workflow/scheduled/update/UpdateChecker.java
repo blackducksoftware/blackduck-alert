@@ -28,7 +28,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +52,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class UpdateChecker {
-    public static final String DATE_FORMAT = "yyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
     private static final String SNAPSHOT = "-SNAPSHOT";
     private static final char VERSION_SEPARATOR = '.';
 
@@ -86,7 +85,7 @@ public class UpdateChecker {
     }
 
     public UpdateModel getUpdateModel(final String currentVersion, final String alertCreated, final DockerTagModel latestAvailableVersion, final String repositoryUrl) {
-        final boolean isUpdatable = 1 == compareVersionAndDates(currentVersion, alertCreated, latestAvailableVersion.getName(), latestAvailableVersion.getLastUpdated(), this::compareDateStrings);
+        final boolean isUpdatable = 1 == compareVersionAndDates(currentVersion, alertCreated, latestAvailableVersion.getName(), latestAvailableVersion.getLastUpdated());
         return new UpdateModel(currentVersion, alertCreated, latestAvailableVersion, repositoryUrl, isUpdatable);
     }
 
@@ -129,10 +128,10 @@ public class UpdateChecker {
     }
 
     private Comparator<DockerTagModel> tagOrder() {
-        return (firstTag, secondTag) -> compareVersionAndDates(firstTag.getName(), firstTag.getLastUpdated(), secondTag.getName(), secondTag.getLastUpdated(), this::compareDateStrings);
+        return (firstTag, secondTag) -> compareVersionAndDates(firstTag.getName(), firstTag.getLastUpdated(), secondTag.getName(), secondTag.getLastUpdated());
     }
 
-    private int compareVersionAndDates(final String firstVersion, final String firstDate, final String secondVersion, final String secondDate, final BiFunction<String, String, Integer> dateComparison) {
+    private int compareVersionAndDates(final String firstVersion, final String firstDate, final String secondVersion, final String secondDate) {
         final String[] firstVersionTokens = StringUtils.split(firstVersion, VERSION_SEPARATOR);
         final String[] secondVersionTokens = StringUtils.split(secondVersion, VERSION_SEPARATOR);
 
@@ -159,7 +158,7 @@ public class UpdateChecker {
             } else if (secondToken > firstToken) {
                 return 1;
             } else if (firstSnapshot || secondSnapshot) {
-                final Integer comparison = dateComparison.apply(firstDate, secondDate);
+                final Integer comparison = compareDateStrings(firstDate, secondDate);
                 if (0 != comparison) {
                     return comparison;
                 } else if (firstSnapshot && !secondSnapshot) {
