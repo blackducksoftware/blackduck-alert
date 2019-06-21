@@ -34,7 +34,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
 public class ProviderMessageContent extends AlertSerializableModel implements Buildable {
-    private static final String KEY_SEPARATOR = "_";
+    public static final String LABEL_PROVIDER = "Provider";
+
     private final LinkableItem provider;
     private final LinkableItem topic;
     private final LinkableItem subTopic;
@@ -70,8 +71,6 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     }
 
     public static class Builder {
-        private static final String LABEL_PROVIDER = "Provider";
-
         private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
         private String providerName;
         private String providerUrl;
