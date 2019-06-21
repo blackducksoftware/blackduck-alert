@@ -107,7 +107,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             // blackduck displays the license data in a modal dialog.  Therefore a link to the license doesn't make sense.
             // Also the VersionBomLicenseView doesn't have any link mappings to the text link.
             LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay());
-            item.setSummarizable(true);
             item.setCollapsible(true);
             return item;
         }).collect(Collectors.toList());
