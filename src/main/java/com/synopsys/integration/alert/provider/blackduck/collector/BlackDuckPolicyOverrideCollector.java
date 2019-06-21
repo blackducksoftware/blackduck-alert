@@ -80,6 +80,8 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         final String linkForComponentName = (componentVersionName.isPresent()) ? null : generatedLink;
         final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, componentName, linkForComponentName);
 
+        final Optional<String> bomComponentVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX).stream().findFirst();
+
         Optional<LinkableItem> nameItem = Optional.empty();
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
@@ -90,8 +92,8 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         for (final PolicyInfo policyItem : policyItems) {
             ComponentItemPriority priority = mapSeverityToPriority(policyItem.getSeverity());
             Set<LinkableItem> attributeSet = new LinkedHashSet<>();
+            attributeSet.addAll(createPolicyLinkableItems(policyItem, bomComponentVersionUrl.orElse("")));
             nameItem.ifPresent(attributeSet::add);
-            attributeSet.addAll(createPolicyLinkableItems(policyItem));
             Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), componentItem, componentVersionItem.orElse(null), attributeSet, operation, priority);
             item.ifPresent(items::add);
         }
