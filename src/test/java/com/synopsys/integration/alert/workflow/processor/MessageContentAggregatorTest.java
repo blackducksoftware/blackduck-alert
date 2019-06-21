@@ -79,7 +79,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         assertFalse(topicContentMap.isEmpty());
         assertEquals(1, topicContentMap.size());
         assertTrue(topicContentMap.containsKey(jobConfig));
-        assertEquals(3, topicContentMap.get(jobConfig).size());
+        // policy cleared notification has a 1 project and version.
+        // vulnerability has 3 projects and versions.
+        assertEquals(4, topicContentMap.get(jobConfig).size());
     }
 
     @Test
