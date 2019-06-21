@@ -141,6 +141,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return Optional.ofNullable(bomComponent.get(0));
     }
 
+    //TODO Clean up this class to make the code more elegant.  This code was based on the Jira Plugin.  Currently it functions but needs more work to make it production ready.
+
     private Optional<ProjectVersionWrapper> getProjectVersionWrapper(final VersionBomComponentView versionBomComponent) {
         try {
             // TODO Stop using this when Black Duck supports going back to the project-version
@@ -232,6 +234,10 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             }
             final List<PolicyRuleView> policyRules = getBlackDuckService().get().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (final PolicyRuleView rule : policyRules) {
+                final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
+                policyNameItem.setCollapsible(true);
+                policyNameItem.setSummarizable(true);
+                policyNameItem.setCountable(true);
                 if (hasVulnerabilityRule(rule)) {
                     final List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().get().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE);
                     final Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
@@ -240,6 +246,9 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                                                                                                   .map(VulnerableComponentView::getVulnerabilityWithRemediation)
                                                                                                   .collect(Collectors.toSet());
                     for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
+
+                        // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
+
                         final String vulnerabilityId = vulnerabilityView.getCweId();
                         final String vulnerabilityUrl = vulnerabilityView.getHref().orElse(null);
                         final String severity = vulnerabilityView.getSeverity().prettyPrint();
@@ -256,6 +265,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                         final List<LinkableItem> attributes = new LinkedList<>();
                         attributes.addAll(licenseItems);
                         attributes.add(severityItem);
+                        attributes.add(policyNameItem);
                         attributes.add(item);
 
                         ComponentItem.Builder builder = new ComponentItem.Builder();
