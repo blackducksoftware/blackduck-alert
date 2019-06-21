@@ -117,11 +117,11 @@ public class FieldModelProcessor {
         return fieldModel;
     }
 
-    public FieldModel performAfterSaveAction(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel performAfterSaveAction(final FieldModel fieldModel) throws AlertException {
         final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
             final ApiAction apiAction = optionalApiAction.get();
-            return apiAction.afterSaveAction(id, fieldModel);
+            return apiAction.afterSaveAction(fieldModel);
         }
         return fieldModel;
     }
@@ -135,11 +135,11 @@ public class FieldModelProcessor {
         return fieldModel;
     }
 
-    public FieldModel performAfterUpdateAction(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel performAfterUpdateAction(final FieldModel fieldModel) throws AlertException {
         final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
             final ApiAction apiAction = optionalApiAction.get();
-            return apiAction.afterUpdateAction(id, fieldModel);
+            return apiAction.afterUpdateAction(fieldModel);
         }
         return fieldModel;
     }

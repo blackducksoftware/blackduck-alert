@@ -22,10 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.actions;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +36,9 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class JiraGlobalApiAction extends ApiAction {
@@ -54,32 +52,38 @@ public class JiraGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterUpdateAction(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel beforeUpdateAction(final FieldModel fieldModel) throws AlertException {
         final String jiraCloudUrl = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_URL).orElse("");
+        final Long id = Long.parseLong(fieldModel.getId());
         try {
-            removeSetupPluginFromDB(id, jiraCloudUrl);
+            final boolean shouldRemoveField = removeSetupPluginFieldModel(id, jiraCloudUrl);
+            if (shouldRemoveField) {
+                fieldModel.removeField(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN);
+            }
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("There was a problem accessing the DB when updating Jira values: {}", e.getMessage());
         }
 
-        return super.afterSaveAction(id, fieldModel);
+        return super.afterSaveAction(fieldModel);
     }
 
-    public void removeSetupPluginFromDB(final Long id, final String jiraCloudUrl) throws AlertDatabaseConstraintException, AlertFieldException {
+    @Override
+    public FieldModel afterUpdateAction(final FieldModel fieldModel) throws AlertException {
+        final Optional<FieldValueModel> fieldValue = fieldModel.getFieldValueModel(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN);
+        if (fieldValue.isEmpty() || !fieldValue.get().hasValues()) {
+            throw new AlertFieldException(Map.of(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, "Please configure the Jira Cloud plugin for this server."));
+        }
+        return super.afterUpdateAction(fieldModel);
+    }
+
+    private boolean removeSetupPluginFieldModel(final Long id, final String jiraCloudUrl) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationById(id);
         if (configurationModelOptional.isPresent()) {
             final ConfigurationModel configurationModel = configurationModelOptional.get();
             final String oldUrl = configurationModel.getField(JiraDescriptor.KEY_JIRA_URL)
                                       .flatMap(configurationFieldModel -> configurationFieldModel.getFieldValue()).orElse("");
-            if (!oldUrl.equals(jiraCloudUrl)) {
-                final List<ConfigurationFieldModel> fieldsCopy = configurationModel.getCopyOfFieldList()
-                                                                     .stream()
-                                                                     .filter(configurationFieldModel -> !configurationFieldModel.getFieldKey().equals(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN))
-                                                                     .collect(Collectors.toList());
-                configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldsCopy);
-                throw new AlertFieldException(Map.of(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, "Please install plugin remotely after changing URL."));
-            }
+            return !oldUrl.equals(jiraCloudUrl);
         }
+        return false;
     }
-
 }

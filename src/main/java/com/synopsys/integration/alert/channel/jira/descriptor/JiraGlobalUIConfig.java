@@ -58,7 +58,7 @@ public class JiraGlobalUIConfig extends UIConfig {
         final ConfigField jiraUrl = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL);
         final ConfigField jiraUserName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_USERNAME, LABEL_USER_NAME, DESCRIPTION_USER_NAME);
         final ConfigField jiraAccessToken = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN);
-        final ConfigField jiraConfigurePlugin = EndpointField.createRequiredWithSuccessBox(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
+        final ConfigField jiraConfigurePlugin = EndpointField.createWithSuccessBox(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
                                                     .addSubField(PasswordConfigField.createRequired(KEY_JIRA_ADMIN_ACCESS_TOKEN, LABEL_ADMIN_ACCESS_TOKEN, DESCRIPTION_ADMIN_ACCESS_TOKEN));
 
         return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraConfigurePlugin);

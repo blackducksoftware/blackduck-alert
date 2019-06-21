@@ -126,8 +126,7 @@ public class JobConfigActions {
         validateJobNameUnique(jobFieldModel);
         final Set<String> descriptorNames = new HashSet<>();
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-        final Set<FieldModel> jobFieldModels = jobFieldModel.getFieldModels();
-        for (final FieldModel fieldModel : jobFieldModels) {
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final FieldModel beforeSaveEventFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
             descriptorNames.add(beforeSaveEventFieldModel.getDescriptorName());
             final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(beforeSaveEventFieldModel).values();
@@ -138,13 +137,8 @@ public class JobConfigActions {
 
         final Set<FieldModel> updatedFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
-            final String descriptorName = fieldModel.getDescriptorName();
-            final Long fieldModelId = Long.parseLong(fieldModel.getId());
-            final Optional<FieldModel> matchingFieldModel = jobFieldModels.stream().filter(originalFieldModel -> originalFieldModel.getDescriptorName().equals(descriptorName)).findFirst();
-            if (matchingFieldModel.isPresent()) {
-                final FieldModel updatedModel = fieldModelProcessor.performAfterSaveAction(fieldModelId, matchingFieldModel.get());
-                updatedFieldModels.add(updatedModel);
-            }
+            final FieldModel updatedModel = fieldModelProcessor.performAfterSaveAction(fieldModel);
+            updatedFieldModels.add(updatedModel);
         }
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
@@ -165,13 +159,8 @@ public class JobConfigActions {
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         final Set<FieldModel> updatedFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
-            final String descriptorName = fieldModel.getDescriptorName();
-            final Long fieldModelId = Long.parseLong(fieldModel.getId());
-            final Optional<FieldModel> matchingFieldModel = jobFieldModels.stream().filter(originalFieldModel -> originalFieldModel.getDescriptorName().equals(descriptorName)).findFirst();
-            if (matchingFieldModel.isPresent()) {
-                final FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(fieldModelId, matchingFieldModel.get());
-                updatedFieldModels.add(updatedModel);
-            }
+            final FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(fieldModel);
+            updatedFieldModels.add(updatedModel);
         }
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;

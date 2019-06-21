@@ -78,6 +78,10 @@ public class FieldModel extends Config {
         keyToValues.put(key, field);
     }
 
+    public void removeField(final String key) {
+        keyToValues.remove(key);
+    }
+
     public FieldModel fill(final FieldModel fieldModel) {
         final Map<String, FieldValueModel> fieldValueModelMap = new HashMap<>();
         fieldValueModelMap.putAll(getKeyToValues());

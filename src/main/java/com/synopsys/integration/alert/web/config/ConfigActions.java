@@ -133,7 +133,7 @@ public class ConfigActions {
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(configuration.getConfigurationId(), modifiedFieldModel);
+        final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
         return dbSavedModel.fill(afterSaveAction);
     }
 
@@ -167,7 +167,7 @@ public class ConfigActions {
         final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(configurationModel.getConfigurationId(), updatedFieldModel);
+        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
         return dbSavedModel.fill(afterUpdateAction);
     }
 

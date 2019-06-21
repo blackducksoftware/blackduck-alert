@@ -31,7 +31,7 @@ public abstract class ApiAction {
         return fieldModel;
     }
 
-    public FieldModel afterSaveAction(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel afterSaveAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
@@ -39,7 +39,7 @@ public abstract class ApiAction {
         return fieldModel;
     }
 
-    public FieldModel afterUpdateAction(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel afterUpdateAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
