@@ -125,7 +125,7 @@ public class ConfigActions {
         }
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
+    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
         final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         final String descriptorName = modifiedFieldModel.getDescriptorName();
@@ -133,13 +133,12 @@ public class ConfigActions {
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
+        final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(configuration.getConfigurationId(), modifiedFieldModel);
         return dbSavedModel.fill(afterSaveAction);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
-        final FieldModel processedFieldModel = fieldModelProcessor.performBeforeValidate(fieldModel);
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(processedFieldModel));
+        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -162,13 +161,13 @@ public class ConfigActions {
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
 
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
         final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
+        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(configurationModel.getConfigurationId(), updatedFieldModel);
         return dbSavedModel.fill(afterUpdateAction);
     }
 

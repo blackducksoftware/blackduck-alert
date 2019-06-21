@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +35,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class JiraGlobalApiAction extends ApiAction {
@@ -53,31 +53,19 @@ public class JiraGlobalApiAction extends ApiAction {
         this.configurationAccessor = configurationAccessor;
     }
 
-    // FIXME this feels like the wrong thing to do. Figure out how to keep the UI updated with the endpoint field.
     @Override
-    public FieldModel beforeValidate(final FieldModel fieldModel) {
-        final String stringId = fieldModel.getId();
-        if (StringUtils.isBlank(stringId)) {
-            return fieldModel;
-        }
-
+    public FieldModel afterUpdateAction(final Long id, final FieldModel fieldModel) throws AlertException {
         final String jiraCloudUrl = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_URL).orElse("");
-        final Long id = Long.parseLong(stringId);
         try {
-            final boolean removedFlag = removeSetupPluginFromDB(id, jiraCloudUrl);
-            if (removedFlag) {
-                final Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
-                keyToValues.remove(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN);
-                fieldModel.setKeyToValues(keyToValues);
-            }
+            removeSetupPluginFromDB(id, jiraCloudUrl);
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("There was a problem accessing the DB when updating Jira values: {}", e.getMessage());
         }
 
-        return super.beforeUpdateAction(fieldModel);
+        return super.afterSaveAction(id, fieldModel);
     }
 
-    public boolean removeSetupPluginFromDB(final Long id, final String jiraCloudUrl) throws AlertDatabaseConstraintException {
+    public void removeSetupPluginFromDB(final Long id, final String jiraCloudUrl) throws AlertDatabaseConstraintException, AlertFieldException {
         final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationById(id);
         if (configurationModelOptional.isPresent()) {
             final ConfigurationModel configurationModel = configurationModelOptional.get();
@@ -89,10 +77,9 @@ public class JiraGlobalApiAction extends ApiAction {
                                                                      .filter(configurationFieldModel -> !configurationFieldModel.getFieldKey().equals(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN))
                                                                      .collect(Collectors.toList());
                 configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldsCopy);
-                return true;
+                throw new AlertFieldException(Map.of(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, "Please install plugin remotely after changing URL."));
             }
         }
-        return false;
     }
 
 }

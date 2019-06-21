@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -139,7 +140,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor);
                 final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
                 updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
-            } catch (final IllegalArgumentException | SecurityException | AlertDatabaseConstraintException ex) {
+            } catch (final IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("error initializing descriptor", ex);
             }
         }
@@ -161,7 +162,7 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private void updateConfigurationFields(final String descriptorName, final boolean overwriteCurrentConfig, final List<ConfigurationModel> foundConfigurationModels, final Set<ConfigurationFieldModel> configurationModels)
-        throws AlertDatabaseConstraintException {
+        throws AlertException {
         if (!configurationModels.isEmpty()) {
             if (!foundConfigurationModels.isEmpty()) {
                 final ConfigurationModel foundModel = foundConfigurationModels.get(0);
@@ -177,7 +178,7 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels, final ConfigurationModel foundModel, final boolean overwriteCurrentConfig)
-        throws AlertDatabaseConstraintException {
+        throws AlertException {
         final Collection<ConfigurationFieldModel> fieldsToUpdate;
         if (overwriteCurrentConfig) {
             fieldsToUpdate = configurationFieldModels;
@@ -195,7 +196,7 @@ public class AlertStartupInitializer extends StartupComponent {
         return modelConverter.convertToConfigurationFieldModelMap(updatedFieldModel).values();
     }
 
-    private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertDatabaseConstraintException {
+    private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
         final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);

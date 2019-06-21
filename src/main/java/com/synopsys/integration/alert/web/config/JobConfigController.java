@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
@@ -87,12 +86,12 @@ public class JobConfigController extends BaseController {
         }
         final List<JobFieldModel> models = new LinkedList<>();
         try {
-            List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
+            final List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
 
-            for (JobFieldModel jobModel : allModels) {
-                boolean includeJob = jobModel.getFieldModels().stream()
-                                         .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                         .allMatch(permissionKey -> authorizationManager.hasReadPermission(permissionKey));
+            for (final JobFieldModel jobModel : allModels) {
+                final boolean includeJob = jobModel.getFieldModels().stream()
+                                               .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                               .allMatch(permissionKey -> authorizationManager.hasReadPermission(permissionKey));
                 if (includeJob) {
                     models.add(jobModel);
                 }
@@ -116,10 +115,10 @@ public class JobConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            JobFieldModel fieldModel = optionalModel.get();
-            boolean missingPermission = fieldModel.getFieldModels().stream()
-                                            .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                            .anyMatch(permissionKey -> !authorizationManager.hasReadPermission(permissionKey));
+            final JobFieldModel fieldModel = optionalModel.get();
+            final boolean missingPermission = fieldModel.getFieldModels().stream()
+                                                  .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                                  .anyMatch(permissionKey -> !authorizationManager.hasReadPermission(permissionKey));
             if (missingPermission) {
                 return responseFactory.createForbiddenResponse();
             }
@@ -130,10 +129,10 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        boolean missingPermission = restModel.getFieldModels().stream()
-                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                        .anyMatch(permissionKey -> !authorizationManager.hasCreatePermission(permissionKey));
+    public ResponseEntity<String> postConfig(@RequestBody final JobFieldModel restModel) {
+        final boolean missingPermission = restModel.getFieldModels().stream()
+                                              .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                              .anyMatch(permissionKey -> !authorizationManager.hasCreatePermission(permissionKey));
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
@@ -146,7 +145,7 @@ public class JobConfigController extends BaseController {
         }
     }
 
-    private ResponseEntity<String> runPostConfig(final JobFieldModel restModel) throws AlertDatabaseConstraintException {
+    private ResponseEntity<String> runPostConfig(final JobFieldModel restModel) throws AlertException {
         final String id = restModel.getJobId();
         if (StringUtils.isNotBlank(id) && jobConfigActions.doesJobExist(id)) {
             return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
@@ -162,9 +161,9 @@ public class JobConfigController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
-        boolean missingPermission = restModel.getFieldModels().stream()
-                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                        .anyMatch(permissionKey -> !authorizationManager.hasWritePermission(permissionKey));
+        final boolean missingPermission = restModel.getFieldModels().stream()
+                                              .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                              .anyMatch(permissionKey -> !authorizationManager.hasWritePermission(permissionKey));
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
@@ -198,13 +197,13 @@ public class JobConfigController extends BaseController {
         final String stringId = contentConverter.getStringValue(id);
         try {
             if (jobConfigActions.doesJobExist(id)) {
-                Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
+                final Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
 
                 if (optionalModel.isPresent()) {
-                    JobFieldModel jobFieldModel = optionalModel.get();
-                    boolean missingPermission = jobFieldModel.getFieldModels().stream()
-                                                    .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                                    .anyMatch(permissionKey -> !authorizationManager.hasDeletePermission(permissionKey));
+                    final JobFieldModel jobFieldModel = optionalModel.get();
+                    final boolean missingPermission = jobFieldModel.getFieldModels().stream()
+                                                          .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                                          .anyMatch(permissionKey -> !authorizationManager.hasDeletePermission(permissionKey));
                     if (missingPermission) {
                         return responseFactory.createForbiddenResponse();
                     }
@@ -222,14 +221,14 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final JobFieldModel restModel) {
+    public ResponseEntity<String> validateConfig(@RequestBody final JobFieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        boolean missingPermission = restModel.getFieldModels().stream()
-                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                        .anyMatch(permission -> !authorizationManager.hasCreatePermission(permission) && !authorizationManager.hasWritePermission(permission));
+        final boolean missingPermission = restModel.getFieldModels().stream()
+                                              .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                              .anyMatch(permission -> !authorizationManager.hasCreatePermission(permission) && !authorizationManager.hasWritePermission(permission));
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
@@ -244,14 +243,14 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = true) final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
+    public ResponseEntity<String> testConfig(@RequestBody final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        boolean missingPermission = restModel.getFieldModels().stream()
-                                        .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
-                                        .anyMatch(permissionKey -> !authorizationManager.hasExecutePermission(permissionKey));
+        final boolean missingPermission = restModel.getFieldModels().stream()
+                                              .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                              .anyMatch(permissionKey -> !authorizationManager.hasExecutePermission(permissionKey));
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }

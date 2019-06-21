@@ -1,7 +1,8 @@
 package com.synopsys.integration.alert.web.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +71,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
 
         assertEquals(newUsername, updatedValues.get(SettingsDescriptor.KEY_PROXY_USERNAME).getValue().orElse(""));
-        assertNull(updatedValues.get(SettingsDescriptor.KEY_PROXY_PWD), "Saving an empty values should remove it from DB.");
+        assertNotNull(updatedValues.get(SettingsDescriptor.KEY_PROXY_PWD));
+        assertFalse(updatedValues.get(SettingsDescriptor.KEY_PROXY_PWD).hasValues(), "Saving an empty values should remove it from DB.");
     }
 }

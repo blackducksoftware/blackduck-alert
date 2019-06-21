@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -53,15 +54,15 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(final FieldModel fieldModel) {
+    public FieldModel afterSaveAction(final Long id, final FieldModel fieldModel) throws AlertException {
         handleNewOrUpdatedConfig();
-        return super.afterSaveAction(fieldModel);
+        return super.afterSaveAction(id, fieldModel);
     }
 
     @Override
-    public FieldModel afterUpdateAction(final FieldModel fieldModel) {
+    public FieldModel afterUpdateAction(final Long id, final FieldModel fieldModel) throws AlertException {
         handleNewOrUpdatedConfig();
-        return super.afterUpdateAction(fieldModel);
+        return super.afterUpdateAction(id, fieldModel);
     }
 
     @Override
