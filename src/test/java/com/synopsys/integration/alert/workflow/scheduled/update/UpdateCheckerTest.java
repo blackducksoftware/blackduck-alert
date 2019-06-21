@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.update;
+package com.synopsys.integration.alert.workflow.scheduled.update;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,8 +18,6 @@ import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.workflow.scheduled.update.UpdateChecker;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -31,8 +29,7 @@ public class UpdateCheckerTest {
     @Test
     public void testAlertIsNewer() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final DockerTagModel latestVersion = createDockerTagModel("0.1.0", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "0.1.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -40,8 +37,7 @@ public class UpdateCheckerTest {
     @Test
     public void testAlertIsNewerPatch() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1", null, "1.0.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -49,8 +45,7 @@ public class UpdateCheckerTest {
     @Test
     public void testAlertIsOlder() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.1", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.1", null, null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -58,8 +53,7 @@ public class UpdateCheckerTest {
     @Test
     public void testAlertIsOlderDockerPatch() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0.1", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0.1", null, null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -67,8 +61,7 @@ public class UpdateCheckerTest {
     @Test
     public void testAlertIsNewerSnapshot() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final DockerTagModel latestVersion = createDockerTagModel("0.1.0", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, "0.1.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -76,8 +69,7 @@ public class UpdateCheckerTest {
     @Test
     public void testAlertIsNewerSnapshotPatch() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-SNAPSHOT", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-SNAPSHOT", null, "1.0.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -89,8 +81,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0", formatter.format(dockerTagDate), null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -102,8 +93,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0", formatter.format(dockerTagDate), null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -115,8 +105,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0", formatter.format(dockerTagDate), null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -128,8 +117,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0.1", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0.1", formatter.format(dockerTagDate), null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -138,8 +126,7 @@ public class UpdateCheckerTest {
     public void testAlertIsNewerBothSnapshot() throws IntegrationException {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        final DockerTagModel latestVersion = createDockerTagModel("0.1.0-SNAPSHOT", null);
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, "0.1.0-SNAPSHOT", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -151,8 +138,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, -80);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0-SNAPSHOT", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -164,8 +150,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0-SNAPSHOT", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -177,8 +162,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0-SNAPSHOT", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -190,8 +174,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0-SNAPSHOT", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -203,8 +186,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0-SNAPSHOT", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -216,8 +198,7 @@ public class UpdateCheckerTest {
         final Date alertTime = new Date();
         final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
 
-        final DockerTagModel latestVersion = createDockerTagModel("1.0.0-SNAPSHOT", formatter.format(dockerTagDate));
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatter.format(alertTime), latestVersion, null);
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
         assertTrue(updateModel.getUpdatable());
     }
@@ -247,7 +228,4 @@ public class UpdateCheckerTest {
         return new UpdateChecker(null, null, null);
     }
 
-    private DockerTagModel createDockerTagModel(final String version, final String updated) {
-        return new DockerTagModel(version, null, null, null, null, null, null, updated, true);
-    }
 }

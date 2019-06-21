@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.update;
+package com.synopsys.integration.alert.workflow.scheduled.update;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.workflow.scheduled.update.DockerTagRetriever;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.exception.IntegrationException;

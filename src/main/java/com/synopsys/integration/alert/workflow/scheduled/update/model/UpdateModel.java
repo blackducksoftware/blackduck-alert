@@ -25,14 +25,16 @@ package com.synopsys.integration.alert.workflow.scheduled.update.model;
 public class UpdateModel {
     private final String currentVersion;
     private final String currentCreatedDate;
-    private final DockerTagModel latestAvailableTag;
+    private final String dockerTagVersion;
+    private final String dockerTagUpdatedDate;
     private final String repositoryUrl;
     private final Boolean isUpdatable;
 
-    public UpdateModel(final String currentVersion, final String currentCreatedDate, final DockerTagModel latestAvailableTag, final String repositoryUrl, final Boolean isUpdatable) {
+    public UpdateModel(final String currentVersion, final String currentCreatedDate, final String dockerTagVersion, final String dockerTagUpdatedDate, final String repositoryUrl, final Boolean isUpdatable) {
         this.currentVersion = currentVersion;
         this.currentCreatedDate = currentCreatedDate;
-        this.latestAvailableTag = latestAvailableTag;
+        this.dockerTagVersion = dockerTagVersion;
+        this.dockerTagUpdatedDate = dockerTagUpdatedDate;
         this.repositoryUrl = repositoryUrl;
         this.isUpdatable = isUpdatable;
     }
@@ -45,8 +47,12 @@ public class UpdateModel {
         return currentCreatedDate;
     }
 
-    public DockerTagModel getLatestAvailableTag() {
-        return latestAvailableTag;
+    public String getDockerTagVersion() {
+        return dockerTagVersion;
+    }
+
+    public String getDockerTagUpdatedDate() {
+        return dockerTagUpdatedDate;
     }
 
     public String getRepositoryUrl() {

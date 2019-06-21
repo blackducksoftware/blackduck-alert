@@ -54,7 +54,7 @@ public class UpdateNotifierTask extends ScheduledTask {
     public void runTask() {
         final UpdateModel updateModel = updateChecker.getUpdateModel();
         if (updateModel.getUpdatable()) {
-            addSystemMessage(updateModel.getLatestAvailableTag().getName());
+            addSystemMessage(updateModel.getDockerTagVersion());
             updateEmailService.sendUpdateEmail(updateModel);
         }
     }

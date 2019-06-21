@@ -78,22 +78,19 @@ public class UpdateChecker {
 
         final Boolean isProduction = isProductionVersion(currentVersion);
 
-        final DockerTagModel latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
+        final VersionDateModel latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
         final String repositoryUrl = dockerTagRetriever.getRepositoryUrl();
 
-        return getUpdateModel(currentVersion, alertCreated, latestAvailableVersion, repositoryUrl);
+        return getUpdateModel(currentVersion, alertCreated, latestAvailableVersion.getVersionName(), latestAvailableVersion.getDate(), repositoryUrl);
     }
 
-    public UpdateModel getUpdateModel(final String currentVersion, final String alertCreated, final DockerTagModel latestAvailableVersion, final String repositoryUrl) {
-        int comparison = compareVersions(currentVersion, latestAvailableVersion.getName());
-        if (0 == comparison) {
-            comparison = compareDateStrings(alertCreated, latestAvailableVersion.getLastUpdated());
-        }
-        if (0 == comparison) {
-            comparison = compareProductionAndSnapshotVersions(currentVersion, latestAvailableVersion.getName());
-        }
+    public UpdateModel getUpdateModel(final String currentVersion, final String alertCreated, final String dockerTagVersioName, final String dockerTagUpdatedDate, final String repositoryUrl) {
+        final VersionDateModel alertModel = new VersionDateModel(currentVersion, alertCreated);
+        final VersionDateModel dockerTagModel = new VersionDateModel(dockerTagVersioName, dockerTagUpdatedDate);
+
+        final int comparison = versionDateModelComparator().compare(alertModel, dockerTagModel);
         final boolean isUpdatable = 1 == comparison;
-        return new UpdateModel(currentVersion, alertCreated, latestAvailableVersion, repositoryUrl, isUpdatable);
+        return new UpdateModel(currentVersion, alertCreated, dockerTagVersioName, dockerTagUpdatedDate, repositoryUrl, isUpdatable);
     }
 
     private IntHttpClient createHttpClient() {
@@ -102,7 +99,7 @@ public class UpdateChecker {
         return new IntHttpClient(intLogger, 120, false, proxyInfo);
     }
 
-    private DockerTagModel getLatestAvailableTag(final DockerTagRetriever dockerTagRetriever, final boolean isProduction) {
+    private VersionDateModel getLatestAvailableTag(final DockerTagRetriever dockerTagRetriever, final boolean isProduction) {
         DockerTagsResponseModel tagsResponseModel = dockerTagRetriever.getTagsModel();
 
         final List<DockerTagModel> tags = new LinkedList<>();
@@ -119,7 +116,8 @@ public class UpdateChecker {
                        }
                        return true;
                    })
-                   .min(tagOrder())
+                   .map(dockerTagModel -> new VersionDateModel(dockerTagModel.getName(), dockerTagModel.getLastUpdated()))
+                   .min(versionDateModelComparator())
                    .get();
     }
 
@@ -134,14 +132,14 @@ public class UpdateChecker {
                    .allMatch(NumberUtils::isParsable);
     }
 
-    private Comparator<DockerTagModel> tagOrder() {
-        return (firstTag, secondTag) -> {
-            int comparison = compareVersions(firstTag.getName(), secondTag.getName());
+    private Comparator<VersionDateModel> versionDateModelComparator() {
+        return (firstModel, secondModel) -> {
+            int comparison = compareVersions(firstModel.getVersionName(), secondModel.getVersionName());
             if (0 == comparison) {
-                comparison = compareDateStrings(firstTag.getLastUpdated(), secondTag.getLastUpdated());
+                comparison = compareDateStrings(firstModel.getDate(), secondModel.getDate());
             }
             if (0 == comparison) {
-                comparison = compareProductionAndSnapshotVersions(firstTag.getName(), secondTag.getName());
+                comparison = compareProductionAndSnapshotVersions(firstModel.getVersionName(), secondModel.getVersionName());
             }
             return comparison;
         };
@@ -223,4 +221,21 @@ public class UpdateChecker {
         return 0;
     }
 
+    private class VersionDateModel {
+        private final String versionName;
+        private final String date;
+
+        private VersionDateModel(final String versionName, final String date) {
+            this.versionName = versionName;
+            this.date = date;
+        }
+
+        public String getVersionName() {
+            return versionName;
+        }
+
+        public String getDate() {
+            return date;
+        }
+    }
 }
