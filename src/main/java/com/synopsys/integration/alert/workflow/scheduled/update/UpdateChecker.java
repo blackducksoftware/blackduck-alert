@@ -85,7 +85,14 @@ public class UpdateChecker {
     }
 
     public UpdateModel getUpdateModel(final String currentVersion, final String alertCreated, final DockerTagModel latestAvailableVersion, final String repositoryUrl) {
-        final boolean isUpdatable = 1 == compareVersionAndDates(currentVersion, alertCreated, latestAvailableVersion.getName(), latestAvailableVersion.getLastUpdated());
+        int comparison = compareVersions(currentVersion, latestAvailableVersion.getName());
+        if (0 == comparison) {
+            comparison = compareDateStrings(alertCreated, latestAvailableVersion.getLastUpdated());
+        }
+        if (0 == comparison) {
+            comparison = compareProductionAndSnapshotVersions(currentVersion, latestAvailableVersion.getName());
+        }
+        final boolean isUpdatable = 1 == comparison;
         return new UpdateModel(currentVersion, alertCreated, latestAvailableVersion, repositoryUrl, isUpdatable);
     }
 
@@ -128,25 +135,31 @@ public class UpdateChecker {
     }
 
     private Comparator<DockerTagModel> tagOrder() {
-        return (firstTag, secondTag) -> compareVersionAndDates(firstTag.getName(), firstTag.getLastUpdated(), secondTag.getName(), secondTag.getLastUpdated());
+        return (firstTag, secondTag) -> {
+            int comparison = compareVersions(firstTag.getName(), secondTag.getName());
+            if (0 == comparison) {
+                comparison = compareDateStrings(firstTag.getLastUpdated(), secondTag.getLastUpdated());
+            }
+            if (0 == comparison) {
+                comparison = compareProductionAndSnapshotVersions(firstTag.getName(), secondTag.getName());
+            }
+            return comparison;
+        };
     }
 
-    private int compareVersionAndDates(final String firstVersion, final String firstDate, final String secondVersion, final String secondDate) {
+    private int compareVersions(final String firstVersion, final String secondVersion) {
         final String[] firstVersionTokens = StringUtils.split(firstVersion, VERSION_SEPARATOR);
         final String[] secondVersionTokens = StringUtils.split(secondVersion, VERSION_SEPARATOR);
 
         for (int i = 0; i < firstVersionTokens.length && i < secondVersionTokens.length; i++) {
             String firstVersionToken = firstVersionTokens[i];
-            boolean firstSnapshot = false;
             String secondVersionToken = secondVersionTokens[i];
-            boolean secondSnapshot = false;
+
             if (firstVersionToken.contains(SNAPSHOT)) {
                 firstVersionToken = firstVersionToken.substring(0, firstVersionToken.indexOf(SNAPSHOT));
-                firstSnapshot = true;
             }
             if (secondVersionToken.contains(SNAPSHOT)) {
                 secondVersionToken = secondVersionToken.substring(0, secondVersionToken.indexOf(SNAPSHOT));
-                secondSnapshot = true;
             }
 
             final int firstToken = Integer.parseInt(firstVersionToken);
@@ -157,15 +170,6 @@ public class UpdateChecker {
                 return -1;
             } else if (secondToken > firstToken) {
                 return 1;
-            } else if (firstSnapshot || secondSnapshot) {
-                final Integer comparison = compareDateStrings(firstDate, secondDate);
-                if (0 != comparison) {
-                    return comparison;
-                } else if (firstSnapshot && !secondSnapshot) {
-                    return 1;
-                } else if (!firstSnapshot && secondSnapshot) {
-                    return -1;
-                }
             }
         }
         // If their versions have been the same up to this point, a patch release would have more tokens, making it the newer version.
@@ -175,6 +179,19 @@ public class UpdateChecker {
             return 1;
         }
         return 0;
+    }
+
+    private int compareProductionAndSnapshotVersions(final String firstVersion, final String secondVersion) {
+        final boolean firstIsProduction = isProductionVersion(firstVersion);
+        final boolean secondIsProduction = isProductionVersion(secondVersion);
+
+        if (firstIsProduction && !secondIsProduction) {
+            return -1;
+        } else if (!firstIsProduction && secondIsProduction) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /**
