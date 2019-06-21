@@ -72,7 +72,7 @@ public class UpdateEmailService {
     }
 
     public void sendUpdateEmail(final UpdateModel updateModel) {
-        final String updateVersion = updateModel.getLatestAvailableVersion();
+        final String updateVersion = updateModel.getLatestAvailableTag().getName();
         if (wasEmailAlreadySentForVersion(updateVersion)) {
             return;
         }

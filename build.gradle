@@ -249,7 +249,9 @@ task createAboutText(type: Task) {
     def projectUrlText = readmeContentArray.subList(projectUrlStart, projectUrlEnd).join(" ")
     def gitUrl = projectUrlText.substring(projectUrlText.indexOf("https"))
     gitUrl = gitUrl.substring(0, gitUrl.indexOf("releases"))
-    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl, description: description])
+
+    def time = new Date().format('yyy-MM-dd\'T\'HH:mm:ss.SSSSSS\'Z\'');
+    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl, description: description, created: time])
     logger.info("About text file: {} content: {}", aboutFile, aboutJson)
     aboutFile << aboutJson
 }

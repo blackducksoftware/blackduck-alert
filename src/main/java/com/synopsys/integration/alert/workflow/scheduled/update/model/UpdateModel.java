@@ -22,36 +22,38 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled.update.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class UpdateModel {
     private final String currentVersion;
-    private final String latestAvailableVersion;
+    private final String currentCreatedDate;
+    private final DockerTagModel latestAvailableTag;
     private final String repositoryUrl;
+    private final Boolean isUpdatable;
 
-    public UpdateModel(final String currentVersion, final String latestAvailableVersion, final String repositoryUrl) {
+    public UpdateModel(final String currentVersion, final String currentCreatedDate, final DockerTagModel latestAvailableTag, final String repositoryUrl, final Boolean isUpdatable) {
         this.currentVersion = currentVersion;
-        this.latestAvailableVersion = latestAvailableVersion;
+        this.currentCreatedDate = currentCreatedDate;
+        this.latestAvailableTag = latestAvailableTag;
         this.repositoryUrl = repositoryUrl;
+        this.isUpdatable = isUpdatable;
     }
 
     public String getCurrentVersion() {
         return currentVersion;
     }
 
-    public String getLatestAvailableVersion() {
-        return latestAvailableVersion;
+    public String getCurrentCreatedDate() {
+        return currentCreatedDate;
+    }
+
+    public DockerTagModel getLatestAvailableTag() {
+        return latestAvailableTag;
     }
 
     public String getRepositoryUrl() {
         return repositoryUrl;
     }
 
-    public boolean isUpdatable() {
-        if (StringUtils.isAnyBlank(currentVersion, latestAvailableVersion)) {
-            return false;
-        }
-        return !currentVersion.equals(latestAvailableVersion);
+    public Boolean getUpdatable() {
+        return isUpdatable;
     }
-
 }

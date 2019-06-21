@@ -53,7 +53,7 @@ public class AboutReader {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             final String startupDate = systemStatusUtility.getStartupTime() != null ? RestConstants.formatDate(systemStatusUtility.getStartupTime()) : "";
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate);
+            return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -68,4 +68,5 @@ public class AboutReader {
             return PRODUCT_VERSION_UNKNOWN;
         }
     }
+
 }
