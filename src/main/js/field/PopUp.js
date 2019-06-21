@@ -9,7 +9,6 @@ class PopUp extends Component {
     constructor(props) {
         super(props);
 
-        this.handleChange = this.handleChange.bind(this);
         this.internalCancel = this.internalCancel.bind(this);
         this.internalOk = this.internalOk.bind(this);
 
@@ -17,10 +16,6 @@ class PopUp extends Component {
             modalConfig: {},
             fieldErrors: {}
         };
-    }
-
-    handleChange({ target }) {
-        FieldModelUtilities.handleChange(this, target, 'modalConfig');
     }
 
     internalCancel() {
@@ -52,7 +47,8 @@ class PopUp extends Component {
                             descriptorFields={fields}
                             currentConfig={modalConfig}
                             fieldErrors={fieldErrors}
-                            handleChange={this.handleChange}
+                            self={this}
+                            stateName="modalConfig"
                         />
                     </Modal.Body>
                     <Modal.Footer>
@@ -67,11 +63,6 @@ class PopUp extends Component {
                         >
                             {okLabel}
                         </button>
-                        {show &&
-                        <div className="progressIcon">
-                            <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                        </div>
-                        }
                     </Modal.Footer>
                 </Modal>
             </div>

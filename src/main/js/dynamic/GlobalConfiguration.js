@@ -16,7 +16,6 @@ import ChannelTestModal from 'dynamic/ChannelTestModal';
 class GlobalConfiguration extends React.Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
         this.handleTestCancel = this.handleTestCancel.bind(this);
@@ -52,10 +51,6 @@ class GlobalConfiguration extends React.Component {
         }
     }
 
-    handleChange({ target }) {
-        FieldModelUtilities.handleChange(this, target, 'currentConfig');
-    }
-
     handleTest() {
         const { testFieldLabel } = this.state.currentDescriptor;
         if (testFieldLabel) {
@@ -81,6 +76,7 @@ class GlobalConfiguration extends React.Component {
         const fieldModel = this.state.currentConfig;
         const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(fieldModel);
         const id = FieldModelUtilities.getFieldModelId(fieldModel);
+        console.log(fieldModel);
         if (emptyModel && id) {
             this.props.deleteConfig(id);
         } else {
@@ -113,6 +109,8 @@ class GlobalConfiguration extends React.Component {
                             currentConfig={currentConfig}
                             fieldErrors={this.props.fieldErrors}
                             handleChange={this.handleChange}
+                            self={this}
+                            stateName="currentConfig"
                         />
                     </div>
                     <ConfigButtons

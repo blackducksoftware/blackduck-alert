@@ -6,7 +6,12 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import {
+    getDistributionJob,
+    saveDistributionJob,
+    testDistributionJob,
+    updateDistributionJob
+} from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -25,8 +30,6 @@ class DistributionConfiguration extends Component {
         super(props);
 
         this.buildJsonBody = this.buildJsonBody.bind(this);
-        this.handleChannelChange = this.handleChannelChange.bind(this);
-        this.handleProviderChange = this.handleProviderChange.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -125,14 +128,6 @@ class DistributionConfiguration extends Component {
         this.props.handleCancel();
     }
 
-    handleChannelChange({ target }) {
-        FieldModelUtilities.handleChange(this, target, 'channelConfig');
-    }
-
-    handleProviderChange({ target }) {
-        FieldModelUtilities.handleChange(this, target, 'providerConfig');
-    }
-
     buildJsonBody() {
         const { channelConfig, providerConfig } = this.state;
         return Object.assign({}, {
@@ -204,7 +199,8 @@ class DistributionConfiguration extends Component {
                     descriptorFields={removedFields.fields}
                     currentConfig={providerConfig}
                     fieldErrors={this.props.fieldErrors}
-                    handleChange={this.handleProviderChange}
+                    self={this}
+                    stateName="providerConfig"
                 />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
@@ -252,7 +248,8 @@ class DistributionConfiguration extends Component {
                                 descriptorFields={currentChannel.fields}
                                 currentConfig={channelConfig}
                                 fieldErrors={this.props.fieldErrors}
-                                handleChange={this.handleChannelChange}
+                                self={this}
+                                stateName="channelConfig"
                             />
                             {selectedProvider && this.renderProviderForm()}
                         </form>

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import CollapsiblePane from 'component/common/CollapsiblePane';
+import { updateFieldModelValues, updateFieldModelSingleValue } from 'util/fieldModelUtilities';
 
 const DEFAULT_PANEL = 'default';
 
@@ -10,12 +10,24 @@ class FieldsPanel extends React.Component {
     constructor(props) {
         super(props);
 
+        this.handleChange = this.handleChange.bind(this);
         this.initializeFieldMapping = this.initializeFieldMapping.bind(this);
         this.parsePanel = this.parsePanel.bind(this);
         this.parseHeader = this.parseHeader.bind(this);
         this.createPanel = this.createPanel.bind(this);
         this.createHeaders = this.createHeaders.bind(this);
         this.createFields = this.createFields.bind(this);
+    }
+
+    handleChange({ target }) {
+        const { self, stateName } = this.props;
+        const { type, name, value } = target;
+        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+        const newState = Array.isArray(updatedValue) ? updateFieldModelValues(self.state[stateName], name, updatedValue) : updateFieldModelSingleValue(self.state[stateName], name, updatedValue);
+
+        self.setState({
+            [stateName]: newState
+        });
     }
 
     initializeFieldMapping(fields) {
@@ -77,12 +89,12 @@ class FieldsPanel extends React.Component {
     }
 
     createFields(fields) {
-        const { currentConfig, fieldErrors, handleChange } = this.props;
+        const { currentConfig, fieldErrors } = this.props;
         const createdFields = [];
 
         fields.forEach((field) => {
             const fieldKey = field.key;
-            const newField = FieldMapping.createField(field, currentConfig, fieldErrors[fieldKey], handleChange);
+            const newField = FieldMapping.createField(field, currentConfig, fieldErrors[fieldKey], this.handleChange);
             createdFields.push(newField);
         });
         return createdFields;
@@ -109,7 +121,8 @@ FieldsPanel.propTypes = {
     descriptorFields: PropTypes.array.isRequired,
     currentConfig: PropTypes.object.isRequired,
     fieldErrors: PropTypes.object.isRequired,
-    handleChange: PropTypes.func.isRequired
+    self: PropTypes.object.isRequired,
+    stateName: PropTypes.string.isRequired
 };
 
 export default FieldsPanel;
