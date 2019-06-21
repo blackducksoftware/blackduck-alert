@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class UpdateCheckerTest {
@@ -27,7 +26,7 @@ public class UpdateCheckerTest {
     private final SimpleDateFormat formatter = new SimpleDateFormat(UpdateChecker.DATE_FORMAT);
 
     @Test
-    public void testAlertIsNewer() throws IntegrationException {
+    public void testAlertIsNewer() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "0.1.0", null, null);
 
@@ -35,7 +34,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerPatch() throws IntegrationException {
+    public void testAlertIsNewerPatch() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1", null, "1.0.0", null, null);
 
@@ -43,7 +42,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlder() throws IntegrationException {
+    public void testAlertIsOlder() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.1", null, null);
 
@@ -51,7 +50,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderDockerPatch() throws IntegrationException {
+    public void testAlertIsOlderDockerPatch() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0.1", null, null);
 
@@ -59,7 +58,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerSnapshot() throws IntegrationException {
+    public void testAlertIsNewerSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, "0.1.0", null, null);
 
@@ -67,7 +66,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerSnapshotPatch() throws IntegrationException {
+    public void testAlertIsNewerSnapshotPatch() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-SNAPSHOT", null, "1.0.0", null, null);
 
@@ -75,7 +74,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerButCloseSnapshot() throws IntegrationException {
+    public void testAlertIsNewerButCloseSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -87,7 +86,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderButCloseSnapshot() throws IntegrationException {
+    public void testAlertIsOlderButCloseSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -99,7 +98,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderSnapshot() throws IntegrationException {
+    public void testAlertIsOlderSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -111,7 +110,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderSnapshotDockerPatch() throws IntegrationException {
+    public void testAlertIsOlderSnapshotDockerPatch() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -123,7 +122,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerBothSnapshot() throws IntegrationException {
+    public void testAlertIsNewerBothSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, "0.1.0-SNAPSHOT", null, null);
@@ -132,7 +131,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerDateBothSnapshot() throws IntegrationException {
+    public void testAlertIsNewerDateBothSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -144,7 +143,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerButCloseBothSnapshot() throws IntegrationException {
+    public void testAlertIsNewerButCloseBothSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -156,7 +155,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderButCloseBothSnapshot() throws IntegrationException {
+    public void testAlertIsOlderButCloseBothSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -168,7 +167,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderBothSnapshot() throws IntegrationException {
+    public void testAlertIsOlderBothSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -180,7 +179,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderButCloseDockerSnapshot() throws IntegrationException {
+    public void testAlertIsOlderButCloseDockerSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
@@ -192,7 +191,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderDockerSnapshot() throws IntegrationException {
+    public void testAlertIsOlderDockerSnapshot() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         final Date alertTime = new Date();
