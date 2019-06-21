@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.util.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -40,7 +40,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
         messageContentMap.put(createSlackConfig(), messageContentGroups);
 
         final List<DistributionEvent> events = converter.convertToEvents(messageContentMap);
-        assertEquals(6, events.size());
+        assertEquals(4, events.size());
     }
 
     private ConfigurationJobModel createEmailConfig() {

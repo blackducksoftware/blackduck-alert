@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
-    public static final String CATEGORY_TYPE = "policy";
+    public static final String CATEGORY_TYPE = "Policy";
     private final Map<String, ComponentItemPriority> priorityMap = new HashMap<>();
     private Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -79,7 +79,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         assertFalse(topicContentMap.isEmpty());
         assertEquals(1, topicContentMap.size());
         assertTrue(topicContentMap.containsKey(jobConfig));
-        assertEquals(3, topicContentMap.get(jobConfig).size());
+        // policy cleared notification has a 1 project and version.
+        // vulnerability has 3 projects and versions.
+        assertEquals(4, topicContentMap.get(jobConfig).size());
     }
 
     @Test
@@ -174,7 +176,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private AlertNotificationWrapper createNotification(final String providerName, final String notificationContent, final NotificationType type) {
-        return new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
+        NotificationContent notification = new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
+        notification.setId(1L);
+        return notification;
     }
 
 }

@@ -110,9 +110,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         final List<ComponentItem> summarizedCategoryItems = new LinkedList<>();
         for (final ComponentItem componentItem : componentItemsForOperation) {
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(componentItemsForOperation, componentItem.getComponentAttributes());
-            // FIXME is this required for collapsing?
-            //  final ComponentKey componentKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
-
             try {
                 ComponentItem newComponentItem = createNewComponentItem(componentItem, summarizedLinkableItems);
                 summarizedCategoryItems.add(newComponentItem);

@@ -203,6 +203,7 @@ public abstract class MessageContentCollector {
         return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
     }
 
+    // FIXME We still need the Human Readable name and url. Should this method be protected and abstract?
     private List<ProviderMessageContent.Builder> getProviderContentsOrCreateIfDoesNotExist(String providerName, JsonFieldAccessor accessor, List<JsonField<?>> notificationFields) {
         final List<ProviderMessageContent.Builder> buildersForNotifications = new ArrayList<>();
 
