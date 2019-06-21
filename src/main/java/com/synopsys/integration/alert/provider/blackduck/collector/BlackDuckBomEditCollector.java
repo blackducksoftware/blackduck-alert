@@ -72,7 +72,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckBomEditCollector extends BlackDuckCollector {
-    private static final String CATEGORY_TYPE = "bom edit";
+    private static final String CATEGORY_TYPE_REMEDIATION = "Vulnerability Remediation";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -142,6 +142,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     }
 
     //TODO Clean up this class to make the code more elegant.  This code was based on the Jira Plugin.  Currently it functions but needs more work to make it production ready.
+    // TODO use the bucket service especially for the vulnerabilities
 
     private Optional<ProjectVersionWrapper> getProjectVersionWrapper(final VersionBomComponentView versionBomComponent) {
         try {
@@ -205,7 +206,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                     ComponentItem.Builder builder = new ComponentItem.Builder();
                     builder.applyComponentData(componentItem)
                         .applyAllComponentAttributes(componentAttributes)
-                        .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
+                        .applyCategory(CATEGORY_TYPE_REMEDIATION)
                         .applyOperation(ItemOperation.ADD)
                         .applyNotificationId(notificationId);
                     componentVersionItem.ifPresent(builder::applySubComponent);
@@ -249,7 +250,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
                         // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
 
-                        final String vulnerabilityId = vulnerabilityView.getCweId();
+                        final String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
                         final String vulnerabilityUrl = vulnerabilityView.getHref().orElse(null);
                         final String severity = vulnerabilityView.getSeverity().prettyPrint();
 
