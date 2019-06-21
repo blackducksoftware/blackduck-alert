@@ -84,11 +84,16 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         final String policyName = policyInfo.getPolicyName();
         final String severity = policyInfo.getSeverity();
         final ArrayList<LinkableItem> itemList = new ArrayList<>(2);
+
+        if (StringUtils.isNotBlank(bomComponentUrl)) {
+            getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getLicenseLinkableItems(bomComponent).forEach(itemList::add));
+        }
+
         final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
         policyNameItem.setCollapsible(true);
         policyNameItem.setSummarizable(true);
         policyNameItem.setCountable(true);
-        itemList.add(policyNameItem);
+
         if (StringUtils.isNotBlank(severity)) {
             final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
             severityItem.setPartOfKey(true);
@@ -97,7 +102,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
             severityItem.setCountable(false);
             itemList.add(severityItem);
         }
-        getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getLicenseLinkableItems(bomComponent).forEach(itemList::add));
+        itemList.add(policyNameItem);
         return itemList;
     }
 
