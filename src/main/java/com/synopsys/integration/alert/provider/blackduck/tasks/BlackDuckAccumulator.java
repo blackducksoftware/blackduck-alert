@@ -195,7 +195,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     private List<String> getNotificationTypes() {
         return Stream.of(NotificationType.values())
-                   .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED && type != NotificationType.BOM_EDIT)
+                   .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
                    .map(Enum::name).collect(Collectors.toList());
     }
 

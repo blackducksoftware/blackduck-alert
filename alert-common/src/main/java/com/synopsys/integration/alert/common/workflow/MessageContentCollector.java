@@ -270,7 +270,7 @@ public abstract class MessageContentCollector {
         return messageBuilderMap.get(key);
     }
 
-    private Optional<JsonField<?>> getFieldForContentIdentifier(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
+    protected final Optional<JsonField<?>> getFieldForContentIdentifier(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
         return fields
                    .parallelStream()
                    .filter(field -> contentIdentifier.equals(field.getContentIdentifier()))
