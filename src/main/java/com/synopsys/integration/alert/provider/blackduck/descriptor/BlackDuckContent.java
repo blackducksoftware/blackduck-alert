@@ -28,7 +28,6 @@ import static com.synopsys.integration.alert.common.workflow.filter.field.JsonFi
 import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createOptionalStringField;
 import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createStringField;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -110,11 +109,16 @@ public class BlackDuckContent extends ProviderContent {
 
     public static final String LABEL_BOM_COMPONENT = "Bom Component";
 
-    // TODO remove this
+    public static final String LABEL_REMEDIATION_FIX_PREVIOUS = "Remediation Fixes Previous Vulnerabilies";
+    public static final String LABEL_REMEDIATION_CLEAN = "Remediation Without Vulnerabilies       ";
+    public static final String LABEL_REMEDIATION_LATEST = "Remediation Latest Version              ";
+
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
-        Collections.emptyList()
-    );
+        List.of(createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_BOM_COMPONENT)
+        ));
 
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
         NotificationType.LICENSE_LIMIT.name(),
@@ -145,6 +149,8 @@ public class BlackDuckContent extends ProviderContent {
                 LABEL_COMPONENT_VERSION_NAME),
             createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM,
                 LABEL_COMPONENT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
+                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_FIRST_NAME), JSON_FIELD_FIRST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_FIRST_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LAST_NAME), JSON_FIELD_LAST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
             createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
@@ -172,6 +178,8 @@ public class BlackDuckContent extends ProviderContent {
                 LABEL_COMPONENT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
             createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_NEW_VULNERABILITY_IDS), JSON_FIELD_NEW_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_NEW,
                 new TypeRef<List<VulnerabilitySourceQualifiedId>>() {}),
+            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
+                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
             createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_UPDATED_VULNERABILITY_IDS), JSON_FIELD_UPDATED_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM,
                 LABEL_VULNERABILITY_UPDATED,
                 new TypeRef<List<VulnerabilitySourceQualifiedId>>() {}),
@@ -190,6 +198,8 @@ public class BlackDuckContent extends ProviderContent {
         createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION_STATUSES, FieldContentIdentifier.CATEGORY_ITEM,
             LABEL_COMPONENT_VERSION_STATUS,
             new TypeRef<List<ComponentVersionStatus>>() {}),
+        createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
+            LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
         createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
             new TypeRef<List<PolicyInfo>>() {})
     );
@@ -202,7 +212,7 @@ public class BlackDuckContent extends ProviderContent {
         RULE_VIOLATION_FIELD_LIST
     );
 
-    private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
+    private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY, BOM_EDIT);
     private static final EnumSet<FormatType> SUPPORTED_CONTENT_FORMATS = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
 
     public BlackDuckContent() {
