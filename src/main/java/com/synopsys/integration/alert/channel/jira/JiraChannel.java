@@ -82,6 +82,10 @@ public class JiraChannel extends DistributionChannel {
     @Override
     public String sendMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
+        final Boolean pluginConfigured = fieldAccessor.getBoolean(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN).orElse(false);
+        if (!pluginConfigured) {
+            throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
+        }
         final MessageContentGroup content = event.getContent();
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
