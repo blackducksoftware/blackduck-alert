@@ -23,10 +23,11 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum ComponentItemPriority {
-    CRITICAL,
+    HIGHEST,
     HIGH,
     MEDIUM,
     LOW,
+    LOWEST,
     STANDARD;
 
     public static final ComponentItemPriority findPriority(String priority) {

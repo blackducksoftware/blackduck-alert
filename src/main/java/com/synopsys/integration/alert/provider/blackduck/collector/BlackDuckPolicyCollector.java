@@ -47,16 +47,16 @@ import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     public static final String CATEGORY_TYPE = "Policy";
     private final Map<String, ComponentItemPriority> priorityMap = new HashMap<>();
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
 
-        priorityMap.put("blocker", ComponentItemPriority.CRITICAL);
-        priorityMap.put("critical", ComponentItemPriority.CRITICAL);
-        priorityMap.put("major", ComponentItemPriority.HIGH);
-        priorityMap.put("minor", ComponentItemPriority.MEDIUM);
-        priorityMap.put("trivial", ComponentItemPriority.LOW);
+        priorityMap.put("blocker", ComponentItemPriority.HIGHEST);
+        priorityMap.put("critical", ComponentItemPriority.HIGH);
+        priorityMap.put("major", ComponentItemPriority.MEDIUM);
+        priorityMap.put("minor", ComponentItemPriority.LOW);
+        priorityMap.put("trivial", ComponentItemPriority.LOWEST);
         priorityMap.put("unspecified", ComponentItemPriority.STANDARD);
     }
 
