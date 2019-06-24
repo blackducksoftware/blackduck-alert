@@ -121,7 +121,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         if (projectVersionWrapper.isPresent()) {
             // have both the component view and the project wrapper.
             List<LinkableItem> licenseItems = getLicenseLinkableItems(versionBomComponentView.get());
-            componentItems.addAll(addVulnerabilityData(notificationContent.getId(), projectVersionWrapper.get(), versionBomComponentView.get(), licenseItems));
+            componentItems.addAll(addVulnerabilityData(notificationContent.getId(), versionBomComponentView.get(), licenseItems));
             componentItems.addAll(addPolicyData(notificationContent.getId(), projectVersionWrapper.get(), versionBomComponentView.get(), licenseItems));
         }
 
@@ -157,7 +157,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 final ProjectVersionView projectVersion = getBlackDuckBucket().get(projectVersionUri, ProjectVersionView.class);
                 final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
                 wrapper.setProjectVersionView(projectVersion);
-                getBlackDuckService().get().getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(project -> wrapper.setProjectView(project));
+                getBlackDuckService().get().getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
                 return Optional.of(wrapper);
             }
         } catch (final IntegrationException ie) {
@@ -167,7 +167,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return Optional.empty();
     }
 
-    private Collection<ComponentItem> addVulnerabilityData(Long notificationId, final ProjectVersionWrapper projectVersionWrapper, final VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
+    private Collection<ComponentItem> addVulnerabilityData(Long notificationId, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             final RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
@@ -308,7 +308,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         int count = 0;
         for (final RiskCountView riskCount : vulnerabilityCounts) {
             if (!RiskCountType.OK.equals(riskCount.getCountType())) {
-                count += riskCount.getCount().intValue();
+                count += riskCount.getCount();
             }
         }
         return count;
@@ -336,4 +336,5 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         }
         return false;
     }
+
 }

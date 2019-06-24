@@ -129,6 +129,10 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                    .collect(Collectors.toList());
     }
 
+    protected boolean hasValidConnection() {
+        return hasValidConnection;
+    }
+
     protected Optional<BlackDuckService> getBlackDuckService() {
         return Optional.ofNullable(blackDuckService);
     }
