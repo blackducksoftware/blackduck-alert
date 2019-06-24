@@ -46,17 +46,18 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     private final Set<LinkableItem> componentAttributes;
     private final ComponentItemPriority priority;
     private final String category;
-    private final ComponentKeys componentKey;
+    private final ComponentKeys componentKeys;
     private final ItemOperation operation;
     private final Long notificationId;
 
-    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, ComponentItemPriority priority, String category, ComponentKeys componentKey, ItemOperation operation, Long notificationId) {
+    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, ComponentItemPriority priority, String category, ComponentKeys componentKeys, ItemOperation operation,
+        Long notificationId) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
         this.priority = priority;
         this.category = category;
-        this.componentKey = componentKey;
+        this.componentKeys = componentKeys;
         this.operation = operation;
         this.notificationId = notificationId;
     }
@@ -65,7 +66,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return Comparator
                    .comparing(ComponentItem::getOperation)
                    .thenComparing(ComponentItem::getPriority)
-                   .thenComparing(ComponentItem::getComponentKey);
+                   .thenComparing(ComponentItem::getComponentKeys);
     }
 
     public LinkableItem getComponent() {
@@ -88,8 +89,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return category;
     }
 
-    public ComponentKeys getComponentKey() {
-        return componentKey;
+    public ComponentKeys getComponentKeys() {
+        return componentKeys;
     }
 
     public ItemOperation getOperation() {
@@ -141,7 +142,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
             final String additionalDataString = ComponentKeys.generateAdditionalDataString(componentAttributes);
             ComponentKeys key = new ComponentKeys(category, componentName, componentValue, subComponentName, subComponentValue, additionalDataString);
-            ComponentItemPriority componentPriority = ComponentItemPriority.STANDARD;
+            ComponentItemPriority componentPriority = ComponentItemPriority.NONE;
             if (null != priority) {
                 componentPriority = priority;
             }

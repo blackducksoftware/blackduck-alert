@@ -76,11 +76,7 @@ public class ComponentKeys extends AlertSerializableModel implements Comparable<
     }
 
     public String getDeepKey() {
-        List<String> keyParts = List.of(category, componentName, componentValue, additionalData);
-        if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
-            keyParts = List.of(category, componentName, componentValue, subComponentName, subComponentValue, additionalData);
-        }
-        return StringUtils.join(keyParts, KEY_SEPARATOR);
+        return StringUtils.join(getShallowKey(), KEY_SEPARATOR, additionalData);
     }
 
     public String prettyPrint(boolean includeAdditionalData) {

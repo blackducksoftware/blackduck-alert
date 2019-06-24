@@ -57,7 +57,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         priorityMap.put("major", ComponentItemPriority.MEDIUM);
         priorityMap.put("minor", ComponentItemPriority.LOW);
         priorityMap.put("trivial", ComponentItemPriority.LOWEST);
-        priorityMap.put("unspecified", ComponentItemPriority.STANDARD);
+        priorityMap.put("unspecified", ComponentItemPriority.NONE);
     }
 
     protected Optional<ComponentItem> addApplicableItems(Long notificationId, LinkableItem componentLinkableItem, LinkableItem componentVersionItem, Collection<LinkableItem> policyItems, ItemOperation operation,
@@ -108,7 +108,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
 
     protected ComponentItemPriority mapSeverityToPriority(String severity) {
         if (StringUtils.isBlank(severity) || !priorityMap.containsKey(severity.trim().toLowerCase())) {
-            return ComponentItemPriority.STANDARD;
+            return ComponentItemPriority.NONE;
         }
         return priorityMap.get(severity.trim().toLowerCase());
     }

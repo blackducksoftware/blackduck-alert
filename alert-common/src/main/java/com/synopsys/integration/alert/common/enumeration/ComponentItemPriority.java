@@ -28,14 +28,14 @@ public enum ComponentItemPriority {
     MEDIUM,
     LOW,
     LOWEST,
-    STANDARD;
+    NONE;
 
     public static final ComponentItemPriority findPriority(String priority) {
         try {
             return ComponentItemPriority.valueOf(priority.toUpperCase());
         } catch (IllegalArgumentException ex) {
             // couldn't find the enum value default to STANDARD
-            return STANDARD;
+            return NONE;
         }
     }
 }

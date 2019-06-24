@@ -189,7 +189,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         final LinkedHashMap<ComponentKeys, ComponentItem> keyToItem = new LinkedHashMap<>();
         for (final ComponentItem currentItem : componentItems) {
             ComponentItem updatedCategoryItem = currentItem;
-            final ComponentKeys componentKey = currentItem.getComponentKey();
+            final ComponentKeys componentKey = currentItem.getComponentKeys();
             if (keyToItem.containsKey(componentKey)) {
                 final ComponentItem oldCategoryItem = keyToItem.get(componentKey);
                 final Set<LinkableItem> oldLinkableItems = oldCategoryItem.getComponentAttributes();

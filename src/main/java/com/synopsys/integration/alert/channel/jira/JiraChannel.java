@@ -221,7 +221,7 @@ public class JiraChannel extends DistributionChannel {
         }
 
         // FIXME this needs to be changed to contain appropriate values from the category item instead of just the key.
-        final String categoryKey = componentItem.getComponentKey().getDeepKey();
+        final String categoryKey = componentItem.getComponentKeys().getDeepKey();
         title.append(categoryKey);
         return title.toString();
     }
@@ -298,7 +298,7 @@ public class JiraChannel extends DistributionChannel {
           vs
           provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version
         */
-        final ComponentKeys categoryKey = categoryItem.getComponentKey();
+        final ComponentKeys categoryKey = categoryItem.getComponentKeys();
         final String operationName = categoryItem.getOperation().name();
         final String operationRemovedKey = categoryKey.getDeepKey().replace("_" + operationName, "");
         return String.format("%s:%s", providerName, operationRemovedKey);

@@ -97,7 +97,7 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
         final Map<String, ComponentItem> keyToItems = new LinkedHashMap<>();
         for (final ComponentItem componentItem : allComponentItems) {
             final Set<LinkableItem> componentAttributes = componentItem.getComponentAttributes();
-            final String key = generateKey(componentItem.getComponentKey(), componentAttributes);
+            final String key = generateKey(componentItem.getComponentKeys(), componentAttributes);
             final ComponentItem oldItem = keyToItems.get(key);
 
             final Set<LinkableItem> linkableItems = new LinkedHashSet<>();
