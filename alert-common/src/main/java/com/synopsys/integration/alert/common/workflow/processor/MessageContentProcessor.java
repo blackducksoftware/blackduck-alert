@@ -64,15 +64,12 @@ public abstract class MessageContentProcessor {
 
     protected ComponentItem createNewComponentItem(ComponentItem oldItem, Collection<LinkableItem> componentAttributes) throws AlertException {
         LinkableItem component = oldItem.getComponent();
-        final Optional<LinkableItem> subComponent = oldItem.getSubComponent();
-        String subComponentName = subComponent.map(LinkableItem::getName).orElse(null);
-        String subComponentValue = subComponent.map(LinkableItem::getValue).orElse(null);
-        String subComponentUrl = subComponent.flatMap(LinkableItem::getUrl).orElse(null);
+        LinkableItem nullableSubComponent = oldItem.getSubComponent().orElse(null);
         return new ComponentItem.Builder()
                    .applyCategory(oldItem.getCategory())
                    .applyPriority(oldItem.getPriority())
                    .applyComponentData(component.getName(), component.getValue(), component.getUrl().orElse(null))
-                   .applySubComponent(subComponentName, subComponentValue, subComponentUrl)
+                   .applySubComponent(nullableSubComponent)
                    .applyOperation(oldItem.getOperation())
                    .applyNotificationId(oldItem.getNotificationId())
                    .applyAllComponentAttributes(componentAttributes)
