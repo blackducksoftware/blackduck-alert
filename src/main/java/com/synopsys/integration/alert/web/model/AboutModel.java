@@ -26,6 +26,7 @@ import com.synopsys.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
     private String version;
+    private String created;
     private String description;
     private String projectUrl;
     private boolean initialized;
@@ -35,8 +36,9 @@ public class AboutModel extends Stringable {
 
     }
 
-    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime) {
+    public AboutModel(final String version, final String created, final String description, final String projectUrl, final boolean initialized, final String startupTime) {
         this.version = version;
+        this.created = created;
         this.description = description;
         this.projectUrl = projectUrl;
         this.initialized = initialized;
@@ -45,6 +47,10 @@ public class AboutModel extends Stringable {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getCreated() {
+        return created;
     }
 
     public String getDescription() {
