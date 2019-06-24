@@ -133,7 +133,7 @@ public class ComponentItemTest {
 
         Comparator<ComponentItem> comparator = ComponentItem.createDefaultComparator();
         int compareResult = comparator.compare(componentItem_1, componentItem_2);
-        assertEquals(1, compareResult);
+        assertTrue(compareResult > 0);
 
     }
 
