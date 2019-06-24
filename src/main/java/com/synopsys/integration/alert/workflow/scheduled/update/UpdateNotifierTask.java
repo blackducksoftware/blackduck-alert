@@ -53,14 +53,14 @@ public class UpdateNotifierTask extends ScheduledTask {
     @Override
     public void runTask() {
         final UpdateModel updateModel = updateChecker.getUpdateModel();
-        if (updateModel.isUpdatable()) {
-            addSystemMessage(updateModel);
+        if (updateModel.getUpdatable()) {
+            addSystemMessage(updateModel.getDockerTagVersion());
             updateEmailService.sendUpdateEmail(updateModel);
         }
     }
 
-    private void addSystemMessage(final UpdateModel updateModel) {
-        final String message = String.format("There is a new version of %s available: %s", AlertConstants.ALERT_APPLICATION_NAME, updateModel.getLatestAvailableVersion());
+    private void addSystemMessage(final String versionName) {
+        final String message = String.format("There is a new version of %s available: %s", AlertConstants.ALERT_APPLICATION_NAME, versionName);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.UPDATE_AVAILABLE);
         systemMessageUtility.addSystemMessage(message, SystemMessageSeverity.WARNING, SystemMessageType.UPDATE_AVAILABLE);
     }
