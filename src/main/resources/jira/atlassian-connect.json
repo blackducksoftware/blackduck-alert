@@ -14,25 +14,30 @@
   "modules": {
     "jiraEntityProperties": [
       {
-        "key": "com-synopsys-integration-alert-bom-component-uri",
+        "key": "com-synopsys-integration-alert",
         "name": {
           "value": "BOM Component URI"
         },
-        "entityType": "issue"
-      },
-      {
-        "key": "com-synopsys-integration-alert-category",
-        "name": {
-          "value": "Issue Category"
-        },
-        "entityType": "issue"
-      },
-      {
-        "key": "com-synopsys-integration-alert-policy-uri",
-        "name": {
-          "value": "Policy URI"
-        },
-        "entityType": "issue"
+        "entityType": "issue",
+        "keyConfigurations": [
+          {
+            "propertyKey": "com-synopsys-integration-alert",
+            "extractions": [
+              {
+                "objectName": "bomComponentUri",
+                "type": "text"
+              },
+              {
+                "objectName": "category",
+                "type": "text"
+              },
+              {
+                "objectName": "policyName",
+                "type": "text"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
