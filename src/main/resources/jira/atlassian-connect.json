@@ -1,0 +1,43 @@
+{
+  "name": "Alert Jira Descriptor",
+  "description": "An application used for indexing issue properties to allow Alert to map notifications to the correct issue(s).",
+  "key": "com.synopsys.integrations.alert",
+  "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
+  "vendor": {
+    "name": "Synopsys, Inc.",
+    "url": "https://synopsys.com"
+  },
+  "authentication": {
+    "type": "jwt"
+  },
+  "apiVersion": 2,
+  "modules": {
+    "jiraEntityProperties": [
+      {
+        "key": "com.synopsys.integrations.alert.bom.component.uri",
+        "name": {
+          "value": "BOM Component URI"
+        },
+        "entityType": "issue"
+      },
+      {
+        "key": "com.synopsys.integrations.alert.category",
+        "name": {
+          "value": "Issue Category"
+        },
+        "entityType": "issue"
+      },
+      {
+        "key": "com.synopsys.integrations.alert.policy.uri",
+        "name": {
+          "value": "Policy URI"
+        },
+        "entityType": "issue"
+      }
+    ]
+  },
+  "scopes": [
+    "READ",
+    "WRITE"
+  ]
+}
