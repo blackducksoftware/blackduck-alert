@@ -99,7 +99,13 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
             for (PolicyInfo policyInfo : policyComponentMapping.getPolicies()) {
                 ComponentItemPriority priority = mapSeverityToPriority(policyInfo.getSeverity());
-                Collection<LinkableItem> policyLinkableItems = createPolicyLinkableItems(policyInfo, policyComponentData.getComponentVersionStatus().getBomComponent());
+
+                String bomComponentUrl = null;
+                ComponentVersionStatus componentVersionStatus = policyComponentData.getComponentVersionStatus();
+                if (null != componentVersionStatus) {
+                    bomComponentUrl = componentVersionStatus.getBomComponent();
+                }
+                Collection<LinkableItem> policyLinkableItems = createPolicyLinkableItems(policyInfo, bomComponentUrl);
 
                 Optional<ComponentItem> item = addApplicableItems(notificationContent.getId(), policyComponentData.getComponentItem().orElse(null), policyComponentData.getComponentVersion().orElse(null),
                     policyLinkableItems, operation, priority);
