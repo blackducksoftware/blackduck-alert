@@ -23,18 +23,19 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum ComponentItemPriority {
-    CRITICAL,
+    HIGHEST,
     HIGH,
     MEDIUM,
     LOW,
-    STANDARD;
+    LOWEST,
+    NONE;
 
     public static final ComponentItemPriority findPriority(String priority) {
         try {
             return ComponentItemPriority.valueOf(priority.toUpperCase());
         } catch (IllegalArgumentException ex) {
             // couldn't find the enum value default to STANDARD
-            return STANDARD;
+            return NONE;
         }
     }
 }

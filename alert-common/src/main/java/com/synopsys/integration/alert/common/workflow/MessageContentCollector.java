@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,6 @@ import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -62,7 +60,6 @@ public abstract class MessageContentCollector {
     private final Collection<ProviderContentType> contentTypes;
     private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
     private final Set<String> supportedNotificationTypes;
-    private final List<AggregateMessageContent> collectedContent;
     private final Map<String, ProviderMessageContent.Builder> messageBuilderMap;
 
     public MessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
@@ -70,7 +67,6 @@ public abstract class MessageContentCollector {
         this.contentTypes = contentTypes;
         this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
         this.supportedNotificationTypes = contentTypes.stream().map(ProviderContentType::getNotificationType).collect(Collectors.toSet());
-        this.collectedContent = new Vector<>();
         this.messageBuilderMap = new HashMap<>();
     }
 
@@ -122,10 +118,6 @@ public abstract class MessageContentCollector {
     }
 
     protected abstract Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent);
-
-    protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
-        return Collections.unmodifiableList(collectedContent);
-    }
 
     protected final List<JsonField<String>> getStringFields(final List<JsonField<?>> fields) {
         return getTypedFields(fields, new TypeRef<String>() {});

@@ -23,7 +23,7 @@ public class ComponentItemTest {
         ComponentItem componentItem_1 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.STANDARD)
+                                            .applyPriority(ComponentItemPriority.NONE)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
                                             .applyOperation(ItemOperation.ADD)
@@ -33,7 +33,7 @@ public class ComponentItemTest {
         ComponentItem componentItem_2 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.STANDARD)
+                                            .applyPriority(ComponentItemPriority.NONE)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
                                             .applyOperation(ItemOperation.ADD)
@@ -133,7 +133,7 @@ public class ComponentItemTest {
 
         Comparator<ComponentItem> comparator = ComponentItem.createDefaultComparator();
         int compareResult = comparator.compare(componentItem_1, componentItem_2);
-        assertEquals(1, compareResult);
+        assertTrue(compareResult > 0);
 
     }
 

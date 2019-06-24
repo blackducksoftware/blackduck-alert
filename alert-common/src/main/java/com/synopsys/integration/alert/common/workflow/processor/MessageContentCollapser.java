@@ -69,14 +69,14 @@ public class MessageContentCollapser {
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createAddFunction() {
         return (categoryDataCache, categoryItem) -> {
-            categoryDataCache.put(categoryItem.getComponentKey().getDeepKey(), categoryItem);
+            categoryDataCache.put(categoryItem.getComponentKeys().getDeepKey(), categoryItem);
             return null;
         };
     }
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createDeleteFunction() {
         return (categoryDataCache, categoryItem) -> {
-            final String key = categoryItem.getComponentKey().getDeepKey();
+            final String key = categoryItem.getComponentKeys().getDeepKey();
             if (categoryDataCache.containsKey(key)) {
                 categoryDataCache.remove(key);
             } else {

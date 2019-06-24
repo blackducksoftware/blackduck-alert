@@ -22,13 +22,14 @@ public class AboutControllerTest {
     @Test
     public void testController() {
         final String version = "1.2.3";
+        final String created = "date";
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
 
         final ResponseFactory responseFactory = new ResponseFactory();
-        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
+        final AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
@@ -43,6 +44,7 @@ public class AboutControllerTest {
     @Test
     public void testGetAboutData() {
         final String version = "1.2.3";
+        final String created = "date";
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
@@ -52,7 +54,7 @@ public class AboutControllerTest {
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final ResponseFactory responseFactory = new ResponseFactory();
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
+        final AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
         final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
 

@@ -75,7 +75,7 @@ public class UpdateEmailService {
     }
 
     public void sendUpdateEmail(final UpdateModel updateModel) {
-        final String updateVersion = updateModel.getLatestAvailableVersion();
+        final String updateVersion = updateModel.getDockerTagVersion();
         if (wasEmailAlreadySentForVersion(updateVersion)) {
             return;
         }
