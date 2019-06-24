@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
@@ -53,9 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -118,9 +117,9 @@ public class DefaultAuditUtility implements AuditUtility {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         final Set<Long> notificationIds = contentGroup.getSubContent()
                                               .stream()
-                                              .map(AggregateMessageContent::getCategoryItems)
-                                              .flatMap(SortedSet::stream)
-                                              .map(CategoryItem::getNotificationId)
+                                              .map(ProviderMessageContent::getComponentItems)
+                                              .flatMap(Collection::stream)
+                                              .map(ComponentItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);

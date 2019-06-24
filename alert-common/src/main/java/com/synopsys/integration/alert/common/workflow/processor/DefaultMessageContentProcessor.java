@@ -23,23 +23,28 @@
 package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentKeys;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class DefaultMessageContentProcessor extends MessageContentProcessor {
@@ -50,111 +55,90 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
     }
 
     @Override
-    public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        final Map<DefaultMessageContentProcessor.TopicAndSubTopicPair, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(messages);
+    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
+        final Map<ContentKey, List<ProviderMessageContent>> messagesGroupedByKey = new LinkedHashMap<>();
+        for (ProviderMessageContent message : messages) {
+            messagesGroupedByKey.computeIfAbsent(message.getContentKey(), k -> new LinkedList<>()).add(message);
+        }
 
-        final Map<String, MessageContentGroup> messageGroups = new LinkedHashMap<>();
-        for (final Map.Entry<DefaultMessageContentProcessor.TopicAndSubTopicPair, List<AggregateMessageContent>> groupedMessageEntry : messagesGroupedByTopicAndSubTopic.entrySet()) {
-            final DefaultMessageContentProcessor.TopicAndSubTopicPair topicAndSubTopic = groupedMessageEntry.getKey();
-            final LinkableItem topic = topicAndSubTopic.getLeft();
-            final SortedSet<CategoryItem> combinedCategoryItems = gatherCategoryItems(groupedMessageEntry.getValue());
+        final Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();
+        for (final Map.Entry<ContentKey, List<ProviderMessageContent>> groupedMessageEntry : messagesGroupedByKey.entrySet()) {
+            final List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
+            final LinkedHashSet<ComponentItem> combinedComponentItems = gatherComponentItems(groupedMessages);
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), combinedCategoryItems);
-            messageGroups.computeIfAbsent(topic.getValue(), ignored -> new MessageContentGroup()).add(newMessage);
+            final Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
+                                                                          .stream()
+                                                                          .findAny();
+            if (arbitraryMessage.isPresent()) {
+                try {
+                    final ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
+                    messageGroups.computeIfAbsent(groupedMessageEntry.getKey(), ignored -> new MessageContentGroup()).add(newMessage);
+                } catch (AlertException e) {
+                    // If this happens, it means there is a bug in the Collector logic.
+                    throw new AlertRuntimeException(e);
+                }
+            }
         }
 
         return new ArrayList<>(messageGroups.values());
     }
 
-    private Map<DefaultMessageContentProcessor.TopicAndSubTopicPair, List<AggregateMessageContent>> groupByTopicAndSubTopicValue(final List<AggregateMessageContent> messages) {
-        final Map<DefaultMessageContentProcessor.TopicAndSubTopicPair, List<AggregateMessageContent>> groupedMessages = new LinkedHashMap<>();
-        for (final AggregateMessageContent message : messages) {
-            final LinkableItem topic = new LinkableItem(message.getName(), message.getValue(), message.getUrl().orElse(null));
-            final LinkableItem subTopic = message.getSubTopic().orElse(null);
-            final DefaultMessageContentProcessor.TopicAndSubTopicPair topicAndSubTopic = new DefaultMessageContentProcessor.TopicAndSubTopicPair(topic, subTopic);
-
-            groupedMessages.computeIfAbsent(topicAndSubTopic, ignored -> new ArrayList<>()).add(message);
-        }
-        return groupedMessages;
+    private LinkedHashSet<ComponentItem> gatherComponentItems(final List<ProviderMessageContent> groupedMessages) {
+        final List<ComponentItem> allComponentItems = groupedMessages
+                                                          .stream()
+                                                          .map(ProviderMessageContent::getComponentItems)
+                                                          .flatMap(Set::stream)
+                                                          .collect(Collectors.toList());
+        return combineCategoryItems(allComponentItems);
     }
 
-    private SortedSet<CategoryItem> gatherCategoryItems(final List<AggregateMessageContent> groupedMessages) {
-        final List<CategoryItem> allCategoryItems = groupedMessages
-                                                        .stream()
-                                                        .map(AggregateMessageContent::getCategoryItems)
-                                                        .flatMap(SortedSet::stream)
-                                                        .collect(Collectors.toList());
-        return combineCategoryItems(allCategoryItems);
-    }
-
-    private SortedSet<CategoryItem> combineCategoryItems(final List<CategoryItem> allCategoryItems) {
+    private LinkedHashSet<ComponentItem> combineCategoryItems(final List<ComponentItem> allComponentItems) {
         // The amount of collapsing we do makes this impossible to map back to a single notification.
-        final Map<CategoryKey, CategoryItem> keyToItems = new LinkedHashMap<>();
-        for (final CategoryItem categoryItem : allCategoryItems) {
-            final CategoryKey categoryKey = generateCategoryKey(categoryItem);
-            final CategoryItem oldItem = keyToItems.get(categoryKey);
+        final Map<String, ComponentItem> keyToItems = new LinkedHashMap<>();
+        for (final ComponentItem componentItem : allComponentItems) {
+            final Set<LinkableItem> componentAttributes = componentItem.getComponentAttributes();
+            final String key = generateKey(componentItem.getComponentKeys(), componentAttributes);
+            final ComponentItem oldItem = keyToItems.get(key);
 
-            // Always use the newest notification because the audit entry will appear first.
-            final Long notificationId = categoryItem.getNotificationId();
-            final SortedSet<LinkableItem> linkableItems;
+            final Set<LinkableItem> linkableItems = new LinkedHashSet<>();
             if (null != oldItem) {
-                linkableItems = combineLinkableItems(oldItem.getItems(), categoryItem.getItems());
+                linkableItems.addAll(oldItem.getComponentAttributes());
+                linkableItems.addAll(componentAttributes);
             } else {
-                linkableItems = categoryItem.getItems();
+                linkableItems.addAll(componentAttributes);
             }
 
-            final CategoryItem newCategoryItem = new CategoryItem(categoryKey, categoryItem.getOperation(), notificationId, linkableItems);
-            newCategoryItem.setComparator(categoryItem.createComparator());
-            keyToItems.put(categoryKey, newCategoryItem);
-        }
-        return new TreeSet<>(keyToItems.values());
-    }
-
-    private CategoryKey generateCategoryKey(final CategoryItem categoryItem) {
-        final List<String> keyParts = new ArrayList<>();
-        keyParts.add(categoryItem.getOperation().name());
-        for (final LinkableItem item : categoryItem.getItems()) {
-            if (!item.isCollapsible()) {
-                keyParts.add(item.getName());
-                keyParts.add(item.getValue());
+            try {
+                ComponentItem newComponentItem = createNewComponentItem(componentItem, linkableItems);
+                keyToItems.put(key, newComponentItem);
+            } catch (AlertException e) {
+                // If this happens, it means there is a bug in the Collector logic.
+                throw new AlertRuntimeException(e);
             }
         }
-        return CategoryKey.from("ignored", keyParts);
+        return sortComponentItems(keyToItems.values());
     }
 
-    private SortedSet<LinkableItem> combineLinkableItems(final SortedSet<LinkableItem> oldItems, final SortedSet<LinkableItem> newItems) {
-        final SortedSet<LinkableItem> combinedItems = new TreeSet<>(oldItems);
-        newItems
+    private String generateKey(ComponentKeys componentKey, Collection<LinkableItem> componentAttributes) {
+        StringBuilder keyBuilder = new StringBuilder();
+        keyBuilder.append(componentKey.getShallowKey());
+        componentAttributes
             .stream()
-            .filter(LinkableItem::isCollapsible)
-            .forEach(combinedItems::add);
-        return combinedItems;
+            .filter(item -> !item.isCollapsible())
+            .forEach(item -> {
+                keyBuilder.append(item.getName());
+                keyBuilder.append(item.getValue());
+                item.getUrl().ifPresent(keyBuilder::append);
+            });
+        return keyBuilder.toString();
     }
 
-    private class TopicAndSubTopicPair extends Pair<LinkableItem, LinkableItem> {
-        private final LinkableItem topic;
-        private final LinkableItem subTopicNullable;
-
-        public TopicAndSubTopicPair(final LinkableItem topic, final LinkableItem subTopicNullable) {
-            this.topic = topic;
-            this.subTopicNullable = subTopicNullable;
-        }
-
-        @Override
-        public LinkableItem getLeft() {
-            return topic;
-        }
-
-        @Override
-        public LinkableItem getRight() {
-            return subTopicNullable;
-        }
-
-        @Override
-        public LinkableItem setValue(final LinkableItem subTopic) {
-            throw new UnsupportedOperationException();
-        }
-
+    private LinkedHashSet<ComponentItem> sortComponentItems(Collection<ComponentItem> componentItems) {
+        return componentItems
+                   .stream()
+                   .sorted(ComponentItem.createDefaultComparator())
+                   .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
 }
+

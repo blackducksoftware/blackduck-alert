@@ -41,76 +41,88 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private final MessageContentCollapser messageContentCollapser;
 
     @Autowired
-    public SummaryMessageContentProcessor(final MessageContentCollapser messageContentCollapser) {
+    public SummaryMessageContentProcessor(MessageContentCollapser messageContentCollapser) {
         super(FormatType.SUMMARY);
         this.messageContentCollapser = messageContentCollapser;
     }
 
     @Override
-    public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
+    public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
+        final List<ProviderMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
 
-        final List<MessageContentGroup> messageGroups = new ArrayList<>();
-        for (final AggregateMessageContent message : collapsedMessages) {
-            final AggregateMessageContent summarizedMessage = summarize(message);
-            messageGroups
+        final List<MessageContentGroup> newGroups = new ArrayList<>();
+
+        for (final ProviderMessageContent message : collapsedMessages) {
+            final ProviderMessageContent summarizedMessage = summarize(message);
+            newGroups
                 .stream()
                 .filter(group -> group.applies(summarizedMessage))
                 .findAny()
-                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> messageGroups.add(MessageContentGroup.singleton(summarizedMessage)));
+                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> newGroups.add(MessageContentGroup.singleton(summarizedMessage)));
         }
-        return messageGroups;
+        return newGroups;
     }
 
-    private AggregateMessageContent summarize(final AggregateMessageContent message) {
-        final SortedSet<CategoryItem> originalCategoryItems = message.getCategoryItems();
-        if (null == originalCategoryItems) {
+    private ProviderMessageContent summarize(final ProviderMessageContent message) {
+        final Set<ComponentItem> originalComponentItems = message.getComponentItems();
+        if (null == originalComponentItems) {
             return message;
         }
 
-        final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = sortByOperation(originalCategoryItems);
+        final Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = sortByOperation(originalComponentItems);
 
-        final SortedSet<CategoryItem> summarizedCategoryItems = new TreeSet<>();
-        for (final Map.Entry<ItemOperation, LinkedHashSet<CategoryItem>> sortedEntry : itemsByOperation.entrySet()) {
-            final LinkedHashSet<CategoryItem> summarizedCategoryItemsForOperation = createSummarizedCategoryItems(sortedEntry.getKey(), sortedEntry.getValue());
-            summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
+        final Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
+        for (final Map.Entry<ItemOperation, LinkedHashSet<ComponentItem>> sortedEntry : itemsByOperation.entrySet()) {
+            final LinkedHashSet<ComponentItem> summarizedComponentItemsForOperation = createSummarizedComponentItems(sortedEntry.getKey(), sortedEntry.getValue());
+            summarizedComponentItems.addAll(summarizedComponentItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems);
+        try {
+            return createNewMessage(message, summarizedComponentItems);
+        } catch (AlertException e) {
+            // If this happens, it means there is a bug in the Collector logic.
+            throw new AlertRuntimeException(e);
+        }
     }
 
-    private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {
-        final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = new LinkedHashMap<>();
-        for (final CategoryItem categoryItem : originalCategoryItems) {
-            itemsByOperation.computeIfAbsent(categoryItem.getOperation(), ignored -> new LinkedHashSet<>()).add(categoryItem);
+    private Map<ItemOperation, LinkedHashSet<ComponentItem>> sortByOperation(final Set<ComponentItem> originalComponentItems) {
+        final Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = new LinkedHashMap<>();
+        for (final ComponentItem componentItem : originalComponentItems) {
+            itemsByOperation.computeIfAbsent(componentItem.getOperation(), ignored -> new LinkedHashSet<>()).add(componentItem);
         }
         return itemsByOperation;
     }
 
-    private LinkedHashSet<CategoryItem> createSummarizedCategoryItems(final ItemOperation operation, final Set<CategoryItem> categoryItemsForOperation) {
-        final List<CategoryItem> summarizedCategoryItems = new LinkedList<>();
-        for (final CategoryItem categoryItem : categoryItemsForOperation) {
-            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(categoryItemsForOperation, categoryItem.getItems());
-            final CategoryKey categoryKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
-            final CategoryItem newCategoryItem = new CategoryItem(categoryKey, operation, categoryItem.getNotificationId(), summarizedLinkableItems);
-            summarizedCategoryItems.add(newCategoryItem);
+    private LinkedHashSet<ComponentItem> createSummarizedComponentItems(final ItemOperation operation, final Set<ComponentItem> componentItemsForOperation) {
+        final List<ComponentItem> summarizedCategoryItems = new LinkedList<>();
+        for (final ComponentItem componentItem : componentItemsForOperation) {
+            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(componentItemsForOperation, componentItem.getComponentAttributes());
+            try {
+                ComponentItem newComponentItem = createNewComponentItem(componentItem, summarizedLinkableItems);
+                summarizedCategoryItems.add(newComponentItem);
+            } catch (AlertException e) {
+                // If this happens, it means there is a bug in the Collector logic.
+                throw new AlertRuntimeException(e);
+            }
         }
 
-        return collapseDuplicateCategoryItems(summarizedCategoryItems);
+        return collapseDuplicateComponentItems(summarizedCategoryItems);
     }
 
-    private SortedSet<LinkableItem> createSummarizedLinkableItems(final Set<CategoryItem> categoryItems, final Set<LinkableItem> linkableItems) {
+    private SortedSet<LinkableItem> createSummarizedLinkableItems(final Set<ComponentItem> categoryItems, final Set<LinkableItem> linkableItems) {
         final Map<String, List<LinkableItem>> itemsOfSameName = new LinkedHashMap<>();
         categoryItems.forEach(item -> itemsOfSameName.putAll(item.getItemsOfSameName()));
 
@@ -173,21 +185,26 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return summarizedLinkableItems;
     }
 
-    private LinkedHashSet<CategoryItem> collapseDuplicateCategoryItems(final List<CategoryItem> categoryItems) {
-        final LinkedHashMap<CategoryKey, CategoryItem> keyToItem = new LinkedHashMap<>();
-        for (final CategoryItem currentItem : categoryItems) {
-            CategoryItem updatedCategoryItem = currentItem;
-            final CategoryKey categoryKey = currentItem.getCategoryKey();
-            if (keyToItem.containsKey(categoryKey)) {
-                final CategoryItem oldCategoryItem = keyToItem.get(categoryKey);
-                final Set<LinkableItem> oldLinkableItems = oldCategoryItem.getItems();
-                final Set<LinkableItem> currentLinkableItems = currentItem.getItems();
+    private LinkedHashSet<ComponentItem> collapseDuplicateComponentItems(final List<ComponentItem> componentItems) {
+        final LinkedHashMap<ComponentKeys, ComponentItem> keyToItem = new LinkedHashMap<>();
+        for (final ComponentItem currentItem : componentItems) {
+            ComponentItem updatedCategoryItem = currentItem;
+            final ComponentKeys componentKey = currentItem.getComponentKeys();
+            if (keyToItem.containsKey(componentKey)) {
+                final ComponentItem oldCategoryItem = keyToItem.get(componentKey);
+                final Set<LinkableItem> oldLinkableItems = oldCategoryItem.getComponentAttributes();
+                final Set<LinkableItem> currentLinkableItems = currentItem.getComponentAttributes();
                 final List<LinkableItem> combinedLinkableItems = Stream.concat(oldLinkableItems.stream(), currentLinkableItems.stream()).collect(Collectors.toList());
 
                 final SortedSet<LinkableItem> collapsedLinkableItems = collapseDuplicateLinkableItems(combinedLinkableItems);
-                updatedCategoryItem = new CategoryItem(categoryKey, currentItem.getOperation(), currentItem.getNotificationId(), collapsedLinkableItems);
+                try {
+                    updatedCategoryItem = createNewComponentItem(currentItem, collapsedLinkableItems);
+                } catch (AlertException e) {
+                    // If this happens, it means there is a bug in the Collector logic.
+                    throw new AlertRuntimeException(e);
+                }
             }
-            keyToItem.put(categoryKey, updatedCategoryItem);
+            keyToItem.put(componentKey, updatedCategoryItem);
         }
         return new LinkedHashSet<>(keyToItem.values());
     }
@@ -244,20 +261,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                    .stream()
                    .filter(item -> itemName.equals(item.getName()))
                    .count();
-    }
-
-    private CategoryKey createCategoryKeyFromLinkableItems(final Collection<LinkableItem> linkableItems) {
-        final List<String> itemNameValueSequence = new LinkedList<>();
-        for (final LinkableItem item : linkableItems) {
-            if (!item.isSummarizable()) {
-                continue;
-            }
-            itemNameValueSequence.add(item.getName());
-            if (!item.isNumericValue()) {
-                itemNameValueSequence.add(item.getValue());
-            }
-        }
-        return CategoryKey.from("summary", itemNameValueSequence);
     }
 
     private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {

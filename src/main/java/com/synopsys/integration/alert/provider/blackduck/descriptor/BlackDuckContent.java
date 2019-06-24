@@ -59,6 +59,7 @@ public class BlackDuckContent extends ProviderContent {
     public static final String JSON_FIELD_COMPONENT = "component";
     public static final String JSON_FIELD_COMPONENT_VERSION_NAME = "componentVersionName";
     public static final String JSON_FIELD_COMPONENT_VERSION = "componentVersion";
+    public static final String JSON_FIELD_BOM_COMPONENT = "bomComponent";
 
     // license limit fields
     public static final String JSON_FIELD_MESSAGE = "message";
@@ -87,6 +88,7 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_COMPONENT_VERSION_STATUS = "Component Version Status";
     public static final String LABEL_COMPONENT_NAME = "Component";
     public static final String LABEL_COMPONENT_VERSION_NAME = "Component Version";
+    public static final String LABEL_COMPONENT_LICENSE = "Component License";
     public static final String LABEL_POLICY_INFO_LIST = "Policy Infos";
     public static final String LABEL_POLICY_NAME = "Policy Violated";
     public static final String LABEL_POLICY_SEVERITY_NAME = "Severity";
@@ -103,7 +105,10 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_VULNERABILITY_NEW = "New Vulnerabilities";
     public static final String LABEL_VULNERABILITY_UPDATED = "Updated Vulnerabilities";
     public static final String LABEL_VULNERABILITY_DELETED = "Deleted Vulnerabilities";
+    public static final String LABEL_VULNERABILITIES = "Vulnerabilities";
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
+
+    public static final String LABEL_BOM_COMPONENT = "Bom Component";
 
     // TODO remove this
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
@@ -131,6 +136,8 @@ public class BlackDuckContent extends ProviderContent {
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
                 LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
+                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
             createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
             createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
                 LABEL_COMPONENT_NAME + JsonField.LABEL_URL_SUFFIX),
@@ -140,11 +147,8 @@ public class BlackDuckContent extends ProviderContent {
                 LABEL_COMPONENT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_FIRST_NAME), JSON_FIELD_FIRST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_FIRST_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LAST_NAME), JSON_FIELD_LAST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_NAME), JSON_FIELD_POLICY_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY), JSON_FIELD_POLICY, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_POLICY_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_SEVERITY), JSON_FIELD_POLICY_SEVERITY, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_POLICY_SEVERITY_NAME)
+            createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
+                new TypeRef<List<PolicyInfo>>() {})
 
         )
     );
@@ -158,6 +162,8 @@ public class BlackDuckContent extends ProviderContent {
                 LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
                 LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
+            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
+                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
             createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
             createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
                 LABEL_COMPONENT_NAME + JsonField.LABEL_URL_SUFFIX),

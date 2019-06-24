@@ -22,50 +22,95 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
-    public static final String CATEGORY_TYPE = "policy";
+    public static final String CATEGORY_TYPE = "Policy";
+    private final Map<String, ComponentItemPriority> priorityMap = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
+
+        priorityMap.put("blocker", ComponentItemPriority.HIGHEST);
+        priorityMap.put("critical", ComponentItemPriority.HIGH);
+        priorityMap.put("major", ComponentItemPriority.MEDIUM);
+        priorityMap.put("minor", ComponentItemPriority.LOW);
+        priorityMap.put("trivial", ComponentItemPriority.LOWEST);
+        priorityMap.put("unspecified", ComponentItemPriority.NONE);
     }
 
-    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
-        final List<String> categoryKeyParts = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
-        final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);
+    protected Optional<ComponentItem> addApplicableItems(Long notificationId, LinkableItem componentLinkableItem, LinkableItem componentVersionItem, Collection<LinkableItem> policyItems, ItemOperation operation,
+        ComponentItemPriority priority) {
+        try {
+            ComponentItem.Builder builder = new ComponentItem.Builder();
+            builder.applyComponentData(componentLinkableItem)
+                .applySubComponent(componentVersionItem)
+                .applyAllComponentAttributes(policyItems)
+                .applyPriority(priority)
+                .applyCategory(CATEGORY_TYPE)
+                .applyOperation(operation)
+                .applyNotificationId(notificationId);
 
-        updatePolicyItems(policyItems);
-        for (final LinkableItem item : applicableItems) {
-            final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-            linkableItems.add(item);
-            linkableItems.addAll(policyItems);
-            addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
+            return Optional.of(builder.build());
+        } catch (Exception ex) {
+            logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentLinkableItem, componentVersionItem);
+            logger.error("Error building policy component cause ", ex);
+            return Optional.empty();
         }
     }
 
-    private void updatePolicyItems(final Set<LinkableItem> policyItems) {
-        policyItems.forEach(this::updatePolicyItem);
+    protected Collection<LinkableItem> createPolicyLinkableItems(PolicyInfo policyInfo, String bomComponentUrl) {
+        final String policyName = policyInfo.getPolicyName();
+        final String severity = policyInfo.getSeverity();
+        final ArrayList<LinkableItem> itemList = new ArrayList<>(2);
+
+        if (StringUtils.isNotBlank(bomComponentUrl)) {
+            getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getLicenseLinkableItems(bomComponent).forEach(itemList::add));
+        }
+
+        final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
+        policyNameItem.setCollapsible(true);
+        policyNameItem.setSummarizable(true);
+        policyNameItem.setCountable(true);
+
+        if (StringUtils.isNotBlank(severity)) {
+            final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
+            severityItem.setPartOfKey(true);
+            severityItem.setCollapsible(false);
+            severityItem.setSummarizable(true);
+            severityItem.setCountable(false);
+            itemList.add(severityItem);
+        }
+        itemList.add(policyNameItem);
+        return itemList;
     }
 
-    private void updatePolicyItem(final LinkableItem policyItem) {
-        policyItem.setCollapsible(true);
-        policyItem.setCountable(true);
-        policyItem.setSummarizable(true);
+    protected ComponentItemPriority mapSeverityToPriority(String severity) {
+        if (StringUtils.isBlank(severity) || !priorityMap.containsKey(severity.trim().toLowerCase())) {
+            return ComponentItemPriority.NONE;
+        }
+        return priorityMap.get(severity.trim().toLowerCase());
     }
 
 }

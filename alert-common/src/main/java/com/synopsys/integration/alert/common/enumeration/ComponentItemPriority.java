@@ -20,22 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.common.enumeration;
 
-import java.util.List;
+public enum ComponentItemPriority {
+    HIGHEST,
+    HIGH,
+    MEDIUM,
+    LOW,
+    LOWEST,
+    NONE;
 
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-
-public class TopicEvent extends AlertEvent {
-
-    private final List<AggregateMessageContent> topicList;
-
-    public TopicEvent(final String destination, final List<AggregateMessageContent> topicList) {
-        super(destination);
-        this.topicList = topicList;
-    }
-
-    public List<AggregateMessageContent> getTopicList() {
-        return topicList;
+    public static final ComponentItemPriority findPriority(String priority) {
+        try {
+            return ComponentItemPriority.valueOf(priority.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            // couldn't find the enum value default to STANDARD
+            return NONE;
+        }
     }
 }

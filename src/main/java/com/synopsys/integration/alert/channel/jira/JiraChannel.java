@@ -43,11 +43,11 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -110,11 +110,11 @@ public class JiraChannel extends DistributionChannel {
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElseThrow(() -> new AlertException("Expected to be passed a provider."));
         final Boolean commentOnIssue = fieldAccessor.getBoolean(JiraDescriptor.KEY_ADD_COMMENTS).orElse(false);
         final LinkableItem commonTopic = content.getCommonTopic();
-        for (final AggregateMessageContent messageContent : content.getSubContent()) {
+        for (final ProviderMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
-            for (final CategoryItem categoryItem : messageContent.getCategoryItems()) {
-                final ItemOperation operation = categoryItem.getOperation();
-                final String trackingMessage = createTrackingKey(categoryItem, providerName);
+            for (final ComponentItem componentItem : messageContent.getComponentItems()) {
+                final ItemOperation operation = componentItem.getOperation();
+                final String trackingMessage = createTrackingKey(componentItem, providerName);
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, projectKey, issueType, trackingMessage);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
@@ -140,7 +140,7 @@ public class JiraChannel extends DistributionChannel {
                 } else {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
                         final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-                        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(categoryItem, commonTopic, subTopic, issueType, projectId, providerName);
+                        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(componentItem, commonTopic, subTopic, issueType, projectId, providerName);
                         final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
@@ -189,10 +189,11 @@ public class JiraChannel extends DistributionChannel {
         return issuesByDescription.getIssues().stream().findFirst();
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(final CategoryItem categoryItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId, final String provider) {
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(final ComponentItem componentItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId,
+        final String provider) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        final String title = createTitle(provider, commonTopic, subTopic, categoryItem);
-        final String description = createDescription(commonTopic, subTopic, categoryItem, provider);
+        final String title = createTitle(provider, commonTopic, subTopic, componentItem);
+        final String description = createDescription(commonTopic, subTopic, componentItem, provider);
         fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
         fieldsBuilder.setIssueType(issueType);
@@ -201,7 +202,7 @@ public class JiraChannel extends DistributionChannel {
         return fieldsBuilder;
     }
 
-    private String createTitle(final String provider, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem) {
+    private String createTitle(final String provider, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem) {
         final StringBuilder title = new StringBuilder();
         title.append("Alert: Provider|");
         title.append(provider);
@@ -220,12 +221,12 @@ public class JiraChannel extends DistributionChannel {
         }
 
         // FIXME this needs to be changed to contain appropriate values from the category item instead of just the key.
-        final String categoryKey = categoryItem.getCategoryKey().getKey();
+        final String categoryKey = componentItem.getComponentKeys().getDeepKey();
         title.append(categoryKey);
         return title.toString();
     }
 
-    private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final CategoryItem categoryItem, final String providerName) {
+    private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem, final String providerName) {
         final StringBuilder description = new StringBuilder();
         description.append(commonTopic.getName());
         description.append(":");
@@ -250,18 +251,18 @@ public class JiraChannel extends DistributionChannel {
             }
             description.append("\n");
         }
-        description.append(createDescriptionItems(categoryItem));
+        description.append(createDescriptionItems(componentItem));
 
         description.append("\n------------------- Generated key for Alert. DO NOT DELETE OR EDIT -------------------\nGenerated key: ");
-        description.append(createTrackingKey(categoryItem, providerName));
+        description.append(createTrackingKey(componentItem, providerName));
         description.append("\n----------------------------------------------------------------------------------------");
 
         return description.toString();
     }
 
-    private String createDescriptionItems(final CategoryItem categoryItem) {
+    private String createDescriptionItems(final ComponentItem componentItem) {
         final StringBuilder description = new StringBuilder();
-        final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
+        final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
 
         for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
             final String itemName = entry.getKey();
@@ -290,16 +291,16 @@ public class JiraChannel extends DistributionChannel {
         issueService.addComment(issueCommentRequestModel);
     }
 
-    private String createTrackingKey(final CategoryItem categoryItem, final String providerName) {
+    private String createTrackingKey(final ComponentItem categoryItem, final String providerName) {
         /*
          FIXME category key won't work as tracking key (Policy override generates a different key than policy violation and thus won't update issues correctly).
           provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version_Policy Overridden by_System Administrator'
           vs
           provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version
         */
-        final CategoryKey categoryKey = categoryItem.getCategoryKey();
+        final ComponentKeys categoryKey = categoryItem.getComponentKeys();
         final String operationName = categoryItem.getOperation().name();
-        final String operationRemovedKey = categoryKey.getKey().replace("_" + operationName, "");
+        final String operationRemovedKey = categoryKey.getDeepKey().replace("_" + operationName, "");
         return String.format("%s:%s", providerName, operationRemovedKey);
     }
 

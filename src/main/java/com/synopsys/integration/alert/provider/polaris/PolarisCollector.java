@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -30,9 +31,10 @@ import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
@@ -45,28 +47,37 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 //@Component
 //@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class PolarisCollector extends MessageContentCollector {
+    private final PolarisProperties polarisProperties;
 
     @Autowired
-    public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
+    public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final PolarisProperties polarisProperties) {
         super(jsonExtractor, messageContentProcessorList, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
+        this.polarisProperties = polarisProperties;
     }
 
     @Override
-    protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected LinkableItem getProviderItem() {
+        final String polarisUrl = polarisProperties.getUrl().orElse(null);
+        return new LinkableItem(ProviderMessageContent.LABEL_PROVIDER, "Polaris", polarisUrl);
+    }
+
+    @Override
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
         final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
                                                                        .stream()
                                                                        .filter(field -> PolarisContent.LABEL_ISSUE_TYPE.equals(field.getLabel()))
                                                                        .findFirst();
-
-        final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
+        ComponentItem.Builder builder = new ComponentItem.Builder();
+        final SortedSet<LinkableItem> attributes = new TreeSet<>();
         if (optionalIssueTypeField.isPresent()) {
             final JsonField<String> issueTypeField = optionalIssueTypeField.get();
             final String issueType = jsonFieldAccessor.getFirst(issueTypeField).orElse("<unknown>");
             final LinkableItem issueTypeItem = new LinkableItem(issueTypeField.getLabel(), issueType);
             issueTypeItem.setSummarizable(true);
             issueTypeItem.setCountable(true);
-            linkableItems.add(issueTypeItem);
+            attributes.add(issueTypeItem);
+            builder.applyComponentAttribute(issueTypeItem);
         }
 
         for (final JsonField<Integer> field : countFields) {
@@ -78,12 +89,21 @@ public class PolarisCollector extends MessageContentCollector {
                 countItem.setCountable(true);
                 countItem.setNumericValueFlag(true);
             }
-            linkableItems.add(countItem);
+            attributes.add(countItem);
         }
 
-        final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
         final ItemOperation operation = getOperationFromNotificationType(notificationContent.getNotificationType());
-        categoryItems.add(new CategoryItem(key, operation, notificationContent.getId(), linkableItems));
+        builder.applyAllComponentAttributes(attributes)
+            .applyCategory(notificationContent.getNotificationType())
+            .applyOperation(operation)
+            .applyNotificationId(notificationContent.getId());
+
+        try {
+            ComponentItem item = builder.build();
+            return List.of(item);
+        } catch (AlertException ex) {
+            return List.of();
+        }
     }
 
     private ItemOperation getOperationFromNotificationType(final String notificationType) {
