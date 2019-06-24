@@ -69,8 +69,8 @@ public class JiraGlobalApiAction extends ApiAction {
 
     @Override
     public FieldModel afterUpdateAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<FieldValueModel> fieldValue = fieldModel.getFieldValueModel(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN);
-        if (fieldValue.isEmpty() || !fieldValue.get().hasValues()) {
+        final String fieldValue = fieldModel.getFieldValueModel(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN).flatMap(FieldValueModel::getValue).orElse("false");
+        if (!Boolean.parseBoolean(fieldValue)) {
             throw new AlertFieldException(Map.of(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, "Please configure the Jira Cloud plugin for this server."));
         }
         return super.afterUpdateAction(fieldModel);

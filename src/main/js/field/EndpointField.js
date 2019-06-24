@@ -15,11 +15,25 @@ class EndpointField extends Component {
         this.flipShowModal = this.flipShowModal.bind(this);
 
         this.state = {
-            showModal: false
+            showModal: false,
+            fieldError: this.props.errorValue
         };
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { errorValue } = prevProps;
+        const currentError = this.props.errorValue;
+        if (errorValue !== currentError) {
+            this.setState({
+                fieldError: currentError
+            });
+        }
+    }
+
     onSendClick(popupData) {
+        this.setState({
+            fieldError: this.props.errorValue
+        });
         const {
             fieldKey, csrfToken, onChange, currentConfig, endpoint
         } = this.props;
@@ -36,13 +50,16 @@ class EndpointField extends Component {
                 onChange({ target });
             } else {
                 response.json()
-                    .then(() => {
+                    .then((data) => {
                         const target = {
                             name: [fieldKey],
                             checked: false,
                             type: 'checkbox'
                         };
                         onChange({ target });
+                        this.setState({
+                            fieldError: data.message
+                        });
                     });
             }
         });
@@ -84,7 +101,12 @@ class EndpointField extends Component {
 
         return (
             <div>
-                <LabeledField field={endpointField} {...this.props} />
+                <LabeledField
+                    field={endpointField}
+                    {...this.props}
+                    errorName={fieldKey}
+                    errorValue={this.state.fieldError}
+                />
                 <PopUp
                     onCancel={this.flipShowModal}
                     fields={fields}
@@ -109,13 +131,15 @@ EndpointField.propTypes = {
     fields: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
-    successBox: PropTypes.bool.isRequired
+    successBox: PropTypes.bool.isRequired,
+    errorValue: PropTypes.string
 };
 
 EndpointField.defaultProps = {
     value: false,
     fields: [],
-    name: ''
+    name: '',
+    errorValue: null
 };
 
 const mapStateToProps = state => ({

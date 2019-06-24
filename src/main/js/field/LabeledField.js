@@ -15,7 +15,9 @@ class LabeledField extends Component {
 
     render() {
         const { showDescription } = this.state;
-        const { field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue } = this.props;
+        const {
+            field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue
+        } = this.props;
 
         const labelClasses = `${labelClass} text-right`;
 
