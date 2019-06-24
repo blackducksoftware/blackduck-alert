@@ -35,4 +35,4 @@ All releases are on the GitHub release page. https://github.com/blackducksoftwar
 <!-- project-url-text-end -->
 
 ## Documentation ##
-Our public Confluence page: https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/622882/Black+Duck+Alert
+Our public Confluence page: https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/56197158/Synopsys+Alert

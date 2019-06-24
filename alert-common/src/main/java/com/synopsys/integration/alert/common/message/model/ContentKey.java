@@ -58,7 +58,7 @@ public class ContentKey extends AlertSerializableModel {
         } else {
             keyParts = List.of(providerName, topicName, topicValue);
         }
-        return String.join(KEY_SEPARATOR, keyParts);
+        return StringUtils.join(KEY_SEPARATOR, keyParts);
     }
 
     public String getProviderName() {

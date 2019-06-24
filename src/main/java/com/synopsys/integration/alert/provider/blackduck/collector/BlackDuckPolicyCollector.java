@@ -52,8 +52,8 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
 
-        priorityMap.put("blocker", ComponentItemPriority.HIGH);
-        priorityMap.put("critical", ComponentItemPriority.HIGH);
+        priorityMap.put("blocker", ComponentItemPriority.CRITICAL);
+        priorityMap.put("critical", ComponentItemPriority.CRITICAL);
         priorityMap.put("major", ComponentItemPriority.HIGH);
         priorityMap.put("minor", ComponentItemPriority.MEDIUM);
         priorityMap.put("trivial", ComponentItemPriority.LOW);
@@ -74,7 +74,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
 
             return Optional.of(builder.build());
         } catch (Exception ex) {
-            logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentLinkableItem);
+            logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentLinkableItem, componentVersionItem);
             logger.error("Error building policy component cause ", ex);
             return Optional.empty();
         }

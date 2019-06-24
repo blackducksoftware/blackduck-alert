@@ -48,6 +48,10 @@ public class ComponentKeys extends AlertSerializableModel implements Comparable<
         this.additionalData = additionalData;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
     public static String generateAdditionalDataString(Collection<LinkableItem> componentAttributes) {
         StringBuilder additionalData = new StringBuilder();
         for (LinkableItem attribute : componentAttributes) {

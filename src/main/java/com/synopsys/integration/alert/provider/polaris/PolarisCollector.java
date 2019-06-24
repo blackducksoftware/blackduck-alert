@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
@@ -46,10 +47,18 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 //@Component
 //@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class PolarisCollector extends MessageContentCollector {
+    private final PolarisProperties polarisProperties;
 
     @Autowired
-    public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
+    public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final PolarisProperties polarisProperties) {
         super(jsonExtractor, messageContentProcessorList, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
+        this.polarisProperties = polarisProperties;
+    }
+
+    @Override
+    protected LinkableItem getProviderItem() {
+        final String polarisUrl = polarisProperties.getUrl().orElse(null);
+        return new LinkableItem(ProviderMessageContent.LABEL_PROVIDER, "Polaris", polarisUrl);
     }
 
     @Override

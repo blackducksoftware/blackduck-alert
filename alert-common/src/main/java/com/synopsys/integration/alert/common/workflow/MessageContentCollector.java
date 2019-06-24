@@ -82,7 +82,7 @@ public abstract class MessageContentCollector {
         try {
             final List<JsonField<?>> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
-            final List<ProviderMessageContent.Builder> providerContents = getProviderContentsOrCreateIfDoesNotExist(notification.getProvider(), jsonFieldAccessor, notificationFields);
+            final List<ProviderMessageContent.Builder> providerContents = getMessageBuildersOrCreateIfTheyDoNotExist(jsonFieldAccessor, notificationFields);
 
             for (final ProviderMessageContent.Builder builder : providerContents) {
                 builder.applyAllComponentItems(getComponentItems(jsonFieldAccessor, notificationFields, notification));
@@ -120,8 +120,6 @@ public abstract class MessageContentCollector {
             return Optional.empty();
         }
     }
-
-    //protected abstract void addCategoryItems(SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
 
     protected abstract Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent);
 
@@ -182,6 +180,8 @@ public abstract class MessageContentCollector {
         return list;
     }
 
+    protected abstract LinkableItem getProviderItem();
+
     protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
         return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL, true);
     }
@@ -203,8 +203,7 @@ public abstract class MessageContentCollector {
         return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
     }
 
-    // FIXME We still need the Human Readable name and url. Should this method be protected and abstract?
-    private List<ProviderMessageContent.Builder> getProviderContentsOrCreateIfDoesNotExist(String providerName, JsonFieldAccessor accessor, List<JsonField<?>> notificationFields) {
+    private List<ProviderMessageContent.Builder> getMessageBuildersOrCreateIfTheyDoNotExist(JsonFieldAccessor accessor, List<JsonField<?>> notificationFields) {
         final List<ProviderMessageContent.Builder> buildersForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
@@ -212,7 +211,7 @@ public abstract class MessageContentCollector {
             return List.of();
         }
         final List<LinkableItem> subTopicItems = getSubTopicItems(accessor, notificationFields);
-        // for the number of topics assume there is an equal number of sub topics and the order is the same.this seems fragile at the moment.
+        // For the number of topics assume there is an equal number of sub topics and the order is the same. This seems fragile at the moment.
         final int count = topicItems.size();
         for (int index = 0; index < count; index++) {
             final LinkableItem topicItem = topicItems.get(index);
@@ -222,17 +221,18 @@ public abstract class MessageContentCollector {
                 subTopic = subTopicItems.get(index);
             }
 
-            final ProviderMessageContent.Builder foundContent = findContentBuilder(providerName, topicItem, subTopic);
+            final LinkableItem providerItem = getProviderItem();
+            final ProviderMessageContent.Builder foundContent = findContentBuilder(providerItem.getValue(), topicItem, subTopic);
 
             if (null != foundContent) {
                 buildersForNotifications.add(foundContent);
             } else {
                 ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-                //TODO get the provider URL as well if possible and add it here.
-                builder.applyProvider(providerName)
-                    .applyTopic(topicItem.getName(), topicItem.getValue());
+                builder
+                    .applyProvider(providerItem.getValue(), providerItem.getUrl().orElse(null))
+                    .applyTopic(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null));
                 if (null != subTopic) {
-                    builder.applySubTopic(subTopic.getName(), subTopic.getValue());
+                    builder.applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null));
                 }
                 buildersForNotifications.add(builder);
             }
