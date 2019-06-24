@@ -22,11 +22,13 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +52,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAcce
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.core.BlackDuckView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
@@ -83,31 +86,28 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     @Override
     protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
         final JsonField<String> topicField = getDataField(fields, FieldContentIdentifier.TOPIC);
-        final Optional<String> bomComponentUrl = getBomComponentUrl(accessor, topicField);
-        final Optional<ProjectVersionWrapper> projectVersionWrapper = bomComponentUrl
-                                                                          .flatMap(this::getBomComponentView)
-                                                                          .flatMap(this::getProjectVersionWrapper);
-        if (projectVersionWrapper.isPresent()) {
-            ProjectView projectView = projectVersionWrapper.get().getProjectView();
-            return List.of(new LinkableItem(topicField.getLabel(), projectView.getName(), projectView.getHref().orElse(null)));
-        }
-
-        return List.of();
+        return getItemFromProjectVersionWrapper(accessor, topicField, ProjectVersionWrapper::getProjectView,
+            view -> new LinkableItem(topicField.getLabel(), ((ProjectView) view).getName(), view.getHref().orElse(null)));
     }
 
     @Override
     protected List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        final JsonField<String> topicField = getDataField(fields, FieldContentIdentifier.SUB_TOPIC);
-        final Optional<String> bomComponentUrl = getBomComponentUrl(accessor, topicField);
-        final Optional<ProjectVersionWrapper> projectVersionWrapper = bomComponentUrl
-                                                                          .flatMap(this::getBomComponentView)
-                                                                          .flatMap(this::getProjectVersionWrapper);
-        if (projectVersionWrapper.isPresent()) {
-            ProjectVersionView projectVersionView = projectVersionWrapper.get().getProjectVersionView();
-            return List.of(new LinkableItem(topicField.getLabel(), projectVersionView.getVersionName(), projectVersionView.getHref().orElse(null)));
-        }
+        final JsonField<String> subTopicField = getDataField(fields, FieldContentIdentifier.SUB_TOPIC);
+        return getItemFromProjectVersionWrapper(accessor, subTopicField, ProjectVersionWrapper::getProjectVersionView,
+            view -> new LinkableItem(subTopicField.getLabel(), ((ProjectVersionView) view).getVersionName(), view.getHref().orElse(null)));
+    }
 
-        return List.of();
+    private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
+        final List<LinkableItem> items = new ArrayList<>();
+
+        getBomComponentUrl(accessor, field)
+            .flatMap(this::getBomComponentView)
+            .flatMap(this::getProjectVersionWrapper)
+            .map(viewMapper)
+            .map(itemMapper)
+            .ifPresent(items::add);
+
+        return items;
     }
 
     @Override
@@ -134,11 +134,9 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     }
 
     private Optional<String> getBomComponentUrl(final JsonFieldAccessor accessor, JsonField<String> field) {
-        List<String> bomComponent = accessor.get(field);
-        if (bomComponent.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(bomComponent.get(0));
+        return accessor.get(field)
+                   .stream()
+                   .findFirst();
     }
 
     //TODO Clean up this class to make the code more elegant.  This code was based on the Jira Plugin.  Currently it functions but needs more work to make it production ready.
