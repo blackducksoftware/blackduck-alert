@@ -79,7 +79,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         assertFalse(topicContentMap.isEmpty());
         assertEquals(1, topicContentMap.size());
         assertTrue(topicContentMap.containsKey(jobConfig));
-        assertEquals(3, topicContentMap.get(jobConfig).size());
+        // policy cleared notification has a 1 project and version.
+        // vulnerability has 3 projects and versions.
+        assertEquals(4, topicContentMap.get(jobConfig).size());
     }
 
     @Test
@@ -155,9 +157,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private ConfigurationJobModel createCommonDistributionConfiguration(final List<String> projectNames, final List<String> notificationTypes) {
-        final List<ConfigurationFieldModel> hipChatDistributionFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        hipChatDistributionFields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
-        final ConfigurationJobModel distributionJob = MockConfigurationModelFactory.createDistributionJob(hipChatDistributionFields);
+        final List<ConfigurationFieldModel> slackDistributionFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        slackDistributionFields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
+        final ConfigurationJobModel distributionJob = MockConfigurationModelFactory.createDistributionJob(slackDistributionFields);
         final ConfigurationFieldModel notificationType = distributionJob.getFieldAccessor().getField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
                                                              .orElse(ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
         notificationType.setFieldValues(notificationTypes);
@@ -174,7 +176,9 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private AlertNotificationWrapper createNotification(final String providerName, final String notificationContent, final NotificationType type) {
-        return new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
+        NotificationContent notification = new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
+        notification.setId(1L);
+        return notification;
     }
 
 }

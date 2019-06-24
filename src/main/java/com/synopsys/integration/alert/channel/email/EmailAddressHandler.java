@@ -41,8 +41,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -106,10 +106,10 @@ public class EmailAddressHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> licenseNotificationCheck(final Collection<AggregateMessageContent> messages, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
+    private Set<String> licenseNotificationCheck(final Collection<ProviderMessageContent> messages, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
         final boolean hasSubTopic = messages
                                         .stream()
-                                        .map(AggregateMessageContent::getSubTopic)
+                                        .map(ProviderMessageContent::getSubTopic)
                                         .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
             final Boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
@@ -134,4 +134,5 @@ public class EmailAddressHandler {
 
         return Set.of();
     }
+
 }

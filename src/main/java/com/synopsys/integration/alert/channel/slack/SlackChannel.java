@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +42,10 @@ import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
@@ -111,7 +110,7 @@ public class SlackChannel extends DistributionChannel {
         topicBuilder.append(SLACK_LINE_SEPARATOR);
         messagePieces.add(topicBuilder.toString());
 
-        for (final AggregateMessageContent messageContent : messageContentGroup.getSubContent()) {
+        for (final ProviderMessageContent messageContent : messageContentGroup.getSubContent()) {
             final StringBuilder subTopicBuilder = new StringBuilder();
             messageContent
                 .getSubTopic()
@@ -122,14 +121,26 @@ public class SlackChannel extends DistributionChannel {
             subTopicBuilder.append(SLACK_LINE_SEPARATOR);
             messagePieces.add(subTopicBuilder.toString());
 
-            final SortedSet<CategoryItem> categoryItems = messageContent.getCategoryItems();
-            for (final CategoryItem categoryItem : categoryItems) {
+            final Collection<ComponentItem> componentItems = messageContent.getComponentItems();
+            for (final ComponentItem componentItem : componentItems) {
                 final StringBuilder categoryItemBuilder = new StringBuilder();
-                categoryItemBuilder.append("Type: ");
-                categoryItemBuilder.append(categoryItem.getOperation());
+                categoryItemBuilder.append("Category: ");
+                categoryItemBuilder.append(componentItem.getCategory());
                 categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                categoryItemBuilder.append("Operation: ");
+                categoryItemBuilder.append(componentItem.getOperation());
+                categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                categoryItemBuilder.append(createLinkableItemString(componentItem.getComponent(), false));
+                categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                componentItem
+                    .getSubComponent()
+                    .map(subComponent -> createLinkableItemString(subComponent, false))
+                    .ifPresent(linkableItemString -> {
+                        categoryItemBuilder.append(linkableItemString);
+                        categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
+                    });
 
-                final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
+                final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
                 for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {
                     appendFormattedItems(categoryItemBuilder, namedItems.getKey(), namedItems.getValue());
                     categoryItemBuilder.append(SLACK_LINE_SEPARATOR);
@@ -181,21 +192,21 @@ public class SlackChannel extends DistributionChannel {
     }
 
     private String createLinkableItemString(final LinkableItem linkableItem, final boolean bold) {
-        String format = "%s: <%s|%s>";
-        if (bold) {
-            format = String.format("*%s*", format);
-        }
-
         final String name = createSlackString(linkableItem.getName());
         final String value = createSlackString(linkableItem.getValue());
         final Optional<String> optionalUrl = linkableItem.getUrl();
+
+        String formattedString;
         if (optionalUrl.isPresent()) {
-            return String.format(format, name, optionalUrl.get(), value);
+            formattedString = String.format("%s: <%s|%s>", name, optionalUrl.get(), value);
+        } else {
+            formattedString = String.format("%s: %s", name, value);
         }
+
         if (bold) {
-            return String.format("*%s: %s*", name, value);
+            return String.format("*%s*", formattedString);
         }
-        return String.format("%s: %s", name, value);
+        return formattedString;
     }
 
     private String createSlackString(final String unencodedString) {

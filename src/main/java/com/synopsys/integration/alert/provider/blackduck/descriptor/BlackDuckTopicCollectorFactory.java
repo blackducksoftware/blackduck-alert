@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckBomEditCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
@@ -41,15 +42,17 @@ public class BlackDuckTopicCollectorFactory {
     private final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory;
     private final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory;
     private final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory;
 
     @Autowired
     public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory,
         final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory,
-        final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory) {
+        final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory, final ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory) {
         this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
         this.policyViolationTopicCollectorFactory = policyViolationTopicCollectorFactory;
         this.policyOverrideTopicCollectorFactory = policyOverrideTopicCollectorFactory;
         this.licenseLimitTopicCollectorFactory = licenseLimitTopicCollectorFactory;
+        this.bomEditCollectorFactory = bomEditCollectorFactory;
     }
 
     public Set<MessageContentCollector> createTopicCollectors() {
@@ -58,6 +61,7 @@ public class BlackDuckTopicCollectorFactory {
         collectorSet.add(policyViolationTopicCollectorFactory.getObject());
         collectorSet.add(policyOverrideTopicCollectorFactory.getObject());
         collectorSet.add(licenseLimitTopicCollectorFactory.getObject());
+        collectorSet.add(bomEditCollectorFactory.getObject());
         return collectorSet;
     }
 

@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.email.actions;
 
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -36,12 +37,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -72,13 +73,24 @@ public class EmailGlobalTestAction extends TestAction {
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final SortedSet<LinkableItem> set = new TreeSet<>();
-        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from the Alert global email configuration.", null);
+        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from Alert.", null);
         set.add(linkableItem);
-        final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("TYPE"), null, 1L, set);
-        final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
-        categoryItems.add(categoryItem);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", categoryItems);
-        return emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", MessageContentGroup.singleton(messageContent));
+        ComponentItem.Builder componentBuilder = new ComponentItem.Builder();
+        componentBuilder
+            .applyComponentData("Component", "Global Email Configuration")
+            .applyCategory("Test")
+            .applyOperation(ItemOperation.ADD)
+            .applyNotificationId(1L)
+            .applyComponentAttribute(linkableItem);
+
+        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
+        builder
+            .applyProvider("Test Provider")
+            .applyTopic("Message Content", "Test from Alert")
+            .applyAllComponentItems(List.of(componentBuilder.build()));
+
+        final ProviderMessageContent messageContent = builder.build();
+        return emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", MessageContentGroup.singleton(messageContent));
     }
 
 }

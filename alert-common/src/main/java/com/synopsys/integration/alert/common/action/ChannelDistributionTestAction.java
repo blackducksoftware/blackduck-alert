@@ -28,8 +28,9 @@ import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -49,8 +50,8 @@ public abstract class ChannelDistributionTestAction extends TestAction {
         return distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) {
-        final AggregateMessageContent messageContent = createTestNotificationContent();
+    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) throws AlertException {
+        final ProviderMessageContent messageContent = createTestNotificationContent();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");

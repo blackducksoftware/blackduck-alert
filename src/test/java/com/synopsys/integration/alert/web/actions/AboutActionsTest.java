@@ -13,12 +13,13 @@ public class AboutActionsTest {
     @Test
     public void testGetAboutModel() {
         final String version = "1.2.3";
+        final String created = "date";
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
+        final AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime);
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getAboutModel()).thenReturn(model);
         final AboutActions aboutActions = new AboutActions(aboutReader);

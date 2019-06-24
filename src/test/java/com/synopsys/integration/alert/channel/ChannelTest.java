@@ -12,6 +12,8 @@
 package com.synopsys.integration.alert.channel;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -22,10 +24,10 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestProperties;
 
@@ -48,7 +50,7 @@ public class ChannelTest {
         outputLogger.cleanup();
     }
 
-    public AggregateMessageContent createMessageContent(final String testName) {
+    public ProviderMessageContent createMessageContent(final String testName) throws AlertException {
         final LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
         final LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
 
@@ -57,17 +59,49 @@ public class ChannelTest {
         final LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
         final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
-        final CategoryItem categoryItem1 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.ADD, 1L, asSet(linkableItem1, linkableItem2));
-        final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, asSet(linkableItem2));
-        final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, asSet(linkableItem3, linkableItem4, linkableItem5));
+        ComponentItem.Builder componentBuilder1 = new ComponentItem.Builder();
+        ComponentItem.Builder componentBuilder2 = new ComponentItem.Builder();
+        ComponentItem.Builder componentBuilder3 = new ComponentItem.Builder();
+
+        componentBuilder1
+            .applyComponentData("component", "componentValue")
+            .applyCategory("category")
+            .applyNotificationId(1L)
+            .applyOperation(ItemOperation.ADD)
+            .applyComponentAttribute(linkableItem1)
+            .applyComponentAttribute(linkableItem2);
+
+        componentBuilder2
+            .applyComponentData("component", "componentValue")
+            .applyCategory("category")
+            .applyNotificationId(2L)
+            .applyOperation(ItemOperation.UPDATE)
+            .applyComponentAttribute(linkableItem2);
+
+        componentBuilder3
+            .applyComponentData("component", "componentValue")
+            .applyCategory("category")
+            .applyNotificationId(1L)
+            .applyOperation(ItemOperation.DELETE)
+            .applyComponentAttribute(linkableItem3)
+            .applyComponentAttribute(linkableItem4)
+            .applyComponentAttribute(linkableItem5);
+
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
-        final SortedSet<CategoryItem> items = new TreeSet<>();
-        items.add(categoryItem1);
-        items.add(categoryItem2);
-        items.add(categoryItem3);
+        final Collection<ComponentItem> items = new LinkedList<>();
+        items.add(componentBuilder1.build());
+        items.add(componentBuilder2.build());
+        items.add(componentBuilder3.build());
 
-        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, items);
+        ProviderMessageContent.Builder providerBuilder = new ProviderMessageContent.Builder();
+        providerBuilder
+            .applyProvider("Test Provider")
+            .applyTopic("Topic", testName, "https://google.com")
+            .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+            .applyAllComponentItems(items);
+
+        return providerBuilder.build();
     }
 
     private SortedSet<LinkableItem> asSet(final LinkableItem... items) {

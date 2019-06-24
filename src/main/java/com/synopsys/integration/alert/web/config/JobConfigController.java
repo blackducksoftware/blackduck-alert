@@ -59,7 +59,6 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JobConfigController extends BaseController {
     public static final String JOB_CONFIGURATION_PATH = ConfigController.CONFIGURATION_PATH + "/job";
     private static final String[] REQUIRED_PERMISSION_KEYS = { PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_EMAIL.getDatabaseKey(),
-        PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_HIPCHAT.getDatabaseKey(),
         PermissionKeys.CONFIG_DISTRIBUTION_CHANNEL_SLACK.getDatabaseKey(),
         PermissionKeys.CONFIG_DISTRIBUTION_PROVIDER_BLACKDUCK.getDatabaseKey(),
         PermissionKeys.CONFIG_DISTRIBUTION_PROVIDER_POLARIS.getDatabaseKey()
@@ -129,7 +128,7 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> postConfig(@RequestBody final JobFieldModel restModel) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
         final boolean missingPermission = restModel.getFieldModels().stream()
                                               .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                               .anyMatch(permissionKey -> !authorizationManager.hasCreatePermission(permissionKey));
