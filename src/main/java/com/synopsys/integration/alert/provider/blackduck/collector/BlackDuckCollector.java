@@ -129,11 +129,15 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                    .collect(Collectors.toList());
     }
 
-    public Optional<BlackDuckBucketService> getBucketService() {
+    protected Optional<BlackDuckService> getBlackDuckService() {
+        return Optional.ofNullable(blackDuckService);
+    }
+
+    protected Optional<BlackDuckBucketService> getBucketService() {
         return Optional.ofNullable(bucketService);
     }
 
-    public BlackDuckBucket getBlackDuckBucket() {
+    protected BlackDuckBucket getBlackDuckBucket() {
         return blackDuckBucket;
     }
 }
