@@ -1,7 +1,7 @@
 {
   "name": "Synopsys Alert",
   "description": "An application used for indexing issue properties to allow Alert to map notifications to the correct issue(s).",
-  "key": "com.synopsys.integrations.alert",
+  "key": "com.synopsys.integration.alert",
   "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
   "vendor": {
     "name": "Synopsys, Inc.",
@@ -14,21 +14,21 @@
   "modules": {
     "jiraEntityProperties": [
       {
-        "key": "com.synopsys.integrations.alert.bom.component.uri",
+        "key": "com-synopsys-integration-alert-bom-component-uri",
         "name": {
           "value": "BOM Component URI"
         },
         "entityType": "issue"
       },
       {
-        "key": "com.synopsys.integrations.alert.category",
+        "key": "com-synopsys-integration-alert-category",
         "name": {
           "value": "Issue Category"
         },
         "entityType": "issue"
       },
       {
-        "key": "com.synopsys.integrations.alert.policy.uri",
+        "key": "com-synopsys-integration-alert-policy-uri",
         "name": {
           "value": "Policy URI"
         },
