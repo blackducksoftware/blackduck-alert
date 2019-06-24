@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum ComponentItemPriority {
+    CRITICAL,
     HIGH,
     MEDIUM,
     LOW,

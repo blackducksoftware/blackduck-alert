@@ -121,8 +121,6 @@ public abstract class MessageContentCollector {
         }
     }
 
-    //protected abstract void addCategoryItems(SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
-
     protected abstract Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
