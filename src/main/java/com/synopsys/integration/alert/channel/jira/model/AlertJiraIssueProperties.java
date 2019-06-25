@@ -22,35 +22,27 @@
  */
 package com.synopsys.integration.alert.channel.jira.model;
 
-import java.util.Optional;
-
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class AlertJiraIssueProperties extends AlertSerializableModel {
     private String category;
-    private String bomComponentUri;
-    private String policyName;
+    private String uniqueId;
 
     public AlertJiraIssueProperties() {
         // For serialization
     }
 
-    public AlertJiraIssueProperties(final String category, final String bomComponentUri, final String policyName) {
+    public AlertJiraIssueProperties(final String category, final String uniqueId) {
         this.category = category;
-        this.bomComponentUri = bomComponentUri;
-        this.policyName = policyName;
+        this.uniqueId = uniqueId;
     }
 
     public String getCategory() {
         return category;
     }
 
-    public String getBomComponentUri() {
-        return bomComponentUri;
-    }
-
-    public Optional<String> getPolicyName() {
-        return Optional.ofNullable(policyName);
+    public String getUniqueId() {
+        return uniqueId;
     }
 
 }

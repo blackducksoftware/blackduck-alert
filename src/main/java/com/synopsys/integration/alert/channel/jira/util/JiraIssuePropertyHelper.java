@@ -42,23 +42,14 @@ public class JiraIssuePropertyHelper {
         this.issuePropertyService = issuePropertyService;
     }
 
-    public Optional<IssueSearchResponseModel> findIssues(String category, String bomComponentUri) throws IntegrationException {
-        return findIssues(category, bomComponentUri, null);
-    }
-
-    public Optional<IssueSearchResponseModel> findIssues(String category, String bomComponentUri, String policyName) throws IntegrationException {
+    public Optional<IssueSearchResponseModel> findIssues(String category, String uniqueId) throws IntegrationException {
         final StringBuilder jqlBuilder = new StringBuilder();
         if (StringUtils.isNotBlank(category)) {
             jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category));
             jqlBuilder.append(StringUtils.SPACE);
         }
-        if (StringUtils.isNotBlank(bomComponentUri)) {
-            jqlBuilder.append(StringUtils.SPACE);
-            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_BOM_COMPONENT_URI, bomComponentUri));
-        }
-        if (StringUtils.isNotBlank(policyName)) {
-            jqlBuilder.append(StringUtils.SPACE);
-            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_POLICY_NAME, policyName));
+        if (StringUtils.isNotBlank(uniqueId)) {
+            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_UNIQUE_ID, uniqueId));
         }
 
         final String jql = jqlBuilder.toString();
@@ -69,12 +60,8 @@ public class JiraIssuePropertyHelper {
         return Optional.empty();
     }
 
-    public void addPropertiesToIssue(String issueKey, String category, String bomComponentUri) throws IntegrationException {
-        addPropertiesToIssue(issueKey, category, bomComponentUri, null);
-    }
-
-    public void addPropertiesToIssue(String issueKey, String category, String bomComponentUri, String policyName) throws IntegrationException {
-        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(category, bomComponentUri, policyName);
+    public void addPropertiesToIssue(String issueKey, String category, String uniqueId) throws IntegrationException {
+        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(category, uniqueId);
         addPropertiesToIssue(issueKey, properties);
     }
 
