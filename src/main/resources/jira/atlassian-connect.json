@@ -24,15 +24,11 @@
             "propertyKey": "com-synopsys-integration-alert",
             "extractions": [
               {
-                "objectName": "bomComponentUri",
-                "type": "text"
-              },
-              {
                 "objectName": "category",
                 "type": "text"
               },
               {
-                "objectName": "policyName",
+                "objectName": "uniqueId",
                 "type": "text"
               }
             ]
