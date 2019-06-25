@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.channel.jira;
 
 public class JiraConstants {
+    // This String must always match the String found in the atlassian-connect.json file under name.
+    public static final String JIRA_APP_NAME = "Alert Issue Property Indexer";
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.key.
     public static final String JIRA_ISSUE_PROPERTY_KEY = "com-synopsys-integration-alert";
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.keyConfigurations.propertyKey["com-synopsys-integration-alert"].extractions.objectName.
