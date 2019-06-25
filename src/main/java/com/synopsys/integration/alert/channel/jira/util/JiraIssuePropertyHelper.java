@@ -4,18 +4,15 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.JiraConstants;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 
 public class JiraIssuePropertyHelper {
-    private final Gson gson;
     private final IssueSearchService issueSearchService;
 
-    public JiraIssuePropertyHelper(Gson gson, IssueSearchService issueSearchService) {
-        this.gson = gson;
+    public JiraIssuePropertyHelper(IssueSearchService issueSearchService) {
         this.issueSearchService = issueSearchService;
     }
 
@@ -55,7 +52,7 @@ public class JiraIssuePropertyHelper {
     }
 
     private String createPropertySearchString(String key, String value) {
-        final String propertySearchFormat = "issue.property[%s].%s ~ %s";
+        final String propertySearchFormat = "issue.property[%s].%s ~ '%s'";
         return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, value);
     }
 

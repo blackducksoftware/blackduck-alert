@@ -1,5 +1,5 @@
 {
-  "name": "Synopsys Alert",
+  "name": "Alert Issue Property Indexer",
   "description": "An application used for indexing issue properties to allow Alert to map notifications to the correct issue(s).",
   "key": "com.synopsys.integration.alert",
   "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
@@ -16,7 +16,7 @@
       {
         "key": "com-synopsys-integration-alert",
         "name": {
-          "value": "BOM Component URI"
+          "value": "Alert Issue Property"
         },
         "entityType": "issue",
         "keyConfigurations": [

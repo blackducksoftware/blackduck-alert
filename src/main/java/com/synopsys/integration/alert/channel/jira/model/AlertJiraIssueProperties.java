@@ -2,7 +2,9 @@ package com.synopsys.integration.alert.channel.jira.model;
 
 import java.util.Optional;
 
-public class AlertJiraIssueProperties {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class AlertJiraIssueProperties extends AlertSerializableModel {
     private String category;
     private String bomComponentUri;
     private String policyName;
