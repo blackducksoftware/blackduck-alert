@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,29 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.exception;
+package com.synopsys.integration.alert.channel.jira.model;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AlertException extends IntegrationException {
-    private static final long serialVersionUID = 7993564907680483145L;
+public class AlertJiraIssueProperties extends AlertSerializableModel {
+    private String category;
+    private String uniqueId;
 
-    public AlertException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public AlertJiraIssueProperties() {
+        // For serialization
     }
 
-    public AlertException(final String message, final Throwable cause) {
-        super(message, cause);
+    public AlertJiraIssueProperties(final String category, final String uniqueId) {
+        this.category = category;
+        this.uniqueId = uniqueId;
     }
 
-    public AlertException(final String message) {
-        super(message);
+    public String getCategory() {
+        return category;
     }
 
-    public AlertException(final Throwable cause) {
-        super(cause);
+    public String getUniqueId() {
+        return uniqueId;
     }
 
-    public AlertException() {
-    }
 }

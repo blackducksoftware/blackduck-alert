@@ -1,28 +1,35 @@
 {
-  "name": "Synopsys Alert Plugin",
-  "description": "Plugin required to run Alert with your Jira Cloud instance. This plugin indexes properties so that we can properly track issues we've created.",
-  "key": "synopsys.alert.plugin.property.index",
+  "name": "Alert Issue Property Indexer",
+  "description": "An application used for indexing issue properties to allow Alert to map notifications to the correct issue(s).",
+  "key": "com.synopsys.integration.alert",
   "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
+  "vendor": {
+    "name": "Synopsys, Inc.",
+    "url": "https://synopsys.com"
+  },
   "authentication": {
     "type": "none"
   },
-  "apiVersion": 1,
+  "apiVersion": 2,
   "modules": {
     "jiraEntityProperties": [
       {
-        "key": "alert-jira-issue-indexing",
+        "key": "com-synopsys-integration-alert",
         "name": {
-          "value": "Alert index",
-          "i18n": "alert.index"
+          "value": "Alert Issue Property"
         },
         "entityType": "issue",
         "keyConfigurations": [
           {
-            "propertyKey": "alertKey",
+            "propertyKey": "com-synopsys-integration-alert",
             "extractions": [
               {
-                "objectName": "key",
-                "type": "string"
+                "objectName": "category",
+                "type": "text"
+              },
+              {
+                "objectName": "uniqueId",
+                "type": "text"
               }
             ]
           }

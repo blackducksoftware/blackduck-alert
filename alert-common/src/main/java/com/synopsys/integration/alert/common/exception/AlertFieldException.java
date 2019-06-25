@@ -30,7 +30,7 @@ public class AlertFieldException extends AlertException {
     private final Map<String, String> fieldErrors;
 
     public AlertFieldException(final Map<String, String> fieldErrors) {
-        super("");
+        super();
         this.fieldErrors = fieldErrors;
     }
 
