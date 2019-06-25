@@ -114,18 +114,17 @@ function configDeleted() {
 }
 
 function handleFailureResponse(dispatch, response) {
-    response.json()
-        .then((data) => {
-            switch (response.status) {
-                case 400:
-                case 412:
-                    return dispatch(configError(data.message, data.errors));
-                default: {
-                    dispatch(configError(data.message, null));
-                    return dispatch(verifyLoginByStatus(response.status));
-                }
+    response.json().then((data) => {
+        switch (response.status) {
+            case 400:
+            case 412:
+                return dispatch(configError(data.message, data.errors));
+            default: {
+                dispatch(configError(data.message, null));
+                return dispatch(verifyLoginByStatus(response.status));
             }
-        });
+        }
+    });
 }
 
 export function refreshConfig(id) {
@@ -139,19 +138,17 @@ export function refreshConfig(id) {
         const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             if (response.ok) {
-                response.json()
-                    .then((body) => {
-                        if (body) {
-                            dispatch(configRefreshed(body));
-                        } else {
-                            dispatch(configRefreshed({}));
-                        }
-                    });
+                response.json().then((body) => {
+                    if (body) {
+                        dispatch(configRefreshed(body));
+                    } else {
+                        dispatch(configRefreshed({}));
+                    }
+                });
             } else {
                 dispatch(verifyLoginByStatus(response.status));
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
@@ -162,19 +159,17 @@ export function getConfig(descriptorName) {
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             if (response.ok) {
-                response.json()
-                    .then((body) => {
-                        if (body.length > 0) {
-                            dispatch(configFetched(body[0]));
-                        } else {
-                            dispatch(configFetched({}));
-                        }
-                    });
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(configFetched(body[0]));
+                    } else {
+                        dispatch(configFetched({}));
+                    }
+                });
             } else {
                 dispatch(verifyLoginByStatus(response.status));
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
@@ -191,24 +186,21 @@ export function updateConfig(config) {
         }
         request.then((response) => {
             if (response.ok) {
-                response.json()
-                    .then((data) => {
-                        const newId = data.id;
-                        const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
-                        dispatch(configUpdated(updatedConfig));
-                        return newId;
-                    })
-                    .then((data) => {
-                        dispatch(refreshConfig(data));
-                    });
+                response.json().then((data) => {
+                    const newId = data.id;
+                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
+                    dispatch(configUpdated(updatedConfig));
+                    return newId;
+                }).then((data) => {
+                    dispatch(refreshConfig(data));
+                });
             } else {
                 if (id) {
                     dispatch(refreshConfig(id));
                 }
                 handleFailureResponse(dispatch, response);
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
@@ -222,20 +214,18 @@ export function testConfig(config, destination) {
             if (response.ok) {
                 dispatch(testSuccess());
             } else {
-                response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 400:
-                                return dispatch(testFailed(data.message, data.errors));
-                            case 401:
-                                return dispatch(testFailed(`There was a problem testing your configuration. ${data.message}`));
-                            default:
-                                return dispatch(testFailed(data.message));
-                        }
-                    });
+                response.json().then((data) => {
+                    switch (response.status) {
+                        case 400:
+                            return dispatch(testFailed(data.message, data.errors));
+                        case 401:
+                            return dispatch(testFailed(`There was a problem testing your configuration. ${data.message}`));
+                        default:
+                            return dispatch(testFailed(data.message));
+                    }
+                });
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
@@ -246,14 +236,12 @@ export function deleteConfig(id) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             if (response.ok) {
-                response.json()
-                    .then(() => {
-                        dispatch(configDeleted());
-                    });
+                response.json().then(() => {
+                    dispatch(configDeleted());
+                });
             } else {
                 handleFailureResponse(dispatch, response);
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }

@@ -61,22 +61,16 @@ public class JiraCustomEndpoint {
 
     public static final String JIRA_PLUGIN_URL = "/rest/plugins/1.0/";
 
-    private final CustomEndpointManager customEndpointManager;
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
     public JiraCustomEndpoint(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final ConfigurationAccessor configurationAccessor, final Gson gson) throws AlertException {
-        this.customEndpointManager = customEndpointManager;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
 
-        registerEndpoints();
-    }
-
-    public void registerEndpoints() throws AlertException {
         customEndpointManager.registerFunction(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, this::installJiraPlugin);
     }
 
@@ -137,7 +131,6 @@ public class JiraCustomEndpoint {
     }
 
     private String retrievePluginToken(final JiraCloudHttpClient jiraHttpClient, final String url, final String username, final String accessToken) throws IntegrationException {
-        // token=$(curl -sI -H "Accept: application/vnd.atl.plugins.installed+json" "$url?os_authType=basic" | grep upm-token | cut -d: -f2- | tr -d '[[:space:]]');
         final Request.Builder requestBuilder = createBasicRequestBuilder(url, username, accessToken);
         requestBuilder.addQueryParameter("os_authType", "basic");
         requestBuilder.method(HttpMethod.GET);
@@ -147,7 +140,6 @@ public class JiraCustomEndpoint {
     }
 
     private Request uploadJiraPlugin(final String url, final String username, final String accessToken, final String pluginToken) throws IOException {
-        // curl -X POST -v -d '{ "pluginUri" : "&lt;addon-base-url&gt;/atlassian-connect.json"}' -H "Content-type: application/vnd.atl.plugins.remote.install+json" "$url?token=$token"
         final String pluginJson = ResourceUtil.getResourceAsString(JiraCustomEndpoint.class, "/jira/jiraIssueSearchPlugin.json", Charsets.UTF_8);
         final Request.Builder requestBuilder = createBasicRequestBuilder(url, username, accessToken);
         requestBuilder.addQueryParameter("token", pluginToken);

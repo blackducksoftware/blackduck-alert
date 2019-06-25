@@ -46,7 +46,7 @@ public class JiraGlobalUIConfig extends UIConfig {
     public static final String DESCRIPTION_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira Cloud server.";
     public static final String DESCRIPTION_ADMIN_ACCESS_TOKEN = "Access token that will be used to install our plugin on your Jira Cloud server. Must have Admin permission.";
 
-    public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install plugin remotely";
+    public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
     public static final String KEY_JIRA_ADMIN_ACCESS_TOKEN = "jira.cloud.admin.access.token";
 
     public JiraGlobalUIConfig() {

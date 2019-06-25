@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const GeneralButton = ({
-                           onClick, children, className, id
-                       }) => (
+    onClick, children, className, id
+}) => (
     <button
         id={id}
         className={`btn btn-primary ${className}`}
