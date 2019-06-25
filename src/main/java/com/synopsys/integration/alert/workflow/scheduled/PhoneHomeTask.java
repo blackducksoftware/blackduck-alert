@@ -25,8 +25,7 @@ package com.synopsys.integration.alert.workflow.scheduled;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -37,20 +36,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.phonehome.PhoneHomeClient;
+import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
+import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.rest.client.IntHttpClient;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class PhoneHomeTask extends StartupScheduledTask {
@@ -60,43 +68,44 @@ public class PhoneHomeTask extends StartupScheduledTask {
     public static final String CRON_EXPRESSION = "0 0 12 1/1 * ?";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final BlackDuckProperties blackDuckProperties;
     private final AboutReader aboutReader;
     private final DefaultConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
+    private final ProxyManager proxyManager;
+    private final Gson gson;
+    private AuditUtility auditUtility;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final TaskManager taskManager) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
+        final TaskManager taskManager, final ProxyManager proxyManager, final Gson gson) {
         super(taskScheduler, TASK_NAME, taskManager);
-        this.blackDuckProperties = blackDuckProperties;
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
+        this.proxyManager = proxyManager;
+        this.gson = gson;
     }
 
     @Override
     public void runTask() {
-        final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-        if (optionalBlackDuckHttpClient.isPresent()) {
-            final String productVersion = aboutReader.getProductVersion();
-            if (AboutReader.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
-                return;
-            }
-            final ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
-            try {
-                final BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
-                final BlackDuckPhoneHomeHelper blackDuckPhoneHomeHelper = BlackDuckPhoneHomeHelper.createAsynchronousPhoneHomeHelper(blackDuckServicesFactory, phoneHomeExecutor);
+        final String productVersion = aboutReader.getProductVersion();
+        if (AboutReader.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
+            return;
+        }
 
-                final Map<String, String> metaData = getChannelMetaData();
-                final PhoneHomeResponse phoneHomeResponse = blackDuckPhoneHomeHelper.handlePhoneHome(ARTIFACT_ID, productVersion, metaData);
-                phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
-            } catch (final Exception e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                phoneHomeExecutor.shutdownNow();
-            }
+        final ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
+        try {
+            PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
+            phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
+            phoneHomeBuilder.setProductVersion(productVersion);
+            phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
+            final PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
+            final PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(phoneHomeBuilder.build());
+            phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            phoneHomeExecutor.shutdownNow();
         }
     }
 
@@ -105,24 +114,47 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return CRON_EXPRESSION;
     }
 
+    private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
+        final IntLogger intLogger = new Slf4jIntLogger(logger);
+        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        final IntHttpClient intHttpClient = new IntHttpClient(intLogger, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
+
+        final PhoneHomeClient phoneHomeClient = BlackDuckPhoneHomeHelper.createPhoneHomeClient(intLogger, intHttpClient, gson);
+        return PhoneHomeService.createAsynchronousPhoneHomeService(intLogger, phoneHomeClient, phoneHomeExecutor);
+    }
+
     private Map<String, String> getChannelMetaData() {
-        final Set<String> descriptorNames = descriptorMap.getDescriptorMap().entrySet().stream()
-                                                .filter(entry -> entry.getValue().getType() != DescriptorType.COMPONENT)
-                                                .map(Map.Entry::getKey)
-                                                .collect(Collectors.toSet());
-        final Map<String, Integer> createdSupportedChannels = new HashMap<>();
-        for (final String name : descriptorNames) {
-            try {
-                final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorName(name);
-                createdSupportedChannels.put(name, configurationModels.size());
-            } catch (final AlertDatabaseConstraintException e) {
-                logger.debug("Error reading from DB when phoning home.");
+        final Map<String, Integer> createdDistributions = new HashMap<>();
+        final String successKeyPart = "::Successes";
+        final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        for (final ConfigurationJobModel job : allJobs) {
+            for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
+                final String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+                final String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+
+                updateMetaDataCount(createdDistributions, channelName);
+                updateMetaDataCount(createdDistributions, providerName);
+
+                if (hasAuditSuccess(job.getJobId())) {
+                    updateMetaDataCount(createdDistributions, channelName + successKeyPart);
+                    updateMetaDataCount(createdDistributions, providerName + successKeyPart);
+                }
             }
+
         }
-        return createdSupportedChannels
-                   .entrySet()
+        return createdDistributions.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> String.valueOf(entry.getValue())));
+    }
+
+    private Boolean hasAuditSuccess(UUID jobId) {
+        return auditUtility.findFirstByJobId(jobId)
+                   .map(AuditJobStatusModel::getStatus)
                    .stream()
-                   .collect(Collectors.toMap(Map.Entry::getKey, (entry) -> entry.getValue().toString()));
+                   .anyMatch(status -> AuditEntryStatus.SUCCESS.getDisplayName().equals(status));
+    }
+
+    private void updateMetaDataCount(Map<String, Integer> createdDistributions, String name) {
+        final Integer channelCount = createdDistributions.getOrDefault(name, 0) + 1;
+        createdDistributions.put(name, channelCount);
     }
 
 }
