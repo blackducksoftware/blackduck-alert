@@ -30,10 +30,12 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class JiraConfigurationAction extends ConfigurationAction {
+
     @Autowired
-    public JiraConfigurationAction(final JiraGlobalTestAction globalTestAction, final JiraDistributionTestAction jiraDistributionTestAction) {
+    public JiraConfigurationAction(final JiraGlobalTestAction globalTestAction, final JiraDistributionTestAction jiraDistributionTestAction, final JiraGlobalApiAction jiraGlobalApiAction) {
         super(JiraChannel.COMPONENT_NAME);
         addGlobalTestAction(globalTestAction);
         addDistributionTestAction(jiraDistributionTestAction);
+        addGlobalApiAction(jiraGlobalApiAction);
     }
 }

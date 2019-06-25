@@ -42,4 +42,7 @@ public class AlertException extends IntegrationException {
     public AlertException(final Throwable cause) {
         super(cause);
     }
+
+    public AlertException() {
+    }
 }

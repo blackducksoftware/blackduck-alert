@@ -33,6 +33,7 @@ public class JiraDescriptor extends ChannelDescriptor {
     public static final String KEY_JIRA_URL = "jira.cloud.url";
     public static final String KEY_JIRA_USERNAME = "jira.cloud.user.name";
     public static final String KEY_JIRA_ACCESS_TOKEN = "jira.cloud.access.token";
+    public static final String KEY_JIRA_CONFIGURE_PLUGIN = "jira.cloud.configure.plugin";
 
     public static final String KEY_ADD_COMMENTS = "channel.jira.cloud.add.comments";
     public static final String KEY_ISSUE_CREATOR = "channel.jira.cloud.issue.creator";

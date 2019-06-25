@@ -81,45 +81,67 @@ public class FieldModelProcessor {
     }
 
     //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
-    public FieldModel performAfterReadAction(final FieldModel fieldModel) {
-        return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.afterGetAction(fieldModel))
-                   .orElse(fieldModel);
+    public FieldModel performAfterReadAction(final FieldModel fieldModel) throws AlertException {
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            return apiAction.afterGetAction(fieldModel);
+        }
+        return fieldModel;
     }
 
-    public FieldModel performBeforeDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel performBeforeDeleteAction(final ConfigurationModel configurationModel) throws AlertException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
-        return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.beforeDeleteAction(fieldModel))
-                   .orElse(fieldModel);
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            return apiAction.beforeDeleteAction(fieldModel);
+        }
+        return fieldModel;
     }
 
-    public void performAfterDeleteAction(final String descriptorName, final String context) {
-        retrieveApiAction(descriptorName, context).ifPresent(apiAction -> apiAction.afterDeleteAction(descriptorName, context));
+    public void performAfterDeleteAction(final String descriptorName, final String context) throws AlertException {
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(descriptorName, context);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            apiAction.afterDeleteAction(descriptorName, context);
+        }
     }
 
-    public FieldModel performBeforeSaveAction(final FieldModel fieldModel) {
-        return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.beforeSaveAction(fieldModel))
-                   .orElse(fieldModel);
+    public FieldModel performBeforeSaveAction(final FieldModel fieldModel) throws AlertException {
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            return apiAction.beforeSaveAction(fieldModel);
+        }
+        return fieldModel;
     }
 
-    public FieldModel performAfterSaveAction(final FieldModel fieldModel) {
-        return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.afterSaveAction(fieldModel))
-                   .orElse(fieldModel);
+    public FieldModel performAfterSaveAction(final FieldModel fieldModel) throws AlertException {
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            return apiAction.afterSaveAction(fieldModel);
+        }
+        return fieldModel;
     }
 
-    public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) {
-        return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.beforeUpdateAction(fieldModel))
-                   .orElse(fieldModel);
+    public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) throws AlertException {
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            return apiAction.beforeUpdateAction(fieldModel);
+        }
+        return fieldModel;
     }
 
-    public FieldModel performAfterUpdateAction(final FieldModel fieldModel) {
-        return retrieveApiAction(fieldModel)
-                   .map(apiAction -> apiAction.afterUpdateAction(fieldModel))
-                   .orElse(fieldModel);
+    public FieldModel performAfterUpdateAction(final FieldModel fieldModel) throws AlertException {
+        final Optional<ApiAction> optionalApiAction = retrieveApiAction(fieldModel);
+        if (optionalApiAction.isPresent()) {
+            final ApiAction apiAction = optionalApiAction.get();
+            return apiAction.afterUpdateAction(fieldModel);
+        }
+        return fieldModel;
     }
 
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {

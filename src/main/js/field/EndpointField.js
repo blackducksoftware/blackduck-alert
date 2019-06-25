@@ -1,0 +1,149 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import GeneralButton from 'field/input/GeneralButton';
+import PopUp from 'field/PopUp';
+import LabeledField from 'field/LabeledField';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import { connect } from 'react-redux';
+
+class EndpointField extends Component {
+    constructor(props) {
+        super(props);
+
+        this.onSendClick = this.onSendClick.bind(this);
+        this.flipShowModal = this.flipShowModal.bind(this);
+
+        this.state = {
+            showModal: false,
+            fieldError: this.props.errorValue
+        };
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { errorValue } = prevProps;
+        const currentError = this.props.errorValue;
+        if (errorValue !== currentError) {
+            this.setState({
+                fieldError: currentError
+            });
+        }
+    }
+
+    onSendClick(popupData) {
+        this.setState({
+            fieldError: this.props.errorValue
+        });
+        const {
+            fieldKey, csrfToken, onChange, currentConfig, endpoint
+        } = this.props;
+        const mergedData = FieldModelUtilities.combineFieldModels(currentConfig, popupData);
+
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
+        request.then((response) => {
+            if (response.ok) {
+                const target = {
+                    name: [fieldKey],
+                    checked: true,
+                    type: 'checkbox'
+                };
+                onChange({ target });
+            } else {
+                response.json()
+                    .then((data) => {
+                        const target = {
+                            name: [fieldKey],
+                            checked: false,
+                            type: 'checkbox'
+                        };
+                        onChange({ target });
+                        this.setState({
+                            fieldError: data.message
+                        });
+                    });
+            }
+        });
+    }
+
+    flipShowModal() {
+        const { fields } = this.props;
+        if (fields.length > 0) {
+            this.setState({
+                showModal: !this.state.showModal
+            });
+        } else {
+            this.onSendClick({});
+        }
+    }
+
+    render() {
+        const {
+            buttonLabel, fields, value, fieldKey, name, successBox
+        } = this.props;
+
+        const endpointField = (
+            <div className="d-inline-flex p-2 col-sm-8">
+                <GeneralButton id={fieldKey} onClick={this.flipShowModal}>{buttonLabel}</GeneralButton>
+                {successBox &&
+                <div className="d-inline-flex p-2 checkbox">
+                    <input
+                        className="form-control"
+                        id={`${fieldKey}-confirmation`}
+                        type="checkbox"
+                        name={name}
+                        checked={value}
+                        readOnly
+                    />
+                </div>
+                }
+            </div>
+        );
+
+        return (
+            <div>
+                <LabeledField
+                    field={endpointField}
+                    {...this.props}
+                    errorName={fieldKey}
+                    errorValue={this.state.fieldError}
+                />
+                <PopUp
+                    onCancel={this.flipShowModal}
+                    fields={fields}
+                    onOk={this.onSendClick}
+                    title={buttonLabel}
+                    show={this.state.showModal}
+                    okLabel="Send"
+                />
+            </div>
+
+        );
+    }
+}
+
+EndpointField.propTypes = {
+    endpoint: PropTypes.string.isRequired,
+    buttonLabel: PropTypes.string.isRequired,
+    currentConfig: PropTypes.object.isRequired,
+    fieldKey: PropTypes.string.isRequired,
+    csrfToken: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    fields: PropTypes.array,
+    value: PropTypes.bool,
+    name: PropTypes.string,
+    successBox: PropTypes.bool.isRequired,
+    errorValue: PropTypes.string
+};
+
+EndpointField.defaultProps = {
+    value: false,
+    fields: [],
+    name: '',
+    errorValue: null
+};
+
+const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken
+});
+
+export default connect(mapStateToProps, null)(EndpointField);

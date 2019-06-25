@@ -22,34 +22,35 @@
  */
 package com.synopsys.integration.alert.common.action;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class ApiAction {
 
-    public FieldModel beforeSaveAction(final FieldModel fieldModel) {
+    public FieldModel beforeSaveAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
-    public FieldModel afterSaveAction(final FieldModel fieldModel) {
+    public FieldModel afterSaveAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
-    public FieldModel beforeUpdateAction(final FieldModel fieldModel) {
+    public FieldModel beforeUpdateAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
-    public FieldModel afterUpdateAction(final FieldModel fieldModel) {
+    public FieldModel afterUpdateAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
-    public FieldModel beforeDeleteAction(final FieldModel fieldModel) {
+    public FieldModel beforeDeleteAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
-    public void afterDeleteAction(final String descriptorName, final String context) {
+    public void afterDeleteAction(final String descriptorName, final String context) throws AlertException {
     }
 
-    public FieldModel afterGetAction(final FieldModel fieldModel) {
+    public FieldModel afterGetAction(final FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 

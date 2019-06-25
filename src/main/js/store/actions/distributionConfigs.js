@@ -83,21 +83,20 @@ function jobError(type, message, errors) {
 }
 
 function handleFailureResponse(type, dispatch, response) {
-    response.json()
-        .then((data) => {
-            switch (response.status) {
-                case 400:
-                    return dispatch(jobError(type, data.message, data.errors));
-                case 401:
-                    dispatch(jobError(type, data.message, data.errors));
-                    return dispatch(verifyLoginByStatus(response.status));
-                case 412:
-                    return dispatch(jobError(type, data.message, data.errors));
-                default: {
-                    return dispatch(jobError(type, data.message, null));
-                }
+    response.json().then((data) => {
+        switch (response.status) {
+            case 400:
+                return dispatch(jobError(type, data.message, data.errors));
+            case 401:
+                dispatch(jobError(type, data.message, data.errors));
+                return dispatch(verifyLoginByStatus(response.status));
+            case 412:
+                return dispatch(jobError(type, data.message, data.errors));
+            default: {
+                return dispatch(jobError(type, data.message, null));
             }
-        });
+        }
+    });
 }
 
 export function getDistributionJob(jobId) {

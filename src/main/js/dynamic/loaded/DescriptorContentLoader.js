@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import AuditPage from 'dynamic/loading/audit/AuditPage';
+import AuditPage from 'dynamic/loaded/audit/AuditPage';
 
 const ComponentRegistry = {
     'audit.AuditPage': AuditPage

@@ -12,7 +12,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 class SetupPage extends Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
+
         this.handleSubmit = this.handleSubmit.bind(this);
 
         this.state = {
@@ -42,10 +42,6 @@ class SetupPage extends Component {
         }
     }
 
-    handleChange({ target }) {
-        FieldModelUtilities.handleChange(this, target, 'settingsData');
-    }
-
     handleSubmit(evt) {
         evt.preventDefault();
         this.props.saveSettings(this.state.settingsData);
@@ -61,8 +57,20 @@ class SetupPage extends Component {
                 <div className="settingsContainer">
                     <div className="settingsBox">
                         <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
-                        <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit} noValidate>
-                            <FieldsPanel descriptorFields={fields} currentConfig={settingsData} fieldErrors={this.props.fieldErrors} handleChange={this.handleChange} />
+                        <form
+                            method="POST"
+                            className="form-horizontal loginForm"
+                            onSubmit={this.handleSubmit}
+                            noValidate
+                        >
+                            <FieldsPanel
+                                descriptorFields={fields}
+                                currentConfig={settingsData}
+                                fieldErrors={this.props.fieldErrors}
+                                handleChange={this.handleChange}
+                                self={this}
+                                stateName="settingsData"
+                            />
                             <ConfigButtons includeSave type="submit" performingAction={saving} isFixed={false} />
                         </form>
                     </div>

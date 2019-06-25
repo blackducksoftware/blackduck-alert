@@ -7,7 +7,7 @@ import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
-import AuditDetails from 'dynamic/loading/audit/Details';
+import AuditDetails from 'dynamic/loaded/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
@@ -280,8 +280,11 @@ class AuditPage extends Component {
 
     resendButton(cell, row) {
         if (this.isResendAllowed() && row.content) {
-            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
-                                               buttonText="Re-send" />);
+            return (<RefreshTableCellFormatter
+                handleButtonClicked={this.onResendClick}
+                currentRowSelected={row}
+                buttonText="Re-send"
+            />);
         }
         return (<div className="jobIconButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
     }
@@ -302,8 +305,12 @@ class AuditPage extends Component {
         return (
             <ButtonGroup>
                 {!this.props.autoRefresh &&
-                <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton"
-                     onClick={this.refreshAuditEntries}>
+                <div
+                    role="button"
+                    tabIndex={0}
+                    className="btn btn-info react-bs-table-add-btn tableButton"
+                    onClick={this.refreshAuditEntries}
+                >
                     <span>
                         <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
                         Refresh
@@ -402,14 +409,34 @@ class AuditPage extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="provider" dataSort columnClassName="tableCell"
-                                           dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell"
-                                           dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
-                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
-                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
-                        <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell"
-                                           dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="provider"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={this.providerColumnDataFormat}
+                        >Provider
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="notificationType"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={this.notificationTypeDataFormat}
+                        >Notification
+                            Types
+                        </TableHeaderColumn>
+                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time
+                            Retrieved
+                        </TableHeaderColumn>
+                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last
+                            Sent
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="overallStatus"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={this.statusColumnDataFormat}
+                        >Status
+                        </TableHeaderColumn>
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>

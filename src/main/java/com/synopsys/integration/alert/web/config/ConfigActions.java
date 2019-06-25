@@ -125,7 +125,7 @@ public class ConfigActions {
         }
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
+    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
         final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         final String descriptorName = modifiedFieldModel.getDescriptorName();
@@ -161,7 +161,7 @@ public class ConfigActions {
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
 
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
         final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);

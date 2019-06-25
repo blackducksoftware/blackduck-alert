@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -49,13 +50,13 @@ public class PolarisGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(final FieldModel fieldModel) {
+    public FieldModel afterSaveAction(final FieldModel fieldModel) throws AlertException {
         handleNewOrUpdatedConfig();
         return super.afterSaveAction(fieldModel);
     }
 
     @Override
-    public FieldModel afterUpdateAction(final FieldModel fieldModel) {
+    public FieldModel afterUpdateAction(final FieldModel fieldModel) throws AlertException {
         handleNewOrUpdatedConfig();
         return super.afterUpdateAction(fieldModel);
     }

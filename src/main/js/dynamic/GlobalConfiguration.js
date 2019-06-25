@@ -16,7 +16,6 @@ import ChannelTestModal from 'dynamic/ChannelTestModal';
 class GlobalConfiguration extends React.Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
         this.handleTestCancel = this.handleTestCancel.bind(this);
@@ -50,10 +49,6 @@ class GlobalConfiguration extends React.Component {
                 currentConfig: fieldModel
             });
         }
-    }
-
-    handleChange({ target }) {
-        FieldModelUtilities.handleChange(this, target, 'currentConfig');
     }
 
     handleTest() {
@@ -113,6 +108,8 @@ class GlobalConfiguration extends React.Component {
                             currentConfig={currentConfig}
                             fieldErrors={this.props.fieldErrors}
                             handleChange={this.handleChange}
+                            self={this}
+                            stateName="currentConfig"
                         />
                     </div>
                     <ConfigButtons
