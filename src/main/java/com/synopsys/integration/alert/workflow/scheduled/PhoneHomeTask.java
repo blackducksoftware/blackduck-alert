@@ -25,11 +25,13 @@ package com.synopsys.integration.alert.workflow.scheduled;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,6 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.ProxyManager;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
@@ -50,7 +51,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckRegistrationService;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
@@ -70,20 +76,21 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
     private final DefaultConfigurationAccessor configurationAccessor;
-    private final DescriptorMap descriptorMap;
     private final ProxyManager proxyManager;
     private final Gson gson;
-    private AuditUtility auditUtility;
+    private final AuditUtility auditUtility;
+    private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final TaskManager taskManager, final ProxyManager proxyManager, final Gson gson) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor,
+        final TaskManager taskManager, final ProxyManager proxyManager, final Gson gson, final AuditUtility auditUtility, final BlackDuckProperties blackDuckProperties) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
-        this.descriptorMap = descriptorMap;
         this.proxyManager = proxyManager;
         this.gson = gson;
+        this.auditUtility = auditUtility;
+        this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
@@ -100,7 +107,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             phoneHomeBuilder.setProductVersion(productVersion);
             phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
             final PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-            final PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(phoneHomeBuilder.build());
+            final PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder));
             phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
@@ -129,6 +136,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
         for (final ConfigurationJobModel job : allJobs) {
             for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
+                // We can return an Empty string here as these configurations should always have a value associated. If these values don't exist, some other bigger issue occurred somewhere.
                 final String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
                 final String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
 
@@ -157,4 +165,29 @@ public class PhoneHomeTask extends StartupScheduledTask {
         createdDistributions.put(name, channelCount);
     }
 
+    // TODO Provider specific data is being sent here. Either change what data we display in Google or abstract how this data is retrieved.
+    private PhoneHomeRequestBody addBDDataAndBuild(PhoneHomeRequestBody.Builder phoneHomeBuilder) {
+        String registrationId = null;
+        String blackDuckUrl = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
+        try {
+            final Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
+            if (blackDuckHttpClientOptional.isPresent()) {
+                final BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
+                final BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
+                registrationId = blackDuckRegistrationService.getRegistrationId();
+                blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.Builder.UNKNOWN_ID);
+            }
+            // We need to wrap this because this will most likely fail unless they are running as an admin
+
+        } catch (IntegrationException e) {
+        }
+        // We must check if the reg id is blank because of an edge case in which Black Duck can authenticate (while the webserver is coming up) without registration
+        if (StringUtils.isBlank(registrationId)) {
+            registrationId = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
+        }
+        phoneHomeBuilder.setCustomerId(registrationId);
+        phoneHomeBuilder.setHostName(blackDuckUrl);
+        return phoneHomeBuilder.build();
+    }
 }
