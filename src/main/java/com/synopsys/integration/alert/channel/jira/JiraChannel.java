@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
+import com.synopsys.integration.alert.channel.jira.util.JiraChannelFormatHelper;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -195,9 +196,10 @@ public class JiraChannel extends DistributionChannel {
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(final ComponentItem componentItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId,
         final String provider) {
+        final JiraChannelFormatHelper jiraChannelFormatHelper = new JiraChannelFormatHelper();
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        final String title = createTitle(provider, commonTopic, subTopic, componentItem);
-        final String description = createDescription(commonTopic, subTopic, componentItem, provider);
+        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, componentItem.getComponentKeys());
+        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItem, provider);
         fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
         fieldsBuilder.setIssueType(issueType);
@@ -206,95 +208,12 @@ public class JiraChannel extends DistributionChannel {
         return fieldsBuilder;
     }
 
-    private String createTitle(final String provider, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem) {
-        final StringBuilder title = new StringBuilder();
-        title.append("Alert: Provider|");
-        title.append(provider);
-        title.append(", ");
-        title.append(commonTopic.getName());
-        title.append("|");
-        title.append(commonTopic.getValue());
-        title.append(", ");
-
-        if (subTopic.isPresent()) {
-            final LinkableItem subTopicItem = subTopic.get();
-            title.append(subTopicItem.getName());
-            title.append("|");
-            title.append(subTopicItem.getValue());
-            title.append(", ");
-        }
-
-        // FIXME this needs to be changed to contain appropriate values from the category item instead of just the key.
-        final String categoryKey = componentItem.getComponentKeys().getDeepKey();
-        title.append(categoryKey);
-        return title.toString();
-    }
-
-    private String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem, final String providerName) {
-        final StringBuilder description = new StringBuilder();
-        description.append(commonTopic.getName());
-        description.append(":");
-        description.append(commonTopic.getValue());
-        description.append("\n");
-        if (subTopic.isPresent()) {
-            final LinkableItem linkableItem = subTopic.get();
-            description.append(linkableItem.getName());
-            description.append(": ");
-            final String value = linkableItem.getValue();
-            final Optional<String> optionalUrl = linkableItem.getUrl();
-            if (optionalUrl.isPresent()) {
-                // FIXME the URL is not properly being created
-                final String url = optionalUrl.get();
-                description.append("[");
-                description.append(value);
-                description.append("](");
-                description.append(url);
-                description.append(")");
-            } else {
-                description.append(value);
-            }
-            description.append("\n");
-        }
-        description.append(createDescriptionItems(componentItem));
-
-        description.append("\n------------------- Generated key for Alert. DO NOT DELETE OR EDIT -------------------\nGenerated key: ");
-        description.append(createTrackingKey(componentItem, providerName));
-        description.append("\n----------------------------------------------------------------------------------------");
-
-        return description.toString();
-    }
-
-    private String createDescriptionItems(final ComponentItem componentItem) {
-        final StringBuilder description = new StringBuilder();
-        final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
-
-        for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
-            final String itemName = entry.getKey();
-            final List<String> itemValues = entry.getValue().stream().map(LinkableItem::getValue).collect(Collectors.toList());
-            description.append(itemName);
-            description.append(":");
-            if (itemValues.size() > 1) {
-                for (final String value : itemValues) {
-                    description.append("[");
-                    description.append(value);
-                    description.append("]");
-                }
-            } else {
-                for (final String value : itemValues) {
-                    description.append(value);
-                }
-            }
-            description.append("\n");
-        }
-
-        return description.toString();
-    }
-
     private void addCreationComment(final IssueService issueService, final String issueKey) throws IntegrationException {
         final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "This issue has been created by Alert.");
         issueService.addComment(issueCommentRequestModel);
     }
 
+    // FIXME use the deep key from ComponentKeys
     private String createTrackingKey(final ComponentItem categoryItem, final String providerName) {
         /*
          FIXME category key won't work as tracking key (Policy override generates a different key than policy violation and thus won't update issues correctly).
@@ -312,4 +231,5 @@ public class JiraChannel extends DistributionChannel {
         final String concatenatedKeys = issueKeys.stream().collect(Collectors.joining(","));
         return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
     }
+
 }

@@ -42,8 +42,12 @@ public class JiraIssuePropertyHelper {
         this.issuePropertyService = issuePropertyService;
     }
 
-    public Optional<IssueSearchResponseModel> findIssues(String category, String uniqueId) throws IntegrationException {
+    public Optional<IssueSearchResponseModel> findIssues(String provider, String category, String uniqueId) throws IntegrationException {
         final StringBuilder jqlBuilder = new StringBuilder();
+        if (StringUtils.isNotBlank(provider)) {
+            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider));
+            jqlBuilder.append(StringUtils.SPACE);
+        }
         if (StringUtils.isNotBlank(category)) {
             jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category));
             jqlBuilder.append(StringUtils.SPACE);
@@ -60,8 +64,8 @@ public class JiraIssuePropertyHelper {
         return Optional.empty();
     }
 
-    public void addPropertiesToIssue(String issueKey, String category, String uniqueId) throws IntegrationException {
-        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(category, uniqueId);
+    public void addPropertiesToIssue(String issueKey, String provider, String category, String uniqueId) throws IntegrationException {
+        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(provider, category, uniqueId);
         addPropertiesToIssue(issueKey, properties);
     }
 

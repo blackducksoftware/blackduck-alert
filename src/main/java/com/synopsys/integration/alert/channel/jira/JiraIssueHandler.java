@@ -20,35 +20,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.model;
+package com.synopsys.integration.alert.channel.jira;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-
-public class AlertJiraIssueProperties extends AlertSerializableModel {
-    private String provider;
-    private String category;
-    private String uniqueId;
-
-    public AlertJiraIssueProperties() {
-        // For serialization
-    }
-
-    public AlertJiraIssueProperties(final String provider, final String category, final String uniqueId) {
-        this.provider = provider;
-        this.category = category;
-        this.uniqueId = uniqueId;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
+public class JiraIssueHandler {
 
 }

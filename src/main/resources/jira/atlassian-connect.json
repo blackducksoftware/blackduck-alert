@@ -24,6 +24,10 @@
             "propertyKey": "com-synopsys-integration-alert",
             "extractions": [
               {
+                "objectName": "provider",
+                "type": "text"
+              },
+              {
                 "objectName": "category",
                 "type": "text"
               },
