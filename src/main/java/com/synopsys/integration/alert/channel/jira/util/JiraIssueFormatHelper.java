@@ -44,6 +44,7 @@ public class JiraIssueFormatHelper {
 
         if (subTopic.isPresent()) {
             final LinkableItem subTopicItem = subTopic.get();
+            title.append(", ");
             title.append(subTopicItem.getName());
             title.append(": ");
             title.append(subTopicItem.getValue());
@@ -64,11 +65,10 @@ public class JiraIssueFormatHelper {
     public String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem, final String providerName) {
         final StringBuilder description = new StringBuilder();
         description.append("Provider: ");
-        description.append(":");
         description.append(providerName);
         description.append("\n");
         description.append(commonTopic.getName());
-        description.append(":");
+        description.append(": ");
         description.append(commonTopic.getValue());
         description.append("\n");
         if (subTopic.isPresent()) {
@@ -78,7 +78,7 @@ public class JiraIssueFormatHelper {
             final String value = linkableItem.getValue();
             final Optional<String> optionalUrl = linkableItem.getUrl();
             if (optionalUrl.isPresent()) {
-                // FIXME the URL is not properly being created
+                // FIXME the URL is not properly being created in Jira Cloud
                 final String url = optionalUrl.get();
                 description.append("[");
                 description.append(value);
@@ -106,7 +106,7 @@ public class JiraIssueFormatHelper {
                                                 .map(LinkableItem::getValue)
                                                 .collect(Collectors.toList());
             description.append(itemName);
-            description.append(":");
+            description.append(": ");
             if (itemValues.size() > 1) {
                 for (final String value : itemValues) {
                     description.append("[");

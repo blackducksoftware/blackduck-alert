@@ -114,7 +114,7 @@ public class JiraIssueHandler {
             issueKeys.addAll(issueKeysForMessage);
         }
 
-        return createSuccessMessage(issueKeys, jiraProperties.getUrl());
+        return createStatusMessage(issueKeys, jiraProperties.getUrl());
     }
 
     private Set<String> createOrUpdateIssuesPerComponent(
@@ -242,7 +242,10 @@ public class JiraIssueHandler {
         return keyBuilder.toString();
     }
 
-    private String createSuccessMessage(Collection<String> issueKeys, String jiraUrl) {
+    private String createStatusMessage(Collection<String> issueKeys, String jiraUrl) {
+        if (issueKeys.isEmpty()) {
+            return "Did not create any Jira Cloud issues.";
+        }
         final String concatenatedKeys = issueKeys.stream().collect(Collectors.joining(","));
         return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
     }

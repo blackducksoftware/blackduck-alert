@@ -42,6 +42,7 @@ public class JiraIssuePropertyHelper {
         this.issuePropertyService = issuePropertyService;
     }
 
+    // TODO we probably want to add lots of properties for search granularity
     public Optional<IssueSearchResponseModel> findIssues(String provider, String category, String uniqueId) throws IntegrationException {
         final StringBuilder jqlBuilder = new StringBuilder();
         if (StringUtils.isNotBlank(provider)) {
@@ -49,10 +50,12 @@ public class JiraIssuePropertyHelper {
             jqlBuilder.append(StringUtils.SPACE);
         }
         if (StringUtils.isNotBlank(category)) {
+            jqlBuilder.append("AND ");
             jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category));
             jqlBuilder.append(StringUtils.SPACE);
         }
         if (StringUtils.isNotBlank(uniqueId)) {
+            jqlBuilder.append("AND ");
             jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_UNIQUE_ID, uniqueId));
         }
 
