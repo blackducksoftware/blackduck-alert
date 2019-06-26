@@ -123,7 +123,7 @@ public class JiraCustomEndpoint {
                            .orElse("");
 
             } catch (final AlertDatabaseConstraintException e) {
-                logger.error("Was unable to retrieve existing Jira configuration.");
+                logger.error("Unable to retrieve existing Jira configuration.");
             }
         }
 
@@ -148,7 +148,7 @@ public class JiraCustomEndpoint {
                 configurationAccessor.createConfiguration(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, List.of(configurePluginField));
             }
         } catch (final AlertDatabaseConstraintException e) {
-            logger.error("Was unable to retrieve Global Jira Cloud data from the Database.");
+            logger.error("Unable to retrieve Global Jira Cloud data from the Database.");
         }
     }
 
