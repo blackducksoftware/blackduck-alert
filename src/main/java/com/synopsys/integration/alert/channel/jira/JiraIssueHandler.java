@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,13 +37,12 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
-import com.synopsys.integration.alert.channel.jira.util.JiraChannelFormatHelper;
+import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -87,7 +87,7 @@ public class JiraIssueHandler {
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
     }
 
-    public String handleMessage(FieldAccessor fieldAccessor, MessageContentGroup content) throws IntegrationException {
+    public String createOrUpdateIssues(FieldAccessor fieldAccessor, MessageContentGroup content) throws IntegrationException {
         final String projectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse("");
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(projectName);
         final ProjectComponent projectComponent = projectsResponseModel.getProjects()
@@ -109,59 +109,76 @@ public class JiraIssueHandler {
         final LinkableItem commonTopic = content.getCommonTopic();
         for (final ProviderMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
-            for (final ComponentItem componentItem : messageContent.getComponentItems()) {
-                final ItemOperation operation = componentItem.getOperation();
-                final String trackingMessage = createTrackingKey(componentItem, providerName);
-                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(issueSearchService, projectKey, issueType, trackingMessage);
-                if (existingIssueComponent.isPresent()) {
-                    final IssueComponent issueComponent = existingIssueComponent.get();
-                    if (ItemOperation.DELETE.equals(operation)) {
-                        final Optional<String> resolveTransition = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
-                        final String issueKey = transitionIssue(issueService, issueComponent, resolveTransition);
-                        issueKeys.add(issueKey);
-                        if (commentOnIssue) {
-                            // FIXME update this code to be provider specific and provider useful information.
-                            final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "DELETED PLACEHOLDER TEXT");
-                            issueService.addComment(issueCommentRequestModel);
-                        }
-                    } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                        final Optional<String> openTransition = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
-                        final String issueKey = transitionIssue(issueService, issueComponent, openTransition);
-                        issueKeys.add(issueKey);
-                        if (commentOnIssue) {
-                            // FIXME update this code to be provider specific and provider useful information.
-                            final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "ADDED/UPDATED PLACEHOLDER TEXT");
-                            issueService.addComment(issueCommentRequestModel);
-                        }
-                    }
-                } else {
-                    if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                        final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-                        final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(componentItem, commonTopic, subTopic, issueType, projectId, providerName);
-                        final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
-                        if (issue == null || StringUtils.isBlank(issue.getKey())) {
-                            throw new AlertException("There was an problem when creating this issue.");
-                        }
-                        final String issueKey = issue.getKey();
-                        addCreationComment(issueService, issueKey);
-                        issueKeys.add(issueKey);
-                    } else {
-                        logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingMessage);
-                    }
-                }
-            }
+
+            final Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(providerName, commonTopic, subTopic, fieldAccessor, messageContent.getComponentItems(), issueType, projectName, projectId, commentOnIssue);
+            issueKeys.addAll(issueKeysForMessage);
         }
+
         return createSuccessMessage(issueKeys, jiraProperties.getUrl());
     }
 
-    private Optional<IssueComponent> retrieveExistingIssue(final IssueSearchService issueSearchService, final String projectKey, final String issueType, final String itemToSearchFor) throws IntegrationException {
-        final IssueSearchResponseModel issuesByDescription = issueSearchService.findIssuesByDescription(projectKey, issueType, itemToSearchFor);
-        return issuesByDescription.getIssues().stream().findFirst();
+    private Set<String> createOrUpdateIssuesPerComponent(
+        String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, FieldAccessor fieldAccessor, Collection<ComponentItem> componentItems, String issueType, String projectName, String projectId, Boolean commentOnIssue)
+        throws IntegrationException {
+        final Set<String> issueKeys = new HashSet<>();
+
+        for (final ComponentItem componentItem : componentItems) {
+            final ItemOperation operation = componentItem.getOperation();
+            final String category = componentItem.getCategory();
+            final String trackingKey = createTrackingKey(topic, subTopic, componentItem);
+
+            final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, category, trackingKey);
+            if (existingIssueComponent.isPresent()) {
+                final IssueComponent issueComponent = existingIssueComponent.get();
+                if (ItemOperation.DELETE.equals(operation)) {
+                    final Optional<String> resolveTransition = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+                    final String issueKey = transitionIssue(issueService, issueComponent, resolveTransition);
+                    issueKeys.add(issueKey);
+                    if (commentOnIssue) {
+                        // FIXME update this code to be provider specific and provider useful information.
+                        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "DELETED PLACEHOLDER TEXT");
+                        issueService.addComment(issueCommentRequestModel);
+                    }
+                } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                    final Optional<String> openTransition = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
+                    final String issueKey = transitionIssue(issueService, issueComponent, openTransition);
+                    issueKeys.add(issueKey);
+                    if (commentOnIssue) {
+                        // FIXME update this code to be provider specific and provider useful information.
+                        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "ADDED/UPDATED PLACEHOLDER TEXT");
+                        issueService.addComment(issueCommentRequestModel);
+                    }
+                }
+            } else {
+                if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
+                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(componentItem, topic, subTopic, issueType, projectId, providerName);
+                    final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
+                    if (issue == null || StringUtils.isBlank(issue.getKey())) {
+                        throw new AlertException("There was an problem when creating this issue.");
+                    }
+                    final String issueKey = issue.getKey();
+                    jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, providerName, category, trackingKey);
+                    addCreationComment(issueService, issueKey);
+                    issueKeys.add(issueKey);
+                } else {
+                    logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
+                }
+            }
+        }
+        return issueKeys;
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(final ComponentItem componentItem, final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final String issueType, final String projectId,
-        final String provider) {
-        final JiraChannelFormatHelper jiraChannelFormatHelper = new JiraChannelFormatHelper();
+    private Optional<IssueComponent> retrieveExistingIssue(String provider, String category, String alertIssueUniqueId) throws IntegrationException {
+        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(provider, category, alertIssueUniqueId);
+        return optionalIssueSearchResponse
+                   .map(IssueSearchResponseModel::getIssues)
+                   .map(List::stream)
+                   .flatMap(Stream::findFirst);
+    }
+
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem componentItem, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String issueType, String projectId, String provider) {
+        final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, componentItem.getComponentKeys());
         final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItem, provider);
@@ -173,7 +190,7 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
-    private String transitionIssue(final IssueService issueService, final IssueComponent issueComponent, final Optional<String> optionalTransition) throws IntegrationException {
+    private String transitionIssue(IssueService issueService, IssueComponent issueComponent, Optional<String> optionalTransition) throws IntegrationException {
         final String key = issueComponent.getKey();
         if (optionalTransition.isPresent()) {
             final TransitionsResponseModel transitions = issueService.getTransitions(key);
@@ -195,26 +212,37 @@ public class JiraIssueHandler {
         return key;
     }
 
-    private void addCreationComment(final IssueService issueService, final String issueKey) throws IntegrationException {
+    private void addCreationComment(IssueService issueService, String issueKey) throws IntegrationException {
         final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "This issue has been created by Alert.");
         issueService.addComment(issueCommentRequestModel);
     }
 
-    // FIXME use the deep key from ComponentKeys
-    private String createTrackingKey(final ComponentItem categoryItem, final String providerName) {
-        /*
-         FIXME category key won't work as tracking key (Policy override generates a different key than policy violation and thus won't update issues correctly).
-          provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version_Policy Overridden by_System Administrator'
-          vs
-          provider_blackduck:1.2.1_Apache Commons FileUpload_Component_Component Version
-        */
-        final ComponentKeys categoryKey = categoryItem.getComponentKeys();
-        final String operationName = categoryItem.getOperation().name();
-        final String operationRemovedKey = categoryKey.getDeepKey().replace("_" + operationName, "");
-        return String.format("%s:%s", providerName, operationRemovedKey);
+    private String createTrackingKey(LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem) {
+        StringBuilder keyBuilder = new StringBuilder();
+        keyBuilder.append(topic.getName());
+        keyBuilder.append(topic.getValue());
+        subTopic.ifPresent(st -> {
+            keyBuilder.append(st.getName());
+            keyBuilder.append(st.getValue());
+        });
+
+        final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
+        for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
+            if (componentAttributeList.size() == 1) {
+                componentAttributeList
+                    .stream()
+                    .findFirst()
+                    .filter(LinkableItem::isPartOfKey)
+                    .ifPresent(item -> {
+                        keyBuilder.append(item.getName());
+                        keyBuilder.append(item.getValue());
+                    });
+            }
+        }
+        return keyBuilder.toString();
     }
 
-    private String createSuccessMessage(final Collection<String> issueKeys, final String jiraUrl) {
+    private String createSuccessMessage(Collection<String> issueKeys, String jiraUrl) {
         final String concatenatedKeys = issueKeys.stream().collect(Collectors.joining(","));
         return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
     }

@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-public class JiraChannelFormatHelper {
+public class JiraIssueFormatHelper {
 
     public String createTitle(final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentKeys componentKeys) {
         final StringBuilder title = new StringBuilder();
@@ -101,7 +101,10 @@ public class JiraChannelFormatHelper {
 
         for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
             final String itemName = entry.getKey();
-            final List<String> itemValues = entry.getValue().stream().map(LinkableItem::getValue).collect(Collectors.toList());
+            final List<String> itemValues = entry.getValue()
+                                                .stream()
+                                                .map(LinkableItem::getValue)
+                                                .collect(Collectors.toList());
             description.append(itemName);
             description.append(":");
             if (itemValues.size() > 1) {

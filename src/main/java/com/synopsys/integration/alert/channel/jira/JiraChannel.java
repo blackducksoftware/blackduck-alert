@@ -68,7 +68,7 @@ public class JiraChannel extends DistributionChannel {
         final ProjectService projectService = jiraCloudServiceFactory.createProjectService();
 
         final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties);
-        return jiraIssueHandler.handleMessage(fieldAccessor, content);
+        return jiraIssueHandler.createOrUpdateIssues(fieldAccessor, content);
     }
 
     @Override
