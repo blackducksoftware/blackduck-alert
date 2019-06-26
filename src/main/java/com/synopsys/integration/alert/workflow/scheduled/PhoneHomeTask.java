@@ -52,9 +52,12 @@ import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.response.CurrentVersionView;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckRegistrationService;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -63,6 +66,7 @@ import com.synopsys.integration.phonehome.PhoneHomeClient;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
 import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.phonehome.enums.ProductIdEnum;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -104,11 +108,14 @@ public class PhoneHomeTask extends StartupScheduledTask {
         try {
             PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
             phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
-            phoneHomeBuilder.setProductVersion(productVersion);
+            phoneHomeBuilder.setArtifactVersion(productVersion);
             phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
             final PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
             final PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder));
-            phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
+            final Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
+            if (!taskSucceeded) {
+                logger.debug("Phone home task timed out and did not send any results.");
+            }
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
         } finally {
@@ -136,9 +143,13 @@ public class PhoneHomeTask extends StartupScheduledTask {
         final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
         for (final ConfigurationJobModel job : allJobs) {
             for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
-                // We can return an Empty string here as these configurations should always have a value associated. If these values don't exist, some other bigger issue occurred somewhere.
                 final String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
                 final String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+
+                if (StringUtils.isBlank(channelName) || StringUtils.isBlank(providerName)) {
+                    // We want to specifically get the channel configuration here and the only way to determine that is if it has these fields.
+                    continue;
+                }
 
                 updateMetaDataCount(createdDistributions, channelName);
                 updateMetaDataCount(createdDistributions, providerName);
@@ -169,12 +180,16 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private PhoneHomeRequestBody addBDDataAndBuild(PhoneHomeRequestBody.Builder phoneHomeBuilder) {
         String registrationId = null;
         String blackDuckUrl = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
+        String blackDuckVersion = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         try {
             final Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
             if (blackDuckHttpClientOptional.isPresent()) {
                 final BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
                 final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 final BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
+                final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+                final CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
+                blackDuckVersion = currentVersionView.getVersion();
                 registrationId = blackDuckRegistrationService.getRegistrationId();
                 blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.Builder.UNKNOWN_ID);
             }
@@ -186,8 +201,11 @@ public class PhoneHomeTask extends StartupScheduledTask {
         if (StringUtils.isBlank(registrationId)) {
             registrationId = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         }
+        phoneHomeBuilder.setProductId(ProductIdEnum.BLACK_DUCK);
         phoneHomeBuilder.setCustomerId(registrationId);
         phoneHomeBuilder.setHostName(blackDuckUrl);
+        phoneHomeBuilder.setProductVersion(blackDuckVersion);
         return phoneHomeBuilder.build();
     }
+
 }
