@@ -6,7 +6,12 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import {
+    getDistributionJob,
+    saveDistributionJob,
+    testDistributionJob,
+    updateDistributionJob
+} from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -99,9 +104,9 @@ class DistributionConfiguration extends Component {
             const channelKeys = FieldMapping.retrieveKeys(newChannel.fields);
             const emptyChannelConfig = FieldModelUtilities.createEmptyFieldModel(channelKeys, newChannel.context, newChannel.name);
             const updatedChannelConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption));
-            const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME);
-            const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY);
-            const provider = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME);
+            const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME) || '';
+            const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY) || '';
+            const provider = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME) || '';
             const keepName = Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_NAME, name));
             const keepFrequency = Object.assign(keepName, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_FREQUENCY, frequency));
             const keepProvider = Object.assign(keepFrequency, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_PROVIDER_NAME, provider));
@@ -194,7 +199,9 @@ class DistributionConfiguration extends Component {
     }
 
     renderProviderForm() {
-        const { providerConfig, currentProvider, channelConfig, currentChannel } = this.state;
+        const {
+            providerConfig, currentProvider, channelConfig, currentChannel
+        } = this.state;
         const updatedProviderFields = Object.assign({}, currentProvider);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerConfig, KEY_FILTER_BY_PROJECT);
         const removeProject = updatedProviderFields.fields.filter(field => field.key !== KEY_CONFIGURED_PROJECT);
@@ -210,7 +217,12 @@ class DistributionConfiguration extends Component {
 
         return (
             <div>
-                <FieldsPanel descriptorFields={removedFields.fields} currentConfig={providerConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleProviderChange} />
+                <FieldsPanel
+                    descriptorFields={removedFields.fields}
+                    currentConfig={providerConfig}
+                    fieldErrors={this.props.fieldErrors}
+                    handleChange={this.handleProviderChange}
+                />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
                     includeAllProjects={filterByProject}
@@ -221,7 +233,16 @@ class DistributionConfiguration extends Component {
                     fieldErrors={this.props.fieldErrors}
                     readOnly={isReadOnly}
                 />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest={displayTest} includeSave={displaySave} includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.handleClose} isFixed={false} />
+                <ConfigButtons
+                    cancelId="job-cancel"
+                    submitId="job-submit"
+                    includeTest={displayTest}
+                    includeSave={displaySave}
+                    includeCancel
+                    onTestClick={this.handleTestSubmit}
+                    onCancelClick={this.handleClose}
+                    isFixed={false}
+                />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
         );
@@ -244,7 +265,12 @@ class DistributionConfiguration extends Component {
                     </Modal.Header>
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
-                            <FieldsPanel descriptorFields={currentChannel.fields} currentConfig={channelConfig} fieldErrors={this.props.fieldErrors} handleChange={this.handleChannelChange} />
+                            <FieldsPanel
+                                descriptorFields={currentChannel.fields}
+                                currentConfig={channelConfig}
+                                fieldErrors={this.props.fieldErrors}
+                                handleChange={this.handleChannelChange}
+                            />
                             {selectedProvider && this.renderProviderForm()}
                         </form>
                     </Modal.Body>
