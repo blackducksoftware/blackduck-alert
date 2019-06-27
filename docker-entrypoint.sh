@@ -190,10 +190,20 @@ createDataBackUp(){
     if [ -d $alertConfigHome/data ];
     then
       echo "Creating a backup of the data directory: $alertConfigHome/data"
-      cp -r "$alertConfigHome/data" "$alertHome/backup"
-      zip "$alertHome/backup.zip" -r "$alertHome/backup"
-      echo "Created a backup of the data directory: $alertHome/backup.zip"
-      rm -rf "$alertHome/backup"
+      if [ -f "$alertHome/backup.zip" ];
+        then
+        rm -f "$alertHome/backup.zip"
+      fi
+      zip "$alertHome/backup.zip" -r "$alertConfigHome/data"
+      if [ -f "$alertHome/backup.zip" ];
+        then
+          echo "Created a backup of the data directory: $alertHome/backup.zip"
+        else
+          echo "Cannot create the backup."
+          echo "Cannot continue; stopping in 10 seconds..."
+          sleep 10
+          exit 1;
+      fi
     fi
 }
 
