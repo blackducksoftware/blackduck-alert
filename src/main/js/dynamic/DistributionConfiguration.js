@@ -98,9 +98,9 @@ class DistributionConfiguration extends Component {
             const newChannel = this.props.descriptors.find(descriptor => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const emptyChannelConfig = FieldModelUtilities.createFieldModelWithDefaults(newChannel.fields, newChannel.context, newChannel.name);
             const updatedChannelConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption));
-            const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME);
-            const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY);
-            const provider = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME);
+            const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME) || '';
+            const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY) || '';
+            const provider = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME) || '';
             const keepName = Object.assign(updatedChannelConfig, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_NAME, name));
             const keepFrequency = Object.assign(keepName, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_FREQUENCY, frequency));
             const keepProvider = Object.assign(keepFrequency, FieldModelUtilities.updateFieldModelSingleValue(updatedChannelConfig, KEY_PROVIDER_NAME, provider));
