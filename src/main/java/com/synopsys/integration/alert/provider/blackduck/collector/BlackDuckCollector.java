@@ -57,7 +57,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     private final BlackDuckBucket blackDuckBucket;
     private final boolean hasValidConnection;
 
-    public BlackDuckCollector(JsonExtractor jsonExtractor, List<MessageContentProcessor> messageContentProcessorList, Collection<ProviderContentType> contentTypes, BlackDuckProperties blackDuckProperties) {
+    public BlackDuckCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, messageContentProcessorList, contentTypes);
         this.blackDuckProperties = blackDuckProperties;
 
@@ -75,20 +75,21 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
 
     @Override
     protected LinkableItem getProviderItem() {
-        String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
+        final String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
         return new LinkableItem(ProviderMessageContent.LABEL_PROVIDER, "Black Duck", blackDuckUrl);
     }
 
-    public Optional<String> getProjectComponentQueryLink(String projectVersionUrl, String link, String componentName) {
+    public Optional<String> getProjectComponentQueryLink(final String projectVersionUrl, final String link, final String componentName) {
         final Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
         return projectLink.flatMap(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
     }
 
-    public Optional<String> getProjectComponentQueryLink(String projectLink, String componentName) {
+    public Optional<String> getProjectComponentQueryLink(final String projectLink, final String componentName) {
         return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
     }
 
-    public Optional<String> getProjectLink(String projectVersionUrl, String link) {
+    //FIXME we need to update our BD common library to the latest so that we can change bucket service to use the new future implementation.
+    public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
         if (hasValidConnection) {
             try {
                 final UriSingleResponse<ProjectVersionView> uriSingleResponse = new UriSingleResponse(projectVersionUrl, ProjectVersionView.class);
@@ -103,7 +104,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.empty();
     }
 
-    public Optional<VersionBomComponentView> getBomComponentView(String bomComponentUrl) {
+    public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
         if (hasValidConnection) {
             try {
                 bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
@@ -116,7 +117,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.empty();
     }
 
-    public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
+    public List<LinkableItem> getLicenseLinkableItems(final VersionBomComponentView bomComponentView) {
         return bomComponentView.getLicenses()
                    .stream()
                    .map(licenseView -> {
