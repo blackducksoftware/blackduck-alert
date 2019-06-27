@@ -106,7 +106,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
         final ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
         try {
-            PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
+            final PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
             phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
             phoneHomeBuilder.setArtifactVersion(productVersion);
             phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
@@ -128,7 +128,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return CRON_EXPRESSION;
     }
 
-    private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
+    private PhoneHomeService createPhoneHomeService(final ExecutorService phoneHomeExecutor) {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         final IntHttpClient intHttpClient = new IntHttpClient(intLogger, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
@@ -142,7 +142,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         final String successKeyPart = "::Successes";
         final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
         for (final ConfigurationJobModel job : allJobs) {
-            for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
+            for (final ConfigurationModel configuration : job.getCopyOfConfigurations()) {
                 final String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
                 final String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
 
@@ -164,20 +164,20 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return createdDistributions.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> String.valueOf(entry.getValue())));
     }
 
-    private Boolean hasAuditSuccess(UUID jobId) {
+    private Boolean hasAuditSuccess(final UUID jobId) {
         return auditUtility.findFirstByJobId(jobId)
                    .map(AuditJobStatusModel::getStatus)
                    .stream()
                    .anyMatch(status -> AuditEntryStatus.SUCCESS.getDisplayName().equals(status));
     }
 
-    private void updateMetaDataCount(Map<String, Integer> createdDistributions, String name) {
+    private void updateMetaDataCount(final Map<String, Integer> createdDistributions, final String name) {
         final Integer channelCount = createdDistributions.getOrDefault(name, 0) + 1;
         createdDistributions.put(name, channelCount);
     }
 
     // TODO Provider specific data is being sent here. Either change what data we display in Google or abstract how this data is retrieved.
-    private PhoneHomeRequestBody addBDDataAndBuild(PhoneHomeRequestBody.Builder phoneHomeBuilder) {
+    private PhoneHomeRequestBody addBDDataAndBuild(final PhoneHomeRequestBody.Builder phoneHomeBuilder) {
         String registrationId = null;
         String blackDuckUrl = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         String blackDuckVersion = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
@@ -195,7 +195,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             }
             // We need to wrap this because this will most likely fail unless they are running as an admin
 
-        } catch (IntegrationException e) {
+        } catch (final IntegrationException e) {
         }
         // We must check if the reg id is blank because of an edge case in which Black Duck can authenticate (while the webserver is coming up) without registration
         if (StringUtils.isBlank(registrationId)) {
