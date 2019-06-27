@@ -59,7 +59,7 @@ public class JiraCustomEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
 
     // FIXME whenever we change the atlassian-connect.json file, we need to update this URL. This is very error prone and we'll want to find a better way to do this. Perhaps GH-pages
-    public static final String JIRA_PLUGIN_URL = "https://raw.githubusercontent.com/blackducksoftware/blackduck-alert/810dd02/src/main/resources/jira/atlassian-connect.json";
+    public static final String JIRA_PLUGIN_URL = "https://raw.githubusercontent.com/blackducksoftware/blackduck-alert/gk_jira_channel_enhancements/src/main/resources/jira/atlassian-connect.json";
 
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
