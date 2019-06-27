@@ -153,7 +153,7 @@ public class JiraIssueHandler {
                         throw new AlertException("There was an problem when creating this issue.");
                     }
                     final String issueKey = issue.getKey();
-                    jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, providerName, category, trackingKey);
+                    addIssueProperties(issueKey, providerName, topic, subTopic, componentItem, trackingKey);
                     addComment(issueKey, "This issue was automatically created by Alert.");
                     issueKeys.add(issueKey);
                 } else {
@@ -170,6 +170,18 @@ public class JiraIssueHandler {
                    .map(IssueSearchResponseModel::getIssues)
                    .map(List::stream)
                    .flatMap(Stream::findFirst);
+    }
+
+    private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+        final LinkableItem component = componentItem.getComponent();
+        final Optional<LinkableItem> subComponent = componentItem.getSubComponent();
+
+        jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, provider,
+            topic.getName(), topic.getValue(), subTopic.map(LinkableItem::getName).orElse(null), subTopic.map(LinkableItem::getValue).orElse(null),
+            componentItem.getCategory(),
+            component.getName(), component.getValue(), subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null),
+            alertIssueUniqueId
+        );
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem componentItem, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String issueType, String projectId, String provider) {

@@ -90,13 +90,14 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         }
 
         final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
+        policyNameItem.setPartOfKey(true);
         policyNameItem.setCollapsible(true);
         policyNameItem.setSummarizable(true);
         policyNameItem.setCountable(true);
 
         if (StringUtils.isNotBlank(severity)) {
             final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
-            severityItem.setPartOfKey(true);
+            severityItem.setPartOfKey(false);
             severityItem.setCollapsible(false);
             severityItem.setSummarizable(true);
             severityItem.setCountable(false);

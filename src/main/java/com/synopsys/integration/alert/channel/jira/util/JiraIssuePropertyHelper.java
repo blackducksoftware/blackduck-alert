@@ -38,6 +38,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchServic
 
 public class JiraIssuePropertyHelper {
     private static final String SEARCH_CONJUNCTION = "AND";
+    private static final String[] ADVANCED_SEARCH_RESERVED_CHARACTERS = { "+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "~", "*", "?", "\\", ":" };
 
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
@@ -102,8 +103,21 @@ public class JiraIssuePropertyHelper {
         return Optional.empty();
     }
 
-    public void addPropertiesToIssue(String issueKey, String provider, String category, String uniqueId) throws IntegrationException {
-        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(provider, category, uniqueId);
+    public void addPropertiesToIssue(
+        String issueKey,
+        String provider,
+        String topicName,
+        String topicValue,
+        String subTopicName,
+        String subTopicValue,
+        String category,
+        String componentName,
+        String componentValue,
+        String subComponentName,
+        String subComponentValue,
+        String additionalKey
+    ) throws IntegrationException {
+        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(provider, topicName, topicValue, subTopicName, subTopicValue, category, componentName, componentValue, subComponentName, subComponentValue, additionalKey);
         addPropertiesToIssue(issueKey, properties);
     }
 
@@ -122,7 +136,17 @@ public class JiraIssuePropertyHelper {
 
     private String createPropertySearchString(String key, String value) {
         final String propertySearchFormat = "issue.property[%s].%s ~ '%s'";
-        return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, value);
+        final String escapedValue = escapeReservedCharacters(value);
+        return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
+    }
+
+    // TODO move this code to int-jira-common
+    private String escapeReservedCharacters(String originalString) {
+        String replacementString = originalString;
+        for (String stringToReplace : ADVANCED_SEARCH_RESERVED_CHARACTERS) {
+            replacementString = StringUtils.replace(replacementString, stringToReplace, "\\\\" + stringToReplace);
+        }
+        return replacementString;
     }
 
 }
