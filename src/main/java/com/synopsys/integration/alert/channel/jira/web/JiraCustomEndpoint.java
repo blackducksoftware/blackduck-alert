@@ -22,7 +22,10 @@
  */
 package com.synopsys.integration.alert.channel.jira.web;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,6 +46,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
@@ -86,6 +90,7 @@ public class JiraCustomEndpoint {
             if (response.isStatusCodeError()) {
                 return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
+            saveSuccessfulConfigure();
             return responseFactory.createOkResponse("", "Successfully created Alert plugin on Jira Cloud server.");
         } catch (final IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
@@ -118,11 +123,33 @@ public class JiraCustomEndpoint {
                            .orElse("");
 
             } catch (final AlertDatabaseConstraintException e) {
-                logger.error("Was unable to retrieve existing Jira configuration.");
+                logger.error("Unable to retrieve existing Jira configuration.");
             }
         }
 
         return accessToken;
+    }
+
+    private void saveSuccessfulConfigure() {
+        final ConfigurationFieldModel configurePluginField = ConfigurationFieldModel.create(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN);
+        configurePluginField.setFieldValue("true");
+        try {
+            final Optional<ConfigurationModel> globalJiraCloud = configurationAccessor.getConfigurationByDescriptorNameAndContext(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL).stream().findFirst();
+            if (globalJiraCloud.isPresent()) {
+                final ConfigurationModel configurationModel = globalJiraCloud.get();
+                final Long configurationId = configurationModel.getConfigurationId();
+                final List<ConfigurationFieldModel> configurationFields = configurationModel.getCopyOfFieldList()
+                                                                              .stream()
+                                                                              .filter(configurationFieldModel -> !JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN.equals(configurationFieldModel.getFieldKey()))
+                                                                              .collect(Collectors.toList());
+                configurationFields.add(configurePluginField);
+                configurationAccessor.updateConfiguration(configurationId, configurationFields);
+            } else {
+                configurationAccessor.createConfiguration(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, List.of(configurePluginField));
+            }
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Unable to retrieve Global Jira Cloud data from the Database.");
+        }
     }
 
 }
