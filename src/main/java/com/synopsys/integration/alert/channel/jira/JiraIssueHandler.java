@@ -72,7 +72,6 @@ public class JiraIssueHandler {
 
     private ProjectService projectService;
     private IssueService issueService;
-    private IssueSearchService issueSearchService;
     private IssueTypeService issueTypeService;
     private JiraProperties jiraProperties;
 
@@ -81,7 +80,6 @@ public class JiraIssueHandler {
     public JiraIssueHandler(ProjectService projectService, IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, IssueTypeService issueTypeService, JiraProperties jiraProperties) {
         this.projectService = projectService;
         this.issueService = issueService;
-        this.issueSearchService = issueSearchService;
         this.issueTypeService = issueTypeService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
@@ -93,20 +91,21 @@ public class JiraIssueHandler {
         final ProjectComponent projectComponent = projectsResponseModel.getProjects()
                                                       .stream()
                                                       .findFirst()
-                                                      .orElseThrow(() -> new AlertException("Expected to be passed an existing project name."));
+                                                      .orElseThrow(() -> new AlertException(String.format("No projects matching '%s' were found", projectName)));
+        final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
+        issueTypeService.getAllIssueTypes()
+            .stream()
+            .map(IssueTypeResponseModel::getName)
+            .filter(name -> name.equals(issueType))
+            .findAny()
+            .orElseThrow(() -> new AlertException(String.format("The issue type '%s' could not be found", issueType)));
 
         final String projectId = projectComponent.getId();
-        final String projectKey = projectComponent.getKey();
-        final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
-        final boolean matchingIssueTypeFound = issueTypeService.getAllIssueTypes()
-                                                   .stream()
-                                                   .map(IssueTypeResponseModel::getName)
-                                                   .anyMatch(name -> name.equals(issueType));
-
-        final Set<String> issueKeys = new HashSet<>();
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElseThrow(() -> new AlertException("Expected to be passed a provider."));
         final Boolean commentOnIssue = fieldAccessor.getBoolean(JiraDescriptor.KEY_ADD_COMMENTS).orElse(false);
         final LinkableItem commonTopic = content.getCommonTopic();
+
+        final Set<String> issueKeys = new HashSet<>();
         for (final ProviderMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
 
@@ -131,22 +130,18 @@ public class JiraIssueHandler {
             if (existingIssueComponent.isPresent()) {
                 final IssueComponent issueComponent = existingIssueComponent.get();
                 if (ItemOperation.DELETE.equals(operation)) {
-                    final Optional<String> resolveTransition = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
-                    final String issueKey = transitionIssue(issueService, issueComponent, resolveTransition);
+                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
                     issueKeys.add(issueKey);
                     if (commentOnIssue) {
                         // FIXME update this code to be provider specific and provider useful information.
-                        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "DELETED PLACEHOLDER TEXT");
-                        issueService.addComment(issueCommentRequestModel);
+                        addComment(issueKey, "DELETED PLACEHOLDER TEXT");
                     }
                 } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    final Optional<String> openTransition = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
-                    final String issueKey = transitionIssue(issueService, issueComponent, openTransition);
+                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
                     issueKeys.add(issueKey);
                     if (commentOnIssue) {
                         // FIXME update this code to be provider specific and provider useful information.
-                        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "ADDED/UPDATED PLACEHOLDER TEXT");
-                        issueService.addComment(issueCommentRequestModel);
+                        addComment(issueKey, "ADDED/UPDATED PLACEHOLDER TEXT");
                     }
                 }
             } else {
@@ -159,7 +154,7 @@ public class JiraIssueHandler {
                     }
                     final String issueKey = issue.getKey();
                     jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, providerName, category, trackingKey);
-                    addCreationComment(issueService, issueKey);
+                    addComment(issueKey, "This issue was automatically created by Alert.");
                     issueKeys.add(issueKey);
                 } else {
                     logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
@@ -190,17 +185,17 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
-    private String transitionIssue(IssueService issueService, IssueComponent issueComponent, Optional<String> optionalTransition) throws IntegrationException {
-        final String key = issueComponent.getKey();
-        if (optionalTransition.isPresent()) {
-            final TransitionsResponseModel transitions = issueService.getTransitions(key);
-            final String transition = optionalTransition.get();
+    private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
+        final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
+        if (transitionName.isPresent()) {
+            final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
+            final String transition = transitionName.get();
             final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
             if (firstTransitionByName.isPresent()) {
                 final TransitionComponent issueTransition = firstTransitionByName.get();
                 final String transitionId = issueTransition.getId();
                 final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-                final IssueRequestModel issueRequestModel = new IssueRequestModel(key, new IdComponent(transitionId), fieldsBuilder, Map.of(), List.of());
+                final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), fieldsBuilder, Map.of(), List.of());
                 issueService.transitionIssue(issueRequestModel);
             } else {
                 logger.warn("Was unable to find given transition {}.", transition);
@@ -209,11 +204,11 @@ public class JiraIssueHandler {
             logger.debug("No transition selected, ignoring issue state change.");
         }
 
-        return key;
+        return issueKey;
     }
 
-    private void addCreationComment(IssueService issueService, String issueKey) throws IntegrationException {
-        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, "This issue has been created by Alert.");
+    private void addComment(String issueKey, String comment) throws IntegrationException {
+        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
         issueService.addComment(issueCommentRequestModel);
     }
 
