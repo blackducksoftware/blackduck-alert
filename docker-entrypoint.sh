@@ -187,17 +187,13 @@ importWebServerCertificate(){
 }
 
 createDataBackUp(){
-    echo "Creating a backup of the data directory: $alertConfigHome/data"
     if [ -d $alertConfigHome/data ];
     then
+      echo "Creating a backup of the data directory: $alertConfigHome/data"
       cp -r "$alertConfigHome/data" "$alertHome/backup"
-      ls -al "$alertConfigHome"
-      whoami
-
-
       zip "$alertHome/backup.zip" -r "$alertHome/backup"
       echo "Created a backup of the data directory: $alertHome/backup.zip"
-      rm -rf "$alertHome/data" "$alertHome/backup"
+      rm -rf "$alertHome/backup"
     fi
 }
 
