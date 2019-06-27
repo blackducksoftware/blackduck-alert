@@ -51,7 +51,7 @@ public class JiraIssueFormatHelper {
             title.append(", ");
         }
 
-        // TODO find a way to make this less Black Duck specific
+        // FIXME make this provider-agnostic
         String prettyPrintedKey;
         if (componentKeys.getCategory().contains("Policy")) {
             prettyPrintedKey = componentKeys.prettyPrint(true);

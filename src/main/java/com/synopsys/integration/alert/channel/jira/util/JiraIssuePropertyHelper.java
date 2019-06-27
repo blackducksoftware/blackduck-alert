@@ -25,15 +25,20 @@ package com.synopsys.integration.alert.channel.jira.util;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 
 import com.synopsys.integration.alert.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.model.AlertJiraIssueProperties;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 
 public class JiraIssuePropertyHelper {
+    private static final String SEARCH_CONJUNCTION = "AND";
+
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
 
@@ -42,22 +47,52 @@ public class JiraIssuePropertyHelper {
         this.issuePropertyService = issuePropertyService;
     }
 
-    // TODO we probably want to add lots of properties for search granularity
-    public Optional<IssueSearchResponseModel> findIssues(String provider, String category, String uniqueId) throws IntegrationException {
+    public Optional<IssueSearchResponseModel> findIssues(String provider, LinkableItem topic, @Nullable LinkableItem subTopic, ComponentItem componentItem, String additionalKey) throws IntegrationException {
+        String subTopicName = null;
+        String subTopicValue = null;
+        if (null != subTopic) {
+            subTopicName = subTopic.getName();
+            subTopicValue = subTopic.getValue();
+        }
+
+        LinkableItem component = componentItem.getComponent();
+        final Optional<LinkableItem> optionalSubComponent = componentItem.getSubComponent();
+        String subComponentName = optionalSubComponent.map(LinkableItem::getName).orElse(null);
+        String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
+
+        return findIssues(provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
+    }
+
+    public Optional<IssueSearchResponseModel> findIssues(
+        String provider,
+        String topicName,
+        String topicValue,
+        String subTopicName,
+        String subTopicValue,
+        String category,
+        String componentName,
+        String componentValue,
+        String subComponentName,
+        String subComponentValue,
+        String additionalKey
+    ) throws IntegrationException {
         final StringBuilder jqlBuilder = new StringBuilder();
         if (StringUtils.isNotBlank(provider)) {
             jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider));
             jqlBuilder.append(StringUtils.SPACE);
         }
-        if (StringUtils.isNotBlank(category)) {
-            jqlBuilder.append("AND ");
-            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category));
-            jqlBuilder.append(StringUtils.SPACE);
-        }
-        if (StringUtils.isNotBlank(uniqueId)) {
-            jqlBuilder.append("AND ");
-            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_UNIQUE_ID, uniqueId));
-        }
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME, topicName);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE, topicValue);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_NAME, subTopicName);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_VALUE, subTopicValue);
+
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_NAME, componentName);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE, componentValue);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_NAME, subComponentName);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE, subComponentValue);
+
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey);
 
         final String jql = jqlBuilder.toString();
         if (!jql.isBlank()) {
@@ -74,6 +109,15 @@ public class JiraIssuePropertyHelper {
 
     public void addPropertiesToIssue(String issueKey, AlertJiraIssueProperties properties) throws IntegrationException {
         issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, properties);
+    }
+
+    private void appendPropertySearchString(StringBuilder jqlBuilder, String key, String value) {
+        if (StringUtils.isNotBlank(value)) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
+            jqlBuilder.append(createPropertySearchString(key, value));
+            jqlBuilder.append(StringUtils.SPACE);
+        }
     }
 
     private String createPropertySearchString(String key, String value) {

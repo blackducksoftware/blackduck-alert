@@ -124,9 +124,9 @@ public class JiraIssueHandler {
         for (final ComponentItem componentItem : componentItems) {
             final ItemOperation operation = componentItem.getOperation();
             final String category = componentItem.getCategory();
-            final String trackingKey = createTrackingKey(topic, subTopic, componentItem);
+            final String trackingKey = createAdditionalTrackingKey(componentItem);
 
-            final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, category, trackingKey);
+            final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, componentItem, trackingKey);
             if (existingIssueComponent.isPresent()) {
                 final IssueComponent issueComponent = existingIssueComponent.get();
                 if (ItemOperation.DELETE.equals(operation)) {
@@ -164,8 +164,8 @@ public class JiraIssueHandler {
         return issueKeys;
     }
 
-    private Optional<IssueComponent> retrieveExistingIssue(String provider, String category, String alertIssueUniqueId) throws IntegrationException {
-        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(provider, category, alertIssueUniqueId);
+    private Optional<IssueComponent> retrieveExistingIssue(String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId);
         return optionalIssueSearchResponse
                    .map(IssueSearchResponseModel::getIssues)
                    .map(List::stream)
@@ -212,14 +212,9 @@ public class JiraIssueHandler {
         issueService.addComment(issueCommentRequestModel);
     }
 
-    private String createTrackingKey(LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem) {
+    // TODO find a way to make this unique
+    private String createAdditionalTrackingKey(ComponentItem componentItem) {
         StringBuilder keyBuilder = new StringBuilder();
-        keyBuilder.append(topic.getName());
-        keyBuilder.append(topic.getValue());
-        subTopic.ifPresent(st -> {
-            keyBuilder.append(st.getName());
-            keyBuilder.append(st.getValue());
-        });
 
         final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
         for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
@@ -228,6 +223,8 @@ public class JiraIssueHandler {
                     .stream()
                     .findFirst()
                     .filter(LinkableItem::isPartOfKey)
+                    // FIXME make this provider-agnostic
+                    .filter(item -> item.getName().contains("Policy"))
                     .ifPresent(item -> {
                         keyBuilder.append(item.getName());
                         keyBuilder.append(item.getValue());

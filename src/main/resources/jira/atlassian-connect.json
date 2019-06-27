@@ -28,11 +28,43 @@
                 "type": "text"
               },
               {
+                "objectName": "topicName",
+                "type": "text"
+              },
+              {
+                "objectName": "topicValue",
+                "type": "text"
+              },
+              {
+                "objectName": "subTopicName",
+                "type": "text"
+              },
+              {
+                "objectName": "subTopicValue",
+                "type": "text"
+              },
+              {
                 "objectName": "category",
                 "type": "text"
               },
               {
-                "objectName": "uniqueId",
+                "objectName": "componentName",
+                "type": "text"
+              },
+              {
+                "objectName": "componentValue",
+                "type": "text"
+              },
+              {
+                "objectName": "subComponentName",
+                "type": "text"
+              },
+              {
+                "objectName": "subComponentValue",
+                "type": "text"
+              },
+              {
+                "objectName": "additionalKey",
                 "type": "text"
               }
             ]
