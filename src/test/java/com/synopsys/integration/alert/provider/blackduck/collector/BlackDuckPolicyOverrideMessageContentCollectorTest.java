@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,14 +20,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
-import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollapser;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -36,7 +30,6 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 
 public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     private final JsonExtractor jsonExtractor = new JsonExtractor(new Gson());
-    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor(new MessageContentCollapser(), defaultMessageContentProcessor));
 
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
@@ -76,7 +69,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         categoryCount += numberOfPoliciesOverridden - policyOverlap;
         BlackDuckPolicyViolationMessageContentCollectorTest.insertAndAssertCountsOnTopic(collector, n2, topicName, categoryCount, linkableItemsCount);
 
-        Assert.assertEquals(1, collector.collect(FormatType.DEFAULT).size());
+        Assert.assertEquals(1, collector.getCollectedContent().size());
     }
 
     @Test
@@ -88,7 +81,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
             .addCategoryItems(Mockito.any(SortedSet.class), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
         spiedCollector.insert(n0);
-        final List<MessageContentGroup> contentList = spiedCollector.collect(FormatType.DEFAULT);
+        final List<AggregateMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());
     }
 
@@ -96,7 +89,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     public void collectEmptyMapTest() {
         final BlackDuckPolicyCollector collector = createCollector();
         final BlackDuckPolicyCollector spiedCollector = Mockito.spy(collector);
-        final List<MessageContentGroup> contentList = spiedCollector.collect(FormatType.DEFAULT);
+        final List<AggregateMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());
     }
 
@@ -109,7 +102,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     private BlackDuckPolicyOverrideCollector createCollector() {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any(Logger.class))).thenReturn(Optional.empty());
-        return new BlackDuckPolicyOverrideCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
+        return new BlackDuckPolicyOverrideCollector(jsonExtractor, blackDuckProperties);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
@@ -125,7 +118,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
 
     private void test(final BlackDuckPolicyCollector collector, final NotificationContent notification) {
         collector.insert(notification);
-        final List<MessageContentGroup> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
+        final List<AggregateMessageContent> aggregateMessageContentList = collector.getCollectedContent();
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 

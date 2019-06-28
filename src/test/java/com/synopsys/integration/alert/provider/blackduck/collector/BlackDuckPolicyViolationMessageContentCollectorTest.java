@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +21,10 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
-import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollapser;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -39,16 +32,13 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 
 public class BlackDuckPolicyViolationMessageContentCollectorTest {
     private final JsonExtractor jsonExtractor = new JsonExtractor(new Gson());
-    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor(new MessageContentCollapser(), defaultMessageContentProcessor));
 
     public static final void insertAndAssertCountsOnTopic(final BlackDuckPolicyCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount,
         final int expectedLinkableItemsCount) {
         collector.insert(notification);
-        final AggregateMessageContent content = collector.collect(FormatType.DEFAULT)
+        final AggregateMessageContent content = collector.getCollectedContent()
                                                     .stream()
-                                                    .filter(contentGroup -> topicName.equals(contentGroup.getCommonTopic().getValue()))
-                                                    .map(MessageContentGroup::getSubContent)
-                                                    .flatMap(List::stream)
+                                                    .filter(messageContent -> topicName.equals(messageContent.getValue()))
                                                     .findFirst()
                                                     .orElse(null);
         final SortedSet<CategoryItem> items = content.getCategoryItems();
@@ -105,7 +95,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         linkableItemsCount = categoryCount * linkableItemsPerCategory;
         insertAndAssertCountsOnTopic(collector, n1, topicName, categoryCount, linkableItemsCount);
 
-        Assert.assertEquals(1, collector.collect(FormatType.DEFAULT).size());
+        Assert.assertEquals(1, collector.getCollectedContent().size());
     }
 
     @Test
@@ -114,7 +104,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final NotificationContent n0 = createNotification(ruleContent, NotificationType.BOM_EDIT);
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         collector.insert(n0);
-        Assert.assertEquals(0, collector.collect(FormatType.DEFAULT).size());
+        Assert.assertEquals(0, collector.getCollectedContent().size());
     }
 
     @Test
@@ -126,7 +116,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
             .addApplicableItems(Mockito.any(SortedSet.class), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class));
         spiedCollector.insert(n0);
-        final List<MessageContentGroup> contentList = spiedCollector.collect(FormatType.DEFAULT);
+        final List<AggregateMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());
     }
 
@@ -134,7 +124,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     public void collectEmptyMapTest() {
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         final BlackDuckPolicyCollector spiedCollector = Mockito.spy(collector);
-        final List<MessageContentGroup> contentList = spiedCollector.collect(FormatType.DEFAULT);
+        final List<AggregateMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());
     }
 
@@ -147,7 +137,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     private BlackDuckPolicyViolationCollector createPolicyViolationCollector() {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any(Logger.class))).thenReturn(Optional.empty());
-        return new BlackDuckPolicyViolationCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
+        return new BlackDuckPolicyViolationCollector(jsonExtractor, blackDuckProperties);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
@@ -163,7 +153,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
     private void test(final BlackDuckPolicyCollector collector, final NotificationContent notification) {
         collector.insert(notification);
-        final List<MessageContentGroup> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
+        final List<AggregateMessageContent> aggregateMessageContentList = collector.getCollectedContent();
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 }
