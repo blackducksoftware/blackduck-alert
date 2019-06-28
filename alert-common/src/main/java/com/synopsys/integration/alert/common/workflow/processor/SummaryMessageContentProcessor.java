@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -59,18 +58,14 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
+        List<AggregateMessageContent> combinedMessages = combineMessages(messages);
+        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(combinedMessages);
 
-        final List<MessageContentGroup> messageGroups = new ArrayList<>();
-        for (final AggregateMessageContent message : collapsedMessages) {
-            final AggregateMessageContent summarizedMessage = summarize(message);
-            messageGroups
-                .stream()
-                .filter(group -> group.applies(summarizedMessage))
-                .findAny()
-                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> messageGroups.add(MessageContentGroup.singleton(summarizedMessage)));
-        }
-        return messageGroups;
+        List<AggregateMessageContent> summarizedMessages = collapsedMessages.stream()
+                                                               .map(this::summarize)
+                                                               .collect(Collectors.toList());
+
+        return createMessageContentGroups(summarizedMessages);
     }
 
     private AggregateMessageContent summarize(final AggregateMessageContent message) {

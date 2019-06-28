@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
@@ -47,8 +46,8 @@ import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotific
 public class PolarisCollector extends MessageContentCollector {
 
     @Autowired
-    public PolarisCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
-        super(jsonExtractor, messageContentProcessorList, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
+    public PolarisCollector(final JsonExtractor jsonExtractor) {
+        super(jsonExtractor, List.of(PolarisContent.ISSUE_COUNT_INCREASED, PolarisContent.ISSUE_COUNT_DECREASED));
     }
 
     @Override

@@ -26,7 +26,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitTyp
 
 public class BlackDuckLicenseLimitCollectorTest {
     private final Gson gson = new Gson();
-    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor(new MessageContentCollapser()));
+    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor(new MessageContentCollapser(), defaultMessageContentProcessor));
 
     @Test
     public void addCategoryItemsTest() {

@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,10 +41,8 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        return messages
-                   .stream()
-                   .map(MessageContentGroup::singleton)
-                   .collect(Collectors.toList());
+        List<AggregateMessageContent> combinedMessages = combineMessages(messages);
+        return createMessageContentGroups(combinedMessages);
     }
 
 }
