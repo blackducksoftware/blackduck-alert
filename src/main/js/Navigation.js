@@ -30,8 +30,8 @@ class Navigation extends Component {
                 </NavLink>
             </li>));
 
-        if (contentList && contentList.length > 0) {
-            contentList.unshift(<li className="navHeader">
+        if (header && contentList && contentList.length > 0) {
+            contentList.unshift(<li className="navHeader" key={header}>
                 {header}
             </li>);
         }
