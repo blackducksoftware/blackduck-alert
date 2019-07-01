@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.channel.jira;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -121,12 +123,17 @@ public class JiraIssueHandler {
         throws IntegrationException {
         final Set<String> issueKeys = new HashSet<>();
 
-        for (final ComponentItem componentItem : componentItems) {
-            final ItemOperation operation = componentItem.getOperation();
-            final String category = componentItem.getCategory();
-            final String trackingKey = createAdditionalTrackingKey(componentItem);
+        final Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
 
-            final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, componentItem, trackingKey);
+        for (final List<ComponentItem> combinedItems : combinedItemsMap.values()) {
+            final ComponentItem arbitraryItem = combinedItems
+                                                    .stream()
+                                                    .findAny()
+                                                    .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
+            final ItemOperation operation = arbitraryItem.getOperation();
+            final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
+
+            final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
             if (existingIssueComponent.isPresent()) {
                 final IssueComponent issueComponent = existingIssueComponent.get();
                 if (ItemOperation.DELETE.equals(operation)) {
@@ -147,13 +154,13 @@ public class JiraIssueHandler {
             } else {
                 if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
                     final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(componentItem, topic, subTopic, issueType, projectId, providerName);
+                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, issueType, projectId, providerName);
                     final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
                     if (issue == null || StringUtils.isBlank(issue.getKey())) {
                         throw new AlertException("There was an problem when creating this issue.");
                     }
                     final String issueKey = issue.getKey();
-                    addIssueProperties(issueKey, providerName, topic, subTopic, componentItem, trackingKey);
+                    addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                     addComment(issueKey, "This issue was automatically created by Alert.");
                     issueKeys.add(issueKey);
                 } else {
@@ -162,6 +169,21 @@ public class JiraIssueHandler {
             }
         }
         return issueKeys;
+    }
+
+    private Map<String, List<ComponentItem>> combineComponentItems(Collection<ComponentItem> componentItems) {
+        final Map<String, List<ComponentItem>> combinedItems = new LinkedHashMap<>();
+        componentItems
+            .stream()
+            .forEach(item -> {
+                String key = item.getComponentKeys().getShallowKey() + item.getOperation();
+                // FIXME find a way to make this provider-agnostic
+                if (item.getCategory().contains("Policy")) {
+                    key = item.getComponentKeys().getDeepKey() + item.getOperation();
+                }
+                combinedItems.computeIfAbsent(key, ignored -> new LinkedList<>()).add(item);
+            });
+        return combinedItems;
     }
 
     private Optional<IssueComponent> retrieveExistingIssue(String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
@@ -184,11 +206,12 @@ public class JiraIssueHandler {
         );
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem componentItem, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String issueType, String projectId, String provider) {
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(
+        ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String issueType, String projectId, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, componentItem.getComponentKeys());
-        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItem, provider);
+        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
+        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
         fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
         fieldsBuilder.setIssueType(issueType);
@@ -224,7 +247,6 @@ public class JiraIssueHandler {
         issueService.addComment(issueCommentRequestModel);
     }
 
-    // TODO find a way to make this unique
     private String createAdditionalTrackingKey(ComponentItem componentItem) {
         StringBuilder keyBuilder = new StringBuilder();
 
