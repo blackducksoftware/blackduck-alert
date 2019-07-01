@@ -107,7 +107,6 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(defaultDescriptorId);
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(defaultConfigurationId);
 
-        // TODO update these field keys when they are clearly defined by the descriptor
         final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
         blackDuckTimeoutField.setFieldValue(String.valueOf(getBlackDuckTimeout()));
