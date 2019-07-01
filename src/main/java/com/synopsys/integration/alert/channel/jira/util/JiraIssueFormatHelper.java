@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.util;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class JiraIssueFormatHelper {
         return title.toString();
     }
 
-    public String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem, final String providerName) {
+    public String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final Collection<ComponentItem> componentItems, final String providerName) {
         final StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
@@ -90,7 +91,10 @@ public class JiraIssueFormatHelper {
             }
             description.append("\n");
         }
-        description.append(createDescriptionItems(componentItem));
+
+        for (ComponentItem componentItem : componentItems) {
+            description.append(createDescriptionItems(componentItem));
+        }
 
         return description.toString();
     }
