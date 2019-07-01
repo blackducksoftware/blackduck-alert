@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -76,19 +76,8 @@ public class JiraIssueFormatHelper {
             final LinkableItem linkableItem = subTopic.get();
             description.append(linkableItem.getName());
             description.append(": ");
-            final String value = linkableItem.getValue();
-            final Optional<String> optionalUrl = linkableItem.getUrl();
-            if (optionalUrl.isPresent()) {
-                // FIXME the URL is not properly being created in Jira Cloud
-                final String url = optionalUrl.get();
-                description.append("[");
-                description.append(value);
-                description.append("](");
-                description.append(url);
-                description.append(")");
-            } else {
-                description.append(value);
-            }
+            String valueString = createValueString(linkableItem);
+            description.append(valueString);
             description.append("\n");
         }
 
@@ -103,29 +92,53 @@ public class JiraIssueFormatHelper {
         final StringBuilder description = new StringBuilder();
         final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
 
+        description.append('\n');
         for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
-            final String itemName = entry.getKey();
-            final List<String> itemValues = entry.getValue()
-                                                .stream()
-                                                .map(LinkableItem::getValue)
-                                                .collect(Collectors.toList());
+            String itemName = entry.getKey();
             description.append(itemName);
             description.append(": ");
-            if (itemValues.size() > 1) {
-                for (final String value : itemValues) {
-                    description.append("[");
-                    description.append(value);
-                    description.append("]");
-                }
-            } else {
-                for (final String value : itemValues) {
-                    description.append(value);
-                }
-            }
-            description.append("\n");
+            String valuesString = createValuesString(entry.getValue());
+            description.append(valuesString);
+
+            description.append('\n');
         }
 
         return description.toString();
+    }
+
+    private String createValuesString(Collection<LinkableItem> linkableItems) {
+        if (linkableItems.size() == 1) {
+            final LinkableItem item = linkableItems
+                                          .stream()
+                                          .findAny()
+                                          .orElseThrow(() -> new AlertRuntimeException("A non-empty list had no elements"));
+            return createValueString(item);
+        } else {
+            StringBuilder valuesBuilder = new StringBuilder();
+            for (LinkableItem item : linkableItems) {
+                final String valueString = createValueString(item);
+                valuesBuilder.append("[ ");
+                valuesBuilder.append(valueString);
+                valuesBuilder.append(" ] ");
+            }
+            return valuesBuilder.toString();
+        }
+    }
+
+    private String createValueString(LinkableItem linkableItem) {
+        StringBuilder valueBuilder = new StringBuilder();
+        final Optional<String> url = linkableItem.getUrl();
+        if (url.isPresent()) {
+            valueBuilder.append('[');
+            valueBuilder.append(linkableItem.getValue());
+            valueBuilder.append('|');
+            valueBuilder.append(url.get());
+            valueBuilder.append(']');
+        } else {
+            valueBuilder.append(linkableItem.getValue());
+        }
+        valueBuilder.append(' ');
+        return valueBuilder.toString();
     }
 
 }
