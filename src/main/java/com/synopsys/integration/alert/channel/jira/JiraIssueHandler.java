@@ -72,14 +72,16 @@ import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
 public class JiraIssueHandler {
     private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
 
-    private ProjectService projectService;
-    private IssueService issueService;
-    private IssueTypeService issueTypeService;
-    private JiraProperties jiraProperties;
+    private final ProjectService projectService;
+    private final IssueService issueService;
+    private final IssueTypeService issueTypeService;
+    private final JiraProperties jiraProperties;
 
-    private JiraIssuePropertyHelper jiraIssuePropertyHelper;
+    private final JiraIssuePropertyHelper jiraIssuePropertyHelper;
 
-    public JiraIssueHandler(ProjectService projectService, IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, IssueTypeService issueTypeService, JiraProperties jiraProperties) {
+    public JiraIssueHandler(
+        final ProjectService projectService, final IssueService issueService, final IssueSearchService issueSearchService, final IssuePropertyService issuePropertyService, final IssueTypeService issueTypeService,
+        final JiraProperties jiraProperties) {
         this.projectService = projectService;
         this.issueService = issueService;
         this.issueTypeService = issueTypeService;
@@ -87,7 +89,7 @@ public class JiraIssueHandler {
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
     }
 
-    public String createOrUpdateIssues(FieldAccessor fieldAccessor, MessageContentGroup content) throws IntegrationException {
+    public String createOrUpdateIssues(final FieldAccessor fieldAccessor, final MessageContentGroup content) throws IntegrationException {
         final String projectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse("");
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(projectName);
         final ProjectComponent projectComponent = projectsResponseModel.getProjects()
@@ -118,13 +120,10 @@ public class JiraIssueHandler {
         return createStatusMessage(issueKeys, jiraProperties.getUrl());
     }
 
-    private Set<String> createOrUpdateIssuesPerComponent(
-        String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, FieldAccessor fieldAccessor, Collection<ComponentItem> componentItems, String issueType, String projectName, String projectId, Boolean commentOnIssue)
-        throws IntegrationException {
+    private Set<String> createOrUpdateIssuesPerComponent(final String providerName, final LinkableItem topic, final Optional<LinkableItem> subTopic, final FieldAccessor fieldAccessor, final Collection<ComponentItem> componentItems,
+        final String issueType, final String projectName, final String projectId, final Boolean commentOnIssue) throws IntegrationException {
         final Set<String> issueKeys = new HashSet<>();
-
         final Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
-
         for (final List<ComponentItem> combinedItems : combinedItemsMap.values()) {
             final ComponentItem arbitraryItem = combinedItems
                                                     .stream()
@@ -133,23 +132,15 @@ public class JiraIssueHandler {
             final ItemOperation operation = arbitraryItem.getOperation();
             final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
+            final String operationComment = String.format("The %s operation was performed for this %s in %s", operation.name(), arbitraryItem.getCategory(), providerName);
             final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
             if (existingIssueComponent.isPresent()) {
                 final IssueComponent issueComponent = existingIssueComponent.get();
-                if (ItemOperation.DELETE.equals(operation)) {
-                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
-                    issueKeys.add(issueKey);
-                    if (commentOnIssue) {
-                        // FIXME update this code to be provider specific and provider useful information.
-                        addComment(issueKey, "DELETED PLACEHOLDER TEXT");
-                    }
-                } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
-                    issueKeys.add(issueKey);
-                    if (commentOnIssue) {
-                        // FIXME update this code to be provider specific and provider useful information.
-                        addComment(issueKey, "ADDED/UPDATED PLACEHOLDER TEXT");
-                    }
+                final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+                final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
+                issueKeys.add(issueKey);
+                if (commentOnIssue) {
+                    addComment(issueKey, operationComment);
                 }
             } else {
                 if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
@@ -194,7 +185,8 @@ public class JiraIssueHandler {
                    .flatMap(Stream::findFirst);
     }
 
-    private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+    private void addIssueProperties(final String issueKey, final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem, final String alertIssueUniqueId)
+        throws IntegrationException {
         final LinkableItem component = componentItem.getComponent();
         final Optional<LinkableItem> subComponent = componentItem.getSubComponent();
 
@@ -220,7 +212,7 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
-    private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
+    private String transitionIssue(final String issueKey, final FieldAccessor fieldAccessor, final String transitionKey) throws IntegrationException {
         final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
         if (transitionName.isPresent()) {
             final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
@@ -242,14 +234,13 @@ public class JiraIssueHandler {
         return issueKey;
     }
 
-    private void addComment(String issueKey, String comment) throws IntegrationException {
+    private void addComment(final String issueKey, final String comment) throws IntegrationException {
         final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
         issueService.addComment(issueCommentRequestModel);
     }
 
     private String createAdditionalTrackingKey(ComponentItem componentItem) {
         StringBuilder keyBuilder = new StringBuilder();
-
         final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
         for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
             componentAttributeList
@@ -266,7 +257,7 @@ public class JiraIssueHandler {
         return keyBuilder.toString();
     }
 
-    private String createStatusMessage(Collection<String> issueKeys, String jiraUrl) {
+    private String createStatusMessage(final Collection<String> issueKeys, final String jiraUrl) {
         if (issueKeys.isEmpty()) {
             return "Did not create any Jira Cloud issues.";
         }
