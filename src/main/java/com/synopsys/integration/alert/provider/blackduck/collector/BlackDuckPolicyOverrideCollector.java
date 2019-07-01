@@ -23,9 +23,9 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -86,9 +86,15 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
             applicableItems.add(nameItem);
         }
 
+        // This has to be the same list of items as BlackDuckPolicyViolationCollector or the collapsing wont work
+        SortedSet<String> keyItems = new TreeSet<>();
+        keyItems.add(componentName);
+        componentVersionName.ifPresent(versionName -> keyItems.add(versionName));
         for (final LinkableItem policyItem : policyItems) {
-            addApplicableItems(categoryItems, notificationContent.getId(), Set.of(policyItem), operation, applicableItems);
+            keyItems.add(policyItem.getValue());
         }
+
+        addApplicableItems(categoryItems, notificationContent.getId(), new HashSet<>(policyItems), operation, applicableItems, keyItems);
     }
 
 }

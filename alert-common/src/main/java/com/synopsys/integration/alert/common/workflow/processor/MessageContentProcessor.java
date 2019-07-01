@@ -47,6 +47,7 @@ public abstract class MessageContentProcessor {
     public List<MessageContentGroup> createMessageContentGroups(List<AggregateMessageContent> messages) {
         final Map<String, MessageContentGroup> messageGroups = new LinkedHashMap<>();
         messages.stream()
+            .filter(message -> !message.getCategoryItems().isEmpty())
             .forEach(message -> {
                 messageGroups.computeIfAbsent(message.getValue(), ignored -> new MessageContentGroup()).add(message);
             });

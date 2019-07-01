@@ -22,12 +22,12 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
@@ -44,8 +44,9 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         super(jsonExtractor, contentTypes, blackDuckProperties);
     }
 
-    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
-        final List<String> categoryKeyParts = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
+    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems,
+        SortedSet<String> keyItems) {
+        final List<String> categoryKeyParts = new ArrayList<>(keyItems);
         final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);
 
         updatePolicyItems(policyItems);

@@ -31,9 +31,11 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 
 public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
     private final SortedSet<LinkableItem> componentData;
+    private final SortedSet<String> keyItems;
 
     public BlackDuckPolicyLinkableItem() {
         componentData = new TreeSet<>();
+        keyItems = new TreeSet<>();
     }
 
     public SortedSet<LinkableItem> getComponentData() {
@@ -54,4 +56,11 @@ public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
         addComponentData(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, version, url));
     }
 
+    public void addKeyItem(String keyItem) {
+        keyItems.add(keyItem);
+    }
+
+    public SortedSet<String> getKeyItems() {
+        return keyItems;
+    }
 }

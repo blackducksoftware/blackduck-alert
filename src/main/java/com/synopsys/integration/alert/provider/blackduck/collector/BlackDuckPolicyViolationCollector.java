@@ -99,8 +99,11 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                                                     .map(this::createPolicyLinkableItem)
                                                                     .collect(Collectors.toCollection(TreeSet::new));
             final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
+            policyComponentMapping.getPolicies()
+                .forEach(policyInfo -> blackDuckPolicyLinkableItem.addKeyItem(policyInfo.getPolicyName()));
             final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getComponentData();
-            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
+
+            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems, blackDuckPolicyLinkableItem.getKeyItems());
         }
     }
 
@@ -153,14 +156,15 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final String componentVersionName = componentVersionStatus.getComponentVersionName();
         if (StringUtils.isNotBlank(componentVersionName)) {
             blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionName, projectVersionWithComponentLink);
+            blackDuckPolicyLinkableItem.addKeyItem(componentVersionName);
         }
 
         final String componentName = componentVersionStatus.getComponentName();
         if (StringUtils.isNotBlank(componentName)) {
             final String componentLink = (StringUtils.isBlank(componentVersionName)) ? projectVersionWithComponentLink : null;
             blackDuckPolicyLinkableItem.addComponentNameItem(componentName, componentLink);
+            blackDuckPolicyLinkableItem.addKeyItem(componentName);
         }
-
         return blackDuckPolicyLinkableItem;
     }
 
