@@ -37,12 +37,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
@@ -51,12 +53,15 @@ public class MessageContentAggregator {
     private final JobConfigReader jobConfigReader;
     private final List<Provider> providers;
     private final NotificationFilter notificationFilter;
+    private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
 
     @Autowired
-    public MessageContentAggregator(final JobConfigReader jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter) {
+    public MessageContentAggregator(final JobConfigReader jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter, final List<MessageContentProcessor> messageContentProcessorList) {
         this.jobConfigReader = jobConfigReader;
         this.providers = providers;
         this.notificationFilter = notificationFilter;
+        this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
+
     }
 
     public Map<CommonDistributionConfiguration, List<MessageContentGroup>> processNotifications(final Collection<AlertNotificationWrapper> notificationList) {
@@ -110,10 +115,11 @@ public class MessageContentAggregator {
             notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
-            return providerMessageContentCollectors
-                       .stream()
-                       .flatMap(collector -> collector.collect(formatType).stream())
-                       .collect(Collectors.toList());
+            final List<AggregateMessageContent> messages = providerMessageContentCollectors
+                                                               .stream()
+                                                               .flatMap(collector -> collector.getCollectedContent().stream())
+                                                               .collect(Collectors.toList());
+            return messageContentProcessorMap.get(formatType).process(messages);
         }
         return List.of();
     }

@@ -51,7 +51,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.item.BlackDuckPolicyLinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
@@ -66,8 +65,8 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
+    public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
     }
 
     @Override
@@ -100,8 +99,11 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                                                     .map(this::createPolicyLinkableItem)
                                                                     .collect(Collectors.toCollection(TreeSet::new));
             final BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItem.getValue();
+            policyComponentMapping.getPolicies()
+                .forEach(policyInfo -> blackDuckPolicyLinkableItem.addKeyItem(policyInfo.getPolicyName()));
             final SortedSet<LinkableItem> applicableItems = blackDuckPolicyLinkableItem.getComponentData();
-            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems);
+
+            addApplicableItems(categoryItems, notificationContent.getId(), linkablePolicyItems, operation, applicableItems, blackDuckPolicyLinkableItem.getKeyItems());
         }
     }
 
@@ -154,14 +156,15 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final String componentVersionName = componentVersionStatus.getComponentVersionName();
         if (StringUtils.isNotBlank(componentVersionName)) {
             blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionName, projectVersionWithComponentLink);
+            blackDuckPolicyLinkableItem.addKeyItem(componentVersionName);
         }
 
         final String componentName = componentVersionStatus.getComponentName();
         if (StringUtils.isNotBlank(componentName)) {
             final String componentLink = (StringUtils.isBlank(componentVersionName)) ? projectVersionWithComponentLink : null;
             blackDuckPolicyLinkableItem.addComponentNameItem(componentName, componentLink);
+            blackDuckPolicyLinkableItem.addKeyItem(componentName);
         }
-
         return blackDuckPolicyLinkableItem;
     }
 

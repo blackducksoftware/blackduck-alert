@@ -22,7 +22,10 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -40,5 +43,16 @@ public abstract class MessageContentProcessor {
     }
 
     public abstract List<MessageContentGroup> process(final List<AggregateMessageContent> messages);
+
+    public List<MessageContentGroup> createMessageContentGroups(List<AggregateMessageContent> messages) {
+        final Map<String, MessageContentGroup> messageGroups = new LinkedHashMap<>();
+        messages.stream()
+            .filter(message -> !message.getCategoryItems().isEmpty())
+            .forEach(message -> {
+                messageGroups.computeIfAbsent(message.getValue(), ignored -> new MessageContentGroup()).add(message);
+            });
+
+        return new ArrayList<>(messageGroups.values());
+    }
 
 }

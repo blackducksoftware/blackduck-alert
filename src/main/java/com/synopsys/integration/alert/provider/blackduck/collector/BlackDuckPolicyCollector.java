@@ -22,12 +22,12 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
@@ -35,18 +35,18 @@ import com.synopsys.integration.alert.common.message.model.CategoryKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     public static final String CATEGORY_TYPE = "policy";
 
-    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
+    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, contentTypes, blackDuckProperties);
     }
 
-    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems) {
-        final List<String> categoryKeyParts = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
+    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems,
+        SortedSet<String> keyItems) {
+        final List<String> categoryKeyParts = new ArrayList<>(keyItems);
         final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);
 
         updatePolicyItems(policyItems);
