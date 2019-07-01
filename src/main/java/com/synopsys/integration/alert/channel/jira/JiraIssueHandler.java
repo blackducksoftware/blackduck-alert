@@ -242,19 +242,17 @@ public class JiraIssueHandler {
     private String createAdditionalTrackingKey(ComponentItem componentItem) {
         StringBuilder keyBuilder = new StringBuilder();
         final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
-        for (final List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
-            if (componentAttributeList.size() == 1) {
-                componentAttributeList
-                    .stream()
-                    .findFirst()
-                    .filter(LinkableItem::isPartOfKey)
-                    // FIXME make this provider-agnostic
-                    .filter(item -> item.getName().contains("Policy"))
-                    .ifPresent(item -> {
-                        keyBuilder.append(item.getName());
-                        keyBuilder.append(item.getValue());
-                    });
-            }
+        for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
+            componentAttributeList
+                .stream()
+                .findFirst()
+                .filter(LinkableItem::isPartOfKey)
+                // FIXME make this provider-agnostic
+                .filter(item -> item.getName().contains("Policy"))
+                .ifPresent(item -> {
+                    keyBuilder.append(item.getName());
+                    keyBuilder.append(item.getValue());
+                });
         }
         return keyBuilder.toString();
     }
