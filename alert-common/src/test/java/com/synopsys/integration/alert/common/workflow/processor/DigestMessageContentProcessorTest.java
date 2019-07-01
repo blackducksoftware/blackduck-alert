@@ -14,7 +14,7 @@ public class DigestMessageContentProcessorTest extends ProcessorTest {
 
     @Test
     public void processTest() {
-        DigestMessageContentProcessor digestMessageContentProcessor = new DigestMessageContentProcessor(new MessageContentCollapser());
+        DigestMessageContentProcessor digestMessageContentProcessor = new DigestMessageContentProcessor(new MessageOperationCombiner());
         List<AggregateMessageContent> messages = createDefaultMessages();
         final List<MessageContentGroup> messageGroups = digestMessageContentProcessor.process(messages);
         assertFalse(messageGroups.isEmpty());

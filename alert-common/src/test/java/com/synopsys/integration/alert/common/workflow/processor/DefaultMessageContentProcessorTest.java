@@ -14,7 +14,7 @@ public class DefaultMessageContentProcessorTest extends ProcessorTest {
 
     @Test
     public void processTest() {
-        DefaultMessageContentProcessor defaultMessageContentProcessor = new DefaultMessageContentProcessor(new TopicCombiner());
+        DefaultMessageContentProcessor defaultMessageContentProcessor = new DefaultMessageContentProcessor(new MessageCombiner());
         List<AggregateMessageContent> messages = createDefaultMessages();
         final List<MessageContentGroup> messageGroups = defaultMessageContentProcessor.process(messages);
         assertFalse(messageGroups.isEmpty());

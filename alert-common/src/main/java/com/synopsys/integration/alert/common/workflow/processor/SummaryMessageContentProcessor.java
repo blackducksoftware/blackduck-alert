@@ -48,17 +48,17 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
-    private final MessageContentCollapser messageContentCollapser;
+    private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public SummaryMessageContentProcessor(final MessageContentCollapser messageContentCollapser) {
+    public SummaryMessageContentProcessor(final MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.SUMMARY);
-        this.messageContentCollapser = messageContentCollapser;
+        this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.process(messages);
+        final List<AggregateMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
 
         List<AggregateMessageContent> summarizedMessages = collapsedMessages.stream()
                                                                .map(this::summarize)

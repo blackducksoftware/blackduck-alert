@@ -33,17 +33,17 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {
-    private final MessageContentCollapser messageContentCollapser;
+    private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public DigestMessageContentProcessor(final MessageContentCollapser messageContentCollapser) {
+    public DigestMessageContentProcessor(final MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.DIGEST);
-        this.messageContentCollapser = messageContentCollapser;
+        this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.process(messages);
+        final List<AggregateMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
 
         return createMessageContentGroups(collapsedMessages);
     }

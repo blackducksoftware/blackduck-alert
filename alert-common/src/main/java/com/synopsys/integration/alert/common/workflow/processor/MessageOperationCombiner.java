@@ -44,11 +44,11 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.workflow.processor.model.TopicAndSubTopicPair;
 
 @Component
-public class MessageContentCollapser extends TopicCombiner {
+public class MessageOperationCombiner extends MessageCombiner {
     private final Map<ItemOperation, BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void>> operationFunctionMap;
 
     @Autowired
-    public MessageContentCollapser() {
+    public MessageOperationCombiner() {
         final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> addFunction = createAddFunction();
         final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> deleteFunction = createDeleteFunction();
         operationFunctionMap = new EnumMap<>(ItemOperation.class);
@@ -58,7 +58,7 @@ public class MessageContentCollapser extends TopicCombiner {
     }
 
     @Override
-    public List<AggregateMessageContent> process(List<AggregateMessageContent> messages) {
+    public List<AggregateMessageContent> combine(List<AggregateMessageContent> messages) {
         final Map<TopicAndSubTopicPair, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(messages);
 
         List<AggregateMessageContent> combinedMessages = new ArrayList<>();

@@ -39,9 +39,9 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.workflow.processor.model.TopicAndSubTopicPair;
 
 @Component
-public class TopicCombiner {
+public class MessageCombiner {
 
-    public List<AggregateMessageContent> process(List<AggregateMessageContent> messages) {
+    public List<AggregateMessageContent> combine(List<AggregateMessageContent> messages) {
         final Map<TopicAndSubTopicPair, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(messages);
 
         List<AggregateMessageContent> combinedMessages = new ArrayList<>();
