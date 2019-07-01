@@ -190,14 +190,14 @@ public class AlertStartupInitializer extends StartupComponent {
             }
         }
 
-        final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(fieldsToUpdate);
+        final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(fieldsToUpdate);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(updatedFieldModel).values();
     }
 
     private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
-        final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(configurationFieldModels);
+        final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();

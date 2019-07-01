@@ -8,8 +8,7 @@ class ChannelTestModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            destination: '',
-            show: this.props.showTestModal
+            destination: ''
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -40,27 +39,30 @@ class ChannelTestModal extends Component {
     }
 
     render() {
-        // TODO figure out a way to toggle the spinner/ there is no point to toggling the spinner if the sendTestMessage is closing the modal
         return (
             <Modal show={this.props.showTestModal} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Test Your Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <TextInput id="destinationName" label={this.props.destinationName} name="destinationName"
-                               value={this.state.destination} onChange={this.handleChange} />
+                    <TextInput
+                        id="destinationName"
+                        label={this.props.destinationName}
+                        name="destinationName"
+                        value={this.state.destination}
+                        onChange={this.handleChange}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
                     </button>
-                    <button id="testSend" type="button" className="btn btn-primary"
-                            onClick={this.handleSendTestMessage}>Send Test Message
+                    <button
+                        id="testSend"
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={this.handleSendTestMessage}
+                    >Send Test Message
                     </button>
-                    {this.state.show &&
-                    <div className="progressIcon">
-                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                    </div>
-                    }
                 </Modal.Footer>
             </Modal>
         );
