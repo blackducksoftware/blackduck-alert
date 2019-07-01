@@ -33,15 +33,17 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class DefaultMessageContentProcessor extends MessageContentProcessor {
+    private final TopicCombiner topicCombiner;
 
     @Autowired
-    public DefaultMessageContentProcessor() {
+    public DefaultMessageContentProcessor(final TopicCombiner topicCombiner) {
         super(FormatType.DEFAULT);
+        this.topicCombiner = topicCombiner;
     }
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        List<AggregateMessageContent> combinedMessages = combineMessages(messages);
+        List<AggregateMessageContent> combinedMessages = topicCombiner.process(messages);
         return createMessageContentGroups(combinedMessages);
     }
 

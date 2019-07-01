@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 
@@ -39,9 +40,11 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.CategoryItem;
 import com.synopsys.integration.alert.common.message.model.CategoryKey;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.workflow.processor.model.TopicAndSubTopicPair;
 
 @Component
-public class MessageContentCollapser {
+public class MessageContentCollapser extends TopicCombiner {
     private final Map<ItemOperation, BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void>> operationFunctionMap;
 
     @Autowired
@@ -54,54 +57,66 @@ public class MessageContentCollapser {
         operationFunctionMap.put(ItemOperation.DELETE, deleteFunction);
     }
 
-    public List<AggregateMessageContent> collapse(final List<AggregateMessageContent> messages) {
-        final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(messages.size());
-        for (final AggregateMessageContent topic : messages) {
-            final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
-            topic.getCategoryItems().forEach(item -> processOperation(categoryDataCache, item));
+    @Override
+    public List<AggregateMessageContent> process(List<AggregateMessageContent> messages) {
+        final Map<TopicAndSubTopicPair, List<AggregateMessageContent>> messagesGroupedByTopicAndSubTopic = groupByTopicAndSubTopicValue(messages);
 
-            final Optional<AggregateMessageContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
-            if (collapsedContent.isPresent()) {
-                collapsedTopicList.add(collapsedContent.get());
+        List<AggregateMessageContent> combinedMessages = new ArrayList<>();
+        for (final Map.Entry<TopicAndSubTopicPair, List<AggregateMessageContent>> groupedMessageEntry : messagesGroupedByTopicAndSubTopic.entrySet()) {
+            final TopicAndSubTopicPair topicAndSubTopic = groupedMessageEntry.getKey();
+            final LinkableItem topic = topicAndSubTopic.getLeft();
+
+            List<CategoryItem> groupCategoryItems = new ArrayList<>();
+            for (AggregateMessageContent aggregateMessageContent : groupedMessageEntry.getValue()) {
+                final Map<CategoryKey, CategoryItem> messageDataCache = new LinkedHashMap<>();
+                aggregateMessageContent.getCategoryItems().forEach(item -> processOperation(messageDataCache, item));
+                groupCategoryItems.addAll(messageDataCache.values());
             }
-        }
+            Map<CategoryKey, CategoryItem> groupDataCache = new LinkedHashMap<>();
+            groupCategoryItems.forEach(item -> processOperation(groupDataCache, item));
 
-        return collapsedTopicList;
+            final SortedSet<CategoryItem> combinedCategoryItems = combineCategoryItems(new ArrayList<>(groupDataCache.values()));
+
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), combinedCategoryItems);
+            combinedMessages.add(newMessage);
+        }
+        return combinedMessages;
     }
 
     private BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> createAddFunction() {
-        return (categoryDataCache, categoryItem) -> {
-            categoryDataCache.put(categoryItem.getCategoryKey(), categoryItem);
+        return (messageDataCache, categoryItem) -> {
+            messageDataCache.put(categoryItem.getCategoryKey(), categoryItem);
             return null;
         };
     }
 
     private BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> createDeleteFunction() {
-        return (categoryDataCache, categoryItem) -> {
+        return (messageDataCache, categoryItem) -> {
             final CategoryKey key = categoryItem.getCategoryKey();
-            if (categoryDataCache.containsKey(key)) {
-                categoryDataCache.remove(key);
+            if (messageDataCache.containsKey(key)) {
+                messageDataCache.remove(key);
             } else {
-                categoryDataCache.put(key, categoryItem);
+                messageDataCache.put(key, categoryItem);
             }
             return null;
         };
     }
 
-    private void processOperation(final Map<CategoryKey, CategoryItem> categoryDataCache, final CategoryItem item) {
+    private void processOperation(final Map<CategoryKey, CategoryItem> messageDataCache, final CategoryItem item) {
         final ItemOperation operation = item.getOperation();
         if (operationFunctionMap.containsKey(operation)) {
             final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> operationFunction = operationFunctionMap.get(operation);
-            operationFunction.apply(categoryDataCache, item);
+            operationFunction.apply(messageDataCache, item);
         }
     }
 
-    private Optional<AggregateMessageContent> rebuildTopic(final AggregateMessageContent currentContent, final Collection<CategoryItem> categoryItemCollection) {
+    private Optional<AggregateMessageContent> rebuildTopic(LinkableItem topic, Optional<LinkableItem> subTopic, final Collection<CategoryItem> categoryItemCollection) {
         if (categoryItemCollection.isEmpty()) {
             return Optional.empty();
         } else {
-            final String url = currentContent.getUrl().orElse(null);
-            return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, currentContent.getSubTopic().orElse(null), new TreeSet<>(categoryItemCollection)));
+            final String url = topic.getUrl().orElse(null);
+            LinkableItem resolvedSubTopic = subTopic.orElse(null);
+            return Optional.of(new AggregateMessageContent(topic.getName(), topic.getValue(), url, resolvedSubTopic, new TreeSet<>(categoryItemCollection)));
         }
     }
 

@@ -58,8 +58,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        List<AggregateMessageContent> combinedMessages = combineMessages(messages);
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(combinedMessages);
+        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.process(messages);
 
         List<AggregateMessageContent> summarizedMessages = collapsedMessages.stream()
                                                                .map(this::summarize)

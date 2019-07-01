@@ -43,8 +43,8 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
 
     @Override
     public List<MessageContentGroup> process(final List<AggregateMessageContent> messages) {
-        List<AggregateMessageContent> combinedMessages = combineMessages(messages);
-        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.collapse(combinedMessages);
+        final List<AggregateMessageContent> collapsedMessages = messageContentCollapser.process(messages);
+
         return createMessageContentGroups(collapsedMessages);
     }
 }
