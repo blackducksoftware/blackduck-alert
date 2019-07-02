@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.common.persistence.util;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,10 +133,7 @@ public class ConfigurationFieldModelConverter {
 
     private void populateAndSecureFields(final ConfigurationFieldModel fieldModel, final Map<String, FieldValueModel> fields) {
         final String key = fieldModel.getFieldKey();
-        Collection<String> values = Collections.emptyList();
-        if (!fieldModel.isSensitive()) {
-            values = fieldModel.getFieldValues();
-        }
+        Collection<String> values = (!fieldModel.isSensitive()) ? fieldModel.getFieldValues() : List.of();
         final FieldValueModel fieldValueModel = new FieldValueModel(values, fieldModel.isSet());
         fields.put(key, fieldValueModel);
     }
