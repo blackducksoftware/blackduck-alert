@@ -34,12 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessage;
@@ -53,8 +52,6 @@ public class SystemActions {
     private final Logger logger = LoggerFactory.getLogger(SystemActions.class);
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
-
-    // TODO remove configActions from here and replace it with FieldModelProcessor
     private final ConfigActions configActions;
 
     @Autowired
@@ -107,7 +104,7 @@ public class SystemActions {
         return model;
     }
 
-    public FieldModel saveRequiredInformation(final FieldModel settingsToSave, final Map<String, String> fieldErrors) throws AlertException, AlertFieldException {
+    public FieldModel saveRequiredInformation(final FieldModel settingsToSave, final Map<String, String> fieldErrors) throws AlertException {
         FieldModel systemSettings = settingsToSave;
         configActions.validateConfig(systemSettings, fieldErrors);
         if (fieldErrors.isEmpty()) {

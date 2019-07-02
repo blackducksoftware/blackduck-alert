@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -33,16 +32,16 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
     private FieldModelProcessor fieldModelProcessor;
 
     @Autowired
-    private ConfigurationFieldModelConverter configurationFieldModelConverter;
+    private DescriptorProcessor descriptorProcessor;
 
     @Autowired
-    private ContentConverter contentConverter;
+    private ConfigurationFieldModelConverter configurationFieldModelConverter;
 
     @Test
     public void deleteSensitiveFieldFromConfig() throws AlertException, AlertFieldException {
         final FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
         Mockito.doReturn(Map.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
-        final ConfigActions configActions = new ConfigActions(configurationAccessor, spiedFieldModelProcessor, configurationFieldModelConverter, contentConverter);
+        final ConfigActions configActions = new ConfigActions(configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter);
         final ConfigurationFieldModel proxyHost = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         final ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(SettingsDescriptor.KEY_PROXY_PORT);
@@ -60,7 +59,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final FieldValueModel proxyPasswordFieldValue = new FieldValueModel(Set.of(), false);
 
         final Long longConfigId = configurationModel.getConfigurationId();
-        final String configId = contentConverter.getStringValue(longConfigId);
+        final String configId = String.valueOf(longConfigId);
 
         final FieldModel fieldModel = new FieldModel(configId, SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(),
             new HashMap<>(Map.of(SettingsDescriptor.KEY_PROXY_HOST, proxyHostFieldValue, SettingsDescriptor.KEY_PROXY_PORT, proxyPortFieldValue,

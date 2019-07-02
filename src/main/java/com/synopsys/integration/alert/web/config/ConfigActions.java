@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -56,16 +55,15 @@ public class ConfigActions {
     private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
+    private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
-    private final ContentConverter contentConverter;
 
     @Autowired
-    public ConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter,
-        final ContentConverter contentConverter) {
+    public ConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final DescriptorProcessor descriptorProcessor, final ConfigurationFieldModelConverter modelConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
+        this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
-        this.contentConverter = contentConverter;
     }
 
     public boolean doesConfigExist(final String id) throws AlertException {
@@ -84,7 +82,7 @@ public class ConfigActions {
             final List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
-                    final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+                    final FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
                     fieldModelList.add(fieldModel);
                 }
             }
@@ -104,7 +102,7 @@ public class ConfigActions {
         Optional<FieldModel> optionalModel = Optional.empty();
         final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
-            final FieldModel configurationFieldModel = fieldModelProcessor.convertToFieldModel(configurationModel.get());
+            final FieldModel configurationFieldModel = modelConverter.convertToFieldModel(configurationModel.get());
             final FieldModel fieldModel = fieldModelProcessor.performAfterReadAction(configurationFieldModel);
             optionalModel = Optional.of(fieldModel);
         }
@@ -116,10 +114,11 @@ public class ConfigActions {
             final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
             if (configuration.isPresent()) {
                 final ConfigurationModel configurationModel = configuration.get();
-                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(configurationModel);
+                final FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
+                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
                 final String descriptorName = fieldModel.getDescriptorName();
                 final String context = fieldModel.getContext();
-                configurationAccessor.deleteConfiguration(contentConverter.getLongValue(fieldModel.getId()));
+                configurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
                 fieldModelProcessor.performAfterDeleteAction(descriptorName, context);
             }
         }
@@ -132,7 +131,7 @@ public class ConfigActions {
         final String context = modifiedFieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
-        final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
+        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
         final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
         return dbSavedModel.fill(afterSaveAction);
     }
@@ -147,7 +146,7 @@ public class ConfigActions {
 
     public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
         validateConfig(restModel, new HashMap<>());
-        final Optional<TestAction> testActionOptional = fieldModelProcessor.retrieveTestAction(restModel);
+        final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
             final FieldModel upToDateFieldModel = fieldModelProcessor.createTestFieldModel(restModel);
             final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
@@ -166,7 +165,7 @@ public class ConfigActions {
         final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
-        final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
         final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
         return dbSavedModel.fill(afterUpdateAction);
     }

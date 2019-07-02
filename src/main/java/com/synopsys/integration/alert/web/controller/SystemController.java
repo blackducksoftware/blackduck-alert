@@ -93,7 +93,7 @@ public class SystemController extends BaseController {
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             }
         } catch (final ParseException ex) {
-            logger.error("error occured getting system messages", ex);
+            logger.error("error occurred getting system messages", ex);
             return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
