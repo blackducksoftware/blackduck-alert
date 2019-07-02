@@ -22,14 +22,13 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
@@ -46,34 +45,15 @@ public abstract class MessageContentProcessor {
 
     public abstract List<MessageContentGroup> process(final List<ProviderMessageContent> messages);
 
-    protected ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
-        LinkableItem provider = oldMessage.getProvider();
-        LinkableItem topic = oldMessage.getTopic();
-        Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();
-        String subTopicName = optionalSubTopic.map(LinkableItem::getName).orElse(null);
-        String subTopicValue = optionalSubTopic.map(LinkableItem::getValue).orElse(null);
-        String subTopicUrl = optionalSubTopic.flatMap(LinkableItem::getUrl).orElse(null);
+    public List<MessageContentGroup> createMessageContentGroups(List<ProviderMessageContent> messages) {
+        final Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();
+        messages.stream()
+            .filter(message -> !message.getComponentItems().isEmpty())
+            .forEach(message -> {
+                messageGroups.computeIfAbsent(message.getContentKey(), ignored -> new MessageContentGroup()).add(message);
+            });
 
-        return new ProviderMessageContent.Builder()
-                   .applyProvider(provider.getValue(), provider.getUrl().orElse(null))
-                   .applyTopic(topic.getName(), topic.getValue(), topic.getUrl().orElse(null))
-                   .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
-                   .applyAllComponentItems(componentItems)
-                   .build();
-    }
-
-    protected ComponentItem createNewComponentItem(ComponentItem oldItem, Collection<LinkableItem> componentAttributes) throws AlertException {
-        LinkableItem component = oldItem.getComponent();
-        LinkableItem nullableSubComponent = oldItem.getSubComponent().orElse(null);
-        return new ComponentItem.Builder()
-                   .applyCategory(oldItem.getCategory())
-                   .applyPriority(oldItem.getPriority())
-                   .applyComponentData(component.getName(), component.getValue(), component.getUrl().orElse(null))
-                   .applySubComponent(nullableSubComponent)
-                   .applyOperation(oldItem.getOperation())
-                   .applyNotificationId(oldItem.getNotificationId())
-                   .applyAllComponentAttributes(componentAttributes)
-                   .build();
+        return new ArrayList<>(messageGroups.values());
     }
 
 }

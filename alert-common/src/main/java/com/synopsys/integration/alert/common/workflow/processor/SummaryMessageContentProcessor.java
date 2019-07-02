@@ -51,17 +51,17 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
-    private final MessageContentCollapser messageContentCollapser;
+    private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public SummaryMessageContentProcessor(MessageContentCollapser messageContentCollapser) {
+    public SummaryMessageContentProcessor(final MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.SUMMARY);
-        this.messageContentCollapser = messageContentCollapser;
+        this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
     public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
-        final List<ProviderMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
+        final List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
 
         final List<MessageContentGroup> newGroups = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         }
 
         try {
-            return createNewMessage(message, summarizedComponentItems);
+            return messageOperationCombiner.createNewMessage(message, summarizedComponentItems);
         } catch (AlertException e) {
             // If this happens, it means there is a bug in the Collector logic.
             throw new AlertRuntimeException(e);
@@ -111,7 +111,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         for (final ComponentItem componentItem : componentItemsForOperation) {
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(componentItemsForOperation, componentItem.getComponentAttributes());
             try {
-                ComponentItem newComponentItem = createNewComponentItem(componentItem, summarizedLinkableItems);
+                ComponentItem newComponentItem = messageOperationCombiner.createNewComponentItem(componentItem, summarizedLinkableItems);
                 summarizedCategoryItems.add(newComponentItem);
             } catch (AlertException e) {
                 // If this happens, it means there is a bug in the Collector logic.
@@ -198,7 +198,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
                 final SortedSet<LinkableItem> collapsedLinkableItems = collapseDuplicateLinkableItems(combinedLinkableItems);
                 try {
-                    updatedCategoryItem = createNewComponentItem(currentItem, collapsedLinkableItems);
+                    updatedCategoryItem = messageOperationCombiner.createNewComponentItem(currentItem, collapsedLinkableItems);
                 } catch (AlertException e) {
                     // If this happens, it means there is a bug in the Collector logic.
                     throw new AlertRuntimeException(e);

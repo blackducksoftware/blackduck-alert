@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -39,6 +40,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     private ConfigurationAccessor jobConfigReader;
     @Autowired
     private NotificationFilter notificationFilter;
+    @Autowired
+    private List<MessageContentProcessor> messageContentProcessorList;
+
+    private Long idCount = 0L;
 
     @Test
     public void testNoJobProcessing() throws Exception {
@@ -50,7 +55,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(jobConfigReader, providers, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(jobConfigReader, providers, notificationFilter, messageContentProcessorList);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
@@ -73,7 +78,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final ConfigurationAccessor spiedReader = Mockito.spy(jobConfigReader);
         Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getAllJobs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter, messageContentProcessorList);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentMap.isEmpty());
@@ -98,7 +103,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final ConfigurationAccessor spiedReader = Mockito.spy(jobConfigReader);
         Mockito.doReturn(List.of()).when(spiedReader).getAllJobs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter, messageContentProcessorList);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
@@ -123,7 +128,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final ConfigurationAccessor spiedReader = Mockito.spy(jobConfigReader);
         Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getAllJobs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter, messageContentProcessorList);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
@@ -149,7 +154,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final ConfigurationAccessor spiedReader = Mockito.spy(jobConfigReader);
         Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getAllJobs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter, messageContentProcessorList);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
@@ -176,9 +181,6 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private AlertNotificationWrapper createNotification(final String providerName, final String notificationContent, final NotificationType type) {
-        NotificationContent notification = new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
-        notification.setId(1L);
-        return notification;
+        return new NotificationContent(idCount++, new Date(), providerName, new Date(), type.name(), notificationContent);
     }
-
 }

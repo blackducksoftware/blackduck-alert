@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 
@@ -57,8 +56,8 @@ public class BlackDuckLicenseLimitCollector extends BlackDuckCollector {
     private Logger logger = LoggerFactory.getLogger(BlackDuckLicenseLimitCollector.class);
 
     @Autowired
-    public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.LICENSE_LIMIT), blackDuckProperties);
+    public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, Arrays.asList(BlackDuckContent.LICENSE_LIMIT), blackDuckProperties);
         this.blackDuckProperties = blackDuckProperties;
     }
 

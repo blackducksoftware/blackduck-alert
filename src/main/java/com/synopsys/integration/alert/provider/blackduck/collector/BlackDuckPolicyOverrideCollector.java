@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -55,8 +54,8 @@ import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
 
     @Autowired
-    public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckContent.POLICY_OVERRIDE), blackDuckProperties);
+    public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, Arrays.asList(BlackDuckContent.POLICY_OVERRIDE), blackDuckProperties);
     }
 
     @Override

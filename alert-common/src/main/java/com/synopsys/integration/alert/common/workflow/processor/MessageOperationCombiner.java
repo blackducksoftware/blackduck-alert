@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,16 +38,18 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
-public class MessageContentCollapser {
+public class MessageOperationCombiner extends MessageCombiner {
     private final Map<ItemOperation, BiFunction<Map<String, ComponentItem>, ComponentItem, Void>> operationFunctionMap;
 
     @Autowired
-    public MessageContentCollapser() {
+    public MessageOperationCombiner() {
         final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> addFunction = createAddFunction();
         final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> deleteFunction = createDeleteFunction();
         operationFunctionMap = new EnumMap<>(ItemOperation.class);
@@ -54,17 +58,43 @@ public class MessageContentCollapser {
         operationFunctionMap.put(ItemOperation.DELETE, deleteFunction);
     }
 
-    public List<ProviderMessageContent> collapse(final List<ProviderMessageContent> messages) {
-        final List<ProviderMessageContent> collapsedMessages = new ArrayList<>(messages.size());
-        for (final ProviderMessageContent message : messages) {
-            final Map<String, ComponentItem> categoryDataCache = new LinkedHashMap<>();
-            message.getComponentItems().forEach(item -> processOperation(categoryDataCache, item));
-
-            final Optional<ProviderMessageContent> collapsedContent = rebuildTopic(message, categoryDataCache.values());
-            collapsedContent.ifPresent(collapsedMessages::add);
+    @Override
+    public List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
+        final Map<ContentKey, List<ProviderMessageContent>> messagesGroupedByKey = new LinkedHashMap<>();
+        for (ProviderMessageContent message : messages) {
+            messagesGroupedByKey.computeIfAbsent(message.getContentKey(), k -> new LinkedList<>()).add(message);
         }
 
-        return collapsedMessages;
+        List<ProviderMessageContent> combinedMessages = new ArrayList<>();
+        for (final Map.Entry<ContentKey, List<ProviderMessageContent>> groupedMessageEntry : messagesGroupedByKey.entrySet()) {
+            final List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
+
+            List<ComponentItem> groupCategoryItems = new ArrayList<>();
+            for (ProviderMessageContent aggregateMessageContent : groupedMessageEntry.getValue()) {
+                final Map<String, ComponentItem> messageDataCache = new LinkedHashMap<>();
+                aggregateMessageContent.getComponentItems().forEach(item -> processOperation(messageDataCache, item));
+                groupCategoryItems.addAll(messageDataCache.values());
+            }
+            Map<String, ComponentItem> groupDataCache = new LinkedHashMap<>();
+            groupCategoryItems.forEach(item -> processOperation(groupDataCache, item));
+
+            final LinkedHashSet<ComponentItem> combinedComponentItems = combineComponentItems(new ArrayList<>(groupDataCache.values()));
+
+            final Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
+                                                                          .stream()
+                                                                          .findAny();
+
+            if (arbitraryMessage.isPresent()) {
+                try {
+                    final ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
+                    combinedMessages.add(newMessage);
+                } catch (AlertException e) {
+                    // If this happens, it means there is a bug in the Collector logic.
+                    throw new AlertRuntimeException(e);
+                }
+            }
+        }
+        return combinedMessages;
     }
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createAddFunction() {

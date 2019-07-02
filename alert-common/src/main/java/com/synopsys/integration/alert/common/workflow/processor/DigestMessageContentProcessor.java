@@ -33,20 +33,18 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {
-    private final DefaultMessageContentProcessor defaultMessageContentProcessor;
-    private final MessageContentCollapser messageContentCollapser;
+    private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public DigestMessageContentProcessor(final DefaultMessageContentProcessor defaultMessageContentProcessor, final MessageContentCollapser messageContentCollapser) {
+    public DigestMessageContentProcessor(final MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.DIGEST);
-        this.defaultMessageContentProcessor = defaultMessageContentProcessor;
-        this.messageContentCollapser = messageContentCollapser;
+        this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
     public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
-        final List<ProviderMessageContent> collapsedMessages = messageContentCollapser.collapse(messages);
-        return defaultMessageContentProcessor.process(collapsedMessages);
-    }
+        final List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
 
+        return createMessageContentGroups(collapsedMessages);
+    }
 }

@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,7 +38,6 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -49,8 +47,8 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     private final Map<String, ComponentItemPriority> priorityMap = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, messageContentProcessorList, contentTypes, blackDuckProperties);
+    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor,  final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor,  contentTypes, blackDuckProperties);
 
         priorityMap.put("blocker", ComponentItemPriority.HIGHEST);
         priorityMap.put("critical", ComponentItemPriority.HIGH);
