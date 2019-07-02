@@ -173,6 +173,7 @@ class AuditPage extends Component {
         let hasIssueCountIncreased = false;
         let hasIssueCountDecreased = false;
         let hasLicenseLimit = false;
+        let hasBomEdit = false;
 
 
         if (cell === 'RULE_VIOLATION') {
@@ -189,9 +190,10 @@ class AuditPage extends Component {
             hasIssueCountDecreased = true;
         } else if (cell === 'LICENSE_LIMIT') {
             hasLicenseLimit = true;
+        } else if (cell === 'BOM_EDIT') {
+            hasBomEdit = true;
         }
-
-
+        
         return (<NotificationTypeLegend
             hasPolicyViolation={hasPolicyViolation}
             hasPolicyViolationCleared={hasPolicyViolationCleared}
@@ -203,6 +205,7 @@ class AuditPage extends Component {
             hasIssueCountIncreased={hasIssueCountIncreased}
             hasIssueCountDecreased={hasIssueCountDecreased}
             hasLicenseLimit={hasLicenseLimit}
+            hasBomEdit={hasBomEdit}
         />);
     }
 

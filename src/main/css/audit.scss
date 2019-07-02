@@ -17,7 +17,7 @@
   color: lighten($synopsys-color-platform-red, 10%);
 }
 
-.lowVulnerability {
+.lowVulnerability, .bomEdit {
   padding-left: 3px;
   padding-right: 3px;
   color: $synopsys-color-light-gray;

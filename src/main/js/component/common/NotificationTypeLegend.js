@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const policyViolationIcon = <span key="policyViolationIcon" alt="Policy Violation" className="fa-layers fa-fw policyViolation"><FontAwesomeIcon icon="ban" className="alert-icon" size="lg" /></span>;
 const policyViolationClearedIcon = <span key="policyViolationClearedIcon" alt="Policy Violation Cleared" className="fa-layers fa-fw policyViolationCleared"><FontAwesomeIcon icon="eraser" className="alert-icon" size="lg" /></span>;
@@ -13,6 +13,7 @@ const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" clas
 const issueCountIncreasedIcon = <span key="issueCountIncreasing" alt="Issue Count Increased" className="fa-layers fa-fw issueCountIncreased"><FontAwesomeIcon icon="angle-double-up" className="alert-icon" size="lg" /></span>;
 const issueCountDecreasedIcon = <span key="issueCountDecreased" alt="Issue Count Decreased" className="fa-layers fa-fw issueCountDecreased"><FontAwesomeIcon icon="angle-double-down" className="alert-icon" size="lg" /></span>;
 const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa fa-database fa-fw licenseLimit" aria-hidden="true" />;
+const bomEditIcon = <span key="bomEdit" alt="Bom Edit" className="fa-layers fa-fw bomEdit"><FontAwesomeIcon icon="user-edit" className="alert-icon" size="lg" /></span>;
 
 const NotificationTypeLegend = ({
                                     hasPolicyViolation,
@@ -24,7 +25,8 @@ const NotificationTypeLegend = ({
                                     hasVulnerability,
                                     hasIssueCountIncreased,
                                     hasIssueCountDecreased,
-                                    hasLicenseLimit
+                                    hasLicenseLimit,
+                                    hasBomEdit
                                 }) => (
     <OverlayTrigger
         trigger={['hover', 'focus']}
@@ -41,6 +43,7 @@ const NotificationTypeLegend = ({
                 {hasIssueCountIncreased && <div>{issueCountIncreasedIcon} Issue Count Increased</div>}
                 {hasIssueCountDecreased && <div>{issueCountDecreasedIcon} Issue Count Decreased</div>}
                 {hasLicenseLimit && <div>{licenseLimitIcon} License Limit</div>}
+                {hasBomEdit && <div>{bomEditIcon} Bom Edit</div>}
             </Popover>
         )}
     >
@@ -55,6 +58,7 @@ const NotificationTypeLegend = ({
             {hasIssueCountIncreased && issueCountIncreasedIcon}
             {hasIssueCountDecreased && issueCountDecreasedIcon}
             {hasLicenseLimit && licenseLimitIcon}
+            {hasBomEdit && bomEditIcon}
         </span>
     </OverlayTrigger>
 );
@@ -69,7 +73,8 @@ NotificationTypeLegend.propTypes = {
     hasVulnerability: PropTypes.bool,
     hasIssueCountIncreased: PropTypes.bool,
     hasIssueCountDecreased: PropTypes.bool,
-    hasLicenseLimit: PropTypes.bool
+    hasLicenseLimit: PropTypes.bool,
+    hasBomEdit: PropTypes.bool
 };
 
 NotificationTypeLegend.defaultProps = {
@@ -82,7 +87,8 @@ NotificationTypeLegend.defaultProps = {
     hasVulnerability: false,
     hasIssueCountIncreased: false,
     hasIssueCountDecreased: false,
-    hasLicenseLimit: false
+    hasLicenseLimit: false,
+    hasBomEdit: false
 };
 
 export default NotificationTypeLegend;
