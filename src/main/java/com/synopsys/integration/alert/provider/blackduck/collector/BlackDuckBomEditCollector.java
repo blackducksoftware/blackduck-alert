@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -118,11 +119,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         final Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(this::getProjectVersionWrapper);
 
         List<ComponentItem> componentItems = new LinkedList<>();
-        if (projectVersionWrapper.isPresent()) {
+        if (versionBomComponentView.isPresent()) {
             // have both the component view and the project wrapper.
             List<LinkableItem> licenseItems = getLicenseLinkableItems(versionBomComponentView.get());
             componentItems.addAll(addVulnerabilityData(notificationContent.getId(), versionBomComponentView.get(), licenseItems));
-            componentItems.addAll(addPolicyData(notificationContent.getId(), projectVersionWrapper.get(), versionBomComponentView.get(), licenseItems));
+            projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(addPolicyData(notificationContent.getId(), versionWrapper, versionBomComponentView.get(), licenseItems)));
         }
 
         return componentItems;
@@ -130,7 +131,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
     private JsonField<String> getDataField(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
         final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, contentIdentifier);
-        return (JsonField<String>) optionalField.get();
+        return (JsonField<String>) optionalField.orElseThrow(() -> new AlertRuntimeException(String.format("The '' field is required for this operation", contentIdentifier.name())));
     }
 
     private Optional<String> getBomComponentUrl(final JsonFieldAccessor accessor, JsonField<String> field) {
@@ -151,11 +152,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 final int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
                 final String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
 
-                getBucketService().get().addToTheBucket(getBlackDuckBucket(), projectVersionUri, ProjectVersionView.class);
+                getBucketService().addToTheBucket(getBlackDuckBucket(), projectVersionUri, ProjectVersionView.class);
                 final ProjectVersionView projectVersion = getBlackDuckBucket().get(projectVersionUri, ProjectVersionView.class);
                 final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
                 wrapper.setProjectVersionView(projectVersion);
-                getBlackDuckService().get().getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
+                getBlackDuckService().getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
                 return Optional.of(wrapper);
             }
         } catch (final IntegrationException ie) {
@@ -176,10 +177,10 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             }
 
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
-                getBucketService().get().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
+                getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
                 ComponentVersionView componentVersionView = getBlackDuckBucket().get(versionBomComponent.getComponentVersion(), ComponentVersionView.class);
                 // add remediation data information.
-                final ComponentService componentService = new ComponentService(getBlackDuckService().get(), new Slf4jIntLogger(logger));
+                final ComponentService componentService = new ComponentService(getBlackDuckService(), new Slf4jIntLogger(logger));
                 final Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
                 final List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(licenseItems);
@@ -231,14 +232,14 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
                 componentVersionItem = Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
             }
-            final List<PolicyRuleView> policyRules = getBlackDuckService().get().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
+            final List<PolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (final PolicyRuleView rule : policyRules) {
                 final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
                 policyNameItem.setCollapsible(true);
                 policyNameItem.setSummarizable(true);
                 policyNameItem.setCountable(true);
                 if (hasVulnerabilityRule(rule)) {
-                    final List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().get().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE);
+                    final List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE);
                     final Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                                   .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
                                                                                                   .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))

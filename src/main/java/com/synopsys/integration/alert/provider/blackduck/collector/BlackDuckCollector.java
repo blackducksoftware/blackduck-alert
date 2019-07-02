@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
@@ -65,10 +66,10 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                                                                                 .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
         blackDuckService = blackDuckServicesFactory
                                .map(BlackDuckServicesFactory::createBlackDuckService)
-                               .orElse(null);
+                               .orElseThrow(() -> new AlertRuntimeException("The BlackDuckCollector cannot be used without a valid Black Duck connection"));
         bucketService = blackDuckServicesFactory
                             .map(BlackDuckServicesFactory::createBlackDuckBucketService)
-                            .orElse(null);
+                            .orElseThrow(() -> new AlertRuntimeException("The BlackDuckCollector cannot be used without a valid Black Duck connection"));
         hasValidConnection = null != blackDuckService && null != bucketService;
         blackDuckBucket = new BlackDuckBucket();
     }
@@ -134,12 +135,12 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return hasValidConnection;
     }
 
-    protected Optional<BlackDuckService> getBlackDuckService() {
-        return Optional.ofNullable(blackDuckService);
+    protected BlackDuckService getBlackDuckService() {
+        return blackDuckService;
     }
 
-    protected Optional<BlackDuckBucketService> getBucketService() {
-        return Optional.ofNullable(bucketService);
+    protected BlackDuckBucketService getBucketService() {
+        return bucketService;
     }
 
     protected BlackDuckBucket getBlackDuckBucket() {

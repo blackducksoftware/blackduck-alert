@@ -96,12 +96,13 @@ public class JiraIssueHandler {
                                                       .findFirst()
                                                       .orElseThrow(() -> new AlertException(String.format("No projects matching '%s' were found", projectName)));
         final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
-        issueTypeService.getAllIssueTypes()
-            .stream()
-            .map(IssueTypeResponseModel::getName)
-            .filter(name -> name.equals(issueType))
-            .findAny()
-            .orElseThrow(() -> new AlertException(String.format("The issue type '%s' could not be found", issueType)));
+        boolean isValidIssueType = issueTypeService.getAllIssueTypes()
+                                       .stream()
+                                       .map(IssueTypeResponseModel::getName)
+                                       .anyMatch(name -> name.equals(issueType));
+        if (!isValidIssueType) {
+            throw new AlertException(String.format("The issue type '%s' could not be found", issueType));
+        }
 
         final String projectId = projectComponent.getId();
         final String providerName = content.getComonProvider().getValue();
