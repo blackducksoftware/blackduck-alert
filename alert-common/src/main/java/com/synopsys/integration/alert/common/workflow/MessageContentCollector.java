@@ -75,7 +75,8 @@ public abstract class MessageContentCollector {
             final List<ProviderMessageContent.Builder> providerContents = getMessageBuildersOrCreateIfTheyDoNotExist(jsonFieldAccessor, notificationFields);
 
             for (final ProviderMessageContent.Builder builder : providerContents) {
-                builder.applyAllComponentItems(getComponentItems(jsonFieldAccessor, notificationFields, notification));
+                final Collection<ComponentItem> componentItems = getComponentItems(jsonFieldAccessor, notificationFields, notification);
+                builder.applyAllComponentItems(componentItems);
                 String builderKey = builder.getCurrentContentKey().getValue();
                 if (!messageBuilderMap.containsKey(builderKey)) {
                     messageBuilderMap.put(builderKey, builder);
