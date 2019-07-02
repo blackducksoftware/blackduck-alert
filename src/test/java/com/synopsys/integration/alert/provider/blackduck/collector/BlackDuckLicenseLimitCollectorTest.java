@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -31,7 +30,7 @@ public class BlackDuckLicenseLimitCollectorTest {
     @Test
     public void addCategoryItemsTest() {
         final JsonExtractor jsonExtractor = new JsonExtractor(gson);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        final BlackDuckProperties blackDuckProperties = BlackDuckCollectorTestHelper.mockProperties();
         final BlackDuckLicenseLimitCollector collector = new BlackDuckLicenseLimitCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
         final NotificationContent notification = getNotificationContent();
 

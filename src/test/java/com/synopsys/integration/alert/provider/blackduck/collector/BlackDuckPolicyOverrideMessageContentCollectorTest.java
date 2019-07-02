@@ -11,14 +11,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
@@ -116,8 +114,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     }
 
     private BlackDuckPolicyOverrideCollector createCollector() {
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any(Logger.class))).thenReturn(Optional.empty());
+        final BlackDuckProperties blackDuckProperties = BlackDuckCollectorTestHelper.mockProperties();
         return new BlackDuckPolicyOverrideCollector(jsonExtractor, messageContentProcessorList, blackDuckProperties);
     }
 
