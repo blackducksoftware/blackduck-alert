@@ -45,7 +45,7 @@ public class BlackDuckProviderUIConfig extends UIConfig {
 
     private static final String BLACKDUCK_URL_DESCRIPTION = "The URL of the Black Duck server.";
     private static final String BLACKDUCK_API_KEY_DESCRIPTION = "The API token used to retrieve data from the Black Duck server. The API token should be for a super user.";
-    private static final String BLACKDUCK_TIMEOUT_DESCRIPTION = "The timeout in seconds for all connections to the Black Duck server. Default: 300.";
+    private static final String BLACKDUCK_TIMEOUT_DESCRIPTION = "The timeout in seconds for all connections to the Black Duck server.";
 
     public BlackDuckProviderUIConfig() {
         super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_DESCRIPTION, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);

@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -40,32 +39,27 @@ import org.slf4j.LoggerFactory;
 
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 
 public abstract class MessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final JsonExtractor jsonExtractor;
     private final Collection<ProviderContentType> contentTypes;
-    private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
     private final Set<String> supportedNotificationTypes;
     private final Map<String, ProviderMessageContent.Builder> messageBuilderMap;
 
-    public MessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
+    public MessageContentCollector(final JsonExtractor jsonExtractor, final Collection<ProviderContentType> contentTypes) {
         this.jsonExtractor = jsonExtractor;
         this.contentTypes = contentTypes;
-        this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
         this.supportedNotificationTypes = contentTypes.stream().map(ProviderContentType::getNotificationType).collect(Collectors.toSet());
         this.messageBuilderMap = new HashMap<>();
     }
@@ -93,19 +87,12 @@ public abstract class MessageContentCollector {
         }
     }
 
-    public List<MessageContentGroup> collect(final FormatType format) {
-        List<ProviderMessageContent> collectedContent = messageBuilderMap.values().stream()
-                                                            .map(this::buildMessageContent)
-                                                            .filter(Optional::isPresent)
-                                                            .map(Optional::get)
-                                                            .collect(Collectors.toList());
-
-        if (messageContentProcessorMap.containsKey(format)) {
-            final MessageContentProcessor processor = messageContentProcessorMap.get(format);
-            return processor.process(collectedContent);
-        } else {
-            return List.of();
-        }
+    public List<ProviderMessageContent> getCollectedContent() {
+        return messageBuilderMap.values().stream()
+                   .map(this::buildMessageContent)
+                   .filter(Optional::isPresent)
+                   .map(Optional::get)
+                   .collect(Collectors.toList());
     }
 
     private Optional<ProviderMessageContent> buildMessageContent(ProviderMessageContent.Builder builder) {
