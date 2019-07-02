@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -66,15 +65,14 @@ public class JobConfigActions {
     private static final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
-    private final ContentConverter contentConverter;
+    private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public JobConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ContentConverter contentConverter,
-        final ConfigurationFieldModelConverter modelConverter) {
+    public JobConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final DescriptorProcessor descriptorProcessor, final ConfigurationFieldModelConverter modelConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
-        this.contentConverter = contentConverter;
+        this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
     }
 
@@ -111,7 +109,8 @@ public class JobConfigActions {
             final LinkedList<String> descriptorNames = new LinkedList<>();
             final ConfigurationJobModel configurationJobModel = jobs.get();
             for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(configurationModel);
+                final FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
+                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
                 descriptorNames.add(fieldModel.getDescriptorName());
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
@@ -150,7 +149,7 @@ public class JobConfigActions {
         final Set<FieldModel> jobFieldModels = jobFieldModel.getFieldModels();
         for (final FieldModel fieldModel : jobFieldModels) {
             final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
-            final Long fieldModelId = contentConverter.getLongValue(beforeUpdateEventFieldModel.getId());
+            final Long fieldModelId = Long.parseLong(beforeUpdateEventFieldModel.getId());
             final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
@@ -214,7 +213,7 @@ public class JobConfigActions {
         FieldModel channelFieldModel = null;
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            final Optional<Descriptor> descriptor = fieldModelProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
+            final Optional<Descriptor> descriptor = descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
             final FieldModel updatedFieldModel = fieldModelProcessor.createTestFieldModel(fieldModel);
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
                 channelFieldModel = updatedFieldModel;
@@ -224,7 +223,7 @@ public class JobConfigActions {
         }
 
         if (null != channelFieldModel) {
-            final Optional<TestAction> testActionOptional = fieldModelProcessor.retrieveTestAction(channelFieldModel);
+            final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(channelFieldModel);
             if (testActionOptional.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
@@ -241,7 +240,7 @@ public class JobConfigActions {
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 final TestConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> fieldModelProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(testConfig);
                 }
@@ -259,7 +258,7 @@ public class JobConfigActions {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (final ConfigurationModel configurationModel : configurations) {
-            final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+            final FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
             constructedFieldModels.add(fieldModelProcessor.performAfterReadAction(fieldModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
@@ -268,7 +267,7 @@ public class JobConfigActions {
     private JobFieldModel convertToJobFieldModel(final ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-            constructedFieldModels.add(fieldModelProcessor.convertToFieldModel(configurationModel));
+            constructedFieldModels.add(modelConverter.convertToFieldModel(configurationModel));
         }
         return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels);
     }

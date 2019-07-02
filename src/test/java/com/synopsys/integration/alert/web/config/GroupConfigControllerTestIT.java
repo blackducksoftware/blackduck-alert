@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,7 +137,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testUpdateConfig() throws Exception {
-        final JobFieldModel fieldModel = createTestJobFieldModel();
+        final JobFieldModel fieldModel = createTestJobFieldModel("1", "2");
         final Map<String, Collection<String>> fieldValueModels = new HashMap<>();
         for (final FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
@@ -165,7 +166,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        final JobFieldModel fieldModel = createTestJobFieldModel();
+        final JobFieldModel fieldModel = createTestJobFieldModel(null, null);
 
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
@@ -184,7 +185,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        final JobFieldModel fieldModel = createTestJobFieldModel();
+        final JobFieldModel fieldModel = createTestJobFieldModel(null, null);
 
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
@@ -192,7 +193,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    private JobFieldModel createTestJobFieldModel() {
+    private JobFieldModel createTestJobFieldModel(String channelId, String providerId) {
         final String descriptorName = SlackChannel.COMPONENT_NAME;
         final String context = ConfigContextEnum.DISTRIBUTION.name();
 
@@ -210,6 +211,10 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
             ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
         final FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
+        if (StringUtils.isNotBlank(channelId)) {
+            fieldModel.setId(channelId);
+        }
+
 
         final String bdDescriptorName = BlackDuckProvider.COMPONENT_NAME;
         final String bdContext = ConfigContextEnum.DISTRIBUTION.name();
@@ -222,6 +227,9 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
             formatType, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames);
         final FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
+        if (StringUtils.isNotBlank(providerId)) {
+            bdFieldModel.setId(providerId);
+        }
 
         return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
     }
