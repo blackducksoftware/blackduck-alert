@@ -138,20 +138,21 @@ public class StartupManager {
 
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Logging level:           {}", alertProperties.getLoggingLevel().orElse(""));
+        logger.info("Alert Server URL:          {}", alertProperties.getServerUrl().orElse(""));
+        logger.info("Logging level:             {}", alertProperties.getLoggingLevel().orElse(""));
         logger.info("Alert Proxy Host:          {}", proxyHost.orElse(""));
         logger.info("Alert Proxy Port:          {}", proxyPort.orElse(""));
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
         logger.info("Alert Proxy User:          {}", proxyUsername.orElse(""));
         logger.info("");
-        logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
-        logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
-        logger.info("BlackDuck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
+        logger.info("BlackDuck URL:             {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
+        logger.info("BlackDuck Webserver Host:  {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
+        logger.info("BlackDuck Webserver Port:  {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
         final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
         optionalGlobalBlackDuckConfigEntity.ifPresent(configurationModel -> {
             final FieldAccessor fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-            logger.info("BlackDuck API Token:           **********");
-            logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(BlackDuckProperties.DEFAULT_TIMEOUT));
+            logger.info("BlackDuck API Token:       **********");
+            logger.info("BlackDuck Timeout:         {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(BlackDuckProperties.DEFAULT_TIMEOUT));
         });
         logger.info("----------------------------------------");
     }

@@ -22,6 +22,10 @@
  */
 package com.synopsys.integration.alert.common;
 
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +54,11 @@ public class AlertProperties {
     private String loggingLevel;
 
     // SSL properties
-    @Value("${server.port:")
+    @Value("${server.port:}")
     private String serverPort;
+
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
 
     @Value("${server.ssl.key-store:}")
     private String keyStoreFile;
@@ -124,6 +131,14 @@ public class AlertProperties {
         return getOptionalString(loggingLevel);
     }
 
+    public Optional<String> getServerPort() {
+        return getOptionalString(serverPort);
+    }
+
+    public Optional<String> getContextPath() {
+        return getOptionalString(contextPath);
+    }
+
     public Optional<String> getKeyAlias() {
         return getOptionalString(keyAlias);
     }
@@ -138,6 +153,20 @@ public class AlertProperties {
 
     public Optional<String> getKeyStoreType() {
         return getOptionalString(keyStoreType);
+    }
+
+    public Optional<String> getServerUrl() {
+        try {
+            final String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+            String protocol = "http";
+            if (getSslEnabled()) {
+                protocol = "https";
+            }
+            final URL url = new URL(protocol, hostName, getServerPort().map(Integer::parseInt).orElse(null), getContextPath().orElse(""));
+            return Optional.of(url.toString());
+        } catch (UnknownHostException | MalformedURLException ex) {
+            return Optional.empty();
+        }
     }
 
     private Optional<String> getOptionalString(final String value) {
