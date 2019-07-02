@@ -99,7 +99,7 @@ public class JiraIssueHandler {
         boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                        .stream()
                                        .map(IssueTypeResponseModel::getName)
-                                       .anyMatch(name -> name.equals(issueType));
+                                       .anyMatch(issueType::equals);
         if (!isValidIssueType) {
             throw new AlertException(String.format("The issue type '%s' could not be found", issueType));
         }
