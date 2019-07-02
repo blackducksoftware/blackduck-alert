@@ -56,8 +56,7 @@ public class MessageContentAggregator {
     private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
 
     @Autowired
-    public MessageContentAggregator(final ConfigurationAccessor jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter,
-        final List<MessageContentProcessor> messageContentProcessorList) {
+    public MessageContentAggregator(final ConfigurationAccessor jobConfigReader, final List<Provider> providers, final NotificationFilter notificationFilter, final List<MessageContentProcessor> messageContentProcessorList) {
         this.jobConfigReader = jobConfigReader;
         this.providers = providers;
         this.notificationFilter = notificationFilter;
@@ -107,13 +106,14 @@ public class MessageContentAggregator {
     private List<MessageContentGroup> collectTopics(final ConfigurationJobModel jobConfiguration, final Collection<AlertNotificationWrapper> notificationCollection) {
         final Optional<Provider> optionalProvider = getProviderByName(jobConfiguration.getProviderName());
         if (optionalProvider.isPresent()) {
-            final Collection<AlertNotificationWrapper> notificationsForJob = filterNotifications(optionalProvider.get(), jobConfiguration, notificationCollection);
+            final Provider provider = optionalProvider.get();
+            final Collection<AlertNotificationWrapper> notificationsForJob = filterNotifications(provider, jobConfiguration, notificationCollection);
             if (notificationsForJob.isEmpty()) {
                 return List.of();
             }
 
             final FormatType formatType = jobConfiguration.getFormatType();
-            final Set<MessageContentCollector> providerMessageContentCollectors = optionalProvider.get().createTopicCollectors();
+            final Set<MessageContentCollector> providerMessageContentCollectors = provider.createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
             notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))

@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
@@ -54,7 +55,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     private final BlackDuckBucketService bucketService;
     private final BlackDuckService blackDuckService;
     private final BlackDuckBucket blackDuckBucket;
-    private final boolean hasValidConnection;
 
     public BlackDuckCollector(final JsonExtractor jsonExtractor, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, contentTypes);
@@ -64,11 +64,10 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                                                                                 .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
         blackDuckService = blackDuckServicesFactory
                                .map(BlackDuckServicesFactory::createBlackDuckService)
-                               .orElse(null);
+                               .orElseThrow(() -> new AlertRuntimeException("The BlackDuckCollector cannot be used without a valid Black Duck connection"));
         bucketService = blackDuckServicesFactory
                             .map(BlackDuckServicesFactory::createBlackDuckBucketService)
-                            .orElse(null);
-        hasValidConnection = null != blackDuckService && null != bucketService;
+                            .orElseThrow(() -> new AlertRuntimeException("The BlackDuckCollector cannot be used without a valid Black Duck connection"));
         blackDuckBucket = new BlackDuckBucket();
     }
 
@@ -89,29 +88,24 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
 
     //FIXME we need to update our BD common library to the latest so that we can change bucket service to use the new future implementation.
     public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
-        if (hasValidConnection) {
-            try {
-                final UriSingleResponse<ProjectVersionView> uriSingleResponse = new UriSingleResponse(projectVersionUrl, ProjectVersionView.class);
-                final ProjectVersionView projectVersionView = (blackDuckBucket.contains(uriSingleResponse.getUri())) ? blackDuckBucket.get(uriSingleResponse) : blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
-                bucketService.addToTheBucket(blackDuckBucket, List.of(uriSingleResponse));
-                return projectVersionView.getFirstLink(link);
-            } catch (final IntegrationException e) {
-                logger.error("There was a problem retrieving the Project Version link.", e);
-            }
+        try {
+            final UriSingleResponse<ProjectVersionView> uriSingleResponse = new UriSingleResponse(projectVersionUrl, ProjectVersionView.class);
+            final ProjectVersionView projectVersionView = (blackDuckBucket.contains(uriSingleResponse.getUri())) ? blackDuckBucket.get(uriSingleResponse) : blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
+            bucketService.addToTheBucket(blackDuckBucket, List.of(uriSingleResponse));
+            return projectVersionView.getFirstLink(link);
+        } catch (final IntegrationException e) {
+            logger.error("There was a problem retrieving the Project Version link.", e);
         }
 
         return Optional.empty();
     }
 
     public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
-        if (hasValidConnection) {
-            try {
-                bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
-                return Optional.ofNullable(getBlackDuckBucket().get(bomComponentUrl, VersionBomComponentView.class));
-            } catch (final IntegrationException ie) {
-                logger.error("Error retrieving bom component/", ie);
-                return Optional.empty();
-            }
+        try {
+            bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
+            return Optional.ofNullable(getBlackDuckBucket().get(bomComponentUrl, VersionBomComponentView.class));
+        } catch (final IntegrationException ie) {
+            logger.error("Error retrieving bom component/", ie);
         }
         return Optional.empty();
     }
@@ -129,16 +123,12 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                    .collect(Collectors.toList());
     }
 
-    protected boolean hasValidConnection() {
-        return hasValidConnection;
+    protected BlackDuckService getBlackDuckService() {
+        return blackDuckService;
     }
 
-    protected Optional<BlackDuckService> getBlackDuckService() {
-        return Optional.ofNullable(blackDuckService);
-    }
-
-    protected Optional<BlackDuckBucketService> getBucketService() {
-        return Optional.ofNullable(bucketService);
+    protected BlackDuckBucketService getBucketService() {
+        return bucketService;
     }
 
     protected BlackDuckBucket getBlackDuckBucket() {

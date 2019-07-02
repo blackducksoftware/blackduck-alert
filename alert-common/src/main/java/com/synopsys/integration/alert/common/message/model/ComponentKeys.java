@@ -109,6 +109,11 @@ public class ComponentKeys extends AlertSerializableModel implements Comparable<
     }
 
     @Override
+    public int hashCode() {
+        return this.getDeepKey().hashCode();
+    }
+
+    @Override
     public int compareTo(final ComponentKeys other) {
         if (null == other) {
             throw new NullPointerException("Other component key cannot be null");
