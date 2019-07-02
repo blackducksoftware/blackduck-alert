@@ -130,7 +130,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
     private JsonField<String> getDataField(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
         final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, contentIdentifier);
-        return (JsonField<String>) optionalField.orElseThrow(() -> new AlertRuntimeException(String.format("The '' field is required for this operation", contentIdentifier.name())));
+        return (JsonField<String>) optionalField.orElseThrow(() -> new AlertRuntimeException(String.format("The '%s' field is required for this operation", contentIdentifier.name())));
     }
 
     private Optional<String> getBomComponentUrl(final JsonFieldAccessor accessor, JsonField<String> field) {
