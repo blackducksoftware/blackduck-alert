@@ -6,7 +6,9 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.UriSingleResponse;
+import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
@@ -47,30 +49,44 @@ public class BlackDuckCollectorTestHelper {
     public static BlackDuckService mockBlackDuckService() {
         final BlackDuckService mockBlackDuckService = Mockito.mock(BlackDuckService.class);
         try {
-            ProjectVersionView projectVersionView = new ProjectVersionView();
+            String project1Href = "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24";
+            ProjectVersionView projectVersionView1 = new ProjectVersionView();
+            projectVersionView1.setMeta(new ResourceMetadata());
+            projectVersionView1.getMeta().setHref(project1Href);
+            final UriSingleResponse mockProjectSingleResponse1 = new UriSingleResponse(project1Href, ProjectVersionView.class);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockProjectSingleResponse1))).thenReturn(projectVersionView1);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(project1Href), Mockito.any(ProjectVersionView.class.getClass()))).thenReturn(projectVersionView1);
 
-            final UriSingleResponse mockProjectSingleResponse1 =
-                new UriSingleResponse("https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24", ProjectVersionView.class);
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockProjectSingleResponse1))).thenReturn(projectVersionView);
+            String project2Href = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c";
+            ProjectVersionView projectVersionView2 = new ProjectVersionView();
+            projectVersionView1.setMeta(new ResourceMetadata());
+            projectVersionView1.getMeta().setHref(project2Href);
+            final UriSingleResponse mockProjectSingleResponse2 = new UriSingleResponse(project2Href, ProjectVersionView.class);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockProjectSingleResponse2))).thenReturn(projectVersionView2);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(project2Href), Mockito.any(ProjectVersionView.class.getClass()))).thenReturn(projectVersionView2);
 
-            final UriSingleResponse mockProjectSingleResponse2 =
-                new UriSingleResponse("https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c", ProjectVersionView.class);
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockProjectSingleResponse2))).thenReturn(projectVersionView);
+            String bomComponentUri = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96";
+            VersionBomComponentView versionBomComponentView = new VersionBomComponentView();
+            versionBomComponentView.setMeta(new ResourceMetadata());
+            versionBomComponentView.getMeta().setHref(project2Href);
+            final UriSingleResponse mockComponentSingleResponse = new UriSingleResponse(bomComponentUri, ProjectVersionView.class);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockComponentSingleResponse))).thenReturn(versionBomComponentView);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(bomComponentUri), Mockito.any(ProjectVersionView.class.getClass()))).thenReturn(versionBomComponentView);
 
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_1, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_2, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_3, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_4, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_5, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_6, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_7, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_8, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_9, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_10, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_11, mockBlackDuckService, "HIGH");
-            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_12, mockBlackDuckService, "HIGH");
-
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.anyString(), Mockito.any(ProjectVersionView.class.getClass()))).thenReturn(projectVersionView);
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_1, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_2, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_3, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_4, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_5, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_6, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_7, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_8, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_9, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_10, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_11, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_12, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_13, mockBlackDuckService, "UNKNOWN");
+            mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_BDSA_4, mockBlackDuckService, "UNKNOWN");
         } catch (IntegrationException ignored) {
         }
 
@@ -88,10 +104,11 @@ public class BlackDuckCollectorTestHelper {
     private static void mockVulnSingleResponse(String uri, BlackDuckService blackDuckService, String severity) {
         VulnerabilityView vulnerabilityView = new VulnerabilityView();
         vulnerabilityView.setSeverity(severity);
-        final UriSingleResponse mockVulnSingleResponse2 =
-            new UriSingleResponse(uri, VulnerabilityView.class);
+        vulnerabilityView.setMeta(new ResourceMetadata());
+        vulnerabilityView.getMeta().setHref(uri);
+        final UriSingleResponse mockVulnSingleResponse = new UriSingleResponse(uri, VulnerabilityView.class);
         try {
-            Mockito.when(blackDuckService.getResponse(Mockito.eq(mockVulnSingleResponse2))).thenReturn(vulnerabilityView);
+            Mockito.when(blackDuckService.getResponse(Mockito.eq(mockVulnSingleResponse))).thenReturn(vulnerabilityView);
         } catch (IntegrationException ignored) {
         }
     }
