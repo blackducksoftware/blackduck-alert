@@ -77,10 +77,15 @@ public class FieldValidationAction {
         return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
     }
 
+    private Boolean hasValueOrIsCheckbox(final FieldValueModel fieldValueModel, final String type) {
+        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
+        return isCheckbox || !fieldValueModel.containsNoData();
+    }
+
     private void validateAnyRelatedFieldsMissing(final ConfigField field, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final String key = field.getKey();
         final Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
-        if (optionalFieldValue.isEmpty() || optionalFieldValue.map(FieldValueModel::containsNoData).orElse(true)) {
+        if (optionalFieldValue.isEmpty() || optionalFieldValue.map(fieldValueModel -> !hasValueOrIsCheckbox(fieldValueModel, field.getType())).orElse(true)) {
             fieldErrors.put(key, field.getLabel() + " is missing");
         }
     }
