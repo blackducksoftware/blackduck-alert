@@ -23,9 +23,11 @@
 package com.synopsys.integration.alert.channel.jira.util;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -81,29 +83,62 @@ public class JiraIssueFormatHelper {
             description.append("\n");
         }
 
+        boolean componentInfoIsSet = false;
+        Set<String> descriptionItems = new LinkedHashSet<>();
+
         for (ComponentItem componentItem : componentItems) {
-            description.append(createDescriptionItems(componentItem));
+            if (!componentInfoIsSet) {
+                String componentSection = createComponentString(componentItem);
+                description.append(componentSection);
+                componentInfoIsSet = true;
+            }
+            final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
+            descriptionItems.addAll(descriptionItemsForComponent);
+        }
+
+        for (String descriptionItem : descriptionItems) {
+            description.append(descriptionItem);
+            description.append("\n");
         }
 
         return description.toString();
     }
 
-    private String createDescriptionItems(final ComponentItem componentItem) {
-        final StringBuilder description = new StringBuilder();
-        final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
+    private String createComponentString(ComponentItem componentItem) {
+        StringBuilder componentSection = new StringBuilder();
+        componentSection.append("Category: ");
+        componentSection.append(componentItem.getCategory());
+        componentSection.append("\n");
 
-        description.append('\n');
+        LinkableItem component = componentItem.getComponent();
+        componentSection.append(component.getName());
+        componentSection.append(": ");
+        componentSection.append(component.getValue());
+
+        componentItem.getSubComponent().ifPresent(subComponent -> {
+            componentSection.append("\n");
+            componentSection.append(subComponent.getName());
+            componentSection.append(": ");
+            componentSection.append(subComponent.getValue());
+        });
+
+        componentSection.append("\n");
+        return componentSection.toString();
+    }
+
+    private Set<String> createDescriptionItems(ComponentItem componentItem) {
+        Set<String> descriptionItems = new LinkedHashSet<>();
+        Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
+
         for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
             String itemName = entry.getKey();
-            description.append(itemName);
-            description.append(": ");
             String valuesString = createValuesString(entry.getValue());
-            description.append(valuesString);
 
-            description.append('\n');
+            String descriptionItem = String.format("%s: %s ", itemName, valuesString);
+            descriptionItems.add(descriptionItem);
         }
 
-        return description.toString();
+        return descriptionItems;
     }
 
     private String createValuesString(Collection<LinkableItem> linkableItems) {
