@@ -58,8 +58,6 @@ public class StartupManagerTest {
         Mockito.when(proxyManager.getProxyPassword()).thenReturn(Optional.of("aPassword"));
 
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        testGlobalProperties.setBlackDuckUrl("Black Duck Url");
-        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final TestBlackDuckProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
@@ -70,8 +68,6 @@ public class StartupManagerTest {
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck API Token:           **********"));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Timeout:             300"));
     }
 
     @Test
