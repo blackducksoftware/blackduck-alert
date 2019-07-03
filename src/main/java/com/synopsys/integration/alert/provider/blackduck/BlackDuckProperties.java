@@ -28,7 +28,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.ProxyManager;
@@ -55,14 +54,6 @@ public class BlackDuckProperties extends ProviderProperties {
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
 
-    // the blackduck product hasn't renamed their environment variables from hub to blackduck
-    // need to keep hub in the name until
-    @Value("${public.hub.webserver.host:}")
-    private String publicBlackDuckWebserverHost;
-
-    @Value("${public.hub.webserver.port:}")
-    private String publicBlackDuckWebserverPort;
-
     public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
         super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
         this.gson = gson;
@@ -80,14 +71,6 @@ public class BlackDuckProperties extends ProviderProperties {
         return createFieldAccessor()
                    .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
                    .orElse(DEFAULT_TIMEOUT);
-    }
-
-    public Optional<String> getPublicBlackDuckWebserverHost() {
-        return createOptionalString(publicBlackDuckWebserverHost);
-    }
-
-    public Optional<String> getPublicBlackDuckWebserverPort() {
-        return createOptionalString(publicBlackDuckWebserverPort);
     }
 
     public Optional<ConfigurationModel> getBlackDuckConfig() {

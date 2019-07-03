@@ -131,5 +131,4 @@ public class UpdateEmailService {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }
     }
-
 }

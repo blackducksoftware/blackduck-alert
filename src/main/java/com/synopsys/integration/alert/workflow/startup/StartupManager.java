@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -52,7 +51,6 @@ import com.synopsys.integration.alert.component.scheduling.SchedulingConfigurati
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
@@ -145,15 +143,6 @@ public class StartupManager {
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
         logger.info("Alert Proxy User:          {}", proxyUsername.orElse(""));
         logger.info("");
-        logger.info("BlackDuck URL:             {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
-        logger.info("BlackDuck Webserver Host:  {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
-        logger.info("BlackDuck Webserver Port:  {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
-        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
-        optionalGlobalBlackDuckConfigEntity.ifPresent(configurationModel -> {
-            final FieldAccessor fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-            logger.info("BlackDuck API Token:       **********");
-            logger.info("BlackDuck Timeout:         {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(BlackDuckProperties.DEFAULT_TIMEOUT));
-        });
         logger.info("----------------------------------------");
     }
 

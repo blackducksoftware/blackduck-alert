@@ -22,10 +22,8 @@
  */
 package com.synopsys.integration.alert.common;
 
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -86,6 +84,14 @@ public class AlertProperties {
 
     @Value("${server.ssl.enabled:false}")
     private Boolean sslEnabled;
+
+    // the blackduck product hasn't renamed their environment variables from hub to blackduck
+    // need to keep hub in the name until
+    @Value("${public.hub.webserver.host:}")
+    private String publicWebserverHost;
+
+    @Value("${public.hub.webserver.port:}")
+    private String publicWebserverPort;
 
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
@@ -155,23 +161,39 @@ public class AlertProperties {
         return getOptionalString(keyStoreType);
     }
 
-    public Optional<String> getServerUrl() {
-        try {
-            final String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-            String protocol = "http";
-            if (getSslEnabled()) {
-                protocol = "https";
-            }
-            final URL url = new URL(protocol, hostName, getServerPort().map(Integer::parseInt).orElse(null), getContextPath().orElse(""));
-            return Optional.of(url.toString());
-        } catch (UnknownHostException | MalformedURLException ex) {
-            return Optional.empty();
-        }
+    public Optional<String> getPublicWebserverHost() {
+        return getOptionalString(publicWebserverHost);
+    }
+
+    public Optional<String> getPublicWebserverPort() {
+        return getOptionalString(publicWebserverPort);
     }
 
     private Optional<String> getOptionalString(final String value) {
         if (StringUtils.isNotBlank(value)) {
             return Optional.of(value);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<String> getServerUrl() {
+        try {
+            final String hostName = getPublicWebserverHost().orElse("localhost");
+            final String port = getPublicWebserverPort().orElse(getServerPort().orElse(""));
+            final String path = getContextPath().orElse("");
+            String protocol = "http";
+            if (getSslEnabled()) {
+                protocol = "https";
+            }
+            URL url;
+            if (StringUtils.isNotBlank(port)) {
+                url = new URL(protocol, hostName, Integer.parseInt(port), path);
+            } else {
+                url = new URL(protocol, hostName, path);
+            }
+            return Optional.of(url.toString());
+        } catch (NumberFormatException | MalformedURLException ex) {
+
         }
         return Optional.empty();
     }
