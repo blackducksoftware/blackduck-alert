@@ -135,7 +135,6 @@ public class SystemValidatorTest {
         systemValidator.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
     }
 
     @Test
@@ -153,7 +152,6 @@ public class SystemValidatorTest {
         systemValidator.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
         assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
     }
 
     @Test

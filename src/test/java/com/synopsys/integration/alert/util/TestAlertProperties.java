@@ -13,6 +13,7 @@ public class TestAlertProperties extends AlertProperties {
     private String alertProxyPort;
     private String alertProxyUsername;
     private String alertProxyPassword;
+    private Boolean sslEnabled = false;
 
     public TestAlertProperties() {
     }
@@ -51,5 +52,14 @@ public class TestAlertProperties extends AlertProperties {
 
     public void setAlertTrustCertificate(final Boolean alertTrustCertificate) {
         this.alertTrustCertificate = alertTrustCertificate;
+    }
+
+    @Override
+    public Boolean getSslEnabled() {
+        return this.sslEnabled;
+    }
+
+    public void setSslEnabled(final Boolean sslEnabled) {
+        this.sslEnabled = sslEnabled;
     }
 }
