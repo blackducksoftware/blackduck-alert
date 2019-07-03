@@ -2,7 +2,8 @@
 
 certificateManagerDir=/opt/blackduck/alert/bin
 securityDir=/opt/blackduck/alert/security
-alertConfigHome=/opt/blackduck/alert/alert-config
+alertHome=/opt/blackduck/alert
+alertConfigHome=$alertHome/alert-config
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -185,6 +186,30 @@ importWebServerCertificate(){
     fi
 }
 
+createDataBackUp(){
+    if [ -d $alertConfigHome/data ];
+    then
+      echo "Creating a backup of the data directory: $alertConfigHome/data"
+      if [ -f "$alertConfigHome/data/backup.zip" ];
+        then
+        rm -f "$alertConfigHome/data/backup.zip"
+      fi
+      cd "$alertConfigHome"
+      zip "$alertHome/backup.zip" -r "data"
+      if [ -f "$alertHome/backup.zip" ];
+        then
+          echo "Created a backup of the data directory: $alertHome/backup.zip"
+          echo "Moving backup file to: $alertConfigHome/data"
+          mv "$alertHome/backup.zip" "$alertConfigHome/data"
+        else
+          echo "Cannot create the backup."
+          echo "Cannot continue; stopping in 10 seconds..."
+          sleep 10
+          exit 1;
+      fi
+    fi
+}
+
 checkVolumeDirectories() {
   echo "Checking volume directory: $alertConfigHome"
   if [ -d $alertConfigHome ];
@@ -236,6 +261,7 @@ else
   trustRootCertificate
   trustProxyCertificate
   importWebServerCertificate
+  createDataBackUp
 
   if [ -f "$truststoreFile" ];
   then

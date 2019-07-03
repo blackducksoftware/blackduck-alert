@@ -5,7 +5,7 @@ ARG VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION"
-      
+
 ENV APPLICATION_NAME blackduck-alert
 ENV BLACKDUCK_HOME /opt/blackduck
 ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/alert/bin
@@ -29,6 +29,7 @@ RUN set -e \
     		jq \
     		openssl \
     		bash \
+    		zip \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
 
