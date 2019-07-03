@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
 
@@ -54,14 +56,19 @@ public class JiraGlobalTestAction extends TestAction {
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
             final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            final UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
+            final JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
             final String username = jiraProperties.getUsername();
+            final boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
+            if (missingApp) {
+                throw new AlertException("Please configure the Jira Cloud plugin for your server.");
+            }
+            final UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
             final boolean retrievedCurrentUser = userSearchService.findUser(username).stream().map(UserDetailsResponseModel::getEmailAddress).anyMatch(email -> email.equals(username));
             if (!retrievedCurrentUser) {
                 throw new AlertException("User did not match any known users.");
             }
         } catch (final IntegrationException e) {
-            throw new AlertException("Was not able to retrieve User from Jira cloud instance: " + e.getMessage());
+            throw new AlertException("An error occurred during testing: " + e.getMessage());
         }
         return "Successfully connected to Jira Cloud instance.";
     }
