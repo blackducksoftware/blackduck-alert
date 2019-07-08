@@ -109,9 +109,9 @@ public class BlackDuckContent extends ProviderContent {
 
     public static final String LABEL_BOM_COMPONENT = "Bom Component";
 
-    public static final String LABEL_REMEDIATION_FIX_PREVIOUS = "Remediation Fixes Previous Vulnerabilies";
-    public static final String LABEL_REMEDIATION_CLEAN = "Remediation Without Vulnerabilies       ";
-    public static final String LABEL_REMEDIATION_LATEST = "Remediation Latest Version              ";
+    public static final String LABEL_REMEDIATION_FIX_PREVIOUS = "Remediation - Fixes Previous Vulnerabilities";
+    public static final String LABEL_REMEDIATION_CLEAN = "Remediation - Without Vulnerabilities";
+    public static final String LABEL_REMEDIATION_LATEST = "Remediation - Latest Version";
 
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
