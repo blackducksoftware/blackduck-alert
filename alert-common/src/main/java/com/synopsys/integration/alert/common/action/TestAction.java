@@ -64,5 +64,4 @@ public abstract class TestAction {
         builder.applyComponentAttribute(messageIdItem);
         return builder.build();
     }
-
 }
