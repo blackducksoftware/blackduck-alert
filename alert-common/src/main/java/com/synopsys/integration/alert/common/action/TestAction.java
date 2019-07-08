@@ -27,7 +27,6 @@ import java.util.UUID;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
@@ -53,15 +52,11 @@ public abstract class TestAction {
     }
 
     private ComponentItem createTestComponentItem() throws AlertException {
-        final LinkableItem messageIdItem = new LinkableItem("Message ID", UUID.randomUUID().toString());
-        messageIdItem.setPartOfKey(true);
-
         final ComponentItem.Builder builder = new ComponentItem.Builder();
         builder.applyOperation(ItemOperation.ADD);
         builder.applyCategory("Test Category");
-        builder.applyComponentData("Test Component", "Test Component Value");
+        builder.applyComponentData("Message ID", UUID.randomUUID().toString());
         builder.applyNotificationId(1L);
-        builder.applyComponentAttribute(messageIdItem);
         return builder.build();
     }
 
