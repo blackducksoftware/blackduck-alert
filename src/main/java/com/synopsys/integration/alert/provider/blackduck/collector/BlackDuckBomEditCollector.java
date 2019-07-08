@@ -193,7 +193,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             final List<PolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (final PolicyRuleView rule : policyRules) {
                 final Optional<PolicySummaryStatusType> policySummaryStatusTypeFromRule = getPolicySummaryStatusTypeFromRule(rule);
-                if (!PolicySummaryStatusType.IN_VIOLATION.equals(policySummaryStatusTypeFromRule)) {
+                if (policySummaryStatusTypeFromRule.isPresent() && !PolicySummaryStatusType.IN_VIOLATION.equals(policySummaryStatusTypeFromRule.get())) {
                     continue;
                 }
 
@@ -213,7 +213,10 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                     for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
                         // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
                         final String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
-                        final String vulnerabilityUrl = vulnerabilityView.getHref().orElse(null);
+                        String vulnerabilityUrl = null;
+                        if (vulnerabilityViews.containsKey(vulnerabilityId)) {
+                            vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
+                        }
                         final String severity = vulnerabilityView.getSeverity().prettyPrint();
 
                         final LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
