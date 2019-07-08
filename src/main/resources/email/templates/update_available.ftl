@@ -15,7 +15,7 @@ A new version of Alert is available:
 <br />
 <div style="border: 1px solid #979797;"></div>
 <#if alertServerUrl??>
-    Server: <a href="${alertServerUrl}" style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 12px;color: #225786;">${alertServerUrl}</a>
+    <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 10px;color: #4A4A4A;">Server: <a href="${alertServerUrl}" style="color: #225786;">${alertServerUrl}</a></span>
 </#if>
 <br />
 <br />

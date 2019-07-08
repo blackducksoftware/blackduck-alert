@@ -103,11 +103,17 @@
 </#if>
 <br />
 <div style="border: 1px solid #979797;"></div>
+<#if alertServerUrl??>
+    <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 10px;color: #4A4A4A;">Server: <a href="${alertServerUrl}" style="color: #225786;">${alertServerUrl}</a></span>
+</#if>
 <br />
 <#if provider_name??>
+    <br />
     <div style="display:inline-block;width:100%;">
         <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are assigned to project: ${provider_project_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the project.</span>
     </div>
+</#if>
+<#if alertServerUrl?? || provider_name??>
     <br />
     <br />
 </#if>

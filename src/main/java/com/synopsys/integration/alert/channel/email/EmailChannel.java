@@ -102,6 +102,7 @@ public class EmailChannel extends DistributionChannel {
             topicValue = content.getCommonTopic().getValue();
         }
 
+        final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
         final LinkableItem comonProvider = content.getComonProvider();
         final String providerName = comonProvider.getValue();
         final String providerUrl = comonProvider.getUrl().orElse("#");
@@ -121,6 +122,7 @@ public class EmailChannel extends DistributionChannel {
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+        model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
 
         final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
