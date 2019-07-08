@@ -75,7 +75,6 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckBomEditCollector extends BlackDuckCollector {
-    private static final String CATEGORY_TYPE_REMEDIATION = "Vulnerability Remediation";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -97,19 +96,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             view -> new LinkableItem(subTopicField.getLabel(), ((ProjectVersionView) view).getVersionName(), view.getHref().orElse(null)));
     }
 
-    private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
-        final List<LinkableItem> items = new ArrayList<>();
-
-        getBomComponentUrl(accessor, field)
-            .flatMap(this::getBomComponentView)
-            .flatMap(this::getProjectVersionWrapper)
-            .map(viewMapper)
-            .map(itemMapper)
-            .ifPresent(items::add);
-
-        return items;
-    }
-
     @Override
     protected Collection<ComponentItem> getComponentItems(final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final JsonField<String> topicField = getDataField(notificationFields, FieldContentIdentifier.CATEGORY_ITEM);
@@ -127,20 +113,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
         return componentItems;
     }
-
-    private JsonField<String> getDataField(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
-        final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, contentIdentifier);
-        return (JsonField<String>) optionalField.orElseThrow(() -> new AlertRuntimeException(String.format("The '%s' field is required for this operation", contentIdentifier.name())));
-    }
-
-    private Optional<String> getBomComponentUrl(final JsonFieldAccessor accessor, JsonField<String> field) {
-        return accessor.get(field)
-                   .stream()
-                   .findFirst();
-    }
-
-    //TODO Clean up this class to make the code more elegant.  This code was based on the Jira Plugin.  Currently it functions but needs more work to make it production ready.
-    // TODO use the bucket service especially for the vulnerabilities
 
     private Optional<ProjectVersionWrapper> getProjectVersionWrapper(final VersionBomComponentView versionBomComponent) {
         try {
@@ -170,51 +142,30 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         try {
             final RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
             final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
-            Optional<LinkableItem> componentVersionItem = Optional.empty();
-            if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
-                componentVersionItem = Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
-            }
+            Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
 
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
-                getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
-                ComponentVersionView componentVersionView = getBlackDuckBucket().get(versionBomComponent.getComponentVersion(), ComponentVersionView.class);
-                // add remediation data information.
-                final ComponentService componentService = new ComponentService(getBlackDuckService(), new Slf4jIntLogger(logger));
-                final Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
                 final List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(licenseItems);
-                if (optionalRemediation.isPresent()) {
-                    final RemediationOptionsView remediationOptions = optionalRemediation.get();
-                    if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
-                        RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
-                        String versionText = createRemediationVersionText(remediatingVersionView);
-                        componentAttributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
-                    }
-                    if (null != remediationOptions.getLatestAfterCurrent()) {
-                        RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
-                        String versionText = createRemediationVersionText(remediatingVersionView);
-                        componentAttributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
-                    }
-                    if (null != remediationOptions.getNoVulnerabilities()) {
-                        RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
-                        String versionText = createRemediationVersionText(remediatingVersionView);
-                        componentAttributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
-                    }
 
-                    ComponentItem.Builder builder = new ComponentItem.Builder();
-                    builder.applyComponentData(componentItem)
-                        .applyAllComponentAttributes(componentAttributes)
-                        .applyCategory(CATEGORY_TYPE_REMEDIATION)
-                        .applyOperation(ItemOperation.ADD)
-                        .applyNotificationId(notificationId);
-                    componentVersionItem.ifPresent(builder::applySubComponent);
-                    try {
-                        items.add(builder.build());
-                    } catch (AlertException ex) {
-                        logger
-                            .info("Error building vulnerability bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.ADD, componentItem, componentVersionItem.orElse(null));
-                        logger.error("Error building vulnerability bom edit component cause ", ex);
-                    }
+                getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
+                ComponentVersionView componentVersionView = getBlackDuckBucket().get(versionBomComponent.getComponentVersion(), ComponentVersionView.class);
+                final List<LinkableItem> remediationItems = getRemediationItems(componentVersionView);
+                componentAttributes.addAll(remediationItems);
+
+                ComponentItem.Builder builder = new ComponentItem.Builder();
+                builder.applyComponentData(componentItem)
+                    .applyAllComponentAttributes(componentAttributes)
+                    .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
+                    .applyOperation(ItemOperation.ADD)
+                    .applyNotificationId(notificationId);
+                componentVersionItem.ifPresent(builder::applySubComponent);
+                try {
+                    items.add(builder.build());
+                } catch (AlertException ex) {
+                    logger
+                        .warn("Error building vulnerability BOM edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.ADD, componentItem, componentVersionItem.orElse(null));
+                    logger.error("Error building vulnerability BOM edit component cause ", ex);
                 }
             }
         } catch (Exception ex) {
@@ -227,12 +178,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
-            Optional<LinkableItem> componentVersionItem = Optional.empty();
-            if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
-                componentVersionItem = Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
-            }
+            Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
             final List<PolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (final PolicyRuleView rule : policyRules) {
+                // TODO check if rule is in violation
+
                 final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
                 policyNameItem.setCollapsible(true);
                 policyNameItem.setSummarizable(true);
@@ -245,9 +195,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                                                                                                   .map(VulnerableComponentView::getVulnerabilityWithRemediation)
                                                                                                   .collect(Collectors.toSet());
                     for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
-
                         // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
-
                         final String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
                         final String vulnerabilityUrl = vulnerabilityView.getHref().orElse(null);
                         final String severity = vulnerabilityView.getSeverity().prettyPrint();
@@ -289,6 +237,51 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         }
 
         return items;
+    }
+
+    private List<LinkableItem> getRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
+        List<LinkableItem> remediationItems = new LinkedList<>();
+        ComponentService componentService = new ComponentService(getBlackDuckService(), new Slf4jIntLogger(logger));
+        Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
+        if (optionalRemediation.isPresent()) {
+            RemediationOptionsView remediationOptions = optionalRemediation.get();
+            if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
+            }
+            if (null != remediationOptions.getLatestAfterCurrent()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
+            }
+            if (null != remediationOptions.getNoVulnerabilities()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
+            }
+        }
+        return remediationItems;
+    }
+
+    private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
+        final List<LinkableItem> items = new ArrayList<>();
+
+        getBomComponentUrl(accessor, field)
+            .flatMap(this::getBomComponentView)
+            .flatMap(this::getProjectVersionWrapper)
+            .map(viewMapper)
+            .map(itemMapper)
+            .ifPresent(items::add);
+
+        return items;
+    }
+
+    private Optional<LinkableItem> createComponentVersionItem(VersionBomComponentView versionBomComponent) {
+        if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
+            return Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
+        }
+        return Optional.empty();
     }
 
     private boolean doesSecurityRiskProfileHaveVulnerabilities(final RiskProfileView securityRiskProfile) {
@@ -333,6 +326,17 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             }
         }
         return false;
+    }
+
+    private JsonField<String> getDataField(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
+        final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, contentIdentifier);
+        return (JsonField<String>) optionalField.orElseThrow(() -> new AlertRuntimeException(String.format("The '%s' field is required for this operation", contentIdentifier.name())));
+    }
+
+    private Optional<String> getBomComponentUrl(final JsonFieldAccessor accessor, JsonField<String> field) {
+        return accessor.get(field)
+                   .stream()
+                   .findFirst();
     }
 
 }
