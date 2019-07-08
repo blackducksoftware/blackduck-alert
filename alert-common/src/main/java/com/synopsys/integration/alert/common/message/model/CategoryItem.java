@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
     private final ItemOperation operation;
     private final SortedSet<LinkableItem> items;
     private final Long notificationId;
+    private transient Comparator<CategoryItem> comparator;
 
     private static SortedSet<LinkableItem> singleton(final LinkableItem item) {
         final SortedSet<LinkableItem> sortedSet = new TreeSet<>();
@@ -89,10 +91,21 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
         return map;
     }
 
+    public Comparator<CategoryItem> createComparator() {
+        // If the other fields are equal the item order shouldn't matter.
+        return (self, otherItem) -> CompareToBuilder.reflectionCompare(self, otherItem, "items");
+    }
+
+    public void setComparator(final Comparator<CategoryItem> comparator) {
+        this.comparator = comparator;
+    }
+
     @Override
     public int compareTo(final CategoryItem otherItem) {
-        // If the other fields are equal the item order shouldn't matter.
-        return CompareToBuilder.reflectionCompare(this, otherItem, "items");
+        if (comparator == null) {
+            comparator = createComparator();
+        }
+        return comparator.compare(this, otherItem);
     }
 
 }

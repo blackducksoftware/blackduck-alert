@@ -70,7 +70,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     }
 
     @Override
-    protected void addCategoryItems(final SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final ItemOperation operation = getOperationFromNotification(notificationContent);
         if (operation == null) {
             return;

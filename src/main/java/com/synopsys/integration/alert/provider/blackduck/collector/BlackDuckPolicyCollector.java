@@ -44,7 +44,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         super(jsonExtractor, contentTypes, blackDuckProperties);
     }
 
-    protected void addApplicableItems(final SortedSet<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems,
+    protected void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final Set<LinkableItem> policyItems, final ItemOperation operation, final Set<LinkableItem> applicableItems,
         SortedSet<String> keyItems) {
         final List<String> categoryKeyParts = new ArrayList<>(keyItems);
         final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, categoryKeyParts);

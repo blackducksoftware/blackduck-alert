@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import java.util.TreeSet;
+import java.util.ArrayList;
 
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -42,6 +42,6 @@ public abstract class TestAction {
 
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Test message sent by Alert", null);
-        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new TreeSet<>());
+        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new ArrayList<>());
     }
 }

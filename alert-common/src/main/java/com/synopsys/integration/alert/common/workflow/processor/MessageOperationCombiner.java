@@ -23,14 +23,11 @@
 package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.BiFunction;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +74,7 @@ public class MessageOperationCombiner extends MessageCombiner {
 
             final SortedSet<CategoryItem> combinedCategoryItems = combineCategoryItems(new ArrayList<>(groupDataCache.values()));
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), combinedCategoryItems);
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new ArrayList<>(combinedCategoryItems));
             combinedMessages.add(newMessage);
         }
         return combinedMessages;
@@ -107,16 +104,6 @@ public class MessageOperationCombiner extends MessageCombiner {
         if (operationFunctionMap.containsKey(operation)) {
             final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> operationFunction = operationFunctionMap.get(operation);
             operationFunction.apply(messageDataCache, item);
-        }
-    }
-
-    private Optional<AggregateMessageContent> rebuildTopic(LinkableItem topic, Optional<LinkableItem> subTopic, final Collection<CategoryItem> categoryItemCollection) {
-        if (categoryItemCollection.isEmpty()) {
-            return Optional.empty();
-        } else {
-            final String url = topic.getUrl().orElse(null);
-            LinkableItem resolvedSubTopic = subTopic.orElse(null);
-            return Optional.of(new AggregateMessageContent(topic.getName(), topic.getValue(), url, resolvedSubTopic, new TreeSet<>(categoryItemCollection)));
         }
     }
 

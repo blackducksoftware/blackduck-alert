@@ -85,7 +85,7 @@ public abstract class MessageContentCollector {
         return collectedContent;
     }
 
-    protected abstract void addCategoryItems(SortedSet<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
+    protected abstract void addCategoryItems(List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);
@@ -107,7 +107,7 @@ public abstract class MessageContentCollector {
         return getTypedFields(fields, typeRef);
     }
 
-    protected void addItem(final SortedSet<CategoryItem> categoryItems, final CategoryItem newItem) {
+    protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
         final Optional<CategoryItem> foundItem = categoryItems
                                                      .stream()
                                                      .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()))
@@ -206,14 +206,14 @@ public abstract class MessageContentCollector {
             if (foundContent != null) {
                 aggregateMessageContentsForNotifications.add(foundContent);
             } else {
-                final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
+                final List<CategoryItem> categoryItems = new ArrayList<>();
                 aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryItems));
             }
         }
         return aggregateMessageContentsForNotifications;
     }
 
-    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final SortedSet<CategoryItem> categoryItems) {
+    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final List<CategoryItem> categoryItems) {
         if (subTopic.isPresent()) {
             return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems);
         }
