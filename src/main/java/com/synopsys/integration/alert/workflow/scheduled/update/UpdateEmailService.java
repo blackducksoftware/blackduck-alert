@@ -93,10 +93,12 @@ public class UpdateEmailService {
                 final FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
                 final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
+                final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
                 final Map<String, Object> templateFields = new HashMap<>();
                 templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
                 templateFields.put("newVersionName", updateVersion);
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
+                templateFields.put("alertServerUrl", alertServerUrl);
                 handleSendAndUpdateDatabase(emailProperties, templateFields, optionalEmailAddress.get());
 
                 settingsKeyAccessor.saveSettingsKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL, updateVersion);
@@ -130,5 +132,4 @@ public class UpdateEmailService {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }
     }
-
 }

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.ProxyManager;
-import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.startup.component.ConfigurationLogger;
@@ -41,15 +40,9 @@ public class StartupLogTest {
         Mockito.when(proxyManager.getProxyUsername()).thenReturn(Optional.of("AUser"));
         Mockito.when(proxyManager.getProxyPassword()).thenReturn(Optional.of("aPassword"));
 
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        testGlobalProperties.setBlackDuckUrl("Black Duck Url");
-        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
-        final TestBlackDuckProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
-        final ConfigurationLogger configurationLogger = new ConfigurationLogger(proxyManager, mockTestGlobalProperties, testAlertProperties);
+        final ConfigurationLogger configurationLogger = new ConfigurationLogger(proxyManager, testAlertProperties);
 
         configurationLogger.initializeComponent();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck API Token:           **********"));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Timeout:             300"));
     }
 }

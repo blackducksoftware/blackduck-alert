@@ -81,8 +81,6 @@ public class BlackDuckValidator extends ProviderValidator {
                 final URL blackDuckUrl = new URL(blackDuckUrlString);
                 if ("localhost".equals(blackDuckUrl.getHost())) {
                     logger.warn("  -> Black Duck Provider Using localhost...");
-                    final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
-                    logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
                     systemMessageUtility.addSystemMessage("Black Duck Provider Using localhost", SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
                 }
                 final IntLogger intLogger = new Slf4jIntLogger(logger);
