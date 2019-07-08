@@ -250,7 +250,7 @@ public class NotificationFilter {
         for (final String configKey : configKeyMappings) {
             final Optional<ConfigurationFieldModel> optionalConfigField = config.getFieldAccessor()
                                                                               .getField(configKey)
-                                                                              .filter(field -> field.getFieldKey().contains(ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX));
+                                                                              .filter(field -> field.getFieldKey().startsWith(ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX));
             if (optionalConfigField.isPresent()) {
                 final ConfigurationFieldModel configField = optionalConfigField.get();
                 final Collection<String> values = configField.getFieldValues();
