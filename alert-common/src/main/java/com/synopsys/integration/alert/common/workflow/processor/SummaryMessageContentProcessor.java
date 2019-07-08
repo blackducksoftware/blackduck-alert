@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -68,7 +69,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     private AggregateMessageContent summarize(final AggregateMessageContent message) {
-        final SortedSet<CategoryItem> originalCategoryItems = message.getCategoryItems();
+        final List<CategoryItem> originalCategoryItems = message.getCategoryItems();
         if (null == originalCategoryItems) {
             return message;
         }
@@ -81,10 +82,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems);
+        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), new ArrayList(summarizedCategoryItems));
     }
 
-    private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {
+    private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final List<CategoryItem> originalCategoryItems) {
         final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = new LinkedHashMap<>();
         for (final CategoryItem categoryItem : originalCategoryItems) {
             itemsByOperation.computeIfAbsent(categoryItem.getOperation(), ignored -> new LinkedHashSet<>()).add(categoryItem);
@@ -98,6 +99,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(categoryItemsForOperation, categoryItem.getItems());
             final CategoryKey categoryKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
             final CategoryItem newCategoryItem = new CategoryItem(categoryKey, operation, categoryItem.getNotificationId(), summarizedLinkableItems);
+            newCategoryItem.setComparator(categoryItem.createComparator());
             summarizedCategoryItems.add(newCategoryItem);
         }
 
@@ -180,6 +182,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
                 final SortedSet<LinkableItem> collapsedLinkableItems = collapseDuplicateLinkableItems(combinedLinkableItems);
                 updatedCategoryItem = new CategoryItem(categoryKey, currentItem.getOperation(), currentItem.getNotificationId(), collapsedLinkableItems);
+                updatedCategoryItem.setComparator(currentItem.createComparator());
             }
             keyToItem.put(categoryKey, updatedCategoryItem);
         }

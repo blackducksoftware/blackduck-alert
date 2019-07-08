@@ -50,7 +50,7 @@ public class MessageCombiner {
             final LinkableItem topic = topicAndSubTopic.getLeft();
             final SortedSet<CategoryItem> combinedCategoryItems = gatherCategoryItems(groupedMessageEntry.getValue());
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), combinedCategoryItems);
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new ArrayList(combinedCategoryItems));
             combinedMessages.add(newMessage);
         }
         return combinedMessages;
@@ -72,7 +72,7 @@ public class MessageCombiner {
         final List<CategoryItem> allCategoryItems = groupedMessages
                                                         .stream()
                                                         .map(AggregateMessageContent::getCategoryItems)
-                                                        .flatMap(SortedSet::stream)
+                                                        .flatMap(List::stream)
                                                         .collect(Collectors.toList());
         return combineCategoryItems(allCategoryItems);
     }
@@ -94,6 +94,7 @@ public class MessageCombiner {
             }
 
             final CategoryItem newCategoryItem = new CategoryItem(categoryKey, categoryItem.getOperation(), notificationId, linkableItems);
+            newCategoryItem.setComparator(categoryItem.createComparator());
             keyToItems.put(categoryKey, newCategoryItem);
         }
         return new TreeSet<>(keyToItems.values());

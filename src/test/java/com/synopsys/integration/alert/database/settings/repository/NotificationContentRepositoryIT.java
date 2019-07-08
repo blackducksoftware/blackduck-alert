@@ -210,7 +210,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     }
 
     private MessageContentGroup createMessageGroup(final Long notificationId) {
-        final TreeSet<CategoryItem> categoryItems = new TreeSet<>();
+        final List<CategoryItem> categoryItems = new ArrayList<>();
         final CategoryKey categoryKey = CategoryKey.from("notification", notificationId.toString());
         categoryItems.add(new CategoryItem(categoryKey, ItemOperation.UPDATE, notificationId, new TreeSet<>()));
         final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent("topic", "topic value", categoryItems);
