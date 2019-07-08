@@ -52,7 +52,7 @@ public class AlertProperties {
     private String loggingLevel;
 
     // SSL properties
-    @Value("${server.port:8443}")
+    @Value("${server.port:}")
     private String serverPort;
 
     @Value("${server.servlet.context-path:}")
