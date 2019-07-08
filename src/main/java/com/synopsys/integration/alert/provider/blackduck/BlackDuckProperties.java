@@ -131,7 +131,7 @@ public class BlackDuckProperties extends ProviderProperties {
     public Optional<BlackDuckServerConfig> createBlackDuckServerConfigSafely(final IntLogger logger) {
         try {
             return createBlackDuckServerConfig(logger);
-        } catch (final AlertException e) {
+        } catch (final IllegalArgumentException | AlertException e) {
             return Optional.empty();
         }
     }
