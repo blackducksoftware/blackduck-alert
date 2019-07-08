@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -247,7 +248,9 @@ public class NotificationFilter {
 
     private Optional<ConfigurationFieldModel> getConditionalField(final List<String> configKeyMappings, final ConfigurationJobModel config) {
         for (final String configKey : configKeyMappings) {
-            final Optional<ConfigurationFieldModel> optionalConfigField = config.getFieldAccessor().getField(configKey);
+            final Optional<ConfigurationFieldModel> optionalConfigField = config.getFieldAccessor()
+                                                                              .getField(configKey)
+                                                                              .filter(field -> field.getFieldKey().contains(ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX));
             if (optionalConfigField.isPresent()) {
                 final ConfigurationFieldModel configField = optionalConfigField.get();
                 final Collection<String> values = configField.getFieldValues();
