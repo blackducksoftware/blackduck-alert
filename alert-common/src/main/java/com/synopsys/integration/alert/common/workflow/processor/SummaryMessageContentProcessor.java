@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -69,7 +68,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     private AggregateMessageContent summarize(final AggregateMessageContent message) {
-        final List<CategoryItem> originalCategoryItems = message.getCategoryItems();
+        final Set<CategoryItem> originalCategoryItems = message.getCategoryItems();
         if (null == originalCategoryItems) {
             return message;
         }
@@ -82,10 +81,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), new ArrayList(summarizedCategoryItems));
+        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), new LinkedHashSet(summarizedCategoryItems));
     }
 
-    private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final List<CategoryItem> originalCategoryItems) {
+    private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {
         final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = new LinkedHashMap<>();
         for (final CategoryItem categoryItem : originalCategoryItems) {
             itemsByOperation.computeIfAbsent(categoryItem.getOperation(), ignored -> new LinkedHashSet<>()).add(categoryItem);

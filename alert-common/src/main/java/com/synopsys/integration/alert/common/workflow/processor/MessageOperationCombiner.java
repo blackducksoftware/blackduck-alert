@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class MessageOperationCombiner extends MessageCombiner {
 
             final SortedSet<CategoryItem> combinedCategoryItems = combineCategoryItems(new ArrayList<>(groupDataCache.values()));
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new ArrayList<>(combinedCategoryItems));
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new HashSet<>(combinedCategoryItems));
             combinedMessages.add(newMessage);
         }
         return combinedMessages;

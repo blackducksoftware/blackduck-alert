@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.provider.polaris;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -51,7 +52,7 @@ public class PolarisCollector extends MessageContentCollector {
     }
 
     @Override
-    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected void addCategoryItems(final Set<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final List<JsonField<Integer>> countFields = getIntegerFields(notificationFields);
         final Optional<JsonField<String>> optionalIssueTypeField = getStringFields(notificationFields)
                                                                        .stream()

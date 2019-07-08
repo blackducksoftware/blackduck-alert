@@ -23,7 +23,9 @@
 package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -50,7 +52,7 @@ public class MessageCombiner {
             final LinkableItem topic = topicAndSubTopic.getLeft();
             final SortedSet<CategoryItem> combinedCategoryItems = gatherCategoryItems(groupedMessageEntry.getValue());
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new ArrayList(combinedCategoryItems));
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new LinkedHashSet<>(combinedCategoryItems));
             combinedMessages.add(newMessage);
         }
         return combinedMessages;
@@ -72,7 +74,7 @@ public class MessageCombiner {
         final List<CategoryItem> allCategoryItems = groupedMessages
                                                         .stream()
                                                         .map(AggregateMessageContent::getCategoryItems)
-                                                        .flatMap(List::stream)
+                                                        .flatMap(Collection::stream)
                                                         .collect(Collectors.toList());
         return combineCategoryItems(allCategoryItems);
     }

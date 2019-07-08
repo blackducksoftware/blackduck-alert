@@ -116,7 +116,7 @@ public class DefaultAuditUtility implements AuditUtility {
         final Set<Long> notificationIds = contentGroup.getSubContent()
                                               .stream()
                                               .map(AggregateMessageContent::getCategoryItems)
-                                              .flatMap(List::stream)
+                                              .flatMap(Collection::stream)
                                               .map(CategoryItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {

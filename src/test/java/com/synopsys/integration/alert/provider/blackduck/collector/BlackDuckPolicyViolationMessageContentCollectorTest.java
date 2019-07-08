@@ -41,12 +41,12 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
                                                     .filter(messageContent -> topicName.equals(messageContent.getValue()))
                                                     .findFirst()
                                                     .orElse(null);
-        final SortedSet<CategoryItem> items = content.getCategoryItems();
+        final Set<CategoryItem> items = content.getCategoryItems();
         Assert.assertEquals(expectedCategoryItemsCount, items.size());
         Assert.assertEquals(expectedLinkableItemsCount, getCategoryItemLinkableItemsCount(items));
     }
 
-    public static int getCategoryItemLinkableItemsCount(final SortedSet<CategoryItem> items) {
+    public static int getCategoryItemLinkableItemsCount(final Set<CategoryItem> items) {
         int count = 0;
         for (final CategoryItem item : items) {
             count += item.getItems().size();
@@ -114,7 +114,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addApplicableItems(Mockito.any(SortedSet.class), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class), Mockito.any(SortedSet.class));
+            .addApplicableItems(Mockito.any(Set.class), Mockito.anyLong(), Mockito.any(Set.class), Mockito.any(ItemOperation.class), Mockito.any(Set.class), Mockito.any(SortedSet.class));
         spiedCollector.insert(n0);
         final List<AggregateMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());

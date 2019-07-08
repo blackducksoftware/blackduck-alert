@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -58,7 +59,7 @@ public class BlackDuckLicenseLimitCollector extends MessageContentCollector {
     }
 
     @Override
-    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected void addCategoryItems(final Set<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final List<JsonField<Long>> longFields = getLongFields(notificationFields);
 
         final SortedSet<LinkableItem> linkableItems = new TreeSet<>();

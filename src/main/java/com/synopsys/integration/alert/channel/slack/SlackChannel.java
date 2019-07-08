@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,7 @@ public class SlackChannel extends DistributionChannel {
             subTopicBuilder.append(SLACK_LINE_SEPARATOR);
             messagePieces.add(subTopicBuilder.toString());
 
-            final List<CategoryItem> categoryItems = messageContent.getCategoryItems();
+            final Set<CategoryItem> categoryItems = messageContent.getCategoryItems();
             for (final CategoryItem categoryItem : categoryItems) {
                 final StringBuilder categoryItemBuilder = new StringBuilder();
                 categoryItemBuilder.append("Type: ");

@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.SortedSet;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -79,7 +79,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addCategoryItems(Mockito.any(SortedSet.class), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
+            .addCategoryItems(Mockito.any(Set.class), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
         spiedCollector.insert(n0);
         final List<AggregateMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());

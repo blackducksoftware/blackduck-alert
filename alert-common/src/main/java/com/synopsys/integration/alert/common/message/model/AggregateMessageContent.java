@@ -22,29 +22,29 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class AggregateMessageContent extends LinkableItem {
     private final LinkableItem subTopic;
     private final MessageContentKey messageContentKey;
-    private List<CategoryItem> categoryItems;
+    private Set<CategoryItem> categoryItems;
 
-    public AggregateMessageContent(final String name, final String value, final List<CategoryItem> categoryItems) {
+    public AggregateMessageContent(final String name, final String value, final Set<CategoryItem> categoryItems) {
         super(name, value);
         this.subTopic = null;
         this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final List<CategoryItem> categoryItems) {
+    public AggregateMessageContent(final String name, final String value, final String url, final Set<CategoryItem> categoryItems) {
         super(name, value, url);
         this.subTopic = null;
         this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final List<CategoryItem> categoryItems) {
+    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final Set<CategoryItem> categoryItems) {
         super(name, value, url);
         this.subTopic = subTopic;
         this.categoryItems = categoryItems;
@@ -63,11 +63,11 @@ public class AggregateMessageContent extends LinkableItem {
         return messageContentKey;
     }
 
-    public List<CategoryItem> getCategoryItems() {
+    public Set<CategoryItem> getCategoryItems() {
         return categoryItems;
     }
 
-    public void setCategoryItems(final List<CategoryItem> categoryItems) {
+    public void setCategoryItems(final Set<CategoryItem> categoryItems) {
         this.categoryItems = categoryItems;
     }
 

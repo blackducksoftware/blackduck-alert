@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -55,7 +56,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
     }
 
     @Override
-    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
+    protected void addCategoryItems(final Set<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final ItemOperation operation = ItemOperation.DELETE;
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_NAME);
