@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -65,6 +66,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.service.ComponentService;
@@ -75,7 +77,6 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckBomEditCollector extends BlackDuckCollector {
-    private static final String CATEGORY_TYPE_REMEDIATION = "Vulnerability Remediation";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -169,11 +170,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             final RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
-            final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
-            Optional<LinkableItem> componentVersionItem = Optional.empty();
-            if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
-                componentVersionItem = Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
-            }
+            final LinkableItem componentItem = getComponentLinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
+            Optional<LinkableItem> componentVersionItem = getComponentVersionLinkableItem(versionBomComponent);
 
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
                 getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
@@ -181,30 +179,17 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 // add remediation data information.
                 final ComponentService componentService = new ComponentService(getBlackDuckService(), new Slf4jIntLogger(logger));
                 final Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
-                final List<LinkableItem> componentAttributes = new LinkedList<>();
-                componentAttributes.addAll(licenseItems);
+
                 if (optionalRemediation.isPresent()) {
+                    final List<LinkableItem> componentAttributes = new LinkedList<>();
+                    componentAttributes.addAll(licenseItems);
                     final RemediationOptionsView remediationOptions = optionalRemediation.get();
-                    if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
-                        RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
-                        String versionText = createRemediationVersionText(remediatingVersionView);
-                        componentAttributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
-                    }
-                    if (null != remediationOptions.getLatestAfterCurrent()) {
-                        RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
-                        String versionText = createRemediationVersionText(remediatingVersionView);
-                        componentAttributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
-                    }
-                    if (null != remediationOptions.getNoVulnerabilities()) {
-                        RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
-                        String versionText = createRemediationVersionText(remediatingVersionView);
-                        componentAttributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
-                    }
+                    componentAttributes.addAll(getRemediationAttributes(remediationOptions));
 
                     ComponentItem.Builder builder = new ComponentItem.Builder();
                     builder.applyComponentData(componentItem)
                         .applyAllComponentAttributes(componentAttributes)
-                        .applyCategory(CATEGORY_TYPE_REMEDIATION)
+                        .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
                         .applyOperation(ItemOperation.ADD)
                         .applyNotificationId(notificationId);
                     componentVersionItem.ifPresent(builder::applySubComponent);
@@ -223,36 +208,61 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return items;
     }
 
+    private Collection<LinkableItem> getRemediationAttributes(RemediationOptionsView remediationOptions) {
+        final List<LinkableItem> attributes = new LinkedList<>();
+        if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
+            RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
+            String versionText = createRemediationVersionText(remediatingVersionView);
+            attributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
+        }
+        if (null != remediationOptions.getLatestAfterCurrent()) {
+            RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
+            String versionText = createRemediationVersionText(remediatingVersionView);
+            attributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
+        }
+        if (null != remediationOptions.getNoVulnerabilities()) {
+            RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
+            String versionText = createRemediationVersionText(remediatingVersionView);
+            attributes.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
+        }
+
+        return attributes;
+    }
+
     private Collection<ComponentItem> addPolicyData(Long notificationId, final ProjectVersionWrapper projectVersionWrapper, final VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
-            final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
-            Optional<LinkableItem> componentVersionItem = Optional.empty();
-            if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
-                componentVersionItem = Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
-            }
+            final LinkableItem componentItem = getComponentLinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
+            Optional<LinkableItem> componentVersionItem = getComponentVersionLinkableItem(versionBomComponent);
             final List<PolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (final PolicyRuleView rule : policyRules) {
-                final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
+                final LinkableItem policyNameItem = getComponentLinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
                 policyNameItem.setCollapsible(true);
                 policyNameItem.setSummarizable(true);
                 policyNameItem.setCountable(true);
                 if (hasVulnerabilityRule(rule)) {
-                    final List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE);
+                    final List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE).stream()
+                                                                                       .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
+                                                                                       .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))
+                                                                                       .collect(Collectors.toList());
+
+                    final Map<String, VulnerabilityView> vulnerabilityViews = vulnerableComponentViews.stream()
+                                                                                  .map(this::getVulnerabilitiesForComponent)
+                                                                                  .flatMap(List::stream)
+                                                                                  .collect(Collectors.toMap(VulnerabilityView::getName, Function.identity(), (v1, v2) -> v1));
+
                     final Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
-                                                                                                  .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
-                                                                                                  .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))
                                                                                                   .map(VulnerableComponentView::getVulnerabilityWithRemediation)
                                                                                                   .collect(Collectors.toSet());
                     for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
-
-                        // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
-
                         final String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
-                        final String vulnerabilityUrl = vulnerabilityView.getHref().orElse(null);
+                        String vulnerabilityUrl = null;
+                        if (vulnerabilityViews.containsKey(vulnerabilityId)) {
+                            vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
+                        }
                         final String severity = vulnerabilityView.getSeverity().prettyPrint();
 
-                        final LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+                        final LinkableItem item = getComponentLinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
                         item.setPartOfKey(true);
                         item.setSummarizable(true);
                         item.setCountable(true);
@@ -289,6 +299,27 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         }
 
         return items;
+    }
+
+    private List<VulnerabilityView> getVulnerabilitiesForComponent(VulnerableComponentView vulnerableComponentView) {
+        try {
+            return getBlackDuckService().getAllResponses(vulnerableComponentView, VulnerableComponentView.VULNERABILITIES_LINK_RESPONSE);
+        } catch (IntegrationException ex) {
+            logger.error("Error getting vulnerabilities ", ex);
+        }
+        return List.of();
+    }
+
+    private LinkableItem getComponentLinkableItem(final String labelComponentName, final String componentName, final String component) {
+        return new LinkableItem(labelComponentName, componentName, component);
+    }
+
+    private Optional<LinkableItem> getComponentVersionLinkableItem(final VersionBomComponentView versionBomComponent) {
+        Optional<LinkableItem> componentVersionItem = Optional.empty();
+        if (StringUtils.isNotBlank(versionBomComponent.getComponentVersionName())) {
+            componentVersionItem = Optional.of(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, versionBomComponent.getComponentVersionName(), versionBomComponent.getComponentVersion()));
+        }
+        return componentVersionItem;
     }
 
     private boolean doesSecurityRiskProfileHaveVulnerabilities(final RiskProfileView securityRiskProfile) {
