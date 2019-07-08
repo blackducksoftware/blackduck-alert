@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.util;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.ApplicationConfiguration;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
@@ -25,6 +32,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
@@ -49,6 +58,8 @@ public abstract class AlertIntegrationTest {
     private FieldContextRepository fieldContextRepository;
     @Autowired
     private ConfigContextRepository configContextRepository;
+    @Autowired
+    private ConfigurationAccessor configurationAccessor;
 
     @Bean
     @DependsOn({ "descriptorTypeRepository", "registeredDescriptorRepository", "descriptorFieldRepository", "definedFieldRepository", "fieldContextRepository", "configContextRepository" })
@@ -56,4 +67,20 @@ public abstract class AlertIntegrationTest {
         return new DescriptorMocker(descriptorTypeRepository, registeredDescriptorRepository, descriptorFieldRepository, definedFieldRepository, fieldContextRepository, configContextRepository);
     }
 
+    public void initBlackDuckData() throws AlertException {
+        TestProperties testProperties = new TestProperties();
+        final ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL).stream().findFirst()
+                                                              .orElseThrow(() -> new AlertException("Could not find the global Black Duck configuration."));
+
+        ConfigurationFieldModel blackDuckURLField = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackDuckURLField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+
+        ConfigurationFieldModel blackDuckAPITokenField = ConfigurationFieldModel.createSensitive(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackDuckAPITokenField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
+
+        ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
+
+        configurationAccessor.updateConfiguration(blackDuckConfiguration.getConfigurationId(), List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
+    }
 }

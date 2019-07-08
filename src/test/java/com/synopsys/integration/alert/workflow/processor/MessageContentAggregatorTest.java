@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.core.io.ClassPathResource;
 import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -44,6 +46,11 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     private List<MessageContentProcessor> messageContentProcessorList;
 
     private Long idCount = 0L;
+
+    @BeforeEach
+    public void testInit() throws AlertException {
+        initBlackDuckData();
+    }
 
     @Test
     public void testNoJobProcessing() throws Exception {

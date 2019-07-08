@@ -27,8 +27,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
+import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -119,6 +119,9 @@ public class PolarisGlobalTestActionTest {
         final String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
         final String polarisAccessToken = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_ACCESS_TOKEN);
         final String polarisTimeout = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_TIMEOUT);
+        System.err.println("URL: " + polarisUrl);
+        System.err.println("Token: " + polarisAccessToken);
+        System.err.println("Timeout: " + polarisTimeout);
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, polarisUrl);
