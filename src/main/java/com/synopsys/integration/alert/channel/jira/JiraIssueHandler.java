@@ -133,14 +133,14 @@ public class JiraIssueHandler {
             final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
             final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, componentItems, topic, subTopic, providerName);
 
-            final String operationComment = String.format("The %s operation was performed for this %s in %s", operation.name(), arbitraryItem.getCategory(), providerName);
             final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
             if (existingIssueComponent.isPresent()) {
                 final IssueComponent issueComponent = existingIssueComponent.get();
                 final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-                final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey, fieldsBuilder);
+                final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
                 issueKeys.add(issueKey);
                 if (commentOnIssue) {
+                    String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
                     addComment(issueKey, operationComment);
                 }
             } else {
@@ -200,6 +200,26 @@ public class JiraIssueHandler {
         );
     }
 
+    private String createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
+        JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
+        String attributesString = jiraChannelFormatHelper.createComponentAttributesString(componentItems);
+
+        StringBuilder commentBuilder = new StringBuilder();
+        commentBuilder.append("The ");
+        commentBuilder.append(operation.name());
+        commentBuilder.append(" operation was performed for this ");
+        commentBuilder.append(category);
+        commentBuilder.append(" in ");
+        commentBuilder.append(provider);
+        if (StringUtils.isNotBlank(attributesString)) {
+            commentBuilder.append(".\n- - - - -\n");
+            commentBuilder.append(attributesString);
+        } else {
+            commentBuilder.append(".");
+        }
+        return commentBuilder.toString();
+    }
+
     private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
@@ -211,7 +231,7 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
-    private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey, IssueRequestModelFieldsBuilder fieldsBuilder) throws IntegrationException {
+    private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
         final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
         if (transitionName.isPresent()) {
             final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
@@ -225,8 +245,6 @@ public class JiraIssueHandler {
             } else {
                 logger.warn("Unable to find the transition: {}", transition);
             }
-            final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, null, fieldsBuilder, Map.of(), List.of());
-            issueService.updateIssue(issueRequestModel);
         } else {
             logger.debug("No transition selected, ignoring issue state change.");
         }
@@ -248,7 +266,7 @@ public class JiraIssueHandler {
                 .findFirst()
                 .filter(LinkableItem::isPartOfKey)
                 // FIXME make this provider-agnostic
-                .filter(item -> item.getName().contains("Policy"))
+                .filter(item -> !item.getName().contains("Vuln"))
                 .ifPresent(item -> {
                     keyBuilder.append(item.getName());
                     keyBuilder.append(item.getValue());
