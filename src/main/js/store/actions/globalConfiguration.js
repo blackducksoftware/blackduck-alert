@@ -195,9 +195,6 @@ export function updateConfig(config) {
                     dispatch(refreshConfig(data));
                 });
             } else {
-                if (id) {
-                    dispatch(refreshConfig(id));
-                }
                 handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
