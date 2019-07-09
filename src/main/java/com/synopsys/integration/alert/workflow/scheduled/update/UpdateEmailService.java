@@ -98,7 +98,7 @@ public class UpdateEmailService {
                 templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
                 templateFields.put("newVersionName", updateVersion);
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
-                templateFields.put("alertServerUrl", alertServerUrl);
+                templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
                 handleSendAndUpdateDatabase(emailProperties, templateFields, optionalEmailAddress.get());
 
                 settingsKeyAccessor.saveSettingsKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL, updateVersion);

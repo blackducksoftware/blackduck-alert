@@ -39,10 +39,12 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
-    public static final String KEY_NAME = "channel.common.name";
-    public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
-    public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
-    public static final String KEY_FREQUENCY = "channel.common.frequency";
+    public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";
+
+    public static final String KEY_NAME = KEY_COMMON_CHANNEL_PREFIX + "name";
+    public static final String KEY_CHANNEL_NAME = KEY_COMMON_CHANNEL_PREFIX + "channel.name";
+    public static final String KEY_PROVIDER_NAME = KEY_COMMON_CHANNEL_PREFIX + "provider.name";
+    public static final String KEY_FREQUENCY = KEY_COMMON_CHANNEL_PREFIX + "frequency";
 
     private static final String LABEL_NAME = "Name";
     private static final String LABEL_FREQUENCY = "Frequency";

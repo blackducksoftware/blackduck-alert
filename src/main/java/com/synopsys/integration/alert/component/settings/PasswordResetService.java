@@ -78,11 +78,12 @@ public class PasswordResetService {
                                                    .orElseThrow(() -> new AlertException("No global email configuration found"));
         final FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
-
+        final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
         final String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);
         final Map<String, Object> templateFields = new HashMap<>();
         templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
         templateFields.put("tempPassword", tempPassword);
+        templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
         handleSendAndUpdateDatabase(emailProperties, templateFields, userModel.getEmailAddress(), username, tempPassword);
     }
 

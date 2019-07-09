@@ -14,8 +14,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
@@ -27,8 +29,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
-import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
+import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -119,6 +121,10 @@ public class PolarisGlobalTestActionTest {
         final String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
         final String polarisAccessToken = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_ACCESS_TOKEN);
         final String polarisTimeout = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_TIMEOUT);
+
+        Assumptions.assumeTrue(StringUtils.isNotBlank(polarisUrl), "The Polaris URL is required for this test to run.");
+        Assumptions.assumeTrue(StringUtils.isNotBlank(polarisAccessToken), "The Polaris Access Token is required for this test to run.");
+        Assumptions.assumeTrue(StringUtils.isNotBlank(polarisTimeout), "The Polaris Timeout is required for this test to run.");
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, polarisUrl);

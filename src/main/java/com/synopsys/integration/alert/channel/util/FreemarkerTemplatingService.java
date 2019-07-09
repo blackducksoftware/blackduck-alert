@@ -43,6 +43,7 @@ import freemarker.template.TemplateExceptionHandler;
 
 @Component
 public class FreemarkerTemplatingService {
+    public static final String KEY_ALERT_SERVER_URL = "alertServerUrl";
     private final Logger logger = LoggerFactory.getLogger(FreemarkerTemplatingService.class);
     private final AlertProperties alertProperties;
 

@@ -131,21 +131,23 @@ public class JiraIssueHandler {
                                                     .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
             final ItemOperation operation = arbitraryItem.getOperation();
             final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
+            final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, componentItems, topic, subTopic, providerName);
 
             final String operationComment = String.format("The %s operation was performed for this %s in %s", operation.name(), arbitraryItem.getCategory(), providerName);
             final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
             if (existingIssueComponent.isPresent()) {
                 final IssueComponent issueComponent = existingIssueComponent.get();
                 final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-                final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
+                final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey, fieldsBuilder);
                 issueKeys.add(issueKey);
                 if (commentOnIssue) {
                     addComment(issueKey, operationComment);
                 }
             } else {
                 if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
-                    final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, issueType, projectId, providerName);
+                    fieldsBuilder.setProject(projectId);
+                    fieldsBuilder.setIssueType(issueType);
+                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
                     final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
                     if (issue == null || StringUtils.isBlank(issue.getKey())) {
                         throw new AlertException("There was an problem when creating this issue.");
@@ -185,7 +187,7 @@ public class JiraIssueHandler {
                    .flatMap(Stream::findFirst);
     }
 
-    private void addIssueProperties(final String issueKey, final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentItem componentItem, final String alertIssueUniqueId)
+    private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId)
         throws IntegrationException {
         final LinkableItem component = componentItem.getComponent();
         final Optional<LinkableItem> subComponent = componentItem.getSubComponent();
@@ -198,21 +200,18 @@ public class JiraIssueHandler {
         );
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(
-        ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String issueType, String projectId, String provider) {
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
         final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
         fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
-        fieldsBuilder.setIssueType(issueType);
-        fieldsBuilder.setProject(projectId);
 
         return fieldsBuilder;
     }
 
-    private String transitionIssue(final String issueKey, final FieldAccessor fieldAccessor, final String transitionKey) throws IntegrationException {
+    private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey, IssueRequestModelFieldsBuilder fieldsBuilder) throws IntegrationException {
         final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
         if (transitionName.isPresent()) {
             final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
@@ -221,12 +220,13 @@ public class JiraIssueHandler {
             if (firstTransitionByName.isPresent()) {
                 final TransitionComponent issueTransition = firstTransitionByName.get();
                 final String transitionId = issueTransition.getId();
-                final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-                final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), fieldsBuilder, Map.of(), List.of());
+                final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
                 issueService.transitionIssue(issueRequestModel);
             } else {
-                logger.warn("Was unable to find given transition {}.", transition);
+                logger.warn("Unable to find the transition: {}", transition);
             }
+            final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, null, fieldsBuilder, Map.of(), List.of());
+            issueService.updateIssue(issueRequestModel);
         } else {
             logger.debug("No transition selected, ignoring issue state change.");
         }
@@ -234,7 +234,7 @@ public class JiraIssueHandler {
         return issueKey;
     }
 
-    private void addComment(final String issueKey, final String comment) throws IntegrationException {
+    private void addComment(String issueKey, String comment) throws IntegrationException {
         final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
         issueService.addComment(issueCommentRequestModel);
     }

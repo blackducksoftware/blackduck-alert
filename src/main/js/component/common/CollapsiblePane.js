@@ -5,35 +5,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class CollapsiblePane extends Component {
     constructor(props) {
         super(props);
-        this.state = { expanded: false };
-        this.toggleDisplay = this.toggleDisplay.bind(this);
-        this.selfExpand = false;
+
+        this.state = ({ expanded: this.props.expanded });
     }
 
-    toggleDisplay() {
-        this.selfExpand = true;
-        this.setState({ expanded: !this.state.expanded });
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevProps.expanded && this.props.expanded) {
+            this.setState({
+                expanded: this.props.expanded
+            });
+        }
     }
 
     render() {
-        let shouldExpand = false;
-        const propsExand = this.props.expanded();
-        if (this.selfExpand) {
-            shouldExpand = this.state.expanded;
-        } else {
-            // We don't want to use setState here because that would trigger an endless re-render but we need the expanded field to be up to date for when the button takes control of the toggling
-            this.state = { expanded: propsExand };
-            shouldExpand = propsExand;
-        }
-
-        const contentClass = shouldExpand ? 'shown' : 'hidden';
-        const iconClass = shouldExpand ? 'minus' : 'plus';
+        const { expanded } = this.state;
+        const contentClass = expanded ? 'shown' : 'hidden';
+        const iconClass = expanded ? 'fa-minus' : 'fa-plus';
         return (
             <div className="collapsiblePanel">
                 <button
                     type="button"
                     className="btn btn-link"
-                    onClick={this.toggleDisplay}>
+                    onClick={() => this.setState({ expanded: !this.state.expanded })}
+                >
                     <FontAwesomeIcon icon={iconClass} className='icon' size="lg" />
                     {this.props.title}
                 </button>
@@ -47,12 +41,12 @@ class CollapsiblePane extends Component {
 
 CollapsiblePane.propTypes = {
     title: PropTypes.string.isRequired,
-    expanded: PropTypes.func
-
+    expanded: PropTypes.bool,
+    children: PropTypes.array.isRequired
 };
 
 CollapsiblePane.defaultProps = {
-    expanded: () => false
+    expanded: false
 };
 
 export default CollapsiblePane;

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckBomEditCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
@@ -31,7 +32,8 @@ public class BlackDuckMessageContentCollectorFactoryTestIT extends AlertIntegrat
     private ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory;
 
     @Test
-    public void testCollectorCreation() {
+    public void testCollectorCreation() throws AlertException {
+        initBlackDuckData();
         final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyViolationTopicCollectorFactory, policyOverrideTopicCollectorFactory,
             licenseTopicCollectorFactory, bomEditCollectorFactory);
         final Set<MessageContentCollector> messageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
