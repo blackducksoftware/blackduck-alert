@@ -12,8 +12,10 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
@@ -74,6 +76,8 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         final Map<String, String> valueMap = new HashMap<>();
         final String apiToken = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY);
         final String hipChatServerUrl = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_SERVER_URL);
+        Assumptions.assumeTrue(StringUtils.isNotBlank(apiToken), "The HipChat API Token is required for this test to run.");
+        Assumptions.assumeTrue(StringUtils.isNotBlank(hipChatServerUrl), "The HipChat Server URL is required for this test to run.");
         valueMap.put(HipChatDescriptor.KEY_API_KEY, apiToken);
         valueMap.put(HipChatDescriptor.KEY_HOST_SERVER, hipChatServerUrl);
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
