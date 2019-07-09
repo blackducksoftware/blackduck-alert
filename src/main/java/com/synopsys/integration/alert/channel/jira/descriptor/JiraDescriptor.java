@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 @Component
 public class JiraDescriptor extends ChannelDescriptor {
     public static final String KEY_JIRA_URL = "jira.cloud.url";
-    public static final String KEY_JIRA_USERNAME = "jira.cloud.user.name";
-    public static final String KEY_JIRA_ACCESS_TOKEN = "jira.cloud.access.token";
+    public static final String KEY_JIRA_ADMIN_EMAIL_ADDRESS = "jira.cloud.admin.email.address";
+    public static final String KEY_JIRA_ADMIN_API_TOKEN = "jira.cloud.admin.api.token";
     public static final String KEY_JIRA_CONFIGURE_PLUGIN = "jira.cloud.configure.plugin";
 
     public static final String KEY_ADD_COMMENTS = "channel.jira.cloud.add.comments";

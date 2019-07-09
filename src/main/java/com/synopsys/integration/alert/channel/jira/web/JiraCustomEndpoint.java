@@ -89,8 +89,8 @@ public class JiraCustomEndpoint {
 
     private JiraProperties createJiraProperties(final Map<String, FieldValueModel> fieldValueModels) {
         final FieldValueModel fieldUrl = fieldValueModels.get(JiraDescriptor.KEY_JIRA_URL);
-        final FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN);
-        final FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_USERNAME);
+        final FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        final FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
 
         final String url = fieldUrl.getValue().orElse("");
         final String username = fieldUsername.getValue().orElse("");
@@ -107,7 +107,7 @@ public class JiraCustomEndpoint {
                 return configurationAccessor.getConfigurationByDescriptorNameAndContext(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN))
+                           .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
                            .flatMap(ConfigurationFieldModel::getFieldValue)
                            .orElse("");
 

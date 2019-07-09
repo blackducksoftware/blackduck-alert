@@ -144,7 +144,7 @@ public class JiraIssueHandler {
                 }
             } else {
                 if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
+                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElseThrow(() -> new AlertException("Expected to be passed a jira username."));
                     final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, issueType, projectId, providerName);
                     final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
                     if (issue == null || StringUtils.isBlank(issue.getKey())) {

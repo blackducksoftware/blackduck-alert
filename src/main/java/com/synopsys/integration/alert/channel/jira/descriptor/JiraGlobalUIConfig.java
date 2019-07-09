@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 @Component
 public class JiraGlobalUIConfig extends UIConfig {
     public static final String LABEL_URL = "Url";
-    public static final String LABEL_USER_NAME = "Admin Username";
-    public static final String LABEL_ACCESS_TOKEN = "Admin Api Token";
+    public static final String LABEL_ADMIN_EMAIL_ADDRESS = "Admin email address";
+    public static final String LABEL_ADMIN_API_TOKEN = "Admin API Token";
     public static final String LABEL_CONFIGURE_PLUGIN = "Configure Jira Cloud plugin";
 
     public static final String DESCRIPTION_URL = "The URL of the Jira Cloud server.";
-    public static final String DESCRIPTION_USER_NAME = "The email address of the admin used to log into the Jira Cloud server that has generated the api token.";
-    public static final String DESCRIPTION_ACCESS_TOKEN = "The admin api token used to send API requests to the Jira Cloud server.";
+    public static final String DESCRIPTION_ADMIN_USER_NAME = "The email address of the admin used to log into the Jira Cloud server that has generated the API token.";
+    public static final String DESCRIPTION_ADMIN_API_TOKEN = "The admin API token used to send API requests to the Jira Cloud server.";
     public static final String DESCRIPTION_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira Cloud server.";
 
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
@@ -53,8 +53,8 @@ public class JiraGlobalUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField jiraUrl = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL);
-        final ConfigField jiraUserName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_USERNAME, LABEL_USER_NAME, DESCRIPTION_USER_NAME);
-        final ConfigField jiraAccessToken = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN);
+        final ConfigField jiraUserName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_ADMIN_EMAIL_ADDRESS, DESCRIPTION_ADMIN_USER_NAME);
+        final ConfigField jiraAccessToken = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_ADMIN_API_TOKEN, DESCRIPTION_ADMIN_API_TOKEN);
         final ConfigField jiraConfigurePlugin = EndpointField.create(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION);
 
         return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraConfigurePlugin);
