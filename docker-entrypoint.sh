@@ -12,12 +12,12 @@ keyStoreFile=$APPLICATION_NAME.keystore
 keystorePath=$securityDir/$keyStoreFile
 truststoreFile=$securityDir/$APPLICATION_NAME.truststore
 
-publicWebserverHost="${PUBLIC_HUB_WEBSERVER_HOST:-localhost}"
+publicWebserverHost="${ALERT_HOSTNAME:-localhost}"
 targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
 targetCAPort="${HUB_CFSSL_PORT:-8888}"
 targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
-[ -z "$PUBLIC_HUB_WEBSERVER_HOST" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in hub-webserver.env"
+[ -z "$ALERT_HOSTNAME" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
