@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,10 +40,14 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.UriSingleResponse;
+import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
+import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.exception.IntegrationException;
@@ -121,6 +126,42 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                        return item;
                    })
                    .collect(Collectors.toList());
+    }
+
+    public List<LinkableItem> getRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
+        List<LinkableItem> remediationItems = new LinkedList<>();
+        ComponentService componentService = new ComponentService(getBlackDuckService(), new Slf4jIntLogger(logger));
+        Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
+        if (optionalRemediation.isPresent()) {
+            RemediationOptionsView remediationOptions = optionalRemediation.get();
+            if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
+            }
+            if (null != remediationOptions.getLatestAfterCurrent()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
+            }
+            if (null != remediationOptions.getNoVulnerabilities()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
+            }
+        }
+        return remediationItems;
+    }
+
+    private String createRemediationVersionText(final RemediatingVersionView remediatingVersionView) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(remediatingVersionView.getName());
+        if (remediatingVersionView.getVulnerabilityCount() != null && remediatingVersionView.getVulnerabilityCount() > 0) {
+            stringBuilder.append(" (Vulnerability Count: ");
+            stringBuilder.append(remediatingVersionView.getVulnerabilityCount());
+            stringBuilder.append(")");
+        }
+        return stringBuilder.toString();
     }
 
     protected BlackDuckService getBlackDuckService() {

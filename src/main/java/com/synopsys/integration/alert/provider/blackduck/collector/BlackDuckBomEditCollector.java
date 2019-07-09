@@ -60,11 +60,9 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 import com.synopsys.integration.blackduck.api.core.BlackDuckView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
-import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
 import com.synopsys.integration.blackduck.api.generated.component.RiskCountView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.RiskCountType;
-import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -74,15 +72,12 @@ import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponent
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
-import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckBomEditCollector extends BlackDuckCollector {
-    private static final String CATEGORY_TYPE_REMEDIATION = "Vulnerability Remediation";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -282,31 +277,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return List.of();
     }
 
-    private List<LinkableItem> getRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
-        List<LinkableItem> remediationItems = new LinkedList<>();
-        ComponentService componentService = new ComponentService(getBlackDuckService(), new Slf4jIntLogger(logger));
-        Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
-        if (optionalRemediation.isPresent()) {
-            RemediationOptionsView remediationOptions = optionalRemediation.get();
-            if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
-                RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
-                String versionText = createRemediationVersionText(remediatingVersionView);
-                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
-            }
-            if (null != remediationOptions.getLatestAfterCurrent()) {
-                RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
-                String versionText = createRemediationVersionText(remediatingVersionView);
-                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
-            }
-            if (null != remediationOptions.getNoVulnerabilities()) {
-                RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
-                String versionText = createRemediationVersionText(remediatingVersionView);
-                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
-            }
-        }
-        return remediationItems;
-    }
-
     private Optional<PolicySummaryStatusType> getPolicySummaryStatusTypeFromRule(final PolicyRuleView policyRule) {
         // TODO remove when blackduck-common-api supports this field
         if (policyRule.getEnabled()) {
@@ -362,17 +332,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             }
         }
         return count;
-    }
-
-    private String createRemediationVersionText(final RemediatingVersionView remediatingVersionView) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(remediatingVersionView.getName());
-        if (remediatingVersionView.getVulnerabilityCount() != null && remediatingVersionView.getVulnerabilityCount() > 0) {
-            stringBuilder.append(" (Vulnerability Count: ");
-            stringBuilder.append(remediatingVersionView.getVulnerabilityCount());
-            stringBuilder.append(")");
-        }
-        return stringBuilder.toString();
     }
 
     private Boolean hasVulnerabilityRule(final PolicyRuleView policyRuleView) {
