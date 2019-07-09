@@ -449,7 +449,6 @@ const mapStateToProps = state => ({
     totalPageCount: state.audit.totalPageCount,
     items: state.audit.items,
     fetching: state.audit.fetching,
-    autoRefresh: state.refresh.autoRefresh,
     descriptors: state.descriptors.items
 });
 

@@ -387,7 +387,7 @@ class Index extends Component {
 
                 <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
+                    <AutoRefresh startAutoReload={() => console.log(new Date().getMilliseconds())} />
                 </div>
                 {content}
             </div>
@@ -412,7 +412,6 @@ Index.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    autoRefresh: state.refresh.autoRefresh,
     descriptors: state.descriptors.items,
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,
