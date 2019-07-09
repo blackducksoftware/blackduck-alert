@@ -81,7 +81,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanupTest() throws Exception {
-        if (global_config.isPresent()) {
+        if (null != global_config && global_config.isPresent()) {
             configurationAccessor.deleteConfiguration(global_config.get());
         }
 
@@ -265,7 +265,11 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
-        assertTrue(fieldErrors.isEmpty());
+        List<String> errors = fieldErrors.entrySet()
+                                  .stream()
+                                  .map(entry -> entry.getKey() + " : " + entry.getValue()
+                                  ).collect(Collectors.toList());
+        assertTrue(fieldErrors.isEmpty(), StringUtils.join(errors, "; "));
     }
 
     @Test
