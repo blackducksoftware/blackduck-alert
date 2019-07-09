@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -39,6 +38,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyServ
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
+import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
 
@@ -54,13 +54,14 @@ public class JiraChannel extends DistributionChannel {
     @Override
     public String sendMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
-        final Boolean pluginConfigured = fieldAccessor.getBoolean(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN).orElse(false);
-        if (!pluginConfigured) {
-            throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
-        }
         final MessageContentGroup content = event.getContent();
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
+        final JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
+        boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
+        if (missingApp) {
+            throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
+        }
         final IssueService issueService = jiraCloudServiceFactory.createIssueService();
         final IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
         final IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();

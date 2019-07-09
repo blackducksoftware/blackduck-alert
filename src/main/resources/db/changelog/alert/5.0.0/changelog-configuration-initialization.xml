@@ -16,10 +16,10 @@
             CALL DEFINE_FIELD('jira.cloud.url', FALSE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('jira.cloud.user.name', FALSE, 'channel_jira_cloud', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.cloud.admin.email.address', FALSE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('jira.cloud.access.token', TRUE, 'channel_jira_cloud', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.cloud.admin.api.token', TRUE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('jira.cloud.configure.plugin', FALSE, 'channel_jira_cloud', 'GLOBAL');

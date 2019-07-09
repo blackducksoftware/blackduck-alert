@@ -41,8 +41,8 @@ public class JiraProperties {
 
     public JiraProperties(final FieldAccessor fieldAccessor) {
         url = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_URL).orElse(null);
-        accessToken = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN).orElse(null);
-        username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_USERNAME).orElse(null);
+        accessToken = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN).orElse(null);
+        username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse(null);
     }
 
     public JiraProperties(final String url, final String accessToken, final String username) {

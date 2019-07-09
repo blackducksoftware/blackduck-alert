@@ -22,10 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.web;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,14 +36,12 @@ import com.synopsys.integration.alert.channel.jira.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.descriptor.JiraGlobalUIConfig;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
@@ -79,18 +74,12 @@ public class JiraCustomEndpoint {
         try {
             final JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             final JiraAppService jiraAppService = jiraServicesCloudFactory.createJiraAppService();
-            final FieldValueModel adminUsername = fieldValueModels.get(JiraGlobalUIConfig.KEY_JIRA_ADMIN_USERNAME);
-            final FieldValueModel adminAccessToken = fieldValueModels.get(JiraGlobalUIConfig.KEY_JIRA_ADMIN_ACCESS_TOKEN);
-            if (null == adminUsername || null == adminAccessToken) {
-                throw new IntegrationException("Both Username and Access Token are required to install plugin.");
-            }
-            final String username = adminUsername.getValue().orElseThrow(() -> new IntegrationException("Expected to be passed an admin username but did not receive any."));
-            final String accessToken = adminAccessToken.getValue().orElseThrow(() -> new IntegrationException("Expected to be passed an admin username but did not receive any."));
+            final String username = jiraProperties.getUsername();
+            final String accessToken = jiraProperties.getAccessToken();
             final Response response = jiraAppService.installApp(JiraConstants.JIRA_APP_NAME, JIRA_PLUGIN_URL, username, accessToken);
             if (response.isStatusCodeError()) {
                 return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
-            saveSuccessfulConfigure();
             return responseFactory.createOkResponse("", "Successfully created Alert plugin on Jira Cloud server.");
         } catch (final IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
@@ -100,8 +89,8 @@ public class JiraCustomEndpoint {
 
     private JiraProperties createJiraProperties(final Map<String, FieldValueModel> fieldValueModels) {
         final FieldValueModel fieldUrl = fieldValueModels.get(JiraDescriptor.KEY_JIRA_URL);
-        final FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN);
-        final FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_USERNAME);
+        final FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        final FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
 
         final String url = fieldUrl.getValue().orElse("");
         final String username = fieldUsername.getValue().orElse("");
@@ -118,7 +107,7 @@ public class JiraCustomEndpoint {
                 return configurationAccessor.getConfigurationByDescriptorNameAndContext(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ACCESS_TOKEN))
+                           .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
                            .flatMap(ConfigurationFieldModel::getFieldValue)
                            .orElse("");
 
@@ -128,28 +117,6 @@ public class JiraCustomEndpoint {
         }
 
         return accessToken;
-    }
-
-    private void saveSuccessfulConfigure() {
-        final ConfigurationFieldModel configurePluginField = ConfigurationFieldModel.create(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN);
-        configurePluginField.setFieldValue("true");
-        try {
-            final Optional<ConfigurationModel> globalJiraCloud = configurationAccessor.getConfigurationByDescriptorNameAndContext(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL).stream().findFirst();
-            if (globalJiraCloud.isPresent()) {
-                final ConfigurationModel configurationModel = globalJiraCloud.get();
-                final Long configurationId = configurationModel.getConfigurationId();
-                final List<ConfigurationFieldModel> configurationFields = configurationModel.getCopyOfFieldList()
-                                                                              .stream()
-                                                                              .filter(configurationFieldModel -> !JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN.equals(configurationFieldModel.getFieldKey()))
-                                                                              .collect(Collectors.toList());
-                configurationFields.add(configurePluginField);
-                configurationAccessor.updateConfiguration(configurationId, configurationFields);
-            } else {
-                configurationAccessor.createConfiguration(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, List.of(configurePluginField));
-            }
-        } catch (final AlertDatabaseConstraintException e) {
-            logger.error("Unable to retrieve Global Jira Cloud data from the Database.");
-        }
     }
 
 }
