@@ -56,7 +56,7 @@ public class JiraIssueFormatHelper {
 
         // FIXME make this provider-agnostic
         String prettyPrintedKey;
-        if (componentKeys.getCategory().contains("Policy")) {
+        if (!componentKeys.getCategory().contains("Vuln")) {
             prettyPrintedKey = componentKeys.prettyPrint(true);
         } else {
             prettyPrintedKey = componentKeys.prettyPrint(false);
@@ -83,25 +83,35 @@ public class JiraIssueFormatHelper {
             description.append("\n");
         }
 
-        boolean componentInfoIsSet = false;
+        final Optional<ComponentItem> arbitraryItem = componentItems
+                                                          .stream()
+                                                          .findAny();
+        if (arbitraryItem.isPresent()) {
+            String componentSection = createComponentString(arbitraryItem.get());
+            description.append(componentSection);
+
+            final String componentAttributesSection = createComponentAttributesString(componentItems);
+            description.append(componentAttributesSection);
+        }
+
+        return description.toString();
+    }
+
+    public String createComponentAttributesString(Collection<ComponentItem> componentItems) {
         Set<String> descriptionItems = new LinkedHashSet<>();
 
         for (ComponentItem componentItem : componentItems) {
-            if (!componentInfoIsSet) {
-                String componentSection = createComponentString(componentItem);
-                description.append(componentSection);
-                componentInfoIsSet = true;
-            }
             final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
             descriptionItems.addAll(descriptionItemsForComponent);
         }
 
+        StringBuilder attributes = new StringBuilder();
         for (String descriptionItem : descriptionItems) {
-            description.append(descriptionItem);
-            description.append("\n");
+            attributes.append(descriptionItem);
+            attributes.append("\n");
         }
 
-        return description.toString();
+        return attributes.toString();
     }
 
     private String createComponentString(ComponentItem componentItem) {

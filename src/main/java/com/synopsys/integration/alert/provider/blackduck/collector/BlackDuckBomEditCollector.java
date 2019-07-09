@@ -165,14 +165,14 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 builder.applyComponentData(componentItem)
                     .applyAllComponentAttributes(componentAttributes)
                     .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
-                    .applyOperation(ItemOperation.ADD)
+                    .applyOperation(ItemOperation.UPDATE)
                     .applyNotificationId(notificationId);
                 componentVersionItem.ifPresent(builder::applySubComponent);
                 try {
                     items.add(builder.build());
                 } catch (AlertException ex) {
                     logger
-                        .warn("Error building vulnerability BOM edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.ADD, componentItem, componentVersionItem.orElse(null));
+                        .warn("Error building vulnerability BOM edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentItem, componentVersionItem.orElse(null));
                     logger.error("Error building vulnerability BOM edit component cause ", ex);
                 }
             }
@@ -239,13 +239,14 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                             .applyAllComponentAttributes(attributes)
                             .applyPriority(priority)
                             .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
-                            .applyOperation(ItemOperation.ADD)
+                            .applyOperation(ItemOperation.UPDATE)
                             .applyNotificationId(notificationId);
                         componentVersionItem.ifPresent(builder::applySubComponent);
                         try {
                             items.add(builder.build());
                         } catch (AlertException ex) {
-                            logger.info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.ADD, componentItem, componentVersionItem.orElse(null));
+                            logger
+                                .info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentItem, componentVersionItem.orElse(null));
                             logger.error("Error building policy bom edit component cause ", ex);
                         }
                     }
