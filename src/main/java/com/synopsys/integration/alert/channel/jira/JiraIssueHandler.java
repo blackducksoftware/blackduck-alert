@@ -131,7 +131,7 @@ public class JiraIssueHandler {
                                                     .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
             final ItemOperation operation = arbitraryItem.getOperation();
             final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-            final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, componentItems, topic, subTopic, providerName);
+            final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
 
             final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
             if (existingIssueComponent.isPresent()) {
