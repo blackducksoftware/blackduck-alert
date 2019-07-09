@@ -49,7 +49,18 @@ class FieldsPanel extends React.Component {
     }
 
     createPanel(panelName, fieldMapping) {
-        const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : <CollapsiblePane title={panelName}>{this.createHeaders(fieldMapping)}</CollapsiblePane>;
+        let panelFields = [];
+        Object.keys(fieldMapping).forEach((key) => {
+            const fields = fieldMapping[key];
+            panelFields = panelFields.concat(fields);
+        });
+        const hasValues = FieldModelUtilities.fieldsHaveValueOrIsSet(this.props.currentConfig, panelFields);
+        const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : (
+            <CollapsiblePane
+                title={panelName}
+                expanded={hasValues}
+            >{this.createHeaders(fieldMapping)}
+            </CollapsiblePane>);
 
         return (
             <div key={panelName} className="form-group">
