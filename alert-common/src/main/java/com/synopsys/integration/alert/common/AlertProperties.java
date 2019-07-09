@@ -93,6 +93,9 @@ public class AlertProperties {
     @Value("${public.hub.webserver.port:}")
     private String publicWebserverPort;
 
+    @Value("${alert.hostname:}")
+    private String alertHostName;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -161,12 +164,18 @@ public class AlertProperties {
         return getOptionalString(keyStoreType);
     }
 
+    @Deprecated
     public Optional<String> getPublicWebserverHost() {
         return getOptionalString(publicWebserverHost);
     }
 
+    @Deprecated
     public Optional<String> getPublicWebserverPort() {
         return getOptionalString(publicWebserverPort);
+    }
+
+    public Optional<String> getAlertHostName() {
+        return getOptionalString(alertHostName);
     }
 
     private Optional<String> getOptionalString(final String value) {
@@ -178,8 +187,8 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
-            final String hostName = getPublicWebserverHost().orElse("localhost");
-            final String port = getPublicWebserverPort().orElse(getServerPort().orElse(""));
+            final String hostName = getAlertHostName().orElse(getPublicWebserverHost().orElse("localhost"));
+            final String port = getServerPort().orElse(getPublicWebserverPort().orElse(getServerPort().orElse("")));
             final String path = getContextPath().orElse("");
             String protocol = "http";
             if (getSslEnabled()) {
