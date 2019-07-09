@@ -171,7 +171,7 @@ public class JiraIssueHandler {
             .forEach(item -> {
                 String key = item.getComponentKeys().getShallowKey() + item.getOperation();
                 // FIXME find a way to make this provider-agnostic
-                if (item.getCategory().contains("Policy")) {
+                if (!item.getCategory().contains("Vuln")) {
                     key = item.getComponentKeys().getDeepKey() + item.getOperation();
                 }
                 combinedItems.computeIfAbsent(key, ignored -> new LinkedList<>()).add(item);
@@ -212,7 +212,7 @@ public class JiraIssueHandler {
         commentBuilder.append(" in ");
         commentBuilder.append(provider);
         if (StringUtils.isNotBlank(attributesString)) {
-            commentBuilder.append(".\n- - - - -\n");
+            commentBuilder.append(".\n----------\n");
             commentBuilder.append(attributesString);
         } else {
             commentBuilder.append(".");
