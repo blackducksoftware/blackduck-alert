@@ -59,5 +59,4 @@ public abstract class TestAction {
         builder.applyNotificationId(1L);
         return builder.build();
     }
-
 }
