@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as FieldMapping from 'util/fieldMapping';
 import CollapsiblePane from 'component/common/CollapsiblePane';
-import { updateFieldModelValues, updateFieldModelSingleValue } from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 const DEFAULT_PANEL = 'default';
 
@@ -23,7 +23,7 @@ class FieldsPanel extends React.Component {
         const { self, stateName } = this.props;
         const { type, name, value } = target;
         const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? updateFieldModelValues(self.state[stateName], name, updatedValue) : updateFieldModelSingleValue(self.state[stateName], name, updatedValue);
+        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(self.state[stateName], name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(self.state[stateName], name, updatedValue);
 
         self.setState({
             [stateName]: newState
@@ -62,8 +62,18 @@ class FieldsPanel extends React.Component {
     }
 
     createPanel(panelName, fieldMapping) {
-        const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> :
-            <CollapsiblePane title={panelName}>{this.createHeaders(fieldMapping)}</CollapsiblePane>;
+        let panelFields = [];
+        Object.keys(fieldMapping).forEach((key) => {
+            const fields = fieldMapping[key];
+            panelFields = panelFields.concat(fields);
+        });
+        const hasValues = FieldModelUtilities.fieldsHaveValueOrIsSet(this.props.currentConfig, panelFields);
+        const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : (
+            <CollapsiblePane
+                title={panelName}
+                expanded={hasValues}
+            >{this.createHeaders(fieldMapping)}
+            </CollapsiblePane>);
 
         return (
             <div key={panelName} className="form-group">

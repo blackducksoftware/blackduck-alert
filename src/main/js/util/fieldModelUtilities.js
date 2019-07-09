@@ -93,6 +93,29 @@ export function hasValuesOrIsSet(fieldObject) {
     return false;
 }
 
+export function checkboxHasValue(fieldValue) {
+    if (fieldValue) {
+        const { values } = fieldValue;
+        const valuesNotEmpty = values ? values.length > 0 : false;
+        const everyValueIsNotEmpty = values ? values.every(item => item === 'true') : false;
+        return values && valuesNotEmpty && everyValueIsNotEmpty;
+    }
+    return false;
+}
+
+export function fieldsHaveValueOrIsSet(fieldModel, fields) {
+    const { keyToValues } = fieldModel;
+    if (keyToValues && fields) {
+        return fields.some((field) => {
+            const fieldKey = field.key;
+            const fieldType = field.type;
+            const fieldObject = keyToValues[fieldKey];
+            return (fieldType === 'CheckboxInput') ? checkboxHasValue(fieldObject) : hasValuesOrIsSet(fieldObject);
+        });
+    }
+    return false;
+}
+
 export function keysHaveValueOrIsSet(fieldModel, keys) {
     const { keyToValues } = fieldModel;
     if (keyToValues && keys) {
@@ -120,6 +143,7 @@ export function hasAnyValuesExcludingId(fieldModel) {
 }
 
 export function updateFieldModelSingleValue(fieldModel, key, value) {
+    // This is required to be sure we get the proper values from fieldModel
     const copy = JSON.parse(JSON.stringify(fieldModel));
     if (!copy.keyToValues) {
         copy.keyToValues = {};
