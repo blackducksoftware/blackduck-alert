@@ -14,8 +14,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
@@ -122,6 +124,10 @@ public class PolarisGlobalTestActionTest {
         System.err.println("URL: " + polarisUrl);
         System.err.println("Token: " + polarisAccessToken);
         System.err.println("Timeout: " + polarisTimeout);
+
+        Assumptions.assumeTrue(StringUtils.isNotBlank(polarisUrl), "The Polaris URL is required for this test to run.");
+        Assumptions.assumeTrue(StringUtils.isNotBlank(polarisAccessToken), "The Polaris Access Token is required for this test to run.");
+        Assumptions.assumeTrue(StringUtils.isNotBlank(polarisTimeout), "The Polaris Timeout is required for this test to run.");
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, polarisUrl);
