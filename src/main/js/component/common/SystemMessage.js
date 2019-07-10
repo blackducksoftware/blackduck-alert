@@ -5,7 +5,7 @@ import '../../../css/messages.scss';
 class SystemMessage extends Component {
     getIcon() {
         const { severity } = this.props;
-        const errorIcon = 'fa fa-exclamation-triangle ';
+        const errorIcon = 'fa fa-exclamation-triangle';
         if (severity === 'ERROR') {
             return `${errorIcon} errorStatus`;
         } else if (severity === 'WARNING') {

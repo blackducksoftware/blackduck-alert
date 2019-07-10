@@ -1,51 +1,88 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { updateRefresh } from 'store/actions/refresh';
 import CheckboxInput from 'field/input/CheckboxInput';
+import { connect } from 'react-redux';
+import { updateRefresh } from '../../store/actions/refresh';
 
 class AutoRefresh extends Component {
     constructor(props) {
         super(props);
-        this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
+
+        this.state = ({
+            refresh: this.props.autoRefresh
+        });
+
+        this.toggleTimer = this.toggleTimer.bind(this);
+
+        if (this.props.autoRefresh) {
+            this.toggleTimer();
+        }
     }
 
-    handleAutoRefreshChange({ target }) {
-        const { checked } = target;
-        if (checked) {
-            this.props.startAutoReload();
-        } else {
-            this.props.cancelAutoReload();
+    componentDidUpdate(prevProps, prevState) {
+        const { autoRefresh } = this.props;
+        if ((prevProps.autoRefresh !== autoRefresh)) {
+            this.setState({
+                refresh: this.props.autoRefresh
+            });
+            this.toggleTimer();
         }
-        this.props.updateRefresh(checked);
+
+        if (prevState.refresh !== this.state.refresh) {
+            this.toggleTimer();
+            this.props.updateRefresh(this.state.refresh);
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer);
+    }
+
+    toggleTimer() {
+        if (this.state.refresh) {
+            clearInterval(this.timer);
+            this.timer = setInterval(() => this.props.startAutoReload(), this.props.refreshRate);
+        } else {
+            clearInterval(this.timer);
+        }
     }
 
     render() {
+        const { refresh } = this.state;
         return (
             <CheckboxInput
                 id="autoRefresh-id"
-                label="Enable Auto-Refresh"
+                label={this.props.label}
                 name="autoRefresh"
                 showDescriptionPlaceHolder={false}
                 labelClass="tableCheckbox"
-                isChecked={this.props.autoRefresh}
-                onChange={this.handleAutoRefreshChange}
+                isChecked={refresh}
+                onChange={() => this.setState({ refresh: !refresh })}
             />
         );
     }
 }
 
 AutoRefresh.propTypes = {
-    autoRefresh: PropTypes.bool.isRequired,
     startAutoReload: PropTypes.func.isRequired,
-    cancelAutoReload: PropTypes.func.isRequired,
-    updateRefresh: PropTypes.func.isRequired
+    updateRefresh: PropTypes.func.isRequired,
+    autoRefresh: PropTypes.bool,
+    refreshRate: PropTypes.number,
+    label: PropTypes.string
+};
+
+AutoRefresh.defaultProps = {
+    autoRefresh: true,
+    refreshRate: 10000,
+    label: 'Enable Auto-Refresh'
 };
 
 const mapStateToProps = state => ({
     autoRefresh: state.refresh.autoRefresh
 });
+
 const mapDispatchToProps = dispatch => ({
     updateRefresh: checked => dispatch(updateRefresh(checked))
 });
+
 export default connect(mapStateToProps, mapDispatchToProps)(AutoRefresh);
