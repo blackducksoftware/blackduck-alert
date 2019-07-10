@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,22 +30,25 @@ public class AggregateMessageContent extends LinkableItem {
     private final LinkableItem subTopic;
     private final MessageContentKey messageContentKey;
     private Set<CategoryItem> categoryItems;
+    private Date providerCreationTime;
 
-    public AggregateMessageContent(final String name, final String value, final Set<CategoryItem> categoryItems) {
+    public AggregateMessageContent(final String name, final String value, final Set<CategoryItem> categoryItems, Date providerCreationTime) {
         super(name, value);
         this.subTopic = null;
         this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
+        this.providerCreationTime = providerCreationTime;
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final Set<CategoryItem> categoryItems) {
+    public AggregateMessageContent(final String name, final String value, final String url, final Set<CategoryItem> categoryItems, Date providerCreationTime) {
         super(name, value, url);
         this.subTopic = null;
         this.categoryItems = categoryItems;
         this.messageContentKey = MessageContentKey.from(name, value);
+        this.providerCreationTime = providerCreationTime;
     }
 
-    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final Set<CategoryItem> categoryItems) {
+    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final Set<CategoryItem> categoryItems, Date providerCreationTime) {
         super(name, value, url);
         this.subTopic = subTopic;
         this.categoryItems = categoryItems;
@@ -53,6 +57,7 @@ public class AggregateMessageContent extends LinkableItem {
         } else {
             this.messageContentKey = MessageContentKey.from(name, value, subTopic.getName(), subTopic.getValue());
         }
+        this.providerCreationTime = providerCreationTime;
     }
 
     public Optional<LinkableItem> getSubTopic() {
@@ -71,4 +76,7 @@ public class AggregateMessageContent extends LinkableItem {
         this.categoryItems = categoryItems;
     }
 
+    public Date getProviderCreationTime() {
+        return providerCreationTime;
+    }
 }

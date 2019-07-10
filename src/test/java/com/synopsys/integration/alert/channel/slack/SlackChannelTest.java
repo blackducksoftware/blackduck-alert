@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -183,7 +184,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem);
-        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
+        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems, java.sql.Date.from(Instant.now()));
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
@@ -214,7 +215,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem);
-        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
+        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems, java.sql.Date.from(Instant.now()));
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
@@ -248,7 +249,7 @@ public class SlackChannelTest extends ChannelTest {
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem_1);
         categoryItems.add(categoryItem_2);
-        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
+        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems, Date.from(Instant.now()));
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
@@ -282,7 +283,7 @@ public class SlackChannelTest extends ChannelTest {
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
         categoryItems.add(categoryItem_1);
         categoryItems.add(categoryItem_2);
-        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems);
+        final AggregateMessageContent content = new AggregateMessageContent("Message Content", "Slack Unit Test from Alert", categoryItems, Date.from(Instant.now()));
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
@@ -304,7 +305,7 @@ public class SlackChannelTest extends ChannelTest {
         List<Request> request = null;
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "");

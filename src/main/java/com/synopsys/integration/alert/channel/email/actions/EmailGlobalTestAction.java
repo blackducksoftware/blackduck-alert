@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.email.actions;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -78,7 +80,7 @@ public class EmailGlobalTestAction extends TestAction {
         final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("TYPE"), null, 1L, set);
         final Set<CategoryItem> categoryItems = new LinkedHashSet<>();
         categoryItems.add(categoryItem);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", categoryItems);
+        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", categoryItems, Date.from(Instant.now()));
         emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", MessageContentGroup.singleton(messageContent));
     }
 

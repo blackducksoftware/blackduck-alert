@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.workflow.processor;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +53,7 @@ import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class MessageContentAggregator {
+    private static final Logger logger = LoggerFactory.getLogger(MessageContentAggregator.class);
     private final JobConfigReader jobConfigReader;
     private final List<Provider> providers;
     private final NotificationFilter notificationFilter;
@@ -108,7 +112,6 @@ public class MessageContentAggregator {
             if (notificationsForJob.isEmpty()) {
                 return List.of();
             }
-
             final FormatType formatType = jobConfiguration.getFormatType();
             final Set<MessageContentCollector> providerMessageContentCollectors = optionalProvider.get().createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
@@ -118,6 +121,7 @@ public class MessageContentAggregator {
             final List<AggregateMessageContent> messages = providerMessageContentCollectors
                                                                .stream()
                                                                .flatMap(collector -> collector.getCollectedContent().stream())
+                                                               .sorted(Comparator.comparing(AggregateMessageContent::getProviderCreationTime))
                                                                .collect(Collectors.toList());
             return messageContentProcessorMap.get(formatType).process(messages);
         }

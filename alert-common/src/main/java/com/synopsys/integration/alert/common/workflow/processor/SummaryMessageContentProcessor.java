@@ -81,7 +81,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), new LinkedHashSet(summarizedCategoryItems));
+        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), new LinkedHashSet(summarizedCategoryItems), message.getProviderCreationTime());
     }
 
     private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {

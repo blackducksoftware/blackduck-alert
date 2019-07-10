@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.channel.email;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -129,7 +131,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public DistributionEvent createChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", UNIT_TEST_PROJECT_NAME, null, subTopic, new TreeSet<>());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", UNIT_TEST_PROJECT_NAME, null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
         List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorName(EmailChannel.COMPONENT_NAME);

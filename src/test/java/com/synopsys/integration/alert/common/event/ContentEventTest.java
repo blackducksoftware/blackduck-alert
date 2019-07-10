@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.common.event;
 
 import static org.junit.Assert.assertEquals;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
@@ -30,7 +32,7 @@ public class ContentEventTest {
     @Test
     public void getContentTest() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(messageContent);
         final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
         assertEquals(contentGroup, event.getContent());

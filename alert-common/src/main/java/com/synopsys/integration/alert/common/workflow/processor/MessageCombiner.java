@@ -22,8 +22,10 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -52,7 +54,8 @@ public class MessageCombiner {
             final LinkableItem topic = topicAndSubTopic.getLeft();
             final SortedSet<CategoryItem> combinedCategoryItems = gatherCategoryItems(groupedMessageEntry.getValue());
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new LinkedHashSet<>(combinedCategoryItems));
+            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new LinkedHashSet<>(combinedCategoryItems),
+                Date.from(Instant.now()));
             combinedMessages.add(newMessage);
         }
         return combinedMessages;

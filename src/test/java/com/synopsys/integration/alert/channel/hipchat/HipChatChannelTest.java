@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +91,7 @@ public class HipChatChannelTest extends ChannelTest {
         IntegrationException intException = null;
         try {
             final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-            final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+            final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
 
             final FieldAccessor fieldAccessor = new FieldAccessor(new HashMap<>());
             final DistributionEvent event = new DistributionEvent(
@@ -108,7 +109,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, auditUtility, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
@@ -146,7 +147,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, restChannelUtilitySpy);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
