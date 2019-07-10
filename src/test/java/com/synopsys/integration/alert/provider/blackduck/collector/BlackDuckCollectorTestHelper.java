@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.UriSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
@@ -72,6 +73,15 @@ public class BlackDuckCollectorTestHelper {
             final UriSingleResponse mockComponentSingleResponse = new UriSingleResponse(bomComponentUri, ProjectVersionView.class);
             Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockComponentSingleResponse))).thenReturn(versionBomComponentView);
             Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(bomComponentUri), Mockito.any(ProjectVersionView.class.getClass()))).thenReturn(versionBomComponentView);
+
+            String componentVersionUri = "https://a-hub-server.blackduck.com/api/components/7792be90-bfd2-42d7-ae19-66e051978675/versions/5a01d0b3-a6c4-469a-b9c8-c5769cffae78";
+            ComponentVersionView componentVersionView = new ComponentVersionView();
+            componentVersionView.setMeta(new ResourceMetadata());
+            componentVersionView.getMeta().setHref(componentVersionUri);
+            final UriSingleResponse mockComponentVersionSingleResponse = new UriSingleResponse(componentVersionUri, ComponentVersionView.class);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(mockComponentVersionSingleResponse))).thenReturn(componentVersionView);
+            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(componentVersionUri), Mockito.any(ComponentVersionView.class.getClass()))).thenReturn(componentVersionView);
+            Mockito.when(mockBlackDuckService.getResponse(componentVersionUri, ComponentVersionView.class)).thenReturn(componentVersionView);
 
             mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_1, mockBlackDuckService, "UNKNOWN");
             mockVulnSingleResponse(BlackDuckVulnerabilityCollectorTest.VULNERABILITY_URL_CVE_2, mockBlackDuckService, "UNKNOWN");
