@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import '../../../css/messages.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '../../../css/messages.scss';
 
 class SystemMessage extends Component {
     getIcon() {
         const { severity } = this.props;
-        const errorIcon = 'exclamation-triangle ';
+        const errorIcon = 'exclamation-triangle';
         if (severity === 'ERROR') {
             return `${errorIcon}`;
         } else if (severity === 'WARNING') {
