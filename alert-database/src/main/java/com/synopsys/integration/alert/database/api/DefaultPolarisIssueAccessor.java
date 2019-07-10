@@ -63,7 +63,7 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
                                    .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
         return polarisIssueRepository.findByProjectId(projectId)
                    .stream()
-                   .filter(entity -> projectId == entity.getProjectId())
+                   .filter(entity -> projectId.equals(entity.getProjectId()))
                    .map(entity -> new PolarisIssueModel(entity.getIssueType(), entity.getPreviousCount(), entity.getCurrentCount()))
                    .collect(Collectors.toList());
     }
