@@ -39,6 +39,8 @@ import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckColl
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
 
 public class MessageContentAggregatorTest extends AlertIntegrationTest {
     @Autowired
@@ -98,7 +100,12 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
             for (MessageContentCollector collector : topicCollectors) {
                 if (collector.getSupportedNotificationTypes().contains(NotificationType.VULNERABILITY.name())) {
                     collector = Mockito.spy(collector);
+
+                    final BlackDuckService mockBlackDuckService = Mockito.mock(BlackDuckService.class);
+                    Mockito.when(mockBlackDuckService.getResponse(Mockito.anyString(), Mockito.any(ComponentVersionView.class.getClass()))).thenReturn(new ComponentVersionView());
+
                     ((BlackDuckCollector) Mockito.doReturn(List.of()).when(collector)).getRemediationItems(Mockito.any());
+                    ((BlackDuckCollector) Mockito.doReturn(mockBlackDuckService).when(collector)).getBlackDuckService();
                 }
                 spiedCollectors.add(collector);
             }

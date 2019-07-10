@@ -153,6 +153,18 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return remediationItems;
     }
 
+    public BlackDuckService getBlackDuckService() {
+        return blackDuckService;
+    }
+
+    protected BlackDuckBucketService getBucketService() {
+        return bucketService;
+    }
+
+    protected BlackDuckBucket getBlackDuckBucket() {
+        return blackDuckBucket;
+    }
+
     private String createRemediationVersionText(final RemediatingVersionView remediatingVersionView) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(remediatingVersionView.getName());
@@ -164,15 +176,4 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return stringBuilder.toString();
     }
 
-    protected BlackDuckService getBlackDuckService() {
-        return blackDuckService;
-    }
-
-    protected BlackDuckBucketService getBucketService() {
-        return bucketService;
-    }
-
-    protected BlackDuckBucket getBlackDuckBucket() {
-        return blackDuckBucket;
-    }
 }
