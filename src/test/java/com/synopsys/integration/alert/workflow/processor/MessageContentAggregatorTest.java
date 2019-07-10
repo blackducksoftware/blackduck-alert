@@ -7,8 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,10 +30,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckCollector;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -85,7 +90,25 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final ConfigurationAccessor spiedReader = Mockito.spy(jobConfigReader);
         Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getAllJobs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providers, notificationFilter, messageContentProcessorList);
+        List<Provider> spiedProviders = new LinkedList<>();
+        for (Provider provider : providers) {
+            final Set<MessageContentCollector> topicCollectors = provider.createTopicCollectors();
+
+            final LinkedHashSet<Object> spiedCollectors = new LinkedHashSet<>();
+            for (MessageContentCollector collector : topicCollectors) {
+                if (collector.getSupportedNotificationTypes().contains(NotificationType.VULNERABILITY.name())) {
+                    collector = Mockito.spy(collector);
+                    ((BlackDuckCollector) Mockito.doReturn(List.of()).when(collector)).getRemediationItems(Mockito.any());
+                }
+                spiedCollectors.add(collector);
+            }
+
+            final Provider spiedProvider = Mockito.spy(provider);
+            Mockito.doReturn(spiedCollectors).when(spiedProvider).createTopicCollectors();
+            spiedProviders.add(spiedProvider);
+        }
+
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, spiedProviders, notificationFilter, messageContentProcessorList);
         final Map<ConfigurationJobModel, List<MessageContentGroup>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentMap.isEmpty());
