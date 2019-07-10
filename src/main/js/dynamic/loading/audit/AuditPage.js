@@ -30,9 +30,6 @@ class AuditPage extends Component {
             currentRowSelected: {},
             showDetailModal: false
         };
-        // this.addDefaultEntries = this.addDefaultEntries.bind(this);
-        this.cancelAutoReload = this.cancelAutoReload.bind(this);
-        this.startAutoReload = this.startAutoReload.bind(this);
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
@@ -61,14 +58,6 @@ class AuditPage extends Component {
         if (nextProps.items !== this.props.items) {
             this.setEntriesFromArray(nextProps.items);
         }
-
-        if (!nextProps.fetching && this.props.autoRefresh) {
-            this.startAutoReload();
-        }
-    }
-
-    componentWillUnmount() {
-        this.cancelAutoReload();
     }
 
     onResendClick(currentRowSelected) {
@@ -210,16 +199,6 @@ class AuditPage extends Component {
         return rowIndex % 2 === 0 ? 'tableEvenRow' : 'tableRow';
     }
 
-    cancelAutoReload() {
-        clearTimeout(this.timeout);
-    }
-
-    startAutoReload() {
-        // run the reload now and then every 10 seconds
-        this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.reloadAuditEntries(), 10000);
-    }
-
     refreshAuditEntries() {
         this.reloadAuditEntries(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder, this.state.onlyShowSentNotifications);
     }
@@ -279,8 +258,11 @@ class AuditPage extends Component {
 
     resendButton(cell, row) {
         if (this.isResendAllowed() && row.content) {
-            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
-                                               buttonText="Re-send" />);
+            return (<RefreshTableCellFormatter
+                handleButtonClicked={this.onResendClick}
+                currentRowSelected={row}
+                buttonText="Re-send"
+            />);
         }
         return (<div className="editJobButtonDisabled"><span className="fa fa-sync" /></div>);
     }
@@ -301,8 +283,12 @@ class AuditPage extends Component {
         return (
             <ButtonGroup>
                 {!this.props.autoRefresh &&
-                <div role="button" tabIndex={0} className="btn btn-info react-bs-table-add-btn tableButton"
-                     onClick={this.refreshAuditEntries}>
+                <div
+                    role="button"
+                    tabIndex={0}
+                    className="btn btn-info react-bs-table-add-btn tableButton"
+                    onClick={this.refreshAuditEntries}
+                >
                     <span className="fa fa-sync fa-fw" aria-hidden="true" /> Refresh
                 </div>
                 }
@@ -355,7 +341,7 @@ class AuditPage extends Component {
             <div>
                 <ConfigurationLabel fontAwesomeIcon="history" configurationName="Audit" />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
+                    <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} />
                 </div>
                 <div className="pull-right">
                     <CheckboxInput
@@ -398,14 +384,29 @@ class AuditPage extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="provider" dataSort columnClassName="tableCell"
-                                           dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell"
-                                           dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="provider"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={this.providerColumnDataFormat}
+                        >Provider
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="notificationType"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={this.notificationTypeDataFormat}
+                        >Notification Types
+                        </TableHeaderColumn>
                         <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
                         <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
-                        <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell"
-                                           dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="overallStatus"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={this.statusColumnDataFormat}
+                        >Status
+                        </TableHeaderColumn>
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
@@ -435,7 +436,6 @@ AuditPage.propTypes = {
     inProgress: PropTypes.bool,
     message: PropTypes.string,
     autoRefresh: PropTypes.bool,
-    fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     totalPageCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
