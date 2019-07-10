@@ -20,7 +20,7 @@ class CollapsiblePane extends Component {
     render() {
         const { expanded } = this.state;
         const contentClass = expanded ? 'shown' : 'hidden';
-        const iconClass = expanded ? 'fa-minus' : 'fa-plus';
+        const iconClass = expanded ? 'minus' : 'plus';
         return (
             <div className="collapsiblePanel">
                 <button
