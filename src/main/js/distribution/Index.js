@@ -53,9 +53,6 @@ function frequencyColumnDataFormat(cell) {
 class Index extends Component {
     constructor(props) {
         super(props);
-        this.startAutoReload = this.startAutoReload.bind(this);
-        this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
-        this.cancelAutoReload = this.cancelAutoReload.bind(this);
         this.createCustomModal = this.createCustomModal.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
@@ -82,10 +79,6 @@ class Index extends Component {
 
     componentDidMount() {
         this.reloadJobs();
-    }
-
-    componentWillUnmount() {
-        this.cancelAutoReload();
     }
 
     onJobDeleteSubmit() {
@@ -132,22 +125,6 @@ class Index extends Component {
         );
     }
 
-    startAutoReload() {
-        // Run reload in 10seconds - kill an existing timer if it exists.
-        this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.reloadJobs(), 10000);
-    }
-
-    cancelAutoReload() {
-        clearTimeout(this.timeout);
-    }
-
-    startAutoReloadIfConfigured() {
-        if (this.props.autoRefresh) {
-            this.startAutoReload();
-        }
-    }
-
     saveBtn() {
         this.cancelRowSelect();
         this.reloadJobs();
@@ -158,7 +135,6 @@ class Index extends Component {
     }
 
     cancelRowSelect() {
-        this.startAutoReloadIfConfigured();
         this.refs.table.cleanSelected();
         this.setState({
             currentRowSelected: null
@@ -177,7 +153,6 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
-        this.cancelAutoReload();
         this.setState({ currentRowSelected });
     }
 
@@ -387,7 +362,7 @@ class Index extends Component {
 
                 <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={() => console.log(new Date().getMilliseconds())} />
+                    <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} />
                 </div>
                 {content}
             </div>
@@ -412,6 +387,7 @@ Index.defaultProps = {
 };
 
 const mapStateToProps = state => ({
+    autoRefresh: state.refresh.autoRefresh,
     descriptors: state.descriptors.items,
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,

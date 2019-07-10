@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import CheckboxInput from 'field/input/CheckboxInput';
+import { connect } from 'react-redux';
+import { updateRefresh } from '../../store/actions/refresh';
 
 class AutoRefresh extends Component {
     constructor(props) {
@@ -28,11 +30,12 @@ class AutoRefresh extends Component {
 
         if (prevState.refresh !== this.state.refresh) {
             this.toggleTimer();
+            this.props.updateRefresh(this.state.refresh);
         }
     }
 
     componentWillUnmount() {
-        this.cancelAutoReload();
+        clearInterval(this.timer);
     }
 
     toggleTimer() {
@@ -62,6 +65,7 @@ class AutoRefresh extends Component {
 
 AutoRefresh.propTypes = {
     startAutoReload: PropTypes.func.isRequired,
+    updateRefresh: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
     refreshRate: PropTypes.number,
     label: PropTypes.string
@@ -69,8 +73,16 @@ AutoRefresh.propTypes = {
 
 AutoRefresh.defaultProps = {
     autoRefresh: true,
-    refreshRate: 1000,
+    refreshRate: 10000,
     label: 'Enable Auto-Refresh'
 };
 
-export default AutoRefresh;
+const mapStateToProps = state => ({
+    autoRefresh: state.refresh.autoRefresh
+});
+
+const mapDispatchToProps = dispatch => ({
+    updateRefresh: checked => dispatch(updateRefresh(checked))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AutoRefresh);

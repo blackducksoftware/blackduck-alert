@@ -9,6 +9,7 @@ import distributionConfigs from 'store/reducers/distributionConfigs';
 import projects from 'store/reducers/projects';
 import session from 'store/reducers/session';
 import system from 'store/reducers/system';
+import refresh from 'store/reducers/refresh';
 import globalConfiguration from './globalConfiguration';
 
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     projects,
     session,
     system,
+    refresh,
     routing
 });
 
