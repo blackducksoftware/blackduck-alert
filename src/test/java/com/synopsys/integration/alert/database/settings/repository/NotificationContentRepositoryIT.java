@@ -213,7 +213,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         final Set<CategoryItem> categoryItems = new HashSet<>();
         final CategoryKey categoryKey = CategoryKey.from("notification", notificationId.toString());
         categoryItems.add(new CategoryItem(categoryKey, ItemOperation.UPDATE, notificationId, new TreeSet<>()));
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent("topic", "topic value", categoryItems);
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent("topic", "topic value", categoryItems, Date.from(Instant.now()));
         return MessageContentGroup.singleton(aggregateMessageContent);
     }
 

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.workflow.processor;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,6 @@ public class MessageContentAggregator {
             if (notificationsForJob.isEmpty()) {
                 return List.of();
             }
-
             final FormatType formatType = jobConfiguration.getFormatType();
             final Set<MessageContentCollector> providerMessageContentCollectors = optionalProvider.get().createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
@@ -118,6 +118,7 @@ public class MessageContentAggregator {
             final List<AggregateMessageContent> messages = providerMessageContentCollectors
                                                                .stream()
                                                                .flatMap(collector -> collector.getCollectedContent().stream())
+                                                               .sorted(Comparator.comparing(AggregateMessageContent::getProviderCreationTime))
                                                                .collect(Collectors.toList());
             return messageContentProcessorMap.get(formatType).process(messages);
         }

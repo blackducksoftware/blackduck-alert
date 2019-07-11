@@ -2,7 +2,9 @@ package com.synopsys.integration.alert.workflow.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +83,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     }
 
     private AggregateMessageContent createMessageContent(final String value) {
-        return new AggregateMessageContent("Name", value, new TreeSet<>());
+        return new AggregateMessageContent("Name", value, new TreeSet<>(), Date.from(Instant.now()));
     }
 
 }

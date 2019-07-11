@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.channel.slack;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +81,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public DistributionEvent createChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
         List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorName(SlackChannel.COMPONENT_NAME);

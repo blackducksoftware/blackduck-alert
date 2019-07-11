@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.common.workflow.processor;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -24,7 +26,7 @@ public abstract class ProcessorTest {
         for (CategoryItem categoryItem : categoryItems) {
             items.add(categoryItem);
         }
-        return new AggregateMessageContent(name, value, items);
+        return new AggregateMessageContent(name, value, items, Date.from(Instant.now()));
     }
 
     public List<AggregateMessageContent> createDefaultMessages() {

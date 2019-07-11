@@ -71,7 +71,7 @@ public abstract class MessageContentCollector {
         try {
             final List<JsonField<?>> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
-            final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
+            final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields, notification);
             for (final AggregateMessageContent content : contents) {
                 addCategoryItems(content.getCategoryItems(), jsonFieldAccessor, notificationFields, notification);
                 addContent(content);
@@ -180,7 +180,7 @@ public abstract class MessageContentCollector {
         return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
     }
 
-    private List<AggregateMessageContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<JsonField<?>> notificationFields) {
+    private List<AggregateMessageContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<JsonField<?>> notificationFields, AlertNotificationWrapper notification) {
         final List<AggregateMessageContent> aggregateMessageContentsForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
@@ -208,17 +208,17 @@ public abstract class MessageContentCollector {
                 aggregateMessageContentsForNotifications.add(foundContent);
             } else {
                 final Set<CategoryItem> categoryItems = new LinkedHashSet<>();
-                aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryItems));
+                aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryItems, notification));
             }
         }
         return aggregateMessageContentsForNotifications;
     }
 
-    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final Set<CategoryItem> categoryItems) {
+    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final Set<CategoryItem> categoryItems, AlertNotificationWrapper notification) {
         if (subTopic.isPresent()) {
-            return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems);
+            return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems, notification.getProviderCreationTime());
         }
-        return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), categoryItems);
+        return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), categoryItems, notification.getProviderCreationTime());
     }
 
     private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier,

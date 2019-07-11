@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.common.event;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class EventManagerTest {
         final EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
         final FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
         final DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
             MessageContentGroup.singleton(content), fieldAccessor);
@@ -41,7 +42,7 @@ public class EventManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
         final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }

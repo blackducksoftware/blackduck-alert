@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.channel.hipchat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +97,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public DistributionEvent createChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, new TreeSet<>(), Date.from(Instant.now()));
         List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorName(HipChatChannel.COMPONENT_NAME);

@@ -12,6 +12,8 @@
 package com.synopsys.integration.alert.channel;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -67,7 +69,7 @@ public class ChannelTest {
         items.add(categoryItem2);
         items.add(categoryItem3);
 
-        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, items);
+        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, items, Date.from(Instant.now()));
     }
 
     private SortedSet<LinkableItem> asSet(final LinkableItem... items) {

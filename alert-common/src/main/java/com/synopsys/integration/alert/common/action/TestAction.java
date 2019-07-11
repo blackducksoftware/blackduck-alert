@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.action;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.LinkedHashSet;
 
 import com.synopsys.integration.alert.common.message.model.AggregateMessageContent;
@@ -42,6 +44,6 @@ public abstract class TestAction {
 
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Test message sent by Alert", null);
-        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new LinkedHashSet<>());
+        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, new LinkedHashSet<>(), Date.from(Instant.now()));
     }
 }

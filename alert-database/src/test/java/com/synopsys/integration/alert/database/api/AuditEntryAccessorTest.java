@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.database.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -135,7 +136,7 @@ public class AuditEntryAccessorTest {
         categoryItems.add(categoryItem2);
         categoryItems.add(categoryItem3);
 
-        return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, categoryItems);
+        return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, categoryItems, Date.from(Instant.now()));
     }
 
     private void mockAuditRepositorySave(final AuditEntryRepository auditEntryRepository, final AuditEntryEntity savedAuditEntryEntity) {

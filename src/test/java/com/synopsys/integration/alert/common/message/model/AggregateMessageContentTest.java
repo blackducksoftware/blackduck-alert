@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -19,7 +21,7 @@ public class AggregateMessageContentTest {
         final String url = "topic url";
         final LinkableItem subTopic = Mockito.mock(LinkableItem.class);
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, subTopic, categoryItems);
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, subTopic, categoryItems, Date.from(Instant.now()));
 
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
@@ -35,7 +37,7 @@ public class AggregateMessageContentTest {
         final String name = "topic name";
         final String value = "topic value";
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, categoryItems);
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, categoryItems, Date.from(Instant.now()));
 
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
@@ -50,7 +52,7 @@ public class AggregateMessageContentTest {
         final String value = "topic value";
         final String url = "topic url";
         final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
-        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, categoryItems);
+        final AggregateMessageContent aggregateMessageContent = new AggregateMessageContent(name, value, url, categoryItems, Date.from(Instant.now()));
 
         assertEquals(name, aggregateMessageContent.getName());
         assertEquals(value, aggregateMessageContent.getValue());
