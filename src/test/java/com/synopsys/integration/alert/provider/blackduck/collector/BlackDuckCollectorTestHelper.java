@@ -28,6 +28,7 @@ public class BlackDuckCollectorTestHelper {
 
         Mockito.when(mockProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(mockHttpClient));
         Mockito.when(mockProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(mockServicesFactory);
+        Mockito.when(mockProperties.getBlackDuckTimeout()).thenReturn(120);
         return mockProperties;
     }
 

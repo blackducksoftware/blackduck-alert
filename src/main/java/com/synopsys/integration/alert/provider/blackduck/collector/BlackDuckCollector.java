@@ -26,10 +26,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -100,11 +98,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             return optionalProjectVersionFuture
                        .get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS)
                        .flatMap(view -> view.getFirstLink(link));
-        } catch (ExecutionException | TimeoutException multiThreadingException) {
-            logger.error("There was a problem retrieving the Project Version link.", multiThreadingException);
         } catch (InterruptedException interruptedException) {
             logger.debug("The thread was interrupted, failing safely...");
             Thread.currentThread().interrupt();
+        } catch (Exception genericException) {
+            logger.error("There was a problem retrieving the Project Version link.", genericException);
         }
 
         return Optional.empty();
@@ -117,8 +115,8 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         } catch (InterruptedException interruptedException) {
             logger.debug("The thread was interrupted, failing safely...");
             Thread.currentThread().interrupt();
-        } catch (ExecutionException | TimeoutException multiThreadingException) {
-            logger.error("Error retrieving bom component", multiThreadingException);
+        } catch (Exception genericException) {
+            logger.error("Error retrieving bom component", genericException);
         }
         return Optional.empty();
     }
