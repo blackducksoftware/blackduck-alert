@@ -112,6 +112,7 @@ public class MessageCombiner {
             if (!item.isCollapsible()) {
                 keyParts.add(item.getName());
                 keyParts.add(item.getValue());
+                item.getUrl().ifPresent(keyParts::add);
             }
         }
         return CategoryKey.from(categoryItem.getCategoryKey().getType(), keyParts);
