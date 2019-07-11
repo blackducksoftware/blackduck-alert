@@ -114,7 +114,7 @@ public class MessageCombiner {
                 keyParts.add(item.getValue());
             }
         }
-        return CategoryKey.from("ignored", keyParts);
+        return CategoryKey.from(categoryItem.getCategoryKey().getType(), keyParts);
     }
 
     protected SortedSet<LinkableItem> combineLinkableItems(final SortedSet<LinkableItem> oldItems, final SortedSet<LinkableItem> newItems) {
