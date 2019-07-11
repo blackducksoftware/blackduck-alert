@@ -26,6 +26,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -93,12 +97,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     //FIXME we need to update our BD common library to the latest so that we can change bucket service to use the new future implementation.
     public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
         try {
-            final ProjectVersionView projectVersionView = blackDuckBucket.contains(projectVersionUrl)
-                                                              ? blackDuckBucket.get(projectVersionUrl, ProjectVersionView.class)
-                                                              : blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
-            bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
-            return projectVersionView.getFirstLink(link);
-        } catch (final IntegrationException e) {
+            final Future<Optional<ProjectVersionView>> optionalProjectVersionFuture = bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+            return optionalProjectVersionFuture
+                       .get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS)
+                       .flatMap(view -> view.getFirstLink(link));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.error("There was a problem retrieving the Project Version link.", e);
         }
 
@@ -107,8 +110,8 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
 
     public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
         try {
-            bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
-            return Optional.ofNullable(getBlackDuckBucket().get(bomComponentUrl, VersionBomComponentView.class));
+            final Future<Optional<VersionBomComponentView>> optionalVersionBomComponentFuture = bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
+            return optionalVersionBomComponentFuture.get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS);
         } catch (final Exception e) {
             logger.error("Error retrieving bom component", e);
         }
