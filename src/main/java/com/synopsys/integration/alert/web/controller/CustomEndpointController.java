@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @RestController
 @RequestMapping(CustomEndpointManager.CUSTOM_ENDPOINT_URL)
@@ -43,15 +44,22 @@ public class CustomEndpointController {
 
     private final CustomEndpointManager customEndpointManager;
     private final ResponseFactory responseFactory;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public CustomEndpointController(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory) {
+    public CustomEndpointController(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final AuthorizationManager authorizationManager) {
         this.customEndpointManager = customEndpointManager;
         this.responseFactory = responseFactory;
+        this.authorizationManager = authorizationManager;
     }
 
     @PostMapping("/{key}")
     public ResponseEntity<String> postConfig(@PathVariable final String key, @RequestBody final FieldModel restModel) {
+        final String permissionKey = authorizationManager.generatePermissionKey(restModel.getContext(), restModel.getDescriptorName());
+        if (!authorizationManager.hasCreatePermission(permissionKey)) {
+            return responseFactory.createForbiddenResponse();
+        }
+
         if (StringUtils.isBlank(key)) {
             return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
         }
