@@ -26,6 +26,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -39,7 +43,6 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.blackduck.api.UriSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
 import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
@@ -91,14 +94,13 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
     }
 
-    //FIXME we need to update our BD common library to the latest so that we can change bucket service to use the new future implementation.
     public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
         try {
-            final UriSingleResponse<ProjectVersionView> uriSingleResponse = new UriSingleResponse(projectVersionUrl, ProjectVersionView.class);
-            final ProjectVersionView projectVersionView = (blackDuckBucket.contains(uriSingleResponse.getUri())) ? blackDuckBucket.get(uriSingleResponse) : blackDuckService.getResponse(projectVersionUrl, ProjectVersionView.class);
-            bucketService.addToTheBucket(blackDuckBucket, List.of(uriSingleResponse));
-            return projectVersionView.getFirstLink(link);
-        } catch (final IntegrationException e) {
+            final Future<Optional<ProjectVersionView>> optionalProjectVersionFuture = bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+            return optionalProjectVersionFuture
+                       .get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS)
+                       .flatMap(view -> view.getFirstLink(link));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.error("There was a problem retrieving the Project Version link.", e);
         }
 
@@ -107,10 +109,10 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
 
     public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
         try {
-            bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
-            return Optional.ofNullable(getBlackDuckBucket().get(bomComponentUrl, VersionBomComponentView.class));
-        } catch (final IntegrationException ie) {
-            logger.error("Error retrieving bom component/", ie);
+            final Future<Optional<VersionBomComponentView>> optionalVersionBomComponentFuture = bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
+            return optionalVersionBomComponentFuture.get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS);
+        } catch (final Exception e) {
+            logger.error("Error retrieving bom component", e);
         }
         return Optional.empty();
     }

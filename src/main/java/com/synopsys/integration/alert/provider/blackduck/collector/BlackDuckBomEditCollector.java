@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonElement;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -64,11 +62,11 @@ import com.synopsys.integration.blackduck.api.generated.component.RiskCountView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.RiskCountType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
@@ -185,10 +183,9 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         try {
             final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
             Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
-            final List<PolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
-            for (final PolicyRuleView rule : policyRules) {
-                final Optional<PolicySummaryStatusType> policySummaryStatusTypeFromRule = getPolicySummaryStatusTypeFromRule(rule);
-                if (policySummaryStatusTypeFromRule.isPresent() && !PolicySummaryStatusType.IN_VIOLATION.equals(policySummaryStatusTypeFromRule.get())) {
+            final List<VersionBomPolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
+            for (final VersionBomPolicyRuleView rule : policyRules) {
+                if (!PolicySummaryStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
                     continue;
                 }
 
@@ -277,22 +274,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return List.of();
     }
 
-    private Optional<PolicySummaryStatusType> getPolicySummaryStatusTypeFromRule(final PolicyRuleView policyRule) {
-        // TODO remove when blackduck-common-api supports this field
-        if (policyRule.getEnabled()) {
-            final String jsonFieldName = "policyApprovalStatus";
-            final JsonElement policyElement = policyRule.getJsonElement();
-            if (null != policyElement && policyElement.isJsonObject()) {
-                final JsonElement approvalStatusElement = policyElement.getAsJsonObject().get(jsonFieldName);
-                if (null != approvalStatusElement && approvalStatusElement.isJsonPrimitive()) {
-                    final String approvalStatusName = approvalStatusElement.getAsString();
-                    return Optional.of(EnumUtils.getEnum(PolicySummaryStatusType.class, approvalStatusName));
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
     private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
         final List<LinkableItem> items = new ArrayList<>();
 
@@ -334,9 +315,9 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return count;
     }
 
-    private Boolean hasVulnerabilityRule(final PolicyRuleView policyRuleView) {
+    private Boolean hasVulnerabilityRule(final VersionBomPolicyRuleView policyRule) {
         final String vulnerabilityCheck = "vuln";
-        final PolicyRuleExpressionSetView expression = policyRuleView.getExpression();
+        final PolicyRuleExpressionSetView expression = policyRule.getExpression();
         final List<PolicyRuleExpressionView> expressions = expression.getExpressions();
         for (final PolicyRuleExpressionView expressionView : expressions) {
             if (expressionView.getName().toLowerCase().contains(vulnerabilityCheck)) {
