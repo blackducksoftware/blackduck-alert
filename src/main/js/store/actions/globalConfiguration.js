@@ -214,9 +214,12 @@ export function testConfig(config, destination) {
                 response.json().then((data) => {
                     switch (response.status) {
                         case 400:
-                            return dispatch(testFailed(data.message, data.errors));
                         case 401:
-                            return dispatch(testFailed(`There was a problem testing your configuration. ${data.message}`));
+                            let { message } = data;
+                            if (!data.message) {
+                                message = 'There was a problem testing your configuration.';
+                            }
+                            return dispatch(testFailed(message, data.errors));
                         default:
                             return dispatch(testFailed(data.message));
                     }

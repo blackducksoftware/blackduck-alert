@@ -7,7 +7,6 @@ import DescriptorLabel from 'component/common/DescriptorLabel';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import { OPERATIONS } from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
@@ -54,14 +53,11 @@ function frequencyColumnDataFormat(cell) {
 const jobModificationState = {
     EDIT: 'EDIT',
     COPY: 'COPY'
-}
+};
 
 class Index extends Component {
     constructor(props) {
         super(props);
-        this.startAutoReload = this.startAutoReload.bind(this);
-        this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
-        this.cancelAutoReload = this.cancelAutoReload.bind(this);
         this.createCustomModal = this.createCustomModal.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
@@ -93,10 +89,6 @@ class Index extends Component {
         this.reloadJobs();
     }
 
-    componentWillUnmount() {
-        this.cancelAutoReload();
-    }
-
     onJobDeleteSubmit() {
         this.state.nextDelete();
     }
@@ -119,7 +111,6 @@ class Index extends Component {
                     handleCancel={this.cancelRowSelect}
                     onSave={this.saveBtn}
                     jobId={id}
-                    isUpdatingJob={jobModificationState.EDIT === modificationState}
                     onModalClose={() => {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
@@ -144,22 +135,6 @@ class Index extends Component {
         );
     }
 
-    startAutoReload() {
-        // Run reload in 10seconds - kill an existing timer if it exists.
-        this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.reloadJobs(), 10000);
-    }
-
-    cancelAutoReload() {
-        clearTimeout(this.timeout);
-    }
-
-    startAutoReloadIfConfigured() {
-        if (this.props.autoRefresh) {
-            this.startAutoReload();
-        }
-    }
-
     saveBtn() {
         this.cancelRowSelect();
         this.reloadJobs();
@@ -170,7 +145,6 @@ class Index extends Component {
     }
 
     cancelRowSelect() {
-        this.startAutoReloadIfConfigured();
         this.refs.table.cleanSelected();
         this.setState({
             currentRowSelected: null,
@@ -191,7 +165,6 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
-        this.cancelAutoReload();
         this.setState({
             currentRowSelected,
             modificationState: jobModificationState.EDIT
@@ -317,7 +290,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.CREATE));
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE));
             }
         }
         return false;
@@ -328,7 +301,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.DELETE));
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE));
             }
         }
         return false;
@@ -415,7 +388,7 @@ class Index extends Component {
 
                 <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
+                    <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} />
                 </div>
                 {content}
             </div>

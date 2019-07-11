@@ -62,14 +62,6 @@ class AuditPage extends Component {
         if (nextProps.items !== this.props.items) {
             this.setEntriesFromArray(nextProps.items);
         }
-
-        if (!nextProps.fetching && this.props.autoRefresh) {
-            this.startAutoReload();
-        }
-    }
-
-    componentWillUnmount() {
-        this.cancelAutoReload();
     }
 
     onResendClick(currentRowSelected) {
@@ -193,7 +185,7 @@ class AuditPage extends Component {
         } else if (cell === 'BOM_EDIT') {
             hasBomEdit = true;
         }
-        
+
         return (<NotificationTypeLegend
             hasPolicyViolation={hasPolicyViolation}
             hasPolicyViolationCleared={hasPolicyViolationCleared}
@@ -212,16 +204,6 @@ class AuditPage extends Component {
     trClassFormat(row, rowIndex) {
         // color the row correctly, since Striped does not work with expandable rows
         return rowIndex % 2 === 0 ? 'tableEvenRow' : 'tableRow';
-    }
-
-    cancelAutoReload() {
-        clearTimeout(this.timeout);
-    }
-
-    startAutoReload() {
-        // run the reload now and then every 10 seconds
-        this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.reloadAuditEntries(), 10000);
     }
 
     refreshAuditEntries() {
@@ -369,7 +351,7 @@ class AuditPage extends Component {
             <div>
                 <ConfigurationLabel fontAwesomeIcon="history" configurationName="Audit" />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
+                    <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} />
                 </div>
                 <div className="pull-right">
                     <CheckboxInput
@@ -471,7 +453,6 @@ AuditPage.propTypes = {
     inProgress: PropTypes.bool,
     message: PropTypes.string,
     autoRefresh: PropTypes.bool,
-    fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     totalPageCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
