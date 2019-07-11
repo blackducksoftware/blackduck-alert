@@ -94,7 +94,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
     }
 
-    //FIXME we need to update our BD common library to the latest so that we can change bucket service to use the new future implementation.
     public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
         try {
             final Future<Optional<ProjectVersionView>> optionalProjectVersionFuture = bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
