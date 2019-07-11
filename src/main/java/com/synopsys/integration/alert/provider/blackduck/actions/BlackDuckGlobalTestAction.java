@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -45,6 +48,7 @@ import com.synopsys.integration.blackduck.service.model.RequestFactory;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
@@ -86,6 +90,13 @@ public class BlackDuckGlobalTestAction extends TestAction {
             }
         } catch (final IOException ioException) {
             throw new IntegrationException(ioException.getMessage(), ioException);
+        } catch (final IntegrationRestException restException) {
+            if (RestConstants.UNAUTHORIZED_401 == restException.getHttpStatusCode()) {
+                final Map<String, String> fieldErrors = new HashMap<>();
+                fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
+                throw new AlertFieldException(restException.getMessage(), fieldErrors);
+            }
+            throw restException;
         }
     }
 
