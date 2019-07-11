@@ -100,8 +100,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             return optionalProjectVersionFuture
                        .get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS)
                        .flatMap(view -> view.getFirstLink(link));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("There was a problem retrieving the Project Version link.", e);
+        } catch (ExecutionException | TimeoutException multiThreadingException) {
+            logger.error("There was a problem retrieving the Project Version link.", multiThreadingException);
+        } catch (InterruptedException interruptedException) {
+            logger.debug("The thread was interrupted, failing safely...");
+            Thread.currentThread().interrupt();
         }
 
         return Optional.empty();
@@ -111,8 +114,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         try {
             final Future<Optional<VersionBomComponentView>> optionalVersionBomComponentFuture = bucketService.addToTheBucket(getBlackDuckBucket(), bomComponentUrl, VersionBomComponentView.class);
             return optionalVersionBomComponentFuture.get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS);
-        } catch (final Exception e) {
-            logger.error("Error retrieving bom component", e);
+        } catch (InterruptedException interruptedException) {
+            logger.debug("The thread was interrupted, failing safely...");
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException multiThreadingException) {
+            logger.error("Error retrieving bom component", multiThreadingException);
         }
         return Optional.empty();
     }
