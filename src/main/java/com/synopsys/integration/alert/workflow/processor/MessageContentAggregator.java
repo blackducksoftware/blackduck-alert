@@ -33,8 +33,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +51,6 @@ import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class MessageContentAggregator {
-    private static final Logger logger = LoggerFactory.getLogger(MessageContentAggregator.class);
     private final JobConfigReader jobConfigReader;
     private final List<Provider> providers;
     private final NotificationFilter notificationFilter;
