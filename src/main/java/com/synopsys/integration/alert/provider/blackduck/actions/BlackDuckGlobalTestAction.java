@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,12 +76,15 @@ public class BlackDuckGlobalTestAction extends TestAction {
         final BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
         final ConnectionResult connectionResult = blackDuckServerConfig.attemptConnection(intLogger);
         if (connectionResult.isFailure()) {
+            String failureMessage = connectionResult.getFailureMessage().orElse("");
             if (RestConstants.UNAUTHORIZED_401 == connectionResult.getHttpStatusCode()) {
-                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Invalid credential(s) for: %s", url), null, "");
+                final Map<String, String> fieldErrors = new HashMap<>();
+                fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
+                throw new AlertFieldException(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), fieldErrors);
             } else if (connectionResult.getHttpStatusCode() > 0) {
-                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, connectionResult.getFailureMessage().orElse(""));
+                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, failureMessage);
             }
-            throw new AlertException(String.format("Could not connect to: %s. %s", url, connectionResult.getFailureMessage().orElse("")));
+            throw new AlertException(String.format("Could not connect to: %s. %s", url, failureMessage));
         }
         return "Successfully connected to BlackDuck server.";
     }
