@@ -56,7 +56,7 @@ public class CustomEndpointController {
     @PostMapping("/{key}")
     public ResponseEntity<String> postConfig(@PathVariable final String key, @RequestBody final FieldModel restModel) {
         final String permissionKey = authorizationManager.generatePermissionKey(restModel.getContext(), restModel.getDescriptorName());
-        if (!authorizationManager.hasCreatePermission(permissionKey)) {
+        if (!authorizationManager.hasExecutePermission(permissionKey)) {
             return responseFactory.createForbiddenResponse();
         }
 
