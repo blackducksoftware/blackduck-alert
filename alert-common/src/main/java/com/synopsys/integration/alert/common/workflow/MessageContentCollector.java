@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.workflow;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public abstract class MessageContentCollector {
         try {
             final List<JsonField<?>> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
-            final List<ProviderMessageContent.Builder> providerContents = getMessageBuildersOrCreateIfTheyDoNotExist(jsonFieldAccessor, notificationFields);
+            final List<ProviderMessageContent.Builder> providerContents = getMessageBuildersOrCreateIfTheyDoNotExist(jsonFieldAccessor, notificationFields, notification.getProviderCreationTime());
 
             for (final ProviderMessageContent.Builder builder : providerContents) {
                 final Collection<ComponentItem> componentItems = getComponentItems(jsonFieldAccessor, notificationFields, notification);
@@ -183,7 +184,7 @@ public abstract class MessageContentCollector {
         return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
     }
 
-    private List<ProviderMessageContent.Builder> getMessageBuildersOrCreateIfTheyDoNotExist(JsonFieldAccessor accessor, List<JsonField<?>> notificationFields) {
+    private List<ProviderMessageContent.Builder> getMessageBuildersOrCreateIfTheyDoNotExist(JsonFieldAccessor accessor, List<JsonField<?>> notificationFields, Date providerCreationTime) {
         final List<ProviderMessageContent.Builder> buildersForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
@@ -205,11 +206,13 @@ public abstract class MessageContentCollector {
             final ProviderMessageContent.Builder foundContent = findContentBuilder(providerItem.getValue(), topicItem, subTopic);
 
             if (null != foundContent) {
+                foundContent.applyEarliestProviderCreationTime(providerCreationTime);
                 buildersForNotifications.add(foundContent);
             } else {
                 ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
                 builder
                     .applyProvider(providerItem.getValue(), providerItem.getUrl().orElse(null))
+                    .applyProviderCreationTime(providerCreationTime)
                     .applyTopic(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null));
                 if (null != subTopic) {
                     builder.applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null));

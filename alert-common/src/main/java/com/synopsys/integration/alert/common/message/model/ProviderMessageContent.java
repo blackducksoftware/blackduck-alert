@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -41,13 +42,15 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     private final LinkableItem subTopic;
     private final ContentKey contentKey;
     private final Set<ComponentItem> componentItems;
+    private final Date providerCreationTime;
 
-    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, Set<ComponentItem> componentItems) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, Set<ComponentItem> componentItems, Date providerCreationTime) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
         this.contentKey = contentKey;
         this.componentItems = componentItems;
+        this.providerCreationTime = providerCreationTime;
     }
 
     public LinkableItem getProvider() {
@@ -70,6 +73,10 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         return componentItems;
     }
 
+    public Date getProviderCreationTime() {
+        return providerCreationTime;
+    }
+
     public static class Builder {
         private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
         private String providerName;
@@ -80,6 +87,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         private String subTopicName;
         private String subTopicValue;
         private String subTopicUrl;
+        private Date providerCreationTime;
 
         public ProviderMessageContent build() throws AlertException {
             if (null == providerName || null == topicName || null == topicValue) {
@@ -93,7 +101,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
             }
             ContentKey key = ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
-            return new ProviderMessageContent(provider, topic, subTopic, key, componentItems);
+            return new ProviderMessageContent(provider, topic, subTopic, key, componentItems, providerCreationTime);
         }
 
         public ContentKey getCurrentContentKey() {
@@ -159,6 +167,22 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
 
         public Builder applyAllComponentItems(final Collection<ComponentItem> componentItems) {
             this.componentItems.addAll(componentItems);
+            return this;
+        }
+
+        public Builder applyEarliestProviderCreationTime(Date providerCreationTime) {
+            if (null == this.providerCreationTime) {
+                return applyProviderCreationTime(providerCreationTime);
+            }
+
+            if (this.providerCreationTime.getTime() > providerCreationTime.getTime()) {
+                return applyProviderCreationTime(providerCreationTime);
+            }
+            return this;
+        }
+
+        public Builder applyProviderCreationTime(Date providerCreationTime) {
+            this.providerCreationTime = providerCreationTime;
             return this;
         }
 
