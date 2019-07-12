@@ -24,11 +24,8 @@ package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -104,8 +101,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     /**
      * Intended to be used for display purposes (such as freemarker templates).
      */
-    public Map<String, List<LinkableItem>> getItemsOfSameName() {
-        final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
+    public ComponentAttributeMap getItemsOfSameName() {
+        final ComponentAttributeMap map = new ComponentAttributeMap();
         if (null == componentAttributes || componentAttributes.isEmpty()) {
             return map;
         }

@@ -10,7 +10,6 @@ import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
 import AuditDetails from 'dynamic/loaded/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import { OPERATIONS } from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -31,9 +30,6 @@ class AuditPage extends Component {
             currentRowSelected: {},
             showDetailModal: false
         };
-        // this.addDefaultEntries = this.addDefaultEntries.bind(this);
-        this.cancelAutoReload = this.cancelAutoReload.bind(this);
-        this.startAutoReload = this.startAutoReload.bind(this);
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
@@ -279,7 +275,7 @@ class AuditPage extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_AUDIT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, OPERATIONS.EXECUTE));
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.EXECUTE));
             }
         }
 
