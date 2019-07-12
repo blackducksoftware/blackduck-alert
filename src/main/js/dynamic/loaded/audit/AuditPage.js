@@ -31,9 +31,6 @@ class AuditPage extends Component {
             currentRowSelected: {},
             showDetailModal: false
         };
-        // this.addDefaultEntries = this.addDefaultEntries.bind(this);
-        this.cancelAutoReload = this.cancelAutoReload.bind(this);
-        this.startAutoReload = this.startAutoReload.bind(this);
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
