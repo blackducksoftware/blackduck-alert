@@ -41,10 +41,10 @@ public class AlertResourceLoader {
         return getPath(alertProperties.getAlertImagesDir(), channelDirectory);
     }
 
-    private String getPath(String directory, String channelDirectory) {
+    private String getPath(String directory, String subDirectory) {
         if (StringUtils.isNotBlank(directory)) {
-            return String.format("%s/%s", directory, channelDirectory);
+            return String.format("%s/%s", directory, subDirectory);
         }
-        return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), channelDirectory);
+        return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), subDirectory);
     }
 }
