@@ -94,9 +94,11 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
     private LinkedHashSet<CategoryItem> createSummarizedCategoryItems(final ItemOperation operation, final Set<CategoryItem> categoryItemsForOperation) {
         final List<CategoryItem> summarizedCategoryItems = new LinkedList<>();
+        final Map<CategoryKey, Map<String, List<LinkableItem>>> itemsByCategory = collectCategoryItemData(categoryItemsForOperation);
         for (final CategoryItem categoryItem : categoryItemsForOperation) {
-            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(categoryItemsForOperation, categoryItem.getItems());
-            final CategoryKey categoryKey = createCategoryKeyFromLinkableItems(summarizedLinkableItems);
+            final CategoryKey key = categoryItem.getCategoryKey();
+            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(itemsByCategory.get(key));
+            final CategoryKey categoryKey = createCategoryKeyFromLinkableItems(key.getType(), summarizedLinkableItems);
             final CategoryItem newCategoryItem = new CategoryItem(categoryKey, operation, categoryItem.getNotificationId(), summarizedLinkableItems);
             newCategoryItem.setComparator(categoryItem.createComparator());
             summarizedCategoryItems.add(newCategoryItem);
@@ -105,9 +107,17 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return collapseDuplicateCategoryItems(summarizedCategoryItems);
     }
 
-    private SortedSet<LinkableItem> createSummarizedLinkableItems(final Set<CategoryItem> categoryItems, final Set<LinkableItem> linkableItems) {
-        final Map<String, List<LinkableItem>> itemsOfSameName = new LinkedHashMap<>();
-        categoryItems.forEach(item -> itemsOfSameName.putAll(item.getItemsOfSameName()));
+    private Map<CategoryKey, Map<String, List<LinkableItem>>> collectCategoryItemData(Set<CategoryItem> categoryItemsForOperation) {
+        Map<CategoryKey, Map<String, List<LinkableItem>>> itemsByCategory = new LinkedHashMap<>();
+        for (final CategoryItem categoryItem : categoryItemsForOperation) {
+            Map<String, List<LinkableItem>> itemsOfSameName = itemsByCategory.computeIfAbsent(categoryItem.getCategoryKey(), ignored -> new LinkedHashMap<>());
+            itemsOfSameName.putAll(categoryItem.getItemsOfSameName());
+        }
+
+        return itemsByCategory;
+    }
+
+    private SortedSet<LinkableItem> createSummarizedLinkableItems(final Map<String, List<LinkableItem>> itemsOfSameName) {
 
         final SortedSet<LinkableItem> summarizedLinkableItems = new TreeSet<>();
         for (final Map.Entry<String, List<LinkableItem>> similarItemEntries : itemsOfSameName.entrySet()) {
@@ -115,13 +125,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                 .stream()
                 .findAny()
                 .filter(LinkableItem::isSummarizable)
-                .ifPresent(item -> createNewItems(item, summarizedLinkableItems, similarItemEntries.getKey(), linkableItems));
+                .ifPresent(item -> createNewItems(item, summarizedLinkableItems, similarItemEntries.getKey(), similarItemEntries.getValue()));
         }
 
         return summarizedLinkableItems;
     }
 
-    private void createNewItems(final LinkableItem item, final Set<LinkableItem> summarizedLinkableItems, final String oldItemName, final Set<LinkableItem> linkableItems) {
+    private void createNewItems(final LinkableItem item, final Set<LinkableItem> summarizedLinkableItems, final String oldItemName, final Collection<LinkableItem> linkableItems) {
         final boolean isCountable = item.isCountable();
         final boolean isNumericValue = item.isNumericValue();
         final String newItemName = generateSummaryItemName(oldItemName, isCountable, isNumericValue);
@@ -153,7 +163,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return oldItemName;
     }
 
-    private LinkedHashSet<LinkableItem> createLinkableItemsByValue(final String itemName, final Set<LinkableItem> linkableItems) {
+    private LinkedHashSet<LinkableItem> createLinkableItemsByValue(final String itemName, final Collection<LinkableItem> linkableItems) {
         final Set<String> uniqueValuesMatchingName = linkableItems
                                                          .stream()
                                                          .filter(item -> itemName.equals(item.getName()))
@@ -242,7 +252,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                    .count();
     }
 
-    private CategoryKey createCategoryKeyFromLinkableItems(final Collection<LinkableItem> linkableItems) {
+    private CategoryKey createCategoryKeyFromLinkableItems(String type, Collection<LinkableItem> linkableItems) {
         final List<String> itemNameValueSequence = new LinkedList<>();
         for (final LinkableItem item : linkableItems) {
             if (!item.isSummarizable()) {
@@ -253,7 +263,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                 itemNameValueSequence.add(item.getValue());
             }
         }
-        return CategoryKey.from("summary", itemNameValueSequence);
+        return CategoryKey.from(type, itemNameValueSequence);
     }
 
     private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {

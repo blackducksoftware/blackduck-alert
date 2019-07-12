@@ -112,9 +112,10 @@ public class MessageCombiner {
             if (!item.isCollapsible()) {
                 keyParts.add(item.getName());
                 keyParts.add(item.getValue());
+                item.getUrl().ifPresent(keyParts::add);
             }
         }
-        return CategoryKey.from("ignored", keyParts);
+        return CategoryKey.from(categoryItem.getCategoryKey().getType(), keyParts);
     }
 
     protected SortedSet<LinkableItem> combineLinkableItems(final SortedSet<LinkableItem> oldItems, final SortedSet<LinkableItem> newItems) {
