@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -210,6 +211,7 @@ public class SlackChannel extends DistributionChannel {
         final List<String> mrkdwnMessageChunks = splitMessages(mrkdwnMessagePieces);
         return mrkdwnMessageChunks
                    .stream()
+                   .filter(message -> StringUtils.isNotBlank(message))
                    .map(message -> getJsonString(message, channelName, channelUsername))
                    .map(jsonMessage -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonMessage))
                    .collect(Collectors.toList());
