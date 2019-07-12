@@ -176,7 +176,6 @@ class Index extends Component {
     }
 
     copyButtonClicked(currentRowSelected) {
-        this.cancelAutoReload();
         this.setState({
             currentRowSelected,
             modificationState: jobModificationState.COPY
