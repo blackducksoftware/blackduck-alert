@@ -78,12 +78,17 @@ class EndpointField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, value, fieldKey, name, successBox
+            buttonLabel, fields, value, fieldKey, name, successBox, readOnly
         } = this.props;
 
         const endpointField = (
             <div className="d-inline-flex p-2 col-sm-8">
-                <GeneralButton id={fieldKey} onClick={this.flipShowModal}>{buttonLabel}</GeneralButton>
+                <GeneralButton
+                    id={fieldKey}
+                    onClick={this.flipShowModal}
+                    disabled={readOnly}
+                >{buttonLabel}
+                </GeneralButton>
                 {successBox &&
                 <div className="d-inline-flex p-2 checkbox">
                     <input
@@ -132,14 +137,16 @@ EndpointField.propTypes = {
     value: PropTypes.bool,
     name: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
-    errorValue: PropTypes.string
+    errorValue: PropTypes.string,
+    readOnly: PropTypes.bool
 };
 
 EndpointField.defaultProps = {
     value: false,
     fields: [],
     name: '',
-    errorValue: null
+    errorValue: null,
+    readOnly: false
 };
 
 const mapStateToProps = state => ({

@@ -130,9 +130,12 @@ function buildEndpointField(items, field) {
         buttonLabel, endpoint, successBox, subFields, key
     } = field;
     const checkedValue = convertStringToBoolean(value);
+    const { readOnly } = field;
+    const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, {
         value: checkedValue,
-        className: 'form-control'
+        className: 'form-control',
+        readOnly: isReadOnly
     });
     return (<EndpointField
         fields={subFields}
