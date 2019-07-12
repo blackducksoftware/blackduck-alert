@@ -69,8 +69,6 @@ public abstract class AlertIntegrationTest {
 
     public void initBlackDuckData() throws AlertException {
         TestProperties testProperties = new TestProperties();
-        final ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL).stream().findFirst()
-                                                              .orElseThrow(() -> new AlertException("Could not find the global Black Duck configuration."));
 
         ConfigurationFieldModel blackDuckURLField = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         blackDuckURLField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
@@ -81,6 +79,13 @@ public abstract class AlertIntegrationTest {
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
+        final ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL).stream().findFirst()
+                                                              .orElse(
+
+                                                                  configurationAccessor
+                                                                      .createConfiguration(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))
+
+                                                              );
         configurationAccessor.updateConfiguration(blackDuckConfiguration.getConfigurationId(), List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
     }
 }
