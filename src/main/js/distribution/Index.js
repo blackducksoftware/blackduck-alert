@@ -112,7 +112,6 @@ class Index extends Component {
                     onSave={this.saveBtn}
                     isUpdatingJob={jobModificationState.EDIT === modificationState}
                     jobId={id}
-                    isUpdatingJob={jobModificationState.EDIT === modificationState}
                     onModalClose={() => {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
