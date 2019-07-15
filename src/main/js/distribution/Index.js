@@ -110,6 +110,7 @@ class Index extends Component {
                 <DistributionConfiguration
                     handleCancel={this.cancelRowSelect}
                     onSave={this.saveBtn}
+                    isUpdatingJob={jobModificationState.EDIT === modificationState}
                     jobId={id}
                     onModalClose={() => {
                         this.props.fetchDistributionJobs();
