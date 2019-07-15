@@ -111,6 +111,7 @@ class Index extends Component {
                     handleCancel={this.cancelRowSelect}
                     onSave={this.saveBtn}
                     jobId={id}
+                    isUpdatingJob={jobModificationState.EDIT === modificationState}
                     onModalClose={() => {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
