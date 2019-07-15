@@ -24,4 +24,28 @@
                 onDelete="CASCADE"
         />
     </changeSet>
+
+    <!-- Add foreign keys to provider tables -->
+    <changeSet author="gavink" id="1563194312055-2">
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PROVIDER_USER_PROJECT_RELATION"
+                baseColumnNames="PROVIDER_USER_ID"
+                constraintName="FK_PROVIDER_USER_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PROVIDER_USERS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PROVIDER_USER_PROJECT_RELATION"
+                baseColumnNames="PROVIDER_PROJECT_ID"
+                constraintName="FK_PROVIDER_PROJECT_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PROVIDER_PROJECTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
 </databaseChangeLog>
