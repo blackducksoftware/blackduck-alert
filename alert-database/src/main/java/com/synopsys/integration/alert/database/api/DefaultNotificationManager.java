@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -177,9 +176,10 @@ public class DefaultNotificationManager implements NotificationManager {
 
     private void deleteAuditEntries(final Long notificationId) {
         final List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
-        final Function<AuditNotificationRelation, Long> transform = AuditNotificationRelation::getAuditEntryId;
-        final List<Long> auditIdList = foundRelations.stream().map(transform).collect(Collectors.toList());
-        auditNotificationRepository.deleteAll(foundRelations);
+        final List<Long> auditIdList = foundRelations
+                                           .stream()
+                                           .map(AuditNotificationRelation::getAuditEntryId)
+                                           .collect(Collectors.toList());
         final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
         auditEntryRepository.deleteAll(auditEntryList);
     }

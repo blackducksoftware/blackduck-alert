@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Add foreign keys to audit tables -->
+    <changeSet author="gavink" id="1563194312055-1">
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="AUDIT_NOTIFICATION_RELATION"
+                baseColumnNames="AUDIT_ENTRY_ID"
+                constraintName="FK_AUDIT_ENTRY_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="AUDIT_ENTRIES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="AUDIT_NOTIFICATION_RELATION"
+                baseColumnNames="NOTIFICATION_ID"
+                constraintName="FK_AUDIT_NOTIFICATION_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="RAW_NOTIFICATION_CONTENT"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>
