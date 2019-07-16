@@ -170,4 +170,9 @@ public class ConfigActions {
         return dbSavedModel.fill(afterUpdateAction);
     }
 
+    public String sendCustomMessageToConfig(FieldModel restModel, String destination, String messageContent) {
+        // TODO implement
+        return "Not implemented";
+    }
+
 }
