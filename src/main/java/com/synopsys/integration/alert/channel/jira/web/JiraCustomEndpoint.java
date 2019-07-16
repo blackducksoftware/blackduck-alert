@@ -130,7 +130,7 @@ public class JiraCustomEndpoint {
         long maxTimeForChecks = 5L;
         long checkAgain = 1L;
         while (checkAgain <= maxTimeForChecks) {
-            boolean foundPlugin = jiraAppService.getInstalledApp(accessToken, username, appKey).isPresent();
+            boolean foundPlugin = jiraAppService.getInstalledApp(username, accessToken, appKey).isPresent();
             if (foundPlugin) {
                 return true;
             }

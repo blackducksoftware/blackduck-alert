@@ -16,7 +16,8 @@ class EndpointField extends Component {
 
         this.state = {
             showModal: false,
-            fieldError: this.props.errorValue
+            fieldError: this.props.errorValue,
+            progress: false
         };
     }
 
@@ -32,7 +33,8 @@ class EndpointField extends Component {
 
     onSendClick(popupData) {
         this.setState({
-            fieldError: this.props.errorValue
+            fieldError: this.props.errorValue,
+            progress: true
         });
         const {
             fieldKey, csrfToken, onChange, currentConfig, endpoint
@@ -41,6 +43,9 @@ class EndpointField extends Component {
 
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
+            this.setState({
+               progress: false
+            });
             if (response.ok) {
                 const target = {
                     name: [fieldKey],
@@ -49,18 +54,17 @@ class EndpointField extends Component {
                 };
                 onChange({ target });
             } else {
-                response.json()
-                    .then((data) => {
-                        const target = {
-                            name: [fieldKey],
-                            checked: false,
-                            type: 'checkbox'
-                        };
-                        onChange({ target });
-                        this.setState({
-                            fieldError: data.message
-                        });
+                response.json().then((data) => {
+                    const target = {
+                        name: [fieldKey],
+                        checked: false,
+                        type: 'checkbox'
+                    };
+                    onChange({ target });
+                    this.setState({
+                        fieldError: data.message
                     });
+                });
             }
         });
     }
@@ -87,6 +91,7 @@ class EndpointField extends Component {
                     id={fieldKey}
                     onClick={this.flipShowModal}
                     disabled={readOnly}
+                    performingAction={this.state.progress}
                 >{buttonLabel}
                 </GeneralButton>
                 {successBox &&
