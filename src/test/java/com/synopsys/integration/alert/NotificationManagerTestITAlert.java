@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
@@ -122,7 +123,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         all = notificationManager.findAll(pageRequest, true);
         assertTrue(all.isEmpty());
 
-        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(0L, notificationContent.getId());
+        final Date now = new Date();
+        final AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
+        final AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
+
+        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(saveAuditEntry.getId(), notificationContent.getId());
         auditNotificationRepository.save(auditNotificationRelation);
 
         all = notificationManager.findAll(pageRequest, true);
@@ -157,7 +162,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         // Search term should match the notification type but it was never sent so no match
         assertTrue(all.isEmpty());
 
-        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(0L, notificationContent.getId());
+        final Date now = new Date();
+        final AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
+        final AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
+
+        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(saveAuditEntry.getId(), notificationContent.getId());
         auditNotificationRepository.save(auditNotificationRelation);
 
         all = notificationManager.findAllWithSearch(NOTIFICATION_TYPE, pageRequest, true);
