@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.web;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,10 +52,8 @@ import com.synopsys.integration.rest.request.Response;
 
 @Component
 public class JiraCustomEndpoint {
+    public static final String JIRA_PLUGIN_URL = "https://raw.githubusercontent.com/blackducksoftware/blackduck-alert/gh-pages/JiraCloudApp/1.0.0/atlassian-connect.json";
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
-
-    // FIXME whenever we change the atlassian-connect.json file, we need to update this URL. This is very error prone and we'll want to find a better way to do this. Perhaps GH-pages
-    public static final String JIRA_PLUGIN_URL = "https://raw.githubusercontent.com/blackducksoftware/blackduck-alert/gk_jira_channel_enhancements/src/main/resources/jira/atlassian-connect.json";
 
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
@@ -80,10 +79,18 @@ public class JiraCustomEndpoint {
             if (response.isStatusCodeError()) {
                 return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
+            final boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
+            if (!jiraPluginInstalled) {
+                return responseFactory.createNotFoundResponse("Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
+            }
             return responseFactory.createOkResponse("", "Successfully created Alert plugin on Jira Cloud server.");
         } catch (final IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
             return responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
+        } catch (InterruptedException e) {
+            logger.error("Thread was interrupted while validating jira install.", e);
+            Thread.currentThread().interrupt();
+            return responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
         }
     }
 
@@ -117,6 +124,22 @@ public class JiraCustomEndpoint {
         }
 
         return accessToken;
+    }
+
+    private boolean isJiraPluginInstalled(JiraAppService jiraAppService, String accessToken, String username, String appKey) throws IntegrationException, InterruptedException {
+        long maxTimeForChecks = 5L;
+        long checkAgain = 1L;
+        while (checkAgain <= maxTimeForChecks) {
+            boolean foundPlugin = jiraAppService.getInstalledApp(accessToken, username, appKey).isPresent();
+            if (foundPlugin) {
+                return true;
+            }
+
+            TimeUnit.SECONDS.sleep(checkAgain);
+            checkAgain++;
+        }
+
+        return false;
     }
 
 }
