@@ -1,24 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const GeneralButton = ({
-                           onClick, children, className, id, disabled
+                           onClick, children, className, id, disabled, performingAction
                        }) => (
-    <button
-        id={id}
-        className={`btn btn-primary ${className}`}
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-    >{children}
-    </button>
+   <div>
+       <button
+           id={id}
+           className={`btn btn-primary ${className}`}
+           type="button"
+           onClick={onClick}
+           disabled={disabled}
+       >{children}
+       </button>
+       <div className="progressContainer">
+           <div className="progressIcon">
+               {performingAction &&
+                <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+               }
+           </div>
+       </div>
+   </div>
+
 );
 
 GeneralButton.defaultProps = {
     children: 'Click Me',
     className: 'btn-md',
     id: 'id',
-    disabled: false
+    disabled: false,
+    performingAction: false
 };
 
 GeneralButton.propTypes = {
@@ -26,7 +38,8 @@ GeneralButton.propTypes = {
     className: PropTypes.string,
     id: PropTypes.string,
     onClick: PropTypes.func.isRequired,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    performingAction: PropTypes.bool
 };
 
 export default GeneralButton;
