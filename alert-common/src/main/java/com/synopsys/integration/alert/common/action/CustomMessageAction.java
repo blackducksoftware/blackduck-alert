@@ -23,12 +23,15 @@
 package com.synopsys.integration.alert.common.action;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -36,28 +39,49 @@ import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
-public abstract class ChannelDistributionTestAction extends TestAction {
+public class CustomMessageAction {
     private final DistributionChannel distributionChannel;
 
-    public ChannelDistributionTestAction(final DistributionChannel distributionChannel) {
+    public CustomMessageAction(final DistributionChannel distributionChannel) {
         this.distributionChannel = distributionChannel;
     }
 
-    @Override
-    public String testConfig(final CustomMessageConfigModel testConfigModel) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
-        final DistributionEvent event = createChannelTestEvent(testConfigModel.getConfigId().orElse(null), fieldAccessor);
+    public String sendMessage(CustomMessageConfigModel customMessageConfigModel) throws IntegrationException {
+        final DistributionEvent event = createChannelDistributionEvent(customMessageConfigModel);
         return distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) throws AlertException {
-        final ProviderMessageContent messageContent = createTestNotificationContent();
+    public DistributionEvent createChannelDistributionEvent(CustomMessageConfigModel customMessageConfigModel) throws AlertException {
+        final String configId = customMessageConfigModel.getConfigId().orElse(null);
+        final FieldAccessor fieldAccessor = customMessageConfigModel.getFieldAccessor();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
+        final String customTopic = customMessageConfigModel.getCustomTopic().orElse("Test Topic");
+        final String customMessage = customMessageConfigModel.getCustomMessage().orElse("Test Message");
+
+        final ProviderMessageContent messageContent = createCustomMessageContent(customTopic, customMessage);
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
+    }
+
+    public ProviderMessageContent createCustomMessageContent(String customTopic, String customMessage) throws AlertException {
+        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
+        builder.applyProvider("Alert");
+        builder.applyTopic("Topic", customTopic);
+        builder.applyComponentItem(createCustomMessageComponent(customMessage));
+        return builder.build();
+    }
+
+    private ComponentItem createCustomMessageComponent(String customMessage) throws AlertException {
+        final ComponentItem.Builder builder = new ComponentItem.Builder();
+        builder.applyOperation(ItemOperation.UPDATE);
+        builder.applyCategory("Custom Message");
+        builder.applyComponentData("Message ID", UUID.randomUUID().toString());
+        builder.applyComponentData("Details", customMessage);
+        builder.applyNotificationId(1L);
+        return builder.build();
     }
 
 }

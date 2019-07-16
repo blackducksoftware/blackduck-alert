@@ -229,7 +229,7 @@ public class ConfigController extends BaseController {
 
     @PostMapping("/customMessage")
     public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody(required = true) CustomMessageFieldModel restModel, @RequestParam(required = false) String destination) {
-        return sendSpecialMessage(restModel, (FieldModel fieldModel) -> configActions.sendCustomMessageToConfig(fieldModel, destination, restModel.getMessageContent()));
+        return sendSpecialMessage(restModel, (FieldModel fieldModel) -> configActions.sendCustomMessageToConfig(fieldModel, destination, restModel.getCustomTopic(), restModel.getMessageContent()));
     }
 
     private ResponseEntity<String> sendSpecialMessage(FieldModel restModel, ThrowingFunction<FieldModel, String, IntegrationException> sendMessage) {

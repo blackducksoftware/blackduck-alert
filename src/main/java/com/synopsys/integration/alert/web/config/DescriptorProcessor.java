@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -63,6 +64,15 @@ public class DescriptorProcessor {
     public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(descriptorContext));
+    }
+
+    public Optional<CustomMessageAction> retrieveCustomMessageAction(final FieldModel fieldModel) {
+        return retrieveCustomMessageAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+    }
+
+    public Optional<CustomMessageAction> retrieveCustomMessageAction(final String descriptorName, final String context) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getCustomMessageAction(descriptorContext));
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {

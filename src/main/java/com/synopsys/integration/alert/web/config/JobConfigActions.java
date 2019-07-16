@@ -54,10 +54,10 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -214,7 +214,7 @@ public class JobConfigActions {
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Optional<Descriptor> descriptor = descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
-            final FieldModel updatedFieldModel = fieldModelProcessor.createTestFieldModel(fieldModel);
+            final FieldModel updatedFieldModel = fieldModelProcessor.createCustomMessageFieldModel(fieldModel);
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
                 channelFieldModel = updatedFieldModel;
             } else {
@@ -238,7 +238,7 @@ public class JobConfigActions {
 
                 final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-                final TestConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
+                final CustomMessageConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                                     .flatMap(providerName -> descriptorProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
                 if (providerTestAction.isPresent()) {

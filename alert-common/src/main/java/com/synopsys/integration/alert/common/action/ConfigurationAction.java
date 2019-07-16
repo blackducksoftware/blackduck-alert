@@ -31,6 +31,7 @@ public abstract class ConfigurationAction {
     private final String descriptorName;
     private final Map<ConfigContextEnum, ApiAction> apiActionMap = new HashMap<>();
     private final Map<ConfigContextEnum, TestAction> testActionMap = new HashMap<>();
+    private final Map<ConfigContextEnum, CustomMessageAction> customMessageActionMap = new HashMap<>();
 
     protected ConfigurationAction(final String descriptorName) {
         this.descriptorName = descriptorName;
@@ -40,28 +41,36 @@ public abstract class ConfigurationAction {
         return descriptorName;
     }
 
-    public void addGlobalApiAction(final ApiAction apiAction) {
+    public void addGlobalApiAction(ApiAction apiAction) {
         apiActionMap.put(ConfigContextEnum.GLOBAL, apiAction);
     }
 
-    public void addDistributionApiAction(final ApiAction apiAction) {
+    public void addDistributionApiAction(ApiAction apiAction) {
         apiActionMap.put(ConfigContextEnum.DISTRIBUTION, apiAction);
     }
 
-    public void addGlobalTestAction(final TestAction testAction) {
+    public void addGlobalTestAction(TestAction testAction) {
         testActionMap.put(ConfigContextEnum.GLOBAL, testAction);
     }
 
-    public void addDistributionTestAction(final TestAction testAction) {
+    public void addDistributionTestAction(TestAction testAction) {
         testActionMap.put(ConfigContextEnum.DISTRIBUTION, testAction);
     }
 
-    public ApiAction getApiAction(final ConfigContextEnum context) {
+    public void addDistributionCustomMessageAction(CustomMessageAction customMessageAction) {
+        customMessageActionMap.put(ConfigContextEnum.DISTRIBUTION, customMessageAction);
+    }
+
+    public ApiAction getApiAction(ConfigContextEnum context) {
         return apiActionMap.get(context);
     }
 
-    public TestAction getTestAction(final ConfigContextEnum context) {
+    public TestAction getTestAction(ConfigContextEnum context) {
         return testActionMap.get(context);
+    }
+
+    public CustomMessageAction getCustomMessageAction(ConfigContextEnum context) {
+        return customMessageActionMap.get(context);
     }
 
 }

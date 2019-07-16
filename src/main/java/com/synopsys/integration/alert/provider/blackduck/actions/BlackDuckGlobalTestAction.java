@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -59,7 +59,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();

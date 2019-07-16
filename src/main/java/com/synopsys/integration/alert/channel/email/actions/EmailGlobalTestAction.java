@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -57,7 +57,7 @@ public class EmailGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException {
         Set<String> emailAddresses = Set.of();
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {

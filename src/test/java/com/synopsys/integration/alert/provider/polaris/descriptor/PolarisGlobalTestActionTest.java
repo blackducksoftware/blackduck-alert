@@ -26,9 +26,9 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -133,7 +133,7 @@ public class PolarisGlobalTestActionTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor);
 
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
@@ -159,7 +159,7 @@ public class PolarisGlobalTestActionTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor);
 
         try {
             actionApi.testConfig(testConfigModel);
@@ -209,7 +209,7 @@ public class PolarisGlobalTestActionTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor);
 
         try {
             actionApi.testConfig(testConfigModel);

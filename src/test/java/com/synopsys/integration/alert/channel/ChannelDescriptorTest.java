@@ -36,9 +36,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
@@ -204,7 +204,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final String destination = createTestConfigDestination();
         try {
             final TestAction descriptorActionApi = getTestAction();
-            final TestConfigModel testConfigModel = descriptorActionApi.createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, destination);
+            final CustomMessageConfigModel testConfigModel = descriptorActionApi.createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, destination);
             descriptorActionApi.testConfig(testConfigModel);
         } catch (final IntegrationException e) {
             e.printStackTrace();

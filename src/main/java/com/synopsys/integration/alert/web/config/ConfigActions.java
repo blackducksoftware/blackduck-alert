@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -46,8 +47,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -148,10 +149,10 @@ public class ConfigActions {
         validateConfig(restModel, new HashMap<>());
         final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
-            final FieldModel upToDateFieldModel = fieldModelProcessor.createTestFieldModel(restModel);
+            final FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
             final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
             final TestAction testAction = testActionOptional.get();
-            final TestConfigModel testConfig = testAction.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
+            final CustomMessageConfigModel testConfig = testAction.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
             testAction.testConfig(testConfig);
             return "Successfully sent test message.";
         }
@@ -170,9 +171,25 @@ public class ConfigActions {
         return dbSavedModel.fill(afterUpdateAction);
     }
 
-    public String sendCustomMessageToConfig(FieldModel restModel, String destination, String messageContent) {
-        // TODO implement
-        return "Not implemented";
+    public String sendCustomMessageToConfig(FieldModel restModel, String destination, String customTopic, String messageContent) throws IntegrationException {
+        validateConfig(restModel, new HashMap<>());
+        final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(restModel);
+        if (optionalCustomMessageAction.isPresent()) {
+            final FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
+            final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
+            final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
+
+            final CustomMessageConfigModel customMessageConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
+            customMessageConfigModel.setCustomTopic(customTopic);
+            customMessageConfigModel.setCustomMessage(messageContent);
+            customMessageConfigModel.setConfigId(upToDateFieldModel.getId());
+
+            customMessageAction.sendMessage(customMessageConfigModel);
+            return "Successfully sent custom message.";
+        }
+        final String descriptorName = restModel.getDescriptorName();
+        logger.error("Custom message action did not exist: {}", descriptorName);
+        throw new AlertMethodNotAllowedException("Custom message functionality not implemented for " + descriptorName);
     }
 
 }

@@ -29,18 +29,19 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
+// TODO extend or replace with CustomMessageAction?
 public abstract class TestAction {
 
-    public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, destination);
+    public CustomMessageConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
         testConfigModel.setConfigId(configId);
         return testConfigModel;
     }
 
-    public abstract String testConfig(final TestConfigModel testConfig) throws IntegrationException;
+    public abstract String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException;
 
     public ProviderMessageContent createTestNotificationContent() throws AlertException {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();

@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -61,7 +61,7 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
+    public CustomMessageConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
         final Set<String> emailAddresses = new HashSet<>();
         if (StringUtils.isNotBlank(destination)) {
             emailAddresses.add(destination);

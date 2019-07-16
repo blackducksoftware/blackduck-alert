@@ -29,9 +29,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -107,7 +107,7 @@ public class EmailGlobalTestActionTest {
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor);
         emailGlobalTestAction.testConfig(testConfigModel);
 
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
@@ -128,7 +128,7 @@ public class EmailGlobalTestActionTest {
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, "fake");
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor, "fake");
         try {
             emailGlobalTestAction.testConfig(testConfigModel);
             fail("Should have thrown exception");
@@ -144,7 +144,7 @@ public class EmailGlobalTestActionTest {
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, "fake@synopsys.com");
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor, "fake@synopsys.com");
 
         emailGlobalTestAction.testConfig(testConfigModel);
 
@@ -184,7 +184,7 @@ public class EmailGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
+        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
 
         emailGlobalTestAction.testConfig(testConfigModel);
 

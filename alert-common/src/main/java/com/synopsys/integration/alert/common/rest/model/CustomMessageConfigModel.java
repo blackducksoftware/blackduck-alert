@@ -28,18 +28,49 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
-public class TestConfigModel extends AlertSerializableModel {
+public class CustomMessageConfigModel extends AlertSerializableModel {
     private final String destination;
     private final FieldAccessor fieldAccessor;
-    private String configId;
 
-    public TestConfigModel(final FieldAccessor fieldAccessor) {
+    private String customTopic = null;
+    private String customMessage = null;
+    private String configId = null;
+
+    public CustomMessageConfigModel(final FieldAccessor fieldAccessor) {
         this(fieldAccessor, null);
     }
 
-    public TestConfigModel(final FieldAccessor fieldAccessor, final String destination) {
+    public CustomMessageConfigModel(final FieldAccessor fieldAccessor, final String destination) {
         this.fieldAccessor = fieldAccessor;
         this.destination = destination;
+    }
+
+    public FieldAccessor getFieldAccessor() {
+        return fieldAccessor;
+    }
+
+    public Optional<String> getDestination() {
+        return Optional.ofNullable(destination);
+    }
+
+    public Optional<String> getCustomTopic() {
+        return Optional.ofNullable(customTopic);
+    }
+
+    public void setCustomTopic(final String customTopic) {
+        if (StringUtils.isNotBlank(customTopic)) {
+            this.customTopic = customTopic;
+        }
+    }
+
+    public Optional<String> getCustomMessage() {
+        return Optional.ofNullable(customMessage);
+    }
+
+    public void setCustomMessage(final String customMessage) {
+        if (StringUtils.isNotBlank(customMessage)) {
+            this.customMessage = customMessage;
+        }
     }
 
     public Optional<String> getConfigId() {
@@ -52,14 +83,6 @@ public class TestConfigModel extends AlertSerializableModel {
         } else {
             this.configId = configId;
         }
-    }
-
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
-    }
-
-    public Optional<String> getDestination() {
-        return Optional.ofNullable(destination);
     }
 
 }

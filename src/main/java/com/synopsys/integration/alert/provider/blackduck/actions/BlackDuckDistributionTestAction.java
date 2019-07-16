@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -51,7 +51,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {

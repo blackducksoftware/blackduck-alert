@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
@@ -51,7 +51,7 @@ public class JiraGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
