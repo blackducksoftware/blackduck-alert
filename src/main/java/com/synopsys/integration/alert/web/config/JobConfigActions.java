@@ -56,7 +56,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -238,7 +237,7 @@ public class JobConfigActions {
         return "No field model of type channel was was sent to test.";
     }
 
-    public String sendCustomMessageToConfig(CustomMessageFieldModel jobFieldModel, String destination, String customTopic, String messageContent) throws IntegrationException {
+    public String sendCustomMessageToConfig(CustomMessageConfigModel jobFieldModel, String destination, String customTopic, String messageContent) throws IntegrationException {
         validateJob(jobFieldModel);
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
         FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);

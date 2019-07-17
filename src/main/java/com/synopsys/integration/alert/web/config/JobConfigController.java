@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageFieldModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -277,7 +277,7 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping("/customMessage")
-    public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody(required = true) CustomMessageFieldModel restModel, @RequestParam(required = false) String destination) {
+    public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody(required = true) CustomMessageConfigModel restModel, @RequestParam(required = false) String destination) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -289,7 +289,8 @@ public class JobConfigController extends BaseController {
         }
         final String id = restModel.getJobId();
         try {
-            final String responseMessage = jobConfigActions.sendCustomMessageToConfig(restModel, destination, restModel.getCustomTopic(), restModel.getMessageContent());
+            // TODO while implementing the UI feature for this, think about handling the empty cases for customTopic and customMessage
+            final String responseMessage = jobConfigActions.sendCustomMessageToConfig(restModel, destination, restModel.getCustomTopic().orElse("UNDEFINED"), restModel.getCustomMessage().orElse("UNDEFINED"));
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             final String exceptionMessage = e.getMessage();
