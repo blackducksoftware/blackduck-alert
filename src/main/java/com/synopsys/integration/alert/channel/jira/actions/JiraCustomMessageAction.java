@@ -26,16 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.JiraChannel;
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.common.action.CustomMessageAction;
 
 @Component
-public class JiraConfigurationAction extends ConfigurationAction {
+public class JiraCustomMessageAction extends CustomMessageAction {
     @Autowired
-    public JiraConfigurationAction(JiraGlobalTestAction globalTestAction, JiraDistributionTestAction jiraDistributionTestAction, JiraCustomMessageAction jiraCustomMessageAction) {
-        super(JiraChannel.COMPONENT_NAME);
-        addGlobalTestAction(globalTestAction);
-        addDistributionTestAction(jiraDistributionTestAction);
-        addDistributionCustomMessageAction(jiraCustomMessageAction);
+    public JiraCustomMessageAction(JiraChannel jiraChannel) {
+        super(jiraChannel);
     }
 
 }

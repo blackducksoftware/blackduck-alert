@@ -26,27 +26,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.action.CustomMessageAction;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDistributionTestAction extends ChannelDistributionTestAction {
-    private EmailActionHelper emailActionHelper;
+public class EmailCustomMessageAction extends CustomMessageAction {
+    private final EmailActionHelper emailActionHelper;
 
     @Autowired
-    public EmailDistributionTestAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {
+    public EmailCustomMessageAction(final EmailChannel emailChannel, final EmailActionHelper emailActionHelper) {
         super(emailChannel);
         this.emailActionHelper = emailActionHelper;
     }
 
     @Override
-    public CustomMessageConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
-        final FieldAccessor updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(fieldAccessor, destination);
-        final CustomMessageConfigModel customMessageConfigModel = new CustomMessageConfigModel(updatedFieldAccessor, destination);
-        customMessageConfigModel.setJobId(configId);
-        return customMessageConfigModel;
+    protected DistributionEvent createChannelDistributionEvent(final CustomMessageConfigModel customMessageConfigModel) throws AlertException {
+        final DistributionEvent newEvent = super.createChannelDistributionEvent(customMessageConfigModel);
+        final FieldAccessor updatedFieldAccessor;
+        try {
+            updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(newEvent.getFieldAccessor(), newEvent.getDestination());
+        } catch (IntegrationException e) {
+            throw new AlertException("Problem updating FieldAccessor for email.", e);
+        }
+        return new DistributionEvent(newEvent.getConfigId(), newEvent.getDestination(), newEvent.getCreatedAt(), newEvent.getProvider(), newEvent.getFormatType(), newEvent.getContent(), updatedFieldAccessor);
     }
 
 }

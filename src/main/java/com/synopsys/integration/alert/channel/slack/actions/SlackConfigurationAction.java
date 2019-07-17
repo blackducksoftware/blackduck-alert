@@ -30,10 +30,11 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class SlackConfigurationAction extends ConfigurationAction {
-
     @Autowired
-    protected SlackConfigurationAction(final SlackDistributionTestAction slackDistributionTestAction) {
+    protected SlackConfigurationAction(SlackDistributionTestAction slackDistributionTestAction, SlackCustomMessageAction slackCustomMessageAction) {
         super(SlackChannel.COMPONENT_NAME);
         addDistributionTestAction(slackDistributionTestAction);
+        addDistributionCustomMessageAction(slackCustomMessageAction);
     }
+
 }

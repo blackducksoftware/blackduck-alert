@@ -51,7 +51,7 @@ public class CustomMessageAction {
         return distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelDistributionEvent(CustomMessageConfigModel customMessageConfigModel) throws AlertException {
+    protected DistributionEvent createChannelDistributionEvent(CustomMessageConfigModel customMessageConfigModel) throws AlertException {
         final String configId = customMessageConfigModel.getJobId();
         final FieldAccessor fieldAccessor = customMessageConfigModel.getFieldAccessor();
 
@@ -66,7 +66,7 @@ public class CustomMessageAction {
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
-    public ProviderMessageContent createCustomMessageContent(String customTopic, String customMessage) throws AlertException {
+    protected ProviderMessageContent createCustomMessageContent(String customTopic, String customMessage) throws AlertException {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
         builder.applyProvider("Alert");
         builder.applyTopic("Topic", customTopic);
