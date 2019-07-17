@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.workflow;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -207,14 +206,14 @@ public abstract class MessageContentCollector {
             if (foundContent != null) {
                 aggregateMessageContentsForNotifications.add(foundContent);
             } else {
-                final Set<CategoryItem> categoryItems = new LinkedHashSet<>();
+                final SortedSet<CategoryItem> categoryItems = new TreeSet<>();
                 aggregateMessageContentsForNotifications.add(createAggregateMessageContent(topicItem, subTopic, categoryItems, notification));
             }
         }
         return aggregateMessageContentsForNotifications;
     }
 
-    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final Set<CategoryItem> categoryItems, AlertNotificationWrapper notification) {
+    private AggregateMessageContent createAggregateMessageContent(final LinkableItem topicItem, final Optional<LinkableItem> subTopic, final SortedSet<CategoryItem> categoryItems, AlertNotificationWrapper notification) {
         if (subTopic.isPresent()) {
             return new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic.get(), categoryItems, notification.getProviderCreationTime());
         }

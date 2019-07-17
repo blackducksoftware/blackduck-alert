@@ -26,10 +26,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.BiFunction;
 
@@ -75,9 +76,10 @@ public class MessageOperationCombiner extends MessageCombiner {
             Map<CategoryKey, CategoryItem> groupDataCache = new LinkedHashMap<>();
             groupCategoryItems.forEach(item -> processOperation(groupDataCache, item));
 
-            final SortedSet<CategoryItem> combinedCategoryItems = combineCategoryItems(new ArrayList<>(groupDataCache.values()));
+            SortedSet<CategoryItem> combinedCategoryItems = combineCategoryItems(new ArrayList<>(groupDataCache.values()));
+            Set<CategoryItem> combinedItemsCopy = new LinkedHashSet<>(combinedCategoryItems);
 
-            final AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), new HashSet<>(combinedCategoryItems), Date.from(Instant.now()));
+            AggregateMessageContent newMessage = new AggregateMessageContent(topic.getName(), topic.getValue(), topic.getUrl().orElse(null), topicAndSubTopic.getRight(), combinedItemsCopy, Date.from(Instant.now()));
             combinedMessages.add(newMessage);
         }
         return combinedMessages;
