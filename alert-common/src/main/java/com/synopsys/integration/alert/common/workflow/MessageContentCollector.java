@@ -301,4 +301,5 @@ public abstract class MessageContentCollector {
                    .filter(field -> label.equals(field.getLabel()))
                    .findFirst();
     }
+
 }
