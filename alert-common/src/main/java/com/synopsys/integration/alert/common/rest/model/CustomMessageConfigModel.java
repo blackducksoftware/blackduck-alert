@@ -28,13 +28,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
-public class CustomMessageConfigModel extends AlertSerializableModel {
+public class CustomMessageConfigModel extends JobFieldModel {
     private final String destination;
     private final FieldAccessor fieldAccessor;
 
     private String customTopic = null;
     private String customMessage = null;
-    private String configId = null;
 
     public CustomMessageConfigModel(final FieldAccessor fieldAccessor) {
         this(fieldAccessor, null);
@@ -70,18 +69,6 @@ public class CustomMessageConfigModel extends AlertSerializableModel {
     public void setCustomMessage(final String customMessage) {
         if (StringUtils.isNotBlank(customMessage)) {
             this.customMessage = customMessage;
-        }
-    }
-
-    public Optional<String> getConfigId() {
-        return Optional.ofNullable(configId);
-    }
-
-    public void setConfigId(final String configId) {
-        if (StringUtils.isBlank(configId)) {
-            this.configId = null;
-        } else {
-            this.configId = configId;
         }
     }
 

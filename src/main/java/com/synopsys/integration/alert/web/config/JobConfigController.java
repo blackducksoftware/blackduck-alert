@@ -48,6 +48,7 @@ import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -272,4 +273,40 @@ public class JobConfigController extends BaseController {
             return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
         }
     }
+
+    @PostMapping("/customMessage")
+    public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody(required = true) CustomMessageFieldModel restModel, @RequestParam(required = false) String destination) {
+        if (restModel == null) {
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
+        }
+        final boolean missingPermission = restModel.getFieldModels().stream()
+                                              .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
+                                              .anyMatch(permissionKey -> !authorizationManager.hasExecutePermission(permissionKey));
+        if (missingPermission) {
+            return responseFactory.createForbiddenResponse();
+        }
+        final String id = restModel.getJobId();
+        try {
+            final String responseMessage = jobConfigActions.sendCustomMessageToConfig(restModel, destination, restModel.getCustomTopic(), restModel.getMessageContent());
+            return responseFactory.createOkResponse(id, responseMessage);
+        } catch (final IntegrationRestException e) {
+            final String exceptionMessage = e.getMessage();
+            logger.error(exceptionMessage, e);
+            String message = exceptionMessage;
+            if (StringUtils.isNotBlank(e.getHttpStatusMessage())) {
+                message += " : " + e.getHttpStatusMessage();
+            }
+            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
+        } catch (final AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
+        } catch (final AlertMethodNotAllowedException e) {
+            return responseFactory.createMethodNotAllowedResponse(e.getMessage());
+        } catch (final AlertException e) {
+            return responseFactory.createBadRequestResponse(id, e.getMessage());
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+            return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
+        }
+    }
+
 }

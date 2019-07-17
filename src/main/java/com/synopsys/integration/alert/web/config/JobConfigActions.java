@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -55,6 +56,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
+import com.synopsys.integration.alert.common.rest.model.CustomMessageFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -210,37 +212,19 @@ public class JobConfigActions {
 
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
-        FieldModel channelFieldModel = null;
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
-        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            final Optional<Descriptor> descriptor = descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
-            final FieldModel updatedFieldModel = fieldModelProcessor.createCustomMessageFieldModel(fieldModel);
-            if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
-                channelFieldModel = updatedFieldModel;
-            } else {
-                otherJobModels.add(updatedFieldModel);
-            }
-        }
+        FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
 
         if (null != channelFieldModel) {
             final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(channelFieldModel);
             if (testActionOptional.isPresent()) {
-                final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-
-                fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
-                final Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
-
-                configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
-
-                for (final FieldModel fieldModel : otherJobModels) {
-                    fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
-                }
+                final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
 
                 final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 final CustomMessageConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION.name()));
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(testConfig);
                 }
@@ -252,6 +236,67 @@ public class JobConfigActions {
             }
         }
         return "No field model of type channel was was sent to test.";
+    }
+
+    public String sendCustomMessageToConfig(CustomMessageFieldModel jobFieldModel, String destination, String customTopic, String messageContent) throws IntegrationException {
+        validateJob(jobFieldModel);
+        final Collection<FieldModel> otherJobModels = new LinkedList<>();
+        FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
+
+        if (null != channelFieldModel) {
+            final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(channelFieldModel);
+            if (optionalCustomMessageAction.isPresent()) {
+                final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
+
+                final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
+                final FieldAccessor fieldAccessor = new FieldAccessor(fields);
+
+                final CustomMessageConfigModel customMessageConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
+                customMessageConfigModel.setCustomTopic(customTopic);
+                customMessageConfigModel.setCustomMessage(messageContent);
+                customMessageConfigModel.setJobId(channelFieldModel.getId());
+
+                final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                if (providerTestAction.isPresent()) {
+                    providerTestAction.get().testConfig(customMessageConfigModel);
+                }
+                return customMessageAction.sendMessage(customMessageConfigModel);
+            } else {
+                final String descriptorName = channelFieldModel.getDescriptorName();
+                logger.error("Test action did not exist: {}", descriptorName);
+                throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
+            }
+        }
+        return "No field model of type channel was was sent to test.";
+    }
+
+    private FieldModel getChannelFieldModelAndPopulateOtherJobModels(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
+        FieldModel channelFieldModel = null;
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+            final Optional<Descriptor> descriptor = descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
+            final FieldModel updatedFieldModel = fieldModelProcessor.createCustomMessageFieldModel(fieldModel);
+            if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
+                channelFieldModel = updatedFieldModel;
+            } else {
+                otherJobModels.add(updatedFieldModel);
+            }
+        }
+        return channelFieldModel;
+    }
+
+    private Map<String, ConfigurationFieldModel> createFieldsMap(FieldModel channelFieldModel, Collection<FieldModel> otherJobModels) throws AlertDatabaseConstraintException {
+        final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
+
+        fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
+        final Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
+
+        configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
+
+        for (final FieldModel fieldModel : otherJobModels) {
+            fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
+        }
+        return fields;
     }
 
     private JobFieldModel readJobConfiguration(final ConfigurationJobModel groupedConfiguration) throws AlertException {

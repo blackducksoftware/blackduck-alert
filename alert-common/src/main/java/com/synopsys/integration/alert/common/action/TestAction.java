@@ -32,12 +32,11 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-// TODO extend or replace with CustomMessageAction?
 public abstract class TestAction {
 
     public CustomMessageConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
         final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
-        testConfigModel.setConfigId(configId);
+        testConfigModel.setJobId(configId);
         return testConfigModel;
     }
 

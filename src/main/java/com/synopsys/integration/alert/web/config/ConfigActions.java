@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -137,6 +136,16 @@ public class ConfigActions {
         return dbSavedModel.fill(afterSaveAction);
     }
 
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
+        validateConfig(fieldModel, new HashMap<>());
+        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
+        final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
+        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
+        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
+        return dbSavedModel.fill(afterUpdateAction);
+    }
+
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
@@ -159,37 +168,6 @@ public class ConfigActions {
         final String descriptorName = restModel.getDescriptorName();
         logger.error("Test action did not exist: {}", descriptorName);
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
-    }
-
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
-        validateConfig(fieldModel, new HashMap<>());
-        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
-        final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
-        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
-        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
-        return dbSavedModel.fill(afterUpdateAction);
-    }
-
-    public String sendCustomMessageToConfig(FieldModel restModel, String destination, String customTopic, String messageContent) throws IntegrationException {
-        validateConfig(restModel, new HashMap<>());
-        final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(restModel);
-        if (optionalCustomMessageAction.isPresent()) {
-            final FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
-            final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
-            final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
-
-            final CustomMessageConfigModel customMessageConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
-            customMessageConfigModel.setCustomTopic(customTopic);
-            customMessageConfigModel.setCustomMessage(messageContent);
-            customMessageConfigModel.setConfigId(upToDateFieldModel.getId());
-
-            customMessageAction.sendMessage(customMessageConfigModel);
-            return "Successfully sent custom message.";
-        }
-        final String descriptorName = restModel.getDescriptorName();
-        logger.error("Custom message action did not exist: {}", descriptorName);
-        throw new AlertMethodNotAllowedException("Custom message functionality not implemented for " + descriptorName);
     }
 
 }

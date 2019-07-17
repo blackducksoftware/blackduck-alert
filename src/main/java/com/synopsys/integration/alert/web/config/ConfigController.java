@@ -47,13 +47,10 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
-import com.synopsys.integration.alert.common.function.ThrowingFunction;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
@@ -224,15 +221,6 @@ public class ConfigController extends BaseController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
-        return sendSpecialMessage(restModel, (FieldModel fieldModel) -> configActions.testConfig(fieldModel, destination));
-    }
-
-    @PostMapping("/customMessage")
-    public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody(required = true) CustomMessageFieldModel restModel, @RequestParam(required = false) String destination) {
-        return sendSpecialMessage(restModel, (FieldModel fieldModel) -> configActions.sendCustomMessageToConfig(fieldModel, destination, restModel.getCustomTopic(), restModel.getMessageContent()));
-    }
-
-    private ResponseEntity<String> sendSpecialMessage(FieldModel restModel, ThrowingFunction<FieldModel, String, IntegrationException> sendMessage) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -242,7 +230,7 @@ public class ConfigController extends BaseController {
         }
         final String id = restModel.getId();
         try {
-            final String responseMessage = sendMessage.apply(restModel);
+            final String responseMessage = configActions.testConfig(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             final String exceptionMessage = e.getMessage();

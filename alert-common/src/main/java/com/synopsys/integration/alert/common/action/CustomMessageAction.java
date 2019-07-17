@@ -52,7 +52,7 @@ public class CustomMessageAction {
     }
 
     public DistributionEvent createChannelDistributionEvent(CustomMessageConfigModel customMessageConfigModel) throws AlertException {
-        final String configId = customMessageConfigModel.getConfigId().orElse(null);
+        final String configId = customMessageConfigModel.getJobId();
         final FieldAccessor fieldAccessor = customMessageConfigModel.getFieldAccessor();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");

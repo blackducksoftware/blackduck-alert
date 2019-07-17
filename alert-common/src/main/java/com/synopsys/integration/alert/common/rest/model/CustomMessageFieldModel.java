@@ -22,20 +22,20 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.Map;
+import java.util.Set;
 
-public class CustomMessageFieldModel extends FieldModel {
+public class CustomMessageFieldModel extends JobFieldModel {
     private String customTopic;
     private String messageContent;
 
-    public CustomMessageFieldModel(final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues, final String customTopic, final String messageContent) {
-        super(descriptorName, context, keyToValues);
-        this.customTopic = customTopic;
-        this.messageContent = messageContent;
+    public CustomMessageFieldModel() {
+        super();
+        this.customTopic = null;
+        this.messageContent = null;
     }
 
-    public CustomMessageFieldModel(final String configId, final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues, final String customTopic, final String messageContent) {
-        super(configId, descriptorName, context, keyToValues);
+    public CustomMessageFieldModel(final String jobId, final Set<FieldModel> fieldModels, final String customTopic, final String messageContent) {
+        super(jobId, fieldModels);
         this.customTopic = customTopic;
         this.messageContent = messageContent;
     }
