@@ -260,6 +260,8 @@ public class JobConfigController extends BaseController {
             final String responseMessage = jobConfigActions.testJob(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
+            logger.error(e.getHttpResponseContent());
+            logger.error(e.getHttpStatusMessage());
             logger.error(e.getMessage(), e);
             return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
