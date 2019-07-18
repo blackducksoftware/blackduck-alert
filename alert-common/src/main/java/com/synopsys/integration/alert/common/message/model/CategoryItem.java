@@ -92,6 +92,9 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
     }
 
     public Comparator<CategoryItem> createComparator() {
+        if (null != comparator) {
+            return comparator;
+        }
         // If the other fields are equal the item order shouldn't matter.
         return (self, otherItem) -> CompareToBuilder.reflectionCompare(self, otherItem, "items");
     }
@@ -102,7 +105,7 @@ public class CategoryItem extends AlertSerializableModel implements Comparable<C
 
     @Override
     public int compareTo(final CategoryItem otherItem) {
-        if (comparator == null) {
+        if (null == comparator) {
             comparator = createComparator();
         }
         return comparator.compare(this, otherItem);

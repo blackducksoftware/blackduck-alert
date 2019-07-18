@@ -75,13 +75,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
         final Map<ItemOperation, LinkedHashSet<CategoryItem>> itemsByOperation = sortByOperation(originalCategoryItems);
 
-        final SortedSet<CategoryItem> summarizedCategoryItems = new TreeSet<>();
+        final Set<CategoryItem> summarizedCategoryItems = new LinkedHashSet<>();
         for (final Map.Entry<ItemOperation, LinkedHashSet<CategoryItem>> sortedEntry : itemsByOperation.entrySet()) {
             final LinkedHashSet<CategoryItem> summarizedCategoryItemsForOperation = createSummarizedCategoryItems(sortedEntry.getKey(), sortedEntry.getValue());
             summarizedCategoryItems.addAll(summarizedCategoryItemsForOperation);
         }
 
-        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), new LinkedHashSet(summarizedCategoryItems), message.getProviderCreationTime());
+        return new AggregateMessageContent(message.getName(), message.getValue(), message.getUrl().orElse(null), message.getSubTopic().orElse(null), summarizedCategoryItems, message.getProviderCreationTime());
     }
 
     private Map<ItemOperation, LinkedHashSet<CategoryItem>> sortByOperation(final Set<CategoryItem> originalCategoryItems) {
