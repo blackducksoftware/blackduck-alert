@@ -109,6 +109,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
     private LinkedHashSet<ComponentItem> createSummarizedComponentItems(final Set<ComponentItem> componentItemsForOperation) {
         final List<ComponentItem> summarizedCategoryItems = new LinkedList<>();
+        // FIXME before this point, everything is working correctly
         final Map<String, ComponentAttributeMap> itemsByShallowKey = collectComponentItemData(componentItemsForOperation);
         for (final ComponentItem componentItem : componentItemsForOperation) {
             String shallowKey = componentItem.getComponentKeys().getShallowKey();
@@ -125,6 +126,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return collapseDuplicateComponentItems(summarizedCategoryItems);
     }
 
+    // FIXME this seems to screw things up
     private Map<String, ComponentAttributeMap> collectComponentItemData(Set<ComponentItem> componentItemsForOperation) {
         Map<String, ComponentAttributeMap> itemsByCategory = new LinkedHashMap<>();
         for (final ComponentItem categoryItem : componentItemsForOperation) {
