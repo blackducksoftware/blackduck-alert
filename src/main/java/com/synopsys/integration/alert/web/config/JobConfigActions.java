@@ -206,7 +206,6 @@ public class JobConfigActions {
 
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
-        validateProviderGlobalConfig(jobFieldModel);
         FieldModel channelFieldModel = null;
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -250,13 +249,6 @@ public class JobConfigActions {
             }
         }
         return "No field model of type channel was was sent to test.";
-    }
-
-    private void validateProviderGlobalConfig(JobFieldModel jobFieldModel) throws AlertFieldException {
-        final Map<String, String> providerErrors = fieldModelProcessor.validateProviderGlobalConfig(jobFieldModel);
-        if (!providerErrors.isEmpty()) {
-            throw new AlertFieldException(providerErrors);
-        }
     }
 
     private JobFieldModel readJobConfiguration(final ConfigurationJobModel groupedConfiguration) throws AlertDatabaseConstraintException {
