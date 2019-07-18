@@ -202,6 +202,7 @@ public class JobConfigActions {
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
+
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -240,7 +241,7 @@ public class JobConfigActions {
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 final TestConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(testConfig);
                 }
