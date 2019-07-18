@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -56,6 +57,7 @@ import com.synopsys.integration.alert.common.persistence.model.RegisteredDescrip
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 @Component
 public class FieldModelProcessor {
@@ -123,12 +125,12 @@ public class FieldModelProcessor {
     }
 
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
-        return retrieveTestAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
+        return retrieveTestAction(fieldModel.getDescriptorName(), descriptorContext);
     }
 
-    public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(descriptorContext));
+    public Optional<TestAction> retrieveTestAction(final String descriptorName, final ConfigContextEnum context) {
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
     }
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
@@ -137,6 +139,26 @@ public class FieldModelProcessor {
                                                           .stream()
                                                           .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
+        return fieldErrors;
+    }
+
+    public Map<String, String> validateProviderGlobalConfig(JobFieldModel jobFieldModel) {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        final Optional<String> providerName = jobFieldModel.getFieldModels()
+                                                  .stream()
+                                                  .map(FieldModel::getDescriptorName)
+                                                  .filter(descriptorName -> descriptorName.contains("provider"))
+                                                  .findAny();
+        if (providerName.isPresent()) {
+            try {
+                configurationAccessor.getConfigurationByDescriptorNameAndContext(providerName.get(), ConfigContextEnum.GLOBAL)
+                    .stream()
+                    .findAny()
+                    .ifPresentOrElse(ignored -> {}, () -> fieldErrors.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "The global configuration for the specified provider is missing from the database"));
+            } catch (AlertException e) {
+                fieldErrors.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, e.getMessage());
+            }
+        }
         return fieldErrors;
     }
 
