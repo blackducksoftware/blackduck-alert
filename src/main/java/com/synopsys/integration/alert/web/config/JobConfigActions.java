@@ -40,8 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -197,6 +197,7 @@ public class JobConfigActions {
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
+
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -235,7 +236,7 @@ public class JobConfigActions {
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 final TestConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> fieldModelProcessor.retrieveTestAction(ConfigContextEnum.DISTRIBUTION.name(), providerName));
+                                                                    .flatMap(providerName -> fieldModelProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(testConfig);
                 }
