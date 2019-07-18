@@ -6,12 +6,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import {
-    getDistributionJob,
-    saveDistributionJob,
-    testDistributionJob,
-    updateDistributionJob
-} from 'store/actions/distributionConfigs';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -251,6 +246,7 @@ class DistributionConfiguration extends Component {
     render() {
         const { channelConfig, currentProvider, currentChannel } = this.state;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
+        const jobAction = this.props.job.jobId ? 'Edit Distribution Job' : 'New Distribution Job';
 
         return (
             <div
@@ -261,7 +257,7 @@ class DistributionConfiguration extends Component {
             >
                 <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>New Distribution Job</Modal.Title>
+                        <Modal.Title>{jobAction}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
