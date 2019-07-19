@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -146,14 +145,15 @@ public class JobConfigActions {
     public JobFieldModel updateJob(final UUID id, final JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-        final Set<FieldModel> jobFieldModels = jobFieldModel.getFieldModels();
-        for (final FieldModel fieldModel : jobFieldModels) {
+        final Set<String> descriptorNames = new HashSet<>();
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+            descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
             final Long fieldModelId = Long.parseLong(beforeUpdateEventFieldModel.getId());
             final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
-        final Set<String> descriptorNames = jobFieldModels.stream().map(FieldModel::getDescriptorName).collect(Collectors.toSet());
+
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         final Set<FieldModel> updatedFieldModels = new HashSet<>();

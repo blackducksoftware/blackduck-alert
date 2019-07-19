@@ -169,11 +169,12 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         configField1.setFieldValue("example");
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
         configField2.setFieldValue("other example");
-        final ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of(configField1, configField2));
+        final Set<String> descriptorNames = Set.of(DESCRIPTOR_NAME);
+        final ConfigurationJobModel job = configurationAccessor.createJob(descriptorNames, Set.of(configField1, configField2));
 
         final String newValue = "newValue";
         configField1.setFieldValue(newValue);
-        final ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), Set.of(DESCRIPTOR_NAME), Set.of(configField1, configField2));
+        final ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), descriptorNames, Set.of(configField1, configField2));
         assertEquals(job.getJobId(), updatedJob.getJobId());
 
         final FieldAccessor originalFieldMap = job.getFieldAccessor();
