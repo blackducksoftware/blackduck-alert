@@ -153,10 +153,12 @@ public class AlertStartupInitializer {
         throws AlertDatabaseConstraintException {
         if (!configurationModels.isEmpty()) {
             if (!foundConfigurationModels.isEmpty()) {
-                final ConfigurationModel foundModel = foundConfigurationModels.get(0);
-                logger.info("  Overwriting configuration values with environment for descriptor.");
-                final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel, overwriteCurrentConfig);
-                fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
+                if (overwriteCurrentConfig) {
+                    final ConfigurationModel foundModel = foundConfigurationModels.get(0);
+                    logger.info("  Overwriting configuration values with environment for descriptor.");
+                    final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel, overwriteCurrentConfig);
+                    fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
+                }
             } else {
                 logger.info("  Writing initial configuration values from environment for descriptor.");
                 final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
@@ -168,14 +170,10 @@ public class AlertStartupInitializer {
     private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels, final ConfigurationModel foundModel, final boolean overwriteCurrentConfig)
         throws AlertDatabaseConstraintException {
         final Collection<ConfigurationFieldModel> fieldsToUpdate;
-        if (overwriteCurrentConfig) {
-            fieldsToUpdate = configurationFieldModels;
-        } else {
-            fieldsToUpdate = new LinkedList<>();
-            for (final ConfigurationFieldModel fieldModel : configurationFieldModels) {
-                final Optional<ConfigurationFieldModel> currentFieldModel = foundModel.getField(fieldModel.getFieldKey());
-                currentFieldModel.ifPresentOrElse(fieldsToUpdate::add, () -> fieldsToUpdate.add(fieldModel));
-            }
+        fieldsToUpdate = new LinkedList<>();
+        for (final ConfigurationFieldModel fieldModel : configurationFieldModels) {
+            final Optional<ConfigurationFieldModel> currentFieldModel = foundModel.getField(fieldModel.getFieldKey());
+            currentFieldModel.ifPresentOrElse(fieldsToUpdate::add, () -> fieldsToUpdate.add(fieldModel));
         }
 
         final Map<String, FieldValueModel> fieldValueModelMap = fieldModelProcessor.convertToFieldValuesMap(fieldsToUpdate);
