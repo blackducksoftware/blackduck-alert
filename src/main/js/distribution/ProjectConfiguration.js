@@ -187,7 +187,7 @@ class ProjectConfiguration extends Component {
                     bodyContainerClass="projectTableScrollableBody"
                 >
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
+                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" tdStyle={ { whiteSpace: 'normal' } } dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 

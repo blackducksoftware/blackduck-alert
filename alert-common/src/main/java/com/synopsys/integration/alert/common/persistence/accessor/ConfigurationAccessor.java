@@ -42,7 +42,7 @@ public interface ConfigurationAccessor {
 
     ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    ConfigurationJobModel updateJob(final UUID jobId, Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    ConfigurationJobModel updateJob(final UUID jobId, final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
     void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException;
 
