@@ -156,7 +156,7 @@ public class AlertStartupInitializer {
                                                               .findFirst()
                                                               .filter(model -> overwriteCurrentConfig);
         if (optionalFoundModel.isPresent()) {
-            final ConfigurationModel foundModel = optionalFoundModel.orElseThrow();
+            final ConfigurationModel foundModel = optionalFoundModel.get();
             logger.info("  Overwriting configuration values with environment for descriptor.");
             final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel, overwriteCurrentConfig);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
