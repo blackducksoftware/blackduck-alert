@@ -129,8 +129,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             ComponentAttributeMap itemsOfSameName = categoryItem.getItemsOfSameName();
             String summaryKey = createSummaryKey(categoryItem.getComponentKeys(), itemsOfSameName);
 
-            ComponentAttributeMap allItemsForSpecialKey = itemsByCategory.computeIfAbsent(summaryKey, ignored -> new ComponentAttributeMap());
-            allItemsForSpecialKey.putAll(itemsOfSameName);
+            ComponentAttributeMap allItemsForSummaryKey = itemsByCategory.computeIfAbsent(summaryKey, ignored -> new ComponentAttributeMap());
+            allItemsForSummaryKey.putAll(itemsOfSameName);
         }
 
         return itemsByCategory;
