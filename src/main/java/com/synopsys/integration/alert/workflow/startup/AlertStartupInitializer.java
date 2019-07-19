@@ -152,21 +152,19 @@ public class AlertStartupInitializer {
 
     private void updateConfigurationFields(final String descriptorName, final boolean overwriteCurrentConfig, final List<ConfigurationModel> foundConfigurationModels, final Set<ConfigurationFieldModel> configurationModels)
         throws AlertDatabaseConstraintException {
-        if (!configurationModels.isEmpty()) {
-            if (!foundConfigurationModels.isEmpty()) {
-                Optional<ConfigurationModel> optionalFoundModel = foundConfigurationModels
-                                                                      .stream()
-                                                                      .findFirst()
-                                                                      .filter(model -> overwriteCurrentConfig);
-                final ConfigurationModel foundModel = optionalFoundModel.orElseThrow();
-                logger.info("  Overwriting configuration values with environment for descriptor.");
-                final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel, overwriteCurrentConfig);
-                fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
-            } else {
-                logger.info("  Writing initial configuration values from environment for descriptor.");
-                final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
-                fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
-            }
+        Optional<ConfigurationModel> optionalFoundModel = foundConfigurationModels
+                                                              .stream()
+                                                              .findFirst()
+                                                              .filter(model -> overwriteCurrentConfig);
+        if (optionalFoundModel.isPresent()) {
+            final ConfigurationModel foundModel = optionalFoundModel.orElseThrow();
+            logger.info("  Overwriting configuration values with environment for descriptor.");
+            final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel, overwriteCurrentConfig);
+            fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
+        } else {
+            logger.info("  Writing initial configuration values from environment for descriptor.");
+            final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
+            fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
         }
     }
 
