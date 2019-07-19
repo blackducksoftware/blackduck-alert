@@ -61,7 +61,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
     public static Comparator<ComponentItem> createDefaultComparator() {
         return Comparator
-                   .comparing(ComponentItem::getOperation)
+                   .comparing(ComponentItem::getCategory)
+                   .thenComparing(ComponentItem::getOperation)
                    .thenComparing(ComponentItem::getPriority)
                    .thenComparing(ComponentItem::getComponentKeys);
     }

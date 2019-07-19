@@ -26,14 +26,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,12 +106,11 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     private LinkedHashSet<ComponentItem> createSummarizedComponentItems(final Set<ComponentItem> componentItemsForOperation) {
-        final List<ComponentItem> summarizedCategoryItems = new LinkedList<>();
-        // FIXME before this point, everything is working correctly
+        final LinkedHashSet<ComponentItem> summarizedCategoryItems = new LinkedHashSet<>();
         final Map<String, ComponentAttributeMap> itemsByShallowKey = collectComponentItemData(componentItemsForOperation);
         for (final ComponentItem componentItem : componentItemsForOperation) {
-            String shallowKey = componentItem.getComponentKeys().getShallowKey();
-            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(itemsByShallowKey.get(shallowKey));
+            String summaryKey = createSummaryKey(componentItem.getComponentKeys(), componentItem.getItemsOfSameName());
+            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(itemsByShallowKey.get(summaryKey));
             try {
                 ComponentItem newComponentItem = messageOperationCombiner.createNewComponentItem(componentItem, summarizedLinkableItems);
                 summarizedCategoryItems.add(newComponentItem);
@@ -123,18 +120,39 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             }
         }
 
-        return collapseDuplicateComponentItems(summarizedCategoryItems);
+        return summarizedCategoryItems;
     }
 
-    // FIXME this seems to screw things up
     private Map<String, ComponentAttributeMap> collectComponentItemData(Set<ComponentItem> componentItemsForOperation) {
         Map<String, ComponentAttributeMap> itemsByCategory = new LinkedHashMap<>();
         for (final ComponentItem categoryItem : componentItemsForOperation) {
-            ComponentAttributeMap itemsOfSameName = itemsByCategory.computeIfAbsent(categoryItem.getComponentKeys().getShallowKey(), ignored -> new ComponentAttributeMap());
-            itemsOfSameName.putAll(categoryItem.getItemsOfSameName());
+            ComponentAttributeMap itemsOfSameName = categoryItem.getItemsOfSameName();
+            String summaryKey = createSummaryKey(categoryItem.getComponentKeys(), itemsOfSameName);
+
+            ComponentAttributeMap allItemsForSpecialKey = itemsByCategory.computeIfAbsent(summaryKey, ignored -> new ComponentAttributeMap());
+            allItemsForSpecialKey.putAll(itemsOfSameName);
         }
 
         return itemsByCategory;
+    }
+
+    private String createSummaryKey(ComponentKeys componentKeys, ComponentAttributeMap itemsOfSameName) {
+        StringBuilder summaryKeyBuilder = new StringBuilder();
+        summaryKeyBuilder.append(componentKeys.getShallowKey());
+        for (List<LinkableItem> namedItems : itemsOfSameName.values()) {
+            if (namedItems.size() == 1) {
+                final LinkableItem item = namedItems
+                                              .stream()
+                                              .findAny()
+                                              .orElseThrow();
+                if (!item.isCollapsible() && item.isPartOfKey()) {
+                    summaryKeyBuilder.append(item.getName());
+                    summaryKeyBuilder.append(item.getValue());
+                }
+            }
+        }
+
+        return summaryKeyBuilder.toString();
     }
 
     private SortedSet<LinkableItem> createSummarizedLinkableItems(ComponentAttributeMap componentAttributeMap) {
@@ -195,58 +213,6 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             summarizedLinkableItems.add(newLinkableItem);
         }
         return summarizedLinkableItems;
-    }
-
-    private LinkedHashSet<ComponentItem> collapseDuplicateComponentItems(final List<ComponentItem> componentItems) {
-        final LinkedHashMap<ComponentKeys, ComponentItem> keyToItem = new LinkedHashMap<>();
-        for (final ComponentItem currentItem : componentItems) {
-            ComponentItem updatedCategoryItem = currentItem;
-            final ComponentKeys componentKey = currentItem.getComponentKeys();
-            if (keyToItem.containsKey(componentKey)) {
-                final ComponentItem oldCategoryItem = keyToItem.get(componentKey);
-                final Set<LinkableItem> oldLinkableItems = oldCategoryItem.getComponentAttributes();
-                final Set<LinkableItem> currentLinkableItems = currentItem.getComponentAttributes();
-                final List<LinkableItem> combinedLinkableItems = Stream.concat(oldLinkableItems.stream(), currentLinkableItems.stream()).collect(Collectors.toList());
-
-                final SortedSet<LinkableItem> collapsedLinkableItems = collapseDuplicateLinkableItems(combinedLinkableItems);
-                try {
-                    updatedCategoryItem = messageOperationCombiner.createNewComponentItem(currentItem, collapsedLinkableItems);
-                } catch (AlertException e) {
-                    // If this happens, it means there is a bug in the Collector logic.
-                    throw new AlertRuntimeException(e);
-                }
-            }
-            keyToItem.put(componentKey, updatedCategoryItem);
-        }
-        return new LinkedHashSet<>(keyToItem.values());
-    }
-
-    private SortedSet<LinkableItem> collapseDuplicateLinkableItems(final List<LinkableItem> linkableItems) {
-        final LinkedHashMap<String, List<LinkableItem>> nameToItems = new LinkedHashMap<>();
-        for (final LinkableItem item : linkableItems) {
-            nameToItems.computeIfAbsent(item.getName(), ignored -> new LinkedList<>()).add(item);
-        }
-
-        final SortedSet<LinkableItem> collapsedItems = new TreeSet<>();
-        for (final Map.Entry<String, List<LinkableItem>> nameToItemEntries : nameToItems.entrySet()) {
-            final String itemName = nameToItemEntries.getKey();
-            final List<LinkableItem> itemsOfSameName = nameToItemEntries.getValue();
-            final boolean isCountable = itemsOfSameName
-                                            .stream()
-                                            .anyMatch(LinkableItem::isCountable);
-            if (isCountable) {
-                final boolean isNumeric = itemsOfSameName
-                                              .stream()
-                                              .anyMatch(LinkableItem::isNumericValue);
-                final String countAsString = generateCountAsString(itemName, itemsOfSameName, isNumeric);
-                final LinkableItem collapsedItem = new LinkableItem(itemName, countAsString);
-                updateSummarizability(collapsedItem, true, isNumeric);
-                collapsedItems.add(collapsedItem);
-            } else {
-                collapsedItems.addAll(itemsOfSameName);
-            }
-        }
-        return collapsedItems;
     }
 
     private String generateCountAsString(final String itemName, final Collection<LinkableItem> items, final boolean isNumericValue) {
