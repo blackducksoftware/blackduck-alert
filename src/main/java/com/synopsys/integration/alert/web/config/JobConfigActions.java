@@ -144,13 +144,15 @@ public class JobConfigActions {
     public JobFieldModel updateJob(final UUID id, final JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {
         validateJob(jobFieldModel);
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+        final Set<String> descriptorNames = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+            descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
             final Long fieldModelId = contentConverter.getLongValue(beforeUpdateEventFieldModel.getId());
             final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
-        final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
+        final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                        .stream()
