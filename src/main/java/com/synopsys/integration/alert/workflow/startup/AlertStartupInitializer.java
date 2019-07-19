@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -129,7 +128,7 @@ public class AlertStartupInitializer {
                 final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor);
                 final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
                 updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
-            } catch (final IllegalArgumentException | SecurityException | NoSuchElementException | AlertDatabaseConstraintException ex) {
+            } catch (final IllegalArgumentException | SecurityException | AlertDatabaseConstraintException ex) {
                 logger.error("error initializing descriptor", ex);
             }
         }
