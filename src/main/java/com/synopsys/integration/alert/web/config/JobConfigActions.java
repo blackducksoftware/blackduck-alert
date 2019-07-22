@@ -224,7 +224,7 @@ public class JobConfigActions {
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 final CustomMessageConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION.name()));
+                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(testConfig);
                 }
