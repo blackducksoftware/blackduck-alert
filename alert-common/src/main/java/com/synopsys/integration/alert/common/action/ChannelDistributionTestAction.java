@@ -32,25 +32,23 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ChannelDistributionTestAction extends TestAction {
     private final DistributionChannel distributionChannel;
 
-    public ChannelDistributionTestAction(final DistributionChannel distributionChannel) {
+    public ChannelDistributionTestAction(DistributionChannel distributionChannel) {
         this.distributionChannel = distributionChannel;
     }
 
     @Override
-    public String testConfig(final CustomMessageConfigModel testConfigModel) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
-        final DistributionEvent event = createChannelTestEvent(testConfigModel.getJobId(), fieldAccessor);
+    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+        final DistributionEvent event = createChannelTestEvent(jobId, fieldAccessor);
         return distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) throws AlertException {
+    public DistributionEvent createChannelTestEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
         final ProviderMessageContent messageContent = createTestNotificationContent();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");

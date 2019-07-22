@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -161,8 +160,7 @@ public class ConfigActions {
             final FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
             final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
             final TestAction testAction = testActionOptional.get();
-            final CustomMessageConfigModel testConfig = testAction.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
-            testAction.testConfig(testConfig);
+            testAction.testConfig(upToDateFieldModel.getId(), destination, fieldAccessor);
             return "Successfully sent test message.";
         }
         final String descriptorName = restModel.getDescriptorName();

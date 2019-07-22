@@ -35,32 +35,31 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public class CustomMessageAction {
+    public static final String KEY_CUSTOM_TOPIC = "";
+    public static final String KEY_CUSTOM_MESSAGE = "";
+
     private final DistributionChannel distributionChannel;
 
     public CustomMessageAction(final DistributionChannel distributionChannel) {
         this.distributionChannel = distributionChannel;
     }
 
-    public String sendMessage(CustomMessageConfigModel customMessageConfigModel) throws IntegrationException {
-        final DistributionEvent event = createChannelDistributionEvent(customMessageConfigModel);
+    public String sendMessage(String configId, FieldAccessor fieldAccessor) throws IntegrationException {
+        final DistributionEvent event = createChannelDistributionEvent(configId, fieldAccessor);
         return distributionChannel.sendMessage(event);
     }
 
-    protected DistributionEvent createChannelDistributionEvent(CustomMessageConfigModel customMessageConfigModel) throws AlertException {
-        final String configId = customMessageConfigModel.getJobId();
-        final FieldAccessor fieldAccessor = customMessageConfigModel.getFieldAccessor();
-
+    protected DistributionEvent createChannelDistributionEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
-        final String customTopic = customMessageConfigModel.getCustomTopic().orElse("Test Topic");
-        final String customMessage = customMessageConfigModel.getCustomMessage().orElse("Test Message");
+        final String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Test Topic");
+        final String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message");
 
         final ProviderMessageContent messageContent = createCustomMessageContent(customTopic, customMessage);
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);

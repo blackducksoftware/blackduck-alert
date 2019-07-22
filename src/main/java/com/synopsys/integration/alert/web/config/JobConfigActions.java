@@ -54,7 +54,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -210,6 +209,7 @@ public class JobConfigActions {
         return "Valid";
     }
 
+    // TODO abstract duplicate functionality
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
@@ -222,13 +222,14 @@ public class JobConfigActions {
 
                 final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-                final CustomMessageConfigModel testConfig = testAction.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                                     .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+
+                final String jobId = channelFieldModel.getId();
                 if (providerTestAction.isPresent()) {
-                    providerTestAction.get().testConfig(testConfig);
+                    providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
                 }
-                return testAction.testConfig(testConfig);
+                return testAction.testConfig(jobId, destination, fieldAccessor);
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
@@ -238,7 +239,7 @@ public class JobConfigActions {
         return "No field model of type channel was was sent to test.";
     }
 
-    public String sendCustomMessageToConfig(CustomMessageConfigModel jobFieldModel, String destination, String customTopic, String messageContent) throws IntegrationException {
+    public String sendCustomMessageToConfig(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
         FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
@@ -251,17 +252,14 @@ public class JobConfigActions {
                 final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
 
-                final CustomMessageConfigModel customMessageConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
-                customMessageConfigModel.setCustomTopic(customTopic);
-                customMessageConfigModel.setCustomMessage(messageContent);
-                customMessageConfigModel.setJobId(channelFieldModel.getId());
-
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                                     .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+
+                final String jobId = channelFieldModel.getId();
                 if (providerTestAction.isPresent()) {
-                    providerTestAction.get().testConfig(customMessageConfigModel);
+                    providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
                 }
-                return customMessageAction.sendMessage(customMessageConfigModel);
+                return customMessageAction.sendMessage(jobId, fieldAccessor);
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);

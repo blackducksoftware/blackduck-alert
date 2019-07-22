@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -42,11 +41,9 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public CustomMessageConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
+    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         final FieldAccessor updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(fieldAccessor, destination);
-        final CustomMessageConfigModel customMessageConfigModel = new CustomMessageConfigModel(updatedFieldAccessor, destination);
-        customMessageConfigModel.setJobId(configId);
-        return customMessageConfigModel;
+        return super.testConfig(jobId, destination, updatedFieldAccessor);
     }
 
 }

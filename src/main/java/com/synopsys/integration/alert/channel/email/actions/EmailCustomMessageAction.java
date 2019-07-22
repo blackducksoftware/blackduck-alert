@@ -30,7 +30,6 @@ import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -38,14 +37,14 @@ public class EmailCustomMessageAction extends CustomMessageAction {
     private final EmailActionHelper emailActionHelper;
 
     @Autowired
-    public EmailCustomMessageAction(final EmailChannel emailChannel, final EmailActionHelper emailActionHelper) {
+    public EmailCustomMessageAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {
         super(emailChannel);
         this.emailActionHelper = emailActionHelper;
     }
 
     @Override
-    protected DistributionEvent createChannelDistributionEvent(final CustomMessageConfigModel customMessageConfigModel) throws AlertException {
-        final DistributionEvent newEvent = super.createChannelDistributionEvent(customMessageConfigModel);
+    protected DistributionEvent createChannelDistributionEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
+        final DistributionEvent newEvent = super.createChannelDistributionEvent(configId, fieldAccessor);
         final FieldAccessor updatedFieldAccessor;
         try {
             updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(newEvent.getFieldAccessor(), newEvent.getDestination());

@@ -23,25 +23,59 @@
 package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
-public class CustomMessageConfigModel extends JobFieldModel {
+public class CustomMessageConfigModel extends AlertSerializableModel {
     private final String destination;
     private final FieldAccessor fieldAccessor;
 
+    @SerializedName(value = "configId", alternate = { "jobId" })
+    private String configId;
+
+    private Set<FieldModel> fieldModels;
     private String customTopic = null;
     private String customMessage = null;
 
-    public CustomMessageConfigModel(final FieldAccessor fieldAccessor) {
+    public CustomMessageConfigModel() {
+        this.destination = null;
+        this.fieldAccessor = null;
+    }
+
+    public CustomMessageConfigModel(FieldAccessor fieldAccessor) {
         this(fieldAccessor, null);
     }
 
-    public CustomMessageConfigModel(final FieldAccessor fieldAccessor, final String destination) {
+    public CustomMessageConfigModel(FieldAccessor fieldAccessor, String destination) {
         this.fieldAccessor = fieldAccessor;
         this.destination = destination;
+    }
+
+    public CustomMessageConfigModel(String destination, FieldAccessor fieldAccessor, String configId, Set<FieldModel> fieldModels) {
+        this.destination = destination;
+        this.fieldAccessor = fieldAccessor;
+        this.configId = configId;
+        this.fieldModels = fieldModels;
+    }
+
+    public String getConfigId() {
+        return configId;
+    }
+
+    public void setConfigId(final String configId) {
+        this.configId = configId;
+    }
+
+    public Set<FieldModel> getFieldModels() {
+        return fieldModels;
+    }
+
+    public void setFieldModels(final Set<FieldModel> fieldModels) {
+        this.fieldModels = fieldModels;
     }
 
     public FieldAccessor getFieldAccessor() {

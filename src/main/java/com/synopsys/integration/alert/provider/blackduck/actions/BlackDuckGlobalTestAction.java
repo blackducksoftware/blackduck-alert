@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -54,15 +53,13 @@ public class BlackDuckGlobalTestAction extends TestAction {
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckGlobalTestAction(final BlackDuckProperties blackDuckProperties) {
+    public BlackDuckGlobalTestAction(BlackDuckProperties blackDuckProperties) {
         this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
-    public String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException {
+    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
 
         final String apiToken = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse("");
         final String url = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL).orElse("");

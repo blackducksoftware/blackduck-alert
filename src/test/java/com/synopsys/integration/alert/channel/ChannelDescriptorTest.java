@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
@@ -204,8 +203,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final String destination = createTestConfigDestination();
         try {
             final TestAction descriptorActionApi = getTestAction();
-            final CustomMessageConfigModel testConfigModel = descriptorActionApi.createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, destination);
-            descriptorActionApi.testConfig(testConfigModel);
+            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), destination, fieldAccessor);
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -218,7 +216,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
         try {
             final TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(descriptorActionApi.createTestConfigModel(String.valueOf(configurationModel.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
+            descriptorActionApi.testConfig(String.valueOf(configurationModel.getConfigurationId()), createTestConfigDestination(), fieldAccessor);
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();

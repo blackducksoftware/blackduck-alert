@@ -29,18 +29,11 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.CustomMessageConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class TestAction {
 
-    public CustomMessageConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws IntegrationException {
-        final CustomMessageConfigModel testConfigModel = new CustomMessageConfigModel(fieldAccessor, destination);
-        testConfigModel.setJobId(configId);
-        return testConfigModel;
-    }
-
-    public abstract String testConfig(final CustomMessageConfigModel testConfig) throws IntegrationException;
+    public abstract String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException;
 
     public ProviderMessageContent createTestNotificationContent() throws AlertException {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
@@ -59,4 +52,5 @@ public abstract class TestAction {
         builder.applyNotificationId(1L);
         return builder.build();
     }
+
 }
