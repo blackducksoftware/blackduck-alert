@@ -225,7 +225,12 @@ class DistributionConfiguration extends Component {
     render() {
         const { channelConfig, currentProvider, currentChannel } = this.state;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
-        const jobAction = this.props.job.jobId ? 'Edit Distribution Job' : 'New Distribution Job';
+
+        let jobAction = 'New';
+        if (this.props.job.jobId) {
+            jobAction = this.props.isUpdatingJob ? 'Edit' : 'Copy';
+        }
+        const modalTitle = `${jobAction} Distribution Job`;
 
         return (
             <div
@@ -236,7 +241,7 @@ class DistributionConfiguration extends Component {
             >
                 <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>{jobAction}</Modal.Title>
+                        <Modal.Title>{modalTitle}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
