@@ -57,12 +57,12 @@ public class DescriptorProcessor {
     }
 
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
-        return retrieveTestAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
+        return retrieveTestAction(fieldModel.getDescriptorName(), descriptorContext);
     }
 
-    public Optional<TestAction> retrieveTestAction(final String descriptorName, final String context) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(descriptorContext));
+    public Optional<TestAction> retrieveTestAction(final String descriptorName, final ConfigContextEnum context) {
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {

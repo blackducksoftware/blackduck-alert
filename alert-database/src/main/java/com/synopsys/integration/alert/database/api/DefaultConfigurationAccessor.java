@@ -128,13 +128,12 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public ConfigurationJobModel updateJob(final UUID jobId, final Collection<String> inputDescriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+
+    public ConfigurationJobModel updateJob(final UUID jobId, final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         if (jobId == null) {
             throw new AlertDatabaseConstraintException(NULL_JOB_ID);
         }
-        final Set<String> descriptorNames = inputDescriptorNames.stream()
-                                                .filter(name -> registeredDescriptorRepository.findFirstByName(name).isPresent())
-                                                .collect(Collectors.toSet());
+
         deleteJob(jobId);
         return createJob(jobId, descriptorNames, configuredFields);
     }
