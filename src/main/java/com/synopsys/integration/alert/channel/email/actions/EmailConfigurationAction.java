@@ -30,11 +30,12 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class EmailConfigurationAction extends ConfigurationAction {
-
     @Autowired
-    protected EmailConfigurationAction(final EmailGlobalTestAction emailGlobalTestAction, final EmailDistributionTestAction emailDistributionTestAction) {
+    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction, EmailCustomMessageAction emailCustomMessageAction) {
         super(EmailChannel.COMPONENT_NAME);
         addGlobalTestAction(emailGlobalTestAction);
         addDistributionTestAction(emailDistributionTestAction);
+        addDistributionCustomMessageAction(emailCustomMessageAction);
     }
+
 }

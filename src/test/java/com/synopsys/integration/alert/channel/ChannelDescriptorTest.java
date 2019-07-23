@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
@@ -204,8 +203,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final String destination = createTestConfigDestination();
         try {
             final TestAction descriptorActionApi = getTestAction();
-            final TestConfigModel testConfigModel = descriptorActionApi.createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, destination);
-            descriptorActionApi.testConfig(testConfigModel);
+            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), destination, fieldAccessor);
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -218,7 +216,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         final FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
         try {
             final TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(descriptorActionApi.createTestConfigModel(String.valueOf(configurationModel.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
+            descriptorActionApi.testConfig(String.valueOf(configurationModel.getConfigurationId()), createTestConfigDestination(), fieldAccessor);
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();

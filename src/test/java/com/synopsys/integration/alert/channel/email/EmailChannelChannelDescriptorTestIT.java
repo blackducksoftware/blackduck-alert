@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
+import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.TestAction;
@@ -26,8 +27,8 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -214,7 +215,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public TestAction getTestAction() {
-        return new EmailDistributionTestAction(emailChannel, new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
+        final EmailActionHelper emailActionHelper = new EmailActionHelper(new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
+        return new EmailDistributionTestAction(emailChannel, emailActionHelper);
     }
 
     @Test

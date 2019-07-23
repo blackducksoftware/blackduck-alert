@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -45,13 +44,12 @@ public class PolarisDistributionTestAction extends TestAction {
     private final ProviderDataAccessor polarisDataAccessor;
 
     @Autowired
-    public PolarisDistributionTestAction(final ProviderDataAccessor polarisDataAccessor) {
+    public PolarisDistributionTestAction(ProviderDataAccessor polarisDataAccessor) {
         this.polarisDataAccessor = polarisDataAccessor;
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
+    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {
             validatePatternMatchesProject(projectNamePattern.get());
@@ -59,7 +57,7 @@ public class PolarisDistributionTestAction extends TestAction {
         return "Successfully tested Polaris provider fields";
     }
 
-    private void validatePatternMatchesProject(final String projectNamePattern) throws AlertFieldException {
+    private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
         final List<ProviderProject> polarisProjects = polarisDataAccessor.findByProviderName(PolarisProvider.COMPONENT_NAME);
         final boolean noProjectsMatchPattern = polarisProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
@@ -68,4 +66,5 @@ public class PolarisDistributionTestAction extends TestAction {
             throw new AlertFieldException(fieldErrors);
         }
     }
+
 }

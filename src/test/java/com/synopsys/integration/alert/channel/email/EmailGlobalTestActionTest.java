@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -107,8 +106,7 @@ public class EmailGlobalTestActionTest {
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
-        emailGlobalTestAction.testConfig(testConfigModel);
+        emailGlobalTestAction.testConfig(null, null, fieldAccessor);
 
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         final ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
@@ -128,9 +126,8 @@ public class EmailGlobalTestActionTest {
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, "fake");
         try {
-            emailGlobalTestAction.testConfig(testConfigModel);
+            emailGlobalTestAction.testConfig(null, "fake", fieldAccessor);
             fail("Should have thrown exception");
         } catch (final AlertException e) {
             assertTrue(e.getMessage().contains("fake is not a valid email address."));
@@ -144,9 +141,8 @@ public class EmailGlobalTestActionTest {
 
         final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, "fake@synopsys.com");
 
-        emailGlobalTestAction.testConfig(testConfigModel);
+        emailGlobalTestAction.testConfig(null, "fake@synopsys.com", fieldAccessor);
 
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         final ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
@@ -184,9 +180,7 @@ public class EmailGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
-
-        emailGlobalTestAction.testConfig(testConfigModel);
+        emailGlobalTestAction.testConfig(null, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT), fieldAccessor);
 
     }
 

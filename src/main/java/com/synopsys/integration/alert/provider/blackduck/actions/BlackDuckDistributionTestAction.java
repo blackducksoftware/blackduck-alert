@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -46,13 +45,12 @@ public class BlackDuckDistributionTestAction extends TestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired
-    public BlackDuckDistributionTestAction(final ProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
+    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {
             validatePatternMatchesProject(projectNamePattern.get());
@@ -60,7 +58,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
         return "Successfully tested BlackDuck provider fields";
     }
 
-    private void validatePatternMatchesProject(final String projectNamePattern) throws AlertFieldException {
+    private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
         final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
         final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
@@ -69,4 +67,5 @@ public class BlackDuckDistributionTestAction extends TestAction {
             throw new AlertFieldException(fieldErrors);
         }
     }
+
 }

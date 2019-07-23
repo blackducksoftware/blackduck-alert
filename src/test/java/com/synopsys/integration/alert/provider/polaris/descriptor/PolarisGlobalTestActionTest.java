@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -133,8 +132,6 @@ public class PolarisGlobalTestActionTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
-
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
@@ -143,7 +140,7 @@ public class PolarisGlobalTestActionTest {
 
         final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(null, null, fieldAccessor);
         } catch (final Exception e) {
             e.printStackTrace();
             fail("An exception was thrown while testing (seemingly) valid config. " + e.toString());
@@ -159,10 +156,8 @@ public class PolarisGlobalTestActionTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
-
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -171,7 +166,7 @@ public class PolarisGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, "good enough to satisfy the check");
 
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -179,7 +174,7 @@ public class PolarisGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "good enough to satisfy the check");
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_TIMEOUT, "");
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -208,14 +203,12 @@ public class PolarisGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "good enough to satisfy the check");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
-
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected wrapped IOException to be thrown");
         } catch (final IntegrationException e) {
             assertNotNull(e);
         }
     }
+
 }

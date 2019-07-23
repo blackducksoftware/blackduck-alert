@@ -194,7 +194,6 @@ public class ConfigController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteConfig(@PathVariable final Long id) {
-
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }

@@ -137,7 +137,7 @@ public class FieldModelProcessor {
         return fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
     }
 
-    public FieldModel createTestFieldModel(final FieldModel fieldModel) throws AlertException {
+    public FieldModel createCustomMessageFieldModel(final FieldModel fieldModel) throws AlertException {
         final String id = fieldModel.getId();
         FieldModel upToDateFieldModel = fieldModel;
         if (StringUtils.isNotBlank(id)) {

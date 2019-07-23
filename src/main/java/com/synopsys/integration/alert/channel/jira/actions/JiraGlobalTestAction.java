@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
@@ -46,13 +45,12 @@ public class JiraGlobalTestAction extends TestAction {
     private final Gson gson;
 
     @Autowired
-    public JiraGlobalTestAction(final Gson gson) {
+    public JiraGlobalTestAction(Gson gson) {
         this.gson = gson;
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
+    public String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
             final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -72,4 +70,5 @@ public class JiraGlobalTestAction extends TestAction {
         }
         return "Successfully connected to Jira Cloud instance.";
     }
+
 }

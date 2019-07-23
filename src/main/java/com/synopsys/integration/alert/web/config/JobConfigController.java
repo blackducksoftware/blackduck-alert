@@ -48,10 +48,12 @@ import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.function.ThrowingFunction;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
@@ -243,26 +245,37 @@ public class JobConfigController extends BaseController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
+        return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel, destination));
+    }
+
+    @PostMapping("/customMessage")
+    public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody final JobFieldModel restModel, @RequestParam(required = false) String destination) {
+        return sendCustomMessage(restModel, jobModel -> jobConfigActions.sendCustomMessageToConfig(jobModel, destination));
+    }
+
+    private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, String, IntegrationException> messageFunction) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-
         final boolean missingPermission = restModel.getFieldModels().stream()
                                               .map(model -> AuthorizationManager.generatePermissionKey(model.getContext(), model.getDescriptorName()))
                                               .anyMatch(permissionKey -> !authorizationManager.hasExecutePermission(permissionKey));
         if (missingPermission) {
             return responseFactory.createForbiddenResponse();
         }
-
         final String id = restModel.getJobId();
         try {
-            final String responseMessage = jobConfigActions.testJob(restModel, destination);
+            // TODO while implementing the UI feature for this, think about handling the empty cases for customTopic and customMessage
+            final String responseMessage = messageFunction.apply(restModel); // jobConfigActions.sendCustomMessageToConfig(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
-            logger.error(e.getHttpResponseContent());
-            logger.error(e.getHttpStatusMessage());
-            logger.error(e.getMessage(), e);
-            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
+            final String exceptionMessage = e.getMessage();
+            logger.error(exceptionMessage, e);
+            String message = exceptionMessage;
+            if (StringUtils.isNotBlank(e.getHttpStatusMessage())) {
+                message += " : " + e.getHttpStatusMessage();
+            }
+            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (final AlertMethodNotAllowedException e) {
@@ -274,4 +287,5 @@ public class JobConfigController extends BaseController {
             return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
         }
     }
+
 }

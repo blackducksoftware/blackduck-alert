@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -57,19 +56,17 @@ public class EmailGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         Set<String> emailAddresses = Set.of();
-        final String testEmailAddress = testConfig.getDestination().orElse(null);
-        if (StringUtils.isNotBlank(testEmailAddress)) {
+        if (StringUtils.isNotBlank(destination)) {
             try {
-                final InternetAddress emailAddr = new InternetAddress(testEmailAddress);
+                final InternetAddress emailAddr = new InternetAddress(destination);
                 emailAddr.validate();
             } catch (final AddressException ex) {
-                throw new AlertException(String.format("%s is not a valid email address. %s", testEmailAddress, ex.getMessage()));
+                throw new AlertException(String.format("%s is not a valid email address. %s", destination, ex.getMessage()));
             }
-            emailAddresses = Set.of(testEmailAddress);
+            emailAddresses = Set.of(destination);
         }
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final SortedSet<LinkableItem> set = new TreeSet<>();

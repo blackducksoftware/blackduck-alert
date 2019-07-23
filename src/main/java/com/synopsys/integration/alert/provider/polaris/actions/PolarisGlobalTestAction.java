@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisGlobalUIConfig;
@@ -54,10 +53,9 @@ public class PolarisGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final String errorMessageFormat = "The field %s is required";
         final String url = fieldAccessor
                                .getString(PolarisDescriptor.KEY_POLARIS_URL)
@@ -88,4 +86,5 @@ public class PolarisGlobalTestAction extends TestAction {
         }
         return "Successfully connected to Polaris server.";
     }
+
 }

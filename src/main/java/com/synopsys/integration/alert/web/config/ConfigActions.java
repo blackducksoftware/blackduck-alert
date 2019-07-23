@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -136,6 +135,16 @@ public class ConfigActions {
         return dbSavedModel.fill(afterSaveAction);
     }
 
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
+        validateConfig(fieldModel, new HashMap<>());
+        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
+        final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
+        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
+        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
+        return dbSavedModel.fill(afterUpdateAction);
+    }
+
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
@@ -148,26 +157,15 @@ public class ConfigActions {
         validateConfig(restModel, new HashMap<>());
         final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
-            final FieldModel upToDateFieldModel = fieldModelProcessor.createTestFieldModel(restModel);
+            final FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
             final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
             final TestAction testAction = testActionOptional.get();
-            final TestConfigModel testConfig = testAction.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
-            testAction.testConfig(testConfig);
+            testAction.testConfig(upToDateFieldModel.getId(), destination, fieldAccessor);
             return "Successfully sent test message.";
         }
         final String descriptorName = restModel.getDescriptorName();
         logger.error("Test action did not exist: {}", descriptorName);
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
-    }
-
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
-        validateConfig(fieldModel, new HashMap<>());
-        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
-        final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
-        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
-        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
-        return dbSavedModel.fill(afterUpdateAction);
     }
 
 }

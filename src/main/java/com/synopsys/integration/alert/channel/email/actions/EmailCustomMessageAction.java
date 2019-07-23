@@ -26,24 +26,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.action.CustomMessageAction;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDistributionTestAction extends ChannelDistributionTestAction {
-    private EmailActionHelper emailActionHelper;
+public class EmailCustomMessageAction extends CustomMessageAction {
+    private final EmailActionHelper emailActionHelper;
 
     @Autowired
-    public EmailDistributionTestAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {
+    public EmailCustomMessageAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {
         super(emailChannel);
         this.emailActionHelper = emailActionHelper;
     }
 
     @Override
-    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
-        final FieldAccessor updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(fieldAccessor, destination);
-        return super.testConfig(jobId, destination, updatedFieldAccessor);
+    protected DistributionEvent createChannelDistributionEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
+        final DistributionEvent newEvent = super.createChannelDistributionEvent(configId, fieldAccessor);
+        final FieldAccessor updatedFieldAccessor;
+        try {
+            updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(newEvent.getFieldAccessor(), newEvent.getDestination());
+        } catch (IntegrationException e) {
+            throw new AlertException("Problem updating FieldAccessor for email.", e);
+        }
+        return new DistributionEvent(newEvent.getConfigId(), newEvent.getDestination(), newEvent.getCreatedAt(), newEvent.getProvider(), newEvent.getFormatType(), newEvent.getContent(), updatedFieldAccessor);
     }
 
 }
