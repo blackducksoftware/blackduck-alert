@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.function;
 
-// TODO add this to integration-common
+// TODO remove this when integration-common dependency is updated
 public interface ThrowingFunction<T, R, E extends Throwable> {
     /**
      * Applies this function, which may throw an exception, to the given argument.
