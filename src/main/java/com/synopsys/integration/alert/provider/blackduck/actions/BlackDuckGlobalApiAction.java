@@ -36,19 +36,19 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
-import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private final SystemValidator systemValidator;
+    private final BlackDuckValidator blackDuckValidator;
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckGlobalApiAction(final SystemValidator systemValidator, final TaskManager taskManager, final ProviderDataAccessor providerDataAccessor) {
-        this.systemValidator = systemValidator;
+    public BlackDuckGlobalApiAction(final BlackDuckValidator blackDuckValidator, final TaskManager taskManager, final ProviderDataAccessor providerDataAccessor) {
+        this.blackDuckValidator = blackDuckValidator;
         this.taskManager = taskManager;
         this.providerDataAccessor = providerDataAccessor;
     }
@@ -75,8 +75,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     public void handleNewOrUpdatedConfig() {
-        final boolean valid = systemValidator.validate();
-        // This doesn't need to validate the whole system, just the Black Duck settings.
+        final boolean valid = blackDuckValidator.validate();
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {
