@@ -92,6 +92,10 @@ public class SelectConfigField extends ConfigField {
         return new SelectConfigField(key, label, description, false, false, options);
     }
 
+    public static SelectConfigField create(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final boolean isMultiSelect) {
+        return new SelectConfigField(key, label, description, false, false, false, true, isMultiSelect, options);
+    }
+
     public static SelectConfigField create(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, description, false, false, options, validationFunction);
     }
