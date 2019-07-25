@@ -39,8 +39,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public class CustomMessageAction {
-    public static final String KEY_CUSTOM_TOPIC = "";
-    public static final String KEY_CUSTOM_MESSAGE = "";
+    public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
+    public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";
 
     private final DistributionChannel distributionChannel;
 
