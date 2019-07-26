@@ -11,6 +11,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
 import EndpointField from '../field/EndpointField';
+import ProviderDataSelectField from "../field/ProviderDataSelectField";
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -77,6 +78,39 @@ function buildSelectInput(items, field) {
         }
     });
     return <SelectInput {...items} />;
+}
+
+function buildProviderDataSelectInput(items, field) {
+    const { value } = items;
+    const {
+        providerDataEndpoint, searchable, multiSelect, readOnly
+    } = field;
+
+    const isReadOnly = convertStringToBoolean(readOnly);
+    const typeOptionLabel = props => (
+        <Option {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </Option>
+    );
+
+    const typeLabel = props => (
+        <SingleValue {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </SingleValue>
+    );
+
+    Object.assign(items, {
+        value: null,
+        providerDataEndpoint,
+        searchable,
+        multiSelect,
+        readOnly: isReadOnly,
+        components: {
+            Option: typeOptionLabel,
+            SingleValue: typeLabel
+        }
+    });
+    return <ProviderDataSelectField {...items} />;
 }
 
 function buildPasswordInput(items, field) {
@@ -151,6 +185,7 @@ export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
     Select: buildSelectInput,
+    ProviderDataSelect: buildProviderDataSelectInput,
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
     CheckboxInput: buildCheckboxInput,
