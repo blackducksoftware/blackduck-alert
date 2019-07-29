@@ -81,7 +81,6 @@ function buildSelectInput(items, field) {
 }
 
 function buildProviderDataSelectInput(items, field) {
-    const { value } = items;
     const {
         providerDataEndpoint, searchable, multiSelect, readOnly
     } = field;
@@ -100,7 +99,6 @@ function buildProviderDataSelectInput(items, field) {
     );
 
     Object.assign(items, {
-        value: null,
         providerDataEndpoint,
         searchable,
         multiSelect,
