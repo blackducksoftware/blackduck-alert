@@ -88,7 +88,15 @@ public class UpdateChecker {
         final VersionDateModel alertModel = new VersionDateModel(currentVersion, alertCreated);
         final VersionDateModel dockerTagModel = new VersionDateModel(dockerTagVersioName, dockerTagUpdatedDate);
 
-        final int comparison = versionDateModelComparator().compare(alertModel, dockerTagModel);
+        final Boolean isProduction = isProductionVersion(alertModel.getVersionName());
+
+        int comparison;
+        if (isProduction) {
+            comparison = compareVersions(alertModel.getVersionName(), dockerTagModel.getVersionName());
+        } else {
+            comparison = versionDateModelComparator().compare(alertModel, dockerTagModel);
+        }
+
         final boolean isUpdatable = 1 == comparison;
         return new UpdateModel(currentVersion, alertCreated, dockerTagVersioName, dockerTagUpdatedDate, repositoryUrl, isUpdatable);
     }
