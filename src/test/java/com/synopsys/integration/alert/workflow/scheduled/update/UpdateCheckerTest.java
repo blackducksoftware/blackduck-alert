@@ -50,6 +50,14 @@ public class UpdateCheckerTest {
     }
 
     @Test
+    public void testAlertIsSame() {
+        final UpdateChecker updateChecker = getEmptyUpdateChecker();
+        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0", null, null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
     public void testAlertIsOlderDockerPatch() {
         final UpdateChecker updateChecker = getEmptyUpdateChecker();
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0.1", null, null);
@@ -199,7 +207,7 @@ public class UpdateCheckerTest {
 
         final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatter.format(alertTime), "1.0.0-SNAPSHOT", formatter.format(dockerTagDate), null);
 
-        assertTrue(updateModel.getUpdatable());
+        assertFalse(updateModel.getUpdatable());
     }
 
     @Test
