@@ -112,8 +112,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             String summaryKey = createSummaryKey(componentItem.getComponentKeys(), componentItem.getItemsOfSameName());
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(itemsByShallowKey.get(summaryKey));
             try {
-                ComponentItem newComponentItem = messageOperationCombiner.createNewComponentItem(componentItem, summarizedLinkableItems);
-                summarizedCategoryItems.add(newComponentItem);
+                if (!summarizedLinkableItems.isEmpty()) {
+                    ComponentItem newComponentItem = messageOperationCombiner.createNewComponentItem(componentItem, summarizedLinkableItems);
+                    summarizedCategoryItems.add(newComponentItem);
+                }
             } catch (AlertException e) {
                 // If this happens, it means there is a bug in the Collector logic.
                 throw new AlertRuntimeException(e);
