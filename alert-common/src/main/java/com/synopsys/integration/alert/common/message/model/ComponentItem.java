@@ -46,9 +46,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     private final ComponentKeys componentKeys;
     private final ItemOperation operation;
     private final Long notificationId;
+    private final Boolean removeIfOnlyPresentItem;
 
     private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, ComponentItemPriority priority, String category, ComponentKeys componentKeys, ItemOperation operation,
-        Long notificationId) {
+        Long notificationId, Boolean removeIfOnlyPresentItem) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
@@ -57,6 +58,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         this.componentKeys = componentKeys;
         this.operation = operation;
         this.notificationId = notificationId;
+        this.removeIfOnlyPresentItem = removeIfOnlyPresentItem;
     }
 
     public static Comparator<ComponentItem> createDefaultComparator() {
@@ -99,6 +101,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return notificationId;
     }
 
+    public Boolean getRemoveIfOnlyPresentItem() {
+        return removeIfOnlyPresentItem;
+    }
+
     /**
      * Intended to be used for display purposes (such as freemarker templates).
      */
@@ -126,6 +132,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String subComponentUrl;
         private ItemOperation operation;
         private Long notificationId;
+        private Boolean removeIfOnlyPresentItem = Boolean.FALSE;
 
         public ComponentItem build() throws AlertException {
             if (null == componentName || null == componentValue || null == category || null == operation || null == notificationId) {
@@ -145,7 +152,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
                 componentPriority = priority;
             }
 
-            return new ComponentItem(component, subComponent, componentAttributes, componentPriority, category, key, operation, notificationId);
+            return new ComponentItem(component, subComponent, componentAttributes, componentPriority, category, key, operation, notificationId, removeIfOnlyPresentItem);
         }
 
         public Builder applyComponentData(LinkableItem component) {
@@ -238,6 +245,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return this;
         }
 
+        public Builder applyRemoveIfOnlyPresentItem(Boolean removeIfOnlyPresentItem) {
+            this.removeIfOnlyPresentItem = removeIfOnlyPresentItem;
+            return this;
+        }
     }
 
 }

@@ -78,6 +78,8 @@ public class MessageOperationCombiner extends MessageCombiner {
             Map<String, ComponentItem> groupDataCache = new LinkedHashMap<>();
             groupCategoryItems.forEach(item -> processOperation(groupDataCache, item));
 
+            groupDataCache.entrySet().removeIf(entry -> entry.getValue().getRemoveIfOnlyPresentItem());
+
             final LinkedHashSet<ComponentItem> combinedComponentItems = combineComponentItems(new ArrayList<>(groupDataCache.values()));
 
             final Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
