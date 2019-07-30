@@ -8,67 +8,71 @@ class ProviderDataSelectField extends Component {
     constructor(props) {
         super(props);
 
-        this.noOptionsMessage = this.noOptionsMessage.bind(this);
-        this.fetchUserEmails = this.fetchUserEmails.bind(this);
+        this.componentDidUpdate = this.componentDidUpdate.bind(this);
+        this.providerDataFetched = this.providerDataFetched.bind(this);
+        this.fetchProviderData = this.fetchProviderData.bind(this);
+        this.providerDataError = this.providerDataError.bind(this);
 
         this.state = {
             fetched: false,
-            userEmails: []
+            noOptionsMessage: 'Please select a provider',
+            providerData: []
         };
     }
 
     componentDidUpdate() {
+        console.log('Component did update...')
         if (!this.state.fetched) {
-            this.fetchUserEmails(this.props.providerDataEndpoint, 'provider_blackduck');
-            console.log(this.state.userEmails);
+            console.log('Data not fetched yet...')
+            this.fetchProviderData(this.props.providerDataEndpoint, 'provider_blackduck')
+                .then(providerData => this.providerDataFetched(providerData));
         }
     }
 
-    noOptionsMessage() {
-        return 'Please select a provider';
+    providerDataFetched(providerData) {
+        this.setState({
+                fetched: true,
+                noOptionsMessage: 'Unknown error',
+                providerData: providerData
+            },
+            () => {
+                console.log(`Callback Post Fetch: ${this.state.providerData}`);
+            });
+        console.log(`Post Fetch: ${this.state.providerData}`);
     }
 
-    fetchUserEmails(endpoint, providerName) {
-        // dispatch(fetchingUserEmails());
-        console.log(`Fetching user emails`);
-        const resolvedEndpoint = endpoint.replace('{provider}', providerName);
-        // const requestUrl = `${PROVIDER_PROJECTS_URL_PREFIX}${resolvedEndpoint}`; /alert/api
-        const requestUrl = `/alert/api${resolvedEndpoint}`;
+    providerDataError(errorMessage) {
+        this.setState({
+            fetched: true,
+            noOptionsMessage: errorMessage,
+            providerData: []
+        });
+    }
 
-        let userEmails = [];
-        const fetchedUserEmails = fetch(requestUrl, {
+    fetchProviderData(endpoint, providerName) {
+        console.log('Fetching provider data');
+        const resolvedEndpoint = endpoint.replace('{provider}', providerName);
+        const requestUrl = `/alert/api${resolvedEndpoint}`;
+        return fetch(requestUrl, {
             credentials: 'same-origin'
         })
             .then((response) => {
                 response.json()
                     .then((json) => {
                         if (!response.ok) {
-                            // dispatch(userEmailsError(json.message));
                             console.log(json.message);
                             verifyLoginByStatus(response.status);
-                            // dispatch(verifyLoginByStatus(response.status));
+                            this.providerDataError('There was a problem with the request');
                         } else {
-                            // dispatch(userEmailsFetched(projects));
-                            console.log(`User emails fetched`);
-                            const emailOptions = json.map(email => ({
-                                label: email,
-                                value: email
-                            }));
-                            console.log(emailOptions);
-                            return emailOptions;
+                            console.log(`Provider data fetched: ${json}`);
+                            this.providerDataFetched(json);
                         }
                     });
             })
             .catch((error) => {
-                // dispatch(userEmailsError(`Unable to connect to Server: ${error}`));
                 console.log(`Unable to connect to Server: ${error}`);
-                console.error(error);
+                this.providerDataError(error);
             });
-
-        this.setState({
-            fetched: true,
-            userEmails: fetchedUserEmails
-        });
     }
 
     render() {
@@ -90,6 +94,7 @@ class ProviderDataSelectField extends Component {
         };
 
         console.log("Rendering...");
+        console.log(this.state.providerData);
 
         const field = (<div className={selectClasses}>
             <Select
@@ -98,14 +103,14 @@ class ProviderDataSelectField extends Component {
                 onChange={handleChange}
                 isSearchable={searchable}
                 removeSelected={removeSelected}
-                options={this.userEmails}
+                options={this.state.providerData}
                 placeholder={placeholder}
                 value={value}
                 isMulti={multiSelect}
                 closeMenuOnSelect={!multiSelect}
                 components={components}
                 isDisabled={readOnly}
-                noOptionsMessage={this.noOptionsMessage}
+                noOptionsMessage={this.state.noOptionsMessage}
             />
         </div>);
         return (
