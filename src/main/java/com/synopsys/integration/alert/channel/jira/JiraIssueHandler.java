@@ -168,7 +168,7 @@ public class JiraIssueHandler {
             }
         }
         if (!missingTransitions.isEmpty()) {
-            final String joinedMissingTransitions = missingTransitions.stream().collect(Collectors.joining(","));
+            final String joinedMissingTransitions = missingTransitions.stream().collect(Collectors.joining(", "));
             String errorMessage = String.format("For Provider: %s. Topic: %s. Unable to find the transition(s): %s.", providerName, projectName, joinedMissingTransitions);
             throw new AlertException(errorMessage);
         }
