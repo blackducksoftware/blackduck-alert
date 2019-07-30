@@ -21,10 +21,10 @@ class ProviderDataSelectField extends Component {
     }
 
     componentDidUpdate() {
-        console.log('Component did update...')
-        if (!this.state.fetched) {
-            console.log('Data not fetched yet...')
-            this.fetchProviderData(this.props.providerDataEndpoint, 'provider_blackduck')
+        const { provider } = this.props;
+        console.log(`Provider: ${provider}`)
+        if (!this.state.fetched && !provider && provider !== '') {
+            this.fetchProviderData(this.props.providerDataEndpoint, provider)
                 .then(providerData => this.providerDataFetched(providerData));
         }
     }
@@ -41,9 +41,9 @@ class ProviderDataSelectField extends Component {
         console.log(`Post Fetch: ${this.state.providerData}`);
     }
 
-    providerDataError(errorMessage) {
+    providerDataError(fetched, errorMessage) {
         this.setState({
-            fetched: true,
+            fetched: fetched,
             noOptionsMessage: errorMessage,
             providerData: []
         });
@@ -62,7 +62,7 @@ class ProviderDataSelectField extends Component {
                         if (!response.ok) {
                             console.log(json.message);
                             verifyLoginByStatus(response.status);
-                            this.providerDataError('There was a problem with the request');
+                            this.providerDataError(true, 'There was a problem with the request');
                         } else {
                             console.log(`Provider data fetched: ${json}`);
                             this.providerDataFetched(json);
@@ -71,7 +71,7 @@ class ProviderDataSelectField extends Component {
             })
             .catch((error) => {
                 console.log(`Unable to connect to Server: ${error}`);
-                this.providerDataError(error);
+                this.providerDataError(true, error);
             });
     }
 
@@ -122,6 +122,7 @@ class ProviderDataSelectField extends Component {
 ProviderDataSelectField.propTypes = {
     id: PropTypes.string,
     providerDataEndpoint: PropTypes.string,
+    provider: PropTypes.string,
     inputClass: PropTypes.string,
     labelClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
@@ -137,6 +138,7 @@ ProviderDataSelectField.propTypes = {
 ProviderDataSelectField.defaultProps = {
     id: 'id',
     value: [],
+    provider: '',
     placeholder: 'Choose a value',
     components: {},
     inputClass: 'typeAheadField',
