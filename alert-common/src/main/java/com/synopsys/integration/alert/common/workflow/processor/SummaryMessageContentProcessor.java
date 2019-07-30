@@ -108,27 +108,20 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private LinkedHashSet<ComponentItem> createSummarizedComponentItems(final Set<ComponentItem> componentItemsForOperation) {
         final LinkedHashSet<ComponentItem> summarizedCategoryItems = new LinkedHashSet<>();
         final Map<String, ComponentAttributeMap> itemsByShallowKey = collectComponentItemData(componentItemsForOperation);
-        final Map<String, ComponentItem> summarizedComponentMap = new LinkedHashMap<>();
-
         for (final ComponentItem componentItem : componentItemsForOperation) {
             String summaryKey = createSummaryKey(componentItem.getComponentKeys(), componentItem.getItemsOfSameName());
             final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(itemsByShallowKey.get(summaryKey));
             try {
-                String shallowKey = componentItem.getComponentKeys().getShallowKey();
-                ComponentItem oldItem;
-                if (!summarizedComponentMap.containsKey(shallowKey)) {
-                    oldItem = componentItem;
-                } else {
-                    oldItem = summarizedComponentMap.get(shallowKey);
+                if (!summarizedLinkableItems.isEmpty()) {
+                    ComponentItem newComponentItem = messageOperationCombiner.createNewComponentItem(componentItem, summarizedLinkableItems);
+                    summarizedCategoryItems.add(newComponentItem);
                 }
-                ComponentItem newItem = messageOperationCombiner.createNewComponentItem(oldItem, summarizedLinkableItems);
-                summarizedComponentMap.put(shallowKey, newItem);
             } catch (AlertException e) {
                 // If this happens, it means there is a bug in the Collector logic.
                 throw new AlertRuntimeException(e);
             }
         }
-        summarizedCategoryItems.addAll(summarizedComponentMap.values());
+
         return summarizedCategoryItems;
     }
 
