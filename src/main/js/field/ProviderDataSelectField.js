@@ -8,6 +8,7 @@ class ProviderDataSelectField extends Component {
     constructor(props) {
         super(props);
 
+        this.noOptionsMessage = this.noOptionsMessage.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
         this.providerDataFetched = this.providerDataFetched.bind(this);
         this.fetchProviderData = this.fetchProviderData.bind(this);
@@ -15,15 +16,19 @@ class ProviderDataSelectField extends Component {
 
         this.state = {
             fetched: false,
-            noOptionsMessage: 'Please select a provider',
+            errorMessage: 'Please select a provider',
             providerData: []
         };
+    }
+
+    noOptionsMessage() {
+        return this.state.errorMessage;
     }
 
     componentDidUpdate() {
         const { provider } = this.props;
         console.log(`Provider: ${provider}`)
-        if (!this.state.fetched && !provider && provider !== '') {
+        if (!this.state.fetched && provider && provider !== '') {
             this.fetchProviderData(this.props.providerDataEndpoint, provider)
                 .then(providerData => this.providerDataFetched(providerData));
         }
@@ -32,19 +37,18 @@ class ProviderDataSelectField extends Component {
     providerDataFetched(providerData) {
         this.setState({
                 fetched: true,
-                noOptionsMessage: 'Unknown error',
+                errorMessage: 'Unknown error',
                 providerData: providerData
             },
             () => {
                 console.log(`Callback Post Fetch: ${this.state.providerData}`);
             });
-        console.log(`Post Fetch: ${this.state.providerData}`);
     }
 
     providerDataError(fetched, errorMessage) {
         this.setState({
             fetched: fetched,
-            noOptionsMessage: errorMessage,
+            errorMessage: errorMessage,
             providerData: []
         });
     }
@@ -83,8 +87,11 @@ class ProviderDataSelectField extends Component {
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
 
         const handleChange = (option) => {
+            console.log('Handling change...');
             const optionValue = option ? option.value : null;
+            console.log(`Option value: ${optionValue}`);
             const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : optionValue;
+            console.log(`Parsed array: ${parsedArray}`);
             onChange({
                 target: {
                     name: id,
@@ -92,9 +99,6 @@ class ProviderDataSelectField extends Component {
                 }
             });
         };
-
-        console.log("Rendering...");
-        console.log(this.state.providerData);
 
         const field = (<div className={selectClasses}>
             <Select
@@ -110,7 +114,7 @@ class ProviderDataSelectField extends Component {
                 closeMenuOnSelect={!multiSelect}
                 components={components}
                 isDisabled={readOnly}
-                noOptionsMessage={this.state.noOptionsMessage}
+                noOptionsMessage={this.noOptionsMessage}
             />
         </div>);
         return (
