@@ -23,7 +23,15 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class ComponentAttributeMap extends LinkedHashMap<String, List<LinkableItem>> {
+
+    public void putAll(ComponentAttributeMap attributeMap) {
+        for (Map.Entry<String, List<LinkableItem>> entry : attributeMap.entrySet()) {
+            this.computeIfAbsent(entry.getKey(), ignored -> new LinkedList<>()).addAll(entry.getValue());
+        }
+    }
 }

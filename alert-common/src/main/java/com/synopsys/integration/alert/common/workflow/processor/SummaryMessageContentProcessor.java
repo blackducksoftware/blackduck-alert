@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -37,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -85,7 +87,9 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
         final Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
         for (final LinkedHashSet<ComponentItem> componentSet : itemsByOperation.values()) {
+            //final LinkedHashSet<ComponentItem> summarizedComponentCounts = createSummarizedComponentItems(summarizeCategoryComponentCounts(componentSet));
             final LinkedHashSet<ComponentItem> summarizedComponentItemsForOperation = createSummarizedComponentItems(componentSet);
+            //summarizedComponentItems.addAll(summarizedComponentCounts);
             summarizedComponentItems.addAll(summarizedComponentItemsForOperation);
         }
 
@@ -125,12 +129,74 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return summarizedCategoryItems;
     }
 
+    private LinkedHashSet<ComponentItem> summarizeCategoryComponentCounts(Set<ComponentItem> componentItems) {
+        Map<String, Map<ComponentItemPriority, Set<ComponentItem>>> itemsByCategory = new LinkedHashMap<>();
+
+        for (final ComponentItem item : componentItems) {
+            Map<ComponentItemPriority, Set<ComponentItem>> itemsByPriority = itemsByCategory.computeIfAbsent(item.getCategory(), ignored -> new LinkedHashMap<>());
+            Set<ComponentItem> itemList = itemsByPriority.computeIfAbsent(item.getPriority(), ignored -> new LinkedHashSet<>());
+            itemList.add(item);
+        }
+
+        LinkedHashSet<ComponentItem> componentCounts = new LinkedHashSet<>();
+        for (Map.Entry<String, Map<ComponentItemPriority, Set<ComponentItem>>> entry : itemsByCategory.entrySet()) {
+            for (Map.Entry<ComponentItemPriority, Set<ComponentItem>> priorityEntries : entry.getValue().entrySet()) {
+                try {
+                    Set<ComponentItem> items = priorityEntries.getValue();
+                    Optional<ComponentItem> componentItem = items.stream().findFirst();
+                    ComponentItemPriority priority = priorityEntries.getKey();
+                    ComponentItem.Builder builder = new ComponentItem.Builder();
+                    builder.applyNotificationId(-1L);
+                    builder.applyPriority(priorityEntries.getKey());
+                    builder.applyCategory(entry.getKey());
+                    builder.applyComponentData("Summary", "");
+                    componentItem.ifPresent(item -> builder.applyOperation(item.getOperation()));
+
+                    ComponentAttributeMap attributeMap = new ComponentAttributeMap();
+
+                    // count shallow keys in component set.
+                    //create temp component item that includes linkable items from all other component items.
+                    // create summarized linkable items and add.
+
+                    //                    LinkableItem countItem = new LinkableItem("Components", String.format("%s %s", componentItem.getComponent().getValue(), componentItem.getSubComponent().orElse(new LinkableItem("", "")).getValue()));
+                    //                    countItem.setCollapsible(true);
+                    //                    countItem.setCountable(true);
+                    //                    countItem.setSummarizable(true);
+                    //                    countItem.setPartOfKey(true);
+                    items.stream()
+                        .map(ComponentItem::getItemsOfSameName)
+                        .forEach(attributeMap::putAll);
+
+                    final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(attributeMap);
+
+                    if (ComponentItemPriority.NONE != priority) {
+                        LinkableItem severityItem = new LinkableItem("Severity", priorityEntries.getKey().toString());
+                        severityItem.setSummarizable(true);
+                        severityItem.setPartOfKey(true);
+                        builder.applyComponentAttribute(severityItem);
+                    }
+
+                    LinkableItem countItem = new LinkableItem("Component Count", String.valueOf(priorityEntries.getValue().size()));
+                    countItem.setCollapsible(true);
+                    countItem.setSummarizable(true);
+                    countItem.setPartOfKey(true);
+                    builder.applyComponentAttribute(countItem);
+                    builder.applyAllComponentAttributes(summarizedLinkableItems);
+
+                    componentCounts.add(builder.build());
+                } catch (AlertException ex) {
+                    throw new AlertRuntimeException(ex);
+                }
+            }
+        }
+        return componentCounts;
+    }
+
     private Map<String, ComponentAttributeMap> collectComponentItemData(Set<ComponentItem> componentItemsForOperation) {
         Map<String, ComponentAttributeMap> itemsByCategory = new LinkedHashMap<>();
-        for (final ComponentItem categoryItem : componentItemsForOperation) {
-            ComponentAttributeMap itemsOfSameName = categoryItem.getItemsOfSameName();
-            String summaryKey = createSummaryKey(categoryItem.getComponentKeys(), itemsOfSameName);
-
+        for (final ComponentItem componentItem : componentItemsForOperation) {
+            ComponentAttributeMap itemsOfSameName = componentItem.getItemsOfSameName();
+            String summaryKey = createSummaryKey(componentItem.getComponentKeys(), itemsOfSameName);
             ComponentAttributeMap allItemsForSummaryKey = itemsByCategory.computeIfAbsent(summaryKey, ignored -> new ComponentAttributeMap());
             allItemsForSummaryKey.putAll(itemsOfSameName);
         }
