@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
+import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -124,43 +125,54 @@ public class JiraIssueHandler {
         final String issueType, final String projectName, final String projectId, final Boolean commentOnIssue) throws IntegrationException {
         final Set<String> issueKeys = new HashSet<>();
         final Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
+        Set<String> missingTransitions = new HashSet<>();
         for (final List<ComponentItem> combinedItems : combinedItemsMap.values()) {
-            final ComponentItem arbitraryItem = combinedItems
-                                                    .stream()
-                                                    .findAny()
-                                                    .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
-            final ItemOperation operation = arbitraryItem.getOperation();
-            final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-            final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
+            try {
+                final ComponentItem arbitraryItem = combinedItems
+                                                        .stream()
+                                                        .findAny()
+                                                        .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
+                final ItemOperation operation = arbitraryItem.getOperation();
+                final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
+                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
 
-            final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
-            if (existingIssueComponent.isPresent()) {
-                final IssueComponent issueComponent = existingIssueComponent.get();
-                final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-                final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
-                issueKeys.add(issueKey);
-                if (commentOnIssue) {
-                    String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                    addComment(issueKey, operationComment);
-                }
-            } else {
-                if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    fieldsBuilder.setProject(projectId);
-                    fieldsBuilder.setIssueType(issueType);
-                    final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
-                    final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
-                    if (issue == null || StringUtils.isBlank(issue.getKey())) {
-                        throw new AlertException("There was an problem when creating this issue.");
-                    }
-                    final String issueKey = issue.getKey();
-                    addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
-                    addComment(issueKey, "This issue was automatically created by Alert.");
+                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
+                if (existingIssueComponent.isPresent()) {
+                    final IssueComponent issueComponent = existingIssueComponent.get();
+                    final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
                     issueKeys.add(issueKey);
+                    if (commentOnIssue) {
+                        String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
+                        addComment(issueKey, operationComment);
+                    }
                 } else {
-                    logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
+                    if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                        fieldsBuilder.setProject(projectId);
+                        fieldsBuilder.setIssueType(issueType);
+                        final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
+                        final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
+                        if (issue == null || StringUtils.isBlank(issue.getKey())) {
+                            throw new AlertException("There was an problem when creating this issue.");
+                        }
+                        final String issueKey = issue.getKey();
+                        addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
+                        addComment(issueKey, "This issue was automatically created by Alert.");
+                        issueKeys.add(issueKey);
+                    } else {
+                        logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
+                    }
                 }
+            } catch (JiraMissingTransitionException e) {
+                missingTransitions.add(e.getTransition());
             }
         }
+        if (!missingTransitions.isEmpty()) {
+            final String joinedMissingTransitions = missingTransitions.stream().collect(Collectors.joining(", "));
+            String errorMessage = String.format("For Provider: %s. Topic: %s. Unable to find the transition(s): %s.", providerName, projectName, joinedMissingTransitions);
+            throw new AlertException(errorMessage);
+        }
+
         return issueKeys;
     }
 
@@ -243,7 +255,7 @@ public class JiraIssueHandler {
                 final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
                 issueService.transitionIssue(issueRequestModel);
             } else {
-                logger.warn("Unable to find the transition: {}", transition);
+                throw new JiraMissingTransitionException(transition);
             }
         } else {
             logger.debug("No transition selected, ignoring issue state change.");
