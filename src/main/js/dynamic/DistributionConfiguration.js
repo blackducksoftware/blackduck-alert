@@ -11,14 +11,14 @@ import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
 
-const KEY_NAME = 'channel.common.name';
-const KEY_CHANNEL_NAME = 'channel.common.channel.name';
-const KEY_PROVIDER_NAME = 'channel.common.provider.name';
-const KEY_FREQUENCY = 'channel.common.frequency';
+export const KEY_NAME = 'channel.common.name';
+export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
+export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
+export const KEY_FREQUENCY = 'channel.common.frequency';
 
-const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
-const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
-const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
+export const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
+export const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
+export const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
 
 class DistributionConfiguration extends Component {
     constructor(props) {

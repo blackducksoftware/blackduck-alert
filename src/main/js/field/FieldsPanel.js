@@ -99,12 +99,12 @@ class FieldsPanel extends React.Component {
     }
 
     createFields(fields) {
-        const { currentConfig, provider, fieldErrors } = this.props;
+        const { currentConfig, fieldErrors } = this.props;
         const createdFields = [];
 
         fields.forEach((field) => {
             const fieldKey = field.key;
-            const newField = FieldMapping.createField(field, provider, currentConfig, fieldErrors[fieldKey], this.handleChange);
+            const newField = FieldMapping.createField(field, currentConfig, fieldErrors[fieldKey], this.handleChange);
             createdFields.push(newField);
         });
         return createdFields;

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Select from "react-select";
 import LabeledField from "./LabeledField";
 import { verifyLoginByStatus } from "../store/actions/session";
+import { KEY_PROVIDER_NAME } from '../dynamic/DistributionConfiguration';
 
 class ProviderDataSelectField extends Component {
     constructor(props) {
@@ -10,6 +11,7 @@ class ProviderDataSelectField extends Component {
 
         this.noOptionsMessage = this.noOptionsMessage.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
+        this.getProvider = this.getProvider.bind(this);
         this.providerDataFetched = this.providerDataFetched.bind(this);
         this.fetchProviderData = this.fetchProviderData.bind(this);
         this.providerDataError = this.providerDataError.bind(this);
@@ -26,11 +28,19 @@ class ProviderDataSelectField extends Component {
     }
 
     componentDidUpdate() {
-        const { provider } = this.props;
+        const provider = this.getProvider();
+        console.log(`Provider: ${provider}`);
         if (!this.state.fetched && provider && provider !== '') {
             this.fetchProviderData(this.props.providerDataEndpoint, provider)
                 .then(providerData => this.providerDataFetched(providerData));
         }
+    }
+
+    getProvider() {
+        const { currentConfig } = this.props;
+        console.log(`Key: ${KEY_PROVIDER_NAME}`);
+        const providerValues = currentConfig.keyToValues[KEY_PROVIDER_NAME].values;
+        return providerValues && providerValues.length > 0 ? providerValues[0] : null;
     }
 
     providerDataFetched(providerData) {
@@ -62,7 +72,12 @@ class ProviderDataSelectField extends Component {
                             verifyLoginByStatus(response.status);
                             this.providerDataError(true, 'There was a problem with the request');
                         } else {
-                            this.providerDataFetched(json);
+                            const providerData = json.map(item => {
+                                const dataValue = item.value;
+                                return { icon: null, key: dataValue, label: dataValue, value: dataValue };
+                            });
+                            console.log(`Post Map: ${providerData}`);
+                            this.providerDataFetched(providerData);
                         }
                     });
             })
@@ -80,9 +95,8 @@ class ProviderDataSelectField extends Component {
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
 
         const handleChange = (option) => {
-            console.log('Handling change...');
+            console.log(`Option: ${option}`);
             const optionValue = option ? option.value : null;
-            console.log(`Option value: ${optionValue}`);
             const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : optionValue;
             console.log(`Parsed array: ${parsedArray}`);
             onChange({
@@ -119,7 +133,7 @@ class ProviderDataSelectField extends Component {
 ProviderDataSelectField.propTypes = {
     id: PropTypes.string,
     providerDataEndpoint: PropTypes.string,
-    provider: PropTypes.string,
+    currentConfig: PropTypes.object,
     inputClass: PropTypes.string,
     labelClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
@@ -135,7 +149,7 @@ ProviderDataSelectField.propTypes = {
 ProviderDataSelectField.defaultProps = {
     id: 'id',
     value: [],
-    provider: '',
+    currentConfig: {},
     placeholder: 'Choose a value',
     components: {},
     inputClass: 'typeAheadField',
