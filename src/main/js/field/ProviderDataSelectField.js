@@ -27,7 +27,6 @@ class ProviderDataSelectField extends Component {
 
     componentDidUpdate() {
         const { provider } = this.props;
-        console.log(`Provider: ${provider}`)
         if (!this.state.fetched && provider && provider !== '') {
             this.fetchProviderData(this.props.providerDataEndpoint, provider)
                 .then(providerData => this.providerDataFetched(providerData));
@@ -36,13 +35,10 @@ class ProviderDataSelectField extends Component {
 
     providerDataFetched(providerData) {
         this.setState({
-                fetched: true,
-                errorMessage: 'Unknown error',
-                providerData: providerData
-            },
-            () => {
-                console.log(`Callback Post Fetch: ${this.state.providerData}`);
-            });
+            fetched: true,
+            errorMessage: 'No applicable values were found',
+            providerData: providerData
+        });
     }
 
     providerDataError(fetched, errorMessage) {
@@ -54,7 +50,6 @@ class ProviderDataSelectField extends Component {
     }
 
     fetchProviderData(endpoint, providerName) {
-        console.log('Fetching provider data');
         const resolvedEndpoint = endpoint.replace('{provider}', providerName);
         const requestUrl = `/alert/api${resolvedEndpoint}`;
         return fetch(requestUrl, {
@@ -64,11 +59,9 @@ class ProviderDataSelectField extends Component {
                 response.json()
                     .then((json) => {
                         if (!response.ok) {
-                            console.log(json.message);
                             verifyLoginByStatus(response.status);
                             this.providerDataError(true, 'There was a problem with the request');
                         } else {
-                            console.log(`Provider data fetched: ${json}`);
                             this.providerDataFetched(json);
                         }
                     });
