@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +53,8 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
+    public static final String COMPONENT_ITEM_NAME_SUMMARY = "Summary";
+    public static final String COMPONENT_ITEM_NAME_COMPONENTS = "Components";
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
@@ -87,10 +90,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
         final Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
         for (final LinkedHashSet<ComponentItem> componentSet : itemsByOperation.values()) {
-            //final LinkedHashSet<ComponentItem> summarizedComponentCounts = createSummarizedComponentItems(summarizeCategoryComponentCounts(componentSet));
-            final LinkedHashSet<ComponentItem> summarizedComponentItemsForOperation = createSummarizedComponentItems(componentSet);
-            //summarizedComponentItems.addAll(summarizedComponentCounts);
-            summarizedComponentItems.addAll(summarizedComponentItemsForOperation);
+            final LinkedHashSet<ComponentItem> summarizedComponentCounts = summarizeCategoryComponentCounts(componentSet);
+            //final LinkedHashSet<ComponentItem> summarizedComponentItemsForOperation = createSummarizedComponentItems(componentSet);
+            summarizedComponentItems.addAll(summarizedComponentCounts);
+            //summarizedComponentItems.addAll(summarizedComponentItemsForOperation);
         }
 
         try {
@@ -138,58 +141,59 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             itemList.add(item);
         }
 
-        LinkedHashSet<ComponentItem> componentCounts = new LinkedHashSet<>();
+        LinkedHashSet<ComponentItem> componentSummaries = new LinkedHashSet<>();
         for (Map.Entry<String, Map<ComponentItemPriority, Set<ComponentItem>>> entry : itemsByCategory.entrySet()) {
             for (Map.Entry<ComponentItemPriority, Set<ComponentItem>> priorityEntries : entry.getValue().entrySet()) {
                 try {
                     Set<ComponentItem> items = priorityEntries.getValue();
                     Optional<ComponentItem> componentItem = items.stream().findFirst();
-                    ComponentItemPriority priority = priorityEntries.getKey();
+
                     ComponentItem.Builder builder = new ComponentItem.Builder();
                     builder.applyNotificationId(-1L);
                     builder.applyPriority(priorityEntries.getKey());
                     builder.applyCategory(entry.getKey());
-                    builder.applyComponentData("Summary", "");
+                    builder.applyComponentData(COMPONENT_ITEM_NAME_SUMMARY, "");
                     componentItem.ifPresent(item -> builder.applyOperation(item.getOperation()));
-
-                    ComponentAttributeMap attributeMap = new ComponentAttributeMap();
 
                     // count shallow keys in component set.
                     //create temp component item that includes linkable items from all other component items.
                     // create summarized linkable items and add.
 
-                    //                    LinkableItem countItem = new LinkableItem("Components", String.format("%s %s", componentItem.getComponent().getValue(), componentItem.getSubComponent().orElse(new LinkableItem("", "")).getValue()));
-                    //                    countItem.setCollapsible(true);
-                    //                    countItem.setCountable(true);
-                    //                    countItem.setSummarizable(true);
-                    //                    countItem.setPartOfKey(true);
-                    items.stream()
-                        .map(ComponentItem::getItemsOfSameName)
-                        .forEach(attributeMap::putAll);
+                    Map<String, Long> componentCounts = items.stream()
+                                                            .map(ComponentItem::getComponentKeys)
+                                                            .map(ComponentKeys::getShallowKey)
+                                                            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-                    final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(attributeMap);
+                    LinkedHashSet<LinkableItem> attributeSet = items.stream()
+                                                                   .map(ComponentItem::getComponentAttributes)
+                                                                   .flatMap(Set::stream)
+                                                                   .filter(LinkableItem::isSummarizable)
+                                                                   .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                    if (ComponentItemPriority.NONE != priority) {
-                        LinkableItem severityItem = new LinkableItem("Severity", priorityEntries.getKey().toString());
-                        severityItem.setSummarizable(true);
-                        severityItem.setPartOfKey(true);
-                        builder.applyComponentAttribute(severityItem);
+                    ComponentItem newItem = null;
+                    if (componentItem.isPresent()) {
+                        newItem = messageOperationCombiner.createNewComponentItem(componentItem.get(), attributeSet);
                     }
+                    if (null != newItem) {
+                        final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(newItem.getItemsOfSameName());
 
-                    LinkableItem countItem = new LinkableItem("Component Count", String.valueOf(priorityEntries.getValue().size()));
-                    countItem.setCollapsible(true);
-                    countItem.setSummarizable(true);
-                    countItem.setPartOfKey(true);
-                    builder.applyComponentAttribute(countItem);
-                    builder.applyAllComponentAttributes(summarizedLinkableItems);
+                        LinkableItem countItem = new LinkableItem(COMPONENT_ITEM_NAME_COMPONENTS, String.valueOf(componentCounts.keySet().size()));
+                        countItem.setCollapsible(true);
+                        countItem.setCountable(true);
+                        countItem.setSummarizable(true);
+                        countItem.setPartOfKey(true);
 
-                    componentCounts.add(builder.build());
+                        builder.applyComponentAttribute(countItem);
+                        builder.applyAllComponentAttributes(summarizedLinkableItems);
+
+                        componentSummaries.add(builder.build());
+                    }
                 } catch (AlertException ex) {
                     throw new AlertRuntimeException(ex);
                 }
             }
         }
-        return componentCounts;
+        return componentSummaries;
     }
 
     private Map<String, ComponentAttributeMap> collectComponentItemData(Set<ComponentItem> componentItemsForOperation) {
