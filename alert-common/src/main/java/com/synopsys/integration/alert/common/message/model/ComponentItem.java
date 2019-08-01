@@ -45,10 +45,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     private final String category;
     private final ComponentKeys componentKeys;
     private final ItemOperation operation;
-    private final Long notificationId;
+    private final Set<Long> notificationIds;
 
     private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, ComponentItemPriority priority, String category, ComponentKeys componentKeys, ItemOperation operation,
-        Long notificationId) {
+        Set<Long> notificationIds) {
         this.component = component;
         this.subComponent = subComponent;
         this.componentAttributes = componentAttributes;
@@ -56,7 +56,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         this.category = category;
         this.componentKeys = componentKeys;
         this.operation = operation;
-        this.notificationId = notificationId;
+        this.notificationIds = notificationIds;
     }
 
     public static Comparator<ComponentItem> createDefaultComparator() {
@@ -95,8 +95,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return operation;
     }
 
-    public Long getNotificationId() {
-        return notificationId;
+    public Set<Long> getNotificationIds() {
+        return notificationIds;
     }
 
     /**
@@ -125,10 +125,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String subComponentValue;
         private String subComponentUrl;
         private ItemOperation operation;
-        private Long notificationId;
+        private Set<Long> notificationIds = new LinkedHashSet<>();
 
         public ComponentItem build() throws AlertException {
-            if (null == componentName || null == componentValue || null == category || null == operation || null == notificationId) {
+            if (null == componentName || null == componentValue || null == category || null == operation || (null == notificationIds && !notificationIds.isEmpty())) {
                 throw new AlertException("Missing required field(s)");
             }
 
@@ -145,7 +145,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
                 componentPriority = priority;
             }
 
-            return new ComponentItem(component, subComponent, componentAttributes, componentPriority, category, key, operation, notificationId);
+            return new ComponentItem(component, subComponent, componentAttributes, componentPriority, category, key, operation, notificationIds);
         }
 
         public Builder applyComponentData(LinkableItem component) {
@@ -218,7 +218,12 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         }
 
         public Builder applyNotificationId(final Long notificationId) {
-            this.notificationId = notificationId;
+            this.notificationIds.add(notificationId);
+            return this;
+        }
+
+        public Builder applyNotificationIds(final Collection<Long> notificationIds) {
+            this.notificationIds.addAll(notificationIds);
             return this;
         }
 

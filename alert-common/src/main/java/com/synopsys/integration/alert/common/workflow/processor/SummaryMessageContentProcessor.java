@@ -130,10 +130,14 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                                                           .filter(LinkableItem::isSummarizable)
                                                           .collect(Collectors.toList());
                     if (!attributeSet.isEmpty()) {
+                        Set<Long> notificationIds = items.stream()
+                                                        .map(ComponentItem::getNotificationIds)
+                                                        .flatMap(Set::stream)
+                                                        .collect(Collectors.toSet());
                         Optional<ComponentItem> componentItem = items.stream().findFirst();
 
                         ComponentItem.Builder builder = new ComponentItem.Builder();
-                        builder.applyNotificationId(-1L);
+                        builder.applyNotificationIds(notificationIds);
                         builder.applyPriority(priorityEntries.getKey());
                         builder.applyCategory(entry.getKey());
                         builder.applyComponentData(COMPONENT_ITEM_NAME_SUMMARY, "");
