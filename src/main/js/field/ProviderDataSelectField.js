@@ -29,7 +29,6 @@ class ProviderDataSelectField extends Component {
 
     componentDidUpdate() {
         const provider = this.getProvider();
-        console.log(`Provider: ${provider}`);
         if (!this.state.fetched && provider && provider !== '') {
             this.fetchProviderData(this.props.providerDataEndpoint, provider)
                 .then(providerData => this.providerDataFetched(providerData));
@@ -38,7 +37,6 @@ class ProviderDataSelectField extends Component {
 
     getProvider() {
         const { currentConfig } = this.props;
-        console.log(`Key: ${KEY_PROVIDER_NAME}`);
         const providerValues = currentConfig.keyToValues[KEY_PROVIDER_NAME].values;
         return providerValues && providerValues.length > 0 ? providerValues[0] : null;
     }
@@ -76,7 +74,6 @@ class ProviderDataSelectField extends Component {
                                 const dataValue = item.value;
                                 return { icon: null, key: dataValue, label: dataValue, value: dataValue };
                             });
-                            console.log(`Post Map: ${providerData}`);
                             this.providerDataFetched(providerData);
                         }
                     });
@@ -94,10 +91,12 @@ class ProviderDataSelectField extends Component {
 
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
 
-        const handleChange = (option) => {
-            console.log(`Option: ${option}`);
-            const optionValue = option ? option.value : null;
-            const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : optionValue;
+        const handleChange = (selectedOptions) => {
+            const stringifiedObject = JSON.stringify(selectedOptions);
+            console.log(`Option: ${stringifiedObject}`);
+            const optionValue = selectedOptions ? selectedOptions.value : null;
+            console.log(`Option value: ${optionValue}`);
+            const parsedArray = (Array.isArray(selectedOptions) && selectedOptions.length > 0) ? selectedOptions.map(mappedOption => mappedOption.value ? mappedOption.value : mappedOption) : optionValue;
             console.log(`Parsed array: ${parsedArray}`);
             onChange({
                 target: {
