@@ -62,26 +62,24 @@ class ProviderDataSelectField extends Component {
         const requestUrl = `/alert/api${resolvedEndpoint}`;
         return fetch(requestUrl, {
             credentials: 'same-origin'
-        })
-            .then((response) => {
-                response.json()
-                    .then((json) => {
-                        if (!response.ok) {
-                            verifyLoginByStatus(response.status);
-                            this.providerDataError(true, 'There was a problem with the request');
-                        } else {
-                            const providerData = json.map(item => {
-                                const dataValue = item.value;
-                                return { icon: null, key: dataValue, label: dataValue, value: dataValue };
-                            });
-                            this.providerDataFetched(providerData);
-                        }
-                    });
-            })
-            .catch((error) => {
-                console.log(`Unable to connect to Server: ${error}`);
-                this.providerDataError(true, error);
-            });
+        }).then((response) => {
+            response.json()
+                .then((json) => {
+                    if (!response.ok) {
+                        verifyLoginByStatus(response.status);
+                        this.providerDataError(true, 'There was a problem with the request');
+                    } else {
+                        const providerData = json.map(item => {
+                            const dataValue = item.value;
+                            return { icon: null, key: dataValue, label: dataValue, value: dataValue };
+                        });
+                        this.providerDataFetched(providerData);
+                    }
+                });
+        }).catch((error) => {
+            console.log(`Unable to connect to Server: ${error}`);
+            this.providerDataError(true, error);
+        });
     }
 
     render() {

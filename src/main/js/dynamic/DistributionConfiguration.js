@@ -196,7 +196,6 @@ class DistributionConfiguration extends Component {
                     fieldErrors={this.props.fieldErrors}
                     self={this}
                     stateName="providerConfig"
-                    provider={currentProvider.name}
                 />
                 <ProjectConfiguration
                     providerName={FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME)}
@@ -252,7 +251,6 @@ class DistributionConfiguration extends Component {
                                 fieldErrors={this.props.fieldErrors}
                                 self={this}
                                 stateName="channelConfig"
-                                provider={selectedProvider}
                             />
                             {selectedProvider && this.renderProviderForm()}
                         </form>
