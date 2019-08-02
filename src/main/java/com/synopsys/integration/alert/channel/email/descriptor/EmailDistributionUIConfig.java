@@ -33,14 +33,17 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.data.ProviderDataSelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String LABEL_SUBJECT_LINE = "Subject Line";
+    private static final String LABEL_ADDITIONAL_ADDRESSES = "Additional Email Addresses";
     private static final String LABEL_PROJECT_OWNER_ONLY = "Project Owner Only";
 
     private static final String EMAIL_SUBJECT_LINE_DESCRIPTION = "The subject line to use in the emails sent for this distribution job.";
+    private static final String DESCRIPTION_ADDITIONAL_ADDRESSES = "Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to.";
     private static final String EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
 
     @Autowired
@@ -51,7 +54,10 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     @Override
     public List<ConfigField> createChannelDistributionFields() {
         final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, EMAIL_SUBJECT_LINE_DESCRIPTION);
+        final ConfigField additionalEmailAddresses = ProviderDataSelectConfigField.create(
+            EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES, "/provider/{provider}/users/emails", true);
         final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION);
-        return List.of(subjectLine, projectOwnerOnly);
+        return List.of(subjectLine, additionalEmailAddresses, projectOwnerOnly);
     }
+
 }
