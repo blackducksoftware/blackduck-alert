@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.workflow.startup.component;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,8 +138,18 @@ public class AlertStartupInitializer extends StartupComponent {
                 final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
                                                                         .sorted(Comparator.comparing(DefinedFieldModel::getKey))
                                                                         .collect(Collectors.toList());
-                final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor);
                 final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+
+                Map<String, ConfigurationFieldModel> existingConfiguredFields = new HashMap<>();
+                foundConfigurationModels.stream()
+                    .forEach(config ->
+                                 existingConfiguredFields.putAll(
+                                     config.getCopyOfKeyToFieldMap().entrySet().stream()
+                                         .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()))
+                                 )
+                    );
+
+                final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor, existingConfiguredFields);
                 updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
             } catch (final IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("error initializing descriptor", ex);
@@ -146,7 +157,7 @@ public class AlertStartupInitializer extends StartupComponent {
         }
     }
 
-    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, final List<DefinedFieldModel> fieldsForDescriptor) {
+    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, final List<DefinedFieldModel> fieldsForDescriptor, Map<String, ConfigurationFieldModel> existingConfiguredFields) {
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
             final String key = fieldModel.getKey();
@@ -154,7 +165,12 @@ public class AlertStartupInitializer extends StartupComponent {
             final boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
             logger.info("  {}", convertedKey);
             logger.debug("       Environment Variable Found - {}", hasEnvironmentValue);
-            getEnvironmentValue(convertedKey)
+            String defaultValue = null;
+            if (existingConfiguredFields.containsKey(key)) {
+                defaultValue = existingConfiguredFields.get(key).getFieldValue().get();
+            }
+
+            getEnvironmentValue(convertedKey, defaultValue)
                 .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                 .ifPresent(configurationModels::add);
         }
@@ -172,7 +188,7 @@ public class AlertStartupInitializer extends StartupComponent {
             logger.info("  Overwriting configuration values with environment for descriptor.");
             final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
-        } else {
+        } else if (foundConfigurationModels.isEmpty()) {
             logger.info("  Writing initial configuration values from environment for descriptor.");
             final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
@@ -212,11 +228,18 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private Optional<String> getEnvironmentValue(final String propertyKey) {
+        return getEnvironmentValue(propertyKey, null);
+    }
+
+    private Optional<String> getEnvironmentValue(final String propertyKey, String defaultValue) {
         String value = System.getProperty(propertyKey);
         if (StringUtils.isBlank(value)) {
             value = environment.getProperty(propertyKey);
         }
-
+        boolean propertyIsSet = System.getProperties().contains(propertyKey) || environment.containsProperty(propertyKey);
+        if (!propertyIsSet && null != defaultValue && StringUtils.isBlank(value)) {
+            value = defaultValue;
+        }
         return Optional.ofNullable(value);
     }
 }

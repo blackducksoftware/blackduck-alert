@@ -26,17 +26,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -50,6 +51,8 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
+    public static final String COMPONENT_ITEM_NAME_SUMMARY = "Summary";
+    public static final String COMPONENT_ITEM_NAME_COMPONENTS = "Components";
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
@@ -85,8 +88,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
         final Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
         for (final LinkedHashSet<ComponentItem> componentSet : itemsByOperation.values()) {
-            final LinkedHashSet<ComponentItem> summarizedComponentItemsForOperation = createSummarizedComponentItems(componentSet);
-            summarizedComponentItems.addAll(summarizedComponentItemsForOperation);
+            final LinkedHashSet<ComponentItem> summarizedComponentCounts = summarizeCategoryComponentCounts(componentSet);
+            summarizedComponentItems.addAll(summarizedComponentCounts);
         }
 
         try {
@@ -105,58 +108,80 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return itemsByOperation;
     }
 
-    private LinkedHashSet<ComponentItem> createSummarizedComponentItems(final Set<ComponentItem> componentItemsForOperation) {
-        final LinkedHashSet<ComponentItem> summarizedCategoryItems = new LinkedHashSet<>();
-        final Map<String, ComponentAttributeMap> itemsByShallowKey = collectComponentItemData(componentItemsForOperation);
-        for (final ComponentItem componentItem : componentItemsForOperation) {
-            String summaryKey = createSummaryKey(componentItem.getComponentKeys(), componentItem.getItemsOfSameName());
-            final SortedSet<LinkableItem> summarizedLinkableItems = createSummarizedLinkableItems(itemsByShallowKey.get(summaryKey));
-            try {
-                ComponentItem newComponentItem = messageOperationCombiner.createNewComponentItem(componentItem, summarizedLinkableItems);
-                summarizedCategoryItems.add(newComponentItem);
-            } catch (AlertException e) {
-                // If this happens, it means there is a bug in the Collector logic.
-                throw new AlertRuntimeException(e);
-            }
+    private LinkedHashSet<ComponentItem> summarizeCategoryComponentCounts(Set<ComponentItem> componentItems) {
+        // Organize the items by category such as policy and vulnerability.
+        // Then have the item priority with the set of components.
+        Map<String, Map<ComponentItemPriority, Set<ComponentItem>>> itemsByCategory = new LinkedHashMap<>();
+
+        for (final ComponentItem item : componentItems) {
+            Map<ComponentItemPriority, Set<ComponentItem>> itemsByPriority = itemsByCategory.computeIfAbsent(item.getCategory(), ignored -> new LinkedHashMap<>());
+            Set<ComponentItem> itemList = itemsByPriority.computeIfAbsent(item.getPriority(), ignored -> new LinkedHashSet<>());
+            itemList.add(item);
         }
 
-        return summarizedCategoryItems;
-    }
+        LinkedHashSet<ComponentItem> componentSummaries = new LinkedHashSet<>();
+        for (Map.Entry<String, Map<ComponentItemPriority, Set<ComponentItem>>> entry : itemsByCategory.entrySet()) {
+            for (Map.Entry<ComponentItemPriority, Set<ComponentItem>> priorityEntries : entry.getValue().entrySet()) {
+                try {
+                    Set<ComponentItem> items = priorityEntries.getValue();
 
-    private Map<String, ComponentAttributeMap> collectComponentItemData(Set<ComponentItem> componentItemsForOperation) {
-        Map<String, ComponentAttributeMap> itemsByCategory = new LinkedHashMap<>();
-        for (final ComponentItem categoryItem : componentItemsForOperation) {
-            ComponentAttributeMap itemsOfSameName = categoryItem.getItemsOfSameName();
-            String summaryKey = createSummaryKey(categoryItem.getComponentKeys(), itemsOfSameName);
+                    List<LinkableItem> summarizableAttributes = items.stream()
+                                                                    .map(ComponentItem::getComponentAttributes)
+                                                                    .flatMap(Set::stream)
+                                                                    .filter(LinkableItem::isSummarizable)
+                                                                    .collect(Collectors.toList());
+                    if (!summarizableAttributes.isEmpty()) {
+                        Set<Long> notificationIds = items.stream()
+                                                        .map(ComponentItem::getNotificationIds)
+                                                        .flatMap(Set::stream)
+                                                        .collect(Collectors.toSet());
+                        ItemOperation operation = items.stream().map(ComponentItem::getOperation).findFirst().orElse(ItemOperation.UPDATE);
 
-            ComponentAttributeMap allItemsForSummaryKey = itemsByCategory.computeIfAbsent(summaryKey, ignored -> new ComponentAttributeMap());
-            allItemsForSummaryKey.putAll(itemsOfSameName);
-        }
+                        ComponentItem.Builder builder = new ComponentItem.Builder();
+                        builder.applyNotificationIds(notificationIds);
+                        builder.applyPriority(priorityEntries.getKey());
+                        builder.applyCategory(entry.getKey());
+                        builder.applyComponentData(COMPONENT_ITEM_NAME_SUMMARY, "");
+                        builder.applyOperation(operation);
 
-        return itemsByCategory;
-    }
+                        Map<String, Long> componentCounts = items.stream()
+                                                                .map(ComponentItem::getComponentKeys)
+                                                                .map(ComponentKeys::getShallowKey)
+                                                                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-    private String createSummaryKey(ComponentKeys componentKeys, ComponentAttributeMap itemsOfSameName) {
-        StringBuilder summaryKeyBuilder = new StringBuilder();
-        summaryKeyBuilder.append(componentKeys.getShallowKey());
-        for (List<LinkableItem> namedItems : itemsOfSameName.values()) {
-            if (namedItems.size() == 1) {
-                final LinkableItem item = namedItems
-                                              .stream()
-                                              .findAny()
-                                              .orElseThrow();
-                if (!item.isCollapsible() && item.isPartOfKey()) {
-                    summaryKeyBuilder.append(item.getName());
-                    summaryKeyBuilder.append(item.getValue());
+                        LinkableItem countItem = new LinkableItem(COMPONENT_ITEM_NAME_COMPONENTS, String.valueOf(componentCounts.keySet().size()));
+                        countItem.setCollapsible(true);
+                        countItem.setCountable(true);
+                        countItem.setSummarizable(true);
+                        countItem.setPartOfKey(true);
+                        builder.applyComponentAttribute(countItem);
+
+                        final Collection<LinkableItem> summarizedLinkableItems = summarizeComponentItemData(summarizableAttributes);
+                        builder.applyAllComponentAttributes(summarizedLinkableItems);
+                        componentSummaries.add(builder.build());
+                    }
+                } catch (AlertException ex) {
+                    throw new AlertRuntimeException(ex);
                 }
             }
         }
-
-        return summaryKeyBuilder.toString();
+        return componentSummaries;
     }
 
-    private SortedSet<LinkableItem> createSummarizedLinkableItems(ComponentAttributeMap componentAttributeMap) {
-        final SortedSet<LinkableItem> summarizedLinkableItems = new TreeSet<>();
+    private Collection<LinkableItem> summarizeComponentItemData(Collection<LinkableItem> attributes) {
+        if (attributes.isEmpty()) {
+            return List.of();
+        }
+        ComponentAttributeMap attributeMap = new ComponentAttributeMap();
+        for (final LinkableItem item : attributes) {
+            final String name = item.getName();
+            attributeMap.computeIfAbsent(name, ignored -> new LinkedList<>()).add(item);
+        }
+        return createSummarizedLinkableItems(attributeMap);
+    }
+
+    private List<LinkableItem> createSummarizedLinkableItems(ComponentAttributeMap componentAttributeMap) {
+        final List<LinkableItem> summarizedLinkableItems = new LinkedList<>();
         for (final Map.Entry<String, List<LinkableItem>> similarItemEntries : componentAttributeMap.entrySet()) {
             similarItemEntries.getValue()
                 .stream()
@@ -165,10 +190,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                 .ifPresent(item -> createNewItems(item, summarizedLinkableItems, similarItemEntries.getKey(), similarItemEntries.getValue()));
         }
 
-        return summarizedLinkableItems;
+        return summarizedLinkableItems.stream().sorted().collect(Collectors.toList());
     }
 
-    private void createNewItems(final LinkableItem item, final Set<LinkableItem> summarizedLinkableItems, final String oldItemName, final Collection<LinkableItem> linkableItems) {
+    private void createNewItems(final LinkableItem item, final Collection<LinkableItem> summarizedLinkableItems, final String oldItemName, final Collection<LinkableItem> linkableItems) {
         final boolean isCountable = item.isCountable();
         final boolean isNumericValue = item.isNumericValue();
         final String newItemName = generateSummaryItemName(oldItemName, isCountable, isNumericValue);
@@ -179,7 +204,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             updateSummarizability(newLinkableItem, true, true);
             summarizedLinkableItems.add(newLinkableItem);
         } else {
-            final Set<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
+            final Collection<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
             if (newDetailedItems.isEmpty()) {
                 final LinkableItem summarizedLinkableItem = new LinkableItem(newItemName, item.getValue());
                 updateSummarizability(summarizedLinkableItem, false, isNumericValue);
@@ -200,13 +225,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return oldItemName;
     }
 
-    private LinkedHashSet<LinkableItem> createLinkableItemsByValue(final String itemName, final Collection<LinkableItem> linkableItems) {
-        final Set<String> uniqueValuesMatchingName = linkableItems
-                                                         .stream()
-                                                         .filter(item -> itemName.equals(item.getName()))
-                                                         .map(LinkableItem::getValue)
-                                                         .collect(Collectors.toSet());
-        final LinkedHashSet<LinkableItem> summarizedLinkableItems = new LinkedHashSet<>();
+    private List<LinkableItem> createLinkableItemsByValue(final String itemName, final Collection<LinkableItem> linkableItems) {
+        final List<String> uniqueValuesMatchingName = linkableItems
+                                                          .stream()
+                                                          .filter(item -> itemName.equals(item.getName()))
+                                                          .map(LinkableItem::getValue)
+                                                          .collect(Collectors.toList());
+        final List<LinkableItem> summarizedLinkableItems = new LinkedList<>();
         for (final String uniqueValue : uniqueValuesMatchingName) {
             final LinkableItem newLinkableItem = new LinkableItem(itemName, uniqueValue);
             newLinkableItem.setSummarizable(true);
