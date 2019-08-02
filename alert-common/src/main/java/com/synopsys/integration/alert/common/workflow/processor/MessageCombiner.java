@@ -136,7 +136,7 @@ public class MessageCombiner {
                    .applyComponentData(component.getName(), component.getValue(), component.getUrl().orElse(null))
                    .applySubComponent(nullableSubComponent)
                    .applyOperation(oldItem.getOperation())
-                   .applyNotificationId(oldItem.getNotificationId())
+                   .applyNotificationIds(oldItem.getNotificationIds())
                    .applyAllComponentAttributes(componentAttributes)
                    .build();
     }
