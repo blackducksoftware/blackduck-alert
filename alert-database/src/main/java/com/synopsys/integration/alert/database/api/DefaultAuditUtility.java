@@ -119,7 +119,8 @@ public class DefaultAuditUtility implements AuditUtility {
                                               .stream()
                                               .map(ProviderMessageContent::getComponentItems)
                                               .flatMap(Collection::stream)
-                                              .map(ComponentItem::getNotificationId)
+                                              .map(ComponentItem::getNotificationIds)
+                                              .flatMap(Set::stream)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
