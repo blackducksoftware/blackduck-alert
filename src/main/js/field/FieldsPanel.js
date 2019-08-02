@@ -132,8 +132,7 @@ FieldsPanel.propTypes = {
     currentConfig: PropTypes.object.isRequired,
     fieldErrors: PropTypes.object.isRequired,
     self: PropTypes.object.isRequired,
-    stateName: PropTypes.string.isRequired,
-    provider: PropTypes.string
+    stateName: PropTypes.string.isRequired
 };
 
 export default FieldsPanel;

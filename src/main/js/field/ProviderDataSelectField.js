@@ -92,12 +92,8 @@ class ProviderDataSelectField extends Component {
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
 
         const handleChange = (selectedOptions) => {
-            const stringifiedObject = JSON.stringify(selectedOptions);
-            console.log(`Option: ${stringifiedObject}`);
             const optionValue = selectedOptions ? selectedOptions.value : null;
-            console.log(`Option value: ${optionValue}`);
-            const parsedArray = (Array.isArray(selectedOptions) && selectedOptions.length > 0) ? selectedOptions.map(mappedOption => mappedOption.value ? mappedOption.value : mappedOption) : optionValue;
-            console.log(`Parsed array: ${parsedArray}`);
+            const parsedArray = (Array.isArray(selectedOptions) && selectedOptions.length > 0) ? selectedOptions.map(mappedOption => mappedOption.value) : optionValue;
             onChange({
                 target: {
                     name: id,
