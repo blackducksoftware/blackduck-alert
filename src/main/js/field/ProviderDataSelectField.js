@@ -106,6 +106,10 @@ class ProviderDataSelectField extends Component {
             });
         };
 
+        const { providerData } = this.state;
+        const options = providerData ? providerData : [];
+        const selectValue = options.filter(option => value.includes(option.value));
+
         const field = (<div className={selectClasses}>
             <Select
                 id={id}
@@ -113,9 +117,9 @@ class ProviderDataSelectField extends Component {
                 onChange={handleChange}
                 isSearchable={searchable}
                 removeSelected={removeSelected}
-                options={this.state.providerData}
+                options={options}
                 placeholder={placeholder}
-                value={value}
+                value={selectValue}
                 isMulti={multiSelect}
                 closeMenuOnSelect={!multiSelect}
                 components={components}
