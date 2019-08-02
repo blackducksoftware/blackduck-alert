@@ -27,6 +27,17 @@ To build the zip file containing the orchestration files for deployment:
 ./gradlew createDeploymentZip
 ```
 
+### To run the server locally
+This section describes running the server locally.
+
+#### Run Command 
+Execute the following command which will build the source code and then start the server
+```
+./gradlew runServer
+```
+
+#### Accessing the Server
+You can access the Alert user interface at the following URL: https://localhost:8443/alert
 
 ## Where can I get the latest release? ##
 <!-- The comments following wrap around the project url string for parsing during the build. Do Not Remove -->
