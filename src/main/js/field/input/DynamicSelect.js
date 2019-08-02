@@ -4,7 +4,7 @@ import Select from 'react-select';
 import LabeledField from 'field/LabeledField';
 
 function noOptionsMessage() {
-    return null;
+    return 'No options available...';
 }
 
 function DynamicSelectInput(props) {
@@ -24,7 +24,7 @@ function DynamicSelectInput(props) {
             }
         });
     };
-
+    console.log('props: ', props);
     const field = (<div className={selectClasses}>
         <Select
             id={id}
