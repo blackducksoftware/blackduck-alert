@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -186,7 +185,7 @@ public class AlertStartupInitializer extends StartupComponent {
         if (optionalFoundModel.isPresent()) {
             final ConfigurationModel foundModel = optionalFoundModel.get();
             logger.info("  Overwriting configuration values with environment for descriptor.");
-            final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels, foundModel);
+            final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
         } else if (foundConfigurationModels.isEmpty()) {
             logger.info("  Writing initial configuration values from environment for descriptor.");
@@ -195,16 +194,9 @@ public class AlertStartupInitializer extends StartupComponent {
         }
     }
 
-    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels, final ConfigurationModel foundModel)
+    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels)
         throws AlertException {
-        final Collection<ConfigurationFieldModel> fieldsToUpdate;
-        fieldsToUpdate = new LinkedList<>();
-        for (final ConfigurationFieldModel fieldModel : configurationFieldModels) {
-            final Optional<ConfigurationFieldModel> currentFieldModel = foundModel.getField(fieldModel.getFieldKey());
-            currentFieldModel.ifPresentOrElse(fieldsToUpdate::add, () -> fieldsToUpdate.add(fieldModel));
-        }
-
-        final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(fieldsToUpdate);
+        final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
         final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(updatedFieldModel).values();
