@@ -36,14 +36,18 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+
 @Controller
 public class HomeController {
 
     private final HttpSessionCsrfTokenRepository csrfTokenRespository;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public HomeController(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+    public HomeController(HttpSessionCsrfTokenRepository csrfTokenRepository, AuthorizationManager authorizationManager) {
         this.csrfTokenRespository = csrfTokenRepository;
+        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
@@ -56,7 +60,7 @@ public class HomeController {
         final HttpServletRequest httpRequest = request;
         final CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final boolean authorized = authentication.isAuthenticated() && csrfToken != null;
+        final boolean authorized = authentication.isAuthenticated() && authorizationManager.hasAlertRole() && csrfToken != null;
 
         if (!authorized) {
             httpRequest.getSession().invalidate();
