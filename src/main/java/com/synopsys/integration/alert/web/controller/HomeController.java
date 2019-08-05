@@ -60,7 +60,8 @@ public class HomeController {
         final HttpServletRequest httpRequest = request;
         final CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final boolean authorized = authentication.isAuthenticated() && authorizationManager.hasAlertRole() && csrfToken != null;
+        final boolean hasAlertRole = authorizationManager.hasAlertRole();
+        final boolean authorized = authentication.isAuthenticated() && hasAlertRole && csrfToken != null;
 
         if (!authorized) {
             httpRequest.getSession().invalidate();

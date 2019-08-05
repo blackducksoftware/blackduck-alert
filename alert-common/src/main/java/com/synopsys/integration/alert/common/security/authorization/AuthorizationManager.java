@@ -84,8 +84,6 @@ public class AuthorizationManager {
     public final boolean hasAlertRole() {
         final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return getCurrentUserRoleNames().stream()
-                   .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX))
                    .map(UserRole::valueOf)
                    .anyMatch(allowedRoles::contains);
     }
