@@ -16,12 +16,8 @@ function DynamicSelectInput(props) {
 
     const handleChange = (option) => {
         const optionValue = option ? option.value : null;
-        let parsedArray = [];
-        if (Array.isArray(option) && option.length > 0) {
-            parsedArray = parsedArray.concat(option.map(mappedOption => mappedOption.value));
-        } else {
-            parsedArray.push(optionValue);
-        }
+        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : [optionValue];
+
         onChange({
             target: {
                 name: id,
