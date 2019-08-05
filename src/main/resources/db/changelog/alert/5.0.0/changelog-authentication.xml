@@ -36,4 +36,12 @@
             CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_jira_cloud', 'READ');
         </sql>
     </changeSet>
+    <changeSet author="jrichard" id="1558524156152-5">
+        <delete tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <where>KEY_NAME = 'distribution.channel_hipchat'</where>
+        </delete>
+        <delete tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <where>KEY_NAME = 'global.channel_hipchat'</where>
+        </delete>
+    </changeSet>
 </databaseChangeLog>
