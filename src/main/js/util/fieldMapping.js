@@ -48,11 +48,13 @@ const { Option, SingleValue } = components;
 function buildSelectInput(items, field) {
     const { value } = items;
     const {
-        searchable, multiSelect, options, readOnly
+        searchable, multiSelect, options, readOnly, removeSelected, clearable
     } = field;
 
     const selectValue = options.filter(option => value.includes(option.value));
     const isReadOnly = convertStringToBoolean(readOnly);
+    const isClearable = convertStringToBoolean(clearable);
+    const isRemoveSelected = convertStringToBoolean(removeSelected);
     const typeOptionLabel = props => (
         <Option {...props}>
             <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
@@ -70,6 +72,8 @@ function buildSelectInput(items, field) {
         searchable,
         multiSelect,
         readOnly: isReadOnly,
+        removeSelected: isRemoveSelected,
+        clearable: isClearable,
         options,
         components: {
             Option: typeOptionLabel,
