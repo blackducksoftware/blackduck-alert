@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.util;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +40,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchServic
 
 public class JiraIssuePropertyHelper {
     private static final String SEARCH_CONJUNCTION = "AND";
-    private static final String[] ADVANCED_SEARCH_RESERVED_CHARACTERS = { "+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "~", "*", "?", "\\", ":" };
+    private static final List<Character> ADVANCED_SEARCH_RESERVED_CHARACTERS = Arrays.asList('\\', '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':');
 
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
@@ -142,11 +144,15 @@ public class JiraIssuePropertyHelper {
 
     // TODO move this code to int-jira-common
     private String escapeReservedCharacters(String originalString) {
-        String replacementString = originalString;
-        for (String stringToReplace : ADVANCED_SEARCH_RESERVED_CHARACTERS) {
-            replacementString = StringUtils.replace(replacementString, stringToReplace, "\\\\" + stringToReplace);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Character character : originalString.toCharArray()) {
+            if (ADVANCED_SEARCH_RESERVED_CHARACTERS.contains(character)) {
+                stringBuilder.append("\\\\" + character);
+            } else {
+                stringBuilder.append(character);
+            }
         }
-        return replacementString;
+        return stringBuilder.toString();
     }
 
 }

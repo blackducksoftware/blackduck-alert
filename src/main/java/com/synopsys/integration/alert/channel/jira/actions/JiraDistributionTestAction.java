@@ -57,7 +57,6 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
         String configId = testConfigModel.getConfigId().orElse(null);
         String messageId = UUID.randomUUID().toString();
-        //FIXME this is not working, it is creating 3 different tickets
         final DistributionEvent createIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.ADD, messageId);
         getDistributionChannel().sendMessage(createIssueEvent);
 
@@ -92,8 +91,8 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         builder.applyOperation(operation);
         builder.applyCategory("Test Category");
         builder.applyComponentData("Message ID", messageId);
-        LinkableItem linkableItem = new LinkableItem("Test linkable item", messageId);
-        builder.applyComponentAttribute(linkableItem, true);
+        LinkableItem keyItem = new LinkableItem("Test linkable item", messageId);
+        builder.applyComponentAttribute(keyItem, true);
         builder.applyNotificationId(1L);
         return builder.build();
     }
