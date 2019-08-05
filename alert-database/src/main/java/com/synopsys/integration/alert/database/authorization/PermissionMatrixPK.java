@@ -25,9 +25,10 @@ package com.synopsys.integration.alert.database.authorization;
 import java.io.Serializable;
 
 public class PermissionMatrixPK implements Serializable {
-    private static final long serialVersionUID = -5317479456840456710L;
+    private static final long serialVersionUID = -7208709612139559784L;
     private Long roleId;
-    private Long permissionKeyId;
+    private Long contextId;
+    private Long descriptorId;
     private Long accessOperationId;
 
     public PermissionMatrixPK() {
@@ -42,12 +43,20 @@ public class PermissionMatrixPK implements Serializable {
         this.roleId = roleId;
     }
 
-    public Long getPermissionKeyId() {
-        return permissionKeyId;
+    public Long getContextId() {
+        return contextId;
     }
 
-    public void setPermissionKeyId(final Long permissionKeyId) {
-        this.permissionKeyId = permissionKeyId;
+    public void setContextId(Long contextId) {
+        this.contextId = contextId;
+    }
+
+    public Long getDescriptorId() {
+        return descriptorId;
+    }
+
+    public void setDescriptorId(Long descriptorId) {
+        this.descriptorId = descriptorId;
     }
 
     public Long getAccessOperationId() {
@@ -57,4 +66,5 @@ public class PermissionMatrixPK implements Serializable {
     public void setAccessOperationId(final Long accessOperationId) {
         this.accessOperationId = accessOperationId;
     }
+
 }
