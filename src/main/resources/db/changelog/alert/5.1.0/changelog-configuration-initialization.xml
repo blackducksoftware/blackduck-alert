@@ -6,5 +6,8 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('email.additional.addresses', FALSE, 'channel_email', 'DISTRIBUTION');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('email.additional.addresses.only', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
     </changeSet>
 </databaseChangeLog>

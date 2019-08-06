@@ -66,8 +66,11 @@ public class EmailAddressHandler {
         final Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
         final Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
 
-        final Set<String> projectEmailAddresses = collectProviderEmailsFromProject(contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
-        emailAddresses.addAll(projectEmailAddresses);
+        final boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
+        if (!useOnlyAdditionalEmailAddresses) {
+            final Set<String> projectEmailAddresses = collectProviderEmailsFromProject(contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
+            emailAddresses.addAll(projectEmailAddresses);
+        }
 
         final Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(originalAccessor);
         emailAddresses.addAll(additionalEmailAddresses);
