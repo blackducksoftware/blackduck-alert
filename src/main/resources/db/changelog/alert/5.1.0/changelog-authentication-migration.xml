@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Add new columns -->
+    <changeSet author="gavink" id="1565095720543-1">
+        <addColumn schemaName="ALERT"
+                   tableName="PERMISSION_MATRIX">
+            <column
+                    name="DESCRIPTOR_ID"
+                    type="BIGINT(19)"
+            />
+            <column
+                    name="CONTEXT_ID"
+                    type="BIGINT(19)"
+            />
+        </addColumn>
+    </changeSet>
+    <!-- Add stored procedure to migrate data -->
+    <changeSet author="gavink" id="1565095720543-2">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS MIGRATE_PERMISSION_KEYS AS $$
+            java.lang.Void migrateDistributionJobs(final java.sql.Connection connection) throws java.sql.SQLException {
+                try (final java.sql.ResultSet permissionEntry = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).executeQuery("SELECT * FROM ALERT.PERMISSION_MATRIX;")) {
+                    while (permissionEntry.next()) {
+                        java.lang.Integer permissionKeyId = permissionEntry.getInt("PERMISSION_KEY_ID");
+
+                        try (final java.sql.ResultSet permissionKeyEntry = connection.createStatement().executeQuery("SELECT * FROM ALERT.PERMISSION_KEYS WHERE ID = " + permissionKeyId + ";")) {
+                            while (permissionKeyEntry.next()) {
+                                // Get permission key
+                                java.lang.String currentPermissionKey = permissionKeyEntry.getString("KEY_NAME");
+                                java.lang.Integer dotIndex = currentPermissionKey.indexOf('.');
+                                java.lang.String context = currentPermissionKey.substring(0, dotIndex);
+                                java.lang.String descriptorName = currentPermissionKey.substring(dotIndex + 1);
+
+                                try (final java.sql.ResultSet descriptorEntry = connection.createStatement().executeQuery("SELECT * FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = '" + descriptorName + "';")) {
+                                    while (descriptorEntry.next()) {
+                                        // Get descriptor id
+                                        java.lang.Integer descriptorId = descriptorEntry.getInt("ID");
+                                        permissionEntry.updateInt("DESCRIPTOR_ID", descriptorId);
+                                    }
+                                }
+
+                                try (final java.sql.ResultSet contextEntry = connection.createStatement().executeQuery("SELECT * FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = '" + context.toUpperCase() + "';")) {
+                                    while (contextEntry.next()) {
+                                        // Get context id
+                                        java.lang.Integer contextId = contextEntry.getInt("ID");
+                                        permissionEntry.updateInt("CONTEXT_ID", contextId);
+                                    }
+                                }
+                            }
+                            permissionEntry.updateRow();
+                        }
+                    }
+                }
+                return null;
+            }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <!-- Migrate data -->
+    <changeSet author="gavink" id="1565095720543-3">
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_PERMISSION_KEYS();
+        </sql>
+    </changeSet>
+    <!-- Add not null constraint to new columns -->
+    <changeSet author="gavink" id="1565095720543-4">
+        <addNotNullConstraint
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                columnName="DESCRIPTOR_ID"
+                columnDataType="BIGINT(19)"
+        />
+        <addNotNullConstraint
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                columnName="CONTEXT_ID"
+                columnDataType="BIGINT(19)"
+        />
+    </changeSet>
+    <!-- Drop old primary key -->
+    <changeSet author="gavink" id="1565095720543-5">
+        <dropPrimaryKey
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                constraintName="PERMISSION_MATRIX_KEY"
+        />
+    </changeSet>
+    <!-- Add new primary key -->
+    <changeSet author="gavink" id="1565095720543-6">
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                columnNames="ROLE_ID, ACCESS_OPERATION_ID, DESCRIPTOR_ID, CONTEXT_ID"
+                constraintName="PERMISSION_MATRIX_KEY_UPDATED"
+        />
+    </changeSet>
+    <!-- Drop old foreign key -->
+    <changeSet author="gavink" id="1565095720543-7">
+        <dropForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                constraintName="FK_PERMISSION_KEY"
+        />
+    </changeSet>
+    <!-- Drop old column -->
+    <changeSet author="gavink" id="1565095720543-8">
+        <dropColumn
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                columnName="PERMISSION_KEY_ID"
+        />
+    </changeSet>
+    <!-- Drop old table -->
+    <changeSet author="gavink" id="1565095720543-9">
+        <dropTable
+                schemaName="ALERT"
+                tableName="PERMISSION_KEYS"
+        />
+    </changeSet>
+    <!-- Add foreign key constraints to new columns -->
+    <changeSet author="gavink" id="1565095720543-10">
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="DESCRIPTOR_ID"
+                constraintName="FK_PERMISSION_DESCRIPTOR_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="CONTEXT_ID"
+                constraintName="FK_PERMISSION_CONTEXT_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="CONFIG_CONTEXTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <!-- Delete migration procedure -->
+    <changeSet author="gavink" id="1565095720543-11">
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS PUBLIC.MIGRATE_PERMISSION_KEYS;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
