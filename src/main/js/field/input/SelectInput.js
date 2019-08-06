@@ -10,7 +10,7 @@ function noOptionsMessage() {
 class SelectInput extends Component {
     render() {
         const {
-            onChange, id, inputClass, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components, selectSpacingClass, readOnly
+            onChange, id, inputClass, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components, selectSpacingClass, readOnly, clearable
         } = this.props;
         const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
         let closeOnSelect = true;
@@ -24,6 +24,7 @@ class SelectInput extends Component {
                 className={inputClass}
                 onChange={onChange}
                 isSearchable={isSearchable}
+                isClearable={clearable}
                 removeSelected={removeSelected}
                 options={options}
                 placeholder={placeholder}
@@ -50,7 +51,11 @@ SelectInput.propTypes = {
     placeholder: PropTypes.string,
     isSearchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    multiSelect: PropTypes.bool,
+    clearable: PropTypes.bool,
     hasMultipleValues: PropTypes.bool,
+    value: PropTypes.object,
     onChange: PropTypes.func.isRequired
 };
 
@@ -63,7 +68,11 @@ SelectInput.defaultProps = {
     selectSpacingClass: 'col-sm-4',
     isSearchable: false,
     removeSelected: false,
-    hasMultipleValues: false
+    readOnly: false,
+    multiSelect: false,
+    clearable: false,
+    hasMultipleValues: false,
+    value: {}
 };
 
 

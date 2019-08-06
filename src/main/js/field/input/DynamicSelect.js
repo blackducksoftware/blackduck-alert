@@ -3,20 +3,17 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import LabeledField from 'field/LabeledField';
 
-function noOptionsMessage() {
-    return null;
-}
-
 function DynamicSelectInput(props) {
     const {
-        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass, readOnly
+        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass, readOnly, clearable
     } = props;
 
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
 
     const handleChange = (option) => {
         const optionValue = option ? option.value : null;
-        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : optionValue;
+        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : [optionValue];
+
         onChange({
             target: {
                 name: id,
@@ -31,6 +28,7 @@ function DynamicSelectInput(props) {
             className={inputClass}
             onChange={handleChange}
             isSearchable={searchable}
+            isClearable={clearable}
             removeSelected={removeSelected}
             options={options}
             placeholder={placeholder}
@@ -39,7 +37,7 @@ function DynamicSelectInput(props) {
             closeMenuOnSelect={!multiSelect}
             components={components}
             isDisabled={readOnly}
-            noOptionsMessage={noOptionsMessage}
+            noOptionsMessage={() => 'No options available'}
         />
     </div>);
     return (
@@ -58,7 +56,9 @@ DynamicSelectInput.propTypes = {
     placeholder: PropTypes.string,
     searchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
+    readOnly: PropTypes.bool,
     multiSelect: PropTypes.bool,
+    clearable: PropTypes.bool,
     onChange: PropTypes.func.isRequired
 };
 
@@ -73,7 +73,9 @@ DynamicSelectInput.defaultProps = {
     selectSpacingClass: 'col-sm-8',
     searchable: false,
     removeSelected: false,
-    multiSelect: false
+    readOnly: false,
+    multiSelect: false,
+    clearable: true
 };
 
 
