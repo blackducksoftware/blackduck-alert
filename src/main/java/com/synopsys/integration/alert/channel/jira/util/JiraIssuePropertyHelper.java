@@ -22,9 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.util;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
@@ -40,7 +39,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchServic
 
 public class JiraIssuePropertyHelper {
     private static final String SEARCH_CONJUNCTION = "AND";
-    private static final List<Character> ADVANCED_SEARCH_RESERVED_CHARACTERS = Arrays.asList('\\', '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':');
+    private static final Set<Character> ADVANCED_SEARCH_RESERVED_CHARACTERS = Set.of('\\', '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':');
 
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
