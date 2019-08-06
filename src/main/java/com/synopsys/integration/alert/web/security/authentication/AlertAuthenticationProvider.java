@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.security.authentication;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -107,7 +108,9 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
                    .map(GrantedAuthority::getAuthority)
                    .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
                    .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX))
-                   .map(UserRole::valueOf)
+                   .map(UserRole::findUserRole)
+                   .filter(Optional::isPresent)
+                   .map(Optional::get)
                    .anyMatch(allowedRoles::contains);
     }
 }

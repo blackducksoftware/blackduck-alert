@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -84,7 +85,9 @@ public class AuthorizationManager {
     public final boolean hasAlertRole() {
         final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return getCurrentUserRoleNames().stream()
-                   .map(UserRole::valueOf)
+                   .map(UserRole::findUserRole)
+                   .filter(Optional::isPresent)
+                   .map(Optional::get)
                    .anyMatch(allowedRoles::contains);
     }
 
