@@ -60,4 +60,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
+    public DistributionChannel getDistributionChannel() {
+        return distributionChannel;
+    }
 }
