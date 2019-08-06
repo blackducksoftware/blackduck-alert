@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.rest.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -53,28 +52,26 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public String testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
-        String configId = testConfigModel.getConfigId().orElse(null);
+    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
-        final DistributionEvent createIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.ADD, messageId);
+        final DistributionEvent createIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
         getDistributionChannel().sendMessage(createIssueEvent);
 
-        final DistributionEvent resolveIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.DELETE, messageId);
+        final DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
         getDistributionChannel().sendMessage(resolveIssueEvent);
 
-        final DistributionEvent reOpenIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.ADD, messageId);
+        final DistributionEvent reOpenIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
         return getDistributionChannel().sendMessage(reOpenIssueEvent);
     }
 
-    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
+    public DistributionEvent createChannelTestEvent(final String jobId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
         final ProviderMessageContent messageContent = createTestNotificationContent(operation, messageId);
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
-        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
+        return new DistributionEvent(jobId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
     public ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId) throws AlertException {
