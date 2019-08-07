@@ -109,8 +109,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
                    .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
                    .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX))
                    .map(UserRole::findUserRole)
-                   .filter(Optional::isPresent)
-                   .map(Optional::get)
+                   .flatMap(Optional::stream)
                    .anyMatch(allowedRoles::contains);
     }
 }

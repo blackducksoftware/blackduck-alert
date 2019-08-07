@@ -22,8 +22,9 @@ class App extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.systemInitialized && !prevProps.systemInitialized
-            && !this.props.logoutPerformed && !this.props.loggedIn) {
+        const { systemInitialized, logoutPerformed, loggedIn } = this.props;
+        if (systemInitialized && !prevProps.systemInitialized
+            && !logoutPerformed && !loggedIn) {
             // Switching from un-initialized to initialized due to system setup.
             // Reload the page to display the correct login screen
             window.location.reload();

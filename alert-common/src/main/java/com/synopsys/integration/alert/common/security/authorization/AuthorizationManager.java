@@ -86,8 +86,7 @@ public class AuthorizationManager {
         final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return getCurrentUserRoleNames().stream()
                    .map(UserRole::findUserRole)
-                   .filter(Optional::isPresent)
-                   .map(Optional::get)
+                   .flatMap(Optional::stream)
                    .anyMatch(allowedRoles::contains);
     }
 
