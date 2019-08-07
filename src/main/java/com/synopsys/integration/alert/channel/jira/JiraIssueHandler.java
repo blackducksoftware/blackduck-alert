@@ -90,12 +90,13 @@ public class JiraIssueHandler {
     }
 
     public String createOrUpdateIssues(final FieldAccessor fieldAccessor, final MessageContentGroup content) throws IntegrationException {
-        final String projectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse("");
+        final String projectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse(StringUtils.EMPTY);
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(projectName);
         final ProjectComponent projectComponent = projectsResponseModel.getProjects()
                                                       .stream()
-                                                      .findFirst()
-                                                      .orElseThrow(() -> new AlertException(String.format("No projects matching '%s' were found", projectName)));
+                                                      .filter(project -> projectName.equals(project.getName()))
+                                                      .findAny()
+                                                      .orElseThrow(() -> new AlertException(String.format("No projects named '%s' were found", projectName)));
         final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
         boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                        .stream()
@@ -150,8 +151,10 @@ public class JiraIssueHandler {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
                         fieldsBuilder.setProject(projectId);
                         fieldsBuilder.setIssueType(issueType);
-                        final String username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
-                        final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(username, issueType, projectName, fieldsBuilder, List.of()));
+                        String issueCreator = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_CREATOR)
+                                                  .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
+                                                  .orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
+                        final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
                         }
