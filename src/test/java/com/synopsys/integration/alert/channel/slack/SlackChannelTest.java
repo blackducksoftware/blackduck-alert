@@ -63,13 +63,7 @@ public class SlackChannelTest extends ChannelTest {
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel slackChannel = new SlackChannel(gson, auditUtility, restChannelUtility);
+        final SlackChannel slackChannel = new SlackChannel(gson, createAuditUtility(), createRestChannelUtility());
 
         final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
