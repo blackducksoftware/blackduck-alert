@@ -23,9 +23,10 @@
 package com.synopsys.integration.alert.common.security.authorization;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.PermissionKeys;
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -49,16 +51,16 @@ public class AuthorizationManager {
     private final Map<String, PermissionMatrixModel> permissionCache;
 
     @Autowired
-    public AuthorizationManager(final AuthorizationUtil authorizationUtil) {
+    public AuthorizationManager(AuthorizationUtil authorizationUtil) {
         this.authorizationUtil = authorizationUtil;
         permissionCache = new HashMap<>();
     }
 
-    public static final String generatePermissionKey(final String context, final String descriptorName) {
+    public static final String generatePermissionKey(String context, String descriptorName) {
         return String.format("%s.%s", context.trim().toLowerCase(), descriptorName.trim().toLowerCase());
     }
 
-    public final Set<AccessOperation> getOperations(final String permissionKey) {
+    public final Set<AccessOperation> getOperations(String permissionKey) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(permissionCache::containsKey)
@@ -68,71 +70,79 @@ public class AuthorizationManager {
                    .collect(Collectors.toSet());
     }
 
-    public final boolean hasPermissions(final String permissionKey) {
+    public final boolean hasPermissions(String permissionKey) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey));
     }
 
-    public final boolean isReadOnly(final String permissionKey) {
+    public final boolean isReadOnly(String permissionKey) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .allMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).isReadOnly(permissionKey));
     }
 
-    public final boolean anyReadPermission(final String... permissionKeys) {
+    public final boolean hasAlertRole() {
+        final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
+        return getCurrentUserRoleNames().stream()
+                   .map(UserRole::findUserRole)
+                   .flatMap(Optional::stream)
+                   .anyMatch(allowedRoles::contains);
+    }
+
+    public final boolean anyReadPermission(String... permissionKeys) {
         return currentUserAnyPermission(AccessOperation.READ, permissionKeys);
     }
 
-    public final boolean hasCreatePermission(final String permissionKey) {
+    public final boolean hasCreatePermission(String permissionKey) {
         return currentUserHasPermission(AccessOperation.CREATE, permissionKey);
     }
 
-    public final boolean hasDeletePermission(final String permissionKey) {
+    public final boolean hasDeletePermission(String permissionKey) {
         return currentUserHasPermission(AccessOperation.DELETE, permissionKey);
     }
 
-    public final boolean hasReadPermission(final PermissionKeys permissionKey) {
+    public final boolean hasReadPermission(PermissionKeys permissionKey) {
         return currentUserHasPermission(AccessOperation.READ, permissionKey.getDatabaseKey());
     }
 
-    public final boolean hasReadPermission(final String permissionKey) {
+    public final boolean hasReadPermission(String permissionKey) {
         return currentUserHasPermission(AccessOperation.READ, permissionKey);
     }
 
-    public final boolean hasWritePermission(final String permissionKey) {
+    public final boolean hasWritePermission(String permissionKey) {
         return currentUserHasPermission(AccessOperation.WRITE, permissionKey);
     }
 
-    public final boolean hasExecutePermission(final PermissionKeys permissionKey) {
+    public final boolean hasExecutePermission(PermissionKeys permissionKey) {
         return currentUserHasPermission(AccessOperation.EXECUTE, permissionKey.getDatabaseKey());
     }
 
-    public final boolean hasExecutePermission(final String permissionKey) {
+    public final boolean hasExecutePermission(String permissionKey) {
         return currentUserHasPermission(AccessOperation.EXECUTE, permissionKey);
     }
 
-    private boolean currentUserAnyPermission(final AccessOperation operation, final String... permissionKeys) {
+    private boolean currentUserAnyPermission(AccessOperation operation, String... permissionKeys) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).anyPermissionMatch(operation, permissionKeys));
     }
 
-    private boolean currentUserHasPermission(final AccessOperation operation, final String permissionKey) {
+    private boolean currentUserHasPermission(AccessOperation operation, String permissionKey) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
     }
 
-    private Collection<String> getCurrentUserRoleNames() {
+    private Set<String> getCurrentUserRoleNames() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication || !authentication.isAuthenticated()) {
-            return List.of();
+            return Set.of();
         }
         return authentication.getAuthorities().stream()
                    .map(GrantedAuthority::getAuthority)
                    .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
+                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toSet());
     }
 
     public final void loadPermissionsIntoCache() {

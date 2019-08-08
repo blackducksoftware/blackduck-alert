@@ -17,8 +17,18 @@ IconUtility.loadIconData();
 
 class App extends Component {
     componentDidMount() {
-        this.props.verifyLogin();
         this.props.getSettings();
+        this.props.verifyLogin();
+    }
+
+    componentDidUpdate(prevProps) {
+        const { systemInitialized, logoutPerformed, loggedIn } = this.props;
+        if (systemInitialized && !prevProps.systemInitialized
+            && !logoutPerformed && !loggedIn) {
+            // Switching from un-initialized to initialized due to system setup.
+            // Reload the page to display the correct login screen
+            window.location.reload();
+        }
     }
 
     render() {
