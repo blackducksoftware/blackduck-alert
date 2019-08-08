@@ -265,6 +265,7 @@ class Index extends Component {
                     const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
                     const distributionType = channelModel.descriptorName;
                     const providerName = providerModel.descriptorName;
+                    const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, 'provider.distribution.notification.types').join(', ');
                     const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
                     const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
                     const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
@@ -273,6 +274,7 @@ class Index extends Component {
                         name,
                         distributionType,
                         providerName,
+                        notificationTypes,
                         frequency,
                         lastRan,
                         status
@@ -355,6 +357,7 @@ class Index extends Component {
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                     <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
+                    <TableHeaderColumn dataField="notificationTypes" dataSort columnClassName="tableCell">Notification Types</TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
