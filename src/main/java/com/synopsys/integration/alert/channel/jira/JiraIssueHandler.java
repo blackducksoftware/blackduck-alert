@@ -96,7 +96,7 @@ public class JiraIssueHandler {
                                                       .stream()
                                                       .filter(project -> projectName.equals(project.getName()))
                                                       .findAny()
-                                                      .orElseThrow(() -> new AlertException(String.format("No projects named '%s' were found", projectName)));
+                                                      .orElseThrow(() -> new AlertException(String.format("No project named '%s' was found", projectName)));
         final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
         boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                        .stream()
@@ -152,6 +152,7 @@ public class JiraIssueHandler {
                         fieldsBuilder.setProject(projectId);
                         fieldsBuilder.setIssueType(issueType);
                         String issueCreator = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_CREATOR)
+                                                  .filter(StringUtils::isNotBlank)
                                                   .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
                                                   .orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
                         final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
