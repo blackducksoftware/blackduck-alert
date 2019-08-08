@@ -6,6 +6,7 @@ import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
+import StatusMessage from "./StatusMessage";
 
 class EndpointField extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class EndpointField extends Component {
         this.state = {
             showModal: false,
             fieldError: this.props.errorValue,
+            success: false,
             progress: false
         };
     }
@@ -26,7 +28,8 @@ class EndpointField extends Component {
         const currentError = this.props.errorValue;
         if (errorValue !== currentError) {
             this.setState({
-                fieldError: currentError
+                fieldError: currentError,
+                success: false
             });
         }
     }
@@ -34,7 +37,8 @@ class EndpointField extends Component {
     onSendClick(popupData) {
         this.setState({
             fieldError: this.props.errorValue,
-            progress: true
+            progress: true,
+            success: false
         });
         const {
             fieldKey, csrfToken, onChange, currentConfig, endpoint
@@ -53,6 +57,9 @@ class EndpointField extends Component {
                     type: 'checkbox'
                 };
                 onChange({ target });
+                this.setState({
+                    success: true
+                })
             } else {
                 response.json().then((data) => {
                     const target = {
@@ -106,6 +113,10 @@ class EndpointField extends Component {
                     />
                 </div>
                 }
+                {this.state.success &&
+                    <StatusMessage actionMessage="Success" />
+                }
+
             </div>
         );
 
