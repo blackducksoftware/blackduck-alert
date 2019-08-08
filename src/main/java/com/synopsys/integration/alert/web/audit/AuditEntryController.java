@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.audit;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class AuditEntryController extends BaseController {
     public ResponseEntity<String> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
         @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
         @RequestParam(value = "sortOrder", required = false) final String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) final Boolean onlyShowSentNotifications) {
-        if (!hasReadPermission()) {
+        if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
         final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
@@ -78,7 +79,7 @@ public class AuditEntryController extends BaseController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
-        if (!hasReadPermission()) {
+        if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
         final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
@@ -92,7 +93,7 @@ public class AuditEntryController extends BaseController {
 
     @GetMapping(value = "/job/{jobId}")
     public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final UUID jobId) {
-        if (!hasReadPermission()) {
+        if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
         final Optional<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
@@ -106,7 +107,7 @@ public class AuditEntryController extends BaseController {
 
     @PostMapping(value = "/resend/{id}/")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId) {
-        if (!hasReadPermission()) {
+        if (!hasPermission(authorizationManager::hasExecutePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         return resendNotification(notificationId, null);
@@ -114,7 +115,7 @@ public class AuditEntryController extends BaseController {
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final UUID jobId) {
-        if (!hasReadPermission()) {
+        if (!hasPermission(authorizationManager::hasExecutePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         return resendNotification(notificationId, jobId);
@@ -134,8 +135,8 @@ public class AuditEntryController extends BaseController {
         }
     }
 
-    private boolean hasReadPermission() {
-        return authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), AuditDescriptor.AUDIT_COMPONENT);
+    private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {
+        return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), AuditDescriptor.AUDIT_COMPONENT);
     }
 
 }

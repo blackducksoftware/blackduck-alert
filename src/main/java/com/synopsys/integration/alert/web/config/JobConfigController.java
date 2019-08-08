@@ -22,11 +22,14 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,12 +50,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.function.ThrowingFunction;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -65,6 +70,8 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JobConfigController extends BaseController {
     public static final String JOB_CONFIGURATION_PATH = ConfigController.CONFIGURATION_PATH + "/job";
     private final Logger logger = LoggerFactory.getLogger(JobConfigController.class);
+
+    private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
 
     private final JobConfigActions jobConfigActions;
     private final ResponseFactory responseFactory;
@@ -87,8 +94,8 @@ public class JobConfigController extends BaseController {
         try {
             final Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
                                                     .stream()
+                                                    .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
                                                     .map(RegisteredDescriptorModel::getName)
-                                                    .filter(name -> name.startsWith("channel") || name.startsWith("provider"))
                                                     .collect(Collectors.toSet());
             if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
                 return responseFactory.createForbiddenResponse();
@@ -97,7 +104,7 @@ public class JobConfigController extends BaseController {
             final List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
 
             for (final JobFieldModel jobModel : allModels) {
-                final boolean includeJob = jobModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
+                final boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
                 if (includeJob) {
                     models.add(jobModel);
                 }
@@ -121,11 +128,11 @@ public class JobConfigController extends BaseController {
 
         if (optionalModel.isPresent()) {
             final JobFieldModel fieldModel = optionalModel.get();
-            final boolean hasPermissions = fieldModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
+            final boolean hasPermissions = hasRequiredPermissions(fieldModel.getFieldModels(), authorizationManager::hasReadPermission);
             if (!hasPermissions) {
                 return responseFactory.createForbiddenResponse();
             }
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(fieldModel));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
@@ -133,7 +140,7 @@ public class JobConfigController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        final boolean hasPermissions = restModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()));
+        final boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasCreatePermission);
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
@@ -162,7 +169,7 @@ public class JobConfigController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
-        final boolean hasPermissions = restModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()));
+        final boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasWritePermission);
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
@@ -200,7 +207,7 @@ public class JobConfigController extends BaseController {
 
                 if (optionalModel.isPresent()) {
                     final JobFieldModel jobFieldModel = optionalModel.get();
-                    final boolean hasPermissions = jobFieldModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()));
+                    final boolean hasPermissions = hasRequiredPermissions(jobFieldModel.getFieldModels(), authorizationManager::hasDeletePermission);
                     if (!hasPermissions) {
                         return responseFactory.createForbiddenResponse();
                     }
@@ -226,7 +233,9 @@ public class JobConfigController extends BaseController {
         final boolean hasPermissions = restModel.getFieldModels()
                                            .stream()
                                            .allMatch(model ->
-                                                         authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()) || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
+                                                         authorizationManager.hasCreatePermission(model.getContext(), model.getDescriptorName())
+                                                             || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
+                                                             || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
@@ -254,14 +263,14 @@ public class JobConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final boolean hasPermissions = restModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
+        final boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
         final String id = restModel.getJobId();
         try {
             // TODO while implementing the UI feature for this, think about handling the empty cases for customTopic and customMessage
-            final String responseMessage = messageFunction.apply(restModel); // jobConfigActions.sendCustomMessageToConfig(restModel, destination);
+            final String responseMessage = messageFunction.apply(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             final String exceptionMessage = e.getMessage();
@@ -281,6 +290,12 @@ public class JobConfigController extends BaseController {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
         }
+    }
+
+    private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<String, String, Boolean> permissionChecker) {
+        return fieldModels
+                   .stream()
+                   .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
     }
 
 }
