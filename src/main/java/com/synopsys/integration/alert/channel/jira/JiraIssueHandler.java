@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -37,6 +38,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
@@ -69,6 +74,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchServic
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
     private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
@@ -77,16 +83,17 @@ public class JiraIssueHandler {
     private final IssueService issueService;
     private final IssueTypeService issueTypeService;
     private final JiraProperties jiraProperties;
+    private final Gson gson;
 
     private final JiraIssuePropertyHelper jiraIssuePropertyHelper;
 
     public JiraIssueHandler(
-        final ProjectService projectService, final IssueService issueService, final IssueSearchService issueSearchService, final IssuePropertyService issuePropertyService, final IssueTypeService issueTypeService,
-        final JiraProperties jiraProperties) {
+        ProjectService projectService, IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, IssueTypeService issueTypeService, JiraProperties jiraProperties, Gson gson) {
         this.projectService = projectService;
         this.issueService = issueService;
         this.issueTypeService = issueTypeService;
         this.jiraProperties = jiraProperties;
+        this.gson = gson;
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
     }
 
@@ -156,7 +163,7 @@ public class JiraIssueHandler {
                                                   .filter(StringUtils::isNotBlank)
                                                   .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
                                                   .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_ISSUE_CREATOR, "Expected to be passed a jira user email address.")));
-                        final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
+                        final IssueResponseModel issue = createIssue(issueCreator, issueType, projectName, fieldsBuilder);
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
                         }
@@ -202,6 +209,37 @@ public class JiraIssueHandler {
                    .map(IssueSearchResponseModel::getIssues)
                    .map(List::stream)
                    .flatMap(Stream::findFirst);
+    }
+
+    private IssueResponseModel createIssue(String issueCreatorEmail, String issueType, String projectName, IssueRequestModelFieldsBuilder fieldsBuilder) throws IntegrationException {
+        try {
+            return issueService.createIssue(new IssueCreationRequestModel(issueCreatorEmail, issueType, projectName, fieldsBuilder, List.of()));
+        } catch (IntegrationRestException e) {
+            final JsonObject responseContent = gson.fromJson(e.getHttpResponseContent(), JsonObject.class);
+            List<String> responseErrors = new ArrayList<>();
+            if (null != responseContent) {
+                JsonObject errors = responseContent.get("errors").getAsJsonObject();
+                JsonElement reporterErrorMessage = errors.get("reporter");
+                if (null != reporterErrorMessage) {
+                    throw new AlertFieldException(
+                        Map.of(JiraDescriptor.KEY_ISSUE_CREATOR,
+                            String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)));
+                }
+
+                JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
+                for (JsonElement errorMessage : errorMessages) {
+                    responseErrors.add(errorMessage.getAsString());
+                }
+                responseErrors.add(errors.toString());
+            }
+
+            String message = e.getMessage();
+            if (!responseErrors.isEmpty()) {
+                message += " | Details: " + StringUtils.join(responseErrors, ", ");
+            }
+
+            throw new AlertException(message, e);
+        }
     }
 
     private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId)
