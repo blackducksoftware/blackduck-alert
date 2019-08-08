@@ -6,7 +6,7 @@ import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
-import StatusMessage from "./StatusMessage";
+import StatusMessage from 'field/StatusMessage';
 
 class EndpointField extends Component {
     constructor(props) {
