@@ -367,3 +367,7 @@ task all(dependsOn: [build, createDeploymentZip, dockerLogin, buildDockerImage, 
 
     pushImage.mustRunAfter buildDockerImage
 }
+
+test {
+    testLogging.showStandardStreams = true
+}
