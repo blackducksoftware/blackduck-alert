@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1565268970974-1">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS REGISTER_DESCRIPTOR AS $$
+                java.lang.Void registerDescriptor(final java.sql.Connection connection, final java.lang.String descriptorName, java.lang.String type) throws java.sql.SQLException {
+            <!--                    try (final java.sql.Statement statement = connection.createStatement()) {-->
+            <!--                        statement.executeUpdate("INSERT INTO ALERT.REGISTERED_DESCRIPTORS (NAME, TYPE_ID) VALUES('"+descriptorName+"', GET_ID_FOR_DESCRIPTOR_TYPE('"+type+"'));");-->
+            <!--                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN');");-->
+            <!--                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN');");-->
+            <!--                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.provider_blackduck');");-->
+            <!--                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_email', 'READ');");-->
+            <!--                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_email', 'EXECUTE');");-->
+            <!--                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.provider_blackduck', 'READ');");-->
+            <!--                    }-->
+            return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>
