@@ -104,29 +104,28 @@ public class DescriptorController extends MetadataController {
     private Optional<DescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
         final String descriptorName = descriptorMetadata.getName();
         final ConfigContextEnum context = descriptorMetadata.getContext();
-        final String permissionKey = AuthorizationManager.generatePermissionKey(context.name(), descriptorName);
 
         List<ConfigField> filteredFields = descriptorMetadata.getFields();
-        if (!authorizationManager.hasPermissions(permissionKey)) {
+        if (!authorizationManager.hasPermissions(context.name(), descriptorName)) {
             filteredFields = List.of();
         }
 
         descriptorMetadata.setFields(filteredFields);
-        return restrictMetaData(descriptorMetadata, permissionKey);
+        return restrictMetaData(descriptorMetadata, context.name(), descriptorName);
     }
 
-    private Optional<DescriptorMetadata> restrictMetaData(final DescriptorMetadata descriptorMetadata, final String permissionKey) {
-        final boolean hasReadPermission = authorizationManager.hasReadPermission(permissionKey);
+    private Optional<DescriptorMetadata> restrictMetaData(final DescriptorMetadata descriptorMetadata, String context, String descriptorName) {
+        final boolean hasReadPermission = authorizationManager.hasReadPermission(context, descriptorName);
         if (!hasReadPermission) {
             return Optional.empty();
         }
 
-        Set<AccessOperation> operationSet = authorizationManager.getOperations(permissionKey);
-        final boolean isReadOnly = authorizationManager.isReadOnly(permissionKey);
+        Set<AccessOperation> operationSet = authorizationManager.getOperations(context, descriptorName);
+        final boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorName);
         descriptorMetadata.setOperations(operationSet);
         descriptorMetadata.setReadOnly(isReadOnly);
 
-        if (authorizationManager.isReadOnly(permissionKey)) {
+        if (authorizationManager.isReadOnly(context, descriptorName)) {
             descriptorMetadata.getFields().stream().forEach(field -> field.setReadOnly(isReadOnly));
         }
 

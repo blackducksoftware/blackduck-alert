@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,12 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.authorization;
+package com.synopsys.integration.alert.common.persistence.model;
 
-import java.util.Optional;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class PermissionKey extends AlertSerializableModel {
+    private final String context;
+    private final String descriptorName;
 
-public interface PermissionKeyRepository extends JpaRepository<PermissionKeyEntity, Long> {
-    Optional<PermissionKeyEntity> findByKeyName(String keyName);
+    public PermissionKey(String context, String descriptorName) {
+        this.context = context;
+        this.descriptorName = descriptorName;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public String getDescriptorName() {
+        return descriptorName;
+    }
+
 }

@@ -22,37 +22,41 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class PermissionMatrixModel {
-    private final Map<String, EnumSet<AccessOperation>> permissions;
+public class PermissionMatrixModel extends AlertSerializableModel {
+    private final Map<PermissionKey, EnumSet<AccessOperation>> permissions;
 
-    public PermissionMatrixModel(final Map<String, EnumSet<AccessOperation>> permissions) {
+    public PermissionMatrixModel(Map<PermissionKey, EnumSet<AccessOperation>> permissions) {
         this.permissions = permissions;
     }
 
-    public Map<String, EnumSet<AccessOperation>> getPermissions() {
+    public Map<PermissionKey, EnumSet<AccessOperation>> getPermissions() {
         return permissions;
     }
 
-    public boolean hasPermission(final String permissionKey, final AccessOperation operation) {
+    public boolean hasPermission(PermissionKey permissionKey, AccessOperation operation) {
         return permissions.containsKey(permissionKey) && permissions.get(permissionKey).contains(operation);
     }
 
-    public boolean hasPermissions(final String permissionKey) {
+    public boolean hasPermissions(PermissionKey permissionKey) {
         return permissions.containsKey(permissionKey) && !permissions.get(permissionKey).isEmpty();
     }
 
-    public boolean anyPermissionMatch(final AccessOperation operation, final String... permissionKeys) {
-        return Arrays.stream(permissionKeys).filter(key -> permissions.containsKey(key)).anyMatch(key -> permissions.get(key).contains(operation));
+    public boolean anyPermissionMatch(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
+        return permissionKeys
+                   .stream()
+                   .filter(permissions::containsKey)
+                   .anyMatch(key -> permissions.get(key).contains(operation));
     }
 
-    public boolean isReadOnly(final String permissionKey) {
+    public boolean isReadOnly(PermissionKey permissionKey) {
         if (!permissions.containsKey(permissionKey)) {
             return false;
         }
@@ -61,7 +65,7 @@ public class PermissionMatrixModel {
         return operations.contains(AccessOperation.READ) && !operations.contains(AccessOperation.CREATE) && !operations.contains(AccessOperation.WRITE);
     }
 
-    public Set<AccessOperation> getOperations(final String permissionKey) {
+    public Set<AccessOperation> getOperations(PermissionKey permissionKey) {
         if (!permissions.containsKey(permissionKey)) {
             return Set.of();
         }
@@ -71,4 +75,5 @@ public class PermissionMatrixModel {
     public boolean isEmpty() {
         return permissions.isEmpty();
     }
+
 }
