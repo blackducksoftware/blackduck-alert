@@ -6,6 +6,7 @@ import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
+import StatusMessage from 'field/StatusMessage';
 
 class EndpointField extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class EndpointField extends Component {
         this.state = {
             showModal: false,
             fieldError: this.props.errorValue,
+            success: false,
             progress: false
         };
     }
@@ -26,7 +28,8 @@ class EndpointField extends Component {
         const currentError = this.props.errorValue;
         if (errorValue !== currentError) {
             this.setState({
-                fieldError: currentError
+                fieldError: currentError,
+                success: false
             });
         }
     }
@@ -34,7 +37,8 @@ class EndpointField extends Component {
     onSendClick(popupData) {
         this.setState({
             fieldError: this.props.errorValue,
-            progress: true
+            progress: true,
+            success: false
         });
         const {
             fieldKey, csrfToken, onChange, currentConfig, endpoint
@@ -53,6 +57,9 @@ class EndpointField extends Component {
                     type: 'checkbox'
                 };
                 onChange({ target });
+                this.setState({
+                    success: true
+                })
             } else {
                 response.json().then((data) => {
                     const target = {
@@ -82,7 +89,7 @@ class EndpointField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, value, fieldKey, name, successBox, readOnly
+            buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage
         } = this.props;
 
         const endpointField = (
@@ -106,6 +113,10 @@ class EndpointField extends Component {
                     />
                 </div>
                 }
+                {this.state.success &&
+                    <StatusMessage actionMessage={statusMessage} />
+                }
+
             </div>
         );
 
@@ -143,7 +154,8 @@ EndpointField.propTypes = {
     name: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
     errorValue: PropTypes.string,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
+    statusMessage: PropTypes.string
 };
 
 EndpointField.defaultProps = {
@@ -151,7 +163,8 @@ EndpointField.defaultProps = {
     fields: [],
     name: '',
     errorValue: null,
-    readOnly: false
+    readOnly: false,
+    statusMessage: 'Success'
 };
 
 const mapStateToProps = state => ({
