@@ -23,10 +23,11 @@
 package com.synopsys.integration.alert.common.security.authorization;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -114,6 +116,14 @@ public class AuthorizationManager {
         return currentUserHasPermission(AccessOperation.EXECUTE, context, descriptorName);
     }
 
+    public final boolean hasAlertRole() {
+        final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
+        return getCurrentUserRoleNames().stream()
+                   .map(UserRole::findUserRole)
+                   .flatMap(Optional::stream)
+                   .anyMatch(allowedRoles::contains);
+    }
+
     private boolean currentUserAnyPermission(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
@@ -127,15 +137,15 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
     }
 
-    private Collection<String> getCurrentUserRoleNames() {
+    private Set<String> getCurrentUserRoleNames() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication || !authentication.isAuthenticated()) {
-            return List.of();
+            return Set.of();
         }
         return authentication.getAuthorities().stream()
                    .map(GrantedAuthority::getAuthority)
                    .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toList());
+                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toSet());
     }
 
     public final void loadPermissionsIntoCache() {
