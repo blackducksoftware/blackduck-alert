@@ -133,14 +133,15 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testvalidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
+    public void testValidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
 
         final TestBlackDuckProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
-        spiedGlobalProperties.setBlackDuckUrl("https://localhost:443");
+        spiedGlobalProperties.setBlackDuckUrl("https://localhost:443/alert");
+        spiedGlobalProperties.setBlackDuckApiKey("Test Api Key");
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, spiedGlobalProperties, systemMessageUtility);
         blackDuckValidator.validate();
@@ -157,7 +158,8 @@ public class SystemValidatorTest {
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, Mockito.mock(ConfigurationAccessor.class), proxyManager);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final BlackDuckValidator blackDuckValidator = new BlackDuckValidator(testAlertProperties, testGlobalProperties, systemMessageUtility);
-        testGlobalProperties.setBlackDuckUrl("https://localhost:443");
+        testGlobalProperties.setBlackDuckUrl("https://localhost:443/alert");
+        testGlobalProperties.setBlackDuckApiKey("Test Api Key");
         blackDuckValidator.validate();
         Mockito.verify(systemMessageUtility).addSystemMessage(Mockito.eq("Black Duck Provider Using localhost"), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST));
         Mockito.verify(systemMessageUtility)
