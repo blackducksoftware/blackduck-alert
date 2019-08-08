@@ -50,7 +50,10 @@ public class PermissionMatrixModel extends AlertSerializableModel {
     }
 
     public boolean anyPermissionMatch(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
-        return permissionKeys.stream().filter(permissions::containsKey).anyMatch(key -> permissions.get(key).contains(operation));
+        return permissionKeys
+                   .stream()
+                   .filter(permissions::containsKey)
+                   .anyMatch(key -> permissions.get(key).contains(operation));
     }
 
     public boolean isReadOnly(PermissionKey permissionKey) {

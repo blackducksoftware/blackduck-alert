@@ -121,8 +121,8 @@ public class JobConfigController extends BaseController {
 
         if (optionalModel.isPresent()) {
             final JobFieldModel fieldModel = optionalModel.get();
-            final boolean missingPermission = fieldModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
-            if (missingPermission) {
+            final boolean hasPermissions = fieldModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
+            if (!hasPermissions) {
                 return responseFactory.createForbiddenResponse();
             }
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
@@ -133,8 +133,8 @@ public class JobConfigController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        final boolean missingPermission = restModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
-        if (missingPermission) {
+        final boolean hasPermissions = restModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()));
+        if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
 
@@ -162,8 +162,8 @@ public class JobConfigController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
-        final boolean missingPermission = restModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
-        if (missingPermission) {
+        final boolean hasPermissions = restModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()));
+        if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
 
@@ -200,8 +200,8 @@ public class JobConfigController extends BaseController {
 
                 if (optionalModel.isPresent()) {
                     final JobFieldModel jobFieldModel = optionalModel.get();
-                    final boolean missingPermission = jobFieldModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
-                    if (missingPermission) {
+                    final boolean hasPermissions = jobFieldModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()));
+                    if (!hasPermissions) {
                         return responseFactory.createForbiddenResponse();
                     }
                 }
@@ -223,8 +223,11 @@ public class JobConfigController extends BaseController {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        final boolean missingPermission = restModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
-        if (missingPermission) {
+        final boolean hasPermissions = restModel.getFieldModels()
+                                           .stream()
+                                           .allMatch(model ->
+                                                         authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName()) || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
+        if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
 
@@ -251,8 +254,8 @@ public class JobConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final boolean missingPermission = restModel.getFieldModels().stream().anyMatch(model -> authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName()));
-        if (missingPermission) {
+        final boolean hasPermissions = restModel.getFieldModels().stream().allMatch(model -> authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
+        if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
         final String id = restModel.getJobId();
