@@ -81,4 +81,41 @@
             $$;
         </createProcedure>
     </changeSet>
+    <changeSet author="psantos" id="1565268970974-5">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="REMOVE_PERMISSION">
+            CREATE ALIAS REMOVE_PERMISSION AS $$
+                java.lang.Void removePermission(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeUpdate("DELETE FROM ALERT.PERMISSION_MATRIX WHERE ROLE_ID = GET_ID_FOR_USER_ROLE('" + roleName + "') AND DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "') AND CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('" + context + "') AND ACCESS_OPERATION_ID = GET_ID_FOR_ACCESS_OPERATION('" + accessOperation +"');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-6">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="REMOVE_ALL_PERMISSIONS">
+            CREATE ALIAS REMOVE_ALL_PERMISSIONS AS $$
+                java.lang.Void removeAllPermissions(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        try (final java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
+                            while (accessEntries.next()) {
+                                final java.lang.Integer accessOperationId = accessEntries.getInt("ID");
+                                statement.executeUpdate("DELETE FROM ALERT.PERMISSION_MATRIX WHERE ROLE_ID = GET_ID_FOR_USER_ROLE('" + roleName + "') AND DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "') AND CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('" + context + "') AND ACCESS_OPERATION_ID = '" + accessOperationId + "';");
+                            }
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
 </databaseChangeLog>
