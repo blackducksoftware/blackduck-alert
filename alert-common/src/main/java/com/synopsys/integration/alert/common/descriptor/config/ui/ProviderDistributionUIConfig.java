@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -39,7 +40,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
@@ -72,15 +72,17 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES, false, true,
             providerContent.getContentTypes()
                 .stream()
-                .map(ProviderContentType::getNotificationType)
-                .map(LabelValueSelectOption::new)
+                .map(providerContentType -> new LabelValueSelectOption(
+                    WordUtils.capitalizeFully(providerContentType.getNotificationType().replace("_", " ")),
+                    providerContentType.getNotificationType(),
+                    providerContentType.getFontAwesomeIcon()))
                 .sorted()
                 .collect(Collectors.toList()));
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
             providerContent.getSupportedContentFormats()
                 .stream()
                 .map(FormatType::name)
-                .map(LabelValueSelectOption::new)
+                .map(name -> new LabelValueSelectOption(WordUtils.capitalizeFully(name.replace("_", " ")), name))
                 .sorted()
                 .collect(Collectors.toList()));
 
