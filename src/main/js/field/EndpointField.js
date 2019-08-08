@@ -89,7 +89,7 @@ class EndpointField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, value, fieldKey, name, successBox, readOnly
+            buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage
         } = this.props;
 
         const endpointField = (
@@ -114,7 +114,7 @@ class EndpointField extends Component {
                 </div>
                 }
                 {this.state.success &&
-                    <StatusMessage actionMessage="Success" />
+                    <StatusMessage actionMessage={statusMessage} />
                 }
 
             </div>
@@ -154,7 +154,8 @@ EndpointField.propTypes = {
     name: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
     errorValue: PropTypes.string,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
+    statusMessage: PropTypes.string
 };
 
 EndpointField.defaultProps = {
@@ -162,7 +163,8 @@ EndpointField.defaultProps = {
     fields: [],
     name: '',
     errorValue: null,
-    readOnly: false
+    readOnly: false,
+    statusMessage: 'Success'
 };
 
 const mapStateToProps = state => ({
