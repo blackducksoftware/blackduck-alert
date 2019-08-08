@@ -39,12 +39,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
+import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
-import com.synopsys.integration.alert.database.authorization.PermissionKeyRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
+import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.database.user.RoleEntity;
 import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRelation;
@@ -57,16 +61,18 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     private final UserRoleRepository userRoleRepository;
     private final PermissionMatrixRepository permissionMatrixRepository;
     private final AccessOperationRepository accessOperationRepository;
-    private final PermissionKeyRepository permissionKeyRepository;
+    private final RegisteredDescriptorRepository registeredDescriptorRepository;
+    private final ConfigContextRepository configContextRepository;
 
     @Autowired
     public DefaultAuthorizationUtility(final RoleRepository roleRepository, final UserRoleRepository userRoleRepository, final PermissionMatrixRepository permissionMatrixRepository, final AccessOperationRepository accessOperationRepository,
-        final PermissionKeyRepository permissionKeyRepository) {
+        RegisteredDescriptorRepository registeredDescriptorRepository, ConfigContextRepository configContextRepository) {
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.permissionMatrixRepository = permissionMatrixRepository;
         this.accessOperationRepository = accessOperationRepository;
-        this.permissionKeyRepository = permissionKeyRepository;
+        this.registeredDescriptorRepository = registeredDescriptorRepository;
+        this.configContextRepository = configContextRepository;
     }
 
     @Override
@@ -128,18 +134,21 @@ public class DefaultAuthorizationUtility implements AuthorizationUtil {
     }
 
     private PermissionMatrixModel createPermissionMatrix(final List<PermissionMatrixRelation> permissions) {
-        final Map<String, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
+        final Map<PermissionKey, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
 
         if (null != permissions) {
             for (final PermissionMatrixRelation relation : permissions) {
-                permissionKeyRepository.findById(relation.getPermissionKeyId()).ifPresent(key -> {
-                    final String keyName = key.getKeyName();
-                    permissionOperations.computeIfAbsent(keyName, ignored -> EnumSet.noneOf(AccessOperation.class));
-                    accessOperationRepository.findById(relation.getAccessOperationId()).ifPresent(operation -> permissionOperations.get(keyName).add(AccessOperation.valueOf(operation.getOperationName())));
-                });
+                final Optional<String> optionalContext = configContextRepository.findById(relation.getContextId()).map(ConfigContextEntity::getContext);
+                final Optional<String> optionalDescriptorName = registeredDescriptorRepository.findById(relation.getDescriptorId()).map(RegisteredDescriptorEntity::getName);
+                if (optionalDescriptorName.isPresent() && optionalContext.isPresent()) {
+                    PermissionKey permissionKey = new PermissionKey(optionalContext.get(), optionalDescriptorName.get());
+                    permissionOperations.computeIfAbsent(permissionKey, ignored -> EnumSet.noneOf(AccessOperation.class));
+                    accessOperationRepository.findById(relation.getAccessOperationId()).ifPresent(operation -> permissionOperations.get(permissionKey).add(AccessOperation.valueOf(operation.getOperationName())));
+                }
             }
         }
 
         return new PermissionMatrixModel(permissionOperations);
     }
+
 }
