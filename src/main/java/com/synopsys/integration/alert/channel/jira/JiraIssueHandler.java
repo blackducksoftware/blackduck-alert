@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -96,7 +97,7 @@ public class JiraIssueHandler {
                                                       .stream()
                                                       .filter(project -> projectName.equals(project.getName()))
                                                       .findAny()
-                                                      .orElseThrow(() -> new AlertException(String.format("No project named '%s' was found", projectName)));
+                                                      .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_JIRA_PROJECT_NAME, String.format("No project named '%s' was found", projectName))));
         final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
         boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                        .stream()
@@ -154,7 +155,7 @@ public class JiraIssueHandler {
                         String issueCreator = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_CREATOR)
                                                   .filter(StringUtils::isNotBlank)
                                                   .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
-                                                  .orElseThrow(() -> new AlertException("Expected to be passed a jira user email address."));
+                                                  .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_ISSUE_CREATOR, "Expected to be passed a jira user email address.")));
                         final IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
