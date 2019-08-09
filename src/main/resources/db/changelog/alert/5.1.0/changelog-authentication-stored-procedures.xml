@@ -21,11 +21,6 @@
                 java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
                     try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
                         insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, DESCRIPTOR_ID, CONTEXT_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('"+descriptorName+"'), GET_ID_FOR_CONFIG_CONTEXT('" + context + "'), GET_ID_FOR_ACCESS_OPERATION('" + accessOperation + "'));");
-                    } catch (final java.sql.SQLException e) {
-                        final java.lang.String exceptionMessage = e.getMessage();
-                        if (!exceptionMessage.contains("Unique index or primary key violation")) {
-                            throw e;
-                        }
                     }
                     return null;
                 }
@@ -47,11 +42,6 @@
                                 insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, DESCRIPTOR_ID, CONTEXT_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "'), GET_ID_FOR_CONFIG_CONTEXT('" + context + "'), '" + accessOperationId +"');");
                             }
                         }
-                    } catch (final java.sql.SQLException e) {
-                        final java.lang.String exceptionMessage = e.getMessage();
-                        if (!exceptionMessage.contains("Unique index or primary key violation")) {
-                            throw e;
-                        }
                     }
                     return null;
                 }
@@ -67,14 +57,14 @@
             CREATE ALIAS ASSIGN_DEFAULT_ROLE_PERMISSIONS AS $$
                 java.lang.Void assignDefaultRolePermissions(final java.sql.Connection connection, java.lang.String descriptorName) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
-                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'global');");
-                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'distribution');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'global');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'distribution');");
 
-                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'global', 'READ');");
-                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'global', 'EXECUTE');");
-                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'distribution');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'global', 'READ');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'global', 'EXECUTE');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'distribution');");
 
-                        statement.executeQuery("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER', '" + descriptorName + "', 'distribution', 'READ');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER', '" + descriptorName + "', 'distribution', 'READ');");
                     }
                     return null;
                 }
