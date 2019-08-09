@@ -47,7 +47,7 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
 
     public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
     public static final String DESCRIPTION_ISSUE_CREATOR = "The email of the Jira Cloud user to assign as the issue creator field of the Jira issue.";
-    public static final String DESCRIPTION_JIRA_PROJECT = "The name of the Jira Project this job creates and/or updates Jira tickets";
+    public static final String DESCRIPTION_JIRA_PROJECT = "The name or key of the Jira Project for which this job creates and/or updates Jira tickets.";
     public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Cloud.";
     public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (Case sensitive), it will be used when resolving an issue.";
     public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (Case sensitive), it will be used when re-opening an issue.";
