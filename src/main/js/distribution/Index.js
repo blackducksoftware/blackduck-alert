@@ -115,6 +115,7 @@ class Index extends Component {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
                     }}
+                    isUpdatingJob={modificationState === jobModificationState.EDIT}
                 />);
         }
         return null;

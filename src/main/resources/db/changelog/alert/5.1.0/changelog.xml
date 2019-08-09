@@ -3,5 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="changelog-authentication-migration.xml" relativeToChangelogFile="true"/>
     <include file="changelog-technical-debt.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-authentication-stored-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-initialization.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

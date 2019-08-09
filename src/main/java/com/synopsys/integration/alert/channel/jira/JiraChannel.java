@@ -68,7 +68,7 @@ public class JiraChannel extends DistributionChannel {
         final IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
         final ProjectService projectService = jiraCloudServiceFactory.createProjectService();
 
-        final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties);
+        final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties, getGson());
         return jiraIssueHandler.createOrUpdateIssues(fieldAccessor, content);
     }
 
