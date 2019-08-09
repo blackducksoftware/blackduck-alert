@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
+import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
@@ -72,17 +73,14 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES, false, true,
             providerContent.getContentTypes()
                 .stream()
-                .map(providerContentType -> new LabelValueSelectOption(
-                    WordUtils.capitalizeFully(providerContentType.getNotificationType().replace("_", " ")),
-                    providerContentType.getNotificationType(),
-                    providerContentType.getFontAwesomeIcon()))
+                .map(this::convertToLabelValueOption)
                 .sorted()
                 .collect(Collectors.toList()));
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
             providerContent.getSupportedContentFormats()
                 .stream()
                 .map(FormatType::name)
-                .map(name -> new LabelValueSelectOption(WordUtils.capitalizeFully(name.replace("_", " ")), name))
+                .map(this::convertToLabelValueOption)
                 .sorted()
                 .collect(Collectors.toList()));
 
@@ -96,6 +94,20 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
+    }
+
+    public abstract List<ConfigField> createProviderDistributionFields();
+
+    private LabelValueSelectOption convertToLabelValueOption(ProviderContentType providerContentType) {
+        final String notificationType = providerContentType.getNotificationType();
+        final String notificationTypeLabel = WordUtils.capitalizeFully(notificationType.replace("_", " "));
+        final String fontAwesomeIcon = providerContentType.getFontAwesomeIcon();
+        return new LabelValueSelectOption(notificationTypeLabel, notificationType, fontAwesomeIcon);
+    }
+
+    private LabelValueSelectOption convertToLabelValueOption(String formatName) {
+        final String formatNameLabel = WordUtils.capitalizeFully(formatName.replace("_", " "));
+        return new LabelValueSelectOption(formatNameLabel, formatName);
     }
 
     private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
@@ -120,7 +132,5 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         }
         return List.of();
     }
-
-    public abstract List<ConfigField> createProviderDistributionFields();
 
 }
