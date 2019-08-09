@@ -36,6 +36,13 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
+// Note when creating a new descriptor you will need to register descriptors in the database.
+// Use the REGISTER_DESCRIPTOR stored procedure.
+// The REGISTER_DESCRIPTOR stored procedure will assign default permissions to the descriptor for the well known roles.
+// The default permissions should be sufficient for channels and providers.
+// For components you may need to remove permissions.  In order to do that use the stored procedures:
+// REMOVE_PERMISSION - removes a single permission from the user role for the descriptor and context.
+// REMOVE_ALL_PERMISSIONS - removes all permissions from the user role for the descriptor and context.
 public abstract class Descriptor extends AlertSerializableModel {
     private final String name;
     private final DescriptorType type;
