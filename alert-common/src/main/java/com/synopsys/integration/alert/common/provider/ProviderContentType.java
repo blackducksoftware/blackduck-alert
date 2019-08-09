@@ -33,15 +33,26 @@ import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {
     private final String notificationType;
+    private String fontAwesomeIcon;
     private final Collection<JsonField<?>> notificationFields;
 
-    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<JsonField<?>> notificationFields) {
+    // TODO temporarily pass in the icon until we refactor ContentTypes and allow people to create this mapping elsewhere
+    public ProviderContentType(@NotNull String notificationType, @NotNull Collection<JsonField<?>> notificationFields, String fontAwesomeIcon) {
         this.notificationType = notificationType;
+        this.fontAwesomeIcon = fontAwesomeIcon;
         this.notificationFields = notificationFields;
+    }
+
+    public ProviderContentType(String notificationType, Collection<JsonField<?>> notificationFields) {
+        this(notificationType, notificationFields, null);
     }
 
     public String getNotificationType() {
         return notificationType;
+    }
+
+    public String getFontAwesomeIcon() {
+        return fontAwesomeIcon;
     }
 
     public List<JsonField<?>> getNotificationFields() {

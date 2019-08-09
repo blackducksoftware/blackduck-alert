@@ -56,17 +56,7 @@ function buildSelectInput(items, field) {
     const isReadOnly = convertStringToBoolean(readOnly);
     const isClearable = convertStringToBoolean(clearable);
     const isRemoveSelected = convertStringToBoolean(removeSelected);
-    const typeOptionLabel = props => (
-        <Option {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-        </Option>
-    );
 
-    const typeLabel = props => (
-        <SingleValue {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-        </SingleValue>
-    );
 
     Object.assign(items, {
         value: selectValue,
@@ -75,11 +65,7 @@ function buildSelectInput(items, field) {
         readOnly: isReadOnly,
         removeSelected: isRemoveSelected,
         clearable: isClearable,
-        options,
-        components: {
-            Option: typeOptionLabel,
-            SingleValue: typeLabel
-        }
+        options
     });
     return <SelectInput {...items} />;
 }

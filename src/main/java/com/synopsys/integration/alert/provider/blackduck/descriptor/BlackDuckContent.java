@@ -113,12 +113,21 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_REMEDIATION_CLEAN = "Remediation - Without Vulnerabilities";
     public static final String LABEL_REMEDIATION_LATEST = "Remediation - Latest Version";
 
+    private static final String BOM_EDIT_ICON = "user-edit";
+    private static final String LICENSE_LIMIT_ICON = "gavel";
+    private static final String POLICY_OVERRIDE_ICON = "exclamation-circle";
+    private static final String VULNERABILITY_ICON = "shield-alt";
+    private static final String RULE_VIOLATION_ICON = "ban";
+    private static final String RULE_VIOLATION_CLEARED_ICON = "eraser";
+
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
         List.of(createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_BOM_COMPONENT)
-        ));
+        ),
+        BOM_EDIT_ICON
+        );
 
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
         NotificationType.LICENSE_LIMIT.name(),
@@ -129,7 +138,8 @@ public class BlackDuckContent extends ProviderContent {
             createLongField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_CODE_SIZE), JSON_FIELD_CODE_SIZE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_USED_CODE_SIZE),
             createLongField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LIMIT_HARD), JSON_FIELD_LIMIT_HARD, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_HARD),
             createLongField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LIMIT_SOFT), JSON_FIELD_LIMIT_SOFT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_SOFT)
-        )
+        ),
+        LICENSE_LIMIT_ICON
     );
 
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
@@ -156,7 +166,8 @@ public class BlackDuckContent extends ProviderContent {
             createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
                 new TypeRef<List<PolicyInfo>>() {})
 
-        )
+        ),
+        POLICY_OVERRIDE_ICON
     );
 
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
@@ -186,7 +197,8 @@ public class BlackDuckContent extends ProviderContent {
             createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_DELETED_VULNERABILITY_IDS), JSON_FIELD_DELETED_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM,
                 LABEL_VULNERABILITY_DELETED,
                 new TypeRef<List<VulnerabilitySourceQualifiedId>>() {})
-        )
+        ),
+        VULNERABILITY_ICON
     );
 
     private static final List<JsonField<?>> RULE_VIOLATION_FIELD_LIST = List.of(
@@ -205,11 +217,13 @@ public class BlackDuckContent extends ProviderContent {
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),
-        RULE_VIOLATION_FIELD_LIST
+        RULE_VIOLATION_FIELD_LIST,
+        RULE_VIOLATION_ICON
     );
     public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
         NotificationType.RULE_VIOLATION_CLEARED.name(),
-        RULE_VIOLATION_FIELD_LIST
+        RULE_VIOLATION_FIELD_LIST,
+        RULE_VIOLATION_CLEARED_ICON
     );
 
     private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY, BOM_EDIT);

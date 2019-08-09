@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import {components} from 'react-select';
 import LabeledField from 'field/LabeledField';
+import DescriptorOption from 'component/common/DescriptorOption';
+
+const { Option, SingleValue } = components;
 
 function DynamicSelectInput(props) {
     const {
-        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass, readOnly, clearable
+        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, selectSpacingClass, readOnly, clearable
     } = props;
 
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
@@ -21,6 +25,23 @@ function DynamicSelectInput(props) {
             }
         });
     };
+
+    const typeOptionLabel = props => (
+        <Option {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </Option>
+    );
+
+    const typeLabel = props => (
+        <SingleValue {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </SingleValue>
+    );
+
+    const components = {
+        Option: typeOptionLabel,
+        SingleValue: typeLabel
+    }
 
     const field = (<div className={selectClasses}>
         <Select

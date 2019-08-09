@@ -6,7 +6,7 @@ import { getAuditData, resendNotification } from 'store/actions/audit';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
-import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
+import NotificationTypeLegend from 'dynamic/loaded/audit/NotificationTypeLegend';
 import AuditDetails from 'dynamic/loaded/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
