@@ -18,8 +18,8 @@
                 schemaName="ALERT"
                 procedureName="ASSIGN_ROLE_PERMISSION_ACCESS">
             CREATE ALIAS ASSIGN_ROLE_PERMISSION_ACCESS AS $$
-                java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
-                    try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
+                java.lang.Void assignPermissionToRole(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
+                    try (java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
                         insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, DESCRIPTOR_ID, CONTEXT_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('"+descriptorName+"'), GET_ID_FOR_CONFIG_CONTEXT('" + context + "'), GET_ID_FOR_ACCESS_OPERATION('" + accessOperation + "'));");
                     }
                     return null;
@@ -34,11 +34,11 @@
                 schemaName="ALERT"
                 procedureName="ASSIGN_ROLE_PERMISSION_ALL_ACCESS">
             CREATE ALIAS ASSIGN_ROLE_PERMISSION_ALL_ACCESS AS $$
-                java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
-                    try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
-                        try (final java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
+                java.lang.Void assignPermissionToRole(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
+                    try (java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
+                        try (java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
                             while (accessEntries.next()) {
-                                final java.lang.Integer accessOperationId = accessEntries.getInt("ID");
+                                java.lang.Integer accessOperationId = accessEntries.getInt("ID");
                                 insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, DESCRIPTOR_ID, CONTEXT_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "'), GET_ID_FOR_CONFIG_CONTEXT('" + context + "'), '" + accessOperationId +"');");
                             }
                         }
@@ -55,8 +55,8 @@
                 schemaName="ALERT"
                 procedureName="ASSIGN_DEFAULT_ROLE_PERMISSIONS">
             CREATE ALIAS ASSIGN_DEFAULT_ROLE_PERMISSIONS AS $$
-                java.lang.Void assignDefaultRolePermissions(final java.sql.Connection connection, java.lang.String descriptorName) throws java.sql.SQLException {
-                    try (final java.sql.Statement statement = connection.createStatement()) {
+                java.lang.Void assignDefaultRolePermissions(java.sql.Connection connection, java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
                         statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'global');");
                         statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'distribution');");
 
@@ -78,8 +78,8 @@
                 schemaName="ALERT"
                 procedureName="REMOVE_PERMISSION">
             CREATE ALIAS REMOVE_PERMISSION AS $$
-                java.lang.Void removePermission(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
-                    try (final java.sql.Statement statement = connection.createStatement()) {
+                java.lang.Void removePermission(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
                         statement.executeUpdate("DELETE FROM ALERT.PERMISSION_MATRIX WHERE ROLE_ID = GET_ID_FOR_USER_ROLE('" + roleName + "') AND DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "') AND CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('" + context + "') AND ACCESS_OPERATION_ID = GET_ID_FOR_ACCESS_OPERATION('" + accessOperation +"');");
                     }
                     return null;
@@ -94,11 +94,11 @@
                 schemaName="ALERT"
                 procedureName="REMOVE_ALL_PERMISSIONS">
             CREATE ALIAS REMOVE_ALL_PERMISSIONS AS $$
-                java.lang.Void removeAllPermissions(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
-                    try (final java.sql.Statement statement = connection.createStatement()) {
-                        try (final java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
+                java.lang.Void removeAllPermissions(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        try (java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
                             while (accessEntries.next()) {
-                                final java.lang.Integer accessOperationId = accessEntries.getInt("ID");
+                                java.lang.Integer accessOperationId = accessEntries.getInt("ID");
                                 statement.executeUpdate("DELETE FROM ALERT.PERMISSION_MATRIX WHERE ROLE_ID = GET_ID_FOR_USER_ROLE('" + roleName + "') AND DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "') AND CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('" + context + "') AND ACCESS_OPERATION_ID = '" + accessOperationId + "';");
                             }
                         }
