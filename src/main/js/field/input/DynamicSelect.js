@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import {components} from 'react-select';
 import LabeledField from 'field/LabeledField';
 import DescriptorOption from 'component/common/DescriptorOption';
-import Option from 'react-select/src/components/Option';
-import SingleValue from 'react-select/src/components/SingleValue';
+
+const { Option, SingleValue } = components;
 
 function DynamicSelectInput(props) {
     const {
