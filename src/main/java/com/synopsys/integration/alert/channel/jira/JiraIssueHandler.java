@@ -102,7 +102,7 @@ public class JiraIssueHandler {
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(projectName);
         final ProjectComponent projectComponent = projectsResponseModel.getProjects()
                                                       .stream()
-                                                      .filter(project -> projectName.equals(project.getName()))
+                                                      .filter(project -> projectName.equals(project.getName()) || projectName.equals(project.getKey()))
                                                       .findAny()
                                                       .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_JIRA_PROJECT_NAME, String.format("No project named '%s' was found", projectName))));
         final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
@@ -163,7 +163,12 @@ public class JiraIssueHandler {
                                                   .filter(StringUtils::isNotBlank)
                                                   .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
                                                   .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_ISSUE_CREATOR, "Expected to be passed a jira user email address.")));
-                        final IssueResponseModel issue = createIssue(issueCreator, issueType, projectName, fieldsBuilder);
+                        IssueResponseModel issue = null;
+                        try {
+                            issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
+                        } catch (IntegrationRestException e) {
+                            handleIssueCreationRestException(e, issueCreator);
+                        }
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
                         }
@@ -211,35 +216,31 @@ public class JiraIssueHandler {
                    .flatMap(Stream::findFirst);
     }
 
-    private IssueResponseModel createIssue(String issueCreatorEmail, String issueType, String projectName, IssueRequestModelFieldsBuilder fieldsBuilder) throws IntegrationException {
-        try {
-            return issueService.createIssue(new IssueCreationRequestModel(issueCreatorEmail, issueType, projectName, fieldsBuilder, List.of()));
-        } catch (IntegrationRestException e) {
-            final JsonObject responseContent = gson.fromJson(e.getHttpResponseContent(), JsonObject.class);
-            List<String> responseErrors = new ArrayList<>();
-            if (null != responseContent) {
-                JsonObject errors = responseContent.get("errors").getAsJsonObject();
-                JsonElement reporterErrorMessage = errors.get("reporter");
-                if (null != reporterErrorMessage) {
-                    throw new AlertFieldException(
-                        Map.of(JiraDescriptor.KEY_ISSUE_CREATOR,
-                            String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)));
-                }
-
-                JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
-                for (JsonElement errorMessage : errorMessages) {
-                    responseErrors.add(errorMessage.getAsString());
-                }
-                responseErrors.add(errors.toString());
+    private IssueResponseModel handleIssueCreationRestException(IntegrationRestException restException, String issueCreatorEmail) throws IntegrationException {
+        final JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
+        List<String> responseErrors = new ArrayList<>();
+        if (null != responseContent) {
+            JsonObject errors = responseContent.get("errors").getAsJsonObject();
+            JsonElement reporterErrorMessage = errors.get("reporter");
+            if (null != reporterErrorMessage) {
+                throw new AlertFieldException(Map.of(
+                    JiraDescriptor.KEY_ISSUE_CREATOR, String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)
+                ));
             }
 
-            String message = e.getMessage();
-            if (!responseErrors.isEmpty()) {
-                message += " | Details: " + StringUtils.join(responseErrors, ", ");
+            JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
+            for (JsonElement errorMessage : errorMessages) {
+                responseErrors.add(errorMessage.getAsString());
             }
-
-            throw new AlertException(message, e);
+            responseErrors.add(errors.toString());
         }
+
+        String message = restException.getMessage();
+        if (!responseErrors.isEmpty()) {
+            message += " | Details: " + StringUtils.join(responseErrors, ", ");
+        }
+
+        throw new AlertException(message, restException);
     }
 
     private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId)
