@@ -42,14 +42,14 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
         Mockito.doReturn(Map.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
         final ConfigActions configActions = new ConfigActions(configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter);
-        final ConfigurationFieldModel proxyHost = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_PROXY_HOST);
+        final ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(SettingsDescriptor.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         final ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(SettingsDescriptor.KEY_PROXY_PORT);
         proxyPort.setFieldValue("80");
-        final ConfigurationFieldModel proxyUsername = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_PROXY_USERNAME);
-        proxyHost.setFieldValue("username");
-        final ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.create(SettingsDescriptor.KEY_PROXY_PWD);
-        proxyPort.setFieldValue("somestuff");
+        final ConfigurationFieldModel proxyUsername = ConfigurationFieldModel.create(SettingsDescriptor.KEY_PROXY_USERNAME);
+        proxyUsername.setFieldValue("username");
+        final ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_PROXY_PWD);
+        proxyPassword.setFieldValue("somestuff");
         final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
 
         final FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
