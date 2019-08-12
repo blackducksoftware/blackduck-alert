@@ -28,17 +28,9 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class ChannelDescriptor extends Descriptor {
 
-    private ChannelDescriptor(final String name) {
-        super(name, DescriptorType.CHANNEL);
-    }
-
-    private ChannelDescriptor(final String name, final ChannelDistributionUIConfig distributionUIConfig) {
+    public ChannelDescriptor(final String name, final ChannelDistributionUIConfig distributionUIConfig, final UIConfig globalUIConfig) {
         super(name, DescriptorType.CHANNEL);
         addDistributionUiConfig(distributionUIConfig);
-    }
-
-    public ChannelDescriptor(final String name, final ChannelDistributionUIConfig distributionUIConfig, final UIConfig globalUIConfig) {
-        this(name, distributionUIConfig);
         addGlobalUiConfig(globalUIConfig);
     }
 
