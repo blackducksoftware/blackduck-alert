@@ -40,7 +40,7 @@ manageRootCertificate() {
         --profile peer
 }
 
-createSelfSignedServerCertificate() {
+manageSelfSignedServerCertificate() {
     echo "Attempting to generate $APPLICATION_NAME self-signed server certificate and key."
     $certificateManagerDir/certificate-manager.sh server-cert \
         --ca $targetCAHost:$targetCAPort \
@@ -66,6 +66,51 @@ createSelfSignedServerCertificate() {
     fi
 }
 
+manageBlackduckSystemClientCertificate() {
+    echo "Attempting to generate blackduck_system client certificate and key."
+    $certificateManagerDir/certificate-manager.sh client-cert \
+        --ca $targetCAHost:$targetCAPort \
+        --outputDirectory $securityDir \
+        --commonName blackduck_system
+    exitCode=$?
+    if [ $exitCode -eq 0 ];
+    then
+        chmod 400 $securityDir/blackduck_system.key
+        chmod 644 $securityDir/blackduck_system.crt
+    else
+        echo "ERROR: Unable to generate blackduck_system certificate and key (Code: $exitCode)."
+        exit $exitCode
+    fi
+
+    echo "Attempting to generate blackduck_system store."
+    $certificateManagerDir/certificate-manager.sh keystore \
+        --outputDirectory $securityDir \
+        --outputFile blackduck_system.keystore \
+        --password changeit \
+        --keyAlias blackduck_system \
+        --key $securityDir/blackduck_system.key \
+        --cert $securityDir/blackduck_system.crt
+    exitCode=$?
+    if [ $exitCode -ne 0 ];
+    then
+        echo "ERROR: Unable to generate blackduck_system store (Code: $exitCode)."
+        exit $exitCode
+    fi
+
+    echo "Attempting to trust root certificate within the blackduck_system store."
+    $certificateManagerDir/certificate-manager.sh trust-java-cert \
+        --store $securityDir/blackduck_system.keystore \
+        --password changeit \
+        --cert $securityDir/root.crt \
+        --certAlias blackduck_root
+    exitCode=$?
+    if [ $exitCode -ne 0 ];
+    then
+      echo "ERROR: Unable to trust root certificate within the blackduck_system store (Code: $exitCode)."
+      exit $exitCode
+    fi
+}
+
 createTruststore() {
     if [ -f $dockerSecretDir/jssecacerts ];
     then
@@ -85,6 +130,45 @@ createTruststore() {
         then
             echo "Unable to create truststore (Code: $exitCode)."
             exit $exitCode
+        fi
+    fi
+}
+
+trustRootCertificate() {
+    $certificateManagerDir/certificate-manager.sh trust-java-cert \
+                        --store $truststoreFile \
+                        --password changeit \
+                        --cert $securityDir/root.crt \
+                        --certAlias hub-root
+
+    exitCode=$?
+    if [ $exitCode -eq 0 ];
+    then
+        echo "Successfully imported Hub root certificate into Java truststore."
+    else
+        echo "Unable to import Hub root certificate into Java truststore (Code: $exitCode)."
+        exit $exitCode
+    fi
+}
+
+trustProxyCertificate() {
+    proxyCertificate="$dockerSecretDir/HUB_PROXY_CERT_FILE"
+
+    if [ ! -f "$dockerSecretDir/HUB_PROXY_CERT_FILE" ];
+    then
+        echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
+    else
+        $certificateManagerDir/certificate-manager.sh trust-java-cert \
+                                --store $truststoreFile \
+                                --password changeit \
+                                --cert $proxyCertificate \
+                                --certAlias proxycert
+        exitCode=$?
+        if [ $exitCode -eq 0 ];
+        then
+            echo "Successfully imported proxy certificate into Java truststore."
+        else
+            echo "Unable to import proxy certificate into Java truststore (Code: $exitCode)."
         fi
     fi
 }
@@ -119,44 +203,6 @@ createKeystore() {
     fi
 }
 
-trustProxyCertificate() {
-    proxyCertificate="$dockerSecretDir/HUB_PROXY_CERT_FILE"
-
-    if [ ! -f "$dockerSecretDir/HUB_PROXY_CERT_FILE" ];
-    then
-        echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
-    else
-        $certificateManagerDir/certificate-manager.sh trust-java-cert \
-                                --store $truststoreFile \
-                                --password changeit \
-                                --cert $proxyCertificate \
-                                --certAlias proxycert
-        exitCode=$?
-        if [ $exitCode -eq 0 ];
-        then
-            echo "Successfully imported proxy certificate into Java truststore."
-        else
-            echo "Unable to import proxy certificate into Java truststore (Code: $exitCode)."
-        fi
-    fi
-}
-
-trustRootCertificate() {
-    $certificateManagerDir/certificate-manager.sh trust-java-cert \
-                        --store $truststoreFile \
-                        --password changeit \
-                        --cert $securityDir/root.crt \
-                        --certAlias hub-root
-
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-        echo "Successfully imported Hub root certificate into Java truststore."
-    else
-        echo "Unable to import Hub root certificate into Java truststore (Code: $exitCode)."
-        exit $exitCode
-    fi
-}
 
 # Bootstrap will optionally configure the config volume if it hasnt been configured yet.
 # After that we verify, import certs, and then launch the webserver.
@@ -254,7 +300,7 @@ else
     	echo "Custom webserver cert and key found"
     	manageRootCertificate
     else
-        createSelfSignedServerCertificate
+        manageSelfSignedServerCertificate
     fi
   createTruststore
   createKeystore
