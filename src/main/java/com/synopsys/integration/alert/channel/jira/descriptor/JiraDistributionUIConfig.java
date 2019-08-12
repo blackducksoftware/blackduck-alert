@@ -49,8 +49,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String DESCRIPTION_ISSUE_CREATOR = "The email of the Jira Cloud user to assign as the issue creator field of the Jira issue.";
     public static final String DESCRIPTION_JIRA_PROJECT = "The name or key of the Jira Project for which this job creates and/or updates Jira tickets.";
     public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Cloud.";
-    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (Case sensitive), it will be used when resolving an issue.";
-    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (Case sensitive), it will be used when re-opening an issue.";
+    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider.";
+    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider.";
 
     public static final String DEFAULT_ISSUE_TYPE = "Task";
     public static final String DEFAULT_RESOLVE_WORKFLOW_TRANSITION = "Resolve Issue";
