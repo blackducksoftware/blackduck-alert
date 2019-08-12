@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -185,8 +184,8 @@ public class JiraIssueHandler {
             }
         }
         if (!missingTransitions.isEmpty()) {
-            final String joinedMissingTransitions = missingTransitions.stream().collect(Collectors.joining(", "));
-            String errorMessage = String.format("For Provider: %s. Topic: %s. Unable to find the transition(s): %s.", providerName, projectName, joinedMissingTransitions);
+            final String joinedMissingTransitions = String.join(", ", missingTransitions);
+            String errorMessage = String.format("For Provider: %s. Project: %s. Unable to find the transition(s): %s.", providerName, projectName, joinedMissingTransitions);
             throw new AlertException(errorMessage);
         }
 
@@ -216,7 +215,7 @@ public class JiraIssueHandler {
                    .flatMap(Stream::findFirst);
     }
 
-    private IssueResponseModel handleIssueCreationRestException(IntegrationRestException restException, String issueCreatorEmail) throws IntegrationException {
+    private void handleIssueCreationRestException(IntegrationRestException restException, String issueCreatorEmail) throws IntegrationException {
         final JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
         List<String> responseErrors = new ArrayList<>();
         if (null != responseContent) {
@@ -335,7 +334,8 @@ public class JiraIssueHandler {
         if (issueKeys.isEmpty()) {
             return "Did not create any Jira Cloud issues.";
         }
-        final String concatenatedKeys = issueKeys.stream().collect(Collectors.joining(","));
+        final String concatenatedKeys = String.join(", ", issueKeys);
+        logger.debug("Issues updated: {}", concatenatedKeys);
         return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
     }
 

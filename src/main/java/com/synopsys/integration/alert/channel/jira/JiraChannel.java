@@ -58,6 +58,7 @@ public class JiraChannel extends DistributionChannel {
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         final JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
+        logger.debug("Verifying the required application is installed on the Jira Cloud server...");
         boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
         if (missingApp) {
             throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
