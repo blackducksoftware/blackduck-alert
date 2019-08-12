@@ -11,6 +11,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
 import EndpointField from '../field/EndpointField';
+import ProviderDataSelectField from "../field/ProviderDataSelectField";
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -48,10 +49,32 @@ const { Option, SingleValue } = components;
 function buildSelectInput(items, field) {
     const { value } = items;
     const {
-        searchable, multiSelect, options, readOnly
+        searchable, multiSelect, options, readOnly, removeSelected, clearable
     } = field;
 
     const selectValue = options.filter(option => value.includes(option.value));
+    const isReadOnly = convertStringToBoolean(readOnly);
+    const isClearable = convertStringToBoolean(clearable);
+    const isRemoveSelected = convertStringToBoolean(removeSelected);
+
+
+    Object.assign(items, {
+        value: selectValue,
+        searchable,
+        multiSelect,
+        readOnly: isReadOnly,
+        removeSelected: isRemoveSelected,
+        clearable: isClearable,
+        options
+    });
+    return <SelectInput {...items} />;
+}
+
+function buildProviderDataSelectInput(items, field) {
+    const {
+        providerDataEndpoint, searchable, multiSelect, readOnly
+    } = field;
+
     const isReadOnly = convertStringToBoolean(readOnly);
     const typeOptionLabel = props => (
         <Option {...props}>
@@ -66,17 +89,16 @@ function buildSelectInput(items, field) {
     );
 
     Object.assign(items, {
-        value: selectValue,
+        providerDataEndpoint,
         searchable,
         multiSelect,
         readOnly: isReadOnly,
-        options,
         components: {
             Option: typeOptionLabel,
             SingleValue: typeLabel
         }
     });
-    return <SelectInput {...items} />;
+    return <ProviderDataSelectField {...items} />;
 }
 
 function buildPasswordInput(items, field) {
@@ -151,6 +173,7 @@ export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
     Select: buildSelectInput,
+    ProviderDataSelect: buildProviderDataSelectInput,
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
     CheckboxInput: buildCheckboxInput,

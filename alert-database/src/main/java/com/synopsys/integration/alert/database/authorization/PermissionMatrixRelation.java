@@ -38,8 +38,11 @@ public class PermissionMatrixRelation extends DatabaseRelation {
     @Column(name = "role_id")
     private Long roleId;
     @Id
-    @Column(name = "permission_key_id")
-    private Long permissionKeyId;
+    @Column(name = "context_id")
+    private Long contextId;
+    @Id
+    @Column(name = "descriptor_id")
+    private Long descriptorId;
     @Id
     @Column(name = "access_operation_id")
     private Long accessOperationId;
@@ -48,9 +51,10 @@ public class PermissionMatrixRelation extends DatabaseRelation {
         // JPA requires default constructor definitions
     }
 
-    public PermissionMatrixRelation(final Long roleId, final Long permissionKeyId, final Long accessOperationId) {
+    public PermissionMatrixRelation(Long roleId, Long contextId, Long descriptorId, Long accessOperationId) {
         this.roleId = roleId;
-        this.permissionKeyId = permissionKeyId;
+        this.contextId = contextId;
+        this.descriptorId = descriptorId;
         this.accessOperationId = accessOperationId;
     }
 
@@ -58,11 +62,16 @@ public class PermissionMatrixRelation extends DatabaseRelation {
         return roleId;
     }
 
-    public Long getPermissionKeyId() {
-        return permissionKeyId;
+    public Long getContextId() {
+        return contextId;
+    }
+
+    public Long getDescriptorId() {
+        return descriptorId;
     }
 
     public Long getAccessOperationId() {
         return accessOperationId;
     }
+
 }

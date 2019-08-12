@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -72,15 +73,14 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES, false, true,
             providerContent.getContentTypes()
                 .stream()
-                .map(ProviderContentType::getNotificationType)
-                .map(LabelValueSelectOption::new)
+                .map(this::convertToLabelValueOption)
                 .sorted()
                 .collect(Collectors.toList()));
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
             providerContent.getSupportedContentFormats()
                 .stream()
                 .map(FormatType::name)
-                .map(LabelValueSelectOption::new)
+                .map(this::convertToLabelValueOption)
                 .sorted()
                 .collect(Collectors.toList()));
 
@@ -94,6 +94,20 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
+    }
+
+    public abstract List<ConfigField> createProviderDistributionFields();
+
+    private LabelValueSelectOption convertToLabelValueOption(ProviderContentType providerContentType) {
+        final String notificationType = providerContentType.getNotificationType();
+        final String notificationTypeLabel = WordUtils.capitalizeFully(notificationType.replace("_", " "));
+        final String fontAwesomeIcon = providerContentType.getFontAwesomeIcon();
+        return new LabelValueSelectOption(notificationTypeLabel, notificationType, fontAwesomeIcon);
+    }
+
+    private LabelValueSelectOption convertToLabelValueOption(String formatName) {
+        final String formatNameLabel = WordUtils.capitalizeFully(formatName.replace("_", " "));
+        return new LabelValueSelectOption(formatNameLabel, formatName);
     }
 
     private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
@@ -118,7 +132,5 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         }
         return List.of();
     }
-
-    public abstract List<ConfigField> createProviderDistributionFields();
 
 }

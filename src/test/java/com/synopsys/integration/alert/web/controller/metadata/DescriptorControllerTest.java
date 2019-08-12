@@ -152,12 +152,12 @@ public class DescriptorControllerTest {
 
     private DescriptorController createDescriptorController() {
         final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.anyString());
-        Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.anyString());
-        Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.anyString());
-        Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.anyString());
-        Mockito.doReturn(true).when(authorizationManager).hasCreatePermission(Mockito.anyString());
-        Mockito.doReturn(true).when(authorizationManager).hasExecutePermission(Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasCreatePermission(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasExecutePermission(Mockito.anyString(), Mockito.anyString());
         return new DescriptorController(descriptors, authorizationManager);
     }
 

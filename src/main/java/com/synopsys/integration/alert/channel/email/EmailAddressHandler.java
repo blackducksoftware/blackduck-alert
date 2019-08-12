@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 
 @Component
 public class EmailAddressHandler {
@@ -60,12 +61,19 @@ public class EmailAddressHandler {
     }
 
     // FIXME This does not filter by provider. This works fine for now but will cause bugs in the future when we have multiple providers. Will probably need to modify our tables
-    public FieldAccessor updateEmailAddresses(final MessageContentGroup contentGroup, final FieldAccessor originalAccessor) {
+    public FieldAccessor updateEmailAddresses(MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
         final Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         final Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
         final Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
-        final Set<String> providerEmailAddresses = collectProviderEmailsFromProject(contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
-        emailAddresses.addAll(providerEmailAddresses);
+
+        final boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
+        if (!useOnlyAdditionalEmailAddresses) {
+            final Set<String> projectEmailAddresses = collectProviderEmailsFromProject(contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
+            emailAddresses.addAll(projectEmailAddresses);
+        }
+
+        final Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(originalAccessor);
+        emailAddresses.addAll(additionalEmailAddresses);
 
         // Temporary fix for license notifications
         final Set<String> licenseNotificationEmails = licenseNotificationCheck(contentGroup.getSubContent(), originalAccessor, projectOwnerOnly);
@@ -79,7 +87,7 @@ public class EmailAddressHandler {
         return new FieldAccessor(fieldMap);
     }
 
-    public Set<String> getEmailAddressesForProject(final ProviderProject project, final Boolean projectOwnerOnly) {
+    public Set<String> getEmailAddressesForProject(ProviderProject project, Boolean projectOwnerOnly) {
         final Set<String> emailAddresses;
         if (projectOwnerOnly) {
             final String projectOwnerEmail = project.getProjectOwnerEmail();
@@ -97,7 +105,22 @@ public class EmailAddressHandler {
         return emailAddresses;
     }
 
-    private Set<String> collectProviderEmailsFromProject(final String projectName, final boolean projectOwnerOnly) {
+    public Set<String> collectAdditionalEmailAddresses(FieldAccessor fieldAccessor) {
+        final Optional<String> optionalProviderName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        final Collection<String> additionalEmailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
+        if (optionalProviderName.isPresent() && !additionalEmailAddresses.isEmpty()) {
+            logger.debug("Adding additional email addresses");
+            return providerDataAccessor.getAllUsers(optionalProviderName.get())
+                       .stream()
+                       .map(ProviderUserModel::getEmailAddress)
+                       .filter(additionalEmailAddresses::contains)
+                       .collect(Collectors.toSet());
+        }
+        logger.debug("No additional email addresses to add");
+        return Set.of();
+    }
+
+    private Set<String> collectProviderEmailsFromProject(String projectName, boolean projectOwnerOnly) {
         final Optional<ProviderProject> optionalProject = providerDataAccessor.findFirstByName(projectName); // FIXME use href
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
@@ -106,7 +129,7 @@ public class EmailAddressHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> licenseNotificationCheck(final Collection<ProviderMessageContent> messages, final FieldAccessor fieldAccessor, final boolean projectOwnerOnly) {
+    private Set<String> licenseNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, boolean projectOwnerOnly) {
         final boolean hasSubTopic = messages
                                         .stream()
                                         .map(ProviderMessageContent::getSubTopic)
@@ -131,7 +154,6 @@ public class EmailAddressHandler {
                        .flatMap(Set::stream)
                        .collect(Collectors.toSet());
         }
-
         return Set.of();
     }
 

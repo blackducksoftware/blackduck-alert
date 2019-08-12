@@ -1,8 +1,8 @@
 import {
     SYSTEM_LATEST_MESSAGES_FETCHED,
     SYSTEM_LATEST_MESSAGES_FETCHING,
-    SYSTEM_SETUP_DESCRIPTOR_FETCHING,
     SYSTEM_SETUP_DESCRIPTOR_FETCHED,
+    SYSTEM_SETUP_DESCRIPTOR_FETCHING,
     SYSTEM_SETUP_FETCH_ERROR,
     SYSTEM_SETUP_FETCH_REDIRECTED,
     SYSTEM_SETUP_FETCHING,
@@ -120,9 +120,10 @@ export function getLatestMessages() {
         fetch(LATEST_MESSAGES_URL)
             .then((response) => {
                 if (response.ok) {
-                    response.json().then((body) => {
-                        dispatch(latestSystemMessagesFetched(body));
-                    });
+                    response.json()
+                        .then((body) => {
+                            dispatch(latestSystemMessagesFetched(body));
+                        });
                 } else {
                     dispatch(verifyLoginByStatus(response.status));
                 }
@@ -139,9 +140,10 @@ export function getInitialSystemSetup() {
                 if (response.redirected) {
                     dispatch(fetchSetupRedirected());
                 } else if (response.ok) {
-                    response.json().then((body) => {
-                        dispatch(systemSetupShowConfig(body));
-                    });
+                    response.json()
+                        .then((body) => {
+                            dispatch(systemSetupShowConfig(body));
+                        });
                 } else {
                     dispatch(systemSetupFetchError(response.statusText));
                 }
@@ -158,9 +160,10 @@ export function getInitialSystemDescriptor() {
                 if (response.redirected) {
                     dispatch(fetchSetupRedirected());
                 } else if (response.ok) {
-                    response.json().then((body) => {
-                        dispatch(systemDescriptorFetched(body));
-                    });
+                    response.json()
+                        .then((body) => {
+                            dispatch(systemDescriptorFetched(body));
+                        });
                 } else {
                     dispatch(systemSetupFetchError(response.statusText));
                 }
@@ -189,19 +192,21 @@ export function saveInitialSystemSetup(setupData) {
                     dispatch(systemSetupUpdated());
                     dispatch(getInitialSystemSetup());
                 } else {
-                    response.json().then((body) => {
-                        const jsonErrors = body.errors;
-                        const errors = {};
-                        if (jsonErrors) {
-                            Object.keys(jsonErrors).forEach((key) => {
-                                if (jsonErrors[key]) {
-                                    const value = jsonErrors[key];
-                                    errors[key] = value;
-                                }
-                            });
-                        }
-                        dispatch(systemSetupUpdateError(body.message, errors));
-                    });
+                    response.json()
+                        .then((body) => {
+                            const jsonErrors = body.errors;
+                            const errors = {};
+                            if (jsonErrors) {
+                                Object.keys(jsonErrors)
+                                    .forEach((key) => {
+                                        if (jsonErrors[key]) {
+                                            const value = jsonErrors[key];
+                                            errors[key] = value;
+                                        }
+                                    });
+                            }
+                            dispatch(systemSetupUpdateError(body.message, errors));
+                        });
                 }
             })
             .catch(console.error);
@@ -215,12 +220,15 @@ export function sendPasswordResetEmail(username) {
         const url = `/alert/api/resetPassword/${encodeURIComponent(username)}`;
         fetch(url, {
             method: 'POST'
-        }).then((response) => {
-            dispatch(hideResetModal());
-            if (!response.ok) {
-                response.json().then(body =>
-                    dispatch(loginError(body.message, body.fieldErrors)));
-            }
-        }).catch(console.error);
+        })
+            .then((response) => {
+                dispatch(hideResetModal());
+                if (!response.ok) {
+                    response.json()
+                        .then(body =>
+                            dispatch(loginError(body.message, body.fieldErrors)));
+                }
+            })
+            .catch(console.error);
     };
 }
