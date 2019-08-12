@@ -12,6 +12,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import DistributionConfiguration from 'dynamic/DistributionConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NotificationTypeLegend from 'dynamic/loaded/audit/NotificationTypeLegend';
 
 /**
  * Selects className based on field value
@@ -255,6 +256,19 @@ class Index extends Component {
         return defaultValue;
     }
 
+    notificationTypeDataFormat(cell) {
+    const notificationTypes = (!Array.isArray(cell)) ? [cell] : cell;
+
+    return (<NotificationTypeLegend
+        hasPolicyViolation={notificationTypes.includes('RULE_VIOLATION')}
+        hasPolicyViolationCleared={notificationTypes.includes('RULE_VIOLATION_CLEARED')}
+        hasPolicyViolationOverride={notificationTypes.includes('POLICY_OVERRIDE')}
+        hasVulnerability={notificationTypes.includes('VULNERABILITY')}
+        hasLicenseLimit={notificationTypes.includes('LICENSE_LIMIT')}
+        hasBomEdit={notificationTypes.includes('BOM_EDIT')}
+    />);
+    }
+
     createTableData(jobs) {
         const tableData = [];
         if (jobs) {
@@ -266,7 +280,7 @@ class Index extends Component {
                     const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
                     const distributionType = channelModel.descriptorName;
                     const providerName = providerModel.descriptorName;
-                    const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, 'provider.distribution.notification.types').join(', ');
+                    const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, 'provider.distribution.notification.types');
                     const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
                     const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
                     const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
@@ -358,7 +372,7 @@ class Index extends Component {
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                     <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                    <TableHeaderColumn dataField="notificationTypes" dataSort columnClassName="tableCell">Notification Types</TableHeaderColumn>
+                    <TableHeaderColumn dataField="notificationTypes" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
