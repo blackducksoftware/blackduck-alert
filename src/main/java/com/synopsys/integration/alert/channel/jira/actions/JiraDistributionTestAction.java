@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.channel.jira.actions;
 import java.util.Date;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +47,7 @@ import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class JiraDistributionTestAction extends ChannelDistributionTestAction {
+    private final Logger logger = LoggerFactory.getLogger(JiraDistributionTestAction.class);
 
     @Autowired
     public JiraDistributionTestAction(final JiraChannel jiraChannel) {
@@ -54,14 +57,29 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     @Override
     public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
+
+        logger.debug("Sending initial ADD test message...");
         final DistributionEvent createIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
-        getDistributionChannel().sendMessage(createIssueEvent);
+        final String initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
+        logger.debug("Initial ADD test message sent!");
 
-        final DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
-        getDistributionChannel().sendMessage(resolveIssueEvent);
+        try {
+            logger.debug("Sending DELETE test message...");
+            final DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
+            getDistributionChannel().sendMessage(resolveIssueEvent);
+            logger.debug("DELETE test message sent!");
 
-        final DistributionEvent reOpenIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
-        return getDistributionChannel().sendMessage(reOpenIssueEvent);
+            logger.debug("Sending additional ADD test message...");
+            final DistributionEvent reOpenIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
+            final String reOpenResult = getDistributionChannel().sendMessage(reOpenIssueEvent);
+            logger.debug("Additional ADD test message sent!");
+            return reOpenResult;
+        } catch (AlertException e) {
+            // Any specific exceptions will have already been thrown by the initial message attempt, so we should only see AlertExceptions at this point.
+            logger.debug("Error testing Jira Cloud config", e);
+            String errorMessage = String.format("The initial test succeeded, but there were issues transitioning the test issue. | Initial Result: %s | Transition Result: %s", initialTestResult, e.getMessage());
+            throw new AlertException(errorMessage);
+        }
     }
 
     public DistributionEvent createChannelTestEvent(final String jobId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {

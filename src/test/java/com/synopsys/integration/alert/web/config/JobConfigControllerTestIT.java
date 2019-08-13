@@ -54,7 +54,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
 @Transactional
-public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
+public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String url = JobConfigController.JOB_CONFIGURATION_PATH;
     @Autowired
@@ -215,7 +215,6 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             fieldModel.setId(channelId);
         }
 
-
         final String bdDescriptorName = BlackDuckProvider.COMPONENT_NAME;
         final String bdContext = ConfigContextEnum.DISTRIBUTION.name();
 
@@ -270,4 +269,5 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         assertEquals(FrequencyType.DAILY.name(), frequencyField.get().getFieldValue().orElse(""));
         assertEquals("false", filterByProjectField.get().getFieldValue().orElse(""));
     }
+
 }

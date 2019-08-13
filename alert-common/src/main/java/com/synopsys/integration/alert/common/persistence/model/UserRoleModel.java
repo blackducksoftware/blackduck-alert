@@ -31,17 +31,17 @@ public class UserRoleModel extends AlertSerializableModel {
     private final String name;
     private final PermissionMatrixModel permissions;
 
-    private UserRoleModel(final String name, final PermissionMatrixModel permissions) {
+    private UserRoleModel(String name, PermissionMatrixModel permissions) {
         this.name = name;
         this.permissions = permissions;
     }
 
-    public static final UserRoleModel of(final String name) {
+    public static final UserRoleModel of(String name) {
         Objects.requireNonNull(name);
         return new UserRoleModel(name, new PermissionMatrixModel(Map.of()));
     }
 
-    public static final UserRoleModel of(final String name, final PermissionMatrixModel permissions) {
+    public static final UserRoleModel of(String name, PermissionMatrixModel permissions) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(permissions);
         return new UserRoleModel(name, permissions);
@@ -54,4 +54,5 @@ public class UserRoleModel extends AlertSerializableModel {
     public PermissionMatrixModel getPermissions() {
         return permissions;
     }
+
 }
