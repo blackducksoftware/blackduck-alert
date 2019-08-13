@@ -149,7 +149,8 @@ public class JobConfigActions {
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
             descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
-            final Long fieldModelId = Long.parseLong(beforeUpdateEventFieldModel.getId());
+            final String beforeFieldModelId = beforeUpdateEventFieldModel.getId();
+            final Long fieldModelId = (StringUtils.isNotBlank(beforeFieldModelId)) ? Long.parseLong(beforeFieldModelId) : null;
             final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
