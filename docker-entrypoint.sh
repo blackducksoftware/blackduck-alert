@@ -9,7 +9,7 @@ serverCertName=$APPLICATION_NAME-server
 
 dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
 keyStoreFile=$APPLICATION_NAME.keystore
-keystorePath=$securityDir/$keyStoreFile
+keystoreFilePath=$securityDir/$keyStoreFile
 truststoreFile=$securityDir/$APPLICATION_NAME.truststore
 
 publicWebserverHost="${ALERT_HOSTNAME:-localhost}"
@@ -144,9 +144,26 @@ trustRootCertificate() {
     exitCode=$?
     if [ $exitCode -eq 0 ];
     then
-        echo "Successfully imported Hub root certificate into Java truststore."
+        echo "Successfully imported BlackDuck root certificate into Java truststore."
     else
-        echo "Unable to import Hub root certificate into Java truststore (Code: $exitCode)."
+        echo "Unable to import BlackDuck root certificate into Java truststore (Code: $exitCode)."
+        exit $exitCode
+    fi
+}
+
+trustBlackDuckSystemCertificate() {
+  $certificateManagerDir/certificate-manager.sh trust-java-cert \
+                        --store $truststoreFile \
+                        --password changeit \
+                        --cert $securityDir/blackduck_system.crt \
+                        --certAlias blackduck_system
+
+    exitCode=$?
+    if [ $exitCode -eq 0 ];
+    then
+        echo "Successfully imported BlackDuck root certificate into Java truststore."
+    else
+        echo "Unable to import BlackDuck root certificate into Java truststore (Code: $exitCode)."
         exit $exitCode
     fi
 }
@@ -196,38 +213,58 @@ createKeystore() {
     exitCode=$?
     if [ $exitCode -eq 0 ];
     then
-        chmod 644 $keystorePath
+        chmod 644 $keystoreFilePath
     else
         echo "Unable to create keystore (Code: $exitCode)."
         exit $exitCode
     fi
 }
 
+importBlackDuckSystemCertificateIntoKeystore() {
+  $certificateManagerDir/certificate-manager.sh trust-java-cert \
+                        --store $keystoreFilePath \
+                        --password changeit \
+                        --cert $securityDir/blackduck_system.crt \
+                        --certAlias blackduck_system
 
+    exitCode=$?
+    if [ $exitCode -eq 0 ];
+    then
+        echo "Successfully imported BlackDuck system certificate into Java truststore."
+    else
+        echo "Unable to import BlackDuck system certificate into Java truststore (Code: $exitCode)."
+        exit $exitCode
+    fi
+}
 # Bootstrap will optionally configure the config volume if it hasnt been configured yet.
 # After that we verify, import certs, and then launch the webserver.
 
-importWebServerCertificate(){
+importBlackDuckWebServerCertificate(){
     if [ "$ALERT_IMPORT_CERT" == "false" ];
     then
-        echo "Skipping import of Hub Certificate"
+        echo "Skipping import of BlackDuck Certificate"
     else
-    	echo "Attempting to import Hub Certificate"
-    	echo $PUBLIC_HUB_WEBSERVER_HOST
-    	echo $PUBLIC_HUB_WEBSERVER_PORT
+      if [ -z "$PUBLIC_HUB_WEBSERVER_HOST" ] && [ -z "$PUBLIC_HUB_WEBSERVER_PORT"];
+      then
+        echo "Attempting to import BlackDuck Certificate"
+        echo $PUBLIC_HUB_WEBSERVER_HOST
+        echo $PUBLIC_HUB_WEBSERVER_PORT
 
-    	# In case of alert container restart
-    	if keytool -list -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver
-    	then
-    	    keytool -delete -alias publichubwebserver -keystore "$truststoreFile" -storepass changeit
-    		echo "Removing the existing certificate after container restart"
-    	fi
+        # In case of alert container restart
+        if keytool -list -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver
+        then
+            keytool -delete -alias publichubwebserver -keystore "$truststoreFile" -storepass changeit
+          echo "Removing the existing certificate after container restart"
+        fi
 
-    	if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver -noprompt
-    	then
-    		echo "Completed importing Hub Certificate"
-    	else
-    		echo "Unable to add the certificate. Please try to import the certificate manually."
+        if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver -noprompt
+        then
+          echo "Completed importing BlackDuck Certificate"
+        else
+          echo "Unable to add the certificate. Please try to import the certificate manually."
+        fi
+      else
+        echo "PUBLIC_HUB_WEBSERVER_HOST and/or PUBLIC_HUB_WEBSERVER_PORT not set.  Skipping import of BlackDuck Certificate"
     	fi
     fi
 }
@@ -302,11 +339,14 @@ else
     else
         manageSelfSignedServerCertificate
     fi
+  manageBlackduckSystemClientCertificate
   createTruststore
-  createKeystore
   trustRootCertificate
+  trustBlackDuckSystemCertificate
   trustProxyCertificate
-  importWebServerCertificate
+  createKeystore
+  importBlackDuckSystemCertificateIntoKeystore
+  importBlackDuckWebServerCertificate
   createDataBackUp
 
   if [ -f "$truststoreFile" ];
