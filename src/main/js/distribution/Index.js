@@ -10,7 +10,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import DistributionConfiguration from 'dynamic/DistributionConfiguration';
+import DistributionConfiguration, { KEY_NAME } from 'dynamic/DistributionConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NotificationTypeLegend from 'dynamic/loaded/audit/NotificationTypeLegend';
 
@@ -274,8 +274,8 @@ class Index extends Component {
         if (jobs) {
             jobs.forEach((job) => {
                 if (job && job.fieldModels) {
-                    const channelModel = job.fieldModels.find(fieldModel => fieldModel.descriptorName.startsWith('channel_'));
-                    const providerModel = job.fieldModels.find(fieldModel => fieldModel.descriptorName.startsWith('provider_'));
+                    const channelModel = job.fieldModels.find(fieldModel => FieldModelUtilities.hasKey(fieldModel, KEY_NAME));
+                    const providerModel = job.fieldModels.find(fieldModel => !FieldModelUtilities.hasKey(fieldModel, KEY_NAME));
                     const id = job.jobId;
                     const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
                     const distributionType = channelModel.descriptorName;

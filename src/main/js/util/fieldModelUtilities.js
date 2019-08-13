@@ -274,3 +274,10 @@ export function checkModelOrCreateModelWithDefaults(fieldModel, fields) {
     newModel.keyToValues = newKeyToValues;
     return newModel;
 }
+
+export function hasKey(fieldModel, key) {
+    const keyToValues = fieldModel.keyToValues;
+    if (keyToValues) {
+        return Object.keys(keyToValues).includes(key);
+    }
+}
