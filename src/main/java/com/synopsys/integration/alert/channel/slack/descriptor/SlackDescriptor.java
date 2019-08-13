@@ -36,7 +36,7 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     public static final String SLACK_LABEL = "Slack";
     public static final String SLACK_URL = "slack";
-    public static final String SLACK_DESCRIPTION = "This page allows you to configure the Slack for Alert.";
+    public static final String SLACK_DESCRIPTION = "Configure Slack for Alert.";
     // brands are in the fab icon set use the / character to delimit the icon set.
     public static final String SLACK_ICON = "fab/slack";
 
