@@ -99,6 +99,7 @@ public class ProviderDataController extends BaseController {
             final AlertPagedModel<ProviderUserModel> pageOfUsers = providerDataAccessor.getPageOfUsers(BlackDuckProvider.COMPONENT_NAME, offset, limit, q);
             final LinkedHashSet<LabelValueSelectOption> emailOptions = pageOfUsers.getContent()
                                                                            .stream()
+                                                                           .filter(user -> !user.getOptOut())
                                                                            .map(ProviderUserModel::getEmailAddress)
                                                                            .sorted()
                                                                            .map(LabelValueSelectOption::new)

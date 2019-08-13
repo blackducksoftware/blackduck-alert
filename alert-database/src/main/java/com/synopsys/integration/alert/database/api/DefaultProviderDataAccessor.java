@@ -165,7 +165,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer offset, Integer limit, String q) throws AlertDatabaseConstraintException {
+    public AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer pageNumber, Integer pageSize, String q) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(providerName)) {
             throw new AlertDatabaseConstraintException("The field 'providerName' cannot be blank.");
         }
@@ -173,9 +173,9 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
             q = "@";
         }
 
-        Integer offsetToUse = isUsableParam(offset) ? offset : DEFAULT_OFFSET;
-        Integer limitToUse = isUsableParam(limit) ? limit : DEFAULT_LIMIT;
-        PageRequest pageRequest = PageRequest.of(offsetToUse, limitToUse, new Sort(Sort.Direction.DESC, "emailAddress"));
+        Integer pageNumberToUse = isUsableParam(pageNumber) ? pageNumber : DEFAULT_OFFSET;
+        Integer pageSizeToUse = isUsableParam(pageSize) ? pageSize : DEFAULT_LIMIT;
+        PageRequest pageRequest = PageRequest.of(pageNumberToUse, pageSizeToUse, new Sort(Sort.Direction.DESC, "emailAddress"));
 
         Page<ProviderUserEntity> pageOfUsers = providerUserRepository.findPageOfUsersByProvider(providerName, q, pageRequest);
         List<ProviderUserModel> userModels = pageOfUsers.getContent()
