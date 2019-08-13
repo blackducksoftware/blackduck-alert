@@ -12,7 +12,7 @@ const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerabi
 const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa-layers fa-fw highVulnerability"><FontAwesomeIcon icon="shield-alt" className="alert-icon" size="lg" /></span>;
 const issueCountIncreasedIcon = <span key="issueCountIncreasing" alt="Issue Count Increased" className="fa-layers fa-fw issueCountIncreased"><FontAwesomeIcon icon="angle-double-up" className="alert-icon" size="lg" /></span>;
 const issueCountDecreasedIcon = <span key="issueCountDecreased" alt="Issue Count Decreased" className="fa-layers fa-fw issueCountDecreased"><FontAwesomeIcon icon="angle-double-down" className="alert-icon" size="lg" /></span>;
-const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa fa-database fa-fw licenseLimit" aria-hidden="true" />;
+const licenseLimitIcon = <span key="licenseLimit" alt="License Limit" className="fa fa-database fa-fw licenseLimit" aria-hidden="true"><FontAwesomeIcon icon="gavel" className="alert-icon" size="lg" /></span>;
 const bomEditIcon = <span key="bomEdit" alt="Bom Edit" className="fa-layers fa-fw bomEdit"><FontAwesomeIcon icon="user-edit" className="alert-icon" size="lg" /></span>;
 
 const NotificationTypeLegend = ({
