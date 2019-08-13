@@ -54,7 +54,6 @@ public class NotificationContent extends DatabaseEntity implements AlertNotifica
     private String content;
 
     @OneToMany(mappedBy = "notificationContent")
-    //@JoinColumn(name = "notification_id", referencedColumnName = "id", insertable = false, updatable = false)
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
     public NotificationContent() {

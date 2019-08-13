@@ -24,13 +24,13 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-public class AlertPagedModel<M extends Config> extends AlertSerializableModel {
+public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSerializableModel {
     private final int totalPages;
     private final int currentPage;
     private final int pageSize;
     private final List<M> content;
 
-    public AlertPagedModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
+    public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> content) {
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
@@ -52,4 +52,5 @@ public class AlertPagedModel<M extends Config> extends AlertSerializableModel {
     public List<M> getContent() {
         return content;
     }
+
 }

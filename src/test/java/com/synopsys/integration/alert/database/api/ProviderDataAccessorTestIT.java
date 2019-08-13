@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -236,6 +237,37 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         final List<ProviderUserModel> allProviderUsers = providerDataAccessor.getAllUsers(providerName);
         assertEquals(3, allProviderUsers.size());
+    }
+
+    @Test
+    public void getPageOfUsersTest() throws AlertDatabaseConstraintException {
+        final String providerName = "provider name";
+        final String newUserEmail1 = "newEmail1@gmail.com";
+        final String newUserEmail2 = "newEmail2@gmail.com";
+        final String newUserEmail3 = "newEmail3@gmail.com";
+        final String newUserEmail4 = "newEmail4@gmail.com";
+        final ProviderUserEntity newUser1 = new ProviderUserEntity(newUserEmail1, false, providerName);
+        final ProviderUserEntity newUser2 = new ProviderUserEntity(newUserEmail2, false, providerName);
+        final ProviderUserEntity newUser3 = new ProviderUserEntity(newUserEmail3, false, providerName);
+        final ProviderUserEntity newUser4 = new ProviderUserEntity(newUserEmail4, false, providerName);
+        providerUserRepository.save(newUser1);
+        providerUserRepository.save(newUser2);
+        providerUserRepository.save(newUser3);
+        providerUserRepository.save(newUser4);
+
+        final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
+
+        // Test pageNumber
+        final AlertPagedModel<ProviderUserModel> offsetUsers = providerDataAccessor.getPageOfUsers(providerName, 1, 2, null);
+        assertEquals(2, offsetUsers.getContent().size());
+
+        // Test pageSize
+        final AlertPagedModel<ProviderUserModel> limitedUsers = providerDataAccessor.getPageOfUsers(providerName, 0, 2, null);
+        assertEquals(2, limitedUsers.getContent().size());
+
+        // Test q
+        final AlertPagedModel<ProviderUserModel> filteredUsers = providerDataAccessor.getPageOfUsers(providerName, 0, 100, "3");
+        assertEquals(1, filteredUsers.getContent().size());
     }
 
     @Test

@@ -31,6 +31,7 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ProviderDataAccessor {
     Optional<ProviderProject> findFirstByHref(final String href);
@@ -52,6 +53,8 @@ public interface ProviderDataAccessor {
     void remapUsersToProjectByEmail(final String projectHref, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException;
 
     List<ProviderUserModel> getAllUsers(final String providerName);
+
+    AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer offset, Integer limit, String q) throws AlertDatabaseConstraintException;
 
     List<ProviderUserModel> saveUsers(final String providerName, final Collection<ProviderUserModel> users);
 
