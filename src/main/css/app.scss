@@ -258,6 +258,22 @@ form.form-horizontal.loginForm {
   padding-top: 10px;
 }
 
+.descriptorHeader {
+  padding-bottom: 0px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.descriptorDescription {
+  position: relative;
+  left: 2vw;
+}
+
+.descriptorBorder {
+  margin: 15px 0;
+  border-bottom: $navigation-border;
+}
+
 .table {
   display: table;
   margin: 0 auto;
