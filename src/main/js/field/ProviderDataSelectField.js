@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Select from "react-select";
+import AsyncSelect from "react-select/lib/Async";
 import LabeledField from "./LabeledField";
 import { verifyLoginByStatus } from "../store/actions/session";
 import { KEY_PROVIDER_NAME } from '../dynamic/DistributionConfiguration';
@@ -9,30 +9,8 @@ class ProviderDataSelectField extends Component {
     constructor(props) {
         super(props);
 
-        this.noOptionsMessage = this.noOptionsMessage.bind(this);
-        this.componentDidUpdate = this.componentDidUpdate.bind(this);
         this.getProvider = this.getProvider.bind(this);
-        this.providerDataFetched = this.providerDataFetched.bind(this);
         this.fetchProviderData = this.fetchProviderData.bind(this);
-        this.providerDataError = this.providerDataError.bind(this);
-
-        this.state = {
-            fetched: false,
-            errorMessage: 'Please select a provider',
-            providerData: []
-        };
-    }
-
-    noOptionsMessage() {
-        return this.state.errorMessage;
-    }
-
-    componentDidUpdate() {
-        const provider = this.getProvider();
-        if (!this.state.fetched && provider && provider !== '') {
-            this.fetchProviderData(this.props.providerDataEndpoint, provider)
-                .then(providerData => this.providerDataFetched(providerData));
-        }
     }
 
     getProvider() {
@@ -41,44 +19,28 @@ class ProviderDataSelectField extends Component {
         return providerValues && providerValues.length > 0 ? providerValues[0] : null;
     }
 
-    providerDataFetched(providerData) {
-        this.setState({
-            fetched: true,
-            errorMessage: 'No applicable values were found',
-            providerData: providerData
-        });
-    }
-
-    providerDataError(fetched, errorMessage) {
-        this.setState({
-            fetched: fetched,
-            errorMessage: errorMessage,
-            providerData: []
-        });
-    }
-
-    fetchProviderData(endpoint, providerName) {
+    fetchProviderData(endpoint, providerName, inputValue, callback) {
         const resolvedEndpoint = endpoint.replace('{provider}', providerName);
-        const requestUrl = `/alert/api${resolvedEndpoint}`;
-        return fetch(requestUrl, {
+        const requestUrl = `/alert/api${resolvedEndpoint}?offset=0&limit=100&q=${inputValue}`;
+        fetch(requestUrl, {
             credentials: 'same-origin'
         }).then((response) => {
             response.json()
                 .then((json) => {
                     if (!response.ok) {
                         verifyLoginByStatus(response.status);
-                        this.providerDataError(true, 'There was a problem with the request');
+                        callback([]);
                     } else {
-                        const providerData = json.map(item => {
+                        const options = json.map(item => {
                             const dataValue = item.value;
                             return { icon: null, key: dataValue, label: dataValue, value: dataValue };
                         });
-                        this.providerDataFetched(providerData);
+                        callback(options);
                     }
                 });
         }).catch((error) => {
             console.log(`Unable to connect to Server: ${error}`);
-            this.providerDataError(true, error);
+            callback([]);
         });
     }
 
@@ -100,25 +62,34 @@ class ProviderDataSelectField extends Component {
             });
         };
 
-        const { providerData } = this.state;
-        const options = providerData ? providerData : [];
-        const selectValue = options.filter(option => value.includes(option.value));
+        const loadOptions = (inputValue) => {
+            return new Promise(resolve => {
+                const provider = this.getProvider();
+                setTimeout(() => {
+                        this.fetchProviderData(this.props.providerDataEndpoint, provider, inputValue, resolve);
+                    },
+                    250
+                );
+            });
+        };
 
         const field = (<div className={selectClasses}>
-            <Select
+            <AsyncSelect
                 id={id}
                 className={inputClass}
-                onChange={handleChange}
+                onInputChange={handleChange}
                 isSearchable={searchable}
                 removeSelected={removeSelected}
-                options={options}
+                loadOptions={loadOptions}
+                cacheOptions={true}
+                defaultOptions={true}
                 placeholder={placeholder}
-                value={selectValue}
+                // value={selectValue}
                 isMulti={multiSelect}
                 closeMenuOnSelect={!multiSelect}
                 components={components}
                 isDisabled={readOnly}
-                noOptionsMessage={this.noOptionsMessage}
+                noOptionsMessage={() => 'No available options. Is the provider configured correctly?'}
             />
         </div>);
         return (
