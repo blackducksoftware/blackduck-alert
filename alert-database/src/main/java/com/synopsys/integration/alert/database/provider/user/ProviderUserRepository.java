@@ -24,10 +24,20 @@ package com.synopsys.integration.alert.database.provider.user;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity, Long> {
     List<ProviderUserEntity> findByProvider(final String provider);
+
+    @Query(value = "SELECT DISTINCT new ProviderUserEntity(providerUser.emailAddress, providerUser.optOut, providerUser.provider) "
+                       + "FROM ProviderUserEntity providerUser "
+                       + "WHERE providerUser.provider = :provider "
+                       + "AND providerUser.emailAddress LIKE %:q%")
+    Page<ProviderUserEntity> findPageOfUsersByProvider(@Param("provider") String provider, @Param("q") String q, Pageable pageable);
 
     List<ProviderUserEntity> findByEmailAddressAndProvider(final String emailAddress, final String provider);
 
