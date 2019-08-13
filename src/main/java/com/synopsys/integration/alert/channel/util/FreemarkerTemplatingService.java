@@ -60,17 +60,21 @@ public class FreemarkerTemplatingService {
         return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), channelDirectory);
     }
 
-    public Configuration createFreemarkerConfig(final String templateDirectory) throws IOException {
+    public Configuration createFreemarkerConfig(final File templateLoadingDirectory) throws IOException {
         final Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         cfg.setLogTemplateExceptions(false);
 
-        final File templateLoadingDirectory = findTemplateDirectory(templateDirectory);
         if (templateLoadingDirectory != null) {
             cfg.setDirectoryForTemplateLoading(templateLoadingDirectory);
         }
         return cfg;
+    }
+
+    public Configuration createFreemarkerConfig(final String templateDirectory) throws IOException {
+        final File templateLoadingDirectory = findTemplateDirectory(templateDirectory);
+        return createFreemarkerConfig(templateLoadingDirectory);
     }
 
     private File findTemplateDirectory(final String templateDirectory) {
