@@ -36,8 +36,8 @@ public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity
     @Query(value = "SELECT DISTINCT new ProviderUserEntity(providerUser.emailAddress, providerUser.optOut, providerUser.provider) "
                        + "FROM ProviderUserEntity providerUser "
                        + "WHERE providerUser.provider = :provider "
-                       + "AND providerUser.emailAddress LIKE %:q%")
-    Page<ProviderUserEntity> findPageOfUsersByProvider(@Param("provider") String provider, @Param("q") String q, Pageable pageable);
+                       + "AND providerUser.emailAddress LIKE %:emailSearchTerm%")
+    Page<ProviderUserEntity> findPageOfUsersByProviderAndEmailSearchTerm(@Param("provider") String provider, @Param("emailSearchTerm") String emailSearchTerm, Pageable pageable);
 
     List<ProviderUserEntity> findByEmailAddressAndProvider(final String emailAddress, final String provider);
 

@@ -177,7 +177,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         Integer pageSizeToUse = isUsableParam(pageSize) ? pageSize : DEFAULT_LIMIT;
         PageRequest pageRequest = PageRequest.of(pageNumberToUse, pageSizeToUse, new Sort(Sort.Direction.DESC, "emailAddress"));
 
-        Page<ProviderUserEntity> pageOfUsers = providerUserRepository.findPageOfUsersByProvider(providerName, q, pageRequest);
+        Page<ProviderUserEntity> pageOfUsers = providerUserRepository.findPageOfUsersByProviderAndEmailSearchTerm(providerName, q, pageRequest);
         List<ProviderUserModel> userModels = pageOfUsers.getContent()
                                                  .stream()
                                                  .map(entry -> new ProviderUserModel(entry.getEmailAddress(), entry.getOptOut()))
