@@ -244,27 +244,37 @@ importBlackDuckWebServerCertificate(){
     then
         echo "Skipping import of BlackDuck Certificate"
     else
-      if [ -z "$PUBLIC_HUB_WEBSERVER_HOST" ] && [ -z "$PUBLIC_HUB_WEBSERVER_PORT"];
+      if [ -z "$PUBLIC_HUB_WEBSERVER_HOST" ];
       then
+        echo "PUBLIC_HUB_WEBSERVER_HOST and/or PUBLIC_HUB_WEBSERVER_PORT not set.  Skipping import of BlackDuck Certificate"
+      else
         echo "Attempting to import BlackDuck Certificate"
         echo $PUBLIC_HUB_WEBSERVER_HOST
         echo $PUBLIC_HUB_WEBSERVER_PORT
 
         # In case of alert container restart
-        if keytool -list -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver
+        if keytool -list -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST"
         then
-            keytool -delete -alias publichubwebserver -keystore "$truststoreFile" -storepass changeit
+            keytool -delete -alias "$PUBLIC_HUB_WEBSERVER_HOST" -keystore "$truststoreFile" -storepass changeit
           echo "Removing the existing certificate after container restart"
         fi
 
-        if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver -noprompt
+        if [ -z "$PUBLIC_HUB_WEBSERVER_PORT"];
         then
-          echo "Completed importing BlackDuck Certificate"
+          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
+          then
+            echo "Completed importing BlackDuck Certificate"
+          else
+            echo "Unable to add the certificate. Please try to import the certificate manually."
+          fi
         else
-          echo "Unable to add the certificate. Please try to import the certificate manually."
+          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
+          then
+            echo "Completed importing BlackDuck Certificate"
+          else
+            echo "Unable to add the certificate. Please try to import the certificate manually."
+          fi
         fi
-      else
-        echo "PUBLIC_HUB_WEBSERVER_HOST and/or PUBLIC_HUB_WEBSERVER_PORT not set.  Skipping import of BlackDuck Certificate"
     	fi
     fi
 }
@@ -278,12 +288,12 @@ createDataBackUp(){
         rm -f "$alertConfigHome/data/backup.zip"
       fi
       cd "$alertConfigHome"
-      zip "$alertHome/backup.zip" -r "data"
-      if [ -f "$alertHome/backup.zip" ];
+      zip "$alertConfigHome/backup.zip" -r "data"
+      if [ -f "$alertConfigHome/backup.zip" ];
         then
-          echo "Created a backup of the data directory: $alertHome/backup.zip"
+          echo "Created a backup of the data directory: $alertConfigHome/backup.zip"
           echo "Moving backup file to: $alertConfigHome/data"
-          mv "$alertHome/backup.zip" "$alertConfigHome/data"
+          mv "$alertConfigHome/backup.zip" "$alertConfigHome/data"
         else
           echo "Cannot create the backup."
           echo "Cannot continue; stopping in 10 seconds..."
