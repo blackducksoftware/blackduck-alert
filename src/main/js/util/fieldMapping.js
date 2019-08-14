@@ -1,5 +1,4 @@
 import React from 'react';
-import { components } from 'react-select';
 import SelectInput from 'field/input/DynamicSelect';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
@@ -9,8 +8,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
-import DescriptorOption from 'component/common/DescriptorOption';
-import EndpointField from '../field/EndpointField';
+import EndpointButtonField from 'field/EndpointButtonField';
 import ProviderDataSelectField from "../field/ProviderDataSelectField";
 
 function extractFirstValue(items) {
@@ -44,8 +42,6 @@ function buildTextArea(items, field) {
     return <TextArea {...trimmedValue} />;
 }
 
-const { Option, SingleValue } = components;
-
 function buildSelectInput(items, field) {
     const { value } = items;
     const {
@@ -72,33 +68,21 @@ function buildSelectInput(items, field) {
 
 function buildProviderDataSelectInput(items, field) {
     const {
-        providerDataEndpoint, searchable, multiSelect, readOnly
+        searchable, multiSelect, readOnly, endpoint, key
     } = field;
 
     const isReadOnly = convertStringToBoolean(readOnly);
-    const typeOptionLabel = props => (
-        <Option {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-        </Option>
-    );
-
-    const typeLabel = props => (
-        <SingleValue {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-        </SingleValue>
-    );
 
     Object.assign(items, {
-        providerDataEndpoint,
         searchable,
         multiSelect,
         readOnly: isReadOnly,
-        components: {
-            Option: typeOptionLabel,
-            SingleValue: typeLabel
-        }
     });
-    return <ProviderDataSelectField {...items} />;
+    return <ProviderDataSelectField
+        endpoint={endpoint}
+        fieldKey={key}
+        {...items}
+    />;
 }
 
 function buildPasswordInput(items, field) {
@@ -159,7 +143,7 @@ function buildEndpointField(items, field) {
         className: 'form-control',
         readOnly: isReadOnly
     });
-    return (<EndpointField
+    return (<EndpointButtonField
         fields={subFields}
         buttonLabel={buttonLabel}
         endpoint={endpoint}
@@ -173,13 +157,13 @@ export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
     Select: buildSelectInput,
-    ProviderDataSelect: buildProviderDataSelectInput,
+    EndpointSelectField: buildProviderDataSelectInput,
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
     CountdownField: buildCounterField,
-    EndpointField: buildEndpointField
+    EndpointButtonField: buildEndpointField,
 };
 
 export function getField(fieldType, props, field) {

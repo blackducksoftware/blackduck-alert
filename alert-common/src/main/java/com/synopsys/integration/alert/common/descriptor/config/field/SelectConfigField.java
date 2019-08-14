@@ -39,6 +39,14 @@ public class SelectConfigField extends ConfigField {
     private boolean removeSelected;
     private boolean clearable;
 
+    protected SelectConfigField(String key, String label, String description, FieldType fieldType, boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
+        super(key, label, description, fieldType.getFieldTypeName(), required, false, false, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
+        this.searchable = searchable;
+        this.multiSelect = multiSelect;
+        this.removeSelected = removeSelected;
+        this.clearable = clearable;
+    }
+
     public SelectConfigField(String key, String label, String description, boolean required, boolean sensitive, boolean readOnly, boolean searchable, boolean multiSelect,
         boolean removeSelected, boolean clearable, Collection<LabelValueSelectOption> options) {
         super(key, label, description, FieldType.SELECT.getFieldTypeName(), required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
-import {components} from 'react-select';
+import Select, { components } from 'react-select';
 import LabeledField from 'field/LabeledField';
 import DescriptorOption from 'component/common/DescriptorOption';
 
@@ -9,7 +8,7 @@ const { Option, SingleValue } = components;
 
 function DynamicSelectInput(props) {
     const {
-        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, selectSpacingClass, readOnly, clearable
+        onChange, id, inputClass, options, searchable, placeholder, value, removeSelected, multiSelect, selectSpacingClass, readOnly, clearable, onFocus
     } = props;
 
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
@@ -59,6 +58,7 @@ function DynamicSelectInput(props) {
             components={components}
             isDisabled={readOnly}
             noOptionsMessage={() => 'No options available'}
+            onFocus={onFocus}
         />
     </div>);
     return (
@@ -80,7 +80,8 @@ DynamicSelectInput.propTypes = {
     readOnly: PropTypes.bool,
     multiSelect: PropTypes.bool,
     clearable: PropTypes.bool,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func
 };
 
 DynamicSelectInput.defaultProps = {
@@ -96,7 +97,8 @@ DynamicSelectInput.defaultProps = {
     removeSelected: false,
     readOnly: false,
     multiSelect: false,
-    clearable: true
+    clearable: true,
+    onFocus: () => null
 };
 
 

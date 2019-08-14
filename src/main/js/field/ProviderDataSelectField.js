@@ -1,99 +1,72 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import AsyncSelect from "react-select/lib/Async";
-import LabeledField from "./LabeledField";
-import { verifyLoginByStatus } from "../store/actions/session";
-import { KEY_PROVIDER_NAME } from '../dynamic/DistributionConfiguration';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { connect } from "react-redux";
+import { createNewConfigurationRequest } from "../util/configurationRequestBuilder";
+import DynamicSelectInput from "./input/DynamicSelect";
 
 class ProviderDataSelectField extends Component {
     constructor(props) {
         super(props);
 
-        this.getProvider = this.getProvider.bind(this);
-        this.fetchProviderData = this.fetchProviderData.bind(this);
+        this.onSendClick = this.onSendClick.bind(this);
+        this.state = ({
+            options: [],
+            progress: false,
+        });
     }
 
-    getProvider() {
-        const { currentConfig } = this.props;
-        const providerValues = currentConfig.keyToValues[KEY_PROVIDER_NAME].values;
-        return providerValues && providerValues.length > 0 ? providerValues[0] : null;
-    }
+    onSendClick() {
+        this.setState({
+            fieldError: this.props.errorValue,
+            progress: true,
+            success: false
+        });
+        const {
+            fieldKey, csrfToken, currentConfig, endpoint
+        } = this.props;
 
-    fetchProviderData(endpoint, providerName, inputValue, callback) {
-        const resolvedEndpoint = endpoint.replace('{provider}', providerName);
-        const requestUrl = `/alert/api${resolvedEndpoint}?offset=0&limit=100&q=${inputValue}`;
-        fetch(requestUrl, {
-            credentials: 'same-origin'
-        }).then((response) => {
-            response.json()
-                .then((json) => {
-                    if (!response.ok) {
-                        verifyLoginByStatus(response.status);
-                        callback([]);
-                    } else {
-                        const options = json.map(item => {
-                            const dataValue = item.value;
-                            return { icon: null, key: dataValue, label: dataValue, value: dataValue };
-                        });
-                        callback(options);
-                    }
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
+        request.then((response) => {
+            this.setState({
+                progress: false
+            });
+            if (response.ok) {
+                response.json().then((data) => {
+                    const options = data.map(item => {
+                        const dataValue = item.value;
+                        return { icon: null, key: dataValue, label: dataValue, value: dataValue };
+                    });
+
+                    this.setState({
+                        options,
+                        success: true
+                    })
                 });
-        }).catch((error) => {
-            console.log(`Unable to connect to Server: ${error}`);
-            callback([]);
+
+            } else {
+                response.json().then((data) => {
+                    this.setState({
+                        options: [],
+                        fieldError: data.message
+                    });
+                });
+            }
         });
     }
 
     render() {
-        const {
-            id, inputClass, searchable, placeholder, value, removeSelected, multiSelect, components, selectSpacingClass, readOnly, onChange
-        } = this.props;
-
-        const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
-
-        const handleChange = (selectedOptions) => {
-            const optionValue = selectedOptions ? selectedOptions.value : null;
-            const parsedArray = (Array.isArray(selectedOptions) && selectedOptions.length > 0) ? selectedOptions.map(mappedOption => mappedOption.value) : optionValue;
-            onChange({
-                target: {
-                    name: id,
-                    value: parsedArray
-                }
-            });
-        };
-
-        const loadOptions = (inputValue) => {
-            return new Promise(resolve => {
-                const provider = this.getProvider();
-                setTimeout(() => {
-                        this.fetchProviderData(this.props.providerDataEndpoint, provider, inputValue, resolve);
-                    },
-                    250
-                );
-            });
-        };
-
-        const field = (<div className={selectClasses}>
-            <AsyncSelect
-                id={id}
-                className={inputClass}
-                onInputChange={handleChange}
-                isSearchable={searchable}
-                removeSelected={removeSelected}
-                loadOptions={loadOptions}
-                cacheOptions={true}
-                defaultOptions={true}
-                placeholder={placeholder}
-                // value={selectValue}
-                isMulti={multiSelect}
-                closeMenuOnSelect={!multiSelect}
-                components={components}
-                isDisabled={readOnly}
-                noOptionsMessage={() => 'No available options. Is the provider configured correctly?'}
-            />
-        </div>);
         return (
-            <LabeledField field={field} {...this.props} />
+            <div>
+                <DynamicSelectInput onChange={this.props.onChange} onFocus={this.onSendClick} options={this.state.options} {...this.props} />
+                <div className="progressContainer">
+                    <div className="progressIcon">
+                        {this.state.progress &&
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                        }
+                    </div>
+                </div>
+            </div>
         );
     }
 }
@@ -111,7 +84,9 @@ ProviderDataSelectField.propTypes = {
     searchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
     multiSelect: PropTypes.bool,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    endpoint: PropTypes.string.isRequired,
+    fieldKey: PropTypes.string.isRequired
 };
 
 ProviderDataSelectField.defaultProps = {
@@ -128,4 +103,8 @@ ProviderDataSelectField.defaultProps = {
     multiSelect: false
 };
 
-export default ProviderDataSelectField;
+const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken
+});
+
+export default connect(mapStateToProps, null)(ProviderDataSelectField);
