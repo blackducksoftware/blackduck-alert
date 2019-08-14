@@ -66,21 +66,34 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         final String initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
         logger.debug("Initial ADD test message sent!");
 
+        String fromStatus = "Initial";
+        String toStatus = "Resolve";
         try {
             logger.debug("Sending DELETE test message...");
             final DistributionEvent resolveIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.DELETE, messageId);
             getDistributionChannel().sendMessage(resolveIssueEvent);
             logger.debug("DELETE test message sent!");
 
+            fromStatus = toStatus;
+            toStatus = "Reopen";
             logger.debug("Sending additional ADD test message...");
             final DistributionEvent reOpenIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.ADD, messageId);
-            final String reOpenResult = getDistributionChannel().sendMessage(reOpenIssueEvent);
+            getDistributionChannel().sendMessage(reOpenIssueEvent);
             logger.debug("Additional ADD test message sent!");
-            return reOpenResult;
+
+            fromStatus = toStatus;
+            toStatus = "Resolve";
+            logger.debug("Sending additional DELETE test message...");
+            final DistributionEvent reResolveIssueEvent = createChannelTestEvent(configId, fieldAccessor, ItemOperation.DELETE, messageId);
+            String reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
+            logger.debug("Additional DELETE test message sent!");
+
+            return reResolveResult;
         } catch (AlertException e) {
             // Any specific exceptions will have already been thrown by the initial message attempt, so we should only see AlertExceptions at this point.
             logger.debug("Error testing Jira Cloud config", e);
-            String errorMessage = String.format("The initial test succeeded, but there were issues transitioning the test issue. | Initial Result: %s | Transition Result: %s", initialTestResult, e.getMessage());
+            String errorMessage = String.format("The initial test succeeded, but there were problems transitioning the test issue from the %s status to the %s status. | Initial Result: %s | Transition Result: %s",
+                fromStatus, toStatus, initialTestResult, e.getMessage());
             throw new AlertException(errorMessage);
         }
     }
