@@ -67,7 +67,7 @@ class DistributionConfiguration extends Component {
                 const { job } = nextProps;
                 if (job && job.fieldModels) {
                     const channelModel = nextProps.job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
-                    const providerName = FieldModelUtilities.getFieldModelValues(channelModel, KEY_PROVIDER_NAME);
+                    const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
                     const providerModel = nextProps.job.fieldModels.find(model => providerName === model.descriptorName);
                     const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
                     const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);

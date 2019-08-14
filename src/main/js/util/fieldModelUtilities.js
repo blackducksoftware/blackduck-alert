@@ -6,7 +6,7 @@ export function getFieldDescription(fieldDescriptions, key) {
 }
 
 export function getFieldModelSingleValue(fieldModel, key) {
-    if (fieldModel.keyToValues) {
+    if (fieldModel && fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject && fieldObject.values) {
             if (Object.keys(fieldObject.values).length > 0) {
@@ -34,7 +34,7 @@ export function getFieldModelSingleNumberValueOrDefault(fieldModel, key, default
 }
 
 export function getFieldModelValues(fieldModel, key) {
-    if (fieldModel.keyToValues) {
+    if (fieldModel && fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject && fieldObject.values) {
             if (Object.keys(fieldObject.values).length > 0) {

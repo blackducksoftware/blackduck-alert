@@ -275,7 +275,7 @@ class Index extends Component {
             jobs.forEach((job) => {
                 if (job && job.fieldModels) {
                     const channelModel = job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
-                    const providerName = FieldModelUtilities.getFieldModelValues(channelModel, KEY_PROVIDER_NAME);
+                    const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
                     const providerModel = job.fieldModels.find(model => providerName === model.descriptorName);
                     const id = job.jobId;
                     const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
