@@ -52,7 +52,7 @@ manageSelfSignedServerCertificate() {
         --san $targetWebAppHost \
         --san $publicWebserverHost \
         --san localhost \
-        --hostName $publicWebserverHost
+        --hostName $targetWebAppHost
     exitCode=$?
     if [ $exitCode -eq 0 ];
     then
