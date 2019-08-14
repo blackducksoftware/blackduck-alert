@@ -34,6 +34,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -52,7 +56,11 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 @Component
 @Transactional
 public class DefaultProviderDataAccessor implements ProviderDataAccessor {
+    public static final Integer DEFAULT_OFFSET = 0;
+    public static final Integer DEFAULT_LIMIT = 100;
+
     private static final int MAX_DESCRIPTION_LENGTH = 250;
+
     private final Logger logger = LoggerFactory.getLogger(DefaultProviderDataAccessor.class);
     private final ProviderProjectRepository providerProjectRepository;
     private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
@@ -153,6 +161,28 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .stream()
                    .map(this::convertToUserModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer pageNumber, Integer pageSize, String q) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(providerName)) {
+            throw new AlertDatabaseConstraintException("The field 'providerName' cannot be blank.");
+        }
+        if (StringUtils.isBlank(q)) {
+            q = "@";
+        }
+
+        Integer pageNumberToUse = isUsableParam(pageNumber) ? pageNumber : DEFAULT_OFFSET;
+        Integer pageSizeToUse = isUsableParam(pageSize) ? pageSize : DEFAULT_LIMIT;
+        PageRequest pageRequest = PageRequest.of(pageNumberToUse, pageSizeToUse, new Sort(Sort.Direction.DESC, "emailAddress"));
+
+        Page<ProviderUserEntity> pageOfUsers = providerUserRepository.findPageOfUsersByProviderAndEmailSearchTerm(providerName, q, pageRequest);
+        List<ProviderUserModel> userModels = pageOfUsers.getContent()
+                                                 .stream()
+                                                 .map(entry -> new ProviderUserModel(entry.getEmailAddress(), entry.getOptOut()))
+                                                 .collect(Collectors.toList());
+        return new AlertPagedModel<>(pageOfUsers.getTotalPages(), pageOfUsers.getNumber(), userModels.size(), userModels);
     }
 
     @Override
@@ -264,6 +294,10 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
             }
         }
         logger.info("User to project relationships {}", userProjectRelations.size());
+    }
+
+    private boolean isUsableParam(Integer param) {
+        return null != param && 0 <= param;
     }
 
 }

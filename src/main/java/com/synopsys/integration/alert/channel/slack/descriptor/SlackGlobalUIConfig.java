@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,18 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.channel.slack.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
-public abstract class ChannelDescriptor extends Descriptor {
+@Component
+public class SlackGlobalUIConfig extends UIConfig {
 
-    public ChannelDescriptor(final String name, final ChannelDistributionUIConfig distributionUIConfig, final UIConfig globalUIConfig) {
-        super(name, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
+    public SlackGlobalUIConfig() {
+        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_DESCRIPTION, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
     }
 
+    @Override
+    public List<ConfigField> createFields() {
+        return List.of();
+    }
 }

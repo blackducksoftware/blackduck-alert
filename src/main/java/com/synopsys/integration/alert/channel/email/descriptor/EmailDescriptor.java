@@ -39,7 +39,7 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String EMAIL_LABEL = "Email";
     public static final String EMAIL_URL = "email";
     public static final String EMAIL_ICON = "envelope";
-    public static final String EMAIL_DESCRIPTION = "This page allows you to configure the email server that Alert will send emails to.";
+    public static final String EMAIL_DESCRIPTION = "Configure the email server that Alert will send emails to.";
 
     @Autowired
     public EmailDescriptor(final EmailGlobalUIConfig emailGlobalUIConfig, final EmailDistributionUIConfig emailDistributionUIConfig) {
