@@ -145,6 +145,7 @@ public class JiraIssueHandler {
                 final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
 
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
+                logJiraCloudAction(operation, providerName, topic, subTopic, arbitraryItem);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
                     final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
@@ -165,6 +166,7 @@ public class JiraIssueHandler {
                         IssueResponseModel issue = null;
                         try {
                             issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
+                            logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
                         } catch (IntegrationRestException e) {
                             handleIssueCreationRestException(e, issueCreator);
                         }
@@ -289,8 +291,9 @@ public class JiraIssueHandler {
     private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
         final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
         if (transitionName.isPresent()) {
-            final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
             final String transition = transitionName.get();
+            logger.debug("Attempting the transition '{}' on the issue '{}'", transition, issueKey);
+            final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
             final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
             if (firstTransitionByName.isPresent()) {
                 final TransitionComponent issueTransition = firstTransitionByName.get();
@@ -337,6 +340,13 @@ public class JiraIssueHandler {
         final String concatenatedKeys = String.join(", ", issueKeys);
         logger.debug("Issues updated: {}", concatenatedKeys);
         return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
+    }
+
+    private void logJiraCloudAction(ItemOperation operation, String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem arbitraryItem) {
+        String jiraProjectVersion = subTopic.map(LinkableItem::getValue).orElse("unknown");
+        String arbitraryItemSubComponent = arbitraryItem.getSubComponent().map(LinkableItem::getName).orElse("unknown");
+        logger.debug("Attempting the {} action from the {} provider on the project '{}' with version '{}'. Category: {}, Component: {}, SubComponent: {}.",
+            operation.name(), providerName, topic.getValue(), jiraProjectVersion, arbitraryItem.getCategory(), arbitraryItem.getComponent().getName(), arbitraryItemSubComponent);
     }
 
 }
