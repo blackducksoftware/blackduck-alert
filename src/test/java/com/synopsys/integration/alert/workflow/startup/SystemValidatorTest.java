@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
+import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -58,8 +58,8 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
-        final SystemValidator spiedSystemValidator = Mockito.spy(systemValidator);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer spiedSystemValidator = Mockito.spy(systemValidator);
 
         spiedSystemValidator.validate();
         Mockito.verify(systemStatusUtility).setSystemInitialized(Mockito.anyBoolean());
@@ -72,7 +72,7 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Not Initialized"));
@@ -86,7 +86,7 @@ public class SystemValidatorTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Initialized"));
@@ -103,7 +103,7 @@ public class SystemValidatorTest {
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemValidator systemValidator = new SystemValidator(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }
