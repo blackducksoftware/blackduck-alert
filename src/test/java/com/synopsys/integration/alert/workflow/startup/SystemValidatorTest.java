@@ -54,25 +54,21 @@ public class SystemValidatorTest {
         testGlobalProperties.setBlackDuckUrl("Black Duck URL");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
-        final SystemMessageInitializer spiedSystemValidator = Mockito.spy(systemValidator);
 
-        spiedSystemValidator.validate();
-        Mockito.verify(systemStatusUtility).setSystemInitialized(Mockito.anyBoolean());
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemMessageUtility, userAccessor, proxyManager);
+        systemValidator.validate();
     }
 
     @Test
     public void testValidateEncryptionProperties() throws IOException {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Not Initialized"));
@@ -86,7 +82,7 @@ public class SystemValidatorTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Initialized"));
@@ -99,11 +95,10 @@ public class SystemValidatorTest {
         testGlobalProperties.setBlackDuckUrl("Black Duck URL");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemStatusUtility, systemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, systemMessageUtility, userAccessor, proxyManager);
         systemValidator.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }
