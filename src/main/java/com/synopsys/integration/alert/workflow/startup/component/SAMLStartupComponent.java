@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 
 @Component
-@Order(6)
+@Order(7)
 public class SAMLStartupComponent extends StartupComponent {
     private final SAMLManager samlManager;
 
