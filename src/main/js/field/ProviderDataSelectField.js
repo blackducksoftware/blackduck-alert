@@ -1,25 +1,33 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
-import { createNewConfigurationRequest } from "../util/configurationRequestBuilder";
-import DynamicSelectInput from "./input/DynamicSelect";
+import { connect } from 'react-redux';
+import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import DynamicSelectInput from 'field/input/DynamicSelect';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 class ProviderDataSelectField extends Component {
     constructor(props) {
         super(props);
 
         this.onSendClick = this.onSendClick.bind(this);
+
         this.state = ({
             options: [],
             progress: false,
         });
     }
 
+    componentDidUpdate(prevProps) {
+        const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
+        const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
+        if (oldValuesEmpty && !currentValuesEmpty) {
+            this.onSendClick();
+        }
+    }
+
     onSendClick() {
         this.setState({
             fieldError: this.props.errorValue,
-            progress: true,
             success: false
         });
         const {
@@ -28,9 +36,6 @@ class ProviderDataSelectField extends Component {
 
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
         request.then((response) => {
-            this.setState({
-                progress: false
-            });
             if (response.ok) {
                 response.json().then((data) => {
                     const options = data.map(item => {
@@ -41,7 +46,7 @@ class ProviderDataSelectField extends Component {
                     this.setState({
                         options,
                         success: true
-                    })
+                    });
                 });
 
             } else {
@@ -59,13 +64,6 @@ class ProviderDataSelectField extends Component {
         return (
             <div>
                 <DynamicSelectInput onChange={this.props.onChange} onFocus={this.onSendClick} options={this.state.options} {...this.props} />
-                <div className="progressContainer">
-                    <div className="progressIcon">
-                        {this.state.progress &&
-                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                        }
-                    </div>
-                </div>
             </div>
         );
     }

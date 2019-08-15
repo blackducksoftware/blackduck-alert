@@ -43,19 +43,16 @@ function buildTextArea(items, field) {
 }
 
 function buildSelectInput(items, field) {
-    const { value } = items;
     const {
         searchable, multiSelect, options, readOnly, removeSelected, clearable
     } = field;
 
-    const selectValue = options.filter(option => value.includes(option.value));
+
     const isReadOnly = convertStringToBoolean(readOnly);
     const isClearable = convertStringToBoolean(clearable);
     const isRemoveSelected = convertStringToBoolean(removeSelected);
 
-
     Object.assign(items, {
-        value: selectValue,
         searchable,
         multiSelect,
         readOnly: isReadOnly,
@@ -68,15 +65,19 @@ function buildSelectInput(items, field) {
 
 function buildProviderDataSelectInput(items, field) {
     const {
-        searchable, multiSelect, readOnly, endpoint, key
+        searchable, multiSelect, readOnly, endpoint, key, removeSelected, clearable
     } = field;
 
     const isReadOnly = convertStringToBoolean(readOnly);
+    const isClearable = convertStringToBoolean(clearable);
+    const isRemoveSelected = convertStringToBoolean(removeSelected);
 
     Object.assign(items, {
         searchable,
         multiSelect,
         readOnly: isReadOnly,
+        removeSelected: isRemoveSelected,
+        clearable: isClearable
     });
     return <ProviderDataSelectField
         endpoint={endpoint}

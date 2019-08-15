@@ -45,6 +45,7 @@ public class SelectConfigField extends ConfigField {
         this.multiSelect = multiSelect;
         this.removeSelected = removeSelected;
         this.clearable = clearable;
+        options = List.of();
     }
 
     public SelectConfigField(String key, String label, String description, boolean required, boolean sensitive, boolean readOnly, boolean searchable, boolean multiSelect,

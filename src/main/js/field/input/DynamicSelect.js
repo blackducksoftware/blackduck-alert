@@ -42,6 +42,8 @@ function DynamicSelectInput(props) {
         SingleValue: typeLabel
     }
 
+    const selectValue = options.filter(option => value.includes(option.value));
+
     const field = (<div className={selectClasses}>
         <Select
             id={id}
@@ -52,7 +54,7 @@ function DynamicSelectInput(props) {
             removeSelected={removeSelected}
             options={options}
             placeholder={placeholder}
-            value={value}
+            value={selectValue}
             isMulti={multiSelect}
             closeMenuOnSelect={!multiSelect}
             components={components}
