@@ -49,7 +49,7 @@ public class JiraIssuePropertyHelper {
         this.issuePropertyService = issuePropertyService;
     }
 
-    public Optional<IssueSearchResponseModel> findIssues(String provider, LinkableItem topic, @Nullable LinkableItem subTopic, ComponentItem componentItem, String additionalKey) throws IntegrationException {
+    public Optional<IssueSearchResponseModel> findIssues(String jiraProjectKey, String provider, LinkableItem topic, @Nullable LinkableItem subTopic, ComponentItem componentItem, String additionalKey) throws IntegrationException {
         String subTopicName = null;
         String subTopicValue = null;
         if (null != subTopic) {
@@ -62,10 +62,12 @@ public class JiraIssuePropertyHelper {
         String subComponentName = optionalSubComponent.map(LinkableItem::getName).orElse(null);
         String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
 
-        return findIssues(provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
+        return findIssues(
+            jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
     }
 
     public Optional<IssueSearchResponseModel> findIssues(
+        String jiraProjectKey,
         String provider,
         String topicName,
         String topicValue,
@@ -79,10 +81,12 @@ public class JiraIssuePropertyHelper {
         String additionalKey
     ) throws IntegrationException {
         final StringBuilder jqlBuilder = new StringBuilder();
-        if (StringUtils.isNotBlank(provider)) {
-            jqlBuilder.append(createPropertySearchString(JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider));
-            jqlBuilder.append(StringUtils.SPACE);
-        }
+        jqlBuilder.append(JiraConstants.JIRA_SEARCH_KEY_JIRA_PROJECT);
+        jqlBuilder.append(" = '");
+        jqlBuilder.append(escapeReservedCharacters(jiraProjectKey));
+        jqlBuilder.append("' ");
+
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME, topicName);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE, topicValue);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_NAME, subTopicName);
