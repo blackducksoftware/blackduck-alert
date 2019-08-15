@@ -9,7 +9,7 @@ import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import EndpointButtonField from 'field/EndpointButtonField';
-import EndpointSelectField from "../field/EndpointSelectField";
+import EndpointSelectField from 'field/EndpointSelectField';
 
 function extractFirstValue(items) {
     const { value } = items;

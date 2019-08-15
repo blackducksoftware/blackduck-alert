@@ -70,35 +70,14 @@ class EndpointSelectField extends Component {
 }
 
 EndpointSelectField.propTypes = {
-    id: PropTypes.string,
-    providerDataEndpoint: PropTypes.string,
     currentConfig: PropTypes.object,
-    inputClass: PropTypes.string,
-    labelClass: PropTypes.string,
-    selectSpacingClass: PropTypes.string,
-    components: PropTypes.object,
-    value: PropTypes.array,
-    placeholder: PropTypes.string,
-    searchable: PropTypes.bool,
-    removeSelected: PropTypes.bool,
-    multiSelect: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     endpoint: PropTypes.string.isRequired,
     fieldKey: PropTypes.string.isRequired
 };
 
 EndpointSelectField.defaultProps = {
-    id: 'id',
-    value: [],
     currentConfig: {},
-    placeholder: 'Choose a value',
-    components: {},
-    inputClass: 'typeAheadField',
-    labelClass: 'col-sm-3',
-    selectSpacingClass: 'col-sm-8',
-    searchable: false,
-    removeSelected: false,
-    multiSelect: false
 };
 
 const mapStateToProps = state => ({
