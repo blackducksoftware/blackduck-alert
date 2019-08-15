@@ -113,7 +113,6 @@ public class JiraIssueHandler {
             throw new AlertException(String.format("The issue type '%s' could not be found", issueType));
         }
 
-        final String jiraProjectId = projectComponent.getId();
         final String providerName = content.getComonProvider().getValue();
         final Boolean commentOnIssue = fieldAccessor.getBoolean(JiraDescriptor.KEY_ADD_COMMENTS).orElse(false);
         final LinkableItem commonTopic = content.getCommonTopic();
@@ -122,7 +121,7 @@ public class JiraIssueHandler {
         for (final ProviderMessageContent messageContent : content.getSubContent()) {
             final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
 
-            final Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(providerName, commonTopic, subTopic, fieldAccessor, messageContent.getComponentItems(), issueType, jiraProjectName, jiraProjectId, commentOnIssue);
+            final Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(providerName, commonTopic, subTopic, fieldAccessor, messageContent.getComponentItems(), issueType, projectComponent, commentOnIssue);
             issueKeys.addAll(issueKeysForMessage);
         }
 
@@ -130,10 +129,15 @@ public class JiraIssueHandler {
     }
 
     private Set<String> createOrUpdateIssuesPerComponent(final String providerName, final LinkableItem topic, final Optional<LinkableItem> subTopic, final FieldAccessor fieldAccessor, final Collection<ComponentItem> componentItems,
-        final String issueType, final String jiraProjectName, final String jiraProjectId, final Boolean commentOnIssue) throws IntegrationException {
-        final Set<String> issueKeys = new HashSet<>();
-        final Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
+        final String issueType, ProjectComponent jiraProject, final Boolean commentOnIssue) throws IntegrationException {
+        Set<String> issueKeys = new HashSet<>();
         Set<String> missingTransitions = new HashSet<>();
+
+        String jiraProjectId = jiraProject.getId();
+        String jiraProjectName = jiraProject.getName();
+        String jiraProjectKey = jiraProject.getKey();
+
+        Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
         for (final List<ComponentItem> combinedItems : combinedItemsMap.values()) {
             try {
                 final ComponentItem arbitraryItem = combinedItems
@@ -144,7 +148,7 @@ public class JiraIssueHandler {
                 final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
                 final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
 
-                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(providerName, topic, subTopic, arbitraryItem, trackingKey);
+                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
@@ -209,8 +213,8 @@ public class JiraIssueHandler {
         return combinedItems;
     }
 
-    private Optional<IssueComponent> retrieveExistingIssue(String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
-        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId);
+    private Optional<IssueComponent> retrieveExistingIssue(String jiraProjectKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(jiraProjectKey, provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId);
         return optionalIssueSearchResponse
                    .map(IssueSearchResponseModel::getIssues)
                    .map(List::stream)
