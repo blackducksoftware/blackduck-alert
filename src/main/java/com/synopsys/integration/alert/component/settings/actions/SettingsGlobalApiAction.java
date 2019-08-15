@@ -43,18 +43,18 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
-import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
+import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 
 @Component
 public class SettingsGlobalApiAction extends ApiAction {
     private static final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
-    private final SystemValidator systemValidator;
+    private final SystemMessageInitializer systemValidator;
     private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final SAMLManager samlManager) {
+    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemMessageInitializer systemValidator, final SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
