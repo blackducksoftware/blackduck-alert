@@ -5,7 +5,7 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
-class ProviderDataSelectField extends Component {
+class EndpointSelectField extends Component {
     constructor(props) {
         super(props);
 
@@ -69,7 +69,7 @@ class ProviderDataSelectField extends Component {
     }
 }
 
-ProviderDataSelectField.propTypes = {
+EndpointSelectField.propTypes = {
     id: PropTypes.string,
     providerDataEndpoint: PropTypes.string,
     currentConfig: PropTypes.object,
@@ -87,7 +87,7 @@ ProviderDataSelectField.propTypes = {
     fieldKey: PropTypes.string.isRequired
 };
 
-ProviderDataSelectField.defaultProps = {
+EndpointSelectField.defaultProps = {
     id: 'id',
     value: [],
     currentConfig: {},
@@ -105,4 +105,4 @@ const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
 
-export default connect(mapStateToProps, null)(ProviderDataSelectField);
+export default connect(mapStateToProps, null)(EndpointSelectField);

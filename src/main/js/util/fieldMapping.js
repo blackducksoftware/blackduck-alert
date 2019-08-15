@@ -9,7 +9,7 @@ import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
 import EndpointButtonField from 'field/EndpointButtonField';
-import ProviderDataSelectField from "../field/ProviderDataSelectField";
+import EndpointSelectField from "../field/EndpointSelectField";
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -63,7 +63,7 @@ function buildSelectInput(items, field) {
     return <SelectInput {...items} />;
 }
 
-function buildProviderDataSelectInput(items, field) {
+function buildEndpointSelectInput(items, field) {
     const {
         searchable, multiSelect, readOnly, endpoint, key, removeSelected, clearable
     } = field;
@@ -79,7 +79,7 @@ function buildProviderDataSelectInput(items, field) {
         removeSelected: isRemoveSelected,
         clearable: isClearable
     });
-    return <ProviderDataSelectField
+    return <EndpointSelectField
         endpoint={endpoint}
         fieldKey={key}
         {...items}
@@ -158,7 +158,7 @@ export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
     Select: buildSelectInput,
-    EndpointSelectField: buildProviderDataSelectInput,
+    EndpointSelectField: buildEndpointSelectInput,
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
     CheckboxInput: buildCheckboxInput,
