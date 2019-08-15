@@ -29,9 +29,11 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
     private static final String LABEL_WEBHOOK = "Webhook";
 

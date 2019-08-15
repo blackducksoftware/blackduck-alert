@@ -175,6 +175,17 @@ task createTruststore(type: Copy) {
 }
 
 task runServer(type: Exec, dependsOn: [build, createKeystore, createTruststore]) {
+    def userHome = System.properties.getProperty('user.home')
+    def user = new File(userHome).name
+    def envVars = [:]
+    envVars['ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE'] = 'true'
+    envVars['ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL'] = "${user}@synopsys.com"
+    envVars['ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_PASSWORD'] = 'blackduck'
+    envVars['ALERT_ENCRYPTION_PASSWORD'] = 'changeme'
+    envVars['ALERT_ENCRYPTION_GLOBAL_SALT'] = 'changeme'
+    envVars['ALERT_TRUST_CERT'] = 'true'
+    environment << envVars
+
     File jarFile = new File("${project.buildDir}/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',

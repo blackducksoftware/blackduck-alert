@@ -22,23 +22,21 @@
  */
 package com.synopsys.integration.alert.channel.msteams.descriptor;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
-public class MsTeamsDescriptor extends ChannelDescriptor {
-    public static final String KEY_WEBHOOK = "channel.msteams.webhook";
-
-    public static final String MSTEAMS_LABEL = "MS Teams";
-    public static final String MSTEAMS_URL = "msteams";
-    public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
-    public static final String MSTEAMS_ICON = "fab/msteams";
-
-    @Autowired
-    public MsTeamsDescriptor(final MsTeamsUIConfig msTeamsUIConfig, final MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
-        super(MsTeamsChannel.COMPONENT_NAME, msTeamsUIConfig, msTeamsGlobalUIConfig);
+public class MsTeamsGlobalUIConfig extends UIConfig {
+    public MsTeamsGlobalUIConfig() {
+        super(MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_DESCRIPTION, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
     }
 
+    @Override
+    public List<ConfigField> createFields() {
+        return List.of();
+    }
 }

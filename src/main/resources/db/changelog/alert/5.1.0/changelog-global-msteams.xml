@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Add Global MsTeams permissions -->
+    <changeSet author="ekerwin" id="1565734102193-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <column name="NAME" value="channel_msteams"/>
+            <column name="TYPE_ID" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ekerwin" id="1565734102193-2">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_DEFAULT_ROLE_PERMISSIONS('channel_msteams');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.msteams.webhook', FALSE, 'channel_msteams', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_msteams', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_msteams', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_msteams', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_msteams', 'DISTRIBUTION');
+        </sql>
+    </changeSet>
+</databaseChangeLog>
