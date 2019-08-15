@@ -102,16 +102,12 @@ class GlobalConfiguration extends React.Component {
         const { currentConfig } = this.state;
         const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE);
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
-
-        return (
-            <div>
-                <ConfigurationLabel
-                    fontAwesomeIcon={fontAwesomeIcon}
-                    configurationName={label}
-                    description={description}
-                />
-                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
-
+        const body = (!Array.isArray(fields) || !fields.length) ?
+            (
+                <div className="form-horizontal">There is no configuration required.</div>
+            )
+                :
+            (
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <div>
                         <FieldsPanel
@@ -137,6 +133,18 @@ class GlobalConfiguration extends React.Component {
                         fieldModel={currentConfig}
                     />
                 </form>
+            );
+
+        return (
+            <div>
+                <ConfigurationLabel
+                    fontAwesomeIcon={fontAwesomeIcon}
+                    configurationName={label}
+                    description={description}
+                />
+                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
+
+                {body}
             </div>
         );
     }

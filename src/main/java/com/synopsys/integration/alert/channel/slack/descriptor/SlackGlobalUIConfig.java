@@ -20,26 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.startup.component;
+package com.synopsys.integration.alert.channel.slack.descriptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
-@Order(7)
-public class SAMLStartupComponent extends StartupComponent {
-    private final SAMLManager samlManager;
+public class SlackGlobalUIConfig extends UIConfig {
 
-    @Autowired
-    public SAMLStartupComponent(final SAMLManager samlManager) {
-        this.samlManager = samlManager;
+    public SlackGlobalUIConfig() {
+        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_DESCRIPTION, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
     }
 
     @Override
-    protected void initialize() {
-        samlManager.initializeSAML();
+    public List<ConfigField> createFields() {
+        return List.of();
     }
 }

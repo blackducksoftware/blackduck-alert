@@ -113,6 +113,7 @@ public class SystemActions {
             } else {
                 systemSettings = configActions.saveConfig(settingsToSave);
             }
+            systemStatusUtility.setSystemInitialized(true);
         }
 
         return systemSettings;
