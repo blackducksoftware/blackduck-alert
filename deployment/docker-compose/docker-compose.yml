@@ -18,10 +18,12 @@ services:
     env_file: [blackduck-alert.env]
     user: alert:root
     healthcheck:
-      test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:8443/alert/api/about']
+      test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:8443/alert/api/about',
+             /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
+             /opt/blackduck/alert/security/blackduck_system.key]
       interval: 30s
-      timeout: 10s
-      retries: 5
+      timeout: 60s
+      retries: 15
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
     mem_limit: 2560M
 volumes: {cert-volume: null, alert-db-volume: null }
