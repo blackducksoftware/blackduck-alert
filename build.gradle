@@ -174,7 +174,7 @@ task createTruststore(type: Copy) {
     rename 'cacerts', 'blackduck-alert.truststore'
 }
 
-task runServer(type: Exec, dependsOn: [build, createKeystore, createTruststore]) {
+task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
     File jarFile = new File("${project.buildDir}/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',
