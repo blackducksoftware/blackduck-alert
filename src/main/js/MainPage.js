@@ -69,7 +69,7 @@ class MainPage extends Component {
                         exact
                         path="/alert/"
                         render={() => (
-                            <Redirect to={`${providers[0].props.path}`} />
+                            <Redirect to="/alert/general/about" />
                         )}
                     />}
                     {providers}
