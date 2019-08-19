@@ -184,10 +184,10 @@ class ProjectConfiguration extends Component {
                     options={projectTableOptions}
                     trClassName={assignClassName}
                     headerContainerClass="scrollable"
-                    bodyContainerClass="projectTableScrollableBody"
+                    bodyContainerClass="tableScrollableBody"
                 >
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" tdStyle={ { whiteSpace: 'normal' } } dataFormat={assignDataFormat}>Description</TableHeaderColumn>
+                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 

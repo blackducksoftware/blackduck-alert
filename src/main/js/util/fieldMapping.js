@@ -12,6 +12,7 @@ import CounterField from 'field/CounterField';
 import DescriptorOption from 'component/common/DescriptorOption';
 import EndpointField from '../field/EndpointField';
 import ProviderDataSelectField from "../field/ProviderDataSelectField";
+import TableSelectInput from "../field/input/TableSelectInput";
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -181,6 +182,10 @@ function buildEndpointField(items, field) {
     />);
 }
 
+function buildTableSelectInput(items, field) {
+    return <TableSelectInput {...items} />
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -192,7 +197,8 @@ export const FIELDS = {
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
     CountdownField: buildCounterField,
-    EndpointField: buildEndpointField
+    EndpointField: buildEndpointField,
+    TableSelectInput: buildTableSelectInput
 };
 
 export function getField(fieldType, props, field) {
