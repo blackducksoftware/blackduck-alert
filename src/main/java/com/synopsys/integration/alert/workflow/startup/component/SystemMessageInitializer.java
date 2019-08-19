@@ -42,26 +42,22 @@ import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 
 @Component
-@Order(2)
-public class SystemValidator extends StartupComponent {
-    private static final Logger logger = LoggerFactory.getLogger(SystemValidator.class);
+@Order(3)
+public class SystemMessageInitializer extends StartupComponent {
+    private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
     private final List<ProviderValidator> providerValidators;
     private final EncryptionUtility encryptionUtility;
-    private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
     private final DefaultUserAccessor userAccessor;
     private final ProxyManager proxyManager;
 
     @Autowired
-    public SystemValidator(final List<ProviderValidator> providerValidators, final EncryptionUtility encryptionUtility, final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility,
-        final DefaultUserAccessor userAccessor, final ProxyManager proxyManager) {
+    public SystemMessageInitializer(List<ProviderValidator> providerValidators, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility, DefaultUserAccessor userAccessor, ProxyManager proxyManager) {
         this.providerValidators = providerValidators;
         this.encryptionUtility = encryptionUtility;
-        this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
         this.userAccessor = userAccessor;
         this.proxyManager = proxyManager;
@@ -87,7 +83,6 @@ public class SystemValidator extends StartupComponent {
         final boolean valid = defaultUserSettingsValid && encryptionValid && proxyValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
-        systemStatusUtility.setSystemInitialized(valid);
         return valid;
     }
 

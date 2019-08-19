@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 
 @Component
-@Order(3)
+@Order(4)
 public class ConfigurationLogger extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(ConfigurationLogger.class);
 

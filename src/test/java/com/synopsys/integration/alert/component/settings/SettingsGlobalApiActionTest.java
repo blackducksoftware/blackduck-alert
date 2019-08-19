@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsUICo
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
-import com.synopsys.integration.alert.workflow.startup.component.SystemValidator;
+import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 
 public class SettingsGlobalApiActionTest {
 
@@ -36,7 +36,7 @@ public class SettingsGlobalApiActionTest {
     public void testReadConfig() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
+        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -56,7 +56,7 @@ public class SettingsGlobalApiActionTest {
     public void testUpdateConfig() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
+        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
 
@@ -76,7 +76,7 @@ public class SettingsGlobalApiActionTest {
     public void testSaveConfig() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
+        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -96,7 +96,7 @@ public class SettingsGlobalApiActionTest {
     public void testSaveConfigEncryptionException() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
+        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
         final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
         final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
