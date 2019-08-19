@@ -38,18 +38,20 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 
 @Controller
 public class HomeController {
-
     private final HttpSessionCsrfTokenRepository csrfTokenRespository;
     private final SAMLContext samlContext;
+    private final ResponseFactory responseFactory;
 
     @Autowired
-    public HomeController(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLContext samlContext) {
+    public HomeController(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLContext samlContext, ResponseFactory responseFactory) {
         this.csrfTokenRespository = csrfTokenRepository;
         this.samlContext = samlContext;
+        this.responseFactory = responseFactory;
     }
 
     @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
@@ -72,10 +74,13 @@ public class HomeController {
             httpRequest.getSession().invalidate();
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else {
-            final String body = String.format("{\"message\":\"Authenticated\", \"saml_enabled\": %s }", samlContext.isSAMLEnabled());
+            final ResponseBodyBuilder responseBody = new ResponseBodyBuilder("Authenticated");
+            responseBody.put("saml_enabled", samlContext.isSAMLEnabled());
+
             final HttpHeaders headers = new HttpHeaders();
             headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
-            return new ResponseEntity<>(body, headers, HttpStatus.OK);
+
+            return responseFactory.createResponse(HttpStatus.OK, headers, responseBody.build());
         }
     }
 }
