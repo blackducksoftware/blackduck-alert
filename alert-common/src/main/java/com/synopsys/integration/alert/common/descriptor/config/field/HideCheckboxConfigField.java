@@ -28,4 +28,12 @@ public class HideCheckboxConfigField extends CheckboxConfigField {
         relatedHiddenFields.addAll(Stream.of(key).collect(Collectors.toList()));
         return this;
     }
+
+    public List<String> getRelatedHiddenFields() {
+        return relatedHiddenFields;
+    }
+
+    public void setRelatedHiddenFields(final List<String> relatedHiddenFields) {
+        this.relatedHiddenFields = relatedHiddenFields;
+    }
 }
