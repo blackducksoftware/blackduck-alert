@@ -33,7 +33,8 @@ public enum FieldType {
     READ_ONLY("ReadOnlyField"),
     COUNTDOWN("CountdownField"),
     ENDPOINT("EndpointField"),
-    PROVIDER_DATA_SELECT("ProviderDataSelect");
+    PROVIDER_DATA_SELECT("ProviderDataSelect"),
+    TABLE_SELECT_INPUT("TableSelectInput");
 
     private final String fieldTypeName;
 
