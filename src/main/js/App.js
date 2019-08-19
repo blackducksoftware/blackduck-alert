@@ -22,9 +22,9 @@ class App extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { systemInitialized, logoutPerformed, loggedIn } = this.props;
+        const { systemInitialized, logoutPerformed, loggedIn, samlEnabled } = this.props;
         if (systemInitialized && !prevProps.systemInitialized
-            && !logoutPerformed && !loggedIn) {
+            && !logoutPerformed && !loggedIn && samlEnabled) {
             // Switching from un-initialized to initialized due to system setup.
             // Reload the page to display the correct login screen
             window.location.reload();
@@ -40,7 +40,7 @@ class App extends Component {
             return <LogoutPage />;
         }
 
-        let contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
+        let contentPage = (this.props.loggedIn || this.props.samlEnabled) ? <MainPage /> : <LoginPage />;
         if (!this.props.systemInitialized) {
             contentPage = <SetupPage />;
         }
@@ -60,7 +60,8 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
-    systemInitialized: PropTypes.bool.isRequired
+    systemInitialized: PropTypes.bool.isRequired,
+    samlEnabled: PropTypes.bool.isRequired
 };
 
 // Redux mappings to be used later....
@@ -68,7 +69,9 @@ const mapStateToProps = state => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
     initializing: state.session.initializing,
+    samlEnabled: state.session.samlEnabled,
     systemInitialized: state.system.systemInitialized
+
 });
 
 const mapDispatchToProps = dispatch => ({

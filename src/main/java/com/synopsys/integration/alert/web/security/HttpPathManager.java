@@ -87,7 +87,8 @@ public class HttpPathManager {
         PATH_SYSTEM_MESSAGES_LATEST,
         PATH_SYSTEM_SETUP_INITIAL,
         PATH_SYSTEM_SETUP_DESCRIPTOR,
-        PATH_VERIFY
+        PATH_VERIFY,
+        PATH_LOGOUT
     };
 
     private final Collection<String> allowedPaths;

@@ -1,4 +1,4 @@
-import { SERIALIZE, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
+import { SAML_ENABLED, SERIALIZE, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
 
 const initialState = {
     csrfToken: null,
@@ -8,6 +8,7 @@ const initialState = {
     initializing: true,
     showLogoutConfirm: false,
     name: '',
+    samlEnabled: false,
     errorMessage: null,
     errors: []
 };
@@ -31,6 +32,7 @@ const session = (state = initialState, action) => {
         case SESSION_LOGGED_IN:
             return Object.assign({}, state, {
                 csrfToken: action.csrfToken,
+                samlEnabled: action.saml_enabled,
                 fetching: false,
                 loggedIn: true,
                 initializing: false,
@@ -42,6 +44,7 @@ const session = (state = initialState, action) => {
         case SESSION_LOGGED_OUT:
             return Object.assign({}, initialState, {
                 initializing: false,
+                samlEnabled: state.samlEnabled,
                 loggedIn: false,
                 showLogoutConfirm: false,
                 errorMessage: null,
@@ -68,6 +71,10 @@ const session = (state = initialState, action) => {
         case SESSION_LOGOUT:
             return Object.assign({}, state, {
                 logoutPerformed: true
+            });
+        case SAML_ENABLED:
+            return Object.assign({}, state, {
+                samlEnabled: action.saml_enabled
             });
         case SERIALIZE:
             return initialState;

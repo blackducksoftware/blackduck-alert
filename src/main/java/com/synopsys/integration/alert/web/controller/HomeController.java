@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +38,18 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 
 @Controller
 public class HomeController {
 
     private final HttpSessionCsrfTokenRepository csrfTokenRespository;
-    private final AuthorizationManager authorizationManager;
+    private final SAMLContext samlContext;
 
     @Autowired
-    public HomeController(HttpSessionCsrfTokenRepository csrfTokenRepository, AuthorizationManager authorizationManager) {
+    public HomeController(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLContext samlContext) {
         this.csrfTokenRespository = csrfTokenRepository;
-        this.authorizationManager = authorizationManager;
+        this.samlContext = samlContext;
     }
 
     @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
@@ -60,14 +62,17 @@ public class HomeController {
         final HttpServletRequest httpRequest = request;
         final CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final boolean hasAlertRole = authorizationManager.hasAlertRole();
-        final boolean authorized = authentication.isAuthenticated() && hasAlertRole && csrfToken != null;
+        final boolean isAnonymous = authentication.getAuthorities().stream()
+                                        .map(authority -> authority.getAuthority())
+                                        .collect(Collectors.toSet())
+                                        .contains("ROLE_ANONYMOUS");
+        final boolean authorized = authentication.isAuthenticated() && !isAnonymous && csrfToken != null;
 
         if (!authorized) {
             httpRequest.getSession().invalidate();
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else {
-            final String body = "{\"message\":\"Authenticated\"}";
+            final String body = String.format("{\"message\":\"Authenticated\", \"saml_enabled\": %s }", samlContext.isSAMLEnabled());
             final HttpHeaders headers = new HttpHeaders();
             headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
             return new ResponseEntity<>(body, headers, HttpStatus.OK);

@@ -1,14 +1,5 @@
 import { push } from 'react-router-redux';
-import {
-    SESSION_CANCEL_LOGOUT,
-    SESSION_CONFIRM_LOGOUT,
-    SESSION_INITIALIZING,
-    SESSION_LOGGED_IN,
-    SESSION_LOGGED_OUT,
-    SESSION_LOGGING_IN,
-    SESSION_LOGIN_ERROR,
-    SESSION_LOGOUT
-} from 'store/actions/types';
+import { SAML_ENABLED, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
 
 /**
  * Triggers Logging In Reducer
@@ -33,7 +24,15 @@ function initializing() {
 function loggedIn(data) {
     return {
         type: SESSION_LOGGED_IN,
-        csrfToken: data.csrfToken
+        csrfToken: data.csrfToken,
+        saml_enabled: data.saml_enabled
+    };
+}
+
+function samlEnabled(enabled) {
+    return {
+        type: SAML_ENABLED,
+        saml_enabled: enabled
     };
 }
 
@@ -77,7 +76,14 @@ export function verifyLogin() {
                 dispatch(loggedOut());
             } else {
                 const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({ csrfToken: token }));
+                response.json().then(body => {
+                    const { message, saml_enabled } = body;
+                    if (message === 'Authenticated') {
+                        dispatch(loggedIn({ csrfToken: token, saml_enabled }));
+                    } else {
+                        dispatch(samlEnabled(Boolean(saml_enabled)));
+                    }
+                });
             }
         }).catch((error) => {
             // TODO: Dispatch Error
@@ -140,13 +146,13 @@ export function logout() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             }
-        }).then((response) => {
-            dispatch(loggedOut());
-            dispatch(logOut());
-            dispatch(push('/alert'));
-        }).catch((error) => {
-            console.log(error);
-        });
+        })
+            .then(() => dispatch(loggedOut()))
+            .then(() => dispatch(logOut()))
+            .then(() => dispatch(push('/alert')))
+            .catch((error) => {
+                console.log(error);
+            });
     };
 }
 
