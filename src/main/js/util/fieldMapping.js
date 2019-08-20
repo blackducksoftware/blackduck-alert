@@ -117,6 +117,18 @@ function buildNumberInput(items, field) {
     return <NumberInput {...trimmedValue} />;
 }
 
+function buildHideCheckboxInput(items, field) {
+    const { value } = items;
+    const checkedValue = convertStringToBoolean(value);
+    const { readOnly } = field;
+    const isReadOnly = convertStringToBoolean(readOnly);
+    Object.assign(items, {
+        isChecked: checkedValue,
+        readOnly: isReadOnly
+    });
+    return <CheckboxInput {...items} />;
+}
+
 function buildCheckboxInput(items, field) {
     const { value } = items;
     const checkedValue = convertStringToBoolean(value);
@@ -176,6 +188,7 @@ export const FIELDS = {
     ProviderDataSelect: buildProviderDataSelectInput,
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
+    HideCheckboxInput: buildHideCheckboxInput,
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
     CountdownField: buildCounterField,

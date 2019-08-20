@@ -73,12 +73,12 @@ public class FieldValidationAction {
 
     private Boolean hasValueOrChecked(final FieldValueModel fieldValueModel, final String type) {
         final Boolean isValueTrue = fieldValueModel.getValue().map(Boolean::parseBoolean).orElse(false);
-        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
+        final Boolean isCheckbox = isCheckbox(type);
         return (isValueTrue && isCheckbox) || (!fieldValueModel.containsNoData() && !isCheckbox);
     }
 
     private Boolean hasValueOrIsCheckbox(final FieldValueModel fieldValueModel, final String type) {
-        final Boolean isCheckbox = FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type);
+        final Boolean isCheckbox = isCheckbox(type);
         return isCheckbox || !fieldValueModel.containsNoData();
     }
 
@@ -97,5 +97,9 @@ public class FieldValidationAction {
             final String errorMessage = String.format("%s cannot be set if %s is already set", field.getLabel(), validatedFieldLabel);
             fieldErrors.put(key, errorMessage);
         }
+    }
+
+    private boolean isCheckbox(String type) {
+        return FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type) || FieldType.HIDE_CHECKBOX_INPUT.getFieldTypeName().equals(type);
     }
 }
