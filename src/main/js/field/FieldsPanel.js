@@ -17,6 +17,10 @@ class FieldsPanel extends React.Component {
         this.createPanel = this.createPanel.bind(this);
         this.createHeaders = this.createHeaders.bind(this);
         this.createFields = this.createFields.bind(this);
+
+        this.state = {
+            hiddenFieldKeys: []
+        };
     }
 
     handleChange({ target }) {
@@ -31,17 +35,30 @@ class FieldsPanel extends React.Component {
     }
 
     initializeFieldMapping(fields) {
+        this.state = {
+            hiddenFieldKeys: []
+        };
+
         const fieldMapping = {};
 
-        Object.keys(fields)
-            .forEach((key) => {
-                const field = fields[key];
-                const { panel, header } = field;
+        Object.keys(fields).forEach((key) => {
+            const field = fields[key];
 
-                const panelName = panel || DEFAULT_PANEL;
-                const foundPanel = this.parsePanel(panelName, header, field, fieldMapping);
-                Object.assign(fieldMapping, { [panelName]: foundPanel });
-            });
+            if (field.type === 'HideCheckboxInput') {
+                const isChecked = FieldModelUtilities.getFieldModelBooleanValue(this.props.currentConfig, field.key);
+                if (!isChecked) {
+                    field.relatedHiddenFields.forEach(hiddenField => {
+                        this.state.hiddenFieldKeys.push(hiddenField);
+                    });
+                }
+            }
+
+            const { panel, header } = field;
+
+            const panelName = panel || DEFAULT_PANEL;
+            const foundPanel = this.parsePanel(panelName, header, field, fieldMapping);
+            Object.assign(fieldMapping, { [panelName]: foundPanel });
+        });
 
         return fieldMapping;
     }
@@ -67,7 +84,15 @@ class FieldsPanel extends React.Component {
             const fields = fieldMapping[key];
             panelFields = panelFields.concat(fields);
         });
-        const hasValues = FieldModelUtilities.fieldsHaveValueOrIsSet(this.props.currentConfig, panelFields);
+        const { keyToValues } = this.props.currentConfig;
+        const hasValues = Object.keys(panelFields).some((fieldKey) => {
+            const field = panelFields[fieldKey];
+            const { key, type } = field;
+            if (!this.state.hiddenFieldKeys.includes(key)) {
+                return (type === 'CheckboxInput' || type === 'HideCheckboxInput') ? FieldModelUtilities.checkboxHasValue(keyToValues[key]) : FieldModelUtilities.hasValuesOrIsSet(keyToValues[key]);
+            }
+            return false;
+        });
         const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : (
             <CollapsiblePane
                 title={panelName}
@@ -104,8 +129,10 @@ class FieldsPanel extends React.Component {
 
         fields.forEach((field) => {
             const fieldKey = field.key;
-            const newField = FieldMapping.createField(field, currentConfig, fieldErrors[fieldKey], this.handleChange);
-            createdFields.push(newField);
+            if (!this.state.hiddenFieldKeys.includes(fieldKey)) {
+                const newField = FieldMapping.createField(field, currentConfig, fieldErrors[fieldKey], this.handleChange);
+                createdFields.push(newField);
+            }
         });
         return createdFields;
     }

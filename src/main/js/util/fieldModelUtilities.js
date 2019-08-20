@@ -1,12 +1,5 @@
-export function getFieldDescription(fieldDescriptions, key) {
-    if (fieldDescriptions.hasOwnProperty(key)) {
-        return fieldDescriptions[key];
-    }
-    return undefined;
-}
-
 export function getFieldModelSingleValue(fieldModel, key) {
-    if (fieldModel.keyToValues) {
+    if (fieldModel && fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject && fieldObject.values) {
             if (Object.keys(fieldObject.values).length > 0) {
@@ -21,20 +14,8 @@ export function getFieldModelSingleValueOrDefault(fieldModel, key, defaultValue)
     return getFieldModelSingleValue(fieldModel, key) || defaultValue;
 }
 
-export function getFieldModelSingleNumberValue(fieldModel, key) {
-    const value = getFieldModelSingleValue(fieldModel, key);
-    if (value) {
-        return Number(value);
-    }
-    return undefined;
-}
-
-export function getFieldModelSingleNumberValueOrDefault(fieldModel, key, defaultValue) {
-    return getFieldModelSingleNumberValue(fieldModel, key) || defaultValue;
-}
-
 export function getFieldModelValues(fieldModel, key) {
-    if (fieldModel.keyToValues) {
+    if (fieldModel && fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject && fieldObject.values) {
             if (Object.keys(fieldObject.values).length > 0) {
@@ -59,25 +40,11 @@ export function getFieldModelId(fieldModel) {
     return fieldModel.id || idValue;
 }
 
-export function getFieldModelBooleanValueOrDefault(fieldModel, key, defaultValue) {
-    return getFieldModelBooleanValue(fieldModel, key) || defaultValue;
-}
-
 export function isFieldModelValueSet(fieldModel, key) {
     if (fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject) {
             return fieldObject.isSet;
-        }
-    }
-    return false;
-}
-
-export function hasFieldModelValues(fieldModel, key) {
-    if (fieldModel.keyToValues) {
-        const fieldObject = fieldModel.keyToValues[key];
-        if (fieldObject) {
-            return fieldObject.values && fieldObject.values.length > 0 && fieldObject.values.every(item => item && item !== '');
         }
     }
     return false;
@@ -110,30 +77,6 @@ export function checkboxHasValue(fieldValue) {
         const valuesNotEmpty = values ? values.length > 0 : false;
         const everyValueIsNotEmpty = values ? values.every(item => item === 'true') : false;
         return values && valuesNotEmpty && everyValueIsNotEmpty;
-    }
-    return false;
-}
-
-export function fieldsHaveValueOrIsSet(fieldModel, fields) {
-    const { keyToValues } = fieldModel;
-    if (keyToValues && fields) {
-        return fields.some((field) => {
-            const fieldKey = field.key;
-            const fieldType = field.type;
-            const fieldObject = keyToValues[fieldKey];
-            return (fieldType === 'CheckboxInput') ? checkboxHasValue(fieldObject) : hasValuesOrIsSet(fieldObject);
-        });
-    }
-    return false;
-}
-
-export function keysHaveValueOrIsSet(fieldModel, keys) {
-    const { keyToValues } = fieldModel;
-    if (keyToValues && keys) {
-        return keys.some((key) => {
-            const fieldObject = keyToValues[key];
-            return hasValuesOrIsSet(fieldObject);
-        });
     }
     return false;
 }
@@ -211,20 +154,6 @@ export function combineFieldModels(sourceModel, modelToAdd) {
     return copy;
 }
 
-export function createEmptyFieldModelFromFieldObject(fieldObjects, context, descriptorName) {
-    const emptySettings = {};
-    emptySettings.context = context;
-    emptySettings.descriptorName = descriptorName;
-    emptySettings.keyToValues = {};
-    Object.keys(fieldObjects).forEach((key) => {
-        emptySettings.keyToValues[fieldObjects[key].key] = {
-            values: [],
-            isSet: false
-        };
-    });
-    return emptySettings;
-}
-
 export function createEmptyFieldModel(fieldKeys, context, descriptorName) {
     const emptySettings = {};
     emptySettings.context = context;
@@ -284,4 +213,11 @@ export function checkModelOrCreateModelWithDefaults(fieldModel, fields) {
     }
     newModel.keyToValues = newKeyToValues;
     return newModel;
+}
+
+export function hasKey(fieldModel, key) {
+    const keyToValues = fieldModel.keyToValues;
+    if (keyToValues) {
+        return Object.keys(keyToValues).includes(key);
+    }
 }

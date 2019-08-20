@@ -29,6 +29,7 @@ public enum FieldType {
     PASSWORD_INPUT("PasswordInput"),
     NUMBER_INPUT("NumberInput"),
     CHECKBOX_INPUT("CheckboxInput"),
+    HIDE_CHECKBOX_INPUT("HideCheckboxInput"),
     READ_ONLY("ReadOnlyField"),
     COUNTDOWN("CountdownField"),
     ENDPOINT_BUTTON("EndpointButtonField"),
