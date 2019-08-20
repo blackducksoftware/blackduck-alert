@@ -47,11 +47,14 @@ class Navigation extends Component {
 
         return (
             <div className="navigation">
-                <div className="navigationLogo">
-                    <Logo />
-                </div>
                 <div className="navigationContent">
                     <ul>
+                        <li>
+                            <NavLink to="/alert/general/about" activeClassName="activeNav">
+                                <Logo />
+                            </NavLink>
+                        </li>
+                        <li className="divider" />
                         {providers}
                         {channelGlobals}
                         <li className="navHeader">
@@ -64,11 +67,7 @@ class Navigation extends Component {
                         </li>
                         <li className="divider" />
                         {components}
-                        <li>
-                            <NavLink to="/alert/general/about" activeClassName="activeNav">
-                                <FontAwesomeIcon icon="info" className="alert-icon" size="lg" fixedWidth /> About
-                            </NavLink>
-                        </li>
+
                         <li className="logoutLink">
                             <a
                                 role="button"

@@ -8,7 +8,7 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 
-class EndpointField extends Component {
+class EndpointButtonField extends Component {
     constructor(props) {
         super(props);
 
@@ -142,7 +142,7 @@ class EndpointField extends Component {
     }
 }
 
-EndpointField.propTypes = {
+EndpointButtonField.propTypes = {
     endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
@@ -158,7 +158,7 @@ EndpointField.propTypes = {
     statusMessage: PropTypes.string
 };
 
-EndpointField.defaultProps = {
+EndpointButtonField.defaultProps = {
     value: false,
     fields: [],
     name: '',
@@ -171,4 +171,4 @@ const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
 
-export default connect(mapStateToProps, null)(EndpointField);
+export default connect(mapStateToProps, null)(EndpointButtonField);

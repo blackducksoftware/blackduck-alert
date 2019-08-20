@@ -8,6 +8,8 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as IconUtility from 'util/iconUtility';
+import { NavLink } from "react-router-dom";
+import LabeledField from "../field/LabeledField";
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -19,7 +21,16 @@ class AboutInfo extends React.Component {
         return (<FontAwesomeIcon key={keyText} icon={IconUtility.createIconPath(cell)} className="alert-icon" size="lg" />);
     }
 
-    createDescriptorTable(tableData) {
+    createNameColumnRenderer(uriPrefix) {
+        return (cell, row) => {
+            const id = `aboutNameKey-${cell}`;
+            const url = `${uriPrefix}${row.urlName}`;
+            return (<NavLink to={url} id={id}>{cell}</NavLink>);
+        };
+    }
+
+    createDescriptorTable(tableData, uriPrefix) {
+        const nameRenderer = this.createNameColumnRenderer(uriPrefix);
         const tableOptions = {
             defaultSortName: 'label',
             defaultSortOrder: 'asc',
@@ -35,8 +46,11 @@ class AboutInfo extends React.Component {
                     bodyContainerClass="scrollable"
                 >
                     <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer} />
-                    <TableHeaderColumn dataField="label" isKey>
+                    <TableHeaderColumn dataField="label" isKey dataFormat={nameRenderer}>
                         Name
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="urlName" hidden>
+                        Url
                     </TableHeaderColumn>
                 </BootstrapTable>
             </div>
@@ -49,8 +63,9 @@ class AboutInfo extends React.Component {
         } = this.props;
         const providerList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         const channelList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-        const providerTable = this.createDescriptorTable(providerList);
-        const channelTable = this.createDescriptorTable(channelList);
+        const providerTable = this.createDescriptorTable(providerList, '/alert/providers/');
+        const channelTable = this.createDescriptorTable(channelList, '/alert/channels/');
+        const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All Distributions</NavLink></div>);
         return (
             <div>
                 <ConfigurationLabel fontAwesomeIcon="info" configurationName="About" />
@@ -58,9 +73,10 @@ class AboutInfo extends React.Component {
                     <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
                     <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl} url={projectUrl} />
+                    <LabeledField label="View Distributions" name="distribution" readOnly="true" value="" field={distributionLink} />
                     <div className="form-group">
                         <div className="form-group">
-                            <label className="col-sm-3 col-form-label text-right">Supported Providers</label>
+                            <label className="col-sm-3 col-form-label text-right">Providers</label>
                             <div className="d-inline-flex p-2 col-sm-8">
                                 <div className="form-control-static">
                                     {providerTable}
@@ -70,7 +86,7 @@ class AboutInfo extends React.Component {
                     </div>
                     <div className="form-group">
                         <div className="form-group">
-                            <label className="col-sm-3 col-form-label text-right">Supported Distribution Channels</label>
+                            <label className="col-sm-3 col-form-label text-right">Distribution Channels</label>
                             <div className="d-inline-flex p-2 col-sm-8">
                                 <div className="form-control-static">
                                     {channelTable}
