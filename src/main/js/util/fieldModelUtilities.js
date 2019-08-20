@@ -50,6 +50,17 @@ export function isFieldModelValueSet(fieldModel, key) {
     return false;
 }
 
+export function areKeyToValuesEmpty(fieldModel) {
+    if (fieldModel && fieldModel.keyToValues) {
+        const keyToValues = fieldModel.keyToValues;
+        return Object.keys(keyToValues).some(key => {
+            const value = keyToValues[key];
+            return !hasValuesOrIsSet(value);
+        });
+    }
+    return true;
+}
+
 export function hasValuesOrIsSet(fieldObject) {
     if (fieldObject) {
         const { isSet, values } = fieldObject;
