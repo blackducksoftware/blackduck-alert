@@ -91,28 +91,11 @@ class TableSelectInput extends Component {
     }
 
     createTable() {
-        const createCloseButton = (props) => {
-            return (
-                <div>
-                    <div>
-                        {props.components.pageList}
-                    </div>
-                    <div>
-                        <span>Items per page</span>
-                        {props.components.sizePerPageDropDown}
-                    </div>
-                    <div>
-                        <GeneralButton onClick={() => this.setState({ showTable: false })}>OK</GeneralButton>
-                    </div>
-                </div>
-            );
-        };
         const tableOptions = {
             noDataText: 'No data found',
             clearSearch: true,
             defaultSortName: 'name',
-            defaultSortOrder: 'asc',
-            paginationPanel: createCloseButton
+            defaultSortOrder: 'asc'
         };
 
         const projectsSelectRowProp = this.createRowSelectionProps();
@@ -159,7 +142,9 @@ class TableSelectInput extends Component {
                 </span>
             </div>}
 
-            {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}
+            <div>
+                <GeneralButton onClick={() => this.setState({ showTable: false })}>OK</GeneralButton>
+            </div>
         </div>);
     }
 
@@ -178,13 +163,14 @@ class TableSelectInput extends Component {
 
         const components = {
             Option: typeOptionLabel,
-            SingleValue: typeLabel
+            SingleValue: typeLabel,
+            DropdownIndicator: null
         }
 
         return (
-            <div>
+            <div className="col-sm-8 d-inline-flex p-2">
                 <Select
-                    className="form-control"
+                    className="typeAheadField"
                     onChange={null}
                     options={[]}
                     isMulti
@@ -192,7 +178,7 @@ class TableSelectInput extends Component {
                     noOptionsMessage={null}
                     isDisabled
                 />
-                <button onClick={() => this.setState({ showTable: true })}>
+                <button className="selectButton" onClick={() => this.setState({ showTable: true })}>
                     Select
                 </button>
             </div>
@@ -200,17 +186,12 @@ class TableSelectInput extends Component {
     }
 
     render() {
-        const selectField = (
-            <div>
-                <LabeledField field={this.createSelect()} {...this.props} />
-            </div>
-        );
-        const tableField = this.createTable();
-
         return (
             <div>
-                {selectField}
-                {this.state.showTable && tableField}
+                <div>
+                    <LabeledField field={this.createSelect()} labelClass="col-sm-3" {...this.props} />
+                </div>
+                {this.state.showTable && this.createTable()}
             </div>
         );
     }
