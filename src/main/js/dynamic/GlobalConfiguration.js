@@ -76,7 +76,7 @@ class GlobalConfiguration extends React.Component {
         const { currentFields, currentConfig } = this.state;
         const filteredFieldKeys = currentFields.filter((field) => {
             const { type } = field;
-            return type !== 'EndpointField';
+            return type !== 'EndpointButtonField';
         }).map(field => field.key);
         const newConfig = FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentConfig.context, currentConfig.descriptorName);
         newConfig.id = currentConfig.id;
@@ -105,9 +105,7 @@ class GlobalConfiguration extends React.Component {
         const body = (!Array.isArray(fields) || !fields.length) ?
             (
                 <div className="form-horizontal">There is no configuration required.</div>
-            )
-                :
-            (
+            ) : (
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <div>
                         <FieldsPanel

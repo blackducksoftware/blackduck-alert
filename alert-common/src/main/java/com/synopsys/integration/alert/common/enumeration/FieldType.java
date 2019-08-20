@@ -32,8 +32,8 @@ public enum FieldType {
     HIDE_CHECKBOX_INPUT("HideCheckboxInput"),
     READ_ONLY("ReadOnlyField"),
     COUNTDOWN("CountdownField"),
-    ENDPOINT("EndpointField"),
-    PROVIDER_DATA_SELECT("ProviderDataSelect"),
+    ENDPOINT_BUTTON("EndpointButtonField"),
+    ENDPOINT_SELECT("EndpointSelectField"),
     TABLE_SELECT_INPUT("TableSelectInput");
 
     private final String fieldTypeName;
