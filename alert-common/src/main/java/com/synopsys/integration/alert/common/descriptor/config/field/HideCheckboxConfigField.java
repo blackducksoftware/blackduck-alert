@@ -19,12 +19,12 @@ public class HideCheckboxConfigField extends CheckboxConfigField {
         relatedHiddenFields = new LinkedList<>();
     }
 
-    public HideCheckboxConfigField addHiddenFieldKey(String key) {
+    public HideCheckboxConfigField addRelatedHiddenFieldKey(String key) {
         relatedHiddenFields.add(key);
         return this;
     }
 
-    public HideCheckboxConfigField addHiddenFieldKeys(String... key) {
+    public HideCheckboxConfigField addRelatedHiddenFieldKeys(String... key) {
         relatedHiddenFields.addAll(Stream.of(key).collect(Collectors.toList()));
         return this;
     }
