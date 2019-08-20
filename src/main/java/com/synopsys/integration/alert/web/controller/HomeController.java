@@ -32,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
@@ -43,6 +44,7 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLConte
 
 @Controller
 public class HomeController {
+    private static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
     private final HttpSessionCsrfTokenRepository csrfTokenRespository;
     private final SAMLContext samlContext;
     private final ResponseFactory responseFactory;
@@ -65,22 +67,26 @@ public class HomeController {
         final CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final boolean isAnonymous = authentication.getAuthorities().stream()
-                                        .map(authority -> authority.getAuthority())
-                                        .collect(Collectors.toSet())
-                                        .contains("ROLE_ANONYMOUS");
+                                        .map(GrantedAuthority::getAuthority)
+                                        .anyMatch(authority -> authority.equals(ROLE_ANONYMOUS));
         final boolean authorized = authentication.isAuthenticated() && !isAnonymous && csrfToken != null;
 
         if (!authorized) {
             httpRequest.getSession().invalidate();
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else {
-            final ResponseBodyBuilder responseBody = new ResponseBodyBuilder("Authenticated");
-            responseBody.put("saml_enabled", samlContext.isSAMLEnabled());
-
             final HttpHeaders headers = new HttpHeaders();
             headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
-
-            return responseFactory.createResponse(HttpStatus.OK, headers, responseBody.build());
+            return responseFactory.createResponse(HttpStatus.NO_CONTENT, headers, null);
         }
     }
+
+    @GetMapping(value = "/api/verify/saml")
+    public ResponseEntity<String> checkSaml() {
+        final ResponseBodyBuilder responseBody = new ResponseBodyBuilder("");
+        responseBody.put("saml_enabled", samlContext.isSAMLEnabled());
+
+        return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, responseBody.build());
+    }
+
 }

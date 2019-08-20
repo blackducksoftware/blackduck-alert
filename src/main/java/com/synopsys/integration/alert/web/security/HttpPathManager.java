@@ -53,6 +53,7 @@ public class HttpPathManager {
     public static final String PATH_SYSTEM_SETUP_INITIAL = BaseController.BASE_PATH + "/system/setup/initial";
     public static final String PATH_SYSTEM_SETUP_DESCRIPTOR = BaseController.BASE_PATH + "/system/setup/descriptor";
     public static final String PATH_VERIFY = BaseController.BASE_PATH + "/verify";
+    public static final String PATH_VERIFY_SAML = PATH_VERIFY + "/saml";
 
     private static final String[] DEFAULT_PATHS = {
         PATH_ROOT,
@@ -72,7 +73,8 @@ public class HttpPathManager {
         PATH_SYSTEM_MESSAGES_LATEST,
         PATH_SYSTEM_SETUP_INITIAL,
         PATH_SYSTEM_SETUP_DESCRIPTOR,
-        PATH_VERIFY
+        PATH_VERIFY,
+        PATH_VERIFY_SAML
     };
 
     private static final String[] DEFAULT_SAML_PATHS = {
@@ -88,6 +90,7 @@ public class HttpPathManager {
         PATH_SYSTEM_SETUP_INITIAL,
         PATH_SYSTEM_SETUP_DESCRIPTOR,
         PATH_VERIFY,
+        PATH_VERIFY_SAML,
         PATH_LOGOUT
     };
 

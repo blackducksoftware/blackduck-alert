@@ -7,7 +7,7 @@ import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
 import SetupPage from 'SetupPage';
-import { verifyLogin } from 'store/actions/session';
+import { verifyLogin, verifySaml } from 'store/actions/session';
 import { getInitialSystemSetup } from 'store/actions/system';
 import * as IconUtility from 'util/iconUtility';
 import LogoutPage from 'LogoutPage';
@@ -19,6 +19,7 @@ class App extends Component {
     componentDidMount() {
         this.props.getSettings();
         this.props.verifyLogin();
+        this.props.verifySaml();
     }
 
     componentDidUpdate(prevProps) {
@@ -59,6 +60,7 @@ App.propTypes = {
     logoutPerformed: PropTypes.bool.isRequired,
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
+    verifySaml: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
     systemInitialized: PropTypes.bool.isRequired,
     samlEnabled: PropTypes.bool.isRequired
@@ -71,11 +73,11 @@ const mapStateToProps = state => ({
     initializing: state.session.initializing,
     samlEnabled: state.session.samlEnabled,
     systemInitialized: state.system.systemInitialized
-
 });
 
 const mapDispatchToProps = dispatch => ({
     verifyLogin: () => dispatch(verifyLogin()),
+    verifySaml: () => dispatch(verifySaml()),
     getSettings: () => dispatch(getInitialSystemSetup())
 });
 

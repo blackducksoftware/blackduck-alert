@@ -34,8 +34,7 @@ function initializing() {
 function loggedIn(data) {
     return {
         type: SESSION_LOGGED_IN,
-        csrfToken: data.csrfToken,
-        saml_enabled: data.saml_enabled
+        csrfToken: data.csrfToken
     };
 }
 
@@ -86,19 +85,27 @@ export function verifyLogin() {
                 dispatch(loggedOut());
             } else {
                 const token = response.headers.get('X-CSRF-TOKEN');
+                dispatch(loggedIn({ csrfToken: token }));
+            }
+        }).catch(error => console.log(error));
+    };
+}
+
+export function verifySaml() {
+    return (dispatch) => {
+        dispatch(initializing());
+        fetch('/alert/api/verify/saml', {
+            credentials: 'same-origin'
+        }).then((response) => {
+            if (!response.ok) {
+                dispatch(loggedOut());
+            } else {
                 response.json().then(body => {
-                    const { message, saml_enabled } = body;
-                    if (message === 'Authenticated') {
-                        dispatch(loggedIn({ csrfToken: token, saml_enabled }));
-                    } else {
-                        dispatch(samlEnabled(Boolean(saml_enabled)));
-                    }
+                    const { saml_enabled } = body;
+                    dispatch(samlEnabled(Boolean(saml_enabled)));
                 });
             }
-        }).catch((error) => {
-            // TODO: Dispatch Error
-            console.log(error);
-        });
+        }).catch(error => console.log(error))
     };
 }
 

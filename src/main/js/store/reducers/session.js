@@ -32,7 +32,6 @@ const session = (state = initialState, action) => {
         case SESSION_LOGGED_IN:
             return Object.assign({}, state, {
                 csrfToken: action.csrfToken,
-                samlEnabled: action.saml_enabled,
                 fetching: false,
                 loggedIn: true,
                 initializing: false,
