@@ -11,7 +11,11 @@ This application provides the ability to send notifications from a provider to v
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.blackducksoftware.integration%3Ablackduck-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.blackducksoftware.integration%3Ablackduck-alert)
 
 ### Build Steps ###
+#### Requirements ####
+ - JDK 11
+
 To compile the UI and create the jar file run:
+
 
 ```
 ./gradlew clean build
@@ -27,16 +31,24 @@ To build the zip file containing the orchestration files for deployment:
 ./gradlew createDeploymentZip
 ```
 
-### To run the server locally
+### To Run the Server Locally ### 
 This section describes running the server locally.
 
-#### Run Command 
-Execute the following command which will build the source code and then start the server
+#### Run Commands ####
+Execute the one of the following commands which will build the source code and then start the server:
+
+##### Without the Initial Settings Splash Screen #####
+```
+./gradlew runServer --nosplash
+```
+Note: The 'nosplash' option sets the encryption and default email address to default values.  With these items set the initial settings screen is not displayed because Alert is configured with its minimum default values.
+
+##### With the All Features ##### 
 ```
 ./gradlew runServer
 ```
 
-#### Accessing the Server
+#### Accessing the Server #### 
 You can access the Alert user interface at the following URL: https://localhost:8443/alert
 
 ## Where can I get the latest release? ##
