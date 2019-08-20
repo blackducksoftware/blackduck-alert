@@ -60,17 +60,10 @@ button + button {
   z-index: 100;
   padding: 0 20px;
 
-  > .navigationLogo {
-    padding: 15px 0px;
-    border-bottom: $navigation-border;
-    width: 100%;
-    display: inline-flex;
-  }
-
   .navigationContent {
     overflow-y: auto;
     position: absolute;
-    top: 57px;
+    top: 5px;
     bottom: 0;
     left: 0;
     right: 0;
