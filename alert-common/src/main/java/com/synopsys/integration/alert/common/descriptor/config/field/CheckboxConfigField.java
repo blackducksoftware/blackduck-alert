@@ -46,6 +46,10 @@ public class CheckboxConfigField extends ConfigField {
         super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, validationFunction);
     }
 
+    protected CheckboxConfigField(final String key, final String label, final String description, FieldType fieldType, final boolean required) {
+        super(key, label, description, fieldType.getFieldTypeName(), required, false);
+    }
+
     public static CheckboxConfigField create(final String key, final String label, final String description) {
         return new CheckboxConfigField(key, label, description, false);
     }
