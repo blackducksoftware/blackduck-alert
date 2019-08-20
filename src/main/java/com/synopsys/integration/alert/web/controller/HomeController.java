@@ -86,7 +86,7 @@ public class HomeController {
         final ResponseBodyBuilder responseBody = new ResponseBodyBuilder("");
         responseBody.put("saml_enabled", samlContext.isSAMLEnabled());
 
-        return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, responseBody.build());
+        return responseFactory.createContentResponse(HttpStatus.OK, responseBody.build());
     }
 
 }
