@@ -93,7 +93,6 @@ class FieldsPanel extends React.Component {
             }
             return false;
         });
-        console.log(`${panelName} has values: ${hasValues}`);
         const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : (
             <CollapsiblePane
                 title={panelName}
