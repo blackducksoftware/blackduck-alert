@@ -7,7 +7,7 @@ import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
 import SetupPage from 'SetupPage';
-import { verifyLogin } from 'store/actions/session';
+import { verifyLogin, verifySaml } from 'store/actions/session';
 import { getInitialSystemSetup } from 'store/actions/system';
 import * as IconUtility from 'util/iconUtility';
 import LogoutPage from 'LogoutPage';
@@ -19,12 +19,13 @@ class App extends Component {
     componentDidMount() {
         this.props.getSettings();
         this.props.verifyLogin();
+        this.props.verifySaml();
     }
 
     componentDidUpdate(prevProps) {
-        const { systemInitialized, logoutPerformed, loggedIn } = this.props;
+        const { systemInitialized, logoutPerformed, loggedIn, samlEnabled } = this.props;
         if (systemInitialized && !prevProps.systemInitialized
-            && !logoutPerformed && !loggedIn) {
+            && !logoutPerformed && !loggedIn && samlEnabled) {
             // Switching from un-initialized to initialized due to system setup.
             // Reload the page to display the correct login screen
             window.location.reload();
@@ -40,7 +41,7 @@ class App extends Component {
             return <LogoutPage />;
         }
 
-        let contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
+        let contentPage = (this.props.loggedIn || this.props.samlEnabled) ? <MainPage /> : <LoginPage />;
         if (!this.props.systemInitialized) {
             contentPage = <SetupPage />;
         }
@@ -59,8 +60,10 @@ App.propTypes = {
     logoutPerformed: PropTypes.bool.isRequired,
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
+    verifySaml: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
-    systemInitialized: PropTypes.bool.isRequired
+    systemInitialized: PropTypes.bool.isRequired,
+    samlEnabled: PropTypes.bool.isRequired
 };
 
 // Redux mappings to be used later....
@@ -68,11 +71,13 @@ const mapStateToProps = state => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
     initializing: state.session.initializing,
+    samlEnabled: state.session.samlEnabled,
     systemInitialized: state.system.systemInitialized
 });
 
 const mapDispatchToProps = dispatch => ({
     verifyLogin: () => dispatch(verifyLogin()),
+    verifySaml: () => dispatch(verifySaml()),
     getSettings: () => dispatch(getInitialSystemSetup())
 });
 

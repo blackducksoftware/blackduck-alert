@@ -53,7 +53,7 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
         final CsrfToken csrfToken = csrfTokenRepository.generateToken(httpServletRequest);
         csrfTokenRepository.saveToken(csrfToken, httpServletRequest, null);
         headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test

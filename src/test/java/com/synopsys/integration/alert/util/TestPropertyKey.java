@@ -33,7 +33,9 @@ public enum TestPropertyKey {
     TEST_EMAIL_SMTP_AUTH("mail.smtp.auth"),
     TEST_EMAIL_SMTP_EHLO("mail.smtp.ehlo"),
     TEST_EMAIL_SMTP_PORT("mail.smtp.port"),
-    TEST_EMAIL_LOGO("logo.image");
+    TEST_EMAIL_LOGO("logo.image"),
+    TEST_ENCRYPTION_PASSWORD("alert.encryption.password"),
+    TEST_ENCRYPTION_SALT("alert.encryption.global.salt");
 
     private final String propertyKey;
 

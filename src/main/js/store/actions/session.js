@@ -1,5 +1,6 @@
 import { push } from 'react-router-redux';
 import {
+    SAML_ENABLED,
     SESSION_CANCEL_LOGOUT,
     SESSION_CONFIRM_LOGOUT,
     SESSION_INITIALIZING,
@@ -34,6 +35,13 @@ function loggedIn(data) {
     return {
         type: SESSION_LOGGED_IN,
         csrfToken: data.csrfToken
+    };
+}
+
+function samlEnabled(enabled) {
+    return {
+        type: SAML_ENABLED,
+        saml_enabled: enabled
     };
 }
 
@@ -79,10 +87,25 @@ export function verifyLogin() {
                 const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({ csrfToken: token }));
             }
-        }).catch((error) => {
-            // TODO: Dispatch Error
-            console.log(error);
-        });
+        }).catch(error => console.log(error));
+    };
+}
+
+export function verifySaml() {
+    return (dispatch) => {
+        dispatch(initializing());
+        fetch('/alert/api/verify/saml', {
+            credentials: 'same-origin'
+        }).then((response) => {
+            if (!response.ok) {
+                dispatch(loggedOut());
+            } else {
+                response.json().then(body => {
+                    const { saml_enabled } = body;
+                    dispatch(samlEnabled(Boolean(saml_enabled)));
+                });
+            }
+        }).catch(error => console.log(error))
     };
 }
 
@@ -140,13 +163,13 @@ export function logout() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             }
-        }).then((response) => {
-            dispatch(loggedOut());
-            dispatch(logOut());
-            dispatch(push('/alert'));
-        }).catch((error) => {
-            console.log(error);
-        });
+        })
+            .then(() => dispatch(loggedOut()))
+            .then(() => dispatch(logOut()))
+            .then(() => dispatch(push('/alert')))
+            .catch((error) => {
+                console.log(error);
+            });
     };
 }
 

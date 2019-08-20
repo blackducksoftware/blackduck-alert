@@ -1,5 +1,4 @@
 import React from 'react';
-import { components } from 'react-select';
 import SelectInput from 'field/input/DynamicSelect';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
@@ -9,9 +8,8 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
-import DescriptorOption from 'component/common/DescriptorOption';
-import EndpointField from '../field/EndpointField';
-import ProviderDataSelectField from "../field/ProviderDataSelectField";
+import EndpointButtonField from 'field/EndpointButtonField';
+import EndpointSelectField from 'field/EndpointSelectField';
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -44,22 +42,17 @@ function buildTextArea(items, field) {
     return <TextArea {...trimmedValue} />;
 }
 
-const { Option, SingleValue } = components;
-
 function buildSelectInput(items, field) {
-    const { value } = items;
     const {
         searchable, multiSelect, options, readOnly, removeSelected, clearable
     } = field;
 
-    const selectValue = options.filter(option => value.includes(option.value));
+
     const isReadOnly = convertStringToBoolean(readOnly);
     const isClearable = convertStringToBoolean(clearable);
     const isRemoveSelected = convertStringToBoolean(removeSelected);
 
-
     Object.assign(items, {
-        value: selectValue,
         searchable,
         multiSelect,
         readOnly: isReadOnly,
@@ -70,35 +63,27 @@ function buildSelectInput(items, field) {
     return <SelectInput {...items} />;
 }
 
-function buildProviderDataSelectInput(items, field) {
+function buildEndpointSelectInput(items, field) {
     const {
-        providerDataEndpoint, searchable, multiSelect, readOnly
+        searchable, multiSelect, readOnly, endpoint, key, removeSelected, clearable
     } = field;
 
     const isReadOnly = convertStringToBoolean(readOnly);
-    const typeOptionLabel = props => (
-        <Option {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-        </Option>
-    );
-
-    const typeLabel = props => (
-        <SingleValue {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-        </SingleValue>
-    );
+    const isClearable = convertStringToBoolean(clearable);
+    const isRemoveSelected = convertStringToBoolean(removeSelected);
 
     Object.assign(items, {
-        providerDataEndpoint,
         searchable,
         multiSelect,
         readOnly: isReadOnly,
-        components: {
-            Option: typeOptionLabel,
-            SingleValue: typeLabel
-        }
+        removeSelected: isRemoveSelected,
+        clearable: isClearable
     });
-    return <ProviderDataSelectField {...items} />;
+    return <EndpointSelectField
+        endpoint={endpoint}
+        fieldKey={key}
+        {...items}
+    />;
 }
 
 function buildPasswordInput(items, field) {
@@ -115,6 +100,18 @@ function buildNumberInput(items, field) {
     const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(trimmedValue, { readOnly: isReadOnly });
     return <NumberInput {...trimmedValue} />;
+}
+
+function buildHideCheckboxInput(items, field) {
+    const { value } = items;
+    const checkedValue = convertStringToBoolean(value);
+    const { readOnly } = field;
+    const isReadOnly = convertStringToBoolean(readOnly);
+    Object.assign(items, {
+        isChecked: checkedValue,
+        readOnly: isReadOnly
+    });
+    return <CheckboxInput {...items} />;
 }
 
 function buildCheckboxInput(items, field) {
@@ -159,7 +156,7 @@ function buildEndpointField(items, field) {
         className: 'form-control',
         readOnly: isReadOnly
     });
-    return (<EndpointField
+    return (<EndpointButtonField
         fields={subFields}
         buttonLabel={buttonLabel}
         endpoint={endpoint}
@@ -173,13 +170,14 @@ export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
     Select: buildSelectInput,
-    ProviderDataSelect: buildProviderDataSelectInput,
+    EndpointSelectField: buildEndpointSelectInput,
     PasswordInput: buildPasswordInput,
     NumberInput: buildNumberInput,
+    HideCheckboxInput: buildHideCheckboxInput,
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
     CountdownField: buildCounterField,
-    EndpointField: buildEndpointField
+    EndpointButtonField: buildEndpointField,
 };
 
 export function getField(fieldType, props, field) {
