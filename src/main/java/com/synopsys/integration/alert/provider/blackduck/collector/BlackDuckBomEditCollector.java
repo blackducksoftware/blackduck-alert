@@ -24,15 +24,10 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,7 +37,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -56,8 +50,6 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAcce
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.core.BlackDuckView;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.component.RiskCountView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.RiskCountType;
@@ -67,11 +59,8 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -170,55 +159,10 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 policyNameItem.setCollapsible(true);
                 policyNameItem.setSummarizable(true);
                 policyNameItem.setCountable(true);
-                if (hasVulnerabilityRule(rule)) {
-                    List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE).stream()
-                                                                                 .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
-                                                                                 .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))
-                                                                                 .collect(Collectors.toList());
-                    Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(vulnerableComponentViews);
-                    Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
-                                                                                            .map(VulnerableComponentView::getVulnerabilityWithRemediation)
-                                                                                            .collect(Collectors.toSet());
-                    for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
-                        // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
-                        String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
-                        String vulnerabilityUrl = null;
-                        if (vulnerabilityViews.containsKey(vulnerabilityId)) {
-                            vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
-                        }
-                        String severity = vulnerabilityView.getSeverity().prettyPrint();
-
-                        LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
-                        item.setPartOfKey(true);
-                        item.setSummarizable(true);
-                        item.setCountable(true);
-                        item.setCollapsible(true);
-
-                        LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, severity);
-                        severityItem.setSummarizable(true);
-                        ComponentItemPriority priority = ComponentItemPriority.findPriority(severity);
-                        List<LinkableItem> attributes = new LinkedList<>();
-                        attributes.addAll(licenseItems);
-                        attributes.add(severityItem);
-                        attributes.add(policyNameItem);
-                        attributes.add(item);
-
-                        ComponentItem.Builder builder = new ComponentItem.Builder();
-                        builder.applyComponentData(componentItem)
-                            .applyAllComponentAttributes(attributes)
-                            .applyPriority(priority)
-                            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
-                            .applyOperation(ItemOperation.UPDATE)
-                            .applyNotificationId(notificationId);
-                        componentVersionItem.ifPresent(builder::applySubComponent);
-                        try {
-                            items.add(builder.build());
-                        } catch (AlertException ex) {
-                            logger
-                                .info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentItem, componentVersionItem.orElse(null));
-                            logger.error("Error building policy bom edit component cause ", ex);
-                        }
-                    }
+                if (getBlackDuckDataHelper().hasVulnerabilityRule(rule)) {
+                    List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
+                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId);
+                    items.addAll(vulnerabilityComponentItems);
                 }
             }
         } catch (Exception ex) {
@@ -226,29 +170,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         }
 
         return items;
-    }
-
-    private Map<String, VulnerabilityView> createVulnerabilityViewMap(List<VulnerableComponentView> vulnerableComponentViews) {
-        Set<String> vulnerabilityUrls = new HashSet<>();
-        Map<String, VulnerabilityView> vulnerabilityViewMap = new HashMap<>(vulnerableComponentViews.size());
-        for (VulnerableComponentView vulnerableComponent : vulnerableComponentViews) {
-            Optional<String> vulnerabilitiesLink = vulnerableComponent.getFirstLink(VulnerableComponentView.VULNERABILITIES_LINK);
-            if (vulnerabilitiesLink.isPresent() && !vulnerabilityUrls.contains(vulnerabilitiesLink.get())) {
-                vulnerabilityViewMap.putAll(getVulnerabilitiesForComponent(vulnerableComponent).stream()
-                                                .collect(Collectors.toMap(VulnerabilityView::getName, Function.identity())));
-                vulnerabilityUrls.add(vulnerabilitiesLink.get());
-            }
-        }
-        return vulnerabilityViewMap;
-    }
-
-    private List<VulnerabilityView> getVulnerabilitiesForComponent(VulnerableComponentView vulnerableComponentView) {
-        try {
-            return getBlackDuckService().getAllResponses(vulnerableComponentView, VulnerableComponentView.VULNERABILITIES_LINK_RESPONSE);
-        } catch (IntegrationException ex) {
-            logger.error("Error getting vulnerabilities ", ex);
-        }
-        return List.of();
     }
 
     private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
@@ -289,18 +210,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             }
         }
         return count;
-    }
-
-    private Boolean hasVulnerabilityRule(VersionBomPolicyRuleView policyRule) {
-        String vulnerabilityCheck = "vuln";
-        PolicyRuleExpressionSetView expression = policyRule.getExpression();
-        List<PolicyRuleExpressionView> expressions = expression.getExpressions();
-        for (PolicyRuleExpressionView expressionView : expressions) {
-            if (expressionView.getName().toLowerCase().contains(vulnerabilityCheck)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private JsonField<String> getDataField(List<JsonField<?>> fields, FieldContentIdentifier contentIdentifier) {

@@ -35,11 +35,16 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
+import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
 import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
+import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
+import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -134,6 +139,34 @@ public class BlackDuckDataHelper {
                        return item;
                    })
                    .collect(Collectors.toList());
+    }
+
+    public List<VulnerabilityView> getVulnerabilitiesForComponent(VulnerableComponentView vulnerableComponentView) {
+        try {
+            return blackDuckService.getAllResponses(vulnerableComponentView, VulnerableComponentView.VULNERABILITIES_LINK_RESPONSE);
+        } catch (IntegrationException ex) {
+            logger.error("Error getting vulnerabilities ", ex);
+        }
+        return List.of();
+    }
+
+    public List<VulnerableComponentView> getVulnerableComponentViews(ProjectVersionWrapper projectVersionWrapper, VersionBomComponentView versionBomComponent) throws IntegrationException {
+        return blackDuckService.getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE).stream()
+                   .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
+                   .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))
+                   .collect(Collectors.toList());
+    }
+
+    public boolean hasVulnerabilityRule(VersionBomPolicyRuleView policyRule) {
+        String vulnerabilityCheck = "vuln";
+        PolicyRuleExpressionSetView expression = policyRule.getExpression();
+        List<PolicyRuleExpressionView> expressions = expression.getExpressions();
+        for (PolicyRuleExpressionView expressionView : expressions) {
+            if (expressionView.getName().toLowerCase().contains(vulnerabilityCheck)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<LinkableItem> getRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
