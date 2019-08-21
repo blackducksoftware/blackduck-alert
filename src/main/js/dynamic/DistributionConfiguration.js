@@ -6,7 +6,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import { getDistributionJob, saveDistributionJob, sendCustomMessage, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -29,6 +29,7 @@ class DistributionConfiguration extends Component {
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
+        this.handleSendMessageSubmit = this.handleSendMessageSubmit.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -141,6 +142,13 @@ class DistributionConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
+    handleSendMessageSubmit(event) {
+        event.preventDefault();
+
+        const jsonBody = this.buildJsonBody();
+        this.props.sendCustomMessage(jsonBody);
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         const { jobId, isUpdatingJob } = this.props;
@@ -213,8 +221,10 @@ class DistributionConfiguration extends Component {
                     submitId="job-submit"
                     includeTest={displayTest}
                     includeSave={displaySave}
+                    includeSendCustomMessage={displayTest}
                     includeCancel
                     onTestClick={this.handleTestSubmit}
+                    onCustomMessageClick={this.handleSendMessageSubmit}
                     onCancelClick={this.handleClose}
                     isFixed={false}
                 />
@@ -280,6 +290,7 @@ DistributionConfiguration.propTypes = {
     updateDistributionJob: PropTypes.func.isRequired,
     testDistributionJob: PropTypes.func.isRequired,
     saveDistributionJob: PropTypes.func.isRequired,
+    sendCustomMessage: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     isUpdatingJob: PropTypes.bool
 };
@@ -301,7 +312,8 @@ const mapDispatchToProps = dispatch => ({
     getDistributionJob: id => dispatch(getDistributionJob(id)),
     saveDistributionJob: config => dispatch(saveDistributionJob(config)),
     updateDistributionJob: config => dispatch(updateDistributionJob(config)),
-    testDistributionJob: config => dispatch(testDistributionJob(config))
+    testDistributionJob: config => dispatch(testDistributionJob(config)),
+    sendCustomMessage: config => dispatch(sendCustomMessage(config))
 });
 
 const mapStateToProps = state => ({
@@ -313,6 +325,7 @@ const mapStateToProps = state => ({
     saving: state.distributionConfigs.saving,
     success: state.distributionConfigs.success,
     testingConfig: state.distributionConfigs.testingConfig,
+    sendingCustomMessage: state.distributionConfigs.sendingCustomMessage,
     configurationMessage: state.distributionConfigs.configurationMessage
 });
 
