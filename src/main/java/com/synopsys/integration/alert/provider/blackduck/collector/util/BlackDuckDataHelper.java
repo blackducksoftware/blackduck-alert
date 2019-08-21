@@ -1,0 +1,175 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (c) 2019 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package com.synopsys.integration.alert.provider.blackduck.collector.util;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
+import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.ComponentService;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
+
+public class BlackDuckDataHelper {
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckDataHelper.class);
+    private BlackDuckProperties blackDuckProperties;
+    private BlackDuckService blackDuckService;
+    private BlackDuckBucket blackDuckBucket;
+    private BlackDuckBucketService bucketService;
+
+    public BlackDuckDataHelper(BlackDuckProperties blackDuckProperties, BlackDuckService blackDuckService, BlackDuckBucket blackDuckBucket, BlackDuckBucketService bucketService) {
+        this.blackDuckProperties = blackDuckProperties;
+        this.blackDuckService = blackDuckService;
+        this.blackDuckBucket = blackDuckBucket;
+        this.bucketService = bucketService;
+    }
+
+    public Optional<String> getProjectComponentQueryLink(final String projectVersionUrl, final String link, final String componentName) {
+        final Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
+        return projectLink.flatMap(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
+    }
+
+    public Optional<String> getProjectComponentQueryLink(final String projectLink, final String componentName) {
+        return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
+    }
+
+    public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
+        try {
+            final Future<Optional<ProjectVersionView>> optionalProjectVersionFuture = bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+            return optionalProjectVersionFuture
+                       .get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS)
+                       .flatMap(view -> view.getFirstLink(link));
+        } catch (InterruptedException interruptedException) {
+            logger.debug("The thread was interrupted, failing safely...");
+            Thread.currentThread().interrupt();
+        } catch (Exception genericException) {
+            logger.error("There was a problem retrieving the Project Version link.", genericException);
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(final VersionBomComponentView versionBomComponent) {
+        try {
+            // TODO Stop using this when Black Duck supports going back to the project-version
+            final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
+            if (versionBomComponentHref.isPresent()) {
+                final String versionHref = versionBomComponentHref.get();
+                final int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
+                final String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
+
+                bucketService.addToTheBucket(blackDuckBucket, projectVersionUri, ProjectVersionView.class);
+                final ProjectVersionView projectVersion = blackDuckBucket.get(projectVersionUri, ProjectVersionView.class);
+                final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
+                wrapper.setProjectVersionView(projectVersion);
+                blackDuckService.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
+                return Optional.of(wrapper);
+            }
+        } catch (final IntegrationException ie) {
+            logger.error("Error getting project version for Bom Component. ", ie);
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
+        try {
+            final Future<Optional<VersionBomComponentView>> optionalVersionBomComponentFuture = bucketService.addToTheBucket(blackDuckBucket, bomComponentUrl, VersionBomComponentView.class);
+            return optionalVersionBomComponentFuture.get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS);
+        } catch (InterruptedException interruptedException) {
+            logger.debug("The thread was interrupted, failing safely...");
+            Thread.currentThread().interrupt();
+        } catch (Exception genericException) {
+            logger.error("Error retrieving bom component", genericException);
+        }
+        return Optional.empty();
+    }
+
+    public List<LinkableItem> getLicenseLinkableItems(final VersionBomComponentView bomComponentView) {
+        return bomComponentView.getLicenses()
+                   .stream()
+                   .map(licenseView -> {
+                       // blackduck displays the license data in a modal dialog.  Therefore a link to the license doesn't make sense.
+                       // Also the VersionBomLicenseView doesn't have any link mappings to the text link.
+                       LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay());
+                       item.setCollapsible(true);
+                       return item;
+                   })
+                   .collect(Collectors.toList());
+    }
+
+    public List<LinkableItem> getRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
+        List<LinkableItem> remediationItems = new LinkedList<>();
+        ComponentService componentService = new ComponentService(blackDuckService, new Slf4jIntLogger(logger));
+        Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
+        if (optionalRemediation.isPresent()) {
+            RemediationOptionsView remediationOptions = optionalRemediation.get();
+            if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
+            }
+            if (null != remediationOptions.getLatestAfterCurrent()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
+            }
+            if (null != remediationOptions.getNoVulnerabilities()) {
+                RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
+                String versionText = createRemediationVersionText(remediatingVersionView);
+                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
+            }
+        }
+        return remediationItems;
+    }
+
+    private String createRemediationVersionText(final RemediatingVersionView remediatingVersionView) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(remediatingVersionView.getName());
+        if (remediatingVersionView.getVulnerabilityCount() != null && remediatingVersionView.getVulnerabilityCount() > 0) {
+            stringBuilder.append(" (Vulnerability Count: ");
+            stringBuilder.append(remediatingVersionView.getVulnerabilityCount());
+            stringBuilder.append(")");
+        }
+        return stringBuilder.toString();
+    }
+
+}

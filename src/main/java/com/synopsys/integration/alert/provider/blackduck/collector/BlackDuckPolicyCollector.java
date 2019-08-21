@@ -47,8 +47,8 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     private final Map<String, ComponentItemPriority> priorityMap = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor,  final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor,  contentTypes, blackDuckProperties);
+    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, contentTypes, blackDuckProperties);
 
         priorityMap.put("blocker", ComponentItemPriority.HIGHEST);
         priorityMap.put("critical", ComponentItemPriority.HIGH);
@@ -84,7 +84,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         final ArrayList<LinkableItem> itemList = new ArrayList<>(2);
 
         if (StringUtils.isNotBlank(bomComponentUrl)) {
-            getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getLicenseLinkableItems(bomComponent).forEach(itemList::add));
+            getBlackDuckDataHelper().getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent).forEach(itemList::add));
         }
 
         final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);

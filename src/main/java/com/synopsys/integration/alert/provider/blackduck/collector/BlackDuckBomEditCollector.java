@@ -101,41 +101,18 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     protected Collection<ComponentItem> getComponentItems(final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
         final JsonField<String> topicField = getDataField(notificationFields, FieldContentIdentifier.CATEGORY_ITEM);
         final Optional<String> bomComponentUrl = getBomComponentUrl(jsonFieldAccessor, topicField);
-        final Optional<VersionBomComponentView> versionBomComponentView = bomComponentUrl.flatMap(this::getBomComponentView);
-        final Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(this::getProjectVersionWrapper);
+        final Optional<VersionBomComponentView> versionBomComponentView = bomComponentUrl.flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url));
+        final Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp));
 
         List<ComponentItem> componentItems = new LinkedList<>();
         if (versionBomComponentView.isPresent()) {
             // have both the component view and the project wrapper.
-            List<LinkableItem> licenseItems = getLicenseLinkableItems(versionBomComponentView.get());
+            List<LinkableItem> licenseItems = getBlackDuckDataHelper().getLicenseLinkableItems(versionBomComponentView.get());
             componentItems.addAll(addVulnerabilityData(notificationContent.getId(), versionBomComponentView.get(), licenseItems));
             projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(notificationContent.getId(), versionWrapper, versionBomComponentView.get(), licenseItems)));
         }
 
         return componentItems;
-    }
-
-    private Optional<ProjectVersionWrapper> getProjectVersionWrapper(final VersionBomComponentView versionBomComponent) {
-        try {
-            // TODO Stop using this when Black Duck supports going back to the project-version
-            final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
-            if (versionBomComponentHref.isPresent()) {
-                final String versionHref = versionBomComponentHref.get();
-                final int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
-                final String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
-
-                getBucketService().addToTheBucket(getBlackDuckBucket(), projectVersionUri, ProjectVersionView.class);
-                final ProjectVersionView projectVersion = getBlackDuckBucket().get(projectVersionUri, ProjectVersionView.class);
-                final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
-                wrapper.setProjectVersionView(projectVersion);
-                getBlackDuckService().getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
-                return Optional.of(wrapper);
-            }
-        } catch (final IntegrationException ie) {
-            logger.error("Error getting project version for Bom Component. ", ie);
-        }
-
-        return Optional.empty();
     }
 
     private Collection<ComponentItem> addVulnerabilityData(Long notificationId, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
@@ -151,7 +128,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
                 getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
                 ComponentVersionView componentVersionView = getBlackDuckBucket().get(versionBomComponent.getComponentVersion(), ComponentVersionView.class);
-                final List<LinkableItem> remediationItems = getRemediationItems(componentVersionView);
+                final List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
                 componentAttributes.addAll(remediationItems);
 
                 ComponentItem.Builder builder = new ComponentItem.Builder();
@@ -278,8 +255,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         final List<LinkableItem> items = new ArrayList<>();
 
         getBomComponentUrl(accessor, field)
-            .flatMap(this::getBomComponentView)
-            .flatMap(this::getProjectVersionWrapper)
+            .flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url))
+            .flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp))
             .map(viewMapper)
             .map(itemMapper)
             .ifPresent(items::add);

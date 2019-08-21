@@ -89,7 +89,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                                              .findFirst()
                                              .orElse("");
 
-        final Optional<String> projectVersionComponentLink = getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
+        final Optional<String> projectVersionComponentLink = getBlackDuckDataHelper().getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
 
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
         for (final Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
@@ -133,7 +133,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         final Optional<String> projectVersionUrl) {
         final Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
         for (final ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
-            final String projectVersionLink = projectVersionUrl.flatMap(url -> getProjectComponentQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
+            final String projectVersionLink = projectVersionUrl.flatMap(url -> getBlackDuckDataHelper().getProjectComponentQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
             final PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus, policyItems);
             BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
             if (blackDuckPolicyLinkableItem == null) {
