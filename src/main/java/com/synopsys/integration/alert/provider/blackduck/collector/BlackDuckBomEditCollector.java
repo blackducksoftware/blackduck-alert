@@ -129,14 +129,14 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 componentVersionItem.ifPresent(builder::applySubComponent);
                 try {
                     items.add(builder.build());
-                } catch (AlertException ex) {
+                } catch (AlertException alertException) {
                     logger
                         .warn("Error building vulnerability BOM edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentItem, componentVersionItem.orElse(null));
-                    logger.error("Error building vulnerability BOM edit component cause ", ex);
+                    logger.error("Error building vulnerability BOM edit component cause ", alertException);
                 }
             }
-        } catch (Exception ex) {
-            logger.error("BOM Edit: Error processing vulnerabilities ", ex);
+        } catch (Exception genericException) {
+            logger.error("BOM Edit: Error processing vulnerabilities ", genericException);
         }
         return items;
     }
@@ -165,8 +165,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                     items.addAll(vulnerabilityComponentItems);
                 }
             }
-        } catch (Exception ex) {
-            logger.error("BOM Edit: Error processing policy ", ex);
+        } catch (Exception e) {
+            logger.error("BOM Edit: Error processing policy ", e);
         }
 
         return items;

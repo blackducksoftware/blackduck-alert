@@ -115,8 +115,8 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     }
 
     private ItemOperation getOperationFromNotification(AlertNotificationWrapper notificationContent) {
-        final ItemOperation operation;
-        final String notificationType = notificationContent.getNotificationType();
+        ItemOperation operation;
+        String notificationType = notificationContent.getNotificationType();
         if (NotificationType.RULE_VIOLATION_CLEARED.name().equals(notificationType)) {
             operation = ItemOperation.DELETE;
         } else if (NotificationType.RULE_VIOLATION.name().equals(notificationType)) {
