@@ -20,15 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.table;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table;
 
 public class TableSelectColumn {
     private String header;
     private boolean isKey;
+    private boolean sortBy;
 
-    public TableSelectColumn(final String header, final boolean isKey) {
+    public TableSelectColumn(final String header, final boolean isKey, final boolean sortBy) {
         this.header = header;
         this.isKey = isKey;
+        this.sortBy = sortBy;
     }
 
     public String getHeader() {
@@ -37,5 +39,9 @@ public class TableSelectColumn {
 
     public boolean isKey() {
         return isKey;
+    }
+
+    public boolean isSortBy() {
+        return sortBy;
     }
 }

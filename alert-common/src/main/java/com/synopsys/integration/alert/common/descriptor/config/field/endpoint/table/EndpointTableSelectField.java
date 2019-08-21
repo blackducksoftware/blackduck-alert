@@ -20,29 +20,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.table;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public abstract class TableSelectField extends ConfigField {
+public class EndpointTableSelectField extends ConfigField {
     private boolean paged;
     private boolean searchable;
+    private String endpoint;
     private List<TableSelectColumn> columns;
 
-    public TableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
+    public static EndpointTableSelectField create(String key, String label, String description, boolean searchable) {
+        return new EndpointTableSelectField(key, label, description, false, false, true, searchable);
+    }
+
+    public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
         super(key, label, description, FieldType.TABLE_SELECT_INPUT.getFieldTypeName(), required, sensitive);
         this.paged = paged;
         this.searchable = searchable;
-        columns = createTableColumns();
+        endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        columns = new LinkedList<>();
     }
-
-    public abstract List<TableSelectColumn> createTableColumns();
-
-    public abstract List<Map<String, String>> mapDataToColumns();
 
     public boolean isPaged() {
         return paged;
@@ -50,6 +55,20 @@ public abstract class TableSelectField extends ConfigField {
 
     public boolean isSearchable() {
         return searchable;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public EndpointTableSelectField addColumn(TableSelectColumn tableSelectColumn) {
+        columns.add(tableSelectColumn);
+        return this;
+    }
+
+    public EndpointTableSelectField addColumns(TableSelectColumn... tableSelectColumns) {
+        columns.addAll(Stream.of(tableSelectColumns).collect(Collectors.toList()));
+        return this;
     }
 
     public List<TableSelectColumn> getColumns() {

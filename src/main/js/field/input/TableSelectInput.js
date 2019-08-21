@@ -6,6 +6,8 @@ import LabeledField from 'field/LabeledField';
 import Select, { components } from 'react-select';
 import DescriptorOption from 'component/common/DescriptorOption';
 import GeneralButton from 'field/input/GeneralButton';
+import { createNewConfigurationRequest } from "../../util/configurationRequestBuilder";
+import PropTypes from "prop-types";
 
 const { Option, SingleValue } = components;
 
@@ -13,6 +15,7 @@ class TableSelectInput extends Component {
     constructor(props) {
         super(props);
 
+        this.retrieveTableData = this.retrieveTableData.bind(this);
         this.createTable = this.createTable.bind(this);
         this.createSelect = this.createSelect.bind(this);
         this.onRowSelected = this.onRowSelected.bind(this);
@@ -78,6 +81,34 @@ class TableSelectInput extends Component {
             onSelect: this.onRowSelected,
             onSelectAll: this.onRowSelectedAll
         };
+    }
+
+    retrieveTableData() {
+        this.setState({
+            progress: true,
+            success: false
+        });
+        const {
+            fieldKey, csrfToken, currentConfig, endpoint
+        } = this.props;
+
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
+        request.then((response) => {
+            this.setState({
+                progress: false
+            });
+            if (response.ok) {
+                this.setState({
+                    success: true
+                })
+            } else {
+                response.json().then((data) => {
+                    this.setState({
+                        fieldError: data.message
+                    });
+                });
+            }
+        });
     }
 
     createTableData() {
@@ -197,12 +228,14 @@ class TableSelectInput extends Component {
     }
 }
 
+TableSelectInput.propTypes = {
+    csrfToken: PropTypes.string.isRequired
+};
+
 TableSelectInput.defaultProps = {};
 
-TableSelectInput.propTypes = {};
+const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken
+});
 
-const mapStateToProps = state => ({});
-
-const mapDispatchToProps = dispatch => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(TableSelectInput);
+export default connect(mapStateToProps)(TableSelectInput);
