@@ -11,6 +11,13 @@ import { verifyLogin, verifySaml } from 'store/actions/session';
 import { getInitialSystemSetup } from 'store/actions/system';
 import * as IconUtility from 'util/iconUtility';
 import LogoutPage from 'LogoutPage';
+
+// These are needed for the react-bootstrap tables to show the ascending/descending icons
+import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+import '@fortawesome/fontawesome-free/js/all.js';
+import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
+import '@fortawesome/fontawesome-free/js/v4-shims.js';
+
 import '../css/main.scss';
 
 IconUtility.loadIconData();
