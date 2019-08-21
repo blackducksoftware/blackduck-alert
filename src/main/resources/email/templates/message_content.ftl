@@ -24,7 +24,7 @@
 <br />
 <#if provider_name??>
     <div style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #445B68;">${provider_name} captured the following new notifications.</div>
-    <a href="${provider_url}" style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #225786;">See more allAttributeDetails in the ${provider_name} server</a>
+    <a href="${provider_url}" style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: lighter;font-size: 14px;color: #225786;">See more details in the ${provider_name} server</a>
     <br />
     <br />
 </#if>
