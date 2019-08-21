@@ -93,7 +93,7 @@ class FieldsPanel extends React.Component {
             }
             const field = panelFields[fieldKey];
             const { key, type } = field;
-            if (keyToValues && !this.state.hiddenFieldKeys.includes(key)) {
+            if (!this.state.hiddenFieldKeys.includes(key)) {
                 return (type === 'CheckboxInput' || type === 'HideCheckboxInput') ? FieldModelUtilities.checkboxHasValue(keyToValues[key]) : FieldModelUtilities.hasValuesOrIsSet(keyToValues[key]);
             }
             return false;
