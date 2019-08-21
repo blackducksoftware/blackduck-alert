@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -56,7 +57,7 @@ public class MsTeamsChannel extends NamedDistributionChannel {
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
+        final String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
         MsTeamsMessage msTeamsMessage = msTeamsEventParser.createMessage(event);
         String json = msTeamsEventParser.toJson(msTeamsMessage);

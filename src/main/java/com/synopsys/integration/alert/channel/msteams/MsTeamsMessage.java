@@ -52,10 +52,15 @@ public class MsTeamsMessage {
             MsTeamsComponent msTeamsComponent = new MsTeamsComponent();
             msTeamsComponent.setCategory(componentItem.getCategory());
             msTeamsComponent.setOperation(componentItem.getOperation().toString());
-            msTeamsComponent.setText(componentItem.getComponent().getValue());
 
-            String details = createDetails(componentItem.getComponentAttributes());
-            msTeamsComponent.setDetails(details);
+            String componentText = componentItem.getComponent().getValue();
+            if (componentItem.getSubComponent().isPresent()) {
+                componentText += "/" + componentItem.getSubComponent().get().getValue();
+            }
+            msTeamsComponent.setText(componentText);
+
+            String allAttributeDetails = createDetails(componentItem.getComponentAttributes());
+            msTeamsComponent.setAllAttributeDetails(allAttributeDetails);
 
             components.add(msTeamsComponent);
         }

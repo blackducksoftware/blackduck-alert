@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.exception.IntegrationException;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -43,10 +44,16 @@ public class MsTeamsEventParser {
     private Configuration freemarkerConfiguration;
     private Template msTeamsTemplate;
 
-    public MsTeamsEventParser(FreemarkerTemplatingService freemarkerTemplatingService) throws IOException {
+    public MsTeamsEventParser(FreemarkerTemplatingService freemarkerTemplatingService) throws IntegrationException {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
-        this.freemarkerConfiguration = freemarkerTemplatingService.createFreemarkerConfig(new File("C:\\cygwin64\\home\\ekerwin\\source\\blackduck-alert\\src\\main\\resources\\channel\\msteams\\templates"));
-        this.msTeamsTemplate = freemarkerConfiguration.getTemplate("message_content.ftl");
+        //TODO ekerwin - when we fix email template loading, we can consolidate the configurations to just load /templates
+        TemplateLoader msTeamsLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/channel/msteams");
+        this.freemarkerConfiguration = freemarkerTemplatingService.createFreemarkerConfig(msTeamsLoader);
+        try {
+            this.msTeamsTemplate = freemarkerConfiguration.getTemplate("message_content.ftl");
+        } catch (IOException e) {
+            throw new IntegrationException("Unable to load the MS Teams template - is it on the classpath? (" + e.getMessage() + ")", e);
+        }
     }
 
     public MsTeamsMessage createMessage(DistributionEvent distributionEvent) {

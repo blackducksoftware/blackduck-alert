@@ -26,7 +26,7 @@ public class MsTeamsComponent {
     private String category;
     private String operation;
     private String text;
-    private String details;
+    private String allAttributeDetails;
 
     public String getCategory() {
         return category;
@@ -52,12 +52,12 @@ public class MsTeamsComponent {
         this.text = text;
     }
 
-    public String getDetails() {
-        return details;
+    public String getAllAttributeDetails() {
+        return allAttributeDetails;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setAllAttributeDetails(String allAttributeDetails) {
+        this.allAttributeDetails = allAttributeDetails;
     }
 
 }

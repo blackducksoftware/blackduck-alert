@@ -1,8 +1,8 @@
 /**
  * blackduck-alert
- *
+ * <p>
  * Copyright (c) 2019 Synopsys, Inc.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -10,9 +10,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +64,34 @@ public class FreemarkerTemplatingService {
     }
 
     public Configuration createFreemarkerConfig(final File templateLoadingDirectory) throws IOException {
+        Configuration configuration = createDefaultConfiguration();
+
+        if (templateLoadingDirectory != null) {
+            configuration.setDirectoryForTemplateLoading(templateLoadingDirectory);
+        }
+
+        return configuration;
+    }
+
+    public Configuration createFreemarkerConfig(TemplateLoader templateLoader) {
+        Configuration configuration = createDefaultConfiguration();
+
+        configuration.setTemplateLoader(templateLoader);
+
+        return configuration;
+    }
+
+    public TemplateLoader createClassTemplateLoader(String basePackagePath) {
+        return new ClassTemplateLoader(getClass(), basePackagePath);
+    }
+
+    private Configuration createDefaultConfiguration() {
         final Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
+
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         cfg.setLogTemplateExceptions(false);
 
-        if (templateLoadingDirectory != null) {
-            cfg.setDirectoryForTemplateLoading(templateLoadingDirectory);
-        }
         return cfg;
     }
 
@@ -99,4 +122,5 @@ public class FreemarkerTemplatingService {
         template.process(model, stringWriter);
         return stringWriter.toString();
     }
+
 }
