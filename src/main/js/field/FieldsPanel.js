@@ -86,6 +86,10 @@ class FieldsPanel extends React.Component {
         });
         const { keyToValues } = this.props.currentConfig;
         const hasValues = Object.keys(panelFields).some((fieldKey) => {
+            // If starting with an empty database, the keyToValues will be undefined
+            if (!keyToValues) {
+                return false;
+            }
             const field = panelFields[fieldKey];
             const { key, type } = field;
             if (!this.state.hiddenFieldKeys.includes(key)) {
