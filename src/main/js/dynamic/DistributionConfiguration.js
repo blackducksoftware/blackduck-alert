@@ -10,6 +10,7 @@ import { getDistributionJob, saveDistributionJob, sendCustomMessage, testDistrib
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
+import JobCustomMessageModal from "./JobCustomMessageModal";
 
 export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
@@ -39,6 +40,7 @@ class DistributionConfiguration extends Component {
         const channelFieldModel = FieldModelUtilities.updateFieldModelSingleValue(emptyFieldModel, KEY_CHANNEL_NAME, name);
         this.state = {
             show: true,
+            showSendMessage: false,
             channelConfig: channelFieldModel,
             providerConfig: {},
             currentChannel: defaultDescriptor,
@@ -142,11 +144,16 @@ class DistributionConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    handleSendMessageSubmit(event) {
-        event.preventDefault();
+    handleSendMessage(event) {
+        this.setState({
+            showSendMessage: true
+        });
+    }
 
-        const jsonBody = this.buildJsonBody();
-        this.props.sendCustomMessage(jsonBody);
+    handleSendMessageCancel() {
+        this.setState({
+            showSendMessage: false
+        });
     }
 
     handleSubmit(event) {
@@ -224,9 +231,17 @@ class DistributionConfiguration extends Component {
                     includeSendCustomMessage={displayTest}
                     includeCancel
                     onTestClick={this.handleTestSubmit}
-                    onCustomMessageClick={this.handleSendMessageSubmit}
+                    onCustomMessageClick={this.handleSendMessage}
                     onCancelClick={this.handleClose}
                     isFixed={false}
+                />
+                <JobCustomMessageModal
+                    topicLabel="Topic"
+                    messageLabel="Message"
+                    showModal={this.state.showSendMessage}
+                    jobFieldModel={this.buildJsonBody()}
+                    sendMessage={this.props.sendCustomMessage}
+                    handleCancel={this.handleSendMessageCancel}
                 />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
