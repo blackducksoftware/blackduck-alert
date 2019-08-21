@@ -48,7 +48,6 @@ class EndpointSelectField extends Component {
                         success: true
                     });
                 });
-
             } else {
                 response.json().then((data) => {
                     this.setState({

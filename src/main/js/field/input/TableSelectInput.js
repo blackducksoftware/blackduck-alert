@@ -6,8 +6,8 @@ import LabeledField from 'field/LabeledField';
 import Select, { components } from 'react-select';
 import DescriptorOption from 'component/common/DescriptorOption';
 import GeneralButton from 'field/input/GeneralButton';
-import { createNewConfigurationRequest } from "../../util/configurationRequestBuilder";
-import PropTypes from "prop-types";
+import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import PropTypes from 'prop-types';
 
 const { Option, SingleValue } = components;
 
@@ -20,12 +20,25 @@ class TableSelectInput extends Component {
         this.createSelect = this.createSelect.bind(this);
         this.onRowSelected = this.onRowSelected.bind(this);
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
+        this.selectOnClick = this.selectOnClick.bind(this);
 
         this.state = {
+            progress: false,
             showTable: false,
             data: [],
-            selectedData: []
+            selectedData: [],
+            displayedData: []
         };
+    }
+
+    componentDidMount() {
+        this.state.selectedData.push(...this.props.value);
+        const convertedValues = this.state.selectedData.map(selected => {
+            return Object.assign({ label: selected, value: selected });
+        });
+        this.setState({
+            displayedData: convertedValues
+        })
     }
 
     onRowSelectedAll(isSelected, rows) {
@@ -53,13 +66,16 @@ class TableSelectInput extends Component {
     }
 
     createSelectedArray(selectedArray, row, isSelected) {
+        const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
+        const rowValue = row[keyColumnHeader];
+
         if (isSelected) {
-            const projectFound = selectedArray.find(project => project === row.name);
+            const projectFound = selectedArray.find(project => project === rowValue);
             if (!projectFound) {
-                selectedArray.push(row.name);
+                selectedArray.push(rowValue);
             }
         } else {
-            const index = selectedArray.indexOf(row.name);
+            const index = selectedArray.indexOf(rowValue);
             if (index >= 0) {
                 selectedArray.splice(index, 1); // if found, remove that element from selected array
             }
@@ -67,12 +83,6 @@ class TableSelectInput extends Component {
     }
 
     createRowSelectionProps() {
-        const { readOnly } = this.props;
-
-        if (readOnly) {
-            return {};
-        }
-
         return {
             mode: 'checkbox',
             clickToSelect: true,
@@ -98,9 +108,12 @@ class TableSelectInput extends Component {
                 progress: false
             });
             if (response.ok) {
-                this.setState({
-                    success: true
-                })
+                response.json().then((data) => {
+                    this.setState({
+                        data,
+                        success: true
+                    });
+                });
             } else {
                 response.json().then((data) => {
                     this.setState({
@@ -111,26 +124,18 @@ class TableSelectInput extends Component {
         });
     }
 
-    createTableData() {
-        const { readOnly } = this.props;
-
-        if (readOnly) {
-            return this.state.data.filter(project => this.props.selectedData.find(selectedProject => project.name === selectedProject));
-        }
-
-        return this.state.data;
-    }
-
     createTable() {
+        const columnsProp = this.props.columns;
+        const defaultSortName = columnsProp.find(column => column.sortBy).header;
+
         const tableOptions = {
             noDataText: 'No data found',
             clearSearch: true,
-            defaultSortName: 'name',
+            defaultSortName: defaultSortName,
             defaultSortOrder: 'asc'
         };
 
         const projectsSelectRowProp = this.createRowSelectionProps();
-        const tableData = this.createTableData();
 
         const assignDataFormat = (cell, row) => {
             const cellContent = (row.missing) ?
@@ -147,10 +152,31 @@ class TableSelectInput extends Component {
             return <div> {cellContent} </div>;
         }
 
+        const okClicked = () => {
+            const convertedValues = this.state.selectedData.map(selected => {
+                return Object.assign({ label: selected, value: selected });
+            });
+            this.setState({
+                showTable: false,
+                displayedData: convertedValues
+            })
+
+            this.props.onChange({
+                target: {
+                    name: this.props.fieldKey,
+                    value: this.state.selectedData
+                }
+            });
+        }
+
+        const columns = columnsProp.map(column => (
+            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>{column.header}</TableHeaderColumn>
+        ));
+
         return (<div>
             <BootstrapTable
                 version="4"
-                data={tableData}
+                data={this.state.data}
                 containerClass="table"
                 hover
                 condensed
@@ -161,12 +187,10 @@ class TableSelectInput extends Component {
                 headerContainerClass="scrollable"
                 bodyContainerClass="tableScrollableBody"
             >
-                <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
-                <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>Description</TableHeaderColumn>
-                <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>
+                {columns}
             </BootstrapTable>
 
-            {this.props.fetching &&
+            {this.state.progress &&
             <div className="progressIcon">
                 <span className="fa-layers fa-fw">
                     <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
@@ -174,9 +198,14 @@ class TableSelectInput extends Component {
             </div>}
 
             <div>
-                <GeneralButton onClick={() => this.setState({ showTable: false })}>OK</GeneralButton>
+                <GeneralButton onClick={okClicked}>OK</GeneralButton>
             </div>
         </div>);
+    }
+
+    selectOnClick() {
+        this.retrieveTableData();
+        this.setState({ showTable: true })
     }
 
     createSelect() {
@@ -195,7 +224,8 @@ class TableSelectInput extends Component {
         const components = {
             Option: typeOptionLabel,
             SingleValue: typeLabel,
-            DropdownIndicator: null
+            DropdownIndicator: null,
+            MultiValueRemove: () => <div></div>
         }
 
         return (
@@ -208,8 +238,10 @@ class TableSelectInput extends Component {
                     components={components}
                     noOptionsMessage={null}
                     isDisabled
+                    clearable={false}
+                    value={this.state.displayedData}
                 />
-                <button className="selectButton" onClick={() => this.setState({ showTable: true })}>
+                <button className="selectButton" onClick={this.selectOnClick} disabled={this.state.showTable || this.props.readOnly}>
                     Select
                 </button>
             </div>
@@ -229,7 +261,11 @@ class TableSelectInput extends Component {
 }
 
 TableSelectInput.propTypes = {
-    csrfToken: PropTypes.string.isRequired
+    fieldKey: PropTypes.string.isRequired,
+    endpoint: PropTypes.string.isRequired,
+    csrfToken: PropTypes.string.isRequired,
+    currentConfig: PropTypes.object.isRequired,
+    columns: PropTypes.array.isRequired
 };
 
 TableSelectInput.defaultProps = {};

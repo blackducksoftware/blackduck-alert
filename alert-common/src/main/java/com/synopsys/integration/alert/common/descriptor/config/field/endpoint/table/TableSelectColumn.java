@@ -37,7 +37,7 @@ public class TableSelectColumn {
         return header;
     }
 
-    public boolean isKey() {
+    public boolean isIsKey() {
         return isKey;
     }
 
