@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -78,31 +79,43 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         }
     }
 
-    protected Collection<LinkableItem> createPolicyLinkableItems(PolicyInfo policyInfo, String bomComponentUrl) {
+    protected LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
         String policyName = policyInfo.getPolicyName();
-        String severity = policyInfo.getSeverity();
-        ArrayList<LinkableItem> itemList = new ArrayList<>(2);
-
-        if (StringUtils.isNotBlank(bomComponentUrl)) {
-            getBlackDuckDataHelper().getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent).forEach(itemList::add));
-        }
-
         LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
         policyNameItem.setPartOfKey(true);
         policyNameItem.setCollapsible(true);
         policyNameItem.setSummarizable(true);
         policyNameItem.setCountable(true);
+        return policyNameItem;
+    }
 
+    protected Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
+        String severity = policyInfo.getSeverity();
         if (StringUtils.isNotBlank(severity)) {
             final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
             severityItem.setPartOfKey(false);
             severityItem.setCollapsible(false);
             severityItem.setSummarizable(true);
             severityItem.setCountable(false);
-            itemList.add(severityItem);
+            return Optional.of(severityItem);
         }
-        itemList.add(policyNameItem);
-        return itemList;
+        return Optional.empty();
+    }
+
+    protected List<LinkableItem> createPolicyLinkableItems(PolicyInfo policyInfo, String bomComponentUrl) {
+        ArrayList<LinkableItem> items = new ArrayList<>();
+
+        LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
+        items.add(policyNameItem);
+
+        Optional<LinkableItem> policySeverityItem = createPolicySeverityItem(policyInfo);
+        policySeverityItem.ifPresent(items::add);
+
+        if (StringUtils.isNotBlank(bomComponentUrl)) {
+            getBlackDuckDataHelper().getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> items.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
+        }
+
+        return items;
     }
 
     protected ComponentItemPriority mapSeverityToPriority(String severity) {

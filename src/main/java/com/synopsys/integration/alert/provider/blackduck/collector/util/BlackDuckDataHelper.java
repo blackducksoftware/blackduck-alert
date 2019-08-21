@@ -29,6 +29,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,18 +68,18 @@ public class BlackDuckDataHelper {
         this.bucketService = bucketService;
     }
 
-    public Optional<String> getProjectComponentQueryLink(final String projectVersionUrl, final String link, final String componentName) {
-        final Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
+    public Optional<String> getProjectComponentQueryLink(String projectVersionUrl, String link, String componentName) {
+        Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
         return projectLink.flatMap(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
     }
 
-    public Optional<String> getProjectComponentQueryLink(final String projectLink, final String componentName) {
+    public Optional<String> getProjectComponentQueryLink(String projectLink, String componentName) {
         return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
     }
 
-    public Optional<String> getProjectLink(final String projectVersionUrl, final String link) {
+    public Optional<String> getProjectLink(String projectVersionUrl, String link) {
         try {
-            final Future<Optional<ProjectVersionView>> optionalProjectVersionFuture = bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
+            Future<Optional<ProjectVersionView>> optionalProjectVersionFuture = bucketService.addToTheBucket(blackDuckBucket, projectVersionUrl, ProjectVersionView.class);
             return optionalProjectVersionFuture
                        .get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS)
                        .flatMap(view -> view.getFirstLink(link));
@@ -92,33 +93,35 @@ public class BlackDuckDataHelper {
         return Optional.empty();
     }
 
-    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(final VersionBomComponentView versionBomComponent) {
+    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(VersionBomComponentView versionBomComponent) {
         try {
             // TODO Stop using this when Black Duck supports going back to the project-version
             final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
             if (versionBomComponentHref.isPresent()) {
-                final String versionHref = versionBomComponentHref.get();
-                final int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
-                final String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
+                String versionHref = versionBomComponentHref.get();
+                int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
+                String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
 
                 bucketService.addToTheBucket(blackDuckBucket, projectVersionUri, ProjectVersionView.class);
-                final ProjectVersionView projectVersion = blackDuckBucket.get(projectVersionUri, ProjectVersionView.class);
-                final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
+                ProjectVersionView projectVersion = blackDuckBucket.get(projectVersionUri, ProjectVersionView.class);
+                ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
                 wrapper.setProjectVersionView(projectVersion);
                 blackDuckService.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
                 return Optional.of(wrapper);
             }
-        } catch (final IntegrationException ie) {
+        } catch (IntegrationException ie) {
             logger.error("Error getting project version for Bom Component. ", ie);
         }
 
         return Optional.empty();
     }
 
-    public Optional<VersionBomComponentView> getBomComponentView(final String bomComponentUrl) {
+    public Optional<VersionBomComponentView> getBomComponentView(String bomComponentUrl) {
         try {
-            final Future<Optional<VersionBomComponentView>> optionalVersionBomComponentFuture = bucketService.addToTheBucket(blackDuckBucket, bomComponentUrl, VersionBomComponentView.class);
-            return optionalVersionBomComponentFuture.get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS);
+            if (StringUtils.isNotBlank(bomComponentUrl)) {
+                Future<Optional<VersionBomComponentView>> optionalVersionBomComponentFuture = bucketService.addToTheBucket(blackDuckBucket, bomComponentUrl, VersionBomComponentView.class);
+                return optionalVersionBomComponentFuture.get(blackDuckProperties.getBlackDuckTimeout(), TimeUnit.SECONDS);
+            }
         } catch (InterruptedException interruptedException) {
             logger.debug("The thread was interrupted, failing safely...");
             Thread.currentThread().interrupt();
@@ -128,7 +131,7 @@ public class BlackDuckDataHelper {
         return Optional.empty();
     }
 
-    public List<LinkableItem> getLicenseLinkableItems(final VersionBomComponentView bomComponentView) {
+    public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
         return bomComponentView.getLicenses()
                    .stream()
                    .map(licenseView -> {
@@ -139,6 +142,15 @@ public class BlackDuckDataHelper {
                        return item;
                    })
                    .collect(Collectors.toList());
+    }
+
+    public List<VersionBomPolicyRuleView> getPolicyRulesFromComponent(VersionBomComponentView bomComponentView) {
+        try {
+            return blackDuckService.getAllResponses(bomComponentView, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
+        } catch (IntegrationException e) {
+            logger.debug("Unable to get policy rules from component: {}[{}]", bomComponentView.getComponentName(), bomComponentView.getComponentVersionName());
+        }
+        return List.of();
     }
 
     public List<VulnerabilityView> getVulnerabilitiesForComponent(VulnerableComponentView vulnerableComponentView) {
@@ -194,7 +206,7 @@ public class BlackDuckDataHelper {
         return remediationItems;
     }
 
-    private String createRemediationVersionText(final RemediatingVersionView remediatingVersionView) {
+    private String createRemediationVersionText(RemediatingVersionView remediatingVersionView) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(remediatingVersionView.getName());
         if (remediatingVersionView.getVulnerabilityCount() != null && remediatingVersionView.getVulnerabilityCount() > 0) {
