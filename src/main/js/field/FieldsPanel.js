@@ -85,10 +85,11 @@ class FieldsPanel extends React.Component {
             panelFields = panelFields.concat(fields);
         });
         const { keyToValues } = this.props.currentConfig;
+        console.log(keyToValues);
         const hasValues = Object.keys(panelFields).some((fieldKey) => {
             const field = panelFields[fieldKey];
             const { key, type } = field;
-            if (!this.state.hiddenFieldKeys.includes(key)) {
+            if (keyToValues && !this.state.hiddenFieldKeys.includes(key)) {
                 return (type === 'CheckboxInput' || type === 'HideCheckboxInput') ? FieldModelUtilities.checkboxHasValue(keyToValues[key]) : FieldModelUtilities.hasValuesOrIsSet(keyToValues[key]);
             }
             return false;
