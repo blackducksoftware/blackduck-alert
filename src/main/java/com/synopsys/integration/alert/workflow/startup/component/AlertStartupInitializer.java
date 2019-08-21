@@ -133,7 +133,7 @@ public class AlertStartupInitializer extends StartupComponent {
             logger.info("---------------------------------");
             logger.info("Descriptor: {}", descriptorName);
             logger.info("---------------------------------");
-            logger.info("  Start Descriptor Initialization...");
+            logger.info("  Starting Descriptor Initialization...");
             try {
                 final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
                                                                         .sorted(Comparator.comparing(DefinedFieldModel::getKey))
