@@ -79,30 +79,30 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public BlackDuckBomEditCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
+    public BlackDuckBomEditCollector(JsonExtractor jsonExtractor, BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, List.of(BlackDuckContent.BOM_EDIT), blackDuckProperties);
     }
 
     @Override
-    protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        final JsonField<String> topicField = getDataField(fields, FieldContentIdentifier.TOPIC);
+    protected List<LinkableItem> getTopicItems(JsonFieldAccessor accessor, List<JsonField<?>> fields) {
+        JsonField<String> topicField = getDataField(fields, FieldContentIdentifier.TOPIC);
         return getItemFromProjectVersionWrapper(accessor, topicField, ProjectVersionWrapper::getProjectView,
             view -> new LinkableItem(topicField.getLabel(), ((ProjectView) view).getName(), view.getHref().orElse(null)));
     }
 
     @Override
-    protected List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        final JsonField<String> subTopicField = getDataField(fields, FieldContentIdentifier.SUB_TOPIC);
+    protected List<LinkableItem> getSubTopicItems(JsonFieldAccessor accessor, List<JsonField<?>> fields) {
+        JsonField<String> subTopicField = getDataField(fields, FieldContentIdentifier.SUB_TOPIC);
         return getItemFromProjectVersionWrapper(accessor, subTopicField, ProjectVersionWrapper::getProjectVersionView,
             view -> new LinkableItem(subTopicField.getLabel(), ((ProjectVersionView) view).getVersionName(), view.getHref().orElse(null)));
     }
 
     @Override
-    protected Collection<ComponentItem> getComponentItems(final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final AlertNotificationWrapper notificationContent) {
-        final JsonField<String> topicField = getDataField(notificationFields, FieldContentIdentifier.CATEGORY_ITEM);
-        final Optional<String> bomComponentUrl = getBomComponentUrl(jsonFieldAccessor, topicField);
-        final Optional<VersionBomComponentView> versionBomComponentView = bomComponentUrl.flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url));
-        final Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp));
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
+        JsonField<String> topicField = getDataField(notificationFields, FieldContentIdentifier.CATEGORY_ITEM);
+        Optional<String> bomComponentUrl = getBomComponentUrl(jsonFieldAccessor, topicField);
+        Optional<VersionBomComponentView> versionBomComponentView = bomComponentUrl.flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url));
+        Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp));
 
         List<ComponentItem> componentItems = new LinkedList<>();
         if (versionBomComponentView.isPresent()) {
@@ -118,17 +118,17 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     private Collection<ComponentItem> addVulnerabilityData(Long notificationId, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
-            final RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
-            final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
+            RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
+            LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
             Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
 
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
-                final List<LinkableItem> componentAttributes = new LinkedList<>();
+                List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(licenseItems);
 
                 getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
                 ComponentVersionView componentVersionView = getBlackDuckBucket().get(versionBomComponent.getComponentVersion(), ComponentVersionView.class);
-                final List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
+                List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
                 componentAttributes.addAll(remediationItems);
 
                 ComponentItem.Builder builder = new ComponentItem.Builder();
@@ -152,52 +152,52 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return items;
     }
 
-    private Collection<ComponentItem> createPolicyItems(Long notificationId, final ProjectVersionWrapper projectVersionWrapper, final VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
+    private Collection<ComponentItem> createPolicyItems(Long notificationId, ProjectVersionWrapper projectVersionWrapper, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
         if (!PolicySummaryStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
             return List.of();
         }
         Collection<ComponentItem> items = new LinkedList<>();
         try {
-            final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
+            LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
             Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
-            final List<VersionBomPolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
-            for (final VersionBomPolicyRuleView rule : policyRules) {
+            List<VersionBomPolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
+            for (VersionBomPolicyRuleView rule : policyRules) {
                 if (!PolicySummaryStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
                     continue;
                 }
 
-                final LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
+                LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
                 policyNameItem.setCollapsible(true);
                 policyNameItem.setSummarizable(true);
                 policyNameItem.setCountable(true);
                 if (hasVulnerabilityRule(rule)) {
-                    final List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE).stream()
-                                                                                       .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
-                                                                                       .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))
-                                                                                       .collect(Collectors.toList());
-                    final Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(vulnerableComponentViews);
-                    final Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
-                                                                                                  .map(VulnerableComponentView::getVulnerabilityWithRemediation)
-                                                                                                  .collect(Collectors.toSet());
+                    List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckService().getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK_RESPONSE).stream()
+                                                                                 .filter(vulnerableComponentView -> vulnerableComponentView.getComponentName().equals(versionBomComponent.getComponentName()))
+                                                                                 .filter(vulnerableComponentView -> vulnerableComponentView.getComponentVersionName().equals(versionBomComponent.getComponentVersionName()))
+                                                                                 .collect(Collectors.toList());
+                    Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(vulnerableComponentViews);
+                    Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
+                                                                                            .map(VulnerableComponentView::getVulnerabilityWithRemediation)
+                                                                                            .collect(Collectors.toSet());
                     for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
                         // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
-                        final String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
+                        String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
                         String vulnerabilityUrl = null;
                         if (vulnerabilityViews.containsKey(vulnerabilityId)) {
                             vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
                         }
-                        final String severity = vulnerabilityView.getSeverity().prettyPrint();
+                        String severity = vulnerabilityView.getSeverity().prettyPrint();
 
-                        final LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+                        LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
                         item.setPartOfKey(true);
                         item.setSummarizable(true);
                         item.setCountable(true);
                         item.setCollapsible(true);
 
-                        final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, severity);
+                        LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, severity);
                         severityItem.setSummarizable(true);
-                        final ComponentItemPriority priority = ComponentItemPriority.findPriority(severity);
-                        final List<LinkableItem> attributes = new LinkedList<>();
+                        ComponentItemPriority priority = ComponentItemPriority.findPriority(severity);
+                        List<LinkableItem> attributes = new LinkedList<>();
                         attributes.addAll(licenseItems);
                         attributes.add(severityItem);
                         attributes.add(policyNameItem);
@@ -252,8 +252,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     }
 
     private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
-        final List<LinkableItem> items = new ArrayList<>();
-
+        List<LinkableItem> items = new ArrayList<>();
         getBomComponentUrl(accessor, field)
             .flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url))
             .flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp))
@@ -273,18 +272,18 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
     private boolean doesSecurityRiskProfileHaveVulnerabilities(final RiskProfileView securityRiskProfile) {
         logger.debug("Checking if the component still has vulnerabilities...");
-        final int vulnerablitiesCount = getSumOfRiskCounts(securityRiskProfile.getCounts());
-        logger.debug("Number of vulnerabilities found: " + vulnerablitiesCount);
-        if (vulnerablitiesCount > 0) {
+        int vulnerabilitiesCount = getSumOfRiskCounts(securityRiskProfile.getCounts());
+        logger.debug("Number of vulnerabilities found: " + vulnerabilitiesCount);
+        if (vulnerabilitiesCount > 0) {
             logger.debug("This component still has vulnerabilities");
             return true;
         }
         return false;
     }
 
-    private int getSumOfRiskCounts(final List<RiskCountView> vulnerabilityCounts) {
+    private int getSumOfRiskCounts(List<RiskCountView> vulnerabilityCounts) {
         int count = 0;
-        for (final RiskCountView riskCount : vulnerabilityCounts) {
+        for (RiskCountView riskCount : vulnerabilityCounts) {
             if (!RiskCountType.OK.equals(riskCount.getCountType())) {
                 count += riskCount.getCount();
             }
@@ -292,11 +291,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return count;
     }
 
-    private Boolean hasVulnerabilityRule(final VersionBomPolicyRuleView policyRule) {
-        final String vulnerabilityCheck = "vuln";
-        final PolicyRuleExpressionSetView expression = policyRule.getExpression();
-        final List<PolicyRuleExpressionView> expressions = expression.getExpressions();
-        for (final PolicyRuleExpressionView expressionView : expressions) {
+    private Boolean hasVulnerabilityRule(VersionBomPolicyRuleView policyRule) {
+        String vulnerabilityCheck = "vuln";
+        PolicyRuleExpressionSetView expression = policyRule.getExpression();
+        List<PolicyRuleExpressionView> expressions = expression.getExpressions();
+        for (PolicyRuleExpressionView expressionView : expressions) {
             if (expressionView.getName().toLowerCase().contains(vulnerabilityCheck)) {
                 return true;
             }
@@ -304,12 +303,12 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return false;
     }
 
-    private JsonField<String> getDataField(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
-        final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, contentIdentifier);
+    private JsonField<String> getDataField(List<JsonField<?>> fields, FieldContentIdentifier contentIdentifier) {
+        Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, contentIdentifier);
         return (JsonField<String>) optionalField.orElseThrow(() -> new AlertRuntimeException(String.format("The '%s' field is required for this operation", contentIdentifier.name())));
     }
 
-    private Optional<String> getBomComponentUrl(final JsonFieldAccessor accessor, JsonField<String> field) {
+    private Optional<String> getBomComponentUrl(JsonFieldAccessor accessor, JsonField<String> field) {
         return accessor.get(field)
                    .stream()
                    .findFirst();

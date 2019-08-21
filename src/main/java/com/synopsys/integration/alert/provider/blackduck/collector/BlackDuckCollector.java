@@ -51,12 +51,12 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     private final BlackDuckBucket blackDuckBucket;
     private final BlackDuckDataHelper blackDuckDataHelper;
 
-    public BlackDuckCollector(final JsonExtractor jsonExtractor, final Collection<ProviderContentType> contentTypes, final BlackDuckProperties blackDuckProperties) {
+    public BlackDuckCollector(JsonExtractor jsonExtractor, Collection<ProviderContentType> contentTypes, BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, contentTypes);
         this.blackDuckProperties = blackDuckProperties;
 
-        final Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
-                                                                                .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
+        Optional<BlackDuckServicesFactory> blackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
+                                                                          .map(blackDuckHttpClient -> blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger)));
         blackDuckService = blackDuckServicesFactory
                                .map(BlackDuckServicesFactory::createBlackDuckService)
                                .orElseThrow(() -> new AlertRuntimeException("The BlackDuckCollector cannot be used without a valid Black Duck connection"));
