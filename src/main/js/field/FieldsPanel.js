@@ -85,7 +85,6 @@ class FieldsPanel extends React.Component {
             panelFields = panelFields.concat(fields);
         });
         const { keyToValues } = this.props.currentConfig;
-        console.log(keyToValues);
         const hasValues = Object.keys(panelFields).some((fieldKey) => {
             // If starting with an empty database, the keyToValues will be undefined
             if (!keyToValues) {
