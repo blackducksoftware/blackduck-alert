@@ -395,29 +395,31 @@ class AuditPage extends Component {
                             dataSort
                             columnClassName="tableCell"
                             dataFormat={this.providerColumnDataFormat}
-                        >Provider
-                        </TableHeaderColumn>
+                        >Provider</TableHeaderColumn>
                         <TableHeaderColumn
                             dataField="notificationType"
                             dataSort
                             columnClassName="tableCell"
                             dataFormat={this.notificationTypeDataFormat}
-                        >Notification
-                            Types
-                        </TableHeaderColumn>
-                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time
-                            Retrieved
-                        </TableHeaderColumn>
-                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last
-                            Sent
-                        </TableHeaderColumn>
+                        >Notification Types</TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="createdAt"
+                            dataSort
+                            columnTitle
+                            columnClassName="tableCell"
+                        >Time Retrieved</TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="lastSent"
+                            dataSort
+                            columnTitle
+                            columnClassName="tableCell"
+                        >Last Sent</TableHeaderColumn>
                         <TableHeaderColumn
                             dataField="overallStatus"
                             dataSort
                             columnClassName="tableCell"
                             dataFormat={this.statusColumnDataFormat}
-                        >Status
-                        </TableHeaderColumn>
+                        >Status</TableHeaderColumn>
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
