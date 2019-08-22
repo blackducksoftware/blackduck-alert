@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -187,23 +188,20 @@ public class BlackDuckDataHelper {
         Optional<RemediationOptionsView> optionalRemediation = componentService.getRemediationInformation(componentVersionView);
         if (optionalRemediation.isPresent()) {
             RemediationOptionsView remediationOptions = optionalRemediation.get();
-            if (null != remediationOptions.getFixesPreviousVulnerabilities()) {
-                RemediatingVersionView remediatingVersionView = remediationOptions.getFixesPreviousVulnerabilities();
-                String versionText = createRemediationVersionText(remediatingVersionView);
-                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS, versionText, remediatingVersionView.getComponentVersion()));
-            }
-            if (null != remediationOptions.getLatestAfterCurrent()) {
-                RemediatingVersionView remediatingVersionView = remediationOptions.getLatestAfterCurrent();
-                String versionText = createRemediationVersionText(remediatingVersionView);
-                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_LATEST, versionText, remediatingVersionView.getComponentVersion()));
-            }
-            if (null != remediationOptions.getNoVulnerabilities()) {
-                RemediatingVersionView remediatingVersionView = remediationOptions.getNoVulnerabilities();
-                String versionText = createRemediationVersionText(remediatingVersionView);
-                remediationItems.add(new LinkableItem(BlackDuckContent.LABEL_REMEDIATION_CLEAN, versionText, remediatingVersionView.getComponentVersion()));
-            }
+            createRemediationItem(remediationOptions::getFixesPreviousVulnerabilities, BlackDuckContent.LABEL_REMEDIATION_FIX_PREVIOUS).ifPresent(remediationItems::add);
+            createRemediationItem(remediationOptions::getLatestAfterCurrent, BlackDuckContent.LABEL_REMEDIATION_LATEST).ifPresent(remediationItems::add);
+            createRemediationItem(remediationOptions::getNoVulnerabilities, BlackDuckContent.LABEL_REMEDIATION_CLEAN).ifPresent(remediationItems::add);
         }
         return remediationItems;
+    }
+
+    private Optional<LinkableItem> createRemediationItem(Supplier<RemediatingVersionView> getRemediationOption, String remediationLabel) {
+        RemediatingVersionView remediatingVersionView = getRemediationOption.get();
+        if (null != remediatingVersionView) {
+            String versionText = createRemediationVersionText(remediatingVersionView);
+            return Optional.of(new LinkableItem(remediationLabel, versionText, remediatingVersionView.getComponentVersion()));
+        }
+        return Optional.empty();
     }
 
     private String createRemediationVersionText(RemediatingVersionView remediatingVersionView) {

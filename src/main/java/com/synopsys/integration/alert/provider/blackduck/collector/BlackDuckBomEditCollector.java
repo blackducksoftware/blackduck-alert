@@ -48,6 +48,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckDataHelper;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.core.BlackDuckView;
 import com.synopsys.integration.blackduck.api.generated.component.RiskCountView;
@@ -90,13 +91,15 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         JsonField<String> topicField = getDataField(notificationFields, FieldContentIdentifier.CATEGORY_ITEM);
         Optional<String> bomComponentUrl = getBomComponentUrl(jsonFieldAccessor, topicField);
-        Optional<VersionBomComponentView> versionBomComponentView = bomComponentUrl.flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url));
-        Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp));
+
+        BlackDuckDataHelper blackDuckDataHelper = getBlackDuckDataHelper();
+        Optional<VersionBomComponentView> versionBomComponentView = bomComponentUrl.flatMap(blackDuckDataHelper::getBomComponentView);
+        Optional<ProjectVersionWrapper> projectVersionWrapper = versionBomComponentView.flatMap(blackDuckDataHelper::getProjectVersionWrapper);
 
         List<ComponentItem> componentItems = new LinkedList<>();
         if (versionBomComponentView.isPresent()) {
             // have both the component view and the project wrapper.
-            List<LinkableItem> licenseItems = getBlackDuckDataHelper().getLicenseLinkableItems(versionBomComponentView.get());
+            List<LinkableItem> licenseItems = blackDuckDataHelper.getLicenseLinkableItems(versionBomComponentView.get());
             componentItems.addAll(addVulnerabilityData(notificationContent.getId(), versionBomComponentView.get(), licenseItems));
             projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(notificationContent.getId(), versionWrapper, versionBomComponentView.get(), licenseItems)));
         }
@@ -174,9 +177,10 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
 
     private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
         List<LinkableItem> items = new ArrayList<>();
+        BlackDuckDataHelper blackDuckDataHelper = getBlackDuckDataHelper();
         getBomComponentUrl(accessor, field)
-            .flatMap(url -> getBlackDuckDataHelper().getBomComponentView(url))
-            .flatMap(comp -> getBlackDuckDataHelper().getProjectVersionWrapper(comp))
+            .flatMap(blackDuckDataHelper::getBomComponentView)
+            .flatMap(blackDuckDataHelper::getProjectVersionWrapper)
             .map(viewMapper)
             .map(itemMapper)
             .ifPresent(items::add);
