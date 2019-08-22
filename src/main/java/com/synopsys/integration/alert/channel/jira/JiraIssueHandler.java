@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.jira;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -131,7 +132,7 @@ public class JiraIssueHandler {
     private Set<String> createOrUpdateIssuesPerComponent(final String providerName, final LinkableItem topic, final Optional<LinkableItem> subTopic, final FieldAccessor fieldAccessor, final Collection<ComponentItem> componentItems,
         final String issueType, ProjectComponent jiraProject, final Boolean commentOnIssue) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        Set<String> missingTransitions = new HashSet<>();
+        Map<String, Set<String>> missingTransitionToIssues = new HashMap<>();
 
         String jiraProjectId = jiraProject.getId();
         String jiraProjectName = jiraProject.getName();
@@ -186,12 +187,23 @@ public class JiraIssueHandler {
                     }
                 }
             } catch (JiraMissingTransitionException e) {
-                missingTransitions.add(e.getTransition());
+                if (missingTransitionToIssues.containsKey(e.getTransition())) {
+                    missingTransitionToIssues.get(e.getTransition()).add(e.getIssueKey());
+                } else {
+                    Set<String> newIssueSet = new HashSet<>();
+                    newIssueSet.add(e.getIssueKey());
+                    missingTransitionToIssues.put(e.getTransition(), newIssueSet);
+                }
             }
         }
-        if (!missingTransitions.isEmpty()) {
-            final String joinedMissingTransitions = String.join(", ", missingTransitions);
-            String errorMessage = String.format("For Provider: %s. Project: %s. Unable to find the transition(s): %s.", providerName, jiraProjectName, joinedMissingTransitions);
+        if (!missingTransitionToIssues.isEmpty()) {
+            final StringBuilder missingTransitions = new StringBuilder();
+            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.entrySet()) {
+                String issues = StringUtils.join(entry.getValue(), ", ");
+                missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
+            }
+
+            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions);
             throw new AlertException(errorMessage);
         }
 
@@ -305,7 +317,7 @@ public class JiraIssueHandler {
                 final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
                 issueService.transitionIssue(issueRequestModel);
             } else {
-                throw new JiraMissingTransitionException(transition);
+                throw new JiraMissingTransitionException(issueKey, transition);
             }
         } else {
             logger.debug("No transition selected, ignoring issue state change.");
