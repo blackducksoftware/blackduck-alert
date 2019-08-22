@@ -30,7 +30,8 @@ class DistributionConfiguration extends Component {
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
-        this.handleSendMessageSubmit = this.handleSendMessageSubmit.bind(this);
+        this.handleSendMessage = this.handleSendMessage.bind(this);
+        this.handleSendMessageCancel = this.handleSendMessageCancel.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -144,7 +145,7 @@ class DistributionConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    handleSendMessage(event) {
+    handleSendMessage() {
         this.setState({
             showSendMessage: true
         });
