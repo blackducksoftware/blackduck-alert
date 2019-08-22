@@ -61,13 +61,13 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME);
+        final ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, true, false, true, false);
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
                                                                                                                                   .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
                                                                                                                                   .sorted()
                                                                                                                                   .collect(Collectors.toList()));
-        final ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME);
+        final ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, true, false, true, false);
 
         final List<ConfigField> configFields = List.of(channelName, name, frequency, providerName);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
