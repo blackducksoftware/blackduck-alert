@@ -230,9 +230,9 @@ importBlackDuckSystemCertificateIntoKeystore() {
     exitCode=$?
     if [ $exitCode -eq 0 ];
     then
-        echo "Successfully imported BlackDuck system certificate into Java truststore."
+        echo "Successfully imported BlackDuck system certificate into Java keystore."
     else
-        echo "Unable to import BlackDuck system certificate into Java truststore (Code: $exitCode)."
+        echo "Unable to import BlackDuck system certificate into Java keystore (Code: $exitCode)."
         exit $exitCode
     fi
 }
