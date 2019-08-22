@@ -8,7 +8,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
-import TableSelectInput from "../field/input/TableSelectInput";
+import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
 
