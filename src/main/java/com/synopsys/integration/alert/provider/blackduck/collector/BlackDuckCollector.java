@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckDataHelper;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
@@ -57,6 +58,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 // Created this class as a parent because of the ObjectFactory bean that is used with Collectors which destroys the bean after use. These services need to be destroyed after usage.
@@ -155,6 +157,33 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
         }
         return vulnerabilityItems;
+    }
+
+    protected Optional<ComponentItem> createRemediationComponentItem(ComponentVersionView componentVersionView, String categoryType, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId) {
+        return createRemediationComponentItem(componentVersionView, categoryType, componentItem, componentVersionItem, Set.of(), notificationId);
+    }
+
+    protected Optional<ComponentItem> createRemediationComponentItem(
+        ComponentVersionView componentVersionView, String categoryType, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Collection<LinkableItem> additionalAttributes, Long notificationId) {
+        try {
+            List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
+            if (!remediationItems.isEmpty()) {
+                ComponentItem.Builder remediationComponent = new ComponentItem.Builder();
+                remediationComponent.applyComponentData(componentItem)
+                    .applyAllComponentAttributes(remediationItems)
+                    .applyAllComponentAttributes(additionalAttributes)
+                    .applyCategory(categoryType)
+                    .applyOperation(ItemOperation.UPDATE)
+                    .applyNotificationId(notificationId)
+                    .applyPriority(ComponentItemPriority.NONE);
+                componentVersionItem.ifPresent(remediationComponent::applySubComponent);
+
+                return Optional.of(remediationComponent.build());
+            }
+        } catch (IntegrationException e) {
+            logger.debug("Could not create remediation component", e);
+        }
+        return Optional.empty();
     }
 
     private Map<String, VulnerabilityView> createVulnerabilityViewMap(Collection<VulnerableComponentView> vulnerableComponentViews) {

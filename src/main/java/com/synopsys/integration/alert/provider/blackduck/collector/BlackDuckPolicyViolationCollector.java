@@ -56,6 +56,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.item.BlackDuckPolicyLinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
@@ -114,8 +115,9 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
                 Optional<VersionBomComponentView> optionalBomComponent = getBlackDuckDataHelper().getBomComponentView(bomComponentUrl);
 
-                ArrayList<LinkableItem> policyLinkableItems = new ArrayList<>();
+                List<LinkableItem> policyLinkableItems = new ArrayList<>();
                 LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
+                policyLinkableItems.add(policyNameItem);
                 Optional<LinkableItem> optionalPolicySeverityItem = createPolicySeverityItem(policyInfo);
                 optionalPolicySeverityItem.ifPresent(policyLinkableItems::add);
                 optionalBomComponent.ifPresent(bomComponent -> policyLinkableItems.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
@@ -211,6 +213,10 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 List<LinkableItem> licenseItems = getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent);
                 List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
+
+                ComponentVersionView componentVersionView = getBlackDuckService().getResponse(bomComponent.getComponentVersion(), ComponentVersionView.class);
+                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(componentVersionView, CATEGORY_TYPE, componentItem, optionalComponentVersionItem, Set.of(policyNameItem), notificationId);
+                remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
             } catch (IntegrationException e) {
                 logger.debug("Could not get the project/version. Skipping vulnerability info for this policy: {}. Exception: {}", policyNameItem, e);
             }
@@ -221,7 +227,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     private Optional<VersionBomPolicyRuleView> getVersionBomPolicyRuleView(String policyRuleUrl, VersionBomComponentView bomComponent) {
         return getBlackDuckDataHelper().getPolicyRulesFromComponent(bomComponent)
                    .stream()
-                   .filter(ruleView -> ruleView.getHref().map(href -> href.equals(policyRuleUrl)).isPresent())
+                   .filter(ruleView -> ruleView.getHref().filter(href -> href.equals(policyRuleUrl)).isPresent())
                    .findFirst();
     }
 
