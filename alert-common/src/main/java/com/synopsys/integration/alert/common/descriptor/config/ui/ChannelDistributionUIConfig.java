@@ -23,19 +23,15 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
@@ -56,25 +52,22 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
     private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
-    private final DescriptorMap descriptorMap;
     private final String channelName;
 
-    public ChannelDistributionUIConfig(final String channelName, final String label, final String urlName, final String fontAwesomeIcon, final DescriptorMap descriptorMap) {
+    public ChannelDistributionUIConfig(final String channelName, final String label, final String urlName, final String fontAwesomeIcon) {
         super(label, "Channel distribution setup.", urlName, fontAwesomeIcon);
         this.channelName = channelName;
-        this.descriptorMap = descriptorMap;
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, getChannelLabelValues());
+        final ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME);
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
                                                                                                                                   .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
                                                                                                                                   .sorted()
                                                                                                                                   .collect(Collectors.toList()));
-
-        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, getProviderLabelValues());
+        final ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME);
 
         final List<ConfigField> configFields = List.of(channelName, name, frequency, providerName);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
@@ -85,25 +78,6 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     public String getChannelName() {
         return channelName;
-    }
-
-    private Collection<LabelValueSelectOption> getProviderLabelValues() {
-        return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
-                   .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
-                   .flatMap(Optional::stream)
-                   .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName(), descriptorMetadata.getFontAwesomeIcon()))
-                   .sorted()
-                   .collect(Collectors.toList());
-    }
-
-    private Collection<LabelValueSelectOption> getChannelLabelValues() {
-        return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                   .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                   .flatMap(Optional::stream)
-                   .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                   .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelName(), channelDistributionUIConfig.getFontAwesomeIcon()))
-                   .sorted()
-                   .collect(Collectors.toList());
     }
 
 }

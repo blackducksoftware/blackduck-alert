@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.controller;
+package com.synopsys.integration.alert.common.rest;
 
 import java.util.Map;
 
@@ -28,8 +28,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 
 @Component
 public class ResponseFactory {

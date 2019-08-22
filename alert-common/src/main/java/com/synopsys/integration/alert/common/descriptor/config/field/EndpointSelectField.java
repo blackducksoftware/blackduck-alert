@@ -36,6 +36,10 @@ public class EndpointSelectField extends SelectConfigField {
         return new EndpointSelectField(key, label, description, true, searchable, multiSelect, removeSelected, clearable);
     }
 
+    public static EndpointSelectField createRequired(final String key, final String label, final String description) {
+        return new EndpointSelectField(key, label, description, true, true, true, true, true);
+    }
+
     public EndpointSelectField(final String key, final String label, final String description, final boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         super(key, label, description, FieldType.ENDPOINT_SELECT, required, searchable, multiSelect, removeSelected, clearable);
         this.endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
