@@ -8,6 +8,7 @@ import DescriptorOption from 'component/common/DescriptorOption';
 import GeneralButton from 'field/input/GeneralButton';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
+import { Modal } from "react-bootstrap";
 
 const { Option, SingleValue } = components;
 
@@ -198,7 +199,7 @@ class TableSelectInput extends Component {
             </div>}
 
             <div>
-                <GeneralButton onClick={okClicked}>OK</GeneralButton>
+                <GeneralButton className="tableSelectOkButton" onClick={okClicked}>OK</GeneralButton>
             </div>
         </div>);
     }
@@ -249,12 +250,23 @@ class TableSelectInput extends Component {
     }
 
     render() {
+        const tableModal = (
+            <Modal size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{this.props.label}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {this.createTable()}
+                </Modal.Body>
+            </Modal>
+        );
+
         return (
             <div>
                 <div>
                     <LabeledField field={this.createSelect()} labelClass="col-sm-3" {...this.props} />
                 </div>
-                {this.state.showTable && this.createTable()}
+                {this.state.showTable && tableModal}
             </div>
         );
     }
