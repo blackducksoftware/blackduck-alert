@@ -83,6 +83,11 @@ public class MsTeamsEventParserTest {
         assertNotNull(json);
 
         String expectedJson = IOUtils.toString(getClass().getResourceAsStream("/msteams/do_not_edit_in_intellij_line_endings_matter_expected.json"), StandardCharsets.UTF_8);
+
+        // remove all possible windows style line endings
+        json = json.replace("\r", "");
+        expectedJson = expectedJson.replace("\r", "");
+
         JSONObject actual = new JSONObject(json);
         JSONObject expected = new JSONObject(expectedJson);
         JSONAssert.assertEquals(expected, actual, true);
