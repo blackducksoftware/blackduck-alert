@@ -198,7 +198,7 @@ class DistributionConfiguration extends Component {
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const isReadOnly = currentChannel.readOnly;
-
+        const channelDescriptorName = channelConfig ? channelConfig.descriptorName : null;
         let removedFields = Object.assign(updatedProviderFields, { fields: removeProject });
         if (!filterByProject) {
             const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
@@ -243,6 +243,7 @@ class DistributionConfiguration extends Component {
                     jobFieldModel={this.buildJsonBody()}
                     sendMessage={this.props.sendCustomMessage}
                     handleCancel={this.handleSendMessageCancel}
+                    channelDescriptorName={channelDescriptorName}
                 />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>

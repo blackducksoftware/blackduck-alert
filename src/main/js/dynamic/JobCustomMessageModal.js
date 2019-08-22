@@ -2,13 +2,19 @@ import React, { Component } from "react";
 import { Modal } from "react-bootstrap";
 import TextInput from "../field/input/TextInput";
 import PropTypes from "prop-types";
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import { CONTEXT_TYPE } from "../util/descriptorUtilities";
 
-class JobCustomMessageModal extends Component {
+const TOPIC_ID = 'channel.common.custom.message.topic';
+const MESSAGE_ID = 'channel.common.custom.message.content';
+
+class JobCustomMessageModal
+    extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            topicName: '',
-            message: ''
+            topicName: 'Alert Test Message',
+            message: 'Test Message'
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -16,10 +22,31 @@ class JobCustomMessageModal extends Component {
         this.handleHide = this.handleHide.bind(this);
     }
 
+    createCustomMessageFieldModel() {
+        const { jobFieldModel } = this.props;
+        const fieldModel = jobFieldModel.fieldModels.filter(model => model.descriptorName === this.props.channelDescriptorName);
+        console.log("Channel model ", fieldModel);
+        let newModel = FieldModelUtilities.createEmptyFieldModel([TOPIC_ID, MESSAGE_ID], CONTEXT_TYPE.DISTRIBUTION, this.props.channelDescriptorName);
+        newModel = FieldModelUtilities.combineFieldModels(newModel, fieldModel);
+        newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, TOPIC_ID, this.state.topicName);
+        newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, MESSAGE_ID, this.state.message);
+        return newModel;
+    }
+
     handleChange(event) {
         event.preventDefault();
-        const { value } = event.target;
-        this.setState({ destination: value });
+        const { id, value } = event.target;
+        if (id === TOPIC_ID) {
+            this.setState({
+                topicName: value
+            });
+        }
+
+        if (id === MESSAGE_ID) {
+            this.setState({
+                message: value
+            });
+        }
     }
 
     handleSendMessage(event) {
@@ -27,13 +54,21 @@ class JobCustomMessageModal extends Component {
         event.stopPropagation();
         const { destination } = this.state;
         const { jobFieldModel } = this.props;
-        FieldModelUtils.this.props.sendMessage(jobFieldModel, destination);
+        const newFieldModel = Object.assign({
+            jobId: jobFieldModel.jobId,
+            fieldModels: []
+        });
+        const customMessageFieldModel = this.createCustomMessageFieldModel();
+        newFieldModel.fieldModels.push(customMessageFieldModel);
+        newFieldModel.fieldModels.concat(jobFieldModel.fieldModels.filter(model => model.descriptorName !== this.props.channelDescriptorName));
+        this.props.sendMessage(newFieldModel, destination);
         this.handleHide();
     }
 
     handleHide() {
         this.setState({
-            destination: ''
+            topicName: '',
+            message: ''
         });
         this.props.handleCancel();
     }
@@ -82,7 +117,8 @@ JobCustomMessageModal.propTypes = {
     handleCancel: PropTypes.func.isRequired,
     topicLabel: PropTypes.string,
     messageLabel: PropTypes.string,
-    jobFieldModel: PropTypes.object.isRequired
+    jobFieldModel: PropTypes.object.isRequired,
+    channelDescriptorName: PropTypes.string.isRequired
 };
 
 JobCustomMessageModal.defaultProps = {

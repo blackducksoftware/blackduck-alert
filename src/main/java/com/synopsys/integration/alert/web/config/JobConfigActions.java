@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -243,12 +245,12 @@ public class JobConfigActions {
     public String sendCustomMessageToConfig(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
-        FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
+        FieldModel customFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
 
-        if (null != channelFieldModel) {
-            final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(channelFieldModel);
+        if (null != customFieldModel) {
+            final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(customFieldModel);
             if (optionalCustomMessageAction.isPresent()) {
-                final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
+                final Map<String, ConfigurationFieldModel> fields = createFieldsMap(customFieldModel, otherJobModels);
 
                 final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
@@ -256,19 +258,33 @@ public class JobConfigActions {
                 final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                                     .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
 
-                final String jobId = channelFieldModel.getId();
+                final String jobId = customFieldModel.getId();
                 if (providerTestAction.isPresent()) {
                     providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
                 }
                 return customMessageAction.sendMessage(jobId, fieldAccessor);
             } else {
-                final String descriptorName = channelFieldModel.getDescriptorName();
+                final String descriptorName = customFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
                 throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
             }
         }
         return "No field model of type channel was was sent to test.";
     }
+
+    //    private FieldModel getCustomMessageFieldModel(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
+    //        FieldModel customFieldModel = null;
+    //        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+    //            final FieldModel updatedFieldModel = fieldModelProcessor.createCustomMessageFieldModel(fieldModel);
+    //            final boolean hasCustomMessageFields = fieldModel.getKeyToValues().containsKey(CustomMessageAction.KEY_CUSTOM_MESSAGE);
+    //            if (hasCustomMessageFields) {
+    //                customFieldModel = updatedFieldModel;
+    //            } else {
+    //                otherJobModels.add(updatedFieldModel);
+    //            }
+    //        }
+    //        return customFieldModel;
+    //    }
 
     private FieldModel getChannelFieldModelAndPopulateOtherJobModels(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
         FieldModel channelFieldModel = null;
