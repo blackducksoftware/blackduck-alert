@@ -1,4 +1,4 @@
-FROM blackducksoftware/hub-docker-common:1.0.2 as docker-common
+FROM blackducksoftware/hub-docker-common:1.0.4 as docker-common
 FROM adoptopenjdk/openjdk11:alpine-slim
 
 ARG VERSION
@@ -22,6 +22,8 @@ ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
 ENV ALERT_MAX_HEAP_SIZE 2048m
 
+ENV BLACKDUCK_ALERT_OPTS="$BLACKDUCK_ALERT_OPTS -Djava.security.properties=${SECURITY_DIR}/java.security"
+
 RUN set -e \
     && mkdir -p $ALERT_HOME \
     && apk add --no-cache --virtual .blackduck-alert-run-deps \
@@ -31,16 +33,19 @@ RUN set -e \
     		bash \
     		zip \
     && addgroup -S alert \
-    && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
+    && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D -H alert
 
-RUN mkdir -p -m 777 $SECURITY_DIR
+RUN mkdir -p -m 774 $CERTIFICATE_MANAGER_DIR
+RUN mkdir -p -m 774 $SECURITY_DIR
+RUN mkdir -p -m 774 $ALERT_CONFIG_HOME
+RUN mkdir -p -m 774 $ALERT_DATA_DIR
+RUN mkdir -p -m 774 $ALERT_DB_DIR
 
 COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
 COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
-
-EXPOSE 8080
+COPY --from=docker-common java.security "$SECURITY_DIR/java.security"
 
 ENTRYPOINT [ "docker-entrypoint.sh", "blackduck-alert" ]
