@@ -49,7 +49,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     public DistributionEvent createChannelTestEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
-        final ProviderMessageContent messageContent = createTestNotificationContent();
+        final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor);
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
