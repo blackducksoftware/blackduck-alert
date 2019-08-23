@@ -32,6 +32,7 @@ class DistributionConfiguration extends Component {
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.handleSendMessage = this.handleSendMessage.bind(this);
         this.hideSendMessage = this.hideSendMessage.bind(this);
+        this.setSendMessageVisible = this.setSendMessageVisible.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -146,14 +147,16 @@ class DistributionConfiguration extends Component {
     }
 
     handleSendMessage() {
-        this.setState({
-            showSendMessage: true
-        });
+        this.setSendMessageVisible(true);
     }
 
     hideSendMessage() {
+        this.setSendMessageVisible(false);
+    }
+
+    setSendMessageVisible(visible) {
         this.setState({
-            showSendMessage: false
+            showSendMessage: visible
         });
     }
 
@@ -198,7 +201,7 @@ class DistributionConfiguration extends Component {
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const isReadOnly = currentChannel.readOnly;
-        const channelDescriptorName = channelConfig ? channelConfig.descriptorName : null;
+        const channelDescriptorName = channelConfig && channelConfig.descriptorName;
         let removedFields = Object.assign(updatedProviderFields, { fields: removeProject });
         if (!filterByProject) {
             const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
