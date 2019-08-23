@@ -20,9 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointSelectField extends SelectConfigField {

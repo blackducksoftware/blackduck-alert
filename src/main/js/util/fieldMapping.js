@@ -8,6 +8,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CounterField from 'field/CounterField';
+import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
 
@@ -166,6 +167,19 @@ function buildEndpointField(items, field) {
     />);
 }
 
+function buildTableSelectInput(items, field) {
+    const {
+        endpoint, key, columns
+    } = field;
+    const { readOnly } = field;
+    const isReadOnly = convertStringToBoolean(readOnly);
+    Object.assign(items, {
+        readOnly: isReadOnly
+    });
+
+    return <TableSelectInput endpoint={endpoint} fieldKey={key} columns={columns} {...items} />
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -177,7 +191,8 @@ export const FIELDS = {
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
     CountdownField: buildCounterField,
-    EndpointButtonField: buildEndpointField,
+    TableSelectInput: buildTableSelectInput,
+    EndpointButtonField: buildEndpointField
 };
 
 export function getField(fieldType, props, field) {

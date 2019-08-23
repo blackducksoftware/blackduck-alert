@@ -20,35 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table;
 
-public enum FieldType {
-    SELECT("Select"),
-    TEXT_INPUT("TextInput"),
-    TEXT_AREA("TextArea"),
-    PASSWORD_INPUT("PasswordInput"),
-    NUMBER_INPUT("NumberInput"),
-    CHECKBOX_INPUT("CheckboxInput"),
-    HIDE_CHECKBOX_INPUT("HideCheckboxInput"),
-    READ_ONLY("ReadOnlyField"),
-    COUNTDOWN("CountdownField"),
-    ENDPOINT_BUTTON("EndpointButtonField"),
-    ENDPOINT_SELECT("EndpointSelectField"),
-    TABLE_SELECT_INPUT("TableSelectInput");
+public class TableSelectColumn {
+    private String header;
+    private boolean isKey;
+    private boolean sortBy;
 
-    private final String fieldTypeName;
-
-    FieldType(final String fieldTypeName) {
-        this.fieldTypeName = fieldTypeName;
+    public TableSelectColumn(final String header, final boolean isKey, final boolean sortBy) {
+        this.header = header;
+        this.isKey = isKey;
+        this.sortBy = sortBy;
     }
 
-    public String getFieldTypeName() {
-        return fieldTypeName;
+    public String getHeader() {
+        return header;
     }
 
-    @Override
-    public String toString() {
-        return getFieldTypeName();
+    public boolean isIsKey() {
+        return isKey;
     }
 
+    public boolean isSortBy() {
+        return sortBy;
+    }
 }
