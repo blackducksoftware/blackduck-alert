@@ -22,16 +22,17 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
-    private static final List<String> EXCLUDED_FIELDS = List.of("collapsible", "countable", "isNumericValue", "summarizable", "isPartOfKey");
+    private static final String[] EXCLUDED_FIELDS = { "collapsible", "countable", "isNumericValue", "summarizable", "isPartOfKey" };
 
     private final String name;
     private final String value;
@@ -131,6 +132,13 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
             }
         }
         return CompareToBuilder.reflectionCompare(this, otherItem, EXCLUDED_FIELDS);
+    }
+
+    @Override
+    public String toString() {
+        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        builder.setExcludeFieldNames(EXCLUDED_FIELDS);
+        return builder.toString();
     }
 
 }
