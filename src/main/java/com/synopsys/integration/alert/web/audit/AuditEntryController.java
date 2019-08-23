@@ -42,11 +42,11 @@ import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.audit.AuditDescriptor;
 import com.synopsys.integration.alert.web.controller.BaseController;
-import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
 @RestController
