@@ -17,6 +17,10 @@ class EndpointSelectField extends Component {
         });
     }
 
+    componentDidMount() {
+        this.onSendClick();
+    }
+
     componentDidUpdate(prevProps) {
         const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
         const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
@@ -40,7 +44,7 @@ class EndpointSelectField extends Component {
                 response.json().then((data) => {
                     const options = data.map(item => {
                         const dataValue = item.value;
-                        return { icon: null, key: dataValue, label: dataValue, value: dataValue };
+                        return { icon: item.icon, key: dataValue, label: item.label, value: dataValue };
                     });
 
                     this.setState({
@@ -48,7 +52,6 @@ class EndpointSelectField extends Component {
                         success: true
                     });
                 });
-
             } else {
                 response.json().then((data) => {
                     this.setState({

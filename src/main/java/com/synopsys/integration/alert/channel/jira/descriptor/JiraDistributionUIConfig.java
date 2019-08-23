@@ -24,12 +24,9 @@ package com.synopsys.integration.alert.channel.jira.descriptor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.JiraChannel;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -54,9 +51,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
 
     public static final String DEFAULT_ISSUE_TYPE = "Task";
 
-    @Autowired
-    public JiraDistributionUIConfig(@Lazy final DescriptorMap descriptorMap) {
-        super(JiraChannel.COMPONENT_NAME, JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON, descriptorMap);
+    public JiraDistributionUIConfig() {
+        super(JiraChannel.COMPONENT_NAME, JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON);
     }
 
     @Override

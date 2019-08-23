@@ -20,9 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointSelectField extends SelectConfigField {
@@ -34,6 +35,10 @@ public class EndpointSelectField extends SelectConfigField {
 
     public static EndpointSelectField createRequired(final String key, final String label, final String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         return new EndpointSelectField(key, label, description, true, searchable, multiSelect, removeSelected, clearable);
+    }
+
+    public static EndpointSelectField createRequired(final String key, final String label, final String description) {
+        return new EndpointSelectField(key, label, description, true, true, true, true, true);
     }
 
     public EndpointSelectField(final String key, final String label, final String description, final boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {

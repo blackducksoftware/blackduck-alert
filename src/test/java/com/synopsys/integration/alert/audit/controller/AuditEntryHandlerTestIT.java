@@ -62,7 +62,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
-import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional

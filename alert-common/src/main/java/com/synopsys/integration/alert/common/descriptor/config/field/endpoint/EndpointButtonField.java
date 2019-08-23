@@ -20,12 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointButtonField extends ConfigField {
