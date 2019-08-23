@@ -6,7 +6,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
-import { getDistributionJob, saveDistributionJob, sendCustomMessage, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -239,7 +239,7 @@ class DistributionConfiguration extends Component {
                     messageLabel="Message"
                     showModal={this.state.showSendMessage}
                     jobFieldModelBuilder={this.buildJsonBody}
-                    sendMessage={this.props.sendCustomMessage}
+                    sendMessage={this.props.testDistributionJob}
                     handleCancel={this.hideSendMessage}
                     channelDescriptorName={channelDescriptorName}
                 />
@@ -305,7 +305,6 @@ DistributionConfiguration.propTypes = {
     updateDistributionJob: PropTypes.func.isRequired,
     testDistributionJob: PropTypes.func.isRequired,
     saveDistributionJob: PropTypes.func.isRequired,
-    sendCustomMessage: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     isUpdatingJob: PropTypes.bool
 };
@@ -327,8 +326,7 @@ const mapDispatchToProps = dispatch => ({
     getDistributionJob: id => dispatch(getDistributionJob(id)),
     saveDistributionJob: config => dispatch(saveDistributionJob(config)),
     updateDistributionJob: config => dispatch(updateDistributionJob(config)),
-    testDistributionJob: config => dispatch(testDistributionJob(config)),
-    sendCustomMessage: config => dispatch(sendCustomMessage(config))
+    testDistributionJob: config => dispatch(testDistributionJob(config))
 });
 
 const mapStateToProps = state => ({
@@ -340,7 +338,6 @@ const mapStateToProps = state => ({
     saving: state.distributionConfigs.saving,
     success: state.distributionConfigs.success,
     testingConfig: state.distributionConfigs.testingConfig,
-    sendingCustomMessage: state.distributionConfigs.sendingCustomMessage,
     configurationMessage: state.distributionConfigs.configurationMessage
 });
 

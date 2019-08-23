@@ -1,5 +1,4 @@
 import {
-    DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_FAILURE, DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_SUCCESS, DISTRIBUTION_JOB_CUSTOM_MESSAGE_SENDING,
     DISTRIBUTION_JOB_FETCH_ERROR,
     DISTRIBUTION_JOB_FETCHED,
     DISTRIBUTION_JOB_FETCHING,
@@ -191,23 +190,6 @@ export function testDistributionJob(config) {
                 });
             } else {
                 handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, response);
-            }
-        }).catch(console.error);
-    };
-}
-
-export function sendCustomMessage(config) {
-    return (dispatch, getState) => {
-        dispatch(sendingJobMessage());
-        const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createCustomMessageRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
-        request.then((response) => {
-            if (response.ok) {
-                response.json().then((json) => {
-                    dispatch(sendJobMessageSuccess(json.message));
-                });
-            } else {
-                handleFailureResponse(DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_FAILURE, dispatch, response);
             }
         }).catch(console.error);
     };

@@ -23,10 +23,12 @@
 package com.synopsys.integration.alert.common.action;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -49,7 +51,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     public DistributionEvent createChannelTestEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
-        final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor);
+        final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, ItemOperation.ADD, UUID.randomUUID().toString());
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");

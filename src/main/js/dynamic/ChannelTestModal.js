@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import TextInput from 'field/input/TextInput';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ChannelTestModal extends Component {
     constructor(props) {
@@ -54,14 +53,14 @@ class ChannelTestModal extends Component {
                     />
                 </Modal.Body>
                 <Modal.Footer>
-                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
-                    </button>
                     <button
                         id="testSend"
                         type="button"
                         className="btn btn-primary"
                         onClick={this.handleSendTestMessage}
                     >Send Test Message
+                    </button>
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
                     </button>
                 </Modal.Footer>
             </Modal>

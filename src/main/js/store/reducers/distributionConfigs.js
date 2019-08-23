@@ -11,9 +11,6 @@ import {
     DISTRIBUTION_JOB_UPDATE_ERROR,
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING,
-    DISTRIBUTION_JOB_CUSTOM_MESSAGE_SENDING,
-    DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_SUCCESS,
-    DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_FAILURE,
     SERIALIZE
 } from 'store/actions/types';
 
@@ -140,42 +137,6 @@ const config = (state = initialState, action) => {
                 inProgress: false,
                 success: false,
                 testingConfig: true,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
-            });
-        case DISTRIBUTION_JOB_CUSTOM_MESSAGE_SENDING:
-            return Object.assign({}, state, {
-                fetching: false,
-                saving: false,
-                inProgress: true,
-                success: false,
-                testingConfig: false,
-                sendingCustomMessage: true,
-                configurationMessage: 'Sending...',
-                error: {}
-            });
-        case DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_SUCCESS:
-            return Object.assign({}, state, {
-                fetching: false,
-                saving: false,
-                inProgress: false,
-                success: true,
-                testingConfig: false,
-                sendingCustomMessage: true,
-                configurationMessage: action.configurationMessage,
-                error: {}
-            });
-        case DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_FAILURE:
-            return Object.assign({}, state, {
-                fetching: false,
-                saving: false,
-                inProgress: false,
-                success: false,
-                testingConfig: false,
-                sendingCustomMessage: true,
                 configurationMessage: action.configurationMessage,
                 error: {
                     ...action.errors,

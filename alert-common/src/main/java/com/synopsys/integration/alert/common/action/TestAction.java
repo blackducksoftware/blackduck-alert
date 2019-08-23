@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import java.util.UUID;
-
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -38,22 +36,22 @@ public abstract class TestAction {
 
     public abstract String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException;
 
-    public ProviderMessageContent createTestNotificationContent(FieldAccessor fieldAccessor) throws AlertException {
+    public ProviderMessageContent createTestNotificationContent(FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
         final String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
         final String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
         builder.applyProvider("Alert");
         builder.applyTopic("Test Topic", customTopic);
         builder.applySubTopic("Test SubTopic", "Test message sent by Alert");
-        builder.applyComponentItem(createTestComponentItem(customMessage));
+        builder.applyComponentItem(createTestComponentItem(operation, messageId, customMessage));
         return builder.build();
     }
 
-    private ComponentItem createTestComponentItem(String customMessage) throws AlertException {
+    private ComponentItem createTestComponentItem(ItemOperation operation, String messageId, String customMessage) throws AlertException {
         final ComponentItem.Builder builder = new ComponentItem.Builder();
-        builder.applyOperation(ItemOperation.ADD);
+        builder.applyOperation(operation);
         builder.applyCategory("Test Category");
-        builder.applyComponentData("Message ID", UUID.randomUUID().toString());
+        builder.applyComponentData("Message ID", messageId);
         builder.applyComponentAttribute(new LinkableItem("Details", customMessage));
         builder.applyNotificationId(1L);
         return builder.build();

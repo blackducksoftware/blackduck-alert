@@ -104,19 +104,3 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel, destination) {
         }
     });
 }
-
-export function createCustomMessageRequest(apiUrl, csrfToken, fieldModel, destination) {
-    let url = `${apiUrl}/customMessage`;
-    if (destination) {
-        url += `?destination=${encodeURIComponent(destination)}`;
-    }
-    return fetch(url, {
-        credentials: 'same-origin',
-        method: 'POST',
-        body: JSON.stringify(fieldModel),
-        headers: {
-            'content-type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
-    });
-}

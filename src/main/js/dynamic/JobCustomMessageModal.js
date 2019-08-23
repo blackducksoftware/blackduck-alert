@@ -129,14 +129,14 @@ class JobCustomMessageModal extends Component {
                     />
                 </Modal.Body>
                 <Modal.Footer>
-                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
-                    </button>
                     <button
                         id="messageSend"
                         type="button"
                         className="btn btn-primary"
                         onClick={this.handleSendMessage}
                     >Send Message
+                    </button>
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
                     </button>
                 </Modal.Footer>
             </Modal>
