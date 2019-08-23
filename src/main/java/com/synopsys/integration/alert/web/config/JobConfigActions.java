@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -222,10 +221,10 @@ public class JobConfigActions {
                 final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
                 // TODO the custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
                 //      Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
-                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, CustomMessageAction.KEY_CUSTOM_TOPIC);
-                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, CustomMessageAction.KEY_CUSTOM_MESSAGE);
-                topicField.ifPresent(model -> fields.put(CustomMessageAction.KEY_CUSTOM_TOPIC, model));
-                messageField.ifPresent(model -> fields.put(CustomMessageAction.KEY_CUSTOM_MESSAGE, model));
+                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
+                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
+                topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
+                messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
                 final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 final String jobId = channelFieldModel.getId();
@@ -234,36 +233,6 @@ public class JobConfigActions {
                 return testAction.testConfig(jobId, destination, fieldAccessor);
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
-                logger.error("Test action did not exist: {}", descriptorName);
-                throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
-            }
-        }
-        return "No field model of type channel was was sent to test.";
-    }
-
-    public String sendCustomMessageToConfig(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
-        validateJob(jobFieldModel);
-        final Collection<FieldModel> otherJobModels = new LinkedList<>();
-        FieldModel customFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
-
-        if (null != customFieldModel) {
-            final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(customFieldModel);
-            if (optionalCustomMessageAction.isPresent()) {
-                final Map<String, ConfigurationFieldModel> fields = createFieldsMap(customFieldModel, otherJobModels);
-                // TODO the custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
-                //      Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
-                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(customFieldModel, CustomMessageAction.KEY_CUSTOM_TOPIC);
-                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(customFieldModel, CustomMessageAction.KEY_CUSTOM_MESSAGE);
-                topicField.ifPresent(model -> fields.put(CustomMessageAction.KEY_CUSTOM_TOPIC, model));
-                messageField.ifPresent(model -> fields.put(CustomMessageAction.KEY_CUSTOM_MESSAGE, model));
-                final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
-                final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-                final String jobId = customFieldModel.getId();
-
-                testProviderConfig(fieldAccessor, jobId, destination);
-                return customMessageAction.sendMessage(jobId, fieldAccessor);
-            } else {
-                final String descriptorName = customFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
                 throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
             }
