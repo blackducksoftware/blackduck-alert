@@ -43,8 +43,8 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;

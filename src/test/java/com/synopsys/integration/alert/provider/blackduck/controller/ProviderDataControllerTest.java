@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
-import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.provider.ProviderDataController;
 
 public class ProviderDataControllerTest {

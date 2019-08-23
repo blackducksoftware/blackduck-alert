@@ -26,12 +26,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -52,9 +49,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY = "Rather than sending emails to users assigned to the configured projects, send emails to only the users selected in 'Additional Email Addresses'.";
     private static final String EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
 
-    @Autowired
-    public EmailDistributionUIConfig(@Lazy DescriptorMap descriptorMap) {
-        super(EmailChannel.COMPONENT_NAME, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON, descriptorMap);
+    public EmailDistributionUIConfig() {
+        super(EmailChannel.COMPONENT_NAME, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
     }
 
     @Override

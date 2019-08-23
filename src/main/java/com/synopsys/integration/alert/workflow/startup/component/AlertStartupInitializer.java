@@ -133,6 +133,7 @@ public class AlertStartupInitializer extends StartupComponent {
             logger.info("---------------------------------");
             logger.info("Descriptor: {}", descriptorName);
             logger.info("---------------------------------");
+            logger.info("  Starting Descriptor Initialization...");
             try {
                 final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
                                                                         .sorted(Comparator.comparing(DefinedFieldModel::getKey))
@@ -149,21 +150,27 @@ public class AlertStartupInitializer extends StartupComponent {
                     );
 
                 final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor, existingConfiguredFields);
+                logConfiguration(configurationModels);
                 updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
+
             } catch (final IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("error initializing descriptor", ex);
+            } finally {
+                logger.info("  Finished Descriptor Initialization...");
+                logger.info("---------------------------------");
             }
         }
     }
 
     private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, final List<DefinedFieldModel> fieldsForDescriptor, Map<String, ConfigurationFieldModel> existingConfiguredFields) {
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
+        logger.info("  ### Environment Variables ### ");
         for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
             final String key = fieldModel.getKey();
             final String convertedKey = convertKeyToProperty(descriptorName, key);
             final boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
-            logger.info("  {}", convertedKey);
-            logger.debug("       Environment Variable Found - {}", hasEnvironmentValue);
+            logger.info("    {}", convertedKey);
+            logger.debug("         Environment Variable Found - {}", hasEnvironmentValue);
             String defaultValue = null;
             if (existingConfiguredFields.containsKey(key)) {
                 defaultValue = existingConfiguredFields.get(key).getFieldValue().get();
@@ -182,13 +189,14 @@ public class AlertStartupInitializer extends StartupComponent {
                                                               .stream()
                                                               .findFirst()
                                                               .filter(model -> overwriteCurrentConfig);
+        logger.info("  ### Processing Configuration ###");
         if (optionalFoundModel.isPresent()) {
             final ConfigurationModel foundModel = optionalFoundModel.get();
-            logger.info("  Overwriting configuration values with environment for descriptor.");
+            logger.info("    Overwriting values with environment.");
             final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
         } else if (foundConfigurationModels.isEmpty()) {
-            logger.info("  Writing initial configuration values from environment for descriptor.");
+            logger.info("    Writing initial values from environment.");
             final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
         }
@@ -233,5 +241,19 @@ public class AlertStartupInitializer extends StartupComponent {
             value = defaultValue;
         }
         return Optional.ofNullable(value);
+    }
+
+    private void logConfiguration(Collection<ConfigurationFieldModel> fieldModels) {
+        if (!fieldModels.isEmpty()) {
+            logger.info("  ");
+            logger.info("  ### Configuration ### ");
+            fieldModels.forEach(this::logField);
+            logger.info("  ");
+        }
+    }
+
+    private void logField(ConfigurationFieldModel fieldModel) {
+        String value = fieldModel.isSensitive() ? "**********" : String.valueOf(fieldModel.getFieldValues());
+        logger.info("    {} = {}", fieldModel.getFieldKey(), value);
     }
 }

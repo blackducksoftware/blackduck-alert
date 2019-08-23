@@ -43,8 +43,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
 @Component
 public class EmailCustomEndpoint {
