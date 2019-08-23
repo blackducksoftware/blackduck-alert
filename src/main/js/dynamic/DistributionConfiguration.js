@@ -229,10 +229,8 @@ class DistributionConfiguration extends Component {
                     submitId="job-submit"
                     includeTest={displayTest}
                     includeSave={displaySave}
-                    includeSendCustomMessage={displayTest}
                     includeCancel
-                    onTestClick={this.handleTestSubmit}
-                    onCustomMessageClick={this.handleSendMessage}
+                    onTestClick={this.handleSendMessage}
                     onCancelClick={this.handleClose}
                     isFixed={false}
                 />

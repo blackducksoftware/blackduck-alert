@@ -39,15 +39,6 @@ class ConfigButtons extends Component {
         return null;
     }
 
-    createSendCustomMessageButton() {
-        const { includeSendCustomMessage, onCustomMessageClick, customMessageLabel } = this.props;
-
-        if (includeSendCustomMessage) {
-            return <GeneralButton id="sendMessageButton" onClick={onCustomMessageClick}>{customMessageLabel}</GeneralButton>
-        }
-        return null;
-    }
-
     createButtonContent() {
         const {
             isFixed, performingAction
@@ -55,7 +46,6 @@ class ConfigButtons extends Component {
         const testButton = this.createTestButton();
         const saveButton = this.createSaveButton();
         const cancelButton = this.createCancelButton();
-        const sendMessageButton = this.createSendCustomMessageButton();
         const buttonContainerClass = isFixed ? '' : 'configButtonContainer';
         return (
             <div className={buttonContainerClass}>
@@ -67,7 +57,6 @@ class ConfigButtons extends Component {
                     </div>
                 </div>
                 {testButton}
-                {sendMessageButton}
                 {saveButton}
                 {cancelButton}
             </div>
@@ -104,7 +93,6 @@ ConfigButtons.propTypes = {
     includeTest: PropTypes.bool,
     onCancelClick: PropTypes.func,
     onTestClick: PropTypes.func,
-    onCustomMessageClick: PropTypes.func,
     performingAction: PropTypes.bool,
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
@@ -121,11 +109,8 @@ ConfigButtons.defaultProps = {
     },
     onTestClick: (evt) => {
     },
-    onCustomMessageClick: (evt) => {
-    },
     submitLabel: 'Save',
     testLabel: 'Test Configuration',
-    customMessageLabel: 'Send Message',
     cancelLabel: 'Cancel',
     isFixed: true
 };

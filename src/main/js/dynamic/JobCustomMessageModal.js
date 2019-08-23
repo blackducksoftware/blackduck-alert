@@ -8,8 +8,7 @@ import { CONTEXT_TYPE } from "../util/descriptorUtilities";
 const TOPIC_ID = 'channel.common.custom.message.topic';
 const MESSAGE_ID = 'channel.common.custom.message.content';
 
-class JobCustomMessageModal
-    extends Component {
+class JobCustomMessageModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,12 +23,12 @@ class JobCustomMessageModal
 
     createCustomMessageFieldModel() {
         const { jobFieldModel } = this.props;
-        const fieldModel = jobFieldModel.fieldModels.filter(model => model.descriptorName === this.props.channelDescriptorName);
-        console.log("Channel model ", fieldModel);
+        const fieldModel = jobFieldModel.fieldModels.find(model => model.descriptorName === this.props.channelDescriptorName);
         let newModel = FieldModelUtilities.createEmptyFieldModel([TOPIC_ID, MESSAGE_ID], CONTEXT_TYPE.DISTRIBUTION, this.props.channelDescriptorName);
         newModel = FieldModelUtilities.combineFieldModels(newModel, fieldModel);
         newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, TOPIC_ID, this.state.topicName);
         newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, MESSAGE_ID, this.state.message);
+
         return newModel;
     }
 
@@ -54,21 +53,22 @@ class JobCustomMessageModal
         event.stopPropagation();
         const { destination } = this.state;
         const { jobFieldModel } = this.props;
-        const newFieldModel = Object.assign({
+        const newJobFieldModel = {
             jobId: jobFieldModel.jobId,
             fieldModels: []
-        });
+        };
         const customMessageFieldModel = this.createCustomMessageFieldModel();
-        newFieldModel.fieldModels.push(customMessageFieldModel);
-        newFieldModel.fieldModels.concat(jobFieldModel.fieldModels.filter(model => model.descriptorName !== this.props.channelDescriptorName));
-        this.props.sendMessage(newFieldModel, destination);
+        newJobFieldModel.fieldModels.push(customMessageFieldModel);
+        const otherModels = jobFieldModel.fieldModels.filter(model => model.descriptorName !== this.props.channelDescriptorName);
+        newJobFieldModel.fieldModels = newJobFieldModel.fieldModels.concat(otherModels);
+        this.props.sendMessage(newJobFieldModel, destination);
         this.handleHide();
     }
 
     handleHide() {
         this.setState({
-            topicName: '',
-            message: ''
+            topicName: 'Alert Test Message',
+            message: 'Test Message'
         });
         this.props.handleCancel();
     }
@@ -77,7 +77,7 @@ class JobCustomMessageModal
         return (
             <Modal show={this.props.showModal} onHide={this.handleHide}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Send Custom Message</Modal.Title>
+                    <Modal.Title>Send Message</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <TextInput
@@ -103,7 +103,7 @@ class JobCustomMessageModal
                         type="button"
                         className="btn btn-primary"
                         onClick={this.handleSendMessage}
-                    >Send Test Message
+                    >Send Message
                     </button>
                 </Modal.Footer>
             </Modal>

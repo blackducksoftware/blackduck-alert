@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -78,7 +79,7 @@ public class CustomMessageAction {
         builder.applyOperation(ItemOperation.UPDATE);
         builder.applyCategory("Custom Message");
         builder.applyComponentData("Message ID", UUID.randomUUID().toString());
-        builder.applyComponentData("Details", customMessage);
+        builder.applyComponentAttribute(new LinkableItem("Details", customMessage));
         builder.applyNotificationId(1L);
         return builder.build();
     }
