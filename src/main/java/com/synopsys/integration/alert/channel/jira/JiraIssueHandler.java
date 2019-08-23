@@ -152,12 +152,16 @@ public class JiraIssueHandler {
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
-                    final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
-                    issueKeys.add(issueKey);
                     if (commentOnIssue) {
                         String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                        addComment(issueKey, operationComment);
+                        addComment(issueComponent.getKey(), operationComment);
+                        issueKeys.add(issueComponent.getKey());
+                    }
+
+                    Optional<String> optionalTransitionKey = determineTransitionKey(operation);
+                    if (optionalTransitionKey.isPresent()) {
+                        transitionIssue(issueComponent.getKey(), fieldAccessor, optionalTransitionKey.get());
+                        issueKeys.add(issueComponent.getKey());
                     }
                 } else {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
@@ -290,6 +294,17 @@ public class JiraIssueHandler {
         fieldsBuilder.setDescription(description);
 
         return fieldsBuilder;
+    }
+
+    private Optional<String> determineTransitionKey(ItemOperation operation) {
+        if (!ItemOperation.UPDATE.equals(operation)) {
+            if (ItemOperation.DELETE.equals(operation)) {
+                return Optional.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+            } else {
+                return Optional.of(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
+            }
+        }
+        return Optional.empty();
     }
 
     private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
