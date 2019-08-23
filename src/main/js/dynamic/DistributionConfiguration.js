@@ -30,8 +30,6 @@ class DistributionConfiguration extends Component {
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
-        this.handleSendMessage = this.handleSendMessage.bind(this);
-        this.hideSendMessage = this.hideSendMessage.bind(this);
         this.setSendMessageVisible = this.setSendMessageVisible.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
@@ -146,14 +144,6 @@ class DistributionConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    handleSendMessage() {
-        this.setSendMessageVisible(true);
-    }
-
-    hideSendMessage() {
-        this.setSendMessageVisible(false);
-    }
-
     setSendMessageVisible(visible) {
         this.setState({
             showSendMessage: visible
@@ -233,7 +223,7 @@ class DistributionConfiguration extends Component {
                     includeTest={displayTest}
                     includeSave={displaySave}
                     includeCancel
-                    onTestClick={this.handleSendMessage}
+                    onTestClick={() => this.setSendMessageVisible(true)}
                     onCancelClick={this.handleClose}
                     isFixed={false}
                 />
@@ -243,7 +233,7 @@ class DistributionConfiguration extends Component {
                     showModal={this.state.showSendMessage}
                     jobFieldModelBuilder={this.buildJsonBody}
                     sendMessage={this.props.testDistributionJob}
-                    handleCancel={this.hideSendMessage}
+                    handleCancel={() => this.setSendMessageVisible(false)}
                     channelDescriptorName={channelDescriptorName}
                 />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
