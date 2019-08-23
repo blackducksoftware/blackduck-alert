@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUI
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -132,7 +133,7 @@ public class JiraIssueHandler {
     private Set<String> createOrUpdateIssuesPerComponent(final String providerName, final LinkableItem topic, final Optional<LinkableItem> subTopic, final FieldAccessor fieldAccessor, final Collection<ComponentItem> componentItems,
         final String issueType, ProjectComponent jiraProject, final Boolean commentOnIssue) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        Map<String, Set<String>> missingTransitionToIssues = new HashMap<>();
+        SetMap<String, String> missingTransitionToIssues = new SetMap(new HashMap<>());
 
         String jiraProjectId = jiraProject.getId();
         String jiraProjectName = jiraProject.getName();
@@ -187,18 +188,12 @@ public class JiraIssueHandler {
                     }
                 }
             } catch (JiraMissingTransitionException e) {
-                if (missingTransitionToIssues.containsKey(e.getTransition())) {
-                    missingTransitionToIssues.get(e.getTransition()).add(e.getIssueKey());
-                } else {
-                    Set<String> newIssueSet = new HashSet<>();
-                    newIssueSet.add(e.getIssueKey());
-                    missingTransitionToIssues.put(e.getTransition(), newIssueSet);
-                }
+                missingTransitionToIssues.add(e.getTransition(), e.getIssueKey());
             }
         }
         if (!missingTransitionToIssues.isEmpty()) {
             final StringBuilder missingTransitions = new StringBuilder();
-            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.entrySet()) {
+            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.getMap().entrySet()) {
                 String issues = StringUtils.join(entry.getValue(), ", ");
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
             }

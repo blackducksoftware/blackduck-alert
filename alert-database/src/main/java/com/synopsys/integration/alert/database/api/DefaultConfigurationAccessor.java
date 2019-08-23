@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -95,16 +95,14 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public List<ConfigurationJobModel> getAllJobs() {
         final List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
-        final Map<UUID, Set<ConfigGroupEntity>> jobMap = new HashMap<>();
+        final SetMap<UUID, ConfigGroupEntity> jobMap = new SetMap(new HashMap<>());
         for (final ConfigGroupEntity entity : jobEntities) {
             final UUID entityJobId = entity.getJobId();
-            if (!jobMap.containsKey(entityJobId)) {
-                jobMap.put(entityJobId, new HashSet<>());
-            }
-            jobMap.get(entityJobId).add(entity);
+            jobMap.add(entityJobId, entity);
         }
 
-        return jobMap.entrySet()
+        return jobMap.getMap()
+                   .entrySet()
                    .stream()
                    .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
                    .collect(Collectors.toList());
