@@ -59,8 +59,8 @@ public class CustomMessageAction {
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
-        final String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Test Topic");
-        final String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message");
+        final String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
+        final String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
 
         final ProviderMessageContent messageContent = createCustomMessageContent(customTopic, customMessage);
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);

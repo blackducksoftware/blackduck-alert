@@ -31,7 +31,7 @@ class DistributionConfiguration extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.handleSendMessage = this.handleSendMessage.bind(this);
-        this.handleSendMessageCancel = this.handleSendMessageCancel.bind(this);
+        this.hideSendMessage = this.hideSendMessage.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -151,7 +151,7 @@ class DistributionConfiguration extends Component {
         });
     }
 
-    handleSendMessageCancel() {
+    hideSendMessage() {
         this.setState({
             showSendMessage: false
         });
@@ -238,9 +238,9 @@ class DistributionConfiguration extends Component {
                     topicLabel="Topic"
                     messageLabel="Message"
                     showModal={this.state.showSendMessage}
-                    jobFieldModel={this.buildJsonBody()}
+                    jobFieldModelBuilder={this.buildJsonBody}
                     sendMessage={this.props.sendCustomMessage}
-                    handleCancel={this.handleSendMessageCancel}
+                    handleCancel={this.hideSendMessage}
                     channelDescriptorName={channelDescriptorName}
                 />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
