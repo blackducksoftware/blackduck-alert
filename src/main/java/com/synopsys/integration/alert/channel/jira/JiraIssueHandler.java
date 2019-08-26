@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.channel.jira;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -133,7 +132,7 @@ public class JiraIssueHandler {
     private Set<String> createOrUpdateIssuesPerComponent(final String providerName, final LinkableItem topic, final Optional<LinkableItem> subTopic, final FieldAccessor fieldAccessor, final Collection<ComponentItem> componentItems,
         final String issueType, ProjectComponent jiraProject, final Boolean commentOnIssue) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        SetMap<String, String> missingTransitionToIssues = new SetMap(new HashMap<>());
+        SetMap<String, String> missingTransitionToIssues = new SetMap();
 
         String jiraProjectId = jiraProject.getId();
         String jiraProjectName = jiraProject.getName();
@@ -199,7 +198,8 @@ public class JiraIssueHandler {
             }
 
             String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions);
-            throw new AlertException(errorMessage);
+            logger.warn(errorMessage);
+            logger.warn("The transitions could be missing because the issue(s) are already set to the status they should be.");
         }
 
         return issueKeys;
