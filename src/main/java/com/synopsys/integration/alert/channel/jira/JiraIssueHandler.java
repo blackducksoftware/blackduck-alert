@@ -192,7 +192,7 @@ public class JiraIssueHandler {
         }
         if (!missingTransitionToIssues.isEmpty()) {
             final StringBuilder missingTransitions = new StringBuilder();
-            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.getMap().entrySet()) {
+            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.entrySet()) {
                 String issues = StringUtils.join(entry.getValue(), ", ");
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
             }
