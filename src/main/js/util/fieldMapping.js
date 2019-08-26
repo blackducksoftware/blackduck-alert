@@ -169,12 +169,14 @@ function buildEndpointField(items, field) {
 
 function buildTableSelectInput(items, field) {
     const {
-        endpoint, key, columns
+        endpoint, key, columns, paged, searchable
     } = field;
     const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, {
-        readOnly: isReadOnly
+        readOnly: isReadOnly,
+        paged,
+        searchable
     });
 
     return <TableSelectInput endpoint={endpoint} fieldKey={key} columns={columns} {...items} />

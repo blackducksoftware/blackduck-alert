@@ -22,10 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.email.web;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,7 +36,6 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -64,8 +61,7 @@ public class EmailCustomEndpoint {
     }
 
     public ResponseEntity<String> createEmailOptions(final Map<String, FieldValueModel> fieldValueModels) {
-        final FieldValueModel fieldValueModel = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-        final String provider = fieldValueModel.getValue().orElse("");
+        final String provider = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).getValue().orElse("");
 
         if (StringUtils.isBlank(provider)) {
             logger.debug("Received provider user email data request with a blank provider");
@@ -74,16 +70,10 @@ public class EmailCustomEndpoint {
 
         try {
             final List<ProviderUserModel> pageOfUsers = providerDataAccessor.getAllUsers(provider);
-            final LinkedHashSet<LabelValueSelectOption> emailOptions = pageOfUsers.stream()
-                                                                           .filter(user -> !user.getOptOut())
-                                                                           .map(ProviderUserModel::getEmailAddress)
-                                                                           .sorted()
-                                                                           .map(LabelValueSelectOption::new)
-                                                                           .collect(Collectors.toCollection(LinkedHashSet::new));
-            if (emailOptions.isEmpty()) {
+            if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", provider);
             }
-            final String usersJson = gson.toJson(emailOptions);
+            final String usersJson = gson.toJson(pageOfUsers);
             return responseFactory.createOkContentResponse(usersJson);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);

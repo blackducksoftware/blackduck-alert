@@ -41,6 +41,10 @@ public class EndpointTableSelectField extends ConfigField {
         return new EndpointTableSelectField(key, label, description, false, false, true, searchable);
     }
 
+    public static EndpointTableSelectField createSearchable(String key, String label, String description) {
+        return new EndpointTableSelectField(key, label, description, false, false, true, true);
+    }
+
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
         super(key, label, description, FieldType.TABLE_SELECT_INPUT.getFieldTypeName(), required, sensitive);
         this.paged = paged;

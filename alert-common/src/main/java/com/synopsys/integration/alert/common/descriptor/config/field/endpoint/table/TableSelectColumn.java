@@ -24,17 +24,23 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 
 public class TableSelectColumn {
     private String header;
+    private String headerLabel;
     private boolean isKey;
     private boolean sortBy;
 
-    public TableSelectColumn(final String header, final boolean isKey, final boolean sortBy) {
+    public TableSelectColumn(final String header, String headerLabel, final boolean isKey, final boolean sortBy) {
         this.header = header;
+        this.headerLabel = headerLabel;
         this.isKey = isKey;
         this.sortBy = sortBy;
     }
 
     public String getHeader() {
         return header;
+    }
+
+    public String getHeaderLabel() {
+        return headerLabel;
     }
 
     public boolean isIsKey() {
