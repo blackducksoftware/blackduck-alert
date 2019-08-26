@@ -18,6 +18,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.rest.ResponseBodyBuilder;
+
 public class ResponseBodyBuilderTest {
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,13 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.rest;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
 public class ResponseBodyBuilder {
     private final JsonObject map;

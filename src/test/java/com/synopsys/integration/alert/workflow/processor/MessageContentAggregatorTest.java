@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckDataHelper;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -101,10 +102,13 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
                 if (collector.getSupportedNotificationTypes().contains(NotificationType.VULNERABILITY.name())) {
                     collector = Mockito.spy(collector);
 
+                    BlackDuckDataHelper blackDuckDataHelper = Mockito.mock(BlackDuckDataHelper.class);
+                    Mockito.when(blackDuckDataHelper.getRemediationItems(Mockito.any())).thenReturn(List.of());
+
                     final BlackDuckService mockBlackDuckService = Mockito.mock(BlackDuckService.class);
                     Mockito.when(mockBlackDuckService.getResponse(Mockito.anyString(), Mockito.any(ComponentVersionView.class.getClass()))).thenReturn(new ComponentVersionView());
 
-                    ((BlackDuckCollector) Mockito.doReturn(List.of()).when(collector)).getRemediationItems(Mockito.any());
+                    ((BlackDuckCollector) Mockito.doReturn(blackDuckDataHelper).when(collector)).getBlackDuckDataHelper();
                     ((BlackDuckCollector) Mockito.doReturn(mockBlackDuckService).when(collector)).getBlackDuckService();
                 }
                 spiedCollectors.add(collector);

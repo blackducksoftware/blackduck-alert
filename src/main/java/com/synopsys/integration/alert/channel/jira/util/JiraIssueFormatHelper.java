@@ -129,7 +129,7 @@ public class JiraIssueFormatHelper {
             componentSection.append("\n");
             componentSection.append(subComponent.getName());
             componentSection.append(": ");
-            componentSection.append(subComponent.getValue());
+            componentSection.append(createValueString(subComponent));
         });
 
         componentSection.append("\n");
