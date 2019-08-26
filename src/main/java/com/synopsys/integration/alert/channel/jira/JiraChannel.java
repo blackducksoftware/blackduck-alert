@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -70,7 +71,12 @@ public class JiraChannel extends DistributionChannel {
         final ProjectService projectService = jiraCloudServiceFactory.createProjectService();
 
         final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties, getGson());
-        return jiraIssueHandler.createOrUpdateIssues(fieldAccessor, content);
+        try {
+            return jiraIssueHandler.createOrUpdateIssues(fieldAccessor, content);
+        } catch (JiraMissingTransitionException e) {
+            logger.warn(e.getMessage());
+            return e.getMessage();
+        }
     }
 
     @Override

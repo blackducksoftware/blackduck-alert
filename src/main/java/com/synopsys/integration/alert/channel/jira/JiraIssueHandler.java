@@ -197,10 +197,9 @@ public class JiraIssueHandler {
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
             }
 
-            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions);
-            logger.warn(errorMessage);
-            logger.warn("The transitions could be missing because the issue(s) are already set to the status they should be.");
-            //FIXME needs to throw an exception if this is from the Test Configuration. Otherwise log warning
+            String errorMessage = String.format("The transitions could be missing because the issue(s) are already set to the status they should be. For Provider: %s. Project: %s. %s.", providerName, jiraProjectName,
+                missingTransitions.toString());
+            throw new JiraMissingTransitionException(errorMessage);
         }
 
         return issueKeys;

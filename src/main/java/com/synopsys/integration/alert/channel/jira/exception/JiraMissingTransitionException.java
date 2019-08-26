@@ -30,6 +30,12 @@ public class JiraMissingTransitionException extends AlertException {
     private final String issueKey;
     private final String transition;
 
+    public JiraMissingTransitionException(final String message) {
+        super(message);
+        this.issueKey = null;
+        this.transition = null;
+    }
+
     public JiraMissingTransitionException(final String issueKey, final String transition) {
         this.issueKey = issueKey;
         this.transition = transition;
@@ -42,4 +48,5 @@ public class JiraMissingTransitionException extends AlertException {
     public String getTransition() {
         return transition;
     }
+
 }
