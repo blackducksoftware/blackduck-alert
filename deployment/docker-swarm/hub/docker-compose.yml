@@ -20,4 +20,4 @@ services:
       resources:
         limits: {memory: 2560M}
         reservations: {memory: 2560M}
-volumes: {cert-volume: null, alert-db-volume: null}
+volumes: {alert-db-volume: null}
