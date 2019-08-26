@@ -74,6 +74,19 @@ function testJobSuccess(message) {
     };
 }
 
+function sendingJobMessage() {
+    return {
+        type: DISTRIBUTION_JOB_CUSTOM_MESSAGE_SENDING
+    };
+}
+
+function sendJobMessageSuccess(message) {
+    return {
+        type: DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_SUCCESS,
+        configurationMessage: message
+    };
+}
+
 function jobError(type, message, errors) {
     return {
         type,

@@ -20,6 +20,7 @@ const initialState = {
     inProgress: false,
     success: false,
     testingConfig: false,
+    sendingCustomMessage: false,
     job: {},
     error: {
         message: ''
@@ -142,7 +143,6 @@ const config = (state = initialState, action) => {
                     message: action.configurationMessage
                 }
             });
-
         case SERIALIZE:
             return initialState;
 

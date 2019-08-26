@@ -121,7 +121,7 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
 }
 
 export function updateFieldModelValues(fieldModel, key, values) {
-    const copy = Object.assign({}, fieldModel);
+    const copy = JSON.parse(JSON.stringify(fieldModel));
     if (!copy.keyToValues) {
         copy.keyToValues = {};
     }
@@ -141,15 +141,34 @@ export function updateFieldModelValues(fieldModel, key, values) {
 }
 
 export function combineFieldModels(sourceModel, modelToAdd) {
-    const copy = Object.assign({}, sourceModel);
+    const copy = {
+        context: null,
+        descriptorName: null,
+        keyToValues: {}
+    };
+
     if (!copy.context) {
-        copy.context = modelToAdd.context;
+        copy.context = sourceModel.context ? sourceModel.context : modelToAdd.context;
     }
 
     if (!copy.descriptorName) {
-        copy.descriptorName = modelToAdd.descriptorName;
+        copy.descriptorName = sourceModel.descriptorName ? sourceModel.descriptorName : modelToAdd.descriptorName;
     }
-    copy.keyToValues = Object.assign({}, sourceModel.keyToValues, modelToAdd.keyToValues);
+
+    const copyKeyToValues = (model) => {
+        const sourceKeys = Object.keys(model.keyToValues);
+        sourceKeys.forEach(key => {
+            copy.keyToValues[key] = model.keyToValues[key];
+        });
+    };
+
+    if (sourceModel.keyToValues) {
+        copyKeyToValues(sourceModel);
+    }
+
+    if (modelToAdd.keyToValues) {
+        copyKeyToValues(modelToAdd);
+    }
 
     return copy;
 }

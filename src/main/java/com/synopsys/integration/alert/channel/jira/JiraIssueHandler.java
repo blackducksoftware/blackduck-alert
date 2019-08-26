@@ -68,11 +68,13 @@ import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResp
 import com.synopsys.integration.jira.common.cloud.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.TransitionsResponseModel;
+import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
@@ -81,15 +83,18 @@ public class JiraIssueHandler {
     private final ProjectService projectService;
     private final IssueService issueService;
     private final IssueTypeService issueTypeService;
+    private final UserSearchService userSearchService;
     private final JiraProperties jiraProperties;
     private final Gson gson;
 
     private final JiraIssuePropertyHelper jiraIssuePropertyHelper;
 
     public JiraIssueHandler(
-        ProjectService projectService, IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, IssueTypeService issueTypeService, JiraProperties jiraProperties, Gson gson) {
+        ProjectService projectService, IssueService issueService, UserSearchService userSearchService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService,
+        IssueTypeService issueTypeService, JiraProperties jiraProperties, Gson gson) {
         this.projectService = projectService;
         this.issueService = issueService;
+        this.userSearchService = userSearchService;
         this.issueTypeService = issueTypeService;
         this.jiraProperties = jiraProperties;
         this.gson = gson;
@@ -97,6 +102,7 @@ public class JiraIssueHandler {
     }
 
     public String createOrUpdateIssues(final FieldAccessor fieldAccessor, final MessageContentGroup content) throws IntegrationException {
+        // TODO throw an exception if no project name is provided
         final String jiraProjectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME).orElse(StringUtils.EMPTY);
         final PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(jiraProjectName);
         final ProjectComponent projectComponent = projectsResponseModel.getProjects()
@@ -152,21 +158,22 @@ public class JiraIssueHandler {
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
-                    final String transitionKey = (ItemOperation.DELETE.equals(operation)) ? JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION : JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-                    final String issueKey = transitionIssue(issueComponent.getKey(), fieldAccessor, transitionKey);
-                    issueKeys.add(issueKey);
                     if (commentOnIssue) {
                         String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                        addComment(issueKey, operationComment);
+                        addComment(issueComponent.getKey(), operationComment);
+                        issueKeys.add(issueComponent.getKey());
+                    }
+
+                    Optional<String> optionalTransitionKey = determineTransitionKey(operation);
+                    if (optionalTransitionKey.isPresent()) {
+                        transitionIssue(issueComponent.getKey(), fieldAccessor, optionalTransitionKey.get());
+                        issueKeys.add(issueComponent.getKey());
                     }
                 } else {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
                         fieldsBuilder.setProject(jiraProjectId);
                         fieldsBuilder.setIssueType(issueType);
-                        String issueCreator = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_CREATOR)
-                                                  .filter(StringUtils::isNotBlank)
-                                                  .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
-                                                  .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_ISSUE_CREATOR, "Expected to be passed a jira user email address.")));
+                        String issueCreator = retrieveAndValidateIssueCreator(fieldAccessor);
                         IssueResponseModel issue = null;
                         try {
                             issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, jiraProjectName, fieldsBuilder, List.of()));
@@ -219,6 +226,21 @@ public class JiraIssueHandler {
                    .map(IssueSearchResponseModel::getIssues)
                    .map(List::stream)
                    .flatMap(Stream::findFirst);
+    }
+
+    private String retrieveAndValidateIssueCreator(FieldAccessor fieldAccessor) throws IntegrationException {
+        String issueCreator = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_CREATOR)
+                                  .filter(StringUtils::isNotBlank)
+                                  .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS))
+                                  .orElseThrow(() -> new AlertFieldException(Map.of(JiraDescriptor.KEY_ISSUE_CREATOR, "Expected to be passed a jira user email address.")));
+        boolean isValidJiraEmail = userSearchService.findUser(issueCreator)
+                                       .stream()
+                                       .map(UserDetailsResponseModel::getEmailAddress)
+                                       .anyMatch(emailAddress -> emailAddress.equals(issueCreator));
+        if (!isValidJiraEmail) {
+            throw new AlertFieldException(Map.of(JiraDescriptor.KEY_ISSUE_CREATOR, String.format("The email address '%s' is not associated with any valid Jira users.", issueCreator)));
+        }
+        return issueCreator;
     }
 
     private void handleIssueCreationRestException(IntegrationRestException restException, String issueCreatorEmail) throws IntegrationException {
@@ -292,6 +314,17 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
+    private Optional<String> determineTransitionKey(ItemOperation operation) {
+        if (!ItemOperation.UPDATE.equals(operation)) {
+            if (ItemOperation.DELETE.equals(operation)) {
+                return Optional.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+            } else {
+                return Optional.of(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
+            }
+        }
+        return Optional.empty();
+    }
+
     private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
         final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
         if (transitionName.isPresent()) {
@@ -320,6 +353,10 @@ public class JiraIssueHandler {
     }
 
     private String createAdditionalTrackingKey(ComponentItem componentItem) {
+        // FIXME make this provider-agnostic
+        if (componentItem.getCategory().contains("Vuln")) {
+            return StringUtils.EMPTY;
+        }
         StringBuilder keyBuilder = new StringBuilder();
         final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
         for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
@@ -327,8 +364,6 @@ public class JiraIssueHandler {
                 .stream()
                 .findFirst()
                 .filter(LinkableItem::isPartOfKey)
-                // FIXME make this provider-agnostic
-                .filter(item -> !item.getName().contains("Vuln"))
                 .ifPresent(item -> {
                     keyBuilder.append(item.getName());
                     keyBuilder.append(item.getValue());

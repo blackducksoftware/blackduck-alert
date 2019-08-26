@@ -31,7 +31,6 @@ public abstract class ConfigurationAction {
     private final String descriptorName;
     private final Map<ConfigContextEnum, ApiAction> apiActionMap = new HashMap<>();
     private final Map<ConfigContextEnum, TestAction> testActionMap = new HashMap<>();
-    private final Map<ConfigContextEnum, CustomMessageAction> customMessageActionMap = new HashMap<>();
 
     protected ConfigurationAction(final String descriptorName) {
         this.descriptorName = descriptorName;
@@ -57,20 +56,12 @@ public abstract class ConfigurationAction {
         testActionMap.put(ConfigContextEnum.DISTRIBUTION, testAction);
     }
 
-    public void addDistributionCustomMessageAction(CustomMessageAction customMessageAction) {
-        customMessageActionMap.put(ConfigContextEnum.DISTRIBUTION, customMessageAction);
-    }
-
     public ApiAction getApiAction(ConfigContextEnum context) {
         return apiActionMap.get(context);
     }
 
     public TestAction getTestAction(ConfigContextEnum context) {
         return testActionMap.get(context);
-    }
-
-    public CustomMessageAction getCustomMessageAction(ConfigContextEnum context) {
-        return customMessageActionMap.get(context);
     }
 
 }

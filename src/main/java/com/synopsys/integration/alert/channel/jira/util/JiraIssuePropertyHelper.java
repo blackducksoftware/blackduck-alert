@@ -140,7 +140,7 @@ public class JiraIssuePropertyHelper {
     }
 
     private String createPropertySearchString(String key, String value) {
-        final String propertySearchFormat = "issue.property[%s].%s ~ '%s'";
+        final String propertySearchFormat = "issue.property[%s].%s = '%s'";
         final String escapedValue = escapeReservedCharacters(value);
         return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
     }

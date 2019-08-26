@@ -25,47 +25,47 @@
             "extractions": [
               {
                 "objectName": "provider",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "topicName",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "topicValue",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "subTopicName",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "subTopicValue",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "category",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "componentName",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "componentValue",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "subComponentName",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "subComponentValue",
-                "type": "text"
+                "type": "string"
               },
               {
                 "objectName": "additionalKey",
-                "type": "text"
+                "type": "string"
               }
             ]
           }

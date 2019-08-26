@@ -31,11 +31,10 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 @Component
 public class JiraConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraConfigurationAction(JiraGlobalTestAction globalTestAction, JiraDistributionTestAction jiraDistributionTestAction, JiraCustomMessageAction jiraCustomMessageAction) {
+    public JiraConfigurationAction(JiraGlobalTestAction globalTestAction, JiraDistributionTestAction jiraDistributionTestAction) {
         super(JiraChannel.COMPONENT_NAME);
         addGlobalTestAction(globalTestAction);
         addDistributionTestAction(jiraDistributionTestAction);
-        addDistributionCustomMessageAction(jiraCustomMessageAction);
     }
 
 }

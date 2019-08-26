@@ -69,10 +69,8 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
 public class JobConfigController extends BaseController {
     public static final String JOB_CONFIGURATION_PATH = ConfigController.CONFIGURATION_PATH + "/job";
-    private final Logger logger = LoggerFactory.getLogger(JobConfigController.class);
-
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
-
+    private final Logger logger = LoggerFactory.getLogger(JobConfigController.class);
     private final JobConfigActions jobConfigActions;
     private final ResponseFactory responseFactory;
     private final ContentConverter contentConverter;
@@ -252,11 +250,6 @@ public class JobConfigController extends BaseController {
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
         return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel, destination));
-    }
-
-    @PostMapping("/customMessage")
-    public ResponseEntity<String> sendCustomMessageToConfig(@RequestBody final JobFieldModel restModel, @RequestParam(required = false) String destination) {
-        return sendCustomMessage(restModel, jobModel -> jobConfigActions.sendCustomMessageToConfig(jobModel, destination));
     }
 
     private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, String, IntegrationException> messageFunction) {
