@@ -10,7 +10,7 @@ import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDis
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
-import JobCustomMessageModal from "./JobCustomMessageModal";
+import JobCustomMessageModal from "dynamic/JobCustomMessageModal";
 
 export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
