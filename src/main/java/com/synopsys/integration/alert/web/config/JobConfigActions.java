@@ -219,8 +219,8 @@ public class JobConfigActions {
             final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(channelFieldModel);
             if (testActionOptional.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
-                // TODO the custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
-                //      Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
+                // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
+                // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
                 Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
                 Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
                 topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
