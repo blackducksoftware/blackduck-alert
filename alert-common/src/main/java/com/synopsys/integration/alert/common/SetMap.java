@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.common;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,27 +22,15 @@ public class SetMap<K, S> extends AbstractMap<K, Set<S>> {
     }
 
     public Set<S> add(K key, S value) {
-        if (map.containsKey(key)) {
-            Set<S> set = map.get(key);
-            set.add(value);
-            return map.put(key, set);
-        } else {
-            Set<S> set = new HashSet<>();
-            set.add(value);
-            return map.put(key, set);
-        }
+        Set<S> set = this.computeIfAbsent(key, ignoredKey -> new LinkedHashSet<>());
+        set.add(value);
+        return set;
     }
 
     public Set<S> addAll(K key, Set<S> value) {
-        if (map.containsKey(key)) {
-            Set<S> set = map.get(key);
-            set.addAll(value);
-            return map.put(key, set);
-        } else {
-            Set<S> set = new HashSet<>();
-            set.addAll(value);
-            return map.put(key, set);
-        }
+        Set<S> set = this.computeIfAbsent(key, ignoredKey -> new LinkedHashSet<>());
+        set.addAll(value);
+        return set;
     }
 
     @Override
