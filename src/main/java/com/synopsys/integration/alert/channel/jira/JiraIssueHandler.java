@@ -353,6 +353,10 @@ public class JiraIssueHandler {
     }
 
     private String createAdditionalTrackingKey(ComponentItem componentItem) {
+        // FIXME make this provider-agnostic
+        if (componentItem.getCategory().contains("Vuln")) {
+            return StringUtils.EMPTY;
+        }
         StringBuilder keyBuilder = new StringBuilder();
         final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
         for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
@@ -360,8 +364,6 @@ public class JiraIssueHandler {
                 .stream()
                 .findFirst()
                 .filter(LinkableItem::isPartOfKey)
-                // FIXME make this provider-agnostic
-                .filter(item -> !item.getName().contains("Vuln"))
                 .ifPresent(item -> {
                     keyBuilder.append(item.getName());
                     keyBuilder.append(item.getValue());
