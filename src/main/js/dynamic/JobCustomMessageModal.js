@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Modal } from "react-bootstrap";
-import TextInput from "../field/input/TextInput";
+import TextInput from "field/input/TextInput";
 import PropTypes from "prop-types";
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from "util/descriptorUtilities";
