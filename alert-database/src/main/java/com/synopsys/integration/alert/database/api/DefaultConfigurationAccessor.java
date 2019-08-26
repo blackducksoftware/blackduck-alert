@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.database.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -95,14 +94,13 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public List<ConfigurationJobModel> getAllJobs() {
         final List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
-        final SetMap<UUID, ConfigGroupEntity> jobMap = new SetMap(new HashMap<>());
+        final SetMap<UUID, ConfigGroupEntity> jobMap = new SetMap();
         for (final ConfigGroupEntity entity : jobEntities) {
             final UUID entityJobId = entity.getJobId();
             jobMap.add(entityJobId, entity);
         }
 
-        return jobMap.getMap()
-                   .entrySet()
+        return jobMap.entrySet()
                    .stream()
                    .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
                    .collect(Collectors.toList());
