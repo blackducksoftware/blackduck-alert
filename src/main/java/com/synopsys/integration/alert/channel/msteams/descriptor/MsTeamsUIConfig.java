@@ -40,8 +40,8 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
     private static final String MSTEAMS_WEBHOOK_DESCRIPTION = "The MS Teams URL to receive alerts.";
 
     @Autowired
-    public MsTeamsUIConfig(@Lazy final DescriptorMap descriptorMap) {
-        super(MsTeamsChannel.COMPONENT_NAME, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON, descriptorMap);
+    public MsTeamsUIConfig() {
+        super(MsTeamsChannel.class.getName(), MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
     }
 
     @Override

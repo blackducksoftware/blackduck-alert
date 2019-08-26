@@ -38,7 +38,7 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
 
     @Autowired
     public MsTeamsDescriptor(final MsTeamsUIConfig msTeamsUIConfig, final MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
-        super(MsTeamsChannel.COMPONENT_NAME, msTeamsUIConfig, msTeamsGlobalUIConfig);
+        super(MsTeamsChannel.class.getName(), msTeamsUIConfig, msTeamsGlobalUIConfig);
     }
 
 }
