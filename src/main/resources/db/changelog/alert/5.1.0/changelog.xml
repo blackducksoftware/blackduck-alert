@@ -7,5 +7,5 @@
     <include file="changelog-configuration-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-initialization.xml" relativeToChangelogFile="true"/>
     <include file="changelog-global-slack.xml" relativeToChangelogFile="true" />
-    <include file="changelog-global-msteams.xml" relativeToChangelogFile="true" />
+    <include file="changelog-distribution-msteams.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
