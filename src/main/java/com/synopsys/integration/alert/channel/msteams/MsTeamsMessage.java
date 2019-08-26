@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
+import com.synopsys.integration.alert.channel.util.FreemarkerDataModel;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -32,9 +33,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MsTeamsMessage {
+public class MsTeamsMessage implements FreemarkerDataModel {
     private Set<LinkableItem> providers = new HashSet<>();
     private List<MsTeamsSection> sections = new ArrayList<>();
+
+    public void addAllContent(MsTeamsMessage other) {
+        providers.addAll(other.providers);
+        sections.addAll(other.sections);
+    }
 
     public void addContent(ProviderMessageContent providerMessageContent) {
         providers.add(providerMessageContent.getProvider());
@@ -53,11 +59,9 @@ public class MsTeamsMessage {
             msTeamsComponent.setCategory(componentItem.getCategory());
             msTeamsComponent.setOperation(componentItem.getOperation().toString());
 
-            String componentText = componentItem.getComponent().getValue();
-            if (componentItem.getSubComponent().isPresent()) {
-                componentText += "/" + componentItem.getSubComponent().get().getValue();
-            }
-            msTeamsComponent.setText(componentText);
+            StringBuilder componentTextBuilder = new StringBuilder(componentItem.getComponent().getValue());
+            componentItem.getSubComponent().map(item -> "/" + item.getValue()).ifPresent(componentTextBuilder::append);
+            msTeamsComponent.setText(componentTextBuilder.toString());
 
             String allAttributeDetails = createDetails(componentItem.getComponentAttributes());
             msTeamsComponent.setAllAttributeDetails(allAttributeDetails);

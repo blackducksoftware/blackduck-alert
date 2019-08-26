@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import com.synopsys.integration.alert.channel.msteams.MsTeamsMessage;
+import com.synopsys.integration.exception.IntegrationException;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -117,10 +119,24 @@ public class FreemarkerTemplatingService {
         }
     }
 
-    public String getResolvedTemplate(final Map<String, Object> model, final Template template) throws IOException, TemplateException {
-        final StringWriter stringWriter = new StringWriter();
-        template.process(model, stringWriter);
-        return stringWriter.toString();
+    public String resolveTemplate(final Map<String, Object> dataModel, final Template template) throws IntegrationException {
+        try {
+            StringWriter stringWriter = new StringWriter();
+            template.process(dataModel, stringWriter);
+            return stringWriter.toString();
+        } catch (IOException | TemplateException e) {
+            throw new IntegrationException(e.getMessage(), e);
+        }
+    }
+
+    public String resolveTemplate(FreemarkerDataModel dataModel, Template template) throws IntegrationException {
+        try {
+            StringWriter stringWriter = new StringWriter();
+            template.process(dataModel, stringWriter);
+            return stringWriter.toString();
+        } catch (IOException | TemplateException e) {
+            throw new IntegrationException(e.getMessage(), e);
+        }
     }
 
 }

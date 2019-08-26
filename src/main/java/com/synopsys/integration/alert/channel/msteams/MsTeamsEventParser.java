@@ -30,6 +30,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.mail.Session;
@@ -37,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class MsTeamsEventParser {
@@ -44,6 +46,7 @@ public class MsTeamsEventParser {
     private Configuration freemarkerConfiguration;
     private Template msTeamsTemplate;
 
+    @Autowired
     public MsTeamsEventParser(FreemarkerTemplatingService freemarkerTemplatingService) throws IntegrationException {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         //TODO ekerwin - when we fix email template loading, we can consolidate the configurations to just load /templates
@@ -56,26 +59,21 @@ public class MsTeamsEventParser {
         }
     }
 
-    public MsTeamsMessage createMessage(DistributionEvent distributionEvent) {
-        MessageContentGroup messageContentGroup = distributionEvent.getContent();
+    public String toJson(DistributionEvent distributionEvent) throws IntegrationException {
+        MsTeamsMessage msTeamsMessage = createMessage(distributionEvent);
+        return toJson(msTeamsMessage);
+    }
 
-        MsTeamsMessage msTeamsMessage = new MsTeamsMessage();
-        messageContentGroup
+    public MsTeamsMessage createMessage(DistributionEvent distributionEvent) {
+        return distributionEvent
+                .getContent()
                 .getSubContent()
                 .stream()
-                .forEach(content -> msTeamsMessage.addContent(content));
-
-        return msTeamsMessage;
+                .collect(MsTeamsMessage::new, MsTeamsMessage::addContent, MsTeamsMessage::addAllContent);
     }
 
     public String toJson(MsTeamsMessage msTeamsMessage) throws IntegrationException {
-        try {
-            StringWriter stringWriter = new StringWriter();
-            msTeamsTemplate.process(msTeamsMessage, stringWriter);
-            return stringWriter.toString();
-        } catch (IOException | TemplateException e) {
-            throw new IntegrationException(e.getMessage(), e);
-        }
+        return freemarkerTemplatingService.resolveTemplate(msTeamsMessage, msTeamsTemplate);
     }
 
 }
