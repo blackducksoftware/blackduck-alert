@@ -200,6 +200,7 @@ public class JiraIssueHandler {
             String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions);
             logger.warn(errorMessage);
             logger.warn("The transitions could be missing because the issue(s) are already set to the status they should be.");
+            //FIXME needs to throw an exception if this is from the Test Configuration. Otherwise log warning
         }
 
         return issueKeys;
