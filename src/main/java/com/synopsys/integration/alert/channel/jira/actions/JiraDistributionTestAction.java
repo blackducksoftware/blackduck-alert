@@ -37,8 +37,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -96,32 +94,12 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     public DistributionEvent createChannelTestEvent(final String jobId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
-        final ProviderMessageContent messageContent = createTestNotificationContent(operation, messageId);
+        final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, operation, messageId);
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
         return new DistributionEvent(jobId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
-    }
-
-    public ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId) throws AlertException {
-        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder.applyProvider("Alert");
-        builder.applyTopic("Test Topic", "Alert Test Message");
-        builder.applySubTopic("Test SubTopic", "Test message sent by Alert");
-        builder.applyComponentItem(createTestComponentItem(operation, messageId));
-        return builder.build();
-    }
-
-    private ComponentItem createTestComponentItem(ItemOperation operation, String messageId) throws AlertException {
-        final ComponentItem.Builder builder = new ComponentItem.Builder();
-        builder.applyOperation(operation);
-        builder.applyCategory("Test Category");
-        builder.applyComponentData("Message ID", messageId);
-        LinkableItem keyItem = new LinkableItem("Test linkable item", messageId);
-        builder.applyComponentAttribute(keyItem, true);
-        builder.applyNotificationId(1L);
-        return builder.build();
     }
 }

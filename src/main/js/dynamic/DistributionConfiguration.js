@@ -10,6 +10,7 @@ import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDis
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
+import JobCustomMessageModal from "dynamic/JobCustomMessageModal";
 
 export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
@@ -29,6 +30,7 @@ class DistributionConfiguration extends Component {
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
+        this.setSendMessageVisible = this.setSendMessageVisible.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -38,6 +40,7 @@ class DistributionConfiguration extends Component {
         const channelFieldModel = FieldModelUtilities.updateFieldModelSingleValue(emptyFieldModel, KEY_CHANNEL_NAME, name);
         this.state = {
             show: true,
+            showSendMessage: false,
             channelConfig: channelFieldModel,
             providerConfig: {},
             currentChannel: defaultDescriptor,
@@ -141,6 +144,12 @@ class DistributionConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
+    setSendMessageVisible(visible) {
+        this.setState({
+            showSendMessage: visible
+        });
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         const { jobId, isUpdatingJob } = this.props;
@@ -182,7 +191,7 @@ class DistributionConfiguration extends Component {
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const isReadOnly = currentChannel.readOnly;
-
+        const channelDescriptorName = channelConfig && channelConfig.descriptorName;
         let removedFields = Object.assign(updatedProviderFields, { fields: removeProject });
         if (!filterByProject) {
             const removePattern = updatedProviderFields.fields.filter(field => field.key !== KEY_PROJECT_NAME_PATTERN);
@@ -214,9 +223,18 @@ class DistributionConfiguration extends Component {
                     includeTest={displayTest}
                     includeSave={displaySave}
                     includeCancel
-                    onTestClick={this.handleTestSubmit}
+                    onTestClick={() => this.setSendMessageVisible(true)}
                     onCancelClick={this.handleClose}
                     isFixed={false}
+                />
+                <JobCustomMessageModal
+                    topicLabel="Topic"
+                    messageLabel="Message"
+                    showModal={this.state.showSendMessage}
+                    jobFieldModelBuilder={this.buildJsonBody}
+                    sendMessage={this.props.testDistributionJob}
+                    handleCancel={() => this.setSendMessageVisible(false)}
+                    channelDescriptorName={channelDescriptorName}
                 />
                 <p name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
