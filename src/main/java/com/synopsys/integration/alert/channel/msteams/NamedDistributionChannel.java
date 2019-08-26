@@ -29,8 +29,11 @@ import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class NamedDistributionChannel extends DistributionChannel {
-    public NamedDistributionChannel(Gson gson, AuditUtility auditUtility) {
+    private ChannelKey channelKey;
+
+    public NamedDistributionChannel(ChannelKey channelKey, Gson gson, AuditUtility auditUtility) {
         super(gson, auditUtility);
+        this.channelKey = channelKey;
     }
 
     @Override
@@ -39,11 +42,11 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
         return String.format("Successfully sent %s message.", getDestinationName());
     }
 
+    public abstract void distributeMessage(DistributionEvent event) throws IntegrationException;
+
     @Override
     public String getDestinationName() {
-        return getClass().getName();
+        return channelKey.getUniversalKey();
     }
-
-    public abstract void distributeMessage(DistributionEvent event) throws IntegrationException;
 
 }

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.msteams.descriptor;
 
 import com.synopsys.integration.alert.channel.msteams.MsTeamsChannel;
+import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -40,8 +41,8 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
     private static final String MSTEAMS_WEBHOOK_DESCRIPTION = "The MS Teams URL to receive alerts.";
 
     @Autowired
-    public MsTeamsUIConfig() {
-        super(MsTeamsChannel.class.getName(), MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
+    public MsTeamsUIConfig(MsTeamsKey msTeamsKey) {
+        super(msTeamsKey.getUniversalKey(), MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
     }
 
     @Override

@@ -3,22 +3,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="ekerwin" id="1565734102193-1">
         <sql dbms="h2" stripComments="true">
-            CALL REGISTER_DESCRIPTOR('MsTeamsChannel');
+            CALL REGISTER_CHANNEL('msteamschannel');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('channel.msteams.webhook', FALSE, 'MsTeamsChannel', 'DISTRIBUTION');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('channel.common.name', FALSE, 'MsTeamsChannel', 'DISTRIBUTION');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'MsTeamsChannel', 'DISTRIBUTION');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'MsTeamsChannel', 'DISTRIBUTION');
-        </sql>
-        <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'MsTeamsChannel', 'DISTRIBUTION');
+            CALL DEFINE_FIELD('channel.msteams.webhook', FALSE, 'msteamschannel', 'DISTRIBUTION');
         </sql>
     </changeSet>
 </databaseChangeLog>

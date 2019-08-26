@@ -46,8 +46,8 @@ public class MsTeamsChannel extends NamedDistributionChannel {
     private MsTeamsEventParser msTeamsEventParser;
 
     @Autowired
-    public MsTeamsChannel(final Gson gson, final AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser) {
-        super(gson, auditUtility);
+    public MsTeamsChannel(MsTeamsKey msTeamsKey, final Gson gson, final AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser) {
+        super(msTeamsKey, gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
     }
