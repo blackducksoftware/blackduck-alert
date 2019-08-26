@@ -32,14 +32,20 @@ class TableSelectInput extends Component {
         };
     }
 
-    componentDidMount() {
-        this.state.selectedData.push(...this.props.value);
-        const convertedValues = this.state.selectedData.map(selected => {
-            return Object.assign({ label: selected, value: selected });
-        });
-        this.setState({
-            displayedData: convertedValues
-        })
+    componentDidUpdate(prevProps) {
+        const { value } = this.props;
+        const prevSize = prevProps.value && prevProps.value.length === 0;
+        const currentSize = value && value.length > 0;
+        const emptySelected = this.state.selectedData.length === 0;
+        if (prevSize && currentSize && emptySelected) {
+            this.state.selectedData.push(...value);
+            const convertedValues = this.state.selectedData.map(selected => {
+                return Object.assign({ label: selected, value: selected });
+            });
+            this.setState({
+                displayedData: convertedValues
+            })
+        }
     }
 
     onRowSelectedAll(isSelected, rows) {
