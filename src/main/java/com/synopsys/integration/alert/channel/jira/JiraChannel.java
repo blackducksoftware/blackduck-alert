@@ -42,6 +42,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
 import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
 
 @Component(value = JiraChannel.COMPONENT_NAME)
 public class JiraChannel extends DistributionChannel {
@@ -69,8 +70,9 @@ public class JiraChannel extends DistributionChannel {
         final IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
         final IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
         final ProjectService projectService = jiraCloudServiceFactory.createProjectService();
+        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
 
-        final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties, getGson());
+        final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, userSearchService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties, getGson());
         try {
             return jiraIssueHandler.createOrUpdateIssues(fieldAccessor, content);
         } catch (JiraMissingTransitionException e) {
