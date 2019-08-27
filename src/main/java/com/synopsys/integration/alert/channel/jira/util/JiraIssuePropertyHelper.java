@@ -39,7 +39,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchServic
 
 public class JiraIssuePropertyHelper {
     private static final String SEARCH_CONJUNCTION = "AND";
-    private static final Set<Character> ADVANCED_SEARCH_RESERVED_CHARACTERS = Set.of('\\', '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':');
+    private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'');
 
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
@@ -83,7 +83,7 @@ public class JiraIssuePropertyHelper {
         final StringBuilder jqlBuilder = new StringBuilder();
         jqlBuilder.append(JiraConstants.JIRA_SEARCH_KEY_JIRA_PROJECT);
         jqlBuilder.append(" = '");
-        jqlBuilder.append(escapeReservedCharacters(jiraProjectKey));
+        jqlBuilder.append(escapeSearchString(jiraProjectKey));
         jqlBuilder.append("' ");
 
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider);
@@ -141,19 +141,27 @@ public class JiraIssuePropertyHelper {
 
     private String createPropertySearchString(String key, String value) {
         final String propertySearchFormat = "issue.property[%s].%s = '%s'";
-        final String escapedValue = escapeReservedCharacters(value);
+        final String escapedValue = escapeSearchString(value);
         return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
     }
 
     // TODO move this code to int-jira-common
-    private String escapeReservedCharacters(String originalString) {
+    private String escapeSearchString(String originalString) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Character character : originalString.toCharArray()) {
-            if (ADVANCED_SEARCH_RESERVED_CHARACTERS.contains(character)) {
-                stringBuilder.append("\\\\" + character);
+            // because the properties are now strings instead of text fields, we no longer need to escape the reserved characters
+            // https://confluence.atlassian.com/jirasoftwarecloud/advanced-searching-764478330.html
+            // we still need to escape single quotes in the string
+            if (CHARACTERS_TO_ESCAPE.contains(character)) {
+                stringBuilder.append("\\" + character);
             } else {
                 stringBuilder.append(character);
             }
+        }
+        String escapedString = stringBuilder.toString();
+        // if the string ends with a single backslash, we need to escape the single backslash
+        if (escapedString.endsWith("\\") && !escapedString.endsWith("\\\\")) {
+            stringBuilder.append("\\");
         }
         return stringBuilder.toString();
     }
