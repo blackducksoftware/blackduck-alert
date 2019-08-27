@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -46,33 +47,38 @@ import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService
 @Component(value = JiraChannel.COMPONENT_NAME)
 public class JiraChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_jira_cloud";
-    private static final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
+    private final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
 
-    public JiraChannel(final Gson gson, final AuditUtility auditUtility) {
+    public JiraChannel(Gson gson, AuditUtility auditUtility) {
         super(gson, auditUtility);
     }
 
     @Override
-    public String sendMessage(final DistributionEvent event) throws IntegrationException {
-        final FieldAccessor fieldAccessor = event.getFieldAccessor();
-        final MessageContentGroup content = event.getContent();
-        final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
-        final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
-        final JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
+    public String sendMessage(DistributionEvent event) throws IntegrationException {
+        FieldAccessor fieldAccessor = event.getFieldAccessor();
+        MessageContentGroup content = event.getContent();
+        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
+        JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
         logger.debug("Verifying the required application is installed on the Jira Cloud server...");
         boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
         if (missingApp) {
             throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
         }
-        final IssueService issueService = jiraCloudServiceFactory.createIssueService();
-        final IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
-        final IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
-        final IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
-        final ProjectService projectService = jiraCloudServiceFactory.createProjectService();
-        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
 
-        final JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(projectService, issueService, userSearchService, issueSearchService, issuePropertyService, issueTypeService, jiraProperties, getGson());
-        return jiraIssueHandler.createOrUpdateIssues(fieldAccessor, content);
+        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
+        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
+        IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
+
+        JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService);
+        JiraIssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
+
+        IssueService issueService = jiraCloudServiceFactory.createIssueService();
+        IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
+        IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
+
+        JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(issueService, issueSearchService, issuePropertyService, jiraProperties, getGson());
+        return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
     }
 
     @Override
