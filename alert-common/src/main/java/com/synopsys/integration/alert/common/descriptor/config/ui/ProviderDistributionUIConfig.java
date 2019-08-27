@@ -33,11 +33,13 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.HideCheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
@@ -56,6 +58,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     protected static final String LABEL_PROJECTS = "Projects";
     protected static final String DESCRIPTION_FILTER_BY_PROJECT = "If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed.";
     protected static final String DESCRIPTION_PROJECT_NAME_PATTERN = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";
+    private static final String DESCRIPTION_PROJECTS = "Select a project or projects that will be used to retrieve notifications from your provider.";
 
     private static final String LABEL_NOTIFICATION_TYPES = "Notification Types";
     private static final String LABEL_FORMAT = "Format";
@@ -84,12 +87,12 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                 .sorted()
                 .collect(Collectors.toList()));
 
-        final ConfigField filterByProject = CheckboxConfigField.create(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT);
+        final ConfigField filterByProject = HideCheckboxConfigField.create(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
+                                                .addRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT);
         final ConfigField projectNamePattern = TextInputConfigField.create(KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, DESCRIPTION_PROJECT_NAME_PATTERN, this::validateProjectNamePattern);
-
-        // TODO figure out how to create a project listing (Perhaps a new field type called table)
-        // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = SelectConfigField.createEmpty(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, "", this::validateConfiguredProject);
+        final ConfigField configuredProject = EndpointTableSelectField.createSearchable(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS, this::validateConfiguredProject)
+                                                  .addColumn(new TableSelectColumn("name", "Project Name", true, true))
+                                                  .addColumn(new TableSelectColumn("description", "Project Description", false, false));
 
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
