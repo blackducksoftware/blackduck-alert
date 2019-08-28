@@ -40,9 +40,9 @@ public class JiraProperties {
     private final String username;
 
     public JiraProperties(final FieldAccessor fieldAccessor) {
-        url = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_URL).orElse(null);
-        accessToken = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN).orElse(null);
-        username = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse(null);
+        url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
+        accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
     }
 
     public JiraProperties(final String url, final String accessToken, final String username) {

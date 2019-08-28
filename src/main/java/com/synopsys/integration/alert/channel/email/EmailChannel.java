@@ -91,7 +91,7 @@ public class EmailChannel extends DistributionChannel {
 
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
-        final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
+        final String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
         return sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());
     }
 

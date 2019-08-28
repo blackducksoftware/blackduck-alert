@@ -93,7 +93,7 @@ public class EmailProperties {
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_USERSET_KEY);
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY);
 
-        mailSmtpPassword = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()).orElse(null);
+        mailSmtpPassword = fieldAccessor.getStringOrNull(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY, mailSmtpPassword);
     }
 
@@ -114,7 +114,7 @@ public class EmailProperties {
     }
 
     private void addJavaMailOption(final EmailPropertyKeys emailPropertyKeys) {
-        addJavaMailOption(emailPropertyKeys, fieldAccessor.getString(emailPropertyKeys.getPropertyKey()).orElse(null));
+        addJavaMailOption(emailPropertyKeys, fieldAccessor.getStringOrNull(emailPropertyKeys.getPropertyKey()));
     }
 
     private void addJavaMailOption(final EmailPropertyKeys emailPropertyKey, final String value) {

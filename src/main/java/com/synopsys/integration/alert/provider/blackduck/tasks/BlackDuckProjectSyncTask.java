@@ -152,7 +152,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         final Set<String> configuredProjectNames = new HashSet<>();
         for (final ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
             final FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-            final String projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse("");
+            final String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (StringUtils.isNotBlank(projectNamePattern)) {
                 final Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
                 configuredProjectNames.addAll(matchedProjectNames);
