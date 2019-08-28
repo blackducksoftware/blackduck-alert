@@ -128,8 +128,14 @@ class FieldsPanel extends React.Component {
     }
 
     createFields(fields) {
-        const { currentConfig, fieldErrors } = this.props;
+        const { currentConfig, fieldErrors, metadata } = this.props;
         const createdFields = [];
+        const { additionalFields } = metadata;
+        if (additionalFields && Object.keys(additionalFields).length != 0) {
+            Object.keys(additionalFields).forEach(key => {
+                currentConfig.keyToValues[key] = additionalFields[key];
+            });
+        }
 
         fields.forEach((field) => {
             const fieldKey = field.key;
@@ -163,7 +169,16 @@ FieldsPanel.propTypes = {
     currentConfig: PropTypes.object.isRequired,
     fieldErrors: PropTypes.object.isRequired,
     self: PropTypes.object.isRequired,
-    stateName: PropTypes.string.isRequired
+    stateName: PropTypes.string.isRequired,
+    metadata: PropTypes.shape({
+        additionalFields: PropTypes.object
+    })
 };
+
+FieldsPanel.defaultProps = {
+    metadata: {
+        additionalFields: {}
+    }
+}
 
 export default FieldsPanel;

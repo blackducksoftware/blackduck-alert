@@ -169,6 +169,7 @@ class DistributionConfiguration extends Component {
             <div>
                 <FieldsPanel
                     descriptorFields={currentProvider.fields}
+                    metadata={{ additionalFields: channelConfig.keyToValues }}
                     currentConfig={providerConfig}
                     fieldErrors={this.props.fieldErrors}
                     self={this}
@@ -199,7 +200,7 @@ class DistributionConfiguration extends Component {
     }
 
     render() {
-        const { channelConfig, currentProvider, currentChannel } = this.state;
+        const { providerConfig, channelConfig, currentProvider, currentChannel } = this.state;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
 
         let jobAction = 'New';
@@ -223,6 +224,7 @@ class DistributionConfiguration extends Component {
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                             <FieldsPanel
                                 descriptorFields={currentChannel.fields}
+                                metadata={{ additionalFields: providerConfig.keyToValues }}
                                 currentConfig={channelConfig}
                                 fieldErrors={this.props.fieldErrors}
                                 self={this}
