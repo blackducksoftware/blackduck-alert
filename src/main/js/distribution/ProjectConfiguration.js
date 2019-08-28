@@ -10,10 +10,9 @@ function assignClassName(row, rowIdx) {
 }
 
 function assignDataFormat(cell, row) {
-    const cellContent = (row.missing) ? <span className="missingBlackDuckData">
-        <span className="fa-layers fa-fw">
+    const cellContent = (row.missing && cell && cell !== '') ? <span className="missingBlackDuckData">
             <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
-        </span> </span>
+        </span>
         : cell;
 
 
@@ -187,7 +186,7 @@ class ProjectConfiguration extends Component {
                     bodyContainerClass="projectTableScrollableBody"
                 >
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" tdStyle={ { whiteSpace: 'normal' } } dataFormat={assignDataFormat}>Description</TableHeaderColumn>
+                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 
