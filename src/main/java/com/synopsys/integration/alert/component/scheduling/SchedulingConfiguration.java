@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import com.synopsys.integration.alert.common.rest.model.Configuration;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.Configuration;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 
 public class SchedulingConfiguration extends Configuration {
@@ -33,8 +33,8 @@ public class SchedulingConfiguration extends Configuration {
     public SchedulingConfiguration(final ConfigurationModel configurationModel) {
         super(configurationModel.getCopyOfKeyToFieldMap());
 
-        dailyDigestHourOfDay = getFieldAccessor().getString(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse(null);
-        dataFrequencyDays = getFieldAccessor().getString(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
+        dailyDigestHourOfDay = getFieldAccessor().getStringOrNull(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
+        dataFrequencyDays = getFieldAccessor().getStringOrNull(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
     }
 
     public String getDailyDigestHourOfDay() {

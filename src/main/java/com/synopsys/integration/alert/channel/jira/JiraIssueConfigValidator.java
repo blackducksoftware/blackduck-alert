@@ -42,7 +42,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
 
 public class JiraIssueConfigValidator {
-    private static final String CONNECTION_ERROR_FORMAT_STRING = "There was a problem getting the %s from Jira. Please ensure the server configured correctly.";
+    private static final String CONNECTION_ERROR_FORMAT_STRING = "There was a problem getting the %s from Jira. Please ensure the server is configured correctly.";
 
     private ProjectService projectService;
     private UserSearchService userSearchService;
