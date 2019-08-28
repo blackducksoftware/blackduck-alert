@@ -60,6 +60,7 @@ import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelField
 import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.cloud.model.components.StatusCategory;
 import com.synopsys.integration.jira.common.cloud.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
@@ -80,6 +81,9 @@ import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
+    public static final String TODO_STATUS_CATEGORY_KEY = "new";
+    public static final String DONE_STATUS_CATEGORY_KEY = "done";
+
     private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
 
     private final ProjectService projectService;
@@ -139,7 +143,7 @@ public class JiraIssueHandler {
     private Set<String> createOrUpdateIssuesPerComponent(final String providerName, final LinkableItem topic, final Optional<LinkableItem> subTopic, final FieldAccessor fieldAccessor, final Collection<ComponentItem> componentItems,
         final String issueType, ProjectComponent jiraProject, final Boolean commentOnIssue) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        SetMap<String, String> missingTransitionToIssues = new SetMap();
+        SetMap<String, String> missingTransitionToIssues = new SetMap<>();
 
         String jiraProjectId = jiraProject.getId();
         String jiraProjectName = jiraProject.getName();
@@ -166,11 +170,8 @@ public class JiraIssueHandler {
                         issueKeys.add(issueComponent.getKey());
                     }
 
-                    Optional<String> optionalTransitionKey = determineTransitionKey(operation);
-                    Optional<String> optionalExpectedStatus = determineExpectedStatusKey(operation);
-                    if (optionalTransitionKey.isPresent() && optionalExpectedStatus.isPresent()) {
-                        StatusDetailsComponent statusDetailsComponent = issueService.getStatus(issueComponent.getId());
-                        transitionIssue(issueComponent.getKey(), statusDetailsComponent.getName(), fieldAccessor, optionalTransitionKey.get(), optionalExpectedStatus.get());
+                    boolean didUpdateIssue = transitionIssue(issueComponent.getKey(), fieldAccessor, operation);
+                    if (didUpdateIssue) {
                         issueKeys.add(issueComponent.getKey());
                     }
                 } else {
@@ -324,6 +325,42 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
+    private boolean transitionIssue(String issueKey, FieldAccessor fieldAccessor, ItemOperation operation) throws IntegrationException {
+        Optional<String> optionalTransitionKey = determineTransitionKey(operation);
+        if (optionalTransitionKey.isPresent()) {
+            final Optional<String> transitionName = fieldAccessor.getString(optionalTransitionKey.get());
+            if (transitionName.isPresent()) {
+                StatusDetailsComponent statusDetailsComponent = issueService.getStatus(issueKey);
+                boolean shouldAttemptTransition = isTransitionRequired(operation, statusDetailsComponent.getStatusCategory());
+                if (shouldAttemptTransition) {
+                    performTransition(issueKey, transitionName.get());
+                    return true;
+                } else {
+                    logger.debug("The issue {} is already in the status category that would result from this transition ({}).", issueKey, transitionName);
+                }
+            } else {
+                logger.debug("No transition name was provided so no transition will be performed for this operation: {}.", operation);
+            }
+        } else {
+            logger.debug("No transition required for this issue: {}.", issueKey);
+        }
+        return false;
+    }
+
+    private void performTransition(String issueKey, String transitionName) throws IntegrationException {
+        logger.debug("Attempting the transition '{}' on the issue '{}'", transitionName, issueKey);
+        final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
+        final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transitionName);
+        if (firstTransitionByName.isPresent()) {
+            final TransitionComponent issueTransition = firstTransitionByName.get();
+            final String transitionId = issueTransition.getId();
+            final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
+            issueService.transitionIssue(issueRequestModel);
+        } else {
+            throw new JiraMissingTransitionException(issueKey, transitionName);
+        }
+    }
+
     private Optional<String> determineTransitionKey(ItemOperation operation) {
         if (!ItemOperation.UPDATE.equals(operation)) {
             if (ItemOperation.DELETE.equals(operation)) {
@@ -335,48 +372,15 @@ public class JiraIssueHandler {
         return Optional.empty();
     }
 
-    private Optional<String> determineExpectedStatusKey(ItemOperation operation) {
-        if (!ItemOperation.UPDATE.equals(operation)) {
-            if (ItemOperation.DELETE.equals(operation)) {
-                return Optional.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS);
-            } else {
-                return Optional.of(JiraDescriptor.KEY_OPEN_WORKFLOW_STATUS);
-            }
+    private boolean isTransitionRequired(ItemOperation operation, StatusCategory statusCategory) {
+        if (ItemOperation.ADD.equals(operation)) {
+            // Should reopen?
+            return DONE_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
+        } else if (ItemOperation.DELETE.equals(operation)) {
+            // Should resolve?
+            return TODO_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
         }
-        return Optional.empty();
-    }
-
-    private String transitionIssue(String issueKey, String issueStatus, FieldAccessor fieldAccessor, String transitionKey, String expectedStatusKey) throws IntegrationException {
-        final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
-        final Optional<String> expectedStatusName = fieldAccessor.getString(expectedStatusKey);
-        if (!transitionName.isPresent()) {
-            logger.debug("No transition selected, ignoring issue state change.");
-            return issueKey;
-        }
-        final String transition = transitionName.get();
-        if (!expectedStatusName.isPresent()) {
-            logger.error("The expected status for the transition '{}' was not configured.", transition);
-            return issueKey;
-        }
-        final String expectedStatus = expectedStatusName.get();
-        if (issueStatus.equalsIgnoreCase(expectedStatus)) {
-            logger.debug("Will not attempting the transition '{}' on the issue '{}'. The issue is already set the expected status '{}'.", transition, issueKey, expectedStatus);
-            return issueKey;
-        }
-
-        logger.debug("Attempting the transition '{}' on the issue '{}'", transition, issueKey);
-        final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-        final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
-        if (firstTransitionByName.isPresent()) {
-            final TransitionComponent issueTransition = firstTransitionByName.get();
-            final String transitionId = issueTransition.getId();
-            final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
-            issueService.transitionIssue(issueRequestModel);
-        } else {
-            throw new JiraMissingTransitionException(issueKey, transition);
-        }
-
-        return issueKey;
+        return false;
     }
 
     private void addComment(String issueKey, String comment) throws IntegrationException {
