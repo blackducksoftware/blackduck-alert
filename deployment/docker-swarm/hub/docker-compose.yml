@@ -1,0 +1,23 @@
+version: '3.6'
+services:
+  alert:
+    image: blackducksoftware/blackduck-alert:VERSION_TOKEN
+    ports: ['8443:8443']
+    env_file: [blackduck-alert.env]
+    user: alert:root
+    healthcheck:
+      test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:8443/alert/api/about',
+             /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
+             /opt/blackduck/alert/security/blackduck_system.key]
+      interval: 30s
+      timeout: 60s
+      retries: 15
+      start_period: 7200s
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
+    deploy:
+      mode: replicated
+      restart_policy: {condition: on-failure, delay: 15s, window: 60s}
+      resources:
+        limits: {memory: 2560M}
+        reservations: {memory: 2560M}
+volumes: {alert-db-volume: null}

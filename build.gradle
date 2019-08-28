@@ -286,10 +286,16 @@ task copyDeploymentFiles(type: Copy) {
         include "docker-compose/**", "docker-swarm/**", "kubernetes/**"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-compose"
+        into "docker-compose/hub"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm"
+        into "docker-compose/standalone"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm/hub"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm/standalone"
     }
     from('deployment/cm-alert.yml') {
         into "kubernetes/standalone"
@@ -302,8 +308,10 @@ task copyDeploymentFiles(type: Copy) {
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-compose/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-compose/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
     }

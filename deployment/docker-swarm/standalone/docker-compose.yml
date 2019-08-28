@@ -18,7 +18,6 @@ services:
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
-    links: [cfssl]
     env_file: [blackduck-alert.env]
     user: alert:root
     healthcheck:
