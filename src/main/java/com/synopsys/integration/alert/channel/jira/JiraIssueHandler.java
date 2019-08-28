@@ -60,6 +60,7 @@ import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelField
 import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.cloud.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
@@ -166,8 +167,10 @@ public class JiraIssueHandler {
                     }
 
                     Optional<String> optionalTransitionKey = determineTransitionKey(operation);
-                    if (optionalTransitionKey.isPresent()) {
-                        transitionIssue(issueComponent.getKey(), fieldAccessor, optionalTransitionKey.get());
+                    Optional<String> optionalExpectedStatus = determineExpectedStatusKey(operation);
+                    if (optionalTransitionKey.isPresent() && optionalExpectedStatus.isPresent()) {
+                        StatusDetailsComponent statusDetailsComponent = issueService.getStatus(issueComponent.getId());
+                        transitionIssue(issueComponent.getKey(), statusDetailsComponent.getName(), fieldAccessor, optionalTransitionKey.get(), optionalExpectedStatus.get());
                         issueKeys.add(issueComponent.getKey());
                     }
                 } else {
@@ -204,9 +207,9 @@ public class JiraIssueHandler {
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
             }
 
-            String errorMessage = String.format("The transitions could be missing because the issue(s) are already set to the status they should be. For Provider: %s. Project: %s. %s.", providerName, jiraProjectName,
+            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName,
                 missingTransitions.toString());
-            throw new JiraMissingTransitionException(errorMessage);
+            throw new AlertException(errorMessage);
         }
 
         return issueKeys;
@@ -332,23 +335,45 @@ public class JiraIssueHandler {
         return Optional.empty();
     }
 
-    private String transitionIssue(String issueKey, FieldAccessor fieldAccessor, String transitionKey) throws IntegrationException {
-        final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
-        if (transitionName.isPresent()) {
-            final String transition = transitionName.get();
-            logger.debug("Attempting the transition '{}' on the issue '{}'", transition, issueKey);
-            final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-            final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
-            if (firstTransitionByName.isPresent()) {
-                final TransitionComponent issueTransition = firstTransitionByName.get();
-                final String transitionId = issueTransition.getId();
-                final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
-                issueService.transitionIssue(issueRequestModel);
+    private Optional<String> determineExpectedStatusKey(ItemOperation operation) {
+        if (!ItemOperation.UPDATE.equals(operation)) {
+            if (ItemOperation.DELETE.equals(operation)) {
+                return Optional.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS);
             } else {
-                throw new JiraMissingTransitionException(issueKey, transition);
+                return Optional.of(JiraDescriptor.KEY_OPEN_WORKFLOW_STATUS);
             }
-        } else {
+        }
+        return Optional.empty();
+    }
+
+    private String transitionIssue(String issueKey, String issueStatus, FieldAccessor fieldAccessor, String transitionKey, String expectedStatusKey) throws IntegrationException {
+        final Optional<String> transitionName = fieldAccessor.getString(transitionKey);
+        final Optional<String> expectedStatusName = fieldAccessor.getString(expectedStatusKey);
+        if (!transitionName.isPresent()) {
             logger.debug("No transition selected, ignoring issue state change.");
+            return issueKey;
+        }
+        final String transition = transitionName.get();
+        if (!expectedStatusName.isPresent()) {
+            logger.error("The expected status for the transition '{}' was not configured.", transition);
+            return issueKey;
+        }
+        final String expectedStatus = expectedStatusName.get();
+        if (issueStatus.equalsIgnoreCase(expectedStatus)) {
+            logger.debug("Will not attempting the transition '{}' on the issue '{}'. The issue is already set the expected status '{}'.", transition, issueKey, expectedStatus);
+            return issueKey;
+        }
+
+        logger.debug("Attempting the transition '{}' on the issue '{}'", transition, issueKey);
+        final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
+        final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
+        if (firstTransitionByName.isPresent()) {
+            final TransitionComponent issueTransition = firstTransitionByName.get();
+            final String transitionId = issueTransition.getId();
+            final IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
+            issueService.transitionIssue(issueRequestModel);
+        } else {
+            throw new JiraMissingTransitionException(issueKey, transition);
         }
 
         return issueKey;

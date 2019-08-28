@@ -76,4 +76,13 @@
             CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
         </sql>
     </changeSet>
+    <changeSet author="jrichard" id="1558524516692-5">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.resolve.status', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.reopen.status', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+
+    </changeSet>
 </databaseChangeLog>

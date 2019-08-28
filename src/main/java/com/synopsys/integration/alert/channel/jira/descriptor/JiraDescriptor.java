@@ -41,6 +41,8 @@ public class JiraDescriptor extends ChannelDescriptor {
     public static final String KEY_ISSUE_TYPE = "channel.jira.cloud.issue.type";
     public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.cloud.resolve.workflow";
     public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.cloud.reopen.workflow";
+    public static final String KEY_RESOLVE_WORKFLOW_STATUS = "channel.jira.cloud.resolve.status";
+    public static final String KEY_OPEN_WORKFLOW_STATUS = "channel.jira.cloud.reopen.status";
 
     public static final String JIRA_LABEL = "Jira Cloud";
     public static final String JIRA_URL = "jira";
