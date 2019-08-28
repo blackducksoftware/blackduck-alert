@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -58,6 +59,7 @@ import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelField
 import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.cloud.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
@@ -103,7 +105,7 @@ public class JiraIssueHandler {
 
     private Set<String> createOrUpdateIssuesPerComponent(String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        Set<String> missingTransitions = new HashSet<>();
+        SetMap<String, String> missingTransitionToIssues = new SetMap();
 
         ProjectComponent jiraProject = jiraIssueConfig.getProjectComponent();
         String jiraProjectId = jiraProject.getId();
@@ -113,26 +115,29 @@ public class JiraIssueHandler {
         Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
         for (List<ComponentItem> combinedItems : combinedItemsMap.values()) {
             try {
-                ComponentItem arbitraryItem = combinedItems
-                                                  .stream()
-                                                  .findAny()
-                                                  .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
-                ItemOperation operation = arbitraryItem.getOperation();
-                String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-                IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                final ComponentItem arbitraryItem = combinedItems
+                                                        .stream()
+                                                        .findAny()
+                                                        .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
+                final ItemOperation operation = arbitraryItem.getOperation();
+                final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
+                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
 
-                Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
+                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
                 if (existingIssueComponent.isPresent()) {
-                    IssueComponent issueComponent = existingIssueComponent.get();
+                    final IssueComponent issueComponent = existingIssueComponent.get();
                     if (jiraIssueConfig.getCommentOnIssues()) {
                         String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
                         addComment(issueComponent.getKey(), operationComment);
                         issueKeys.add(issueComponent.getKey());
                     }
 
-                    transitionIssue(issueComponent.getKey(), operation, jiraIssueConfig);
-                    issueKeys.add(issueComponent.getKey());
+                    StatusDetailsComponent statusDetailsComponent = issueService.getStatus(issueComponent.getId());
+                       boolean didUpdateIssue=  transitionIssue(issueComponent.getKey(),statusDetailsComponent.getName(), operation, jiraIssueConfig);
+                       if(didUpdateIssue) {
+                           issueKeys.add(issueComponent.getKey());
+                       }
                 } else {
                     if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
                         fieldsBuilder.setProject(jiraProjectId);
@@ -148,7 +153,7 @@ public class JiraIssueHandler {
                         if (issue == null || StringUtils.isBlank(issue.getKey())) {
                             throw new AlertException("There was an problem when creating this issue.");
                         }
-                        String issueKey = issue.getKey();
+                        final String issueKey = issue.getKey();
                         addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                         addComment(issueKey, "This issue was automatically created by Alert.");
                         issueKeys.add(issueKey);
@@ -157,12 +162,18 @@ public class JiraIssueHandler {
                     }
                 }
             } catch (JiraMissingTransitionException e) {
-                missingTransitions.add(e.getTransition());
+                missingTransitionToIssues.add(e.getTransition(), e.getIssueKey());
             }
         }
-        if (!missingTransitions.isEmpty()) {
-            String joinedMissingTransitions = String.join(", ", missingTransitions);
-            String errorMessage = String.format("For Provider: %s. Project: %s. Unable to find the transition(s): %s.", providerName, jiraProjectName, joinedMissingTransitions);
+        if (!missingTransitionToIssues.isEmpty()) {
+            final StringBuilder missingTransitions = new StringBuilder();
+            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.entrySet()) {
+                String issues = StringUtils.join(entry.getValue(), ", ");
+                missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
+            }
+
+            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName,
+                missingTransitions.toString());
             throw new AlertException(errorMessage);
         }
 
@@ -170,7 +181,7 @@ public class JiraIssueHandler {
     }
 
     private Map<String, List<ComponentItem>> combineComponentItems(Collection<ComponentItem> componentItems) {
-        Map<String, List<ComponentItem>> combinedItems = new LinkedHashMap<>();
+        final Map<String, List<ComponentItem>> combinedItems = new LinkedHashMap<>();
         componentItems
             .stream()
             .forEach(item -> {
@@ -185,7 +196,7 @@ public class JiraIssueHandler {
     }
 
     private Optional<IssueComponent> retrieveExistingIssue(String jiraProjectKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
-        Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(jiraProjectKey, provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId);
+        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(jiraProjectKey, provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId);
         return optionalIssueSearchResponse
                    .map(IssueSearchResponseModel::getIssues)
                    .map(List::stream)
@@ -221,8 +232,8 @@ public class JiraIssueHandler {
 
     private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId)
         throws IntegrationException {
-        LinkableItem component = componentItem.getComponent();
-        Optional<LinkableItem> subComponent = componentItem.getSubComponent();
+        final LinkableItem component = componentItem.getComponent();
+        final Optional<LinkableItem> subComponent = componentItem.getSubComponent();
 
         jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, provider,
             topic.getName(), topic.getValue(), subTopic.map(LinkableItem::getName).orElse(null), subTopic.map(LinkableItem::getValue).orElse(null),
@@ -253,10 +264,10 @@ public class JiraIssueHandler {
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
-        JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
-        String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
+        final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
+        final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
+        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
+        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
         fieldsBuilder.setSummary(title);
         fieldsBuilder.setDescription(description);
 
@@ -274,28 +285,53 @@ public class JiraIssueHandler {
         return Optional.empty();
     }
 
-    private void transitionIssue(String issueKey, ItemOperation operation, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
-        Optional<String> optionalTransitionName = determineTransitionName(operation, jiraIssueConfig);
-        if (optionalTransitionName.isPresent()) {
-            String transition = optionalTransitionName.get();
-            logger.debug("Attempting the transition '{}' on the issue '{}'", transition, issueKey);
-            TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-            Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
-            if (firstTransitionByName.isPresent()) {
-                TransitionComponent issueTransition = firstTransitionByName.get();
-                String transitionId = issueTransition.getId();
-                IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
-                issueService.transitionIssue(issueRequestModel);
+    private Optional<String> determineExpectedStatusKey(ItemOperation operation, JiraIssueConfig jiraIssueConfig) {
+        if (!ItemOperation.UPDATE.equals(operation)) {
+            if (ItemOperation.DELETE.equals(operation)) {
+                return jiraIssueConfig.getResolveStatus();
             } else {
-                throw new JiraMissingTransitionException(transition);
+                return jiraIssueConfig.getOpenStatus();
             }
-        } else {
-            logger.debug("No transition selected, ignoring issue state change.");
         }
+        return Optional.empty();
+    }
+
+    private boolean transitionIssue(String issueKey, String issueStatus, ItemOperation operation, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
+        Optional<String> optionalTransitionName = determineTransitionName(operation, jiraIssueConfig);
+        Optional<String> optionalExpectedStatus = determineExpectedStatusKey(operation, jiraIssueConfig);
+        if (!optionalTransitionName.isPresent()) {
+            logger.debug("No transition selected, ignoring issue state change.");
+            return false;
+        }
+        final String transition = optionalTransitionName.get();
+        if (!optionalExpectedStatus.isPresent()) {
+            logger.error("The expected status for the transition '{}' was not configured.", transition);
+            return false;
+        }
+        final String expectedStatus = optionalExpectedStatus.get();
+        if (issueStatus.equalsIgnoreCase(expectedStatus)) {
+            logger.debug("Will not attempting the transition '{}' on the issue '{}'. The issue is already set the expected status '{}'.", transition, issueKey, expectedStatus);
+            return false;
+        }
+
+        logger.debug("Attempting the transition '{}' on the issue '{}'", transition, issueKey);
+        TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
+        Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transition);
+        if (firstTransitionByName.isPresent()) {
+            TransitionComponent issueTransition = firstTransitionByName.get();
+            String transitionId = issueTransition.getId();
+            IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
+            issueService.transitionIssue(issueRequestModel);
+        } else {
+            throw new JiraMissingTransitionException(issueKey, transition);
+        }
+
+
+        return true;
     }
 
     private void addComment(String issueKey, String comment) throws IntegrationException {
-        IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
+        final IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
         issueService.addComment(issueCommentRequestModel);
     }
 
@@ -305,7 +341,7 @@ public class JiraIssueHandler {
             return StringUtils.EMPTY;
         }
         StringBuilder keyBuilder = new StringBuilder();
-        Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
+        final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
         for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
             componentAttributeList
                 .stream()
@@ -323,7 +359,7 @@ public class JiraIssueHandler {
         if (issueKeys.isEmpty()) {
             return "Did not create any Jira Cloud issues.";
         }
-        String concatenatedKeys = String.join(", ", issueKeys);
+        final String concatenatedKeys = String.join(", ", issueKeys);
         logger.debug("Issues updated: {}", concatenatedKeys);
         return String.format("Successfully created Jira Cloud issue at %s/issues/?jql=issuekey in (%s)", jiraUrl, concatenatedKeys);
     }

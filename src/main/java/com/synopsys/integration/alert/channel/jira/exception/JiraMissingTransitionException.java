@@ -27,13 +27,20 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 public class JiraMissingTransitionException extends AlertException {
     private static final long serialVersionUID = -3205009960464333872L;
 
+    private final String issueKey;
     private final String transition;
 
-    public JiraMissingTransitionException(final String transition) {
+    public JiraMissingTransitionException(final String issueKey, final String transition) {
+        this.issueKey = issueKey;
         this.transition = transition;
+    }
+
+    public String getIssueKey() {
+        return issueKey;
     }
 
     public String getTransition() {
         return transition;
     }
+
 }

@@ -44,9 +44,9 @@ import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService
 public class JiraIssueConfigValidator {
     private static final String CONNECTION_ERROR_FORMAT_STRING = "There was a problem getting the %s from Jira. Please ensure the server is configured correctly.";
 
-    private ProjectService projectService;
-    private UserSearchService userSearchService;
-    private IssueTypeService issueTypeService;
+    private final ProjectService projectService;
+    private final UserSearchService userSearchService;
+    private final IssueTypeService issueTypeService;
 
     public JiraIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService) {
         this.projectService = projectService;
@@ -75,6 +75,12 @@ public class JiraIssueConfigValidator {
 
         String openTransition = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
         jiraIssueConfig.setOpenTransition(openTransition);
+
+        String resolveStatus = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS);
+        jiraIssueConfig.setResolveStatus(resolveStatus);
+
+        String openStatus = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_OPEN_WORKFLOW_STATUS);
+        jiraIssueConfig.setOpenStatus(openStatus);
 
         if (fieldErrors.isEmpty()) {
             return jiraIssueConfig;
@@ -161,6 +167,8 @@ public class JiraIssueConfigValidator {
         private Boolean commentOnIssues;
         private String resolveTransition;
         private String openTransition;
+        private String resolveStatus;
+        private String openStatus;
 
         public ProjectComponent getProjectComponent() {
             return projectComponent;
@@ -210,6 +218,21 @@ public class JiraIssueConfigValidator {
             this.openTransition = openTransition;
         }
 
+        public Optional<String> getResolveStatus() {
+            return Optional.ofNullable(resolveStatus);
+        }
+
+        public void setResolveStatus(final String resolveStatus) {
+            this.resolveStatus = resolveStatus;
+        }
+
+        public Optional<String> getOpenStatus() {
+            return Optional.ofNullable(openStatus);
+        }
+
+        public void setOpenStatus(final String openStatus) {
+            this.openStatus = openStatus;
+        }
     }
 
 }

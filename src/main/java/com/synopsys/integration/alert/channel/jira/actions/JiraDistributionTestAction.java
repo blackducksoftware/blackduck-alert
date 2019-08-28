@@ -65,7 +65,11 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         String toStatus = "Resolve";
         try {
             logger.debug("Sending DELETE test message...");
-            final DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
+            DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
+            getDistributionChannel().sendMessage(resolveIssueEvent);
+            logger.debug("DELETE test message sent!");
+
+            resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
             getDistributionChannel().sendMessage(resolveIssueEvent);
             logger.debug("DELETE test message sent!");
 
