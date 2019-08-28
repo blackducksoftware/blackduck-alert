@@ -35,11 +35,11 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 public class FieldAccessor {
     private final Map<String, ConfigurationFieldModel> fields;
 
-    public FieldAccessor(final Map<String, ConfigurationFieldModel> fields) {
+    public FieldAccessor(Map<String, ConfigurationFieldModel> fields) {
         this.fields = fields;
     }
 
-    public void addFields(final Map<String, ConfigurationFieldModel> newFields) {
+    public void addFields(Map<String, ConfigurationFieldModel> newFields) {
         fields.putAll(newFields);
     }
 
@@ -47,54 +47,67 @@ public class FieldAccessor {
         return fields;
     }
 
-    public Optional<ConfigurationFieldModel> getField(final String key) {
+    public Optional<ConfigurationFieldModel> getField(String key) {
         return Optional.ofNullable(fields.get(key));
     }
 
-    public Optional<Long> getLong(final String key) {
-        final Optional<String> value = getValue(key);
+    public Optional<Long> getLong(String key) {
+        Optional<String> value = getValue(key);
         return value.map(Long::parseLong);
     }
 
-    public Optional<Integer> getInteger(final String key) {
-        final Optional<String> value = getValue(key);
+    public Optional<Integer> getInteger(String key) {
+        Optional<String> value = getValue(key);
         return value.map(Integer::parseInt);
     }
 
-    public Optional<Boolean> getBoolean(final String key) {
-        final Optional<String> value = getValue(key);
+    public Optional<Boolean> getBoolean(String key) {
+        Optional<String> value = getValue(key);
         return value.map(Boolean::parseBoolean);
     }
 
-    public Optional<String> getString(final String key) {
+    public Boolean getBooleanOrFalse(String key) {
+        return getBoolean(key).orElse(Boolean.FALSE);
+    }
+
+    public Optional<String> getString(String key) {
         return getValue(key);
     }
 
-    public Collection<String> getAllStrings(final String key) {
+    public String getStringOrNull(String key) {
+        return getValue(key).orElse(null);
+    }
+
+    public String getStringOrEmpty(String key) {
+        return getValue(key).orElse(StringUtils.EMPTY);
+    }
+
+    public Collection<String> getAllStrings(String key) {
         if (fields.containsKey(key)) {
             return fields.get(key).getFieldValues();
         }
         return Set.of();
     }
 
-    public <T extends Enum<T>> Optional<T> getEnum(final String key, final Class<T> enumClass) {
-        final Optional<String> enumString = getString(key);
+    public <T extends Enum<T>> Optional<T> getEnum(String key, Class<T> enumClass) {
+        Optional<String> enumString = getString(key);
         return enumString.map(strValue -> EnumUtils.getEnum(enumClass, strValue));
     }
 
-    private Optional<String> getValue(final String key) {
+    private Optional<String> getValue(String key) {
         if (StringUtils.isNotBlank(key) && fields.containsKey(key)) {
-            final ConfigurationFieldModel fieldModel = fields.get(key);
+            ConfigurationFieldModel fieldModel = fields.get(key);
             return fieldModel.getFieldValue();
         }
         return Optional.empty();
     }
 
-    public boolean isSet(final String key) {
+    public boolean isSet(String key) {
         if (StringUtils.isNotBlank(key) && fields.containsKey(key)) {
-            final ConfigurationFieldModel fieldModel = fields.get(key);
+            ConfigurationFieldModel fieldModel = fields.get(key);
             return fieldModel.isSet();
         }
         return false;
     }
+
 }

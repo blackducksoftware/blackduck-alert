@@ -119,7 +119,7 @@ public class BlackDuckProperties extends ProviderProperties {
             final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
 
             final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
-            final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
+            final String apiKey = fieldAccessor.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
             if (apiKey == null) {
                 throw new AlertException("Invalid global config settings. API Token is null.");
             }

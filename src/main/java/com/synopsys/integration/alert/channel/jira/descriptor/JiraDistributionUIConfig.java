@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.descriptor;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -41,6 +42,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String LABEL_ISSUE_TYPE = "Issue Type";
     public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
     public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
+    public static final String LABEL_RESOLVE_WORKFLOW_STATUS = "Resolve Status";
+    public static final String LABEL_OPEN_WORKFLOW_STATUS = "Re-open Status";
 
     public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
     public static final String DESCRIPTION_ISSUE_CREATOR = "The email of the Jira Cloud user to assign as the issue creator field of the Jira issue.";
@@ -48,6 +51,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Cloud.";
     public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider.";
     public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider.";
+    public static final String DESCRIPTION_RESOLVE_WORKFLOW_STATUS = "This should be the expected status that the Resolve Transition transitions to. This way Alert can check if a transition should be done before attempting to do so and failing. This is required if the Resolve Transition field is set.";
+    public static final String DESCRIPTION_OPEN_WORKFLOW_STATUS = "This should be the expected status that the Re-open Transition transitions to. This way Alert can check if a transition should be done before attempting to do so and failing. This is required if the Re-open Transition field is set.";
 
     public static final String DEFAULT_ISSUE_TYPE = "Task";
 
@@ -65,6 +70,14 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
         final ConfigField resolveWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
         final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION);
 
-        return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);
+        final ConfigField resolveStatus = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS, LABEL_RESOLVE_WORKFLOW_STATUS, DESCRIPTION_RESOLVE_WORKFLOW_STATUS);
+        resolveStatus.setRequiredRelatedFields(Set.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION));
+        resolveWorkflow.setRequiredRelatedFields(Set.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS));
+
+        final ConfigField openStatus = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_STATUS, LABEL_OPEN_WORKFLOW_STATUS, DESCRIPTION_OPEN_WORKFLOW_STATUS);
+        openStatus.setRequiredRelatedFields(Set.of(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION));
+        openWorkflow.setRequiredRelatedFields(Set.of(JiraDescriptor.KEY_OPEN_WORKFLOW_STATUS));
+
+        return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, resolveStatus, openStatus);
     }
 }
