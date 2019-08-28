@@ -16,6 +16,7 @@ class TableSelectInput extends Component {
     constructor(props) {
         super(props);
 
+        this.updateSelectedValues = this.updateSelectedValues.bind(this);
         this.retrieveTableData = this.retrieveTableData.bind(this);
         this.createTable = this.createTable.bind(this);
         this.createSelect = this.createSelect.bind(this);
@@ -32,20 +33,30 @@ class TableSelectInput extends Component {
         };
     }
 
+    componentWillMount() {
+        this.updateSelectedValues();
+    }
+
     componentDidUpdate(prevProps) {
         const { value } = this.props;
         const prevSize = prevProps.value && prevProps.value.length === 0;
         const currentSize = value && value.length > 0;
         const emptySelected = this.state.selectedData.length === 0;
         if (prevSize && currentSize && emptySelected) {
-            this.state.selectedData.push(...value);
-            const convertedValues = this.state.selectedData.map(selected => {
-                return Object.assign({ label: selected, value: selected });
-            });
-            this.setState({
-                displayedData: convertedValues
-            })
+            this.updateSelectedValues();
         }
+    }
+
+    updateSelectedValues() {
+        const { value } = this.props;
+        const { selectedData } = this.state;
+        selectedData.push(...value);
+        const convertedValues = selectedData.map(selected => {
+            return Object.assign({ label: selected, value: selected });
+        });
+        this.setState({
+            displayedData: convertedValues
+        });
     }
 
     onRowSelectedAll(isSelected, rows) {
@@ -145,11 +156,9 @@ class TableSelectInput extends Component {
         const projectsSelectRowProp = this.createRowSelectionProps();
 
         const assignDataFormat = (cell, row) => {
-            const cellContent = (row.missing) ?
+            const cellContent = (row.missing && cell && cell !== '') ?
                 <span className="missingBlackDuckData">
-                    <span className="fa-layers fa-fw">
-                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
-                    </span>
+                    <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
                 </span>
                 : cell;
 
