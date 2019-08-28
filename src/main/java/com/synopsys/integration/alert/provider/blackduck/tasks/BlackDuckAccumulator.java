@@ -267,15 +267,17 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     final Optional<ProjectVersionWrapper> projectVersionWrapper = this.getProjectVersionWrapper(blackDuckService, versionBomComponentView.get());
                     if (projectVersionWrapper.isPresent()) {
                         ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
-                        JsonObject jsonObject = gson.fromJson(originalContent, JsonObject.class);
-                        jsonObject.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_NAME, projectVersionData.getProjectView().getName());
-                        jsonObject.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName());
-                        jsonObject.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION, projectVersionData.getProjectVersionView().getHref().orElse(""));
-                        newContent = gson.toJson(jsonObject);
+                        JsonObject contentElement = gson.fromJson(originalContent, JsonObject.class).get("content").getAsJsonObject();
+                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_NAME, projectVersionData.getProjectView().getName());
+                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName());
+                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION, projectVersionData.getProjectVersionView().getHref().orElse(""));
+                        JsonObject objectContent = new JsonObject();
+                        objectContent.add("content", contentElement);
+                        newContent = gson.toJson(objectContent);
                     }
                 }
             } catch (Exception ex) {
-                logger.error("");
+                logger.error("Error processing BOM EDIT notification ", ex);
             }
         }
         return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, newContent);

@@ -63,7 +63,6 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummar
 import com.synopsys.integration.blackduck.api.generated.enumeration.RiskCountType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
@@ -81,20 +80,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
     @Autowired
     public BlackDuckBomEditCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, List.of(BlackDuckContent.BOM_EDIT), blackDuckProperties);
-    }
-
-    @Override
-    protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        final JsonField<String> topicField = getDataField(fields, FieldContentIdentifier.TOPIC);
-        return getItemFromProjectVersionWrapper(accessor, topicField, ProjectVersionWrapper::getProjectView,
-            view -> new LinkableItem(topicField.getLabel(), ((ProjectView) view).getName(), view.getHref().orElse(null)));
-    }
-
-    @Override
-    protected List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        final JsonField<String> subTopicField = getDataField(fields, FieldContentIdentifier.SUB_TOPIC);
-        return getItemFromProjectVersionWrapper(accessor, subTopicField, ProjectVersionWrapper::getProjectVersionView,
-            view -> new LinkableItem(subTopicField.getLabel(), ((ProjectVersionView) view).getVersionName(), view.getHref().orElse(null)));
     }
 
     @Override
