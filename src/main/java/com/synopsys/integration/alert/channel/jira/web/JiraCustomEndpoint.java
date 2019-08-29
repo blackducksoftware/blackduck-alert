@@ -52,7 +52,6 @@ import com.synopsys.integration.rest.request.Response;
 
 @Component
 public class JiraCustomEndpoint {
-    public static final String JIRA_PLUGIN_URL = "https://raw.githubusercontent.com/blackducksoftware/blackduck-alert/gh-pages/JiraCloudApp/1.0.0/atlassian-connect.json";
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
 
     private final ResponseFactory responseFactory;
@@ -75,7 +74,7 @@ public class JiraCustomEndpoint {
             final JiraAppService jiraAppService = jiraServicesCloudFactory.createJiraAppService();
             final String username = jiraProperties.getUsername();
             final String accessToken = jiraProperties.getAccessToken();
-            final Response response = jiraAppService.installApp(JiraConstants.JIRA_APP_NAME, JIRA_PLUGIN_URL, username, accessToken);
+            final Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
             if (response.isStatusCodeError()) {
                 return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
