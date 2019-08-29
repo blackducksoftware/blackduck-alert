@@ -23,14 +23,17 @@
 package com.synopsys.integration.alert.channel.jira.actions;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.JiraChannel;
+import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -83,7 +86,11 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
             String reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
             logger.debug("Additional DELETE test message sent!");
 
-            return reResolveResult;
+            if (areTransitionsConfigured(fieldAccessor)) {
+                return reResolveResult;
+            } else {
+                return initialTestResult;
+            }
         } catch (AlertException e) {
             // Any specific exceptions will have already been thrown by the initial message attempt, so we should only see AlertExceptions at this point.
             logger.debug("Error testing Jira Cloud config", e);
@@ -102,4 +109,11 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
 
         return new DistributionEvent(jobId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
+
+    private boolean areTransitionsConfigured(FieldAccessor fieldAccessor) {
+        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        Optional<String> optionalReopenTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        return optionalResolveTransitionName.isPresent() && optionalReopenTransitionName.isPresent();
+    }
+
 }
