@@ -10,10 +10,9 @@ function assignClassName(row, rowIdx) {
 }
 
 function assignDataFormat(cell, row) {
-    const cellContent = (row.missing) ? <span className="missingBlackDuckData">
-        <span className="fa-layers fa-fw">
+    const cellContent = (row.missing && cell && cell !== '') ? <span className="missingBlackDuckData">
             <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
-        </span> </span>
+        </span>
         : cell;
 
 
