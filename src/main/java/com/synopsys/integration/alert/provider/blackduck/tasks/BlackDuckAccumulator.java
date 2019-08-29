@@ -43,6 +43,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
@@ -253,8 +254,8 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     private NotificationContent createBomEditContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, NotificationView notification) {
-        String originalContent = notification.getJson();
-        String newContent = originalContent;
+        JsonElement originalContent = notification.getJsonElement();
+        JsonElement newContent = originalContent;
         final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
         if (optionalBlackDuckHttpClient.isPresent()) {
             try {
@@ -267,20 +268,20 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     final Optional<ProjectVersionWrapper> projectVersionWrapper = this.getProjectVersionWrapper(blackDuckService, versionBomComponentView.get());
                     if (projectVersionWrapper.isPresent()) {
                         ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
-                        JsonObject contentElement = gson.fromJson(originalContent, JsonObject.class).get("content").getAsJsonObject();
+                        JsonObject contentElement = originalContent.getAsJsonObject().get("content").getAsJsonObject();
                         contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_NAME, projectVersionData.getProjectView().getName());
                         contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName());
                         contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION, projectVersionData.getProjectVersionView().getHref().orElse(""));
                         JsonObject objectContent = new JsonObject();
                         objectContent.add("content", contentElement);
-                        newContent = gson.toJson(objectContent);
+                        newContent = objectContent;
                     }
                 }
             } catch (Exception ex) {
                 logger.error("Error processing BOM EDIT notification ", ex);
             }
         }
-        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, newContent);
+        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, gson.toJson(newContent));
     }
 
     public Optional<VersionBomComponentView> getBomComponentView(BlackDuckService blackDuckService, String bomComponentUrl) {
