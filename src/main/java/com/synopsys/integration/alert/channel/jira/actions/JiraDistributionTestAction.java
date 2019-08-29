@@ -136,8 +136,8 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     private boolean areTransitionsConfigured(FieldAccessor fieldAccessor) {
-        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS).filter(StringUtils::isNotBlank);
-        Optional<String> optionalReopenTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_STATUS).filter(StringUtils::isNotBlank);
+        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        Optional<String> optionalReopenTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
         return optionalResolveTransitionName.isPresent() && optionalReopenTransitionName.isPresent();
     }
 
