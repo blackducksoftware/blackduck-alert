@@ -72,6 +72,7 @@ public class ConfigField extends AlertSerializableModel {
         defaultValues = new HashSet<>();
     }
 
+    // TODO Convert all of the type parameters to be of the enum ConfigField to force users to be consistent.
     public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel) {
         this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, NO_VALIDATION);
     }
