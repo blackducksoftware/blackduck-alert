@@ -170,7 +170,7 @@ public class JiraIssueHandler {
                         issueKeys.add(issueComponent.getKey());
                     }
 
-                    boolean didUpdateIssue = transitionIssue(issueComponent.getKey(), fieldAccessor, operation);
+                    boolean didUpdateIssue = transitionIssueIfNecessary(issueComponent.getKey(), fieldAccessor, operation);
                     if (didUpdateIssue) {
                         issueKeys.add(issueComponent.getKey());
                     }
@@ -325,7 +325,7 @@ public class JiraIssueHandler {
         return fieldsBuilder;
     }
 
-    private boolean transitionIssue(String issueKey, FieldAccessor fieldAccessor, ItemOperation operation) throws IntegrationException {
+    private boolean transitionIssueIfNecessary(String issueKey, FieldAccessor fieldAccessor, ItemOperation operation) throws IntegrationException {
         Optional<String> optionalTransitionKey = determineTransitionKey(operation);
         if (optionalTransitionKey.isPresent()) {
             final Optional<String> transitionName = fieldAccessor.getString(optionalTransitionKey.get());
