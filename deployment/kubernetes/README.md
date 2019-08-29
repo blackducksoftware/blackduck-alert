@@ -21,13 +21,13 @@ Please review the installation instructions below.
 
 ### Installing Alert
 
-### Standalone Installation
+#### Standalone Installation
 All below commands assume:
 - you are using the namespace (or openshift project name) 'blackduck-alert'.
-- you have a cluster with at least 1GB of allocatable memory.
+- you have a cluster with at least 2GB of allocatable memory.
 - you have administrative access to your cluster.
 
-#### Step 1: Create the configuration map for Alert
+##### Step 1: Create the configuration map for Alert
 
 Create the config map from the file to specify the environment variables for Alert
 Edit the 1-cm-alert.yml file with the environment variable values you want to use for your configuration of Alert.
@@ -37,7 +37,7 @@ Edit the 1-cm-alert.yml file with the environment variable values you want to us
 kubectl create -f 1-cm-alert.yml -n blackduck-alert
 ```
 
-#### Step 2: Create your cfssl container, and the Alert config map
+##### Step 2: Create your cfssl container, and the Alert config map
 
 Setup the cfssl container for managing certificates
 
@@ -45,7 +45,7 @@ Setup the cfssl container for managing certificates
 kubectl create -f 2-cfssl.yml -n blackduck-alert
 ```
 
-#### Step 3: Create the Alert application's containers
+##### Step 3: Create the Alert application's containers
 Now setup the Alert containers for the application
 
 ```
@@ -61,14 +61,14 @@ kubectl create -f 3-alert.yml -n blackduck-alert
     * Execute the bundled delete.sh file.  It will delete the deployment in the blackduck-alert namespace.
     * Different namespace: delete.sh <your_alert_namespace>
 
-### Installation with the BlackDuck
+#### Installation with the BlackDuck
 
 You can install the Alert container as part of your BlackDuck installation.  This section describes the steps to install Alert with BlackDuck.
 
-#### Step 1: Install the BlackDuck
+##### Step 1: Install the BlackDuck
  * During installation update the hub-config Configuration Map to have the variable USE_ALERT: "1"
 
-#### Step 2: Create the configuration map for Alert
+##### Step 2: Create the configuration map for Alert
 Edit the 1-cm-alert.yml file with the environment variable values you want to use for your configuration of Alert.
 ###### Note:  You can edit the contents of the configuration map after it has been created.
 
@@ -76,7 +76,7 @@ Edit the 1-cm-alert.yml file with the environment variable values you want to us
 kubectl create -f 2-cm-alert.yml -n <your_blackduck_namespace>
 ```
 
-#### Step 3: Create the Alert application's container
+##### Step 3: Create the Alert application's container
 
 ```
 kubectl create -f 3-alert.yml -n <your_blackduck_namespace>
