@@ -72,7 +72,7 @@ public class DockerTagRetriever {
             tagsResponse.throwExceptionForError();
             return gson.fromJson(tagsResponse.getContentString(), DockerTagsResponseModel.class);
         } catch (final IOException | IntegrationException e) {
-            logger.debug("Could not get docker tags from {}: {}", pageUrl, e.getMessage());
+            logger.warn("Could not get docker tags from {}: {}", pageUrl, e.getMessage());
         }
         return DockerTagsResponseModel.EMPTY;
     }
