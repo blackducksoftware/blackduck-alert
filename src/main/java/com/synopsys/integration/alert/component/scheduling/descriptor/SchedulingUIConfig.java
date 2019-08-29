@@ -45,7 +45,7 @@ public class SchedulingUIConfig extends UIConfig {
 
     private static final String ACCUMULATOR_NEXT_RUN_DESCRIPTION = "By default, Black Duck collects data every 60 seconds. This value indicates the number of seconds until the next time Black Duck pulls data.";
     private static final String POLARIS_NEXT_RUN_DESCRIPTION = "By default, Polaris collects data every 60 seconds. This value indicates the number of seconds until the next time Polaris pulls data.";
-    private static final String SCHEDULING_DIGEST_HOUR_DESCRIPTION = "Select the hour of the day to run the the daily digest distribution jobs.";
+    private static final String SCHEDULING_DIGEST_HOUR_DESCRIPTION = "Select the hour of the day to run the daily digest distribution jobs.";
     private static final String DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION = "This is the next time daily digest distribution jobs will run.";
     private static final String SCHEDULING_PURGE_FREQUENCY_DESCRIPTION = "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.";
     private static final String PURGE_DATA_NEXT_RUN_DESCRIPTION = "This is the next time Alert will purge provider data.";
