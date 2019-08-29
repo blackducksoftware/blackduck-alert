@@ -42,6 +42,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -50,13 +53,18 @@ import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.model.BlackDuckRequestFilter;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.blackduck.service.model.RequestFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -71,13 +79,15 @@ public class BlackDuckAccumulator extends ScheduledTask {
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
+    private final Gson gson;
 
     @Autowired
-    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
+    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil, Gson gson) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
+        this.gson = gson;
         searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
     }
 
@@ -236,7 +246,72 @@ public class BlackDuckAccumulator extends ScheduledTask {
         final String provider = BlackDuckProvider.COMPONENT_NAME;
         final String notificationType = notification.getType().name();
         final String jsonContent = notification.getJson();
-        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
+        NotificationContent notificationContent = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
+        if (NotificationType.BOM_EDIT == notification.getType()) {
+            notificationContent = createBomEditContent(createdAt, provider, providerCreationTime, notificationType, notification);
+        }
+        return notificationContent;
+    }
+
+    private NotificationContent createBomEditContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, NotificationView notification) {
+        JsonElement originalContent = notification.getJsonElement();
+        JsonElement newContent = originalContent;
+        final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        if (optionalBlackDuckHttpClient.isPresent()) {
+            try {
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
+                final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+
+                BomEditNotificationView bomEditNotification = (BomEditNotificationView) notification;
+                final Optional<VersionBomComponentView> versionBomComponentView = this.getBomComponentView(blackDuckService, bomEditNotification.getContent().getBomComponent());
+                if (versionBomComponentView.isPresent()) {
+                    final Optional<ProjectVersionWrapper> projectVersionWrapper = this.getProjectVersionWrapper(blackDuckService, versionBomComponentView.get());
+                    if (projectVersionWrapper.isPresent()) {
+                        ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
+                        JsonObject contentElement = originalContent.getAsJsonObject().get("content").getAsJsonObject();
+                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_NAME, projectVersionData.getProjectView().getName());
+                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName());
+                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION, projectVersionData.getProjectVersionView().getHref().orElse(""));
+                        JsonObject objectContent = new JsonObject();
+                        objectContent.add("content", contentElement);
+                        newContent = objectContent;
+                    }
+                }
+            } catch (Exception ex) {
+                logger.error("Error processing BOM EDIT notification ", ex);
+            }
+        }
+        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, gson.toJson(newContent));
+    }
+
+    public Optional<VersionBomComponentView> getBomComponentView(BlackDuckService blackDuckService, String bomComponentUrl) {
+        try {
+            return Optional.of(blackDuckService.getResponse(bomComponentUrl, VersionBomComponentView.class));
+        } catch (Exception genericException) {
+            logger.error("Error retrieving bom component", genericException);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<ProjectVersionWrapper> getProjectVersionWrapper(BlackDuckService blackDuckService, VersionBomComponentView versionBomComponent) {
+        try {
+            final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
+            if (versionBomComponentHref.isPresent()) {
+                final String versionHref = versionBomComponentHref.get();
+                final int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
+                final String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
+
+                final ProjectVersionView projectVersion = blackDuckService.getResponse(projectVersionUri, ProjectVersionView.class);
+                final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
+                wrapper.setProjectVersionView(projectVersion);
+                blackDuckService.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
+                return Optional.of(wrapper);
+            }
+        } catch (final IntegrationException ie) {
+            logger.error("Error getting project version for Bom Component. ", ie);
+        }
+
+        return Optional.empty();
     }
 
     // Expects that the notifications are sorted oldest to newest
