@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -78,10 +79,14 @@ public class UpdateChecker {
 
         final Boolean isProduction = isProductionVersion(currentVersion);
 
-        final VersionDateModel latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
+        final Optional<VersionDateModel> latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
         final String repositoryUrl = dockerTagRetriever.getRepositoryUrl();
 
-        return getUpdateModel(currentVersion, alertCreated, latestAvailableVersion.getVersionName(), latestAvailableVersion.getDate(), repositoryUrl);
+        // latestAvailableVersion will not be present if Alert can not reach Docker Hub and DockerTagRetriever will log a warning
+        // if latestAvailableVersion is empty, use the Alert version and date so we report no update available
+        String latestVersion = latestAvailableVersion.map(self -> self.getVersionName()).orElse(currentVersion);
+        String latestDate = latestAvailableVersion.map(self -> self.getDate()).orElse(alertCreated);
+        return getUpdateModel(currentVersion, alertCreated, latestVersion, latestDate, repositoryUrl);
     }
 
     public UpdateModel getUpdateModel(final String currentVersion, final String alertCreated, final String dockerTagVersioName, final String dockerTagUpdatedDate, final String repositoryUrl) {
@@ -107,7 +112,7 @@ public class UpdateChecker {
         return new IntHttpClient(intLogger, 120, false, proxyInfo);
     }
 
-    private VersionDateModel getLatestAvailableTag(final DockerTagRetriever dockerTagRetriever, final boolean isProduction) {
+    private Optional<VersionDateModel> getLatestAvailableTag(final DockerTagRetriever dockerTagRetriever, final boolean isProduction) {
         DockerTagsResponseModel tagsResponseModel = dockerTagRetriever.getTagsModel();
 
         final List<DockerTagModel> tags = new LinkedList<>();
@@ -125,8 +130,7 @@ public class UpdateChecker {
                        return true;
                    })
                    .map(dockerTagModel -> new VersionDateModel(dockerTagModel.getName(), dockerTagModel.getLastUpdated()))
-                   .min(versionDateModelComparator())
-                   .get();
+                   .min(versionDateModelComparator());
     }
 
     private boolean isProductionVersion(final String version) {

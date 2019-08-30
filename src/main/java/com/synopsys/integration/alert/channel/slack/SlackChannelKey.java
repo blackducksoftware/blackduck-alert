@@ -20,9 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.channel.slack;
 
-public abstract class ChannelKey {
-    public abstract String getUniversalKey();
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.channel.ChannelKey;
+
+@Component
+public class SlackChannelKey extends ChannelKey {
+    @Override
+    public String getUniversalKey() {
+        return SlackChannel.COMPONENT_NAME;
+    }
 
 }

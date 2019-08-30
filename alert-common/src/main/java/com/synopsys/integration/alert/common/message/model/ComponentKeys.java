@@ -75,6 +75,8 @@ public class ComponentKeys extends AlertSerializableModel implements Comparable<
         return StringUtils.join(keyParts, KEY_SEPARATOR);
     }
 
+    // TODO come up with better keys (maybe processing key, digest key, issue tracking key, etc)
+
     public String getDeepKey() {
         return StringUtils.join(getShallowKey(), KEY_SEPARATOR, additionalData);
     }

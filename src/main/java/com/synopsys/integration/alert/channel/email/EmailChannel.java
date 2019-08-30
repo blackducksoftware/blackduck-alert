@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -45,12 +45,10 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailChannel.COMPONENT_NAME)
-public class EmailChannel extends DistributionChannel {
+public class EmailChannel extends NamedDistributionChannel {
     public static final String COMPONENT_NAME = "channel_email";
 
     public static final String PROPERTY_USER_DIR = "user.dir";
@@ -58,25 +56,20 @@ public class EmailChannel extends DistributionChannel {
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
     public static final String DIRECTORY_EMAIL_IMAGE_RESOURCES = "/src/main/resources/email/images/";
 
-    private final BlackDuckProperties blackDuckProperties;
-    private final PolarisProperties polarisProperties;
     private final EmailAddressHandler emailAddressHandler;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final AlertProperties alertProperties;
 
     @Autowired
-    public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final PolarisProperties polarisProperties, final DefaultAuditUtility auditUtility,
-        final EmailAddressHandler emailAddressHandler, final FreemarkerTemplatingService freemarkerTemplatingService) {
-        super(gson, auditUtility);
-        this.blackDuckProperties = blackDuckProperties;
-        this.polarisProperties = polarisProperties;
+    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, DefaultAuditUtility auditUtility, EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService) {
+        super(emailChannelKey, gson, auditUtility);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;
     }
 
     @Override
-    public String sendMessage(final DistributionEvent event) throws IntegrationException {
+    public void distributeMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
 
         final Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
@@ -91,11 +84,11 @@ public class EmailChannel extends DistributionChannel {
 
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
-        final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
-        return sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());
+        final String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
+        sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());
     }
 
-    public String sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String formatType, final MessageContentGroup content)
+    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String formatType, final MessageContentGroup content)
         throws IntegrationException {
         String topicValue = null;
         if (!content.isEmpty()) {
@@ -130,7 +123,6 @@ public class EmailChannel extends DistributionChannel {
             final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
             emailService.sendEmailMessage(emailTarget);
         }
-        return "Successfully sent Email message";
     }
 
     private String createEnhancedSubjectLine(final String originalSubjectLine, final String providerProjectName) {
@@ -149,8 +141,4 @@ public class EmailChannel extends DistributionChannel {
         return userDirectory + DIRECTORY_EMAIL_IMAGE_RESOURCES + imageFileName;
     }
 
-    @Override
-    public String getDestinationName() {
-        return COMPONENT_NAME;
-    }
 }

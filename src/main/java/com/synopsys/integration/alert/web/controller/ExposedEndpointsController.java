@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -33,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import com.synopsys.integration.alert.common.SetMap;
 
 @RestController
 public class ExposedEndpointsController extends BaseController {
@@ -45,19 +46,16 @@ public class ExposedEndpointsController extends BaseController {
 
     @GetMapping
     public Map<String, Set<RequestMethod>> get() {
-        final Map<String, Set<RequestMethod>> restMappings = new TreeMap<>();
+        SetMap<String, RequestMethod> restMappings = new SetMap(new TreeMap());
 
         for (final RequestMappingInfo info : handlerMapping.getHandlerMethods().keySet()) {
             for (final String apiPath : info.getPatternsCondition().getPatterns()) {
                 if (apiPath != null) {
-                    if (!restMappings.containsKey(apiPath)) {
-                        restMappings.put(apiPath, new HashSet<>());
-                    }
-                    restMappings.get(apiPath).addAll(info.getMethodsCondition().getMethods());
+                    restMappings.addAll(apiPath, info.getMethodsCondition().getMethods());
                 }
             }
         }
-        return restMappings;
+        return restMappings.getMap();
     }
 
 }

@@ -22,16 +22,16 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
-import com.synopsys.integration.alert.channel.util.FreemarkerDataModel;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.synopsys.integration.alert.channel.util.FreemarkerDataModel;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 public class MsTeamsMessage implements FreemarkerDataModel {
     private Set<LinkableItem> providers = new HashSet<>();
@@ -49,8 +49,8 @@ public class MsTeamsMessage implements FreemarkerDataModel {
         msTeamsSection.setProvider(providerMessageContent.getProvider().getValue());
         msTeamsSection.setTopic(providerMessageContent.getTopic().getValue());
         providerMessageContent.getSubTopic()
-                .map(LinkableItem::getValue)
-                .ifPresent(msTeamsSection::setSubTopic);
+            .map(LinkableItem::getValue)
+            .ifPresent(msTeamsSection::setSubTopic);
         sections.add(msTeamsSection);
 
         List<MsTeamsComponent> components = new ArrayList<>(providerMessageContent.getComponentItems().size());
@@ -72,10 +72,11 @@ public class MsTeamsMessage implements FreemarkerDataModel {
     }
 
     private String createDetails(Set<LinkableItem> componentAttributes) {
+        //TODO determine if we should be including the URLs
         return componentAttributes
-                .stream()
-                .map(linkableItem -> String.format("%s: %s", linkableItem.getName(), linkableItem.getValue()))
-                .collect(Collectors.joining(", "));
+                   .stream()
+                   .map(linkableItem -> String.format("%s: %s", linkableItem.getName(), linkableItem.getValue()))
+                   .collect(Collectors.joining(", "));
     }
 
     public int getProviderCount() {

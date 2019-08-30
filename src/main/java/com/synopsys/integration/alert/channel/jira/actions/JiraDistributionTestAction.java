@@ -23,23 +23,25 @@
 package com.synopsys.integration.alert.channel.jira.actions;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.JiraChannel;
+import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -55,12 +57,12 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
         logger.debug("Sending initial ADD test message...");
         final DistributionEvent createIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
-        final String initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
+        final MessageResult initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
         logger.debug("Initial ADD test message sent!");
 
         String fromStatus = "Initial";
@@ -82,10 +84,14 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
             toStatus = "Resolve";
             logger.debug("Sending additional DELETE test message...");
             final DistributionEvent reResolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
-            String reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
+            MessageResult reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
             logger.debug("Additional DELETE test message sent!");
 
-            return reResolveResult;
+            if (areTransitionsConfigured(fieldAccessor)) {
+                return reResolveResult;
+            } else {
+                return initialTestResult;
+            }
         } catch (AlertException e) {
             // Any specific exceptions will have already been thrown by the initial message attempt, so we should only see AlertExceptions at this point.
             logger.debug("Error testing Jira Cloud config", e);
@@ -96,32 +102,19 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     public DistributionEvent createChannelTestEvent(final String jobId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
-        final ProviderMessageContent messageContent = createTestNotificationContent(operation, messageId);
+        final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, operation, messageId);
 
-        final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
-        final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
-        final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
+        final String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        final String providerName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        final String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
 
         return new DistributionEvent(jobId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
-    public ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId) throws AlertException {
-        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder.applyProvider("Alert");
-        builder.applyTopic("Test Topic", "Alert Test Message");
-        builder.applySubTopic("Test SubTopic", "Test message sent by Alert");
-        builder.applyComponentItem(createTestComponentItem(operation, messageId));
-        return builder.build();
+    private boolean areTransitionsConfigured(FieldAccessor fieldAccessor) {
+        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        Optional<String> optionalReopenTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        return optionalResolveTransitionName.isPresent() && optionalReopenTransitionName.isPresent();
     }
 
-    private ComponentItem createTestComponentItem(ItemOperation operation, String messageId) throws AlertException {
-        final ComponentItem.Builder builder = new ComponentItem.Builder();
-        builder.applyOperation(operation);
-        builder.applyCategory("Test Category");
-        builder.applyComponentData("Message ID", messageId);
-        LinkableItem keyItem = new LinkableItem("Test linkable item", messageId);
-        builder.applyComponentAttribute(keyItem, true);
-        builder.applyNotificationId(1L);
-        return builder.build();
-    }
 }

@@ -20,19 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.actions;
+package com.synopsys.integration.alert.channel.email;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.action.CustomMessageAction;
+import com.synopsys.integration.alert.common.channel.ChannelKey;
 
 @Component
-public class SlackCustomMessageAction extends CustomMessageAction {
-    @Autowired
-    public SlackCustomMessageAction(SlackChannel slackChannel) {
-        super(slackChannel);
+public class EmailChannelKey extends ChannelKey {
+    @Override
+    public String getUniversalKey() {
+        return EmailChannel.COMPONENT_NAME;
     }
 
 }

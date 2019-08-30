@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomMessageAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -48,6 +47,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -220,47 +220,19 @@ public class JobConfigActions {
             final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(channelFieldModel);
             if (testActionOptional.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
-
+                // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
+                // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
+                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
+                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
+                topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
+                messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
                 final TestAction testAction = testActionOptional.get();
                 final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-                final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
-
                 final String jobId = channelFieldModel.getId();
-                if (providerTestAction.isPresent()) {
-                    providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
-                }
-                return testAction.testConfig(jobId, destination, fieldAccessor);
-            } else {
-                final String descriptorName = channelFieldModel.getDescriptorName();
-                logger.error("Test action did not exist: {}", descriptorName);
-                throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
-            }
-        }
-        return "No field model of type channel was was sent to test.";
-    }
 
-    public String sendCustomMessageToConfig(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
-        validateJob(jobFieldModel);
-        final Collection<FieldModel> otherJobModels = new LinkedList<>();
-        FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
-
-        if (null != channelFieldModel) {
-            final Optional<CustomMessageAction> optionalCustomMessageAction = descriptorProcessor.retrieveCustomMessageAction(channelFieldModel);
-            if (optionalCustomMessageAction.isPresent()) {
-                final Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
-
-                final CustomMessageAction customMessageAction = optionalCustomMessageAction.get();
-                final FieldAccessor fieldAccessor = new FieldAccessor(fields);
-
-                final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                                    .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
-
-                final String jobId = channelFieldModel.getId();
-                if (providerTestAction.isPresent()) {
-                    providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
-                }
-                return customMessageAction.sendMessage(jobId, fieldAccessor);
+                testProviderConfig(fieldAccessor, jobId, destination);
+                MessageResult testResult = testAction.testConfig(jobId, destination, fieldAccessor);
+                return testResult.getStatusMessage();
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
@@ -298,6 +270,14 @@ public class JobConfigActions {
         return fields;
     }
 
+    private void testProviderConfig(FieldAccessor fieldAccessor, String jobId, String destination) throws IntegrationException {
+        final Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                            .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+        if (providerTestAction.isPresent()) {
+            providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
+        }
+    }
+
     private JobFieldModel readJobConfiguration(final ConfigurationJobModel groupedConfiguration) throws AlertException {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
@@ -316,4 +296,13 @@ public class JobConfigActions {
         return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels);
     }
 
+    private Optional<ConfigurationFieldModel> convertFieldToConfigurationField(FieldModel fieldModel, String fieldKey) {
+        Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(fieldKey);
+        if (fieldValueModel.isPresent()) {
+            ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(fieldKey);
+            configurationFieldModel.setFieldValues(fieldValueModel.get().getValues());
+            return Optional.of(configurationFieldModel);
+        }
+        return Optional.empty();
+    }
 }

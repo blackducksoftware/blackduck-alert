@@ -16,6 +16,7 @@ class TableSelectInput extends Component {
     constructor(props) {
         super(props);
 
+        this.updateSelectedValues = this.updateSelectedValues.bind(this);
         this.retrieveTableData = this.retrieveTableData.bind(this);
         this.createTable = this.createTable.bind(this);
         this.createSelect = this.createSelect.bind(this);
@@ -32,14 +33,30 @@ class TableSelectInput extends Component {
         };
     }
 
-    componentDidMount() {
-        this.state.selectedData.push(...this.props.value);
-        const convertedValues = this.state.selectedData.map(selected => {
+    componentWillMount() {
+        this.updateSelectedValues();
+    }
+
+    componentDidUpdate(prevProps) {
+        const { value } = this.props;
+        const prevSize = prevProps.value && prevProps.value.length === 0;
+        const currentSize = value && value.length > 0;
+        const emptySelected = this.state.selectedData.length === 0;
+        if (prevSize && currentSize && emptySelected) {
+            this.updateSelectedValues();
+        }
+    }
+
+    updateSelectedValues() {
+        const { value } = this.props;
+        const { selectedData } = this.state;
+        selectedData.push(...value);
+        const convertedValues = selectedData.map(selected => {
             return Object.assign({ label: selected, value: selected });
         });
         this.setState({
             displayedData: convertedValues
-        })
+        });
     }
 
     onRowSelectedAll(isSelected, rows) {
@@ -94,7 +111,7 @@ class TableSelectInput extends Component {
         };
     }
 
-    retrieveTableData() {
+    async retrieveTableData() {
         this.setState({
             progress: true,
             success: false
@@ -104,7 +121,7 @@ class TableSelectInput extends Component {
         } = this.props;
 
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
-        request.then((response) => {
+        await request.then((response) => {
             this.setState({
                 progress: false
             });
@@ -139,11 +156,9 @@ class TableSelectInput extends Component {
         const projectsSelectRowProp = this.createRowSelectionProps();
 
         const assignDataFormat = (cell, row) => {
-            const cellContent = (row.missing) ?
+            const cellContent = (row.missing && cell && cell !== '') ?
                 <span className="missingBlackDuckData">
-                    <span className="fa-layers fa-fw">
-                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
-                    </span>
+                    <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
                 </span>
                 : cell;
 
@@ -171,10 +186,18 @@ class TableSelectInput extends Component {
         }
 
         const columns = columnsProp.map(column => (
-            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>{column.header}</TableHeaderColumn>
+            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
         ));
 
-        return (<div>
+        const { paged, searchable } = this.props;
+
+        const displayTable = (this.state.progress) ?
+            <div className="progressIcon">
+                <span className="fa-layers fa-fw">
+                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                </span>
+            </div>
+            :
             <BootstrapTable
                 version="4"
                 data={this.state.data}
@@ -182,26 +205,23 @@ class TableSelectInput extends Component {
                 hover
                 condensed
                 selectRow={projectsSelectRowProp}
-                search
+                search={searchable}
                 options={tableOptions}
                 trClassName="tableRow"
                 headerContainerClass="scrollable"
                 bodyContainerClass="tableScrollableBody"
+                pagination={paged}
             >
                 {columns}
-            </BootstrapTable>
+            </BootstrapTable>;
 
-            {this.state.progress &&
-            <div className="progressIcon">
-                <span className="fa-layers fa-fw">
-                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                </span>
-            </div>}
-
+        return (
             <div>
-                <GeneralButton className="tableSelectOkButton" onClick={okClicked}>OK</GeneralButton>
-            </div>
-        </div>);
+                {displayTable}
+                <div>
+                    <GeneralButton className="tableSelectOkButton" onClick={okClicked}>OK</GeneralButton>
+                </div>
+            </div>);
     }
 
     selectOnClick() {

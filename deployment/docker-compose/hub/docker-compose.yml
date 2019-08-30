@@ -1,16 +1,5 @@
 version: '2.3'
 services:
-  cfssl:
-    image: blackducksoftware/blackduck-cfssl:1.0.0
-    volumes: ['cert-volume:/etc/cfssl']
-    healthcheck:
-      test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'http://localhost:8888/api/v1/cfssl/scaninfo']
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    user: cfssl:root
-    restart: always
-    mem_limit: 512M
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
@@ -26,4 +15,4 @@ services:
       retries: 15
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
     mem_limit: 2560M
-volumes: {cert-volume: null, alert-db-volume: null }
+volumes: {alert-db-volume: null}

@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointTableSelectField extends ConfigField {
@@ -41,8 +42,25 @@ public class EndpointTableSelectField extends ConfigField {
         return new EndpointTableSelectField(key, label, description, false, false, true, searchable);
     }
 
+    public static EndpointTableSelectField createSearchable(String key, String label, String description) {
+        return new EndpointTableSelectField(key, label, description, false, false, true, true);
+    }
+
+    public static EndpointTableSelectField createSearchable(String key, String label, String description, ConfigValidationFunction validationFunction) {
+        return new EndpointTableSelectField(key, label, description, false, false, true, true, validationFunction);
+    }
+
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT.getFieldTypeName(), required, sensitive);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive);
+        this.paged = paged;
+        this.searchable = searchable;
+        endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        columns = new LinkedList<>();
+    }
+
+    public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable,
+        ConfigValidationFunction validationFunction) {
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, validationFunction);
         this.paged = paged;
         this.searchable = searchable;
         endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;

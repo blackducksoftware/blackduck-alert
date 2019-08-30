@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -59,15 +58,15 @@ public class ConfigurationJobModel extends AlertSerializableModel {
     }
 
     public String getName() {
-        return getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_NAME).orElse(null);
+        return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_NAME);
     }
 
     public String getChannelName() {
-        return getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
+        return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
     }
 
     public String getProviderName() {
-        return getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
+        return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
     }
 
     public FrequencyType getFrequencyType() {
@@ -79,7 +78,7 @@ public class ConfigurationJobModel extends AlertSerializableModel {
     }
 
     public Set<String> getNotificationTypes() {
-        return getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
+        return Set.copyOf(getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
     }
 
     // TODO find out if collisions are possible and how to avoid them
