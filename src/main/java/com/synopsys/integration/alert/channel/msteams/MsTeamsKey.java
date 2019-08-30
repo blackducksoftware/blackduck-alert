@@ -25,10 +25,5 @@ package com.synopsys.integration.alert.channel.msteams;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MsTeamsKey extends ChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return MsTeamsChannel.class.getSimpleName().toLowerCase();
-    }
-
+public class MsTeamsKey extends ClassNameChannelKey {
 }

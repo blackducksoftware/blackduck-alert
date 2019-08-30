@@ -34,7 +34,8 @@ public class MsTeamsChannelTest extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(new TestAlertProperties());
         final MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
-        final MsTeamsChannel msTeamsChannel = new MsTeamsChannel(gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser);
+        final MsTeamsKey msTeamsKey = new MsTeamsKey();
+        final MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser);
 
         final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
@@ -43,11 +44,11 @@ public class MsTeamsChannelTest extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent(
-                "1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+                "1L", msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         msTeamsChannel.sendAuditedMessage(event);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + SlackChannel.COMPONENT_NAME + " message!");
+        final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + msTeamsKey.getUniversalKey() + " message!");
         assertTrue(actual, "No success message appeared in the logs");
     }
 
