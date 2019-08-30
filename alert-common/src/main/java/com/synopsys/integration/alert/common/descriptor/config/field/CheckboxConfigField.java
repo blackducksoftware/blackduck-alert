@@ -31,23 +31,23 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class CheckboxConfigField extends ConfigField {
     public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final String panel) {
-        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, panel);
+        super(key, label, description, FieldType.CHECKBOX_INPUT, required, false, panel);
     }
 
     public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final String panel, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, panel, validationFunction);
+        super(key, label, description, FieldType.CHECKBOX_INPUT, required, false, panel, validationFunction);
     }
 
     public CheckboxConfigField(final String key, final String label, final String description, final boolean required) {
-        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false);
+        super(key, label, description, FieldType.CHECKBOX_INPUT, required, false);
     }
 
     public CheckboxConfigField(final String key, final String label, final String description, final boolean required, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, validationFunction);
+        super(key, label, description, FieldType.CHECKBOX_INPUT, required, false, validationFunction);
     }
 
     protected CheckboxConfigField(final String key, final String label, final String description, FieldType fieldType, final boolean required) {
-        super(key, label, description, fieldType.getFieldTypeName(), required, false);
+        super(key, label, description, fieldType, required, false);
     }
 
     public static CheckboxConfigField create(final String key, final String label, final String description) {

@@ -51,7 +51,7 @@ public class EndpointTableSelectField extends ConfigField {
     }
 
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT.getFieldTypeName(), required, sensitive);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive);
         this.paged = paged;
         this.searchable = searchable;
         endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
@@ -60,7 +60,7 @@ public class EndpointTableSelectField extends ConfigField {
 
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable,
         ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, validationFunction);
         this.paged = paged;
         this.searchable = searchable;
         endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;

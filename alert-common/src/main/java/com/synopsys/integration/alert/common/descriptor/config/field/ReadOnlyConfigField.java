@@ -26,19 +26,19 @@ import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class ReadOnlyConfigField extends ConfigField {
     public ReadOnlyConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String subGroup) {
-        super(key, label, description, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup);
+        super(key, label, description, FieldType.READ_ONLY, required, sensitive, subGroup);
     }
 
     public ReadOnlyConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup, validationFunction);
+        super(key, label, description, FieldType.READ_ONLY, required, sensitive, subGroup, validationFunction);
     }
 
     public ReadOnlyConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
-        super(key, label, description, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive);
+        super(key, label, description, FieldType.READ_ONLY, required, sensitive);
     }
 
     public ReadOnlyConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, validationFunction);
+        super(key, label, description, FieldType.READ_ONLY, required, sensitive, validationFunction);
     }
 
     public static ReadOnlyConfigField create(final String key, final String label, final String description) {

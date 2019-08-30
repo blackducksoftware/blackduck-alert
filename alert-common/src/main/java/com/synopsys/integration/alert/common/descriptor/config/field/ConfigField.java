@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -55,12 +56,12 @@ public class ConfigField extends AlertSerializableModel {
     private Set<String> defaultValues;
     private transient ConfigValidationFunction validationFunction;
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final boolean readOnly, final String panel, final String header,
+    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final boolean readOnly, final String panel, final String header,
         final ConfigValidationFunction validationFunction) {
         this.key = key;
         this.label = label;
         this.description = description;
-        this.type = type;
+        this.type = type.getFieldTypeName();
         this.required = required;
         this.sensitive = sensitive;
         this.readOnly = readOnly;
@@ -72,20 +73,19 @@ public class ConfigField extends AlertSerializableModel {
         defaultValues = new HashSet<>();
     }
 
-    // TODO Convert all of the type parameters to be of the enum ConfigField to force users to be consistent.
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel) {
+    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String panel) {
         this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, NO_VALIDATION);
     }
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
+    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
         this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, validationFunction);
     }
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive) {
+    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive) {
         this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, NO_VALIDATION);
     }
 
-    public ConfigField(final String key, final String label, final String description, final String type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
+    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
         this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, validationFunction);
     }
 
