@@ -32,24 +32,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -87,8 +86,23 @@ public class SlackChannel extends DistributionChannel {
 
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
-        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
+
+        final Optional<String> webhookOptional = fields.getString(SlackDescriptor.KEY_WEBHOOK);
+        final Optional<String> channelNameOptional = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME);
+
+        if (webhookOptional.isEmpty() || channelNameOptional.isEmpty()) {
+            Map<String, String> fieldErrors = new HashMap();
+            if (webhookOptional.isEmpty()) {
+                fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL");
+            }
+            if (channelNameOptional.isEmpty()) {
+                fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name");
+            }
+            throw new AlertFieldException(fieldErrors);
+        }
+        String webhook = webhookOptional.get();
+        String channelName = channelNameOptional.get();
+
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
 
         final MessageContentGroup eventContent = event.getContent();
