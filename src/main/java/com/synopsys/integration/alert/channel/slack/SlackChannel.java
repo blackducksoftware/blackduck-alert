@@ -99,22 +99,23 @@ public class SlackChannel extends DistributionChannel {
                 fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name");
             }
             throw new AlertFieldException(fieldErrors);
-        }
-        String webhook = webhookOptional.get();
-        String channelName = channelNameOptional.get();
-
-        final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
-
-        final MessageContentGroup eventContent = event.getContent();
-        if (eventContent.isEmpty()) {
-            return List.of();
         } else {
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Content-Type", "application/json");
+            String webhook = webhookOptional.get();
+            String channelName = channelNameOptional.get();
 
-            final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
-            final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(eventContent);
-            return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
+            final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
+
+            final MessageContentGroup eventContent = event.getContent();
+            if (eventContent.isEmpty()) {
+                return List.of();
+            } else {
+                final Map<String, String> requestHeaders = new HashMap<>();
+                requestHeaders.put("Content-Type", "application/json");
+
+                final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
+                final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(eventContent);
+                return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
+            }
         }
     }
 
