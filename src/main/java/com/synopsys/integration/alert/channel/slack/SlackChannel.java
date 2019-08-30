@@ -87,22 +87,19 @@ public class SlackChannel extends DistributionChannel {
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
 
-        final Optional<String> webhookOptional = fields.getString(SlackDescriptor.KEY_WEBHOOK);
-        final Optional<String> channelNameOptional = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME);
+        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElse("");
+        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");
 
-        if (webhookOptional.isEmpty() || channelNameOptional.isEmpty()) {
+        if (StringUtils.isBlank(webhook) || StringUtils.isBlank(channelName)) {
             Map<String, String> fieldErrors = new HashMap();
-            if (webhookOptional.isEmpty()) {
+            if (StringUtils.isBlank(webhook)) {
                 fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL");
             }
-            if (channelNameOptional.isEmpty()) {
+            if (StringUtils.isBlank(channelName)) {
                 fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name");
             }
             throw new AlertFieldException(fieldErrors);
         } else {
-            String webhook = webhookOptional.get();
-            String channelName = channelNameOptional.get();
-
             final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
 
             final MessageContentGroup eventContent = event.getContent();
