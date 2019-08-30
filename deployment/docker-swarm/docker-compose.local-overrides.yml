@@ -1,0 +1,13 @@
+version: '3.6'
+services:
+#  alert:
+#    secrets:
+#      - ALERT_ENCRYPTION_PASSWORD
+#      - ALERT_ENCRYPTION_GLOBAL_SALT
+#secrets:
+#  ALERT_ENCRYPTION_PASSWORD
+#  external:
+#    name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+#  ALERT_ENCRYPTION_GLOBAL_SALT
+#  external:
+#    name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
