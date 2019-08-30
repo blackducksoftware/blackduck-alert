@@ -22,11 +22,11 @@
  */
 package com.synopsys.integration.alert.channel.msteams.descriptor;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsChannel;
-import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
 public class MsTeamsDescriptor extends ChannelDescriptor {
@@ -35,7 +35,7 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public static final String MSTEAMS_LABEL = "MS Teams";
     public static final String MSTEAMS_URL = "msteams";
     public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
-    public static final String MSTEAMS_ICON = null;
+    public static final String MSTEAMS_ICON = "fab/microsoft";
 
     @Autowired
     public MsTeamsDescriptor(MsTeamsKey msTeamsKey, MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
