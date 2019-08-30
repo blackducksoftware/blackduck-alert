@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -63,9 +61,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
         final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
         final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
-            final Map<String, String> fieldErrors = new HashMap<>();
-            fieldErrors.put(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
-            throw new AlertFieldException(fieldErrors);
+            throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
         }
     }
 

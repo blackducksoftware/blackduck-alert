@@ -192,9 +192,7 @@ public class JobConfigActions {
             }
         }
         if (StringUtils.isNotBlank(error)) {
-            final Map<String, String> fieldErrors = new HashMap<>();
-            fieldErrors.put(ChannelDistributionUIConfig.KEY_NAME, error);
-            throw new AlertFieldException(fieldErrors);
+            throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, error);
         }
     }
 
