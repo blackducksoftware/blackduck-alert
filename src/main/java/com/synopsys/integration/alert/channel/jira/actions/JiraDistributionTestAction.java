@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -56,12 +57,12 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
         logger.debug("Sending initial ADD test message...");
         final DistributionEvent createIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
-        final String initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
+        final MessageResult initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
         logger.debug("Initial ADD test message sent!");
 
         String fromStatus = "Initial";
@@ -83,7 +84,7 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
             toStatus = "Resolve";
             logger.debug("Sending additional DELETE test message...");
             final DistributionEvent reResolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
-            String reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
+            MessageResult reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
             logger.debug("Additional DELETE test message sent!");
 
             if (areTransitionsConfigured(fieldAccessor)) {

@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -34,7 +35,7 @@ public abstract class TestAction {
     public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
     public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";
 
-    public abstract String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException;
+    public abstract MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException;
 
     public ProviderMessageContent createTestNotificationContent(FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
         final String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");

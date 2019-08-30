@@ -1,9 +1,9 @@
 {
   "@type": "MessageCard",
   "@context": "https:\/\/schema.org\/extensions",
-  "summary": "new content from Alert",
+  "summary": "New Content from Alert",
   "themeColor": "5A2A82",
-  "title": "New content from 1 Provider",
+  "title": "New Content from 1 Provider",
   "sections": [
     {
       "startGroup": true,

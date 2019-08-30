@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -49,12 +50,12 @@ public class PolarisDistributionTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {
             validatePatternMatchesProject(projectNamePattern.get());
         }
-        return "Successfully tested Polaris provider fields";
+        return new MessageResult("Successfully tested Polaris provider fields");
     }
 
     private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
