@@ -166,7 +166,7 @@ public class EmailGlobalTestActionTest {
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
-        final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, null, auditUtility, emailAddressHandler, freemarkerTemplatingService);
+        final EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), new Gson(), testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         //////////////////////////////////////
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 

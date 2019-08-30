@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,17 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.common.channel;
 
-import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.alert.common.channel.ChannelKey;
-
-@Component
-public class MsTeamsKey extends ChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return MsTeamsChannel.class.getSimpleName().toLowerCase();
-    }
+public abstract class ChannelKey {
+    public abstract String getUniversalKey();
 
 }

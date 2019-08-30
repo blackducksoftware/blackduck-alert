@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
@@ -50,7 +51,7 @@ public class JiraGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
             final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -68,7 +69,7 @@ public class JiraGlobalTestAction extends TestAction {
         } catch (final IntegrationException e) {
             throw new AlertException("An error occurred during testing: " + e.getMessage());
         }
-        return "Successfully connected to Jira Cloud instance.";
+        return new MessageResult("Successfully connected to Jira Cloud instance.");
     }
 
 }

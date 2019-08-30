@@ -32,29 +32,28 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.channel.util.RestChannelUtility;
+import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component(value = SlackChannel.COMPONENT_NAME)
-public class SlackChannel extends DistributionChannel {
+public class SlackChannel extends NamedDistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
@@ -73,16 +72,15 @@ public class SlackChannel extends DistributionChannel {
     private final RestChannelUtility restChannelUtility;
 
     @Autowired
-    public SlackChannel(final Gson gson, final AuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
-        super(gson, auditUtility);
+    public SlackChannel(SlackChannelKey slackChannelKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility) {
+        super(slackChannelKey, gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
     }
 
     @Override
-    public String sendMessage(final DistributionEvent event) throws IntegrationException {
+    public void distributeMessage(final DistributionEvent event) throws IntegrationException {
         final List<Request> requests = createRequests(event);
         restChannelUtility.sendMessage(requests, event.getDestination());
-        return "Successfully sent Slack message.";
     }
 
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
@@ -314,11 +312,6 @@ public class SlackChannel extends DistributionChannel {
         }
 
         return message.length() - 1;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return COMPONENT_NAME;
     }
 
 }
