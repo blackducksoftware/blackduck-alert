@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.channel.jira.actions;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,73 +34,110 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.JiraChannel;
+import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
+import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHelper;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
+import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
+import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     private final Logger logger = LoggerFactory.getLogger(JiraDistributionTestAction.class);
+    private Gson gson;
 
     @Autowired
-    public JiraDistributionTestAction(final JiraChannel jiraChannel) {
+    public JiraDistributionTestAction(JiraChannel jiraChannel, Gson gson) {
         super(jiraChannel);
+        this.gson = gson;
+    }
+
+    @Override
+    public JiraChannel getDistributionChannel() {
+        return (JiraChannel) super.getDistributionChannel();
     }
 
     @Override
     public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
-        logger.debug("Sending initial ADD test message...");
-        final DistributionEvent createIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
-        final MessageResult initialTestResult = getDistributionChannel().sendMessage(createIssueEvent);
-        logger.debug("Initial ADD test message sent!");
+        final JiraMessageResult initialTestResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.ADD, messageId);
+        String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
+                                     .stream()
+                                     .findFirst()
+                                     .orElseThrow(() -> new AlertException("Failed to create a new issue"));
 
-        String fromStatus = "Initial";
-        String toStatus = "Resolve";
-        try {
-            logger.debug("Sending DELETE test message...");
-            final DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
-            getDistributionChannel().sendMessage(resolveIssueEvent);
-            logger.debug("DELETE test message sent!");
+        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        Optional<String> optionalReopenTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
+        if (optionalResolveTransitionName.isPresent()) {
+            String resolveTransitionName = optionalResolveTransitionName.get();
 
-            fromStatus = toStatus;
-            toStatus = "Reopen";
-            logger.debug("Sending additional ADD test message...");
-            final DistributionEvent reOpenIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.ADD, messageId);
-            getDistributionChannel().sendMessage(reOpenIssueEvent);
-            logger.debug("Additional ADD test message sent!");
+            JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+            JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+            IssueService issueService = jiraCloudServiceFactory.createIssueService();
+            JiraTransitionHelper jiraTransitionHelper = new JiraTransitionHelper(issueService);
 
-            fromStatus = toStatus;
-            toStatus = "Resolve";
-            logger.debug("Sending additional DELETE test message...");
-            final DistributionEvent reResolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
-            MessageResult reResolveResult = getDistributionChannel().sendMessage(reResolveIssueEvent);
-            logger.debug("Additional DELETE test message sent!");
+            String fromStatus = "Initial";
+            String toStatus = "Resolve";
+            Optional<String> possibleSecondIssueKey = Optional.empty();
+            try {
+                Map<String, String> transitionErrors = new HashMap<>();
+                Map<String, String> resolveErrors = validateTransition(jiraTransitionHelper, initialIssueKey, resolveTransitionName, JiraTransitionHelper.DONE_STATUS_CATEGORY_KEY);
+                transitionErrors.putAll(resolveErrors);
+                JiraMessageResult finalResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
 
-            if (areTransitionsConfigured(fieldAccessor)) {
-                return reResolveResult;
-            } else {
-                return initialTestResult;
+                if (optionalReopenTransitionName.isPresent()) {
+                    fromStatus = toStatus;
+                    toStatus = "Reopen";
+                    Map<String, String> reopenErrors = validateTransition(jiraTransitionHelper, initialIssueKey, optionalReopenTransitionName.get(), JiraTransitionHelper.TODO_STATUS_CATEGORY_KEY);
+                    transitionErrors.putAll(reopenErrors);
+                    JiraMessageResult reopenResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.ADD, messageId);
+                    possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
+                                                 .stream()
+                                                 .findFirst()
+                                                 .filter(secondIssueKey -> !StringUtils.equals(secondIssueKey, initialIssueKey));
+
+                    fromStatus = toStatus;
+                    toStatus = "Resolve";
+                    Map<String, String> reResolveErrors = validateTransition(jiraTransitionHelper, initialIssueKey, resolveTransitionName, JiraTransitionHelper.DONE_STATUS_CATEGORY_KEY);
+                    transitionErrors.putAll(reResolveErrors);
+                    finalResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.ADD, messageId);
+                }
+
+                if (transitionErrors.isEmpty()) {
+                    return finalResult;
+                } else {
+                    throw new AlertFieldException(transitionErrors);
+                }
+            } catch (AlertFieldException fieldException) {
+                safelyCleanUpIssue(issueService, initialIssueKey);
+                throw fieldException;
+            } catch (AlertException alertException) {
+                logger.debug("Error testing Jira Cloud config", alertException);
+                String errorMessage = String.format("There were problems transitioning the test issue from the %s status to the %s status: %s", fromStatus, toStatus, alertException.getMessage());
+                possibleSecondIssueKey.ifPresent(key -> safelyCleanUpIssue(issueService, key));
+                throw new AlertException(errorMessage);
             }
-        } catch (AlertException e) {
-            // Any specific exceptions will have already been thrown by the initial message attempt, so we should only see AlertExceptions at this point.
-            logger.debug("Error testing Jira Cloud config", e);
-            String errorMessage = String.format("The initial test succeeded, but there were problems transitioning the test issue from the %s status to the %s status. | Initial Result: %s | Transition Result: %s",
-                fromStatus, toStatus, initialTestResult, e.getMessage());
-            throw new AlertException(errorMessage);
+        } else if (optionalReopenTransitionName.isPresent()) {
+            throw new AlertFieldException(Map.of(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, "A Resolve Transition must be provided if a Reopen Transition is provided."));
         }
+        return initialTestResult;
     }
 
     public DistributionEvent createChannelTestEvent(final String jobId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
@@ -111,10 +150,33 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         return new DistributionEvent(jobId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
-    private boolean areTransitionsConfigured(FieldAccessor fieldAccessor) {
-        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
-        Optional<String> optionalReopenTransitionName = fieldAccessor.getString(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION).filter(StringUtils::isNotBlank);
-        return optionalResolveTransitionName.isPresent() && optionalReopenTransitionName.isPresent();
+    private JiraMessageResult createAndSendMessage(String jobId, FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws IntegrationException {
+        logger.debug("Sending {} test message...", operation.name());
+        final DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, operation, messageId);
+        JiraMessageResult messageResult = getDistributionChannel().sendMessage(resolveIssueEvent);
+        logger.debug("{} test message sent!", operation.name());
+        return messageResult;
+    }
+
+    private Map<String, String> validateTransition(JiraTransitionHelper jiraTransitionHelper, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
+        Optional<TransitionComponent> transitionComponent = jiraTransitionHelper.retrieveIssueTransition(issueKey, transitionName);
+        if (transitionComponent.isPresent()) {
+            boolean isValidTransition = jiraTransitionHelper.doesTransitionToExpectedStatusCategory(transitionComponent.get(), statusCategoryKey);
+            if (!isValidTransition) {
+                return Map.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, "The provided transition would not result in an allowed status category.");
+            }
+        } else {
+            return Map.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, "The provided transition is not possible from the issue state that it would transition from.");
+        }
+        return Map.of();
+    }
+
+    private void safelyCleanUpIssue(IssueService issueService, String issueKey) {
+        try {
+            issueService.deleteIssue(issueKey);
+        } catch (IntegrationException e) {
+            logger.warn("There was a problem trying to delete a the Jira Cloud distribution test issue, {}: {}", issueKey, e);
+        }
     }
 
 }
