@@ -45,8 +45,8 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailActionHelper {
-    private final EmailAddressHandler emailAddressHandler;
-    private final DefaultProviderDataAccessor providerDataAccessor;
+    private EmailAddressHandler emailAddressHandler;
+    private DefaultProviderDataAccessor providerDataAccessor;
 
     public EmailActionHelper(EmailAddressHandler emailAddressHandler, DefaultProviderDataAccessor providerDataAccessor) {
         this.emailAddressHandler = emailAddressHandler;
@@ -54,29 +54,27 @@ public class EmailActionHelper {
     }
 
     public FieldAccessor createUpdatedFieldAccessor(FieldAccessor fieldAccessor, String destination) throws IntegrationException {
-        final Set<String> emailAddresses = new HashSet<>();
+        Set<String> emailAddresses = new HashSet<>();
         if (StringUtils.isNotBlank(destination)) {
             emailAddresses.add(destination);
         }
 
-        final Boolean filterByProject = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT)
-                                            .map(Boolean::parseBoolean)
-                                            .orElse(Boolean.FALSE);
-        final String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                        .orElse("");
+        Boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
+        Boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
-        if (StringUtils.isNotBlank(providerName)) {
-            final Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerName);
+        if (StringUtils.isNotBlank(providerName) && !onlyAdditionalEmails) {
+            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerName);
             if (null != providerProjects) {
-                final Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldAccessor);
+                Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldAccessor);
                 emailAddresses.addAll(providerEmailAddresses);
             }
         }
 
-        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(EmailDescriptor.KEY_EMAIL_ADDRESSES);
+        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         configurationFieldModel.setFieldValues(emailAddresses);
 
-        final Map<String, ConfigurationFieldModel> fields = fieldAccessor.getFields();
+        Map<String, ConfigurationFieldModel> fields = fieldAccessor.getFields();
         fields.put(EmailDescriptor.KEY_EMAIL_ADDRESSES, configurationFieldModel);
 
         return new FieldAccessor(fields);
@@ -86,12 +84,12 @@ public class EmailActionHelper {
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveProviderProjects(final FieldAccessor fieldAccessor, final Boolean filterByProject, final String providerName) {
-        final List<ProviderProject> providerProjects = providerDataAccessor.findByProviderName(providerName);
+    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, Boolean filterByProject, String providerName) {
+        List<ProviderProject> providerProjects = providerDataAccessor.findByProviderName(providerName);
         if (filterByProject) {
-            final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
-            final String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
+            String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             return providerProjects
                        .stream()
                        .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
@@ -100,22 +98,22 @@ public class EmailActionHelper {
         return new HashSet<>(providerProjects);
     }
 
-    private Set<String> addEmailAddresses(final Set<ProviderProject> providerProjects, final FieldAccessor fieldAccessor) throws AlertFieldException {
-        final Optional<String> projectOwnerOnlyOptional = fieldAccessor.getString(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
-        final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
+    private Set<String> addEmailAddresses(Set<ProviderProject> providerProjects, FieldAccessor fieldAccessor) throws AlertFieldException {
+        Optional<String> projectOwnerOnlyOptional = fieldAccessor.getString(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
+        Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
 
-        final Set<String> emailAddresses = new HashSet<>();
-        final Set<String> projectsWithoutEmails = new HashSet<>();
-        for (final ProviderProject project : providerProjects) {
-            final Set<String> emailsForProject = emailAddressHandler.getEmailAddressesForProject(project, projectOwnerOnly);
+        Set<String> emailAddresses = new HashSet<>();
+        Set<String> projectsWithoutEmails = new HashSet<>();
+        for (ProviderProject project : providerProjects) {
+            Set<String> emailsForProject = emailAddressHandler.getEmailAddressesForProject(project, projectOwnerOnly);
             if (emailsForProject.isEmpty()) {
                 projectsWithoutEmails.add(project.getName());
             }
             emailAddresses.addAll(emailsForProject);
         }
         if (!projectsWithoutEmails.isEmpty()) {
-            final String projects = StringUtils.join(projectsWithoutEmails, ", ");
-            final String errorMessage;
+            String projects = StringUtils.join(projectsWithoutEmails, ", ");
+            String errorMessage;
             if (projectOwnerOnly) {
                 errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
             } else {
