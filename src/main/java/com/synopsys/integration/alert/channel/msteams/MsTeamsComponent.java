@@ -20,23 +20,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.descriptor;
+package com.synopsys.integration.alert.channel.msteams;
 
-import java.util.List;
+public class MsTeamsComponent {
+    private String category;
+    private String operation;
+    private String text;
+    private String allAttributeDetails;
 
-import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-
-@Component
-public class SlackGlobalUIConfig extends UIConfig {
-    public SlackGlobalUIConfig() {
-        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_DESCRIPTION, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
+    public String getCategory() {
+        return category;
     }
 
-    @Override
-    public List<ConfigField> createFields() {
-        return List.of();
+    public void setCategory(String category) {
+        this.category = category;
     }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getAllAttributeDetails() {
+        return allAttributeDetails;
+    }
+
+    public void setAllAttributeDetails(String allAttributeDetails) {
+        this.allAttributeDetails = allAttributeDetails;
+    }
+
 }

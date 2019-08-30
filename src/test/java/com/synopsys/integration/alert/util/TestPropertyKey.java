@@ -23,6 +23,8 @@ public enum TestPropertyKey {
     TEST_SLACK_USERNAME("slack.username"),
     TEST_SLACK_WEBHOOK("slack.web.hook"),
 
+    TEST_MSTEAMS_WEBHOOK("msteams.web.hook"),
+
     TEST_EMAIL_RECIPIENT("mail.recipient"),
     TEST_EMAIL_SMTP_HOST("mail.smtp.host"),
     TEST_EMAIL_SMTP_FROM("mail.smtp.from"),

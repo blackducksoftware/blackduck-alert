@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -72,7 +73,7 @@ public class SlackChannel extends DistributionChannel {
     private final RestChannelUtility restChannelUtility;
 
     @Autowired
-    public SlackChannel(final Gson gson, final DefaultAuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
+    public SlackChannel(final Gson gson, final AuditUtility auditUtility, final RestChannelUtility restChannelUtility) {
         super(gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
     }
