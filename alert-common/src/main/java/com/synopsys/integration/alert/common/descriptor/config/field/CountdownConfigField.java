@@ -28,7 +28,7 @@ public class CountdownConfigField extends ConfigField {
     private Long countdown;
 
     public CountdownConfigField(final String key, final String label, final String description, final String panel, final Long countdown) {
-        super(key, label, description, FieldType.COUNTDOWN.getFieldTypeName(), false, false, panel);
+        super(key, label, description, FieldType.COUNTDOWN, false, false, panel);
         this.countdown = countdown;
     }
 
