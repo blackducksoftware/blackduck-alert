@@ -215,9 +215,9 @@ public class JiraIssueHandler {
             JsonObject errors = responseContent.get("errors").getAsJsonObject();
             JsonElement reporterErrorMessage = errors.get("reporter");
             if (null != reporterErrorMessage) {
-                throw new AlertFieldException(Map.of(
+                throw AlertFieldException.singleFieldError(
                     JiraDescriptor.KEY_ISSUE_CREATOR, String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)
-                ));
+                );
             }
 
             JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();

@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -85,20 +85,33 @@ public class SlackChannel extends NamedDistributionChannel {
 
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
-        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
-        final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
 
-        final MessageContentGroup eventContent = event.getContent();
-        if (eventContent.isEmpty()) {
-            return List.of();
+        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElse("");
+        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");
+
+        if (StringUtils.isBlank(webhook) || StringUtils.isBlank(channelName)) {
+            Map<String, String> fieldErrors = new HashMap();
+            if (StringUtils.isBlank(webhook)) {
+                fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL");
+            }
+            if (StringUtils.isBlank(channelName)) {
+                fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name");
+            }
+            throw new AlertFieldException(fieldErrors);
         } else {
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Content-Type", "application/json");
+            final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
 
-            final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
-            final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(eventContent);
-            return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
+            final MessageContentGroup eventContent = event.getContent();
+            if (eventContent.isEmpty()) {
+                return List.of();
+            } else {
+                final Map<String, String> requestHeaders = new HashMap<>();
+                requestHeaders.put("Content-Type", "application/json");
+
+                final String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
+                final List<String> mrkdwnMessagePieces = createMrkdwnMessagePieces(eventContent);
+                return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
+            }
         }
     }
 
@@ -312,6 +325,11 @@ public class SlackChannel extends NamedDistributionChannel {
         }
 
         return message.length() - 1;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
     }
 
 }

@@ -29,6 +29,14 @@ public class AlertFieldException extends AlertException {
 
     private final Map<String, String> fieldErrors;
 
+    public static AlertFieldException singleFieldError(String fieldKey, String fieldError) {
+        return new AlertFieldException(Map.of(fieldKey, fieldError));
+    }
+
+    public static AlertFieldException singleFieldError(String message, String fieldKey, String fieldError) {
+        return new AlertFieldException(message, Map.of(fieldKey, fieldError));
+    }
+
     public AlertFieldException(final Map<String, String> fieldErrors) {
         super();
         this.fieldErrors = fieldErrors;

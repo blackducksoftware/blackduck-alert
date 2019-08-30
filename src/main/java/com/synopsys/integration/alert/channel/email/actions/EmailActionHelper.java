@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.email.actions;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -116,15 +115,13 @@ public class EmailActionHelper {
         }
         if (!projectsWithoutEmails.isEmpty()) {
             final String projects = StringUtils.join(projectsWithoutEmails, ", ");
-            final Map<String, String> fieldErrors = new HashMap<>();
             final String errorMessage;
             if (projectOwnerOnly) {
                 errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
             } else {
                 errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
             }
-            fieldErrors.put(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, errorMessage);
-            throw new AlertFieldException(fieldErrors);
+            throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, errorMessage);
         }
         return emailAddresses;
     }
