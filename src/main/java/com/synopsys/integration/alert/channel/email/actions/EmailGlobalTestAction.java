@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -51,12 +52,12 @@ public class EmailGlobalTestAction extends TestAction {
     private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailGlobalTestAction(final EmailChannel emailChannel) {
+    public EmailGlobalTestAction(EmailChannel emailChannel) {
         this.emailChannel = emailChannel;
     }
 
     @Override
-    public String testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         Set<String> emailAddresses = Set.of();
         if (StringUtils.isNotBlank(destination)) {
             try {
@@ -86,8 +87,9 @@ public class EmailGlobalTestAction extends TestAction {
             .applyTopic("Message Content", "Test from Alert")
             .applyAllComponentItems(List.of(componentBuilder.build()));
 
-        final ProviderMessageContent messageContent = builder.build();
-        return emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", MessageContentGroup.singleton(messageContent));
+        ProviderMessageContent messageContent = builder.build();
+        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", MessageContentGroup.singleton(messageContent));
+        return new MessageResult("Message sent");
     }
 
 }

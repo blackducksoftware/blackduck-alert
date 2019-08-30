@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,11 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.common.channel;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -37,9 +37,10 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
     }
 
     @Override
-    public String sendMessage(final DistributionEvent event) throws IntegrationException {
+    public MessageResult sendMessage(final DistributionEvent event) throws IntegrationException {
         distributeMessage(event);
-        return String.format("Successfully sent %s message.", getDestinationName());
+        String statusMessage = String.format("Successfully sent %s message.", getDestinationName());
+        return new MessageResult(statusMessage);
     }
 
     public abstract void distributeMessage(DistributionEvent event) throws IntegrationException;

@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -45,7 +46,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         final DistributionEvent event = createChannelTestEvent(jobId, fieldAccessor);
         return distributionChannel.sendMessage(event);
     }
@@ -63,4 +64,5 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     public DistributionChannel getDistributionChannel() {
         return distributionChannel;
     }
+
 }

@@ -26,19 +26,19 @@ import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class PasswordConfigField extends ConfigField {
     public PasswordConfigField(final String key, final String label, final String description, final boolean required) {
-        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);
+        super(key, label, description, FieldType.PASSWORD_INPUT, required, true);
     }
 
     public PasswordConfigField(final String key, final String label, final String description, final boolean required, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, validationFunction);
+        super(key, label, description, FieldType.PASSWORD_INPUT, required, true, validationFunction);
     }
 
     public PasswordConfigField(final String key, final String label, final String description, final boolean required, final String panel) {
-        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, panel);
+        super(key, label, description, FieldType.PASSWORD_INPUT, required, true, panel);
     }
 
     public PasswordConfigField(final String key, final String label, final String description, final boolean required, final String panel, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, panel, validationFunction);
+        super(key, label, description, FieldType.PASSWORD_INPUT, required, true, panel, validationFunction);
     }
 
     public static PasswordConfigField create(final String key, final String label, final String description) {

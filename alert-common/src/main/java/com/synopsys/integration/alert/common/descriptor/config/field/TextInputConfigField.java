@@ -26,19 +26,19 @@ import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class TextInputConfigField extends ConfigField {
     public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel) {
-        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, panel);
+        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive, panel);
     }
 
     public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, panel, validationFunction);
+        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive, panel, validationFunction);
     }
 
     public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
-        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive);
+        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive);
     }
 
     public TextInputConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
+        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive, validationFunction);
     }
 
     public static TextInputConfigField create(final String key, final String label, final String description) {

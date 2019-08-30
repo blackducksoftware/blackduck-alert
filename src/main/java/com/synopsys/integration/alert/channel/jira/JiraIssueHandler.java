@@ -44,6 +44,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
+import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.SetMap;
@@ -92,7 +93,7 @@ public class JiraIssueHandler {
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
     }
 
-    public String createOrUpdateIssues(JiraIssueConfig jiraIssueConfig, MessageContentGroup content) throws IntegrationException {
+    public JiraMessageResult createOrUpdateIssues(JiraIssueConfig jiraIssueConfig, MessageContentGroup content) throws IntegrationException {
         String providerName = content.getComonProvider().getValue();
         LinkableItem commonTopic = content.getCommonTopic();
 
@@ -104,7 +105,8 @@ public class JiraIssueHandler {
             issueKeys.addAll(issueKeysForMessage);
         }
 
-        return createStatusMessage(issueKeys, jiraProperties.getUrl());
+        String statusMessage = createStatusMessage(issueKeys, jiraProperties.getUrl());
+        return new JiraMessageResult(statusMessage, issueKeys);
     }
 
     private Set<String> createOrUpdateIssuesPerComponent(String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, JiraIssueConfig jiraIssueConfig) throws IntegrationException {

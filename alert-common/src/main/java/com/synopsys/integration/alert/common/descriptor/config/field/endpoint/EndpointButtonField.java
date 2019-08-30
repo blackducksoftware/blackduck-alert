@@ -53,7 +53,7 @@ public class EndpointButtonField extends ConfigField {
 
     private EndpointButtonField(final String key, final String label, final String description, final boolean required, final String buttonLabel, final Boolean successBox,
         final List<ConfigField> subFields) {
-        super(key, label, description, FieldType.ENDPOINT_BUTTON.getFieldTypeName(), required, false);
+        super(key, label, description, FieldType.ENDPOINT_BUTTON, required, false);
         this.buttonLabel = buttonLabel;
         this.endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
         this.successBox = successBox;

@@ -20,17 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.channel.jira.model;
 
-import org.springframework.stereotype.Component;
+import java.util.Collection;
 
-import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 
-@Component
-public class MsTeamsKey extends ChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return MsTeamsChannel.class.getSimpleName().toLowerCase();
+public class JiraMessageResult extends MessageResult {
+    private Collection<String> updatedIssueKeys;
+
+    public JiraMessageResult(String statusMessage, Collection<String> updatedIssueKeys) {
+        super(statusMessage);
+        this.updatedIssueKeys = updatedIssueKeys;
+    }
+
+    public Collection<String> getUpdatedIssueKeys() {
+        return updatedIssueKeys;
+    }
+
+    public void setUpdatedIssueKeys(Collection<String> updatedIssueKeys) {
+        this.updatedIssueKeys = updatedIssueKeys;
     }
 
 }
