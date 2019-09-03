@@ -1,8 +1,9 @@
 version: '2.3'
 services:
 #  alert:
-#    # uncomment environment to set enviromnent variables for the alert container.
-#    environment: {}
+#    # uncomment environment to set environment variables for the alert service.
+#    environment:
+#      - ALERT_HOSTNAME=localhost
 #    # uncomment the secrets section to use secrets.
 #    # Please uncomment the secrets in use; both the required and the optional secrets.
 #    # Note: choose one jssecacerts or cacerts secret not both.
