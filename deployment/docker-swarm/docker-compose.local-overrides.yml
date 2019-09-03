@@ -1,13 +1,36 @@
 version: '3.6'
 services:
 #  alert:
+#    # uncomment environment to set enviromnent variables for the alert container.
+#    environment: {}
+#    # uncomment the secrets section to use secrets.
+#    # Please uncomment the secrets in use; both the required and the optional secrets.
+#    # Note: choose one jssecacerts or cacerts secret not both.
 #    secrets:
 #      - ALERT_ENCRYPTION_PASSWORD
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
+#      - WEBSERVER_CUSTOM_CERT_FILE
+#      - WEBSERVER_CUSTOM_KEY_FILE
+#      - jssecacerts
+#      - cacerts
+#
+# uncomment the secrets in use; both the required and the optional secrets.
 #secrets:
-#  ALERT_ENCRYPTION_PASSWORD
-#  external:
-#    name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-#  ALERT_ENCRYPTION_GLOBAL_SALT
-#  external:
-#    name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
+#  ALERT_ENCRYPTION_PASSWORD:
+#    external:
+#      name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+#  ALERT_ENCRYPTION_GLOBAL_SALT:
+#    external:
+#      name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
+#  WEBSERVER_CUSTOM_CERT_FILE:
+#    external:
+#      name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
+#  WEBSERVER_CUSTOM_KEY_FILE:
+#    external:
+#      name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
+#  jssecacerts:
+#    external:
+#      name: "<STACK_NAME>_jssecacerts"
+#  cacerts:
+#    external:
+#      name: "<STACK_NAME>_cacerts"
