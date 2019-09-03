@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransiti
 import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
+import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHelper;
 import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -57,39 +58,32 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
 import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.cloud.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.cloud.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
-    public static final String TODO_STATUS_CATEGORY_KEY = "new";
-    public static final String DONE_STATUS_CATEGORY_KEY = "done";
-
     private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
 
     private final IssueService issueService;
     private final JiraProperties jiraProperties;
     private final Gson gson;
 
+    private final JiraTransitionHelper jiraTransitionHelper;
     private final JiraIssuePropertyHelper jiraIssuePropertyHelper;
 
     public JiraIssueHandler(IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, JiraProperties jiraProperties, Gson gson) {
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.gson = gson;
+        this.jiraTransitionHelper = new JiraTransitionHelper(issueService);
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
     }
 
@@ -139,7 +133,7 @@ public class JiraIssueHandler {
                         issueKeys.add(issueComponent.getKey());
                     }
 
-                    boolean didUpdateIssue = transitionIssueIfNecessary(issueComponent.getKey(), jiraIssueConfig, operation);
+                    boolean didUpdateIssue = jiraTransitionHelper.transitionIssueIfNecessary(issueComponent.getKey(), jiraIssueConfig, operation);
                     if (didUpdateIssue) {
                         issueKeys.add(issueComponent.getKey());
                     }
@@ -174,7 +168,7 @@ public class JiraIssueHandler {
             final StringBuilder missingTransitions = new StringBuilder();
             for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.entrySet()) {
                 String issues = StringUtils.join(entry.getValue(), ", ");
-                missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s.", entry.getKey(), issues));
+                missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s", entry.getKey(), issues));
             }
 
             String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName,
@@ -187,16 +181,14 @@ public class JiraIssueHandler {
 
     private Map<String, List<ComponentItem>> combineComponentItems(Collection<ComponentItem> componentItems) {
         final Map<String, List<ComponentItem>> combinedItems = new LinkedHashMap<>();
-        componentItems
-            .stream()
-            .forEach(item -> {
-                String key = item.getComponentKeys().getShallowKey() + item.getOperation();
-                // FIXME find a way to make this provider-agnostic
-                if (!item.getCategory().contains("Vuln")) {
-                    key = item.getComponentKeys().getDeepKey() + item.getOperation();
-                }
-                combinedItems.computeIfAbsent(key, ignored -> new LinkedList<>()).add(item);
-            });
+        componentItems.forEach(item -> {
+            String key = item.getComponentKeys().getShallowKey() + item.getOperation();
+            // FIXME find a way to make this provider-agnostic
+            if (!item.getCategory().contains("Vuln")) {
+                key = item.getComponentKeys().getDeepKey() + item.getOperation();
+            }
+            combinedItems.computeIfAbsent(key, ignored -> new LinkedList<>()).add(item);
+        });
         return combinedItems;
     }
 
@@ -277,75 +269,6 @@ public class JiraIssueHandler {
         fieldsBuilder.setDescription(description);
 
         return fieldsBuilder;
-    }
-
-    private boolean transitionIssueIfNecessary(String issueKey, JiraIssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
-        Optional<String> optionalTransitionKey = determineTransitionKey(operation);
-        if (optionalTransitionKey.isPresent()) {
-            final Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
-            if (transitionName.isPresent()) {
-                StatusDetailsComponent statusDetailsComponent = issueService.getStatus(issueKey);
-                boolean shouldAttemptTransition = isTransitionRequired(operation, statusDetailsComponent.getStatusCategory());
-                if (shouldAttemptTransition) {
-                    performTransition(issueKey, transitionName.get());
-                    return true;
-                } else {
-                    logger.debug("The issue {} is already in the status category that would result from this transition ({}).", issueKey, transitionName);
-                }
-            } else {
-                logger.debug("No transition name was provided so no transition will be performed for this operation: {}.", operation);
-            }
-        } else {
-            logger.debug("No transition required for this issue: {}.", issueKey);
-        }
-        return false;
-    }
-
-    private void performTransition(String issueKey, String transitionName) throws IntegrationException {
-        logger.debug("Attempting the transition '{}' on the issue '{}'", transitionName, issueKey);
-        final TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-        final Optional<TransitionComponent> firstTransitionByName = transitions.findFirstTransitionByName(transitionName);
-        if (firstTransitionByName.isPresent()) {
-            TransitionComponent issueTransition = firstTransitionByName.get();
-            String transitionId = issueTransition.getId();
-            IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
-            issueService.transitionIssue(issueRequestModel);
-        } else {
-            throw new JiraMissingTransitionException(issueKey, transitionName);
-        }
-    }
-
-    private Optional<String> determineTransitionName(ItemOperation operation, JiraIssueConfig jiraIssueConfig) {
-        if (!ItemOperation.UPDATE.equals(operation)) {
-            if (ItemOperation.DELETE.equals(operation)) {
-                return jiraIssueConfig.getResolveTransition();
-            } else {
-                return jiraIssueConfig.getOpenTransition();
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<String> determineTransitionKey(ItemOperation operation) {
-        if (!ItemOperation.UPDATE.equals(operation)) {
-            if (ItemOperation.DELETE.equals(operation)) {
-                return Optional.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
-            } else {
-                return Optional.of(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private boolean isTransitionRequired(ItemOperation operation, StatusCategory statusCategory) {
-        if (ItemOperation.ADD.equals(operation)) {
-            // Should reopen?
-            return DONE_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
-        } else if (ItemOperation.DELETE.equals(operation)) {
-            // Should resolve?
-            return TODO_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
-        }
-        return false;
     }
 
     private void addComment(String issueKey, String comment) throws IntegrationException {

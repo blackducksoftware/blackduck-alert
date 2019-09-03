@@ -65,7 +65,8 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
 
         final ConfigField issueType = TextInputConfigField.createRequired(JiraDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).addDefaultValue(DEFAULT_ISSUE_TYPE);
         final ConfigField resolveWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
-        final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION);
+        final ConfigField openWorkflow = TextInputConfigField.create(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
+                                             .requireField(resolveWorkflow.getKey());
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);
     }
