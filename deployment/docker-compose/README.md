@@ -218,11 +218,17 @@ The steps in the upgrade procedure are the same as the installation procedure af
     ```docker secret ls```
 
 ### Standalone Upgrade
-1. Run ```docker stack rm <STACK_NAME>```
+1. Execute the command:  
+    ```
+    docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
+    ```
 2. Follow the [Standalone Installation](#standalone-installation)
 
 ### Upgrade with Black Duck
-1. Run ```docker stack rm <STACK_NAME>```
+1. Execute the command:
+    ```
+    docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
+    ```
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
 ## Optional Secrets 
@@ -275,6 +281,19 @@ This section describes how to configure some of the optional secrets.
      
             ```docker secret create cacerts file <PATH_TO_TRUST_STORE_FILE>```
     - Uncomment the following from the docker-compose.local-overrides.yml file from the alert service section.
+        ```
+            secrets:
+                jssecacerts:
+                    external:
+                    name: "jssecacerts"
+        ```
+        or 
+        ```
+            secrets:
+                cacerts:
+                    external:
+                    name: "cacerts"
+        ```
 
 ## Environment Variables 
 Alert supports configuration of the application's components via environment variables.  There are two ways to configure the environment variables.
@@ -286,7 +305,7 @@ When installing choose to either edit:
 
 ```docker-compose.local-overrides.yml``` 
 
-OR 
+or 
 
 ```docker-compose.local.overrides.yml``` and ```blackduck-alert.env```
 
@@ -319,6 +338,15 @@ The environment variables will always take precedence and overwrite the values s
 ### Alert Hostname Variable
 You must specify the ALERT_HOSTNAME environment variable in order for Alert to generate and use certificates correctly.
 - Add the ALERT_HOSTNAME environment variable the value must be the hostname only 
+    - Editing environment file:
+        ```
+        ALERT_HOSTNAME=<NEW_HOST_NAME>
+        ```
+    - Editing overrides file:
+        ```
+            environment:
+                - ALERT_HOSTNAME=<NEW_HOST_NAME>
+        ```
 - Do not add the protocol a.k.a scheme to the value of the variable.
     - Good: ```ALERT_HOSTNAME=myhost.example.com```
     - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
@@ -378,7 +406,7 @@ If Alert should not be running on it's default port of 8443, then this section d
 
 For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
 
-- Overrides File Changes
+- Overrides File Changes.
     - Define the new ports for the alert service.  Add 'ports' to the service description. 
     ```
         alert: 
@@ -436,7 +464,7 @@ If Alert should be using more memory than its default settings, then this sectio
 
 For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
 
-- Overrides File Changes
+- Overrides File Changes.
     - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
     ```
         alert:
@@ -461,7 +489,7 @@ For this advanced setting since there are more than just environment variables t
             mem_limit = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
                 
 Example: 
-- Change the memory limit from 2G to 4G
+- Change the memory limit from 2G to 4G.
 ```
     alert:
         environment:

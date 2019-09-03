@@ -2,14 +2,35 @@
 
 This document describes how to install and upgrade Alert in Docker Swarm.
 
+## Table Of Contents
+- [Requirements](#requirements)
+- [Installing Alert](#installing-alert)
+    - [Standalone Installation](#standalone-installation)
+    - [Installation With Black Duck](#installation-with-black-duck)
+- [Upgrading Alert](#upgrading-alert)
+    - [Standalone Upgrade](#standalone-upgrade)
+    - [Upgrade With Black Duck](#upgrade-with-black-duck)
+- [Optional Secrets](#optional-secrets)
+- [Environment Variables](#environment-variables) 
+    - [Edit Environment File](#edit-environment-file)
+    - [Edit the Overrides File](#edit-the-overrides-file)
+    - [Environment Variable Overrides](#environment-variable-overrides)
+    - [Alert Hostname Variable](#alert-hostname-variable)
+    - [Alert Logging Level Variable](#alert-logging-level-variable)
+    - [Email Channel Environment Variables](#email-channel-environment-variables)
+    - [Environment Variable Classifications](#environment-variable-classifications)
+- [Advanced Configuration](#advanced-configuration)
+    - [Changing Server Port](#changing-server-port)
+    - [Changing Memory Settings](#changing-memory-settings)
+
 ## Requirements
 
-- You have a swarm node with at least 2GB of allocatable memory.
+- You have a Docker host with at least 2GB of allocatable memory.
 - You have administrative access to your docker host.  
 - Before installing or upgrading Alert you must create desired persistent storage volumes for Alert.
 
 ## Installing Alert
-Deployment files for Docker Swarm are located in the docker-swarm directory of the: 
+Deployment files for Docker Compose are located in the docker-swarm directory of the: 
 
 blackduck-alert-\<VERSION>\-deployment.zip file.
 
@@ -19,14 +40,88 @@ blackduck-alert-\<VERSION>\-deployment.zip file.
 
 ### Standalone Installation
 This section walk through the instructions to install Alert in a standalone fashion.
-
 #### Overview
 
-1. Create ALERT_ENCRYPTION_PASSWORD secret. See [Required Secrets](#required-secrets).
-2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret. See [Required Secrets](#required-secrets).
-3. Create any optional secrets. See [Optional Secrets](#optional-secrets).
-4. Modify the environment variables.
-6. Deploy the stack.
+1. Create ALERT_ENCRYPTION_PASSWORD secret.
+2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
+3. Create any optional secrets.
+4. Modify environment variables.
+5. Deploy the stack.
+ 
+#### Details 
+This section walks through each step of the installation procedure.
+
+##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
+  
+- Create a docker secret containing the encryption password for Alert.
+
+    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>```
+
+- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+    ```
+        alert:
+            secrets:
+                - ALERT_ENCRYPTION_PASSWORD
+    ```
+- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+    ```
+        secrets:
+            ALERT_ENCRYPTION_PASSWORD:
+              external:
+                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+            
+    ```
+##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
+
+- Create a docker secret containing the encryption salt for Alert.
+
+    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
+    
+- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+    ```
+        alert:
+            secrets:
+                - ALERT_ENCRYPTION_PASSWORD
+                - ALERT_ENCRYPTION_GLOBAL_SALT
+    ```
+- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+    ```
+        secrets:
+            ALERT_ENCRYPTION_PASSWORD:
+              external:
+                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+            ALERT_ENCRYPTION_GLOBAL_SALT:
+              external:
+                name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
+            
+    ```
+
+##### 3. Create optional secrets.
+- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
+- Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
+
+#### 4. Modify environment variables.
+Please see [Environment Variables](#environment-variables)
+- Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
+- Set any other optional environment variables as needed.
+
+##### 5. Deploy the stack.
+- Execute the command: 
+    ```
+    docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
+    ```
+  
+### Installation with Black Duck
+Overview:
+1. Create ALERT_ENCRYPTION_PASSWORD secret.
+2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
+3. Create any optional secrets.
+4. Modify environment variables.
+5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
+6. Install Black Duck. Follow the documented installation procedure for Black Duck.
+7. Deploy the stack.
 
 #### Details 
 This section walks through each step of the installation procedure.
@@ -37,27 +132,19 @@ This section walks through each step of the installation procedure.
 
     ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>```
 
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file
-- Uncomment the following secret from the docker-compose.local-overrides.yml file to the alert service
+- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
     ```
         alert:
             secrets:
                 - ALERT_ENCRYPTION_PASSWORD
     ```
-- Uncomment the following secret from the secrets section of the docker-compose.local-overrides.yml file.
+- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
     ```
         secrets:
-            ALERT_ENCRYPTION_PASSWORD
-            external:
-              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-            
-    ```
-- Replace <STACK_NAME> with the stack name to be used in the deployment i.e. blackduck
-    ```
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD
-            external:
-              name: "blackduck_ALERT_ENCRYPTION_PASSWORD"
+            ALERT_ENCRYPTION_PASSWORD:
+              external:
+                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
             
     ```
 ##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
@@ -66,76 +153,53 @@ This section walks through each step of the installation procedure.
 
     ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
     
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file
-- Uncomment the following secret from the docker-compose.local-overrides.yml file to the alert service
+- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file to the alert service section.
     ```
         alert:
             secrets:
                 - ALERT_ENCRYPTION_PASSWORD
                 - ALERT_ENCRYPTION_GLOBAL_SALT
     ```
-- Uncomment the following secret from the secrets section of the docker-compose.local-overrides.yml file.
+- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
     ```
         secrets:
-            ALERT_ENCRYPTION_PASSWORD
+            ALERT_ENCRYPTION_PASSWORD:
               external:
                 name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-            ALERT_ENCRYPTION_GLOBAL_SALT
+            ALERT_ENCRYPTION_GLOBAL_SALT:
               external:
                 name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
             
     ```
-- Replace <STACK_NAME> with the stack name to be used in the deployment i.e. blackduck
-    ```
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD
-              external:
-                name: "blackduck_ALERT_ENCRYPTION_PASSWORD"
-            ALERT_ENCRYPTION_GLOBAL_SALT
-              external:
-                name: "blackduck_ALERT_ENCRYPTION_GLOBAL_SALT"
-                
-    ```
+
 ##### 3. Create optional secrets.
-##### 4. Modify environment variables.
-- ALERT_HOSTNAME: Set this to match the hostname to be used to access Alert.
-    - Should be the same value as the value of the PUBLIC_HUB_WEBSERVER_HOST environment variable.
-- ALERT_SERVER_PORT: If the default port of 8443 is not available or not to be used. 
-    - Work with your IT staff if necessary to verify the the configured port is accessible through the network. 
-##### 5. Deploy the stack.
-- ```docker stack deploy -c <PATH>/docker-swarm/standalone/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml blackduck```
+- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
+- Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
-### Installation with Black Duck
-This section walks through the instructions to install Alert with a Black Duck instance.
-#### Overview
-1. Create ALERT_ENCRYPTION_PASSWORD secret. See [Required Secrets](#required-secrets).
-2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret. See [Required Secrets](#required-secrets).
-3. Create any optional secrets. See [Optional Secrets](#optional-secrets).
-4. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-5. Install Black Duck following the documented installation procedure for Black Duck.
-6. Modify the environment variables. 
-7. Deploy the stack. 
+#### 4. Modify environment variables.
+Please see [Environment Variables](#environment-variables)
+- Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
+- Set any other optional environment variables as needed.
 
-#### Details
-This section walks through each step of the installation procedure.
+##### 5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
+For the NGinX container set the variable: ```USE_ALERT=1``` 
 
-##### 1. Create ALERT_ENCRYPTION_PASSWORD secret. ####
-- ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD - <PASSWORD_VALUE>```
-##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-- ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <SALT_VALUE>```
-##### 3. Create optional secrets.
-##### 4. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-- For the NGinX container set the variable: ```USE_ALERT=1``` 
-##### 5. Install Black Duck following the documented installation procedure for Black Duck. 
-##### 6. Modify environment variables.
-- ALERT_HOSTNAME: Set this to match the hostname to be used to access Alert.
-    - Should be the same value as the value of the PUBLIC_HUB_WEBSERVER_HOST environment variable.
-- ALERT_SERVER_PORT: If the default port of 8443 is not available or not to be used. 
-    - Work with your IT staff if necessary to verify the the configured port is accessible through the network. 
+##### 6. Install Black Duck.
+- Follow the installation procedure for installing Black Duck. 
+
+Note: The NGinX container will not start correctly because it is waiting for the alert service to be available.  
+Deploy alert onto the stack and NGinX will eventually become healthy because the alert service is up and running. 
+
 ##### 7. Deploy the stack.
-- ```docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml blackduck```
-- Use the same stack name used to install Black Duck from step 4.
-
+- Execute the command: 
+    ```
+    docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
+    ```
+- Use the same stack name used to install Black Duck from step 6 i.e. blackduck.
+    ```
+    docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml blackduck
+    ```
 
 ## Upgrading Alert
 You will remove the stack and then re-deploy your stack.
@@ -145,61 +209,280 @@ The steps in the upgrade procedure are the same as the installation procedure af
 1. Review the docker secrets.
 
     ```docker secret ls```
-    
-2. Create any docker secrets for the upgrade as described in [Docker Secrets](#docker-secrets)
 
 ### Standalone Upgrade
-1. Run ```docker stack rm blackduck```
+1. Run ```docker stack rm <STACK_NAME>```
 2. Follow the [Standalone Installation](#standalone-installation)
 
 ### Upgrade with Black Duck
-1. Run ```docker stack rm blackduck```
+1. Run ```docker stack rm <STACK_NAME>```
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
-## Docker Secrets
-Alert uses docker secrets in order to protect configuration information that Alert needs.
+## Optional Secrets 
+This section describes how to configure some of the optional secrets. 
 
-### Required Secrets
-- The items described in this section are required in order for Alert to start properly.
-
-    - ALERT_ENCRYPTION_PASSWORD - The encryption password string. Recommended to be longer than at least 8 characters.
-    
-        ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD - <PASSWORD_VALUE>```
-
-    - ALERT_ENCRYPTION_GLOBAL_SALT - The encryption salt string. Recommended to be longer than at least 8 characters.
-    
-        ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <SALT_VALUE>```
-
-### Optional Secrets 
+### Using Custom Certificates 
 - Custom Certificates for the Alert Web server to present to clients.
 
-    Before you can use custom certificates for Alert you must have the signed certificate and key used to generate the certificate.
+    - Before you can use custom certificates for Alert you must have the signed certificate and key used to generate the certificate.
 
-    - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
+        - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
     
-        ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE file <PATH_TO_CERT_FILE>```
+            ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE file <PATH_TO_CERT_FILE>```
 
-    - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
+        - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
 
-        ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE file <PATH_TO_KEY_FILE>```
-
+            ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE file <PATH_TO_KEY_FILE>```
+    - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
+        ```
+            alert:
+                secrets:
+                    - WEBSERVER_CUSTOM_CERT_FILE
+                    - WEBSERVER_CUSTOM_KEY_FILE
+        ```
+    - Uncomment the following secrets from the secrets section of the docker-compose.local-overrides.yml file.
+        ```
+            secrets:
+                WEBSERVER_CUSTOM_CERT_FILE:
+                    external:
+                        name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
+                WEBSERVER_CUSTOM_KEY_FILE:
+                    external:
+                        name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
+        ```
+### Using Custom Certificate TrustStore
 - Custom java trust store file for the Alert server to communicate over SSL to external systems.
 
     You must have a valid JKS trust store file that can be used as the Trust Store for Alert.  
     
     Only one of the following secrets needs to be created.  If both are created, then jssecacerts secret will take precedence and be used by Alert.
 
-    - jssecacerts - The java trust store file with any custom certificates imported.
-
-        ```docker secret create <STACK_NAME>_jssecacerts file <PATH_TO_TRUST_STORE_FILE>```
-
+    - Create the secret.  Only create one of the following secrets.
+        - jssecacerts - The java trust store file with any custom certificates imported.
+    
+            ```docker secret create <STACK_NAME>_jssecacerts file <PATH_TO_TRUST_STORE_FILE>```
+    
+            or 
+    
+        - cacerts - The java trust store file with any custom certificates imported. 
+     
+            ```docker secret create <STACK_NAME>_cacerts file <PATH_TO_TRUST_STORE_FILE>```
+    - Uncomment the following from the docker-compose.local-overrides.yml file from the alert service section.
+        ```
+            secrets:
+                jssecacerts:
+                    external:
+                    name: "<STACK_NAME>_jssecacerts"
+        ```
         or 
+        ```
+            secrets:
+                cacerts:
+                    external:
+                    name: "<STACK_NAME>_cacerts"
+        ```
 
-    - cacerts - The java trust store file with any custom certificates imported. 
- 
-        ```docker secret create <STACK_NAME>_cacerts file <PATH_TO_TRUST_STORE_FILE>```
+## Environment Variables 
+Alert supports configuration of the application's components via environment variables.  There are two ways to configure the environment variables.
+1. Edit the blackduck-alert.env file.
+2. Edit the docker-compose.local-overrides.yml file to include the environment variables.
 
+Note: You will need to edit to docker-compose.local-overrides.yml file for other settings.  
+When installing choose to either edit: 
 
+```docker-compose.local-overrides.yml``` 
 
+or 
 
+```docker-compose.local.overrides.yml``` and ```blackduck-alert.env```
 
+### Edit Environment File
+Environment variables for Alert have already been created in this file but they are commented out.  
+Uncomment the variable you wish to set by deleting the '#' character at the beginning of each line and set its value.
+
+Example: 
+```
+ALERT_HOSTNAME=localhost
+ALERT_LOGGING_LEVEL=INFO
+```
+
+### Edit the Overrides File
+Uncomment environment from the alert service section of docker-compose.local-overrides.yml.  
+Add environment variables as ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` into the ```environment: ``` section of the alert service.
+
+Example: 
+```
+    environment:
+        - ALERT_HOSTNAME=localhost
+        - ALERT_LOGGING_LEVEL=INFO
+```
+
+### Environment Variable Overrides
+The environment variables will always take precedence and overwrite the values stored in the database if the following variable value is set to 'true'.
+
+```ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true```
+
+### Alert Hostname Variable
+You must specify the ALERT_HOSTNAME environment variable in order for Alert to generate and use certificates correctly.
+- Add the ALERT_HOSTNAME environment variable the value must be the hostname only 
+    - Editing environment file:
+        ```
+        ALERT_HOSTNAME=<NEW_HOST_NAME>
+        ```
+    - Editing overrides file:
+        ```
+            environment:
+                - ALERT_HOSTNAME=<NEW_HOST_NAME>
+        ```
+- Do not add the protocol a.k.a scheme to the value of the variable.
+    - Good: ```ALERT_HOSTNAME=myhost.example.com```
+    - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
+
+### Alert Logging Level Variable
+To change the logging level of alert add the following environment variable to your deployment. 
+
+- Editing environment file: 
+    ```ALERT_LOGGING_LEVEL=DEBUG```
+- Editing overrides file: 
+    ```
+        environment: 
+           - ALERT_LOGGING_LEVEL=DEBUG
+    ```
+
+- Set the value to one of the following: 
+    - DEBUG
+    - ERROR
+    - INFO
+    - TRACE
+    - WARN
+
+### Email Channel Environment Variables
+A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties.  You can find the JavaMail properties here: 
+
+[JavaMail Properties](https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html)
+
+- The Email Channel environment variables have a prefix of ```ALERT_CHANNEL_EMAIL_```
+- The remaining portion of the variable, after the prefix, map to the JavaMail properties if you replace '_' with '.'
+
+Examples:
+- ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST maps to 'mail.smtp.host'
+- ALERT_CHANNEL_EMAIL_MAIL_SMTP_PORT maps to 'mail.smtp.port'
+
+### Environment Variable Classifications
+There are certain classifications with the environment variables. The variables have a specific naming convention:
+```ALERT_<CLASSIFICATION>_<ITEM_NAME>_<CONFIGURATION_PROPERTY>```
+- Provider:  The environment variables to configure these components start with ALERT_PROVIDER_
+- Channel: The environment variables to configure these components start with ALERT_CHANNEL_
+- Component: The environment variables to configure these components start with ALERT_COMPONENT_
+
+Examples:
+These are some examples of what can be set. the blackduck-alert.env file has a more comprehensive list.
+- Provider: 
+    - ALERT_PROVIDER_BLACKDUCK_BLACKDUCK_URL= The URL for the Black Duck server.
+- Channel:
+    - ALERT_CHANNEL_JIRA_CLOUD_JIRA_CLOUD_URL= The URL for the Jira Cloud server.
+    - ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST= The SMTP host used to send email messages.
+- Component: 
+    - ALERT_COMPONENT_SETTINGS_SETTINGS_LDAP_ENABLED= Boolean to determine if LDAP authentication is used.
+
+## Advanced Configuration
+This section describes some advanced configuration settings for the Alert server.
+
+### Changing Server Port
+If Alert should not be running on it's default port of 8443, then this section describes what you have to change in order to use a different port.
+
+For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
+
+- Overrides File Changes
+    - Define the new ports for the alert service.  Add 'ports' to the service description. 
+    ```
+        alert: 
+            ports: ['<NEW_PORT>:<NEW_PORT>']
+    ```
+    - Define the ```ALERT_SERVER_PORT``` environment variable.
+    ```
+        alert: 
+            environment:
+                - ALERT_HOSTNAME=localhost
+                - ALERT_SERVER_PORT=<NEW_PORT>
+    ```
+    - Define the healthcheck for the alert service. Add 'healthcheck' to the service description.
+    ```
+        alert:
+            healthcheck:
+                  test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:<NEW_PORT>/alert/api/about',
+                         /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
+                         /opt/blackduck/alert/security/blackduck_system.key]
+                  interval: 30s
+                  timeout: 60s
+                  retries: 15
+    ```
+Example:
+- Change the port to 9090 via the ```docker-compose.local-overrides.yml``` file for the blackduck stack.
+```
+    alert:
+        ports: ['9090:9090']
+        environment:
+            - ALERT_HOSTNAME=localhost
+            - ALERT_SERVER_PORT=9090
+        secrets:
+            - ALERT_ENCRYPTION_PASSWORD
+            - ALERT_ENCRYPTION_GLOBAL_SALT
+        healthcheck:
+            test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:9090/alert/api/about',
+                 /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
+                /opt/blackduck/alert/security/blackduck_system.key]
+        interval: 30s
+        timeout: 60s
+        retries: 15
+    secrets:
+        ALERT_ENCRYPTION_PASSWORD:
+            external:
+                name: "blackduck_ALERT_ENCRYPTION_PASSWORD"
+        ALERT_ENCRYPTION_GLOBAL_SALT:
+            external:
+                name: "blackduck_ALERT_ENCRYPTION_GLOBAL_SALT"
+```
+  
+Note: Work with your IT staff if necessary to verify the configured port is accessible through the network.
+
+### Changing Memory Settings
+If Alert should be using more memory than its default settings, then this section describes what you have to change in order to allocate more memory.
+
+For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
+
+- Overrides File Changes.
+    - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
+    ```
+        alert:
+            environment:
+                - ALERT_HOSTNAME=localhost
+                - ALERT_MAX_HEAP_SIZE=<NEW_HEAP_SIZE>
+    ```
+    - Define the container memory limit. Add 'mem_limit' to the service description.
+    ```
+        alert:
+            mem_limit: <NEW_HEAP_SIZE + 256M>
+    ```
+    Note: 
+        The ALERT_MAX_HEAP_SIZE and the container mem_limit settings should not be exactly the same.  
+        The container mem_limit setting is the maximum memory allocated to the container.  
+        Additional memory does not get allocated to it.  
+        The maximum heap size in Java is the maximum size of the heap in the Java virtual machine (JVM), but the JVM also uses additional memory.  
+        Therefore, the ALERT_MAX_HEAP_SIZE environment variable must be less than the amount defined in the mem_limit which is set for the container. 
+        Synopsys recommends setting the mem_limit using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
+        
+            ALERT_MAX_HEAP_SIZE = 4096M
+            mem_limit = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
+                
+Example: 
+- Change the memory limit from 2G to 4G.
+```
+    alert:
+        environment:
+            - ALERT_HOSTNAME=localhost
+            - ALERT_MAX_HEAP_SIZE=4096
+        mem_limit: 4352M
+```
+
+Note: Work with your IT staff if necessary to verify the configured memory is available on the host machine.
