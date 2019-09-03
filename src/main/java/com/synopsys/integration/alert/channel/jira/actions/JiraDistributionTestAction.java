@@ -138,7 +138,7 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         }
     }
 
-    private DistributionEvent createChannelTestEvent(final String jobId, final FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
+    private DistributionEvent createChannelTestEvent(String jobId, FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
         final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, operation, messageId);
 
         final String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
