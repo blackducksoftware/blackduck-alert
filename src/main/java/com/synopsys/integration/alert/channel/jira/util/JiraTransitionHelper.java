@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator;
-import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.exception.IntegrationException;
@@ -55,29 +54,29 @@ public class JiraTransitionHelper {
         this.issueService = issueService;
     }
 
-    public boolean doesTransitionToExpectedStatusCategory(TransitionComponent transition, String expectedStatusCategoryKey) throws IntegrationException {
+    public boolean doesTransitionToExpectedStatusCategory(TransitionComponent transition, String expectedStatusCategoryKey) {
         StatusDetailsComponent statusDetails = transition.getTo();
         StatusCategory statusCategory = statusDetails.getStatusCategory();
         return StringUtils.equals(expectedStatusCategoryKey, statusCategory.getKey());
     }
 
     public boolean transitionIssueIfNecessary(String issueKey, JiraIssueConfigValidator.JiraIssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
-        Optional<String> optionalTransitionKey = determineTransitionKey(operation);
-        if (optionalTransitionKey.isPresent()) {
-            final Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
-            if (transitionName.isPresent()) {
-                boolean shouldAttemptTransition = isTransitionRequired(issueKey, operation);
-                if (shouldAttemptTransition) {
-                    performTransition(issueKey, transitionName.get());
-                    return true;
-                } else {
-                    logger.debug("The issue {} is already in the status category that would result from this transition ({}).", issueKey, transitionName);
-                }
+        if (ItemOperation.UPDATE.equals(operation)) {
+            logger.debug("No transition required for this issue: {}.", issueKey);
+            return false;
+        }
+
+        final Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
+        if (transitionName.isPresent()) {
+            boolean shouldAttemptTransition = isTransitionRequired(issueKey, operation);
+            if (shouldAttemptTransition) {
+                performTransition(issueKey, transitionName.get());
+                return true;
             } else {
-                logger.debug("No transition name was provided so no transition will be performed for this operation: {}.", operation);
+                logger.debug("The issue {} is already in the status category that would result from this transition ({}).", issueKey, transitionName);
             }
         } else {
-            logger.debug("No transition required for this issue: {}.", issueKey);
+            logger.debug("No transition name was provided so no transition will be performed for this operation: {}.", operation);
         }
         return false;
     }
@@ -104,8 +103,7 @@ public class JiraTransitionHelper {
         logger.debug("Attempting the transition '{}' on the issue '{}'", transitionName, issueKey);
         Optional<TransitionComponent> firstTransitionByName = retrieveIssueTransition(issueKey, transitionName);
         if (firstTransitionByName.isPresent()) {
-            TransitionComponent issueTransition = firstTransitionByName.get();
-            String transitionId = issueTransition.getId();
+            String transitionId = firstTransitionByName.map(TransitionComponent::getId).get();
             IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
             issueService.transitionIssue(issueRequestModel);
         } else {
@@ -119,17 +117,6 @@ public class JiraTransitionHelper {
                 return jiraIssueConfig.getResolveTransition();
             } else {
                 return jiraIssueConfig.getOpenTransition();
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<String> determineTransitionKey(ItemOperation operation) {
-        if (!ItemOperation.UPDATE.equals(operation)) {
-            if (ItemOperation.DELETE.equals(operation)) {
-                return Optional.of(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
-            } else {
-                return Optional.of(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
             }
         }
         return Optional.empty();
