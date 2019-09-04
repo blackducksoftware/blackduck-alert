@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -123,7 +125,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             if (vulnerabilityViews.containsKey(vulnerabilityId)) {
                 vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
             }
-            String severity = vulnerabilityView.getSeverity().prettyPrint();
 
             LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             item.setPartOfKey(true);
@@ -131,9 +132,9 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             item.setCountable(true);
             item.setCollapsible(true);
 
-            LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, severity);
+            LinkableItem severityItem = getSeverity(vulnerabilityUrl);
             severityItem.setSummarizable(true);
-            ComponentItemPriority priority = ComponentItemPriority.findPriority(severity);
+            ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
             List<LinkableItem> attributes = new LinkedList<>();
             attributes.addAll(licenseItems);
             attributes.add(severityItem);
@@ -182,6 +183,42 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
         } catch (IntegrationException e) {
             logger.debug("Could not create remediation component", e);
+        }
+        return Optional.empty();
+    }
+
+    protected LinkableItem getSeverity(String vulnerabilityUrl) {
+        LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, "UNKNOWN");
+        try {
+            getBucketService().addToTheBucket(getBlackDuckBucket(), vulnerabilityUrl, VulnerabilityView.class);
+            VulnerabilityView vulnerabilityView = getBlackDuckBucket().get(vulnerabilityUrl, VulnerabilityView.class);
+            String severity = vulnerabilityView.getSeverity();
+            Optional<String> cvss3Severity = getCvss3Severity(vulnerabilityView);
+            if (cvss3Severity.isPresent()) {
+                severity = cvss3Severity.get();
+            }
+            severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, severity);
+        } catch (Exception e) {
+            logger.debug("Error fetching vulnerability view", e);
+        }
+
+        severityItem.setSummarizable(true);
+        severityItem.setPartOfKey(true);
+        return severityItem;
+    }
+
+    // TODO update this code with an Object from blackduck-common-api when available
+    private Optional<String> getCvss3Severity(VulnerabilityView vulnerabilityView) {
+        Boolean useCvss3 = vulnerabilityView.getUseCvss3();
+        if (null != useCvss3 && useCvss3) {
+            JsonObject vulnJsonObject = vulnerabilityView.getJsonElement().getAsJsonObject();
+            JsonElement cvss3 = vulnJsonObject.get("cvss3");
+            if (null != cvss3) {
+                JsonElement cvss3Severity = cvss3.getAsJsonObject().get("severity");
+                if (null != cvss3Severity) {
+                    return Optional.of(cvss3Severity.getAsString());
+                }
+            }
         }
         return Optional.empty();
     }
