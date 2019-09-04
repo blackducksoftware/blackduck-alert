@@ -27,7 +27,9 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 
 - You have a Docker host with at least 2GB of allocatable memory.
 - You have administrative access to your docker host.  
-- Before installing or upgrading Alert you must create desired persistent storage volumes for Alert.
+- Before installing or upgrading Alert you must create desired persistent storage volumes for Alert which needs to be either:
+    - Node locked.     
+    - Backed by an NFS volume or a similar mechanism.
 
 ## Installing Alert
 Deployment files for Docker Compose are located in the docker-swarm directory of the: 
