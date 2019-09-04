@@ -45,7 +45,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceF
 import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
 
-@Component(value = JiraChannel.COMPONENT_NAME)
+@Component
 public class JiraChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_jira_cloud";
     private final Logger logger = LoggerFactory.getLogger(JiraChannel.class);

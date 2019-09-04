@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
-@Component(value = SlackChannel.COMPONENT_NAME)
+@Component
 public class SlackChannel extends NamedDistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";

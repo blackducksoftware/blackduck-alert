@@ -47,10 +47,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 
-@Component(value = EmailChannel.COMPONENT_NAME)
+@Component
 public class EmailChannel extends NamedDistributionChannel {
-    public static final String COMPONENT_NAME = "channel_email";
-
     public static final String PROPERTY_USER_DIR = "user.dir";
     public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
