@@ -247,6 +247,21 @@ This section describes how to configure the optional certificates.  Please verif
      
             ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts```
 
+### Insecure Trust of All Certificates
+WARNING:  This is not a recommended option.  Using this option makes your deployment less secure.  Use at your own risk.
+
+This option allows someone who is installing Alert to verify that the installation is working correctly if certificate issues such as PKIX errors appear.
+
+This is intended to ONLY be used to validate the installation of the Alert server is up and running.  
+Certificates SHOULD be correctly generated for the the Alert server and a valid Truststore SHOULD be provided to trust third party systems. 
+
+To allow Alert to trust all certificates add the environment variable: 
+```
+ALERT_TRUST_CERT=true
+```
+Please see the section [Environment Variables](#environment-variables) to learn how to set the environment variables.
+
+
 ## Environment Variables 
 Alert supports configuration of the application's components via environment variables.  There are two ways to configure the environment variables.
 1. Edit the blackduck-alert.env file.
