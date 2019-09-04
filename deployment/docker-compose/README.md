@@ -12,7 +12,7 @@ This installation method is deprecated and will not be supported after December 
 - [Upgrading Alert](#upgrading-alert)
     - [Standalone Upgrade](#standalone-upgrade)
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
-- [Optional Secrets](#optional-secrets)
+- [Certificates](#certificates)
 - [Environment Variables](#environment-variables) 
     - [Edit Environment File](#edit-environment-file)
     - [Edit the Overrides File](#edit-the-overrides-file)
@@ -42,73 +42,66 @@ blackduck-alert-\<VERSION>\-deployment.zip file.
 ### Standalone Installation
 This section walk through the instructions to install Alert in a standalone fashion.
 #### Overview
-
-1. Create ALERT_ENCRYPTION_PASSWORD secret.
-2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-3. Create any optional secrets.
-4. Modify environment variables.
-5. Bring the containers up.
+1. Create a directory for secrets.
+2. Create ALERT_ENCRYPTION_PASSWORD file.
+3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
+4. Manage certificates.
+5. Modify environment variables.
+6. Bring the containers up.
  
 #### Details 
 This section walks through each step of the installation procedure.
 
-##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
-  
-- Create a docker secret containing the encryption password for Alert.
+##### 1. Create a directory for secrets.
 
-    ```docker secret create ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>```
-
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
-- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+- Create a directory to store secrets.
     ```
-        alert:
-            secrets:
-                - ALERT_ENCRYPTION_PASSWORD
+    mkdir -p <PATH>
     ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "ALERT_ENCRYPTION_PASSWORD"
-            
-    ```
-##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-
-- Create a docker secret containing the encryption salt for Alert.
-
-    ```docker secret create ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
     
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+    Example: 
+    ```
+    mkdir -p /alert/mysecrets
+    ```
+    
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
     ```
-        alert:
-            secrets:
-                - ALERT_ENCRYPTION_PASSWORD
-                - ALERT_ENCRYPTION_GLOBAL_SALT
+      volumes: ['<PATH_TO_SECRETS>:/run/secrets']
     ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+      
+- Replace <PATH_TO_SECRETS> of the docker-compose.local-overrides.yml file with the directory just created.
+    
+    Example:
     ```
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "ALERT_ENCRYPTION_PASSWORD"
-            ALERT_ENCRYPTION_GLOBAL_SALT:
-              external:
-                name: "ALERT_ENCRYPTION_GLOBAL_SALT"
-            
+        volumes:['/alert/mysecrets:/run/secrets']
+    ```
+##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
+  
+- Create a file containing the encryption password for Alert in the secrets directory.
+
+    ```
+    echo "<PASSSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
 
-##### 3. Create optional secrets.
+##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
+
+- Create a file containing the encryption salt for Alert in the secrets directory.
+
+    ```
+    echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
+    ```
+
+##### 4. Manage Certificates.
+This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
-#### 4. Modify environment variables.
+#### 5. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
 - Set any other optional environment variables as needed.
 
-##### 5. Bring the containers up.
+##### 6. Bring the containers up.
 - Start the containers 
     ```
     docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
@@ -122,80 +115,74 @@ Please see [Environment Variables](#environment-variables)
     
 ### Installation with Black Duck
 Overview:
-1. Create ALERT_ENCRYPTION_PASSWORD secret.
-2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-3. Create any optional secrets.
-4. Modify environment variables.
-5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-6. Install Black Duck. Follow the documented installation procedure for Black Duck.
-7. Bring the containers up.
+1. Create a directory for secrets.
+2. Create ALERT_ENCRYPTION_PASSWORD file.
+3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
+4. Manage certificates.
+5. Modify environment variables.
+6. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
+7. Install Black Duck. Follow the documented installation procedure for Black Duck.
+8. Bring the containers up.
 
 #### Details 
 This section walks through each step of the installation procedure.
 
-##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
-  
-- Create a docker secret containing the encryption password for Alert.
+##### 1. Create a directory for secrets.
 
-    ```docker secret create ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>```
-
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Create a directory to store secrets.
+    ```
+    mkdir -p <PATH>
+    ```
+    
+    Example: 
+    ```
+    mkdir -p /alert/mysecrets
+    ```
+    
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
     ```
-        alert:
-            secrets:
-                - ALERT_ENCRYPTION_PASSWORD
+      volumes: ['<PATH_TO_SECRETS>:/run/secrets']
     ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "ALERT_ENCRYPTION_PASSWORD"
-            
-    ```
-##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-
-- Create a docker secret containing the encryption salt for Alert.
-
-    ```docker secret create ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
+      
+- Replace <PATH_TO_SECRETS> of the docker-compose.local-overrides.yml file with the directory just created.
     
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
-- Uncomment the following from the docker-compose.local-overrides.yml file to the alert service section.
+    Example:
     ```
-        alert:
-            secrets:
-                - ALERT_ENCRYPTION_PASSWORD
-                - ALERT_ENCRYPTION_GLOBAL_SALT
+        volumes:['/alert/mysecrets:/run/secrets']
     ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
+  
+- Create a file containing the encryption password for Alert in the secrets directory.
+
     ```
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "ALERT_ENCRYPTION_PASSWORD"
-            ALERT_ENCRYPTION_GLOBAL_SALT:
-              external:
-                name: "ALERT_ENCRYPTION_GLOBAL_SALT"
-            
+    echo "<PASSSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
 
-##### 3. Create optional secrets.
+##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
+
+- Create a file containing the encryption salt for Alert in the secrets directory.
+
+    ```
+    echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
+    ```
+
+##### 4. Manage Certificates.
+This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
-#### 4. Modify environment variables.
+#### 5. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
 - Set any other optional environment variables as needed.
 
-##### 5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
+##### 6. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
 For the NGinX container set the variable: ```USE_ALERT=1``` 
 
-##### 6. Install Black Duck.
+##### 7. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. Do not start the containers.  Skip that step.
 
-##### 7. Bring the containers up.
+##### 8. Bring the containers up.
 - Copy the blackduck-alert.env file to the same location where the Black Duck docker-compose files are located.
 - Start the containers. 
     ```
@@ -209,13 +196,8 @@ For the NGinX container set the variable: ```USE_ALERT=1```
     Note: Don't forget the -d option at the end of the command line to run the command as a daemon process otherwise the container logs will go to standard output and ```ctrl+c``` will stop the application.
 
 ## Upgrading Alert
-You will remove the stack and then re-deploy your stack.
-The steps in the upgrade procedure are the same as the installation procedure after removing the stack.
-
-### Verify Secrets 
-1. Review the docker secrets.
-
-    ```docker secret ls```
+You will bring down the profile and then re-deploy the profile.
+The steps in the upgrade procedure are the same as the installation procedure after bringing the profile down.
 
 ### Standalone Upgrade
 1. Execute the command:  
@@ -231,38 +213,22 @@ The steps in the upgrade procedure are the same as the installation procedure af
     ```
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
-## Optional Secrets 
-This section describes how to configure some of the optional secrets. 
+## Certificates 
+This section describes how to configure the optional certificates.  Please verify beforehand if custom certificates or a certificate truststore must be used.
 
 ### Using Custom Certificates 
-- Custom Certificates for the Alert Web server to present to clients.
+- Custom Certificates for the Alert web server to present to clients.
 
     - Before you can use custom certificates for Alert you must have the signed certificate and key used to generate the certificate.
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
     
-            ```docker secret create WEBSERVER_CUSTOM_CERT_FILE file <PATH_TO_CERT_FILE>```
+            ```cp <PATH_TO_CERT_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_CERT_FILE```
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
 
-            ```docker secret create WEBSERVER_CUSTOM_KEY_FILE file <PATH_TO_KEY_FILE>```
-    - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
-        ```
-            alert:
-                secrets:
-                    - WEBSERVER_CUSTOM_CERT_FILE
-                    - WEBSERVER_CUSTOM_KEY_FILE
-        ```
-    - Uncomment the following secrets from the secrets section of the docker-compose.local-overrides.yml file.
-        ```
-            secrets:
-                WEBSERVER_CUSTOM_CERT_FILE:
-                    external:
-                        name: "WEBSERVER_CUSTOM_CERT_FILE"
-                WEBSERVER_CUSTOM_KEY_FILE:
-                    external:
-                        name: "WEBSERVER_CUSTOM_KEY_FILE"
-        ```
+            ```cp <PATH_TO_KEY_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_KEY_FILE```
+            
 ### Using Custom Certificate TrustStore
 - Custom java trust store file for the Alert server to communicate over SSL to external systems.
 
@@ -273,27 +239,13 @@ This section describes how to configure some of the optional secrets.
     - Create the secret.  Only create one of the following secrets.
         - jssecacerts - The java trust store file with any custom certificates imported.
     
-            ```docker secret create jssecacerts file <PATH_TO_TRUST_STORE_FILE>```
+            ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/jssecacerts```
     
             or 
     
         - cacerts - The java trust store file with any custom certificates imported. 
      
-            ```docker secret create cacerts file <PATH_TO_TRUST_STORE_FILE>```
-    - Uncomment the following from the docker-compose.local-overrides.yml file from the alert service section.
-        ```
-            secrets:
-                jssecacerts:
-                    external:
-                    name: "jssecacerts"
-        ```
-        or 
-        ```
-            secrets:
-                cacerts:
-                    external:
-                    name: "cacerts"
-        ```
+            ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts```
 
 ## Environment Variables 
 Alert supports configuration of the application's components via environment variables.  There are two ways to configure the environment variables.
@@ -438,23 +390,13 @@ Example:
         environment:
             - ALERT_HOSTNAME=localhost
             - ALERT_SERVER_PORT=9090
-        secrets:
-            - ALERT_ENCRYPTION_PASSWORD
-            - ALERT_ENCRYPTION_GLOBAL_SALT
         healthcheck:
             test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:9090/alert/api/about',
                  /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
                 /opt/blackduck/alert/security/blackduck_system.key]
-        interval: 30s
-        timeout: 60s
-        retries: 15
-    secrets:
-        ALERT_ENCRYPTION_PASSWORD:
-            external:
-                name: "ALERT_ENCRYPTION_PASSWORD"
-        ALERT_ENCRYPTION_GLOBAL_SALT:
-            external:
-                name: "ALERT_ENCRYPTION_GLOBAL_SALT"
+            interval: 30s
+            timeout: 60s
+            retries: 15
 ```
   
 Note: Work with your IT staff if necessary to verify the configured port is accessible through the network.
@@ -494,7 +436,7 @@ Example:
     alert:
         environment:
             - ALERT_HOSTNAME=localhost
-            - ALERT_MAX_HEAP_SIZE=4096
+            - ALERT_MAX_HEAP_SIZE=4096M
         mem_limit: 4352M
 ```
 

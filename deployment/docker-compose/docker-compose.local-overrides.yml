@@ -4,34 +4,5 @@ services:
 #    # uncomment environment to set environment variables for the alert service.
 #    environment:
 #      - ALERT_HOSTNAME=localhost
-#    # uncomment the secrets section to use secrets.
-#    # Please uncomment the secrets in use; both the required and the optional secrets.
-#    # Note: choose one jssecacerts or cacerts secret not both.
-#    secrets:
-#      - ALERT_ENCRYPTION_PASSWORD
-#      - ALERT_ENCRYPTION_GLOBAL_SALT
-#      - WEBSERVER_CUSTOM_CERT_FILE
-#      - WEBSERVER_CUSTOM_KEY_FILE
-#      - jssecacerts
-#      - cacerts
-#
-# uncomment the secrets in use; both the required and the optional secrets.
-#secrets:
-#  ALERT_ENCRYPTION_PASSWORD:
-#    external:
-#      name: "ALERT_ENCRYPTION_PASSWORD"
-#  ALERT_ENCRYPTION_GLOBAL_SALT:
-#    external:
-#      name: "ALERT_ENCRYPTION_GLOBAL_SALT"
-#  WEBSERVER_CUSTOM_CERT_FILE:
-#    external:
-#      name: "WEBSERVER_CUSTOM_CERT_FILE"
-#  WEBSERVER_CUSTOM_KEY_FILE:
-#    external:
-#      name: "WEBSERVER_CUSTOM_KEY_FILE"
-#  jssecacerts:
-#    external:
-#      name: "jssecacerts"
-#  cacerts:
-#    external:
-#      name: "cacerts"
+#    # uncomment volumes in order to mount a directory containing the Alert files to /run/secrets of the container.
+#    volumes: ['<PATH_TO_SECRETS>:/run/secrets']
