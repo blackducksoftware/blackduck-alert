@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.jira;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -47,11 +48,14 @@ import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService
 
 @Component
 public class JiraChannel extends DistributionChannel {
-    public static final String COMPONENT_NAME = "channel_jira_cloud";
     private final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
 
-    public JiraChannel(Gson gson, AuditUtility auditUtility) {
+    private final JiraChannelKey jiraChannelKey;
+
+    @Autowired
+    public JiraChannel(Gson gson, AuditUtility auditUtility, JiraChannelKey jiraChannelKey) {
         super(gson, auditUtility);
+        this.jiraChannelKey = jiraChannelKey;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class JiraChannel extends DistributionChannel {
 
     @Override
     public String getDestinationName() {
-        return COMPONENT_NAME;
+        return jiraChannelKey.getUniversalKey();
     }
 
 }

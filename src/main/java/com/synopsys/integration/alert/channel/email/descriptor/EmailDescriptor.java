@@ -43,7 +43,7 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Autowired
     public EmailDescriptor(EmailChannelKey emailChannelKey, EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig) {
-        super(emailChannelKey.getUniversalKey(), emailDistributionUIConfig, emailGlobalUIConfig);
+        super(emailChannelKey, emailDistributionUIConfig, emailGlobalUIConfig);
     }
 
 }
