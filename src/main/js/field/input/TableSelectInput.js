@@ -10,7 +10,33 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import PropTypes from 'prop-types';
 import { Modal } from "react-bootstrap";
 
-const { Option, SingleValue } = components;
+const { Option, SingleValue, ValueContainer } = components;
+
+const typeOptionLabel = props => (
+    <Option {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+    </Option>
+);
+
+const typeLabel = props => (
+    <SingleValue {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+    </SingleValue>
+);
+
+const container = ({ children, getValue, ...props }) => {
+    const length = getValue().length;
+    return (length <= 5) ?
+        <ValueContainer {...props}>
+            {children}
+        </ValueContainer>
+        :
+        <ValueContainer {...props}>
+            {!props.selectProps.menuIsOpen &&
+            `${length} Items selected`}
+            {React.cloneElement(children[1])}
+        </ValueContainer>;
+}
 
 class TableSelectInput extends Component {
     constructor(props) {
@@ -230,21 +256,10 @@ class TableSelectInput extends Component {
     }
 
     createSelect() {
-        const typeOptionLabel = props => (
-            <Option {...props}>
-                <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-            </Option>
-        );
-
-        const typeLabel = props => (
-            <SingleValue {...props}>
-                <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-            </SingleValue>
-        );
-
         const components = {
             Option: typeOptionLabel,
             SingleValue: typeLabel,
+            ValueContainer: container,
             DropdownIndicator: null,
             MultiValueRemove: () => <div></div>
         }
