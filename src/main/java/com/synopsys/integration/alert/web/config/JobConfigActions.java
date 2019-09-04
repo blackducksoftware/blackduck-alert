@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -191,9 +192,7 @@ public class JobConfigActions {
             }
         }
         if (StringUtils.isNotBlank(error)) {
-            final Map<String, String> fieldErrors = new HashMap<>();
-            fieldErrors.put(ChannelDistributionUIConfig.KEY_NAME, error);
-            throw new AlertFieldException(fieldErrors);
+            throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, error);
         }
     }
 
@@ -230,7 +229,8 @@ public class JobConfigActions {
                 final String jobId = channelFieldModel.getId();
 
                 testProviderConfig(fieldAccessor, jobId, destination);
-                return testAction.testConfig(jobId, destination, fieldAccessor);
+                MessageResult testResult = testAction.testConfig(jobId, destination, fieldAccessor);
+                return testResult.getStatusMessage();
             } else {
                 final String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);

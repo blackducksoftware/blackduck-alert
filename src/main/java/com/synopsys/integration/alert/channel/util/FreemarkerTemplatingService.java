@@ -27,6 +27,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import com.synopsys.integration.alert.channel.msteams.MsTeamsMessage;
+import com.synopsys.integration.exception.IntegrationException;
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,17 +65,41 @@ public class FreemarkerTemplatingService {
         return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), channelDirectory);
     }
 
-    public Configuration createFreemarkerConfig(final String templateDirectory) throws IOException {
+    public Configuration createFreemarkerConfig(final File templateLoadingDirectory) throws IOException {
+        Configuration configuration = createDefaultConfiguration();
+
+        if (templateLoadingDirectory != null) {
+            configuration.setDirectoryForTemplateLoading(templateLoadingDirectory);
+        }
+
+        return configuration;
+    }
+
+    public Configuration createFreemarkerConfig(TemplateLoader templateLoader) {
+        Configuration configuration = createDefaultConfiguration();
+
+        configuration.setTemplateLoader(templateLoader);
+
+        return configuration;
+    }
+
+    public TemplateLoader createClassTemplateLoader(String basePackagePath) {
+        return new ClassTemplateLoader(getClass(), basePackagePath);
+    }
+
+    private Configuration createDefaultConfiguration() {
         final Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
+
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         cfg.setLogTemplateExceptions(false);
 
-        final File templateLoadingDirectory = findTemplateDirectory(templateDirectory);
-        if (templateLoadingDirectory != null) {
-            cfg.setDirectoryForTemplateLoading(templateLoadingDirectory);
-        }
         return cfg;
+    }
+
+    public Configuration createFreemarkerConfig(final String templateDirectory) throws IOException {
+        final File templateLoadingDirectory = findTemplateDirectory(templateDirectory);
+        return createFreemarkerConfig(templateLoadingDirectory);
     }
 
     private File findTemplateDirectory(final String templateDirectory) {
@@ -90,9 +119,24 @@ public class FreemarkerTemplatingService {
         }
     }
 
-    public String getResolvedTemplate(final Map<String, Object> model, final Template template) throws IOException, TemplateException {
-        final StringWriter stringWriter = new StringWriter();
-        template.process(model, stringWriter);
-        return stringWriter.toString();
+    public String resolveTemplate(final Map<String, Object> dataModel, final Template template) throws IntegrationException {
+        try {
+            StringWriter stringWriter = new StringWriter();
+            template.process(dataModel, stringWriter);
+            return stringWriter.toString();
+        } catch (IOException | TemplateException e) {
+            throw new IntegrationException(e.getMessage(), e);
+        }
     }
+
+    public String resolveTemplate(FreemarkerDataModel dataModel, Template template) throws IntegrationException {
+        try {
+            StringWriter stringWriter = new StringWriter();
+            template.process(dataModel, stringWriter);
+            return stringWriter.toString();
+        } catch (IOException | TemplateException e) {
+            throw new IntegrationException(e.getMessage(), e);
+        }
+    }
+
 }

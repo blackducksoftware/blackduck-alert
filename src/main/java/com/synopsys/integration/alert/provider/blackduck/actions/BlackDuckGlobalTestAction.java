@@ -22,9 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -35,6 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -58,7 +56,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final String apiToken = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
@@ -75,15 +73,13 @@ public class BlackDuckGlobalTestAction extends TestAction {
         if (connectionResult.isFailure()) {
             String failureMessage = connectionResult.getFailureMessage().orElse("");
             if (RestConstants.UNAUTHORIZED_401 == connectionResult.getHttpStatusCode()) {
-                final Map<String, String> fieldErrors = new HashMap<>();
-                fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
-                throw new AlertFieldException(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), fieldErrors);
+                throw AlertFieldException.singleFieldError(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
             } else if (connectionResult.getHttpStatusCode() > 0) {
                 throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, failureMessage);
             }
             throw new AlertException(String.format("Could not connect to: %s. %s", url, failureMessage));
         }
-        return "Successfully connected to BlackDuck server.";
+        return new MessageResult("Successfully connected to BlackDuck server.");
     }
 
     public void validateBlackDuckConfiguration(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) throws AlertException {

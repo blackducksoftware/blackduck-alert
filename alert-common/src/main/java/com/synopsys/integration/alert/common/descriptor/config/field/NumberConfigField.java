@@ -33,19 +33,19 @@ public class NumberConfigField extends ConfigField {
     public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
 
     public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel) {
-        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, panel);
+        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
     }
 
     public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, panel, validationFunction);
+        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel, validationFunction);
     }
 
     public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
-        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive);
+        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
     }
 
     public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
+        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, validationFunction);
     }
 
     public static NumberConfigField create(final String key, final String label, final String description) {

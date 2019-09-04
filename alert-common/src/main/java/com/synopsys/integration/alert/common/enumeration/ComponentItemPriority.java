@@ -31,8 +31,13 @@ public enum ComponentItemPriority {
     NONE;
 
     public static final ComponentItemPriority findPriority(String priority) {
+        String upperCasePriority = priority.toUpperCase();
+        if ("CRITICAL".equals(upperCasePriority) || "BLOCKER".equals(upperCasePriority)) {
+            return HIGHEST;
+        }
+
         try {
-            return ComponentItemPriority.valueOf(priority.toUpperCase());
+            return ComponentItemPriority.valueOf(upperCasePriority);
         } catch (IllegalArgumentException ex) {
             // couldn't find the enum value default to STANDARD
             return NONE;

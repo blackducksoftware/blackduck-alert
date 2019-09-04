@@ -1,0 +1,21 @@
+{
+  "@type": "MessageCard",
+  "@context": "https:\/\/schema.org\/extensions",
+  "summary": "New Content from Alert",
+  "themeColor": "5A2A82",
+  "title": "New Content from 1 Provider",
+  "sections": [
+    {
+      "startGroup": true,
+      "title": "Black Duck - ek-alert-testing - 1.0.0",
+      "text": "* Vulnerability (ADD): Apache Struts/1.2.2  
+Component License: Apache License 2.0, Severity: HIGH, Vulnerabilities: CVE-2016-0785, Vulnerabilities: CVE-2014-0114, Vulnerabilities: CVE-2006-1546, Vulnerabilities: CVE-2006-1547
+* Vulnerability (ADD): Apache Struts/1.2.2  
+Component License: Apache License 2.0, Severity: MEDIUM, Vulnerabilities: CVE-2012-0394, Vulnerabilities: CVE-2006-1548, Vulnerabilities: CVE-2015-0899, Vulnerabilities: CVE-2016-1182, Vulnerabilities: CVE-2016-1181
+* Vulnerability (ADD): Apache Struts/1.2.2  
+Component License: Apache License 2.0, Severity: LOW, Vulnerabilities: BDSA-2008-0016
+* Vulnerability (UPDATE): Apache Struts/1.2.2  
+Component License: Apache License 2.0, Severity: LOW, Remediation - Fixes Previous Vulnerabilities: 2, Remediation - Latest Version: 2.5.20, Remediation - Without Vulnerabilities: 2"
+    }
+  ]
+}

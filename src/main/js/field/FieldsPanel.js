@@ -115,26 +115,32 @@ class FieldsPanel extends React.Component {
 
     createHeaders(fieldMapping) {
         const fieldRenders = [];
-        Object.keys(fieldMapping)
-            .forEach((key) => {
-                if (key !== DEFAULT_PANEL) {
-                    const header = (<h2 key={key}>{key}</h2>);
-                    fieldRenders.push(header);
-                }
-                const fields = this.createFields(fieldMapping[key]);
-                fieldRenders.push(...fields);
-            });
+        Object.keys(fieldMapping).forEach((key) => {
+            if (key !== DEFAULT_PANEL) {
+                const header = (<h2 key={key}>{key}</h2>);
+                fieldRenders.push(header);
+            }
+            const fields = this.createFields(fieldMapping[key]);
+            fieldRenders.push(...fields);
+        });
         return fieldRenders;
     }
 
     createFields(fields) {
-        const { currentConfig, fieldErrors } = this.props;
+        const { currentConfig, fieldErrors, metadata } = this.props;
         const createdFields = [];
+        const { additionalFields } = metadata;
+        const currentConfigCopy = JSON.parse(JSON.stringify(currentConfig));
+        if (additionalFields && Object.keys(additionalFields).length != 0) {
+            Object.keys(additionalFields).forEach(key => {
+                currentConfigCopy.keyToValues[key] = additionalFields[key];
+            });
+        }
 
         fields.forEach((field) => {
             const fieldKey = field.key;
             if (!this.state.hiddenFieldKeys.includes(fieldKey)) {
-                const newField = FieldMapping.createField(field, currentConfig, fieldErrors[fieldKey], this.handleChange);
+                const newField = FieldMapping.createField(field, currentConfigCopy, fieldErrors[fieldKey], this.handleChange);
                 createdFields.push(newField);
             }
         });
@@ -145,10 +151,9 @@ class FieldsPanel extends React.Component {
         const createdPanels = [];
 
         const sortedFields = this.initializeFieldMapping(this.props.descriptorFields);
-        Object.keys(sortedFields)
-            .forEach((key) => {
-                createdPanels.push(this.createPanel(key, sortedFields[key]));
-            });
+        Object.keys(sortedFields).forEach((key) => {
+            createdPanels.push(this.createPanel(key, sortedFields[key]));
+        });
 
         return (
             <div>
@@ -163,7 +168,16 @@ FieldsPanel.propTypes = {
     currentConfig: PropTypes.object.isRequired,
     fieldErrors: PropTypes.object.isRequired,
     self: PropTypes.object.isRequired,
-    stateName: PropTypes.string.isRequired
+    stateName: PropTypes.string.isRequired,
+    metadata: PropTypes.shape({
+        additionalFields: PropTypes.object
+    })
 };
+
+FieldsPanel.defaultProps = {
+    metadata: {
+        additionalFields: {}
+    }
+}
 
 export default FieldsPanel;

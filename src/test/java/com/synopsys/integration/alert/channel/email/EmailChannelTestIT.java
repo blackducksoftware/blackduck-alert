@@ -7,14 +7,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
@@ -22,15 +20,13 @@ import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
-import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -38,23 +34,17 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelTestIT extends ChannelTest {
+    private static final EmailChannelKey CHANNEL_KEY = new EmailChannelKey();
+
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
         final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testBlackDuckProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null, null);
-        testBlackDuckProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
-
-        final PolarisProperties testPolarisProperties = Mockito.mock(PolarisProperties.class);
-        final String polarisUrl = properties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
-        Mockito.when(testPolarisProperties.getUrl()).thenReturn(Optional.ofNullable(polarisUrl));
-
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
 
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
-        final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, testBlackDuckProperties, testPolarisProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
+        final EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
         final ProviderMessageContent content = createMessageContent(getClass().getSimpleName());
         final Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         final String subjectLine = "Integration test subject line";
@@ -80,7 +70,7 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     public void sendEmailNullGlobalTest() {
         try {
-            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, null, null);
+            final EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final ProviderMessageContent content = new ProviderMessageContent.Builder()
                                                        .applyProvider("testProvider")

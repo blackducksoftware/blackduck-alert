@@ -51,6 +51,10 @@ public class RestChannelUtility {
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
+    public void sendSingleMessage(Request request, final String eventDestination) throws IntegrationException {
+        sendMessage(List.of(request), eventDestination);
+    }
+
     public void sendMessage(final List<Request> requests, final String eventDestination) throws IntegrationException {
         try {
             final IntHttpClient intHttpClient = getIntHttpClient();

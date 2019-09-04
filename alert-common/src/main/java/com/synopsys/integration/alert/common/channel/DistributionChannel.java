@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
@@ -71,6 +72,6 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
         }
     }
 
-    public abstract String sendMessage(final DistributionEvent event) throws IntegrationException;
+    public abstract MessageResult sendMessage(final DistributionEvent event) throws IntegrationException;
 
 }

@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class ChannelDescriptor extends Descriptor {
-
     public ChannelDescriptor(final String name, final ChannelDistributionUIConfig distributionUIConfig, final UIConfig globalUIConfig) {
         super(name, DescriptorType.CHANNEL);
         addDistributionUiConfig(distributionUIConfig);

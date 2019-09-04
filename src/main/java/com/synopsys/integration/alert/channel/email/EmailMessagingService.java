@@ -43,6 +43,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.synopsys.integration.exception.IntegrationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
@@ -89,7 +90,7 @@ public class EmailMessagingService {
             final String emailPath = freemarkerTemplatingService.getTemplatePath("email");
             final Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(emailPath);
             final Template emailTemplate = templateDirectory.getTemplate(templateName);
-            final String html = freemarkerTemplatingService.getResolvedTemplate(model, emailTemplate);
+            final String html = freemarkerTemplatingService.resolveTemplate(model, emailTemplate);
 
             final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
             mimeMultipartBuilder.addHtmlContent(html);
@@ -102,10 +103,10 @@ public class EmailMessagingService {
                 subjectLine = "Default Subject Line - please define one";
             }
             final Template subjectLineTemplate = new Template(EMAIL_SUBJECT_LINE_TEMPLATE, subjectLine, templateDirectory);
-            final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedTemplate(model, subjectLineTemplate);
+            final String resolvedSubjectLine = freemarkerTemplatingService.resolveTemplate(model, subjectLineTemplate);
             final List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
             sendMessages(emailProperties, session, messages);
-        } catch (final MessagingException | IOException | TemplateException ex) {
+        } catch (final MessagingException | IOException | IntegrationException ex) {
             final String errorMessage = "Could not send the email. " + ex.getMessage();
             logger.error(errorMessage, ex);
             throw new AlertException(errorMessage, ex);

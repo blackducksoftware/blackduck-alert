@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
@@ -53,7 +54,7 @@ public class PolarisGlobalTestAction extends TestAction {
     }
 
     @Override
-    public String testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final String errorMessageFormat = "The field %s is required";
@@ -84,7 +85,7 @@ public class PolarisGlobalTestAction extends TestAction {
         } catch (final IOException ioException) {
             throw new AlertException(ioException);
         }
-        return "Successfully connected to Polaris server.";
+        return new MessageResult("Successfully connected to Polaris server.");
     }
 
 }

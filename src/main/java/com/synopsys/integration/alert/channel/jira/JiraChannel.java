@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
+import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -54,7 +55,7 @@ public class JiraChannel extends DistributionChannel {
     }
 
     @Override
-    public String sendMessage(DistributionEvent event) throws IntegrationException {
+    public JiraMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         MessageContentGroup content = event.getContent();
         JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
