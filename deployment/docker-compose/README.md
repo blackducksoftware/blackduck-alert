@@ -13,7 +13,7 @@ This installation method is deprecated and will not be supported after December 
     - [Standalone Upgrade](#standalone-upgrade)
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
 - [Certificates](#certificates)
-- [Environment Variables](#environment-variables) 
+- [Environment Variables](#environment-variables)
     - [Edit Environment File](#edit-environment-file)
     - [Edit the Overrides File](#edit-the-overrides-file)
     - [Environment Variable Overrides](#environment-variable-overrides)
@@ -27,20 +27,22 @@ This installation method is deprecated and will not be supported after December 
 
 ## Requirements
 
-- You have a Docker host with at least 2GB of allocatable memory.
-- You have administrative access to your docker host.  
+- A Docker host with at least 2GB of allocatable memory.
+- Administrative access to the docker host machine.  
 
 ## Installing Alert
-Deployment files for Docker Compose are located in the docker-compose directory of the: 
-
-blackduck-alert-\<VERSION>\-deployment.zip file.
+Deployment files for Docker Compose are located in the docker-compose directory of the zip file.
+```
+blackduck-alert-<VERSION>-deployment.zip file.
+```
 
 - Extract the contents of the ZIP file.
-- For installing with the Black Duck the files are located in the hub sub-directory.
-- For installing Alert standalone the files are located in the standalone sub-directory.
+- For installing with the Black Duck the files are located in the *hub* sub-directory.
+- For installing Alert standalone the files are located in the *standalone* sub-directory.
 
 ### Standalone Installation
-This section walk through the instructions to install Alert in a standalone fashion.
+This section will walk through the instructions to install Alert in a standalone fashion.
+
 #### Overview
 1. Create a directory for secrets.
 2. Create ALERT_ENCRYPTION_PASSWORD file.
@@ -48,9 +50,9 @@ This section walk through the instructions to install Alert in a standalone fash
 4. Manage certificates.
 5. Modify environment variables.
 6. Bring the containers up.
- 
-#### Details 
-This section walks through each step of the installation procedure.
+
+#### Details
+This section will walk through each step of the installation procedure.
 
 ##### 1. Create a directory for secrets.
 
@@ -58,35 +60,36 @@ This section walks through each step of the installation procedure.
     ```
     mkdir -p <PATH>
     ```
-    
-    Example: 
+
+    Example:
     ```
     mkdir -p /alert/mysecrets
     ```
-    
+
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
     ```
       volumes: ['<PATH_TO_SECRETS>:/run/secrets']
     ```
-      
+
 - Replace <PATH_TO_SECRETS> of the docker-compose.local-overrides.yml file with the directory just created.
-    
+
     Example:
     ```
         volumes:['/alert/mysecrets:/run/secrets']
     ```
 ##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
-  
+
 - Create a file containing the encryption password for Alert in the secrets directory.
+    - Replace <PASSWORD_TEXT> with the password to use.
 
     ```
-    echo "<PASSSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
+    echo "<PASSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
 
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 
 - Create a file containing the encryption salt for Alert in the secrets directory.
-
+    - Replace <SALT_TEXT> with the salt to use.
     ```
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
@@ -102,18 +105,20 @@ Please see [Environment Variables](#environment-variables)
 - Set any other optional environment variables as needed.
 
 ##### 6. Bring the containers up.
-- Start the containers 
+- Start the containers
     ```
     docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
-- Be sure to replace <PROFILE_NAME> with the profile name you wish to use for your deployment i.e. blackduck.
+- Be sure to replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
     ```
     docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose.local-overrides.yml -p blackduck up -d
     ```
-    
+
     Note: Don't forget the -d option at the end of the command line to run the command as a daemon process otherwise the container logs will go to standard output and ```ctrl+c``` will stop the application.
-    
+
 ### Installation with Black Duck
+This section will walk through the instructions to install Alert in a deployment with Black Duck.
+
 Overview:
 1. Create a directory for secrets.
 2. Create ALERT_ENCRYPTION_PASSWORD file.
@@ -124,8 +129,8 @@ Overview:
 7. Install Black Duck. Follow the documented installation procedure for Black Duck.
 8. Bring the containers up.
 
-#### Details 
-This section walks through each step of the installation procedure.
+#### Details
+This section will walk through each step of the installation procedure.
 
 ##### 1. Create a directory for secrets.
 
@@ -133,35 +138,35 @@ This section walks through each step of the installation procedure.
     ```
     mkdir -p <PATH>
     ```
-    
-    Example: 
+
+    Example:
     ```
     mkdir -p /alert/mysecrets
     ```
-    
+
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
     ```
       volumes: ['<PATH_TO_SECRETS>:/run/secrets']
     ```
-      
+
 - Replace <PATH_TO_SECRETS> of the docker-compose.local-overrides.yml file with the directory just created.
-    
+
     Example:
     ```
         volumes:['/alert/mysecrets:/run/secrets']
     ```
 ##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
-  
-- Create a file containing the encryption password for Alert in the secrets directory.
 
+- Create a file containing the encryption password for Alert in the secrets directory.
+    - Replace <PASSWORD_TEXT> with the password to use.
     ```
-    echo "<PASSSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
+    echo "<PASSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
 
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 
 - Create a file containing the encryption salt for Alert in the secrets directory.
-
+    - Replace <SALT_TEXT> with the salt to use.
     ```
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
@@ -177,26 +182,27 @@ Please see [Environment Variables](#environment-variables)
 - Set any other optional environment variables as needed.
 
 ##### 6. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-For the NGinX container set the variable: ```USE_ALERT=1``` 
+In the Black Duck deployment files set the following variable for the webserver container: 
+```USE_ALERT=1```
 
 ##### 7. Install Black Duck.
-- Follow the installation procedure for installing Black Duck. Do not start the containers.  Skip that step.
+- Follow the installation procedure for installing Black Duck. Do not start the containers. Skip the step to start the containers.
 
 ##### 8. Bring the containers up.
 - Copy the blackduck-alert.env file to the same location where the Black Duck docker-compose files are located.
-- Start the containers. 
+- Start the containers.
     ```
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
-- Be sure to replace <PROFILE_NAME> with the profile name you wish to use for your deployment i.e. blackduck.
+- Be sure to replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
     ```
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p blackduck up -d
     ```
-    
+
     Note: Don't forget the -d option at the end of the command line to run the command as a daemon process otherwise the container logs will go to standard output and ```ctrl+c``` will stop the application.
 
 ## Upgrading Alert
-You will bring down the profile and then re-deploy the profile.
+Bring down the profile and then re-deploy the profile.
 The steps in the upgrade procedure are the same as the installation procedure after bringing the profile down.
 
 ### Standalone Upgrade
@@ -213,74 +219,73 @@ The steps in the upgrade procedure are the same as the installation procedure af
     ```
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
-## Certificates 
+## Certificates
 This section describes how to configure the optional certificates.  Please verify beforehand if custom certificates or a certificate truststore must be used.
 
-### Using Custom Certificates 
-- Custom Certificates for the Alert web server to present to clients.
+### Using Custom Certificates
+- Custom certificates for the Alert web server to present to clients.
 
-    - Before you can use custom certificates for Alert you must have the signed certificate and key used to generate the certificate.
+    - Before custom certificates can be used for Alert the signed certificate and key must be available.
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
-    
+
             ```cp <PATH_TO_CERT_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_CERT_FILE```
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
 
             ```cp <PATH_TO_KEY_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_KEY_FILE```
-            
-### Using Custom Certificate TrustStore
-- Custom java trust store file for the Alert server to communicate over SSL to external systems.
 
-    You must have a valid JKS trust store file that can be used as the Trust Store for Alert.  
-    
+### Using Custom Certificate TrustStore
+- Custom java TrustStore file for the Alert server to communicate over SSL to external systems.
+
+    Must have a valid JKS trust store file that can be used as the TrustStore for Alert.  
+    If certificate errors arise, then this is the TrustStore where certificates will need to be imported to resolve those issues.
+
     Only one of the following secrets needs to be created.  If both are created, then jssecacerts secret will take precedence and be used by Alert.
 
     - Create the secret.  Only create one of the following secrets.
-        - jssecacerts - The java trust store file with any custom certificates imported.
-    
+        - jssecacerts - The java TrustStore file with any custom certificates imported.
+
             ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/jssecacerts```
-    
-            or 
-    
-        - cacerts - The java trust store file with any custom certificates imported. 
-     
+
+            or
+
+        - cacerts - The java TrustStore file with any custom certificates imported.
+
             ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts```
 
 ### Insecure Trust of All Certificates
-WARNING:  This is not a recommended option.  Using this option makes your deployment less secure.  Use at your own risk.
+WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
+Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
 
-This option allows someone who is installing Alert to verify that the installation is working correctly if certificate issues such as PKIX errors appear.
+This option allows the bypass of all certificate verification in the event that external certificates can not be imported into the Alert TrustStore, or certificate errors continue after importing the external certificates into the Alert TrustStore.
 
-This is intended to ONLY be used to validate the installation of the Alert server is up and running.  
-Certificates SHOULD be correctly generated for the the Alert server and a valid Truststore SHOULD be provided to trust third party systems. 
-
-To allow Alert to trust all certificates add the environment variable: 
+To allow Alert to trust all certificates add the environment variable:
 ```
 ALERT_TRUST_CERT=true
 ```
 Please see the section [Environment Variables](#environment-variables) to learn how to set the environment variables.
 
 
-## Environment Variables 
+## Environment Variables
 Alert supports configuration of the application's components via environment variables.  There are two ways to configure the environment variables.
 1. Edit the blackduck-alert.env file.
 2. Edit the docker-compose.local-overrides.yml file to include the environment variables.
 
-Note: You will need to edit to docker-compose.local-overrides.yml file for other settings.  
-When installing choose to either edit: 
+Note: The docker-compose.local-overrides.yml file will need to be edited for other settings.  
+When installing edit either:
 
-```docker-compose.local-overrides.yml``` 
+```docker-compose.local-overrides.yml```
 
-or 
+or
 
-```docker-compose.local.overrides.yml``` and ```blackduck-alert.env```
+```blackduck-alert.env```
 
 ### Edit Environment File
 Environment variables for Alert have already been created in this file but they are commented out.  
-Uncomment the variable you wish to set by deleting the '#' character at the beginning of each line and set its value.
+Uncomment the variables to be set by deleting the '#' character at the beginning of each line and set its value.
 
-Example: 
+Example:
 ```
 ALERT_HOSTNAME=localhost
 ALERT_LOGGING_LEVEL=INFO
@@ -290,7 +295,7 @@ ALERT_LOGGING_LEVEL=INFO
 Uncomment environment from the alert service section of docker-compose.local-overrides.yml.  
 Add environment variables as ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` into the ```environment: ``` section of the alert service.
 
-Example: 
+Example:
 ```
     environment:
         - ALERT_HOSTNAME=localhost
@@ -303,8 +308,8 @@ The environment variables will always take precedence and overwrite the values s
 ```ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true```
 
 ### Alert Hostname Variable
-You must specify the ALERT_HOSTNAME environment variable in order for Alert to generate and use certificates correctly.
-- Add the ALERT_HOSTNAME environment variable the value must be the hostname only 
+The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
+- Add the ALERT_HOSTNAME environment variable the value must be the hostname only
     - Editing environment file:
         ```
         ALERT_HOSTNAME=<NEW_HOST_NAME>
@@ -319,17 +324,17 @@ You must specify the ALERT_HOSTNAME environment variable in order for Alert to g
     - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
 
 ### Alert Logging Level Variable
-To change the logging level of alert add the following environment variable to your deployment. 
+To change the logging level of Alert add the following environment variable to the deployment.
 
-- Editing environment file: 
+- Editing environment file:
     ```ALERT_LOGGING_LEVEL=DEBUG```
-- Editing overrides file: 
+- Editing overrides file:
     ```
-        environment: 
+        environment:
            - ALERT_LOGGING_LEVEL=DEBUG
     ```
 
-- Set the value to one of the following: 
+- Set the value to one of the following:
     - DEBUG
     - ERROR
     - INFO
@@ -337,19 +342,19 @@ To change the logging level of alert add the following environment variable to y
     - WARN
 
 ### Email Channel Environment Variables
-A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties.  You can find the JavaMail properties here: 
+A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties. The JavaMail properties can be found here:
 
 [JavaMail Properties](https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html)
 
 - The Email Channel environment variables have a prefix of ```ALERT_CHANNEL_EMAIL_```
-- The remaining portion of the variable, after the prefix, map to the JavaMail properties if you replace '_' with '.'
+- The remaining portion of the variable, after the prefix, map to the JavaMail properties if the '_' character is replaced with '.'
 
 Examples:
 - ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST maps to 'mail.smtp.host'
 - ALERT_CHANNEL_EMAIL_MAIL_SMTP_PORT maps to 'mail.smtp.port'
 
 ### Environment Variable Classifications
-There are certain classifications with the environment variables. The variables have a specific naming convention:
+There are certain classifications with the environment variables expressed by a specific naming convention:
 ```ALERT_<CLASSIFICATION>_<ITEM_NAME>_<CONFIGURATION_PROPERTY>```
 - Provider:  The environment variables to configure these components start with ALERT_PROVIDER_
 - Channel: The environment variables to configure these components start with ALERT_CHANNEL_
@@ -357,31 +362,31 @@ There are certain classifications with the environment variables. The variables 
 
 Examples:
 These are some examples of what can be set. the blackduck-alert.env file has a more comprehensive list.
-- Provider: 
+- Provider:
     - ALERT_PROVIDER_BLACKDUCK_BLACKDUCK_URL= The URL for the Black Duck server.
 - Channel:
     - ALERT_CHANNEL_JIRA_CLOUD_JIRA_CLOUD_URL= The URL for the Jira Cloud server.
     - ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST= The SMTP host used to send email messages.
-- Component: 
+- Component:
     - ALERT_COMPONENT_SETTINGS_SETTINGS_LDAP_ENABLED= Boolean to determine if LDAP authentication is used.
 
 ## Advanced Configuration
 This section describes some advanced configuration settings for the Alert server.
 
 ### Changing Server Port
-If Alert should not be running on it's default port of 8443, then this section describes what you have to change in order to use a different port.
+If Alert should not be running on its default port of 8443, then this section describes what must be changed in order to use a different port.
 
-For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
+For this advanced setting, since there are more than just environment variables that need to be set, edit the ```docker-compose.local-overrides.yml``` file.
 
 - Overrides File Changes.
-    - Define the new ports for the alert service.  Add 'ports' to the service description. 
+    - Define the new ports for the alert service.  Add 'ports' to the service description.
     ```
-        alert: 
+        alert:
             ports: ['<NEW_PORT>:<NEW_PORT>']
     ```
     - Define the ```ALERT_SERVER_PORT``` environment variable.
     ```
-        alert: 
+        alert:
             environment:
                 - ALERT_HOSTNAME=localhost
                 - ALERT_SERVER_PORT=<NEW_PORT>
@@ -413,13 +418,13 @@ Example:
             timeout: 60s
             retries: 15
 ```
-  
+
 Note: Work with your IT staff if necessary to verify the configured port is accessible through the network.
 
 ### Changing Memory Settings
-If Alert should be using more memory than its default settings, then this section describes what you have to change in order to allocate more memory.
+If Alert should be using more memory than its default settings, then this section describes what must be changed in order to allocate more memory.
 
-For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
+For this advanced setting, since there are more than just environment variables that need to be set, edit the ```docker-compose.local-overrides.yml``` file.
 
 - Overrides File Changes.
     - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
@@ -434,18 +439,18 @@ For this advanced setting since there are more than just environment variables t
         alert:
             mem_limit: <NEW_HEAP_SIZE + 256M>
     ```
-    Note: 
+    Note:
         The ALERT_MAX_HEAP_SIZE and the container mem_limit settings should not be exactly the same.  
         The container mem_limit setting is the maximum memory allocated to the container.  
         Additional memory does not get allocated to it.  
         The maximum heap size in Java is the maximum size of the heap in the Java virtual machine (JVM), but the JVM also uses additional memory.  
-        Therefore, the ALERT_MAX_HEAP_SIZE environment variable must be less than the amount defined in the mem_limit which is set for the container. 
+        Therefore, the ALERT_MAX_HEAP_SIZE environment variable must be less than the amount defined in the mem_limit which is set for the container.
         Synopsys recommends setting the mem_limit using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
-        
+
             ALERT_MAX_HEAP_SIZE = 4096M
             mem_limit = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
-                
-Example: 
+
+Example:
 - Change the memory limit from 2G to 4G.
 ```
     alert:

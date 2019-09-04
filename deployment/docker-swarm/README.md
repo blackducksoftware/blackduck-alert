@@ -25,23 +25,24 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 
 ## Requirements
 
-- You have a Docker host with at least 2GB of allocatable memory.
-- You have administrative access to your docker host.  
-- Before installing or upgrading Alert you must create desired persistent storage volumes for Alert which needs to be either:
+- A Docker host with at least 2GB of allocatable memory.
+- Administrative access to the docker host machine. 
+- Before installing or upgrading Alert the desired persistent storage volumes must be created for Alert and needs to be either:
     - Node locked.     
     - Backed by an NFS volume or a similar mechanism.
 
 ## Installing Alert
-Deployment files for Docker Compose are located in the docker-swarm directory of the: 
-
-blackduck-alert-\<VERSION>\-deployment.zip file.
-
+Deployment files for Docker Compose are located in the docker-swarm directory of the zip file.
+```
+blackduck-alert-<VERSION>-deployment.zip file.
+```
 - Extract the contents of the ZIP file.
-- For installing with the Black Duck the files are located in the hub sub-directory.
-- For installing Alert standalone the files are located in the standalone sub-directory.
+- For installing with Black Duck the files are located in the *hub* sub-directory.
+- For installing Alert standalone the files are located in the *standalone* sub-directory.
 
 ### Standalone Installation
-This section walk through the instructions to install Alert in a standalone fashion.
+This section will walk through the instructions to install Alert in a standalone fashion.
+
 #### Overview
 
 1. Create ALERT_ENCRYPTION_PASSWORD secret.
@@ -51,7 +52,7 @@ This section walk through the instructions to install Alert in a standalone fash
 5. Deploy the stack.
  
 #### Details 
-This section walks through each step of the installation procedure.
+This section will walk through each step of the installation procedure.
 
 ##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
   
@@ -117,6 +118,8 @@ Please see [Environment Variables](#environment-variables)
     ```
   
 ### Installation with Black Duck
+This section will walk through the instructions to install Alert in a deployment with Black Duck.
+
 Overview:
 1. Create ALERT_ENCRYPTION_PASSWORD secret.
 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
@@ -127,7 +130,7 @@ Overview:
 7. Deploy the stack.
 
 #### Details 
-This section walks through each step of the installation procedure.
+This section will walk through each step of the installation procedure.
 
 ##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
   
@@ -192,8 +195,8 @@ For the NGinX container set the variable: ```USE_ALERT=1```
 ##### 6. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. 
 
-Note: The NGinX container will not start correctly because it is waiting for the alert service to be available.  
-Deploy alert onto the stack and NGinX will eventually become healthy because the alert service is up and running. 
+Note: The NGinX container will not start correctly when it is waiting for the alert service to be available.  
+Deploy alert onto the stack and NGinX will eventually become healthy when the alert service is up and running. 
 
 ##### 7. Deploy the stack.
 - Execute the command: 
@@ -206,7 +209,7 @@ Deploy alert onto the stack and NGinX will eventually become healthy because the
     ```
 
 ## Upgrading Alert
-You will remove the stack and then re-deploy your stack.
+Remove the stack and then re-deploy the stack.
 The steps in the upgrade procedure are the same as the installation procedure after removing the stack.
 
 ### Verify Secrets 
@@ -226,9 +229,9 @@ The steps in the upgrade procedure are the same as the installation procedure af
 This section describes how to configure the optional certificates.  Please verify beforehand if custom certificates or a certificate truststore must be used.
 
 ### Using Custom Certificates 
-- Custom Certificates for the Alert Web server to present to clients.
+- Custom certificates for the Alert Web server to present to clients.
 
-    - Before you can use custom certificates for Alert you must have the signed certificate and key used to generate the certificate.
+    - Before custom certificates can be used for Alert the signed certificate and key must be available.
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
     
@@ -255,20 +258,21 @@ This section describes how to configure the optional certificates.  Please verif
                     name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
         ```
 ### Using Custom Certificate TrustStore
-- Custom java trust store file for the Alert server to communicate over SSL to external systems.
+- Custom java TrustStore file for the Alert server to communicate over SSL to external systems.
 
-    You must have a valid JKS trust store file that can be used as the Trust Store for Alert.  
+    Must have a valid JKS trust store file that can be used as the TrustStore for Alert.  
+    If certificate errors arise, then this is the TrustStore where certificates will need to be imported to resolve those issues. 
     
     Only one of the following secrets needs to be created.  If both are created, then jssecacerts secret will take precedence and be used by Alert.
 
     - Create the secret.  Only create one of the following secrets.
-        - jssecacerts - The java trust store file with any custom certificates imported.
+        - jssecacerts - The java TrustStore file with any custom certificates imported.
     
             ```docker secret create <STACK_NAME>_jssecacerts <PATH_TO_TRUST_STORE_FILE>```
     
             or 
     
-        - cacerts - The java trust store file with any custom certificates imported. 
+        - cacerts - The java TrustStore file with any custom certificates imported. 
      
             ```docker secret create <STACK_NAME>_cacerts <PATH_TO_TRUST_STORE_FILE>```
     - Uncomment the following from the docker-compose.local-overrides.yml file from the alert service section.
@@ -287,12 +291,10 @@ This section describes how to configure the optional certificates.  Please verif
         ```
 
 ### Insecure Trust of All Certificates
-WARNING:  This is not a recommended option.  Using this option makes your deployment less secure.  Use at your own risk.
+WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
+Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
 
-This option allows someone who is installing Alert to verify that the installation is working correctly if certificate issues such as PKIX errors appear.
-
-This is intended to ONLY be used to validate the installation of the Alert server is up and running.  
-Certificates SHOULD be correctly generated for the the Alert server and a valid Truststore SHOULD be provided to trust third party systems. 
+This option allows the bypass of all certificate verification in the event that external certificates can not be imported into the Alert TrustStore, or certificate errors continue after importing the external certificates into the Alert TrustStore.
 
 To allow Alert to trust all certificates add the environment variable: 
 ```
@@ -305,18 +307,18 @@ Alert supports configuration of the application's components via environment var
 1. Edit the blackduck-alert.env file.
 2. Edit the docker-compose.local-overrides.yml file to include the environment variables.
 
-Note: You will need to edit to docker-compose.local-overrides.yml file for other settings.  
-When installing choose to either edit: 
+Note: The docker-compose.local-overrides.yml file will need to be edited for other settings.   
+When installing edit either:
 
 ```docker-compose.local-overrides.yml``` 
 
 or 
 
-```docker-compose.local.overrides.yml``` and ```blackduck-alert.env```
+```blackduck-alert.env```
 
 ### Edit Environment File
 Environment variables for Alert have already been created in this file but they are commented out.  
-Uncomment the variable you wish to set by deleting the '#' character at the beginning of each line and set its value.
+Uncomment the variables to be set by deleting the '#' character at the beginning of each line and set its value.
 
 Example: 
 ```
@@ -341,7 +343,7 @@ The environment variables will always take precedence and overwrite the values s
 ```ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true```
 
 ### Alert Hostname Variable
-You must specify the ALERT_HOSTNAME environment variable in order for Alert to generate and use certificates correctly.
+The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
 - Add the ALERT_HOSTNAME environment variable the value must be the hostname only 
     - Editing environment file:
         ```
@@ -357,7 +359,7 @@ You must specify the ALERT_HOSTNAME environment variable in order for Alert to g
     - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
 
 ### Alert Logging Level Variable
-To change the logging level of alert add the following environment variable to your deployment. 
+To change the logging level of Alert add the following environment variable to the deployment. 
 
 - Editing environment file: 
     ```ALERT_LOGGING_LEVEL=DEBUG```
@@ -375,19 +377,19 @@ To change the logging level of alert add the following environment variable to y
     - WARN
 
 ### Email Channel Environment Variables
-A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties.  You can find the JavaMail properties here: 
+A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties. The JavaMail properties can be found here: 
 
 [JavaMail Properties](https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html)
 
 - The Email Channel environment variables have a prefix of ```ALERT_CHANNEL_EMAIL_```
-- The remaining portion of the variable, after the prefix, map to the JavaMail properties if you replace '_' with '.'
+- The remaining portion of the variable, after the prefix, map to the JavaMail properties if the '_' character is replaced with '.'
 
 Examples:
 - ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST maps to 'mail.smtp.host'
 - ALERT_CHANNEL_EMAIL_MAIL_SMTP_PORT maps to 'mail.smtp.port'
 
 ### Environment Variable Classifications
-There are certain classifications with the environment variables. The variables have a specific naming convention:
+There are certain classifications with the environment variables expressed by a specific naming convention:
 ```ALERT_<CLASSIFICATION>_<ITEM_NAME>_<CONFIGURATION_PROPERTY>```
 - Provider:  The environment variables to configure these components start with ALERT_PROVIDER_
 - Channel: The environment variables to configure these components start with ALERT_CHANNEL_
@@ -407,9 +409,9 @@ These are some examples of what can be set. the blackduck-alert.env file has a m
 This section describes some advanced configuration settings for the Alert server.
 
 ### Changing Server Port
-If Alert should not be running on it's default port of 8443, then this section describes what you have to change in order to use a different port.
+If Alert should not be running on its default port of 8443, then this section describes what must be changed in order to use a different port.
 
-For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
+For this advanced setting, since there are more than just environment variables that need to be set, edit the ```docker-compose.local-overrides.yml``` file.
 
 - Overrides File Changes
     - Define the new ports for the alert service.  Add 'ports' to the service description. 
@@ -465,9 +467,9 @@ Example:
 Note: Work with your IT staff if necessary to verify the configured port is accessible through the network.
 
 ### Changing Memory Settings
-If Alert should be using more memory than its default settings, then this section describes what you have to change in order to allocate more memory.
+If Alert should be using more memory than its default settings, then this section describes what must be changed in order to allocate more memory.
 
-For this advanced setting since there are more than just environment variables that need to be set this should be performed by editing the ```docker-compose.local-overrides.yml``` file.
+For this advanced setting, since there are more than just environment variables that need to be set, edit the ```docker-compose.local-overrides.yml``` file.
 
 - Overrides File Changes.
     - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
