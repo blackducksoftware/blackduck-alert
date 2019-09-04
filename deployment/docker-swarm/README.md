@@ -10,7 +10,7 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 - [Upgrading Alert](#upgrading-alert)
     - [Standalone Upgrade](#standalone-upgrade)
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
-- [Optional Secrets](#optional-secrets)
+- [Certificates](#certificates)
 - [Environment Variables](#environment-variables) 
     - [Edit Environment File](#edit-environment-file)
     - [Edit the Overrides File](#edit-the-overrides-file)
@@ -44,7 +44,7 @@ This section walk through the instructions to install Alert in a standalone fash
 
 1. Create ALERT_ENCRYPTION_PASSWORD secret.
 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-3. Create any optional secrets.
+3. Manage certificates.
 4. Modify environment variables.
 5. Deploy the stack.
  
@@ -68,8 +68,8 @@ This section walks through each step of the installation procedure.
     ```
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+              external: true
+              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
             
     ```
 ##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
@@ -90,15 +90,16 @@ This section walks through each step of the installation procedure.
     ```
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+              external: true
+              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
             ALERT_ENCRYPTION_GLOBAL_SALT:
-              external:
-                name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
+              external: true
+              name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
             
     ```
 
-##### 3. Create optional secrets.
+##### 3. Manage Certificates.
+This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
@@ -143,8 +144,8 @@ This section walks through each step of the installation procedure.
     ```
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+              external: true
+              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
             
     ```
 ##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
@@ -165,15 +166,16 @@ This section walks through each step of the installation procedure.
     ```
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
-              external:
-                name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+              external: true
+              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
             ALERT_ENCRYPTION_GLOBAL_SALT:
-              external:
-                name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
+              external: true
+              name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
             
     ```
 
-##### 3. Create optional secrets.
+##### 3. Manage certificates
+This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
@@ -218,8 +220,8 @@ The steps in the upgrade procedure are the same as the installation procedure af
 1. Run ```docker stack rm <STACK_NAME>```
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
-## Optional Secrets 
-This section describes how to configure some of the optional secrets. 
+## Certificates 
+This section describes how to configure the optional certificates.  Please verify beforehand if custom certificates or a certificate truststore must be used.
 
 ### Using Custom Certificates 
 - Custom Certificates for the Alert Web server to present to clients.
@@ -228,11 +230,11 @@ This section describes how to configure some of the optional secrets.
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
     
-            ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE file <PATH_TO_CERT_FILE>```
+            ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>```
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
 
-            ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE file <PATH_TO_KEY_FILE>```
+            ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>```
     - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
         ```
             alert:
@@ -244,11 +246,11 @@ This section describes how to configure some of the optional secrets.
         ```
             secrets:
                 WEBSERVER_CUSTOM_CERT_FILE:
-                    external:
-                        name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
+                    external: true
+                    name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
                 WEBSERVER_CUSTOM_KEY_FILE:
-                    external:
-                        name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
+                    external: true
+                    name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
         ```
 ### Using Custom Certificate TrustStore
 - Custom java trust store file for the Alert server to communicate over SSL to external systems.
@@ -260,25 +262,25 @@ This section describes how to configure some of the optional secrets.
     - Create the secret.  Only create one of the following secrets.
         - jssecacerts - The java trust store file with any custom certificates imported.
     
-            ```docker secret create <STACK_NAME>_jssecacerts file <PATH_TO_TRUST_STORE_FILE>```
+            ```docker secret create <STACK_NAME>_jssecacerts <PATH_TO_TRUST_STORE_FILE>```
     
             or 
     
         - cacerts - The java trust store file with any custom certificates imported. 
      
-            ```docker secret create <STACK_NAME>_cacerts file <PATH_TO_TRUST_STORE_FILE>```
+            ```docker secret create <STACK_NAME>_cacerts <PATH_TO_TRUST_STORE_FILE>```
     - Uncomment the following from the docker-compose.local-overrides.yml file from the alert service section.
         ```
             secrets:
                 jssecacerts:
-                    external:
+                    external: true
                     name: "<STACK_NAME>_jssecacerts"
         ```
         or 
         ```
             secrets:
                 cacerts:
-                    external:
+                    external: true
                     name: "<STACK_NAME>_cacerts"
         ```
 
@@ -432,16 +434,16 @@ Example:
             test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:9090/alert/api/about',
                  /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
                 /opt/blackduck/alert/security/blackduck_system.key]
-        interval: 30s
-        timeout: 60s
-        retries: 15
+            interval: 30s
+            timeout: 60s
+            retries: 15
     secrets:
         ALERT_ENCRYPTION_PASSWORD:
-            external:
-                name: "blackduck_ALERT_ENCRYPTION_PASSWORD"
+            external: true
+            name: "blackduck_ALERT_ENCRYPTION_PASSWORD"
         ALERT_ENCRYPTION_GLOBAL_SALT:
-            external:
-                name: "blackduck_ALERT_ENCRYPTION_GLOBAL_SALT"
+            external: true
+            name: "blackduck_ALERT_ENCRYPTION_GLOBAL_SALT"
 ```
   
 Note: Work with your IT staff if necessary to verify the configured port is accessible through the network.
@@ -459,21 +461,25 @@ For this advanced setting since there are more than just environment variables t
                 - ALERT_HOSTNAME=localhost
                 - ALERT_MAX_HEAP_SIZE=<NEW_HEAP_SIZE>
     ```
-    - Define the container memory limit. Add 'mem_limit' to the service description.
+    - Define the container memory limit. Add the deploy section to the alert service description.
     ```
         alert:
-            mem_limit: <NEW_HEAP_SIZE + 256M>
+            deploy:
+                resources:
+                    limits: {memory: <NEW_HEAP_SIZE + 256M>}
+                    reservations: {memory: <NEW_HEAP_SIZE + 256M>}: 
     ```
     Note: 
-        The ALERT_MAX_HEAP_SIZE and the container mem_limit settings should not be exactly the same.  
-        The container mem_limit setting is the maximum memory allocated to the container.  
+        The ALERT_MAX_HEAP_SIZE and the container deploy.resources settings should not be exactly the same.  
+        The container deploy.resources setting is the maximum memory allocated to the container.  
         Additional memory does not get allocated to it.  
         The maximum heap size in Java is the maximum size of the heap in the Java virtual machine (JVM), but the JVM also uses additional memory.  
         Therefore, the ALERT_MAX_HEAP_SIZE environment variable must be less than the amount defined in the mem_limit which is set for the container. 
-        Synopsys recommends setting the mem_limit using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
+        Synopsys recommends setting the deploy.resources using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
         
             ALERT_MAX_HEAP_SIZE = 4096M
-            mem_limit = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
+            limits = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
+            reservations = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
                 
 Example: 
 - Change the memory limit from 2G to 4G.
@@ -481,8 +487,11 @@ Example:
     alert:
         environment:
             - ALERT_HOSTNAME=localhost
-            - ALERT_MAX_HEAP_SIZE=4096
-        mem_limit: 4352M
+            - ALERT_MAX_HEAP_SIZE=4096M
+        deploy:
+            resources:
+                limits: {memory: 4352M}
+                reservations: {memory: 4352M}
 ```
 
 Note: Work with your IT staff if necessary to verify the configured memory is available on the host machine.

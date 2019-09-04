@@ -18,20 +18,20 @@ services:
 # uncomment the secrets in use; both the required and the optional secrets.
 #secrets:
 #  ALERT_ENCRYPTION_PASSWORD:
-#    external:
-#      name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
+#    external: true
+#    name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
 #  ALERT_ENCRYPTION_GLOBAL_SALT:
-#    external:
-#      name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
+#    external: true
+#    name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
 #  WEBSERVER_CUSTOM_CERT_FILE:
-#    external:
-#      name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
+#    external: true
+#    name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
 #  WEBSERVER_CUSTOM_KEY_FILE:
-#    external:
-#      name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
+#    external: true
+#    name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
 #  jssecacerts:
-#    external:
-#      name: "<STACK_NAME>_jssecacerts"
+#    external: true
+#    name: "<STACK_NAME>_jssecacerts"
 #  cacerts:
-#    external:
-#      name: "<STACK_NAME>_cacerts"
+#    external: true
+#    name: "<STACK_NAME>_cacerts"

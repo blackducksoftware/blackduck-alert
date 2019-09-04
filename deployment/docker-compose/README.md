@@ -91,7 +91,7 @@ This section walks through each step of the installation procedure.
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
 
-##### 4. Manage Certificates.
+##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
@@ -166,7 +166,7 @@ This section walks through each step of the installation procedure.
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
 
-##### 4. Manage Certificates.
+##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
