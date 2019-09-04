@@ -22,7 +22,8 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
-public abstract class ChannelKey {
-    public abstract String getUniversalKey();
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
+// Marker class for Channels.
+public abstract class ChannelKey extends DescriptorKey {
 }
