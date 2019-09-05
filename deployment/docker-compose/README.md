@@ -14,8 +14,7 @@ This installation method is deprecated and will not be supported after December 
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
 - [Certificates](#certificates)
 - [Environment Variables](#environment-variables)
-    - [Edit Environment File](#edit-environment-file)
-    - [Edit the Overrides File](#edit-the-overrides-file)
+    - [Editing the Overrides File](#editing-the-overrides-file)
     - [Environment Variable Overrides](#environment-variable-overrides)
     - [Alert Hostname Variable](#alert-hostname-variable)
     - [Alert Logging Level Variable](#alert-logging-level-variable)
@@ -268,32 +267,14 @@ Please see the section [Environment Variables](#environment-variables) to learn 
 
 
 ## Environment Variables
-Alert supports configuration of the application's components via environment variables.  There are two ways to configure the environment variables.
-1. Edit the blackduck-alert.env file.
-2. Edit the docker-compose.local-overrides.yml file to include the environment variables.
+Alert supports configuration of the application's components via environment variables.
+Edit the ```docker-compose.local-overrides.yml``` file to include the environment variables.
 
-Note: The docker-compose.local-overrides.yml file will need to be edited for other settings.  
-When installing edit either:
-
-```docker-compose.local-overrides.yml```
-
-or
-
-```blackduck-alert.env```
-
-### Edit Environment File
-Environment variables for Alert have already been created in this file but they are commented out.  
-Uncomment the variables to be set by deleting the '#' character at the beginning of each line and set its value.
-
-Example:
-```
-ALERT_HOSTNAME=localhost
-ALERT_LOGGING_LEVEL=INFO
-```
-
-### Edit the Overrides File
-Uncomment environment from the alert service section of docker-compose.local-overrides.yml.  
-Add environment variables as ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` into the ```environment: ``` section of the alert service.
+### Editing the Overrides File
+- Uncomment ```environment:``` from the alert service section of docker-compose.local-overrides.yml. 
+- Environment variables have the format ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` 
+- Environment variables are commented out in the ```docker-compose.local-overrides.yml``` file. 
+- Uncomment the environment variables to be used from the ```environment: ``` section of the alert service.
 
 Example:
 ```
