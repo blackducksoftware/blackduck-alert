@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.common.action;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,19 +11,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class UploadEndpointManager {
     public static final String UPLOAD_ENDPOINT_URL = "/api/uploads";
     private Map<String, UploadTarget> uploadTargets = new HashMap<>();
     private FilePersistenceUtil filePersistenceUtil;
+    private AuthorizationManager authorizationManager;
+    private ResponseFactory responseFactory;
 
     @Autowired
-    public UploadEndpointManager(FilePersistenceUtil filePersistenceUtil) {
+    public UploadEndpointManager(FilePersistenceUtil filePersistenceUtil, AuthorizationManager authorizationManager, ResponseFactory responseFactory) {
         this.filePersistenceUtil = filePersistenceUtil;
+        this.authorizationManager = authorizationManager;
+        this.responseFactory = responseFactory;
     }
 
     public boolean containsTarget(String targetKey) {
@@ -36,17 +44,34 @@ public class UploadEndpointManager {
         uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, targetKey, fileName));
     }
 
-    public ResponseEntity<String> performFunction(String targetKey, Resource fileResource) {
-        // check permissions
+    public ResponseEntity<String> performUpload(String targetKey, Resource fileResource) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity("No functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
         }
 
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        UploadTarget target = uploadTargets.get(targetKey);
+        // check permissions
+        if(!authorizationManager.hasAllPermissions(target.getContext().name(), target.getDescriptorKey().getUniversalKey(), AccessOperation.EXECUTE, AccessOperation.WRITE)) {
+            return responseFactory.createForbiddenResponse();
+        }
+
+        return writeFile(target, fileResource);
     }
 
+    private ResponseEntity<String> writeFile(UploadTarget target, Resource fileResource) {
+        try {
+            if (fileResource.isFile()) {
+                filePersistenceUtil.writeToFile(target.getFilename(), fileResource.getFile());
+                return responseFactory.createCreatedResponse("", "File uploaded.");
+            }
+        } catch(IOException ex) {
+            // add logger to log details.  Don't want to send internal path details back to the client in the response.
+            return responseFactory.createInternalServerErrorResponse("", "Error uploading file to server.");
+        }
+        return responseFactory.createBadRequestResponse("", "The file could not be uploaded.");
+    }
 
-    public class UploadTarget {
+    private class UploadTarget {
 
         private ConfigContextEnum context;
         private DescriptorKey descriptorKey;
