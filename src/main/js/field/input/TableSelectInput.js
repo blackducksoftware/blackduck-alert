@@ -10,7 +10,7 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import PropTypes from 'prop-types';
 import { Modal } from "react-bootstrap";
 
-const { Option, SingleValue, ValueContainer } = components;
+const { Option, MultiValue, ValueContainer } = components;
 
 const typeOptionLabel = props => (
     <Option {...props}>
@@ -19,23 +19,28 @@ const typeOptionLabel = props => (
 );
 
 const typeLabel = props => (
-    <SingleValue {...props}>
+    <MultiValue {...props}>
         <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-    </SingleValue>
+    </MultiValue>
 );
 
 const container = ({ children, getValue, ...props }) => {
     const length = getValue().length;
-    return (length <= 5) ?
-        <ValueContainer {...props}>
-            {children}
-        </ValueContainer>
-        :
+    if (length <= 5) {
+        return (
+            <ValueContainer {...props}>
+                {children}
+            </ValueContainer>
+        );
+    }
+
+    return (
         <ValueContainer {...props}>
             {!props.selectProps.menuIsOpen &&
             `${length} Items selected`}
             {React.cloneElement(children[1])}
-        </ValueContainer>;
+        </ValueContainer>
+    );
 }
 
 class TableSelectInput extends Component {
@@ -49,6 +54,7 @@ class TableSelectInput extends Component {
         this.onRowSelected = this.onRowSelected.bind(this);
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
         this.selectOnClick = this.selectOnClick.bind(this);
+        this.createDataList = this.createDataList.bind(this);
 
         this.state = {
             progress: false,
@@ -168,6 +174,24 @@ class TableSelectInput extends Component {
         });
     }
 
+    createDataList() {
+        const { data, selectedData } = this.state;
+        const addMissingColumn = data.map(itemData => Object.assign(itemData, { missing: false }));
+
+        const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
+        selectedData.forEach((itemDataValue) => {
+            const dataFound = addMissingColumn.find(foundData => itemDataValue === foundData[keyColumnHeader]);
+            if (!dataFound) {
+                addMissingColumn.unshift({
+                    [keyColumnHeader]: itemDataValue,
+                    missing: true
+                });
+            }
+        });
+
+        return addMissingColumn;
+    }
+
     createTable() {
         const columnsProp = this.props.columns;
         const defaultSortName = columnsProp.find(column => column.sortBy).header;
@@ -212,8 +236,14 @@ class TableSelectInput extends Component {
         }
 
         const columns = columnsProp.map(column => (
-            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
+            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
+                               dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
         ));
+
+        // Need to add this column to the array as you can't display columns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
+        columns.push(
+            <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>
+        );
 
         const { paged, searchable } = this.props;
 
@@ -226,7 +256,7 @@ class TableSelectInput extends Component {
             :
             <BootstrapTable
                 version="4"
-                data={this.state.data}
+                data={this.createDataList()}
                 containerClass="table"
                 hover
                 condensed
@@ -258,7 +288,7 @@ class TableSelectInput extends Component {
     createSelect() {
         const components = {
             Option: typeOptionLabel,
-            SingleValue: typeLabel,
+            MultiValue: typeLabel,
             ValueContainer: container,
             DropdownIndicator: null,
             MultiValueRemove: () => <div></div>

@@ -5,7 +5,7 @@ import * as IconUtility from 'util/iconUtility';
 
 function DescriptorOption(props) {
     const formattedIcon = (<FontAwesomeIcon key={`icon-${props.value}`} icon={IconUtility.createIconPath(props.icon)} className="alert-icon" size="lg" />);
-    const icon = props.icon != null ? formattedIcon : null;
+    const icon = (props.icon != null) ? formattedIcon : null;
     return (
         <div>
             {icon}
