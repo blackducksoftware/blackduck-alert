@@ -57,11 +57,17 @@ import com.synopsys.integration.rest.request.Request;
 public class SlackChannelTest extends ChannelTest {
     private static final SlackChannelKey CHANNEL_KEY = new SlackChannelKey();
 
+    private SlackChannel createSlackChannel() {
+        final RestChannelUtility restChannelUtility = createRestChannelUtility();
+        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(restChannelUtility);
+        return new SlackChannel(CHANNEL_KEY, gson, createAuditUtility(), restChannelUtility, slackChannelEventParser);
+    }
+
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, createAuditUtility(), createRestChannelUtility());
+        SlackChannel slackChannel = createSlackChannel();
 
         final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
@@ -82,10 +88,7 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestMissingWebhook() {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
@@ -100,7 +103,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(content.getTopic()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
         try {
-            channel.createRequests(event);
+            slackChannel.createRequests(event);
             fail("Expected an exception for missing webhook");
         } catch (final IntegrationException e) {
         }
@@ -108,9 +111,6 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestMissingChannelName() {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
@@ -125,11 +125,10 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(content.getTopic()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
 
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
         try {
-            channel.createRequests(event);
+            slackChannel.createRequests(event);
             fail("Expected an exception for missing channel name");
         } catch (final IntegrationException e) {
         }
@@ -137,8 +136,6 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestMissingContent() {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -150,19 +147,16 @@ public class SlackChannelTest extends ChannelTest {
         final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
 
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
         try {
-            assertTrue(channel.createRequests(event).isEmpty(), "Expected no requests to be created");
+            assertTrue(slackChannel.createRequests(event).isEmpty(), "Expected no requests to be created");
         } catch (final IntegrationException e) {
         }
     }
 
     @Test
     public void testCreateRequestSingleCategory() throws Exception {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -186,10 +180,9 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = channel.createRequests(event);
+        final List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
@@ -199,8 +192,6 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestSingleCategoryWithItemUrl() throws Exception {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -225,10 +216,9 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = channel.createRequests(event);
+        final List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
@@ -238,8 +228,6 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestMultipleCategory() throws Exception {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -273,10 +261,9 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = channel.createRequests(event);
+        final List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
@@ -286,8 +273,6 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestMultipleCategoryWithItemUrls() throws Exception {
-        final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
@@ -320,10 +305,9 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(channelRestConnectionFactory);
-        final SlackChannel channel = new SlackChannel(CHANNEL_KEY, new Gson(), auditUtility, restChannelUtility);
+        SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = channel.createRequests(event);
+        final List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         final Request actualRequest = requests.get(0);
@@ -333,7 +317,8 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestExceptions() throws Exception {
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null);
+        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(null);
+        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
         List<Request> request = null;
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -381,7 +366,8 @@ public class SlackChannelTest extends ChannelTest {
         final RestChannelUtility restChannelUtility = new RestChannelUtility(null);
         final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessage(Mockito.any(), Mockito.anyString());
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, restChannelUtilitySpy);
+        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(restChannelUtilitySpy);
+        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, restChannelUtilitySpy, slackChannelEventParser);
         final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
@@ -401,7 +387,8 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null);
+        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(null);
+        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");

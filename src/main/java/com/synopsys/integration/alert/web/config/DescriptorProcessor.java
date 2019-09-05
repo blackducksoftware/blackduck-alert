@@ -26,6 +26,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.channel.msteams.SimpleChannelActions;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,13 +51,24 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class DescriptorProcessor {
     private final DescriptorMap descriptorMap;
     private final ConfigurationAccessor configurationAccessor;
+
+    //TODO ekerwin - I think a Map is better here, it is only ever used: configurationAction.getDescriptorName().equals(descriptorName)
     private final List<ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions) {
+    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions, final List<SimpleChannelActions> allSimpleChannelActions) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
         this.allConfigurationActions = allConfigurationActions;
+        for (SimpleChannelActions simpleChannelActions : allSimpleChannelActions) {
+            DistributionChannel channel = simpleChannelActions.getChannel();
+            ChannelKey channelKey = simpleChannelActions.getChannelKey();
+
+            ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {};
+            ConfigurationAction configurationAction = new ConfigurationAction(channelKey.getUniversalKey()) {};
+            configurationAction.addDistributionTestAction(channelDistributionTestAction);
+            allConfigurationActions.add(configurationAction);
+        }
     }
 
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {

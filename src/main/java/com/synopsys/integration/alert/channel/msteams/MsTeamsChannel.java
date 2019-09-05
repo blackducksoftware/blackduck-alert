@@ -39,7 +39,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
-public class MsTeamsChannel extends NamedDistributionChannel {
+public class MsTeamsChannel extends NamedDistributionChannel implements SimpleChannelActions {
     private RestChannelUtility restChannelUtility;
     private MsTeamsEventParser msTeamsEventParser;
 
