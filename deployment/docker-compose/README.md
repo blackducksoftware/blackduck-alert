@@ -30,7 +30,7 @@ This installation method is deprecated and will not be supported after December 
 - Administrative access to the docker host machine.  
 
 ## Installing Alert
-Deployment files for Docker Compose are located in the docker-compose directory of the zip file.
+Deployment files for Docker Compose are located in the *docker-compose* directory of the zip file.
 ```
 blackduck-alert-<VERSION>-deployment.zip file.
 ```
@@ -57,7 +57,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a directory to store secrets.
     ```
-    mkdir -p <PATH>
+    mkdir -p <PATH_TO_SECRETS>
     ```
 
     Example:
@@ -79,20 +79,21 @@ This section will walk through each step of the installation procedure.
 ##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
 
 - Create a file containing the encryption password for Alert in the secrets directory.
-    - Replace <PASSWORD_TEXT> with the password to use.
-
     ```
     echo "<PASSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
-
+    - Replace <PASSWORD_TEXT> with the password to use.
+    - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
+    
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 
 - Create a file containing the encryption salt for Alert in the secrets directory.
-    - Replace <SALT_TEXT> with the salt to use.
     ```
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
-
+    - Replace <SALT_TEXT> with the salt to use.
+    - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
+    
 ##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
@@ -108,7 +109,7 @@ Please see [Environment Variables](#environment-variables)
     ```
     docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
-- Be sure to replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
+- Replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
     ```
     docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose.local-overrides.yml -p blackduck up -d
     ```
@@ -135,7 +136,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a directory to store secrets.
     ```
-    mkdir -p <PATH>
+    mkdir -p <PATH_TO_SECRETS>
     ```
 
     Example:
@@ -157,19 +158,21 @@ This section will walk through each step of the installation procedure.
 ##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
 
 - Create a file containing the encryption password for Alert in the secrets directory.
-    - Replace <PASSWORD_TEXT> with the password to use.
     ```
     echo "<PASSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
-
+    - Replace <PASSWORD_TEXT> with the password to use.
+    - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
+        
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 
 - Create a file containing the encryption salt for Alert in the secrets directory.
-    - Replace <SALT_TEXT> with the salt to use.
     ```
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
-
+    - Replace <SALT_TEXT> with the salt to use.
+    - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
+    
 ##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
@@ -193,7 +196,9 @@ In the Black Duck deployment files set the following variable for the webserver 
     ```
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
-- Be sure to replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
+    - Replace <PATH_TO_BLACK_DUCK> with the directory path to the Black Duck installation files.
+    - Replace <PATH_TO_ALERT> with the directory path to the Alert installation files.
+    - Replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
     ```
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p blackduck up -d
     ```
@@ -209,6 +214,7 @@ The steps in the upgrade procedure are the same as the installation procedure af
     ```
     docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
+    - Replace <PROFILE_NAME> with the name of the profile that was used during installation.
 2. Follow the [Standalone Installation](#standalone-installation)
 
 ### Upgrade with Black Duck
@@ -216,6 +222,10 @@ The steps in the upgrade procedure are the same as the installation procedure af
     ```
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
+   - Replace <PATH_TO_BLACK_DUCK> with the directory path to the Black Duck installation files.
+   - Replace <PATH_TO_ALERT> with the directory path to the Alert installation files.
+   - Replace <PROFILE_NAME> with the name of the profile that was used during installation.
+   
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
 ## Certificates
@@ -229,10 +239,14 @@ This section describes how to configure the optional certificates.  Please verif
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
 
             ```cp <PATH_TO_CERT_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_CERT_FILE```
+            - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.
+            - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed. 
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
 
             ```cp <PATH_TO_KEY_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_KEY_FILE```
+            - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.
+            - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed.
 
 ### Using Custom Certificate TrustStore
 - Custom java TrustStore file for the Alert server to communicate over SSL to external systems.
@@ -247,11 +261,13 @@ This section describes how to configure the optional certificates.  Please verif
 
             ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/jssecacerts```
 
-            or
+        or
 
         - cacerts - The java TrustStore file with any custom certificates imported.
 
             ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts```
+    - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
+    - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed.
 
 ### Insecure Trust of All Certificates
 WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
@@ -288,18 +304,22 @@ The environment variables will always take precedence and overwrite the values s
 
 ```ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true```
 
+Please note the following with the override environment variable set. 
+If any other environment variable is set with no value or an empty string, then the corresponding value (if any) in the database will be removed.
+
 ### Alert Hostname Variable
 The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
-- Add the ALERT_HOSTNAME environment variable the value must be the hostname only
+- Add the ALERT_HOSTNAME environment variable. (The value must be the hostname only.)
     - Editing environment file:
-        ```
-        ALERT_HOSTNAME=<NEW_HOST_NAME>
-        ```
+    ```
+    ALERT_HOSTNAME=<NEW_HOST_NAME>
+    ```
     - Editing overrides file:
-        ```
-            environment:
-                - ALERT_HOSTNAME=<NEW_HOST_NAME>
-        ```
+    ```
+        environment:
+            - ALERT_HOSTNAME=<NEW_HOST_NAME>
+    ```
+    - Replace <NEW_HOST_NAME> with the hostname of the machine where Alert is installed.
 - Do not add the protocol a.k.a scheme to the value of the variable.
     - Good: ```ALERT_HOSTNAME=myhost.example.com```
     - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
@@ -383,6 +403,8 @@ For this advanced setting, since there are more than just environment variables 
                   timeout: 60s
                   retries: 15
     ```
+    - Replace <NEW_PORT> with the port to be used.
+    
 Example:
 - Change the port to 9090 via the ```docker-compose.local-overrides.yml``` file.
 ```
@@ -420,6 +442,7 @@ For this advanced setting, since there are more than just environment variables 
         alert:
             mem_limit: <NEW_HEAP_SIZE + 256M>
     ```
+    - Replace <NEW_HEAP_SIZE> with the heap size to be used.
     Note:
         The ALERT_MAX_HEAP_SIZE and the container mem_limit settings should not be exactly the same.  
         The container mem_limit setting is the maximum memory allocated to the container.  
