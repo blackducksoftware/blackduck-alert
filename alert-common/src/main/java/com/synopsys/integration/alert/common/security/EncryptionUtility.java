@@ -43,7 +43,7 @@ public class EncryptionUtility {
     private static final Logger logger = LoggerFactory.getLogger(EncryptionUtility.class);
     private static final String DATA_FILE_NAME = "alert_encryption_data.json";
     private static final String SECRETS_ENCRYPTION_PASSWORD = "ALERT_ENCRYPTION_PASSWORD";
-    private static final String SECRETS_ENCRYPTION_SALT = "ALERT_ENCRYPTION_SALT";
+    private static final String SECRETS_ENCRYPTION_SALT = "ALERT_ENCRYPTION_GLOBAL_SALT";
     private final AlertProperties alertProperties;
     private final FilePersistenceUtil filePersistenceUtil;
 

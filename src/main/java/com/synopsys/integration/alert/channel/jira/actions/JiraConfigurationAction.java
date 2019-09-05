@@ -25,14 +25,14 @@ package com.synopsys.integration.alert.channel.jira.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.JiraChannel;
+import com.synopsys.integration.alert.channel.jira.JiraChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class JiraConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraConfigurationAction(JiraGlobalTestAction globalTestAction, JiraDistributionTestAction jiraDistributionTestAction) {
-        super(JiraChannel.COMPONENT_NAME);
+    public JiraConfigurationAction(JiraChannelKey jiraChannelKey, JiraGlobalTestAction globalTestAction, JiraDistributionTestAction jiraDistributionTestAction) {
+        super(jiraChannelKey.getUniversalKey());
         addGlobalTestAction(globalTestAction);
         addDistributionTestAction(jiraDistributionTestAction);
     }

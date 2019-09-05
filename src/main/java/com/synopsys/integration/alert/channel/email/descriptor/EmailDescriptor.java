@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
@@ -42,8 +42,8 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String EMAIL_DESCRIPTION = "Configure the email server that Alert will send emails to.";
 
     @Autowired
-    public EmailDescriptor(final EmailGlobalUIConfig emailGlobalUIConfig, final EmailDistributionUIConfig emailDistributionUIConfig) {
-        super(EmailChannel.COMPONENT_NAME, emailDistributionUIConfig, emailGlobalUIConfig);
+    public EmailDescriptor(EmailChannelKey emailChannelKey, EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig) {
+        super(emailChannelKey, emailDistributionUIConfig, emailGlobalUIConfig);
     }
 
 }

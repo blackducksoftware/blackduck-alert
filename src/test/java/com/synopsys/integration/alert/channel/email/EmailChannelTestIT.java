@@ -63,7 +63,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent(
-            "1L", EmailChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
         emailChannel.sendAuditedMessage(event);
     }
 
@@ -81,7 +81,7 @@ public class EmailChannelTestIT extends ChannelTest {
             final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
             final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
             final DistributionEvent event = new DistributionEvent(
-                "1L", EmailChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, "FORMAT", MessageContentGroup.singleton(content), fieldAccessor);
+                "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, "FORMAT", MessageContentGroup.singleton(content), fieldAccessor);
             emailChannel.sendMessage(event);
             fail();
         } catch (final IntegrationException e) {

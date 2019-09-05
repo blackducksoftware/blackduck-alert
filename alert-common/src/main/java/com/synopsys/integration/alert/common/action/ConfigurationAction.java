@@ -32,6 +32,7 @@ public abstract class ConfigurationAction {
     private final Map<ConfigContextEnum, ApiAction> apiActionMap = new HashMap<>();
     private final Map<ConfigContextEnum, TestAction> testActionMap = new HashMap<>();
 
+    // TODO consider taking a DescriptorKey here which would be like a ChannelKey
     protected ConfigurationAction(final String descriptorName) {
         this.descriptorName = descriptorName;
     }

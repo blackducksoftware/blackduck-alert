@@ -20,26 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams.descriptor;
+package com.synopsys.integration.alert.channel.jira;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.channel.ChannelKey;
 
 @Component
-public class MsTeamsDescriptor extends ChannelDescriptor {
-    public static final String KEY_WEBHOOK = "channel.msteams.webhook";
+public class JiraChannelKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "channel_jira_cloud";
 
-    public static final String MSTEAMS_LABEL = "MS Teams";
-    public static final String MSTEAMS_URL = "msteams";
-    public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
-    public static final String MSTEAMS_ICON = "fab/microsoft";
-
-    @Autowired
-    public MsTeamsDescriptor(MsTeamsKey msTeamsKey, MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
-        super(msTeamsKey, msTeamsUIConfig, msTeamsGlobalUIConfig);
+    @Override
+    public String getUniversalKey() {
+        return COMPONENT_NAME;
     }
 
 }
