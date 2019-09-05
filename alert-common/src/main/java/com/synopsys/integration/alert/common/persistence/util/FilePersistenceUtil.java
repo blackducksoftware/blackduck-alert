@@ -62,6 +62,7 @@ public class FilePersistenceUtil {
     }
 
     public void writeToFile(File destination, byte[] data) throws IOException {
+        // destination is a path to a file.  Make sure all parent directories exist before writing.
         destination.getParentFile().mkdirs();
         Files.write(destination.toPath(),data,StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }

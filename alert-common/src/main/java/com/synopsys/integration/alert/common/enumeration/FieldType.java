@@ -34,7 +34,8 @@ public enum FieldType {
     COUNTDOWN("CountdownField"),
     ENDPOINT_BUTTON("EndpointButtonField"),
     ENDPOINT_SELECT("EndpointSelectField"),
-    TABLE_SELECT_INPUT("TableSelectInput");
+    TABLE_SELECT_INPUT("TableSelectInput"),
+    UPLOAD_FILE_BUTTON("UploadFileButtonField");
 
     private final String fieldTypeName;
 

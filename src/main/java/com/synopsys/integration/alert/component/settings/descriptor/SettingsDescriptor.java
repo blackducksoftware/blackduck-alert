@@ -68,6 +68,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_METADATA_URL = "settings.saml.metadata.url";
     public static final String KEY_SAML_ENTITY_ID = "settings.saml.entity.id";
     public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
+    public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";
 
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 

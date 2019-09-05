@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.UploadFileButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -67,6 +68,8 @@ public class SettingsUIConfig extends UIConfig {
     private static final String LABEL_SAML_METADATA_URL = "Identity Provider Metadata URL";
     private static final String LABEL_SAML_ENTITY_ID = "Entity ID";
     private static final String LABEL_SAML_ENTITY_BASE_URL = "Entity Base URL";
+    private static final String LABEL_SAML_METADATA_FILE = "Identity Provider Metadata File";
+
 
     private static final String SETTINGS_ADMIN_EMAIL_DESCRIPTION = "The email address of the Alert system administrator. Used in case a password reset is needed.";
     private static final String SETTINGS_USER_PASSWORD_DESCRIPTION = "The password of the Alert system administrator. Used when logging in as the \"sysadmin\" user.";
@@ -95,6 +98,9 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_SAML_METADATA_URL_DESCRIPTION = "The Metadata URL from the external Identity Provider.";
     private static final String SETTINGS_SAML_ENTITY_ID_DESCRIPTION = "The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta.";
     private static final String SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION = "This should be the URL of the Alert system.";
+    private static final String SETTINGS_SAML_METADATA_FILE_DESCRIPTION = "The file to upload to the server containing the Metadata from the external Identity Provider.";
+
+    private static final String BUTTON_LABEL_SAML_METADATA_FILE = "Upload Metadata File";
 
     private static final String SETTINGS_PANEL_PROXY = "Proxy Configuration";
     private static final String SETTINGS_PANEL_LDAP = "LDAP Configuration";
@@ -174,6 +180,7 @@ public class SettingsUIConfig extends UIConfig {
         // Saml settings
         final ConfigField samlForceAuth = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, SETTINGS_SAML_FORCE_AUTH_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
+        final ConfigField samlMetaDataFile = UploadFileButtonField.create(SettingsDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, SETTINGS_SAML_METADATA_FILE_DESCRIPTION, BUTTON_LABEL_SAML_METADATA_FILE,List.of("text/xml"), "", false).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEntityId = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, SETTINGS_SAML_ENTITY_ID_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEntityBaseURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL, LABEL_SAML_ENTITY_BASE_URL, SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_ENABLED, LABEL_SAML_ENABLED, SETTINGS_SAML_ENABLED_DESCRIPTION)
@@ -186,8 +193,7 @@ public class SettingsUIConfig extends UIConfig {
 
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, samlEnabled, samlForceAuth,
-            samlMetaDataURL,
-            samlEntityId, samlEntityBaseURL);
+            samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL);
     }
 
     private Collection<String> minimumEncryptionFieldLength(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

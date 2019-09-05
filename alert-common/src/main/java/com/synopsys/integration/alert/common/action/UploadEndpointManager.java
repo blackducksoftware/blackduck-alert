@@ -1,9 +1,33 @@
+/**
+ * alert-common
+ *
+ * Copyright (c) 2019 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.common.action;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -21,6 +45,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Component
 public class UploadEndpointManager {
     public static final String UPLOAD_ENDPOINT_URL = "/api/uploads";
+    private static final Logger logger = LoggerFactory.getLogger(UploadEndpointManager.class);
     private Map<String, UploadTarget> uploadTargets = new HashMap<>();
     private FilePersistenceUtil filePersistenceUtil;
     private AuthorizationManager authorizationManager;
@@ -61,11 +86,14 @@ public class UploadEndpointManager {
     private ResponseEntity<String> writeFile(UploadTarget target, Resource fileResource) {
         try {
             if (fileResource.isFile()) {
+                //TODO add a validation function to apply for further security
                 filePersistenceUtil.writeToFile(target.getFilename(), fileResource.getFile());
                 return responseFactory.createCreatedResponse("", "File uploaded.");
             }
         } catch(IOException ex) {
             // add logger to log details.  Don't want to send internal path details back to the client in the response.
+            logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
+            logger.error("Caused by: ",ex);
             return responseFactory.createInternalServerErrorResponse("", "Error uploading file to server.");
         }
         return responseFactory.createBadRequestResponse("", "The file could not be uploaded.");
