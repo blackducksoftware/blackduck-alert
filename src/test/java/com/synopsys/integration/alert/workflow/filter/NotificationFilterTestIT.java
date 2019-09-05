@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class NotificationFilterTestIT extends AlertIntegrationTest {
-    private static final String TEST_DESCRIPTOR_NAME = SlackChannel.COMPONENT_NAME;
+    private static final String TEST_DESCRIPTOR_NAME = new SlackChannelKey().getUniversalKey();
     private static final String TEST_DESCRIPTOR_FIELD_KEY = "testFieldKeyForDesc";
     private static final ConfigContextEnum TEST_DESCRIPTOR_FIELD_CONTEXT = ConfigContextEnum.DISTRIBUTION;
 
@@ -185,4 +185,5 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
         return notification;
     }
+
 }

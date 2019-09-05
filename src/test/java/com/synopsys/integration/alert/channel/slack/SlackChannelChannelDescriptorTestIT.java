@@ -38,9 +38,10 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
     @Autowired
     private SlackDescriptor slackDescriptor;
-
     @Autowired
     private SlackChannel slackChannel;
+    @Autowired
+    private SlackChannelKey slackChannelKey;
 
     @BeforeEach
     public void testSetup() throws Exception {
@@ -73,7 +74,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         fieldMap.get(SlackDescriptor.KEY_WEBHOOK).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
         fieldMap.get(SlackDescriptor.KEY_CHANNEL_NAME).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
         fieldMap.get(SlackDescriptor.KEY_CHANNEL_USERNAME).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
-        return configurationAccessor.createConfiguration(SlackChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
+        return configurationAccessor.createConfiguration(slackChannelKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, models);
     }
 
     @Override
@@ -86,7 +87,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
                                                    .build();
         List<ConfigurationModel> models = List.of();
         try {
-            models = configurationAccessor.getConfigurationsByDescriptorName(SlackChannel.COMPONENT_NAME);
+            models = configurationAccessor.getConfigurationsByDescriptorName(slackChannelKey.getUniversalKey());
         } catch (final AlertDatabaseConstraintException e) {
             e.printStackTrace();
         }
@@ -99,7 +100,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         final String createdAt = RestConstants.formatDate(DateRange.createCurrentDateTimestamp());
         final DistributionEvent event = new DistributionEvent(
-            String.valueOf(distribution_config.getConfigurationId()), SlackChannel.COMPONENT_NAME, createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
+            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
         return event;
     }
 
@@ -143,7 +144,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public String getDestinationName() {
-        return SlackChannel.COMPONENT_NAME;
+        return slackChannelKey.getUniversalKey();
     }
 
     @Override
@@ -165,4 +166,5 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public void testGlobalValidateWithFieldErrors() {
 
     }
+
 }

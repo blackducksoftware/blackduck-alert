@@ -56,7 +56,7 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public JiraDistributionUIConfig(JiraChannelKey jiraChannelKey) {
-        super(jiraChannelKey.getUniversalKey(), JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON);
+        super(jiraChannelKey, JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL, JiraDescriptor.JIRA_ICON);
     }
 
     @Override

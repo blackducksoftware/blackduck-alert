@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -43,7 +43,8 @@ public class MockConfigurationModelFactory {
         fields.add(username);
         fields.add(webhook);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", SlackChannel.COMPONENT_NAME);
+        SlackChannelKey slackChannelKey = new SlackChannelKey();
+        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", slackChannelKey.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }

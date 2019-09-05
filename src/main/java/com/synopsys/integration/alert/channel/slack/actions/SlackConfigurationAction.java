@@ -25,14 +25,14 @@ package com.synopsys.integration.alert.channel.slack.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class SlackConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected SlackConfigurationAction(SlackDistributionTestAction slackDistributionTestAction) {
-        super(SlackChannel.COMPONENT_NAME);
+    protected SlackConfigurationAction(SlackChannelKey slackChannelKey, SlackDistributionTestAction slackDistributionTestAction) {
+        super(slackChannelKey.getUniversalKey());
         addDistributionTestAction(slackDistributionTestAction);
     }
 

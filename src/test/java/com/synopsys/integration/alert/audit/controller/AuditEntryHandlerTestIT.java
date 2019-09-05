@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.jayway.jsonpath.JsonPath;
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -62,7 +63,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
@@ -71,6 +71,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public ResponseFactory responseFactory;
     @Autowired
     public Gson gson;
+    @Autowired
+    private SlackChannelKey slackChannelKey;
     @Autowired
     public AuditEntryRepository auditEntryRepository;
     @Autowired
@@ -116,7 +118,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
 
         final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), slackFields);
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME), slackFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
@@ -163,7 +165,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Test
     public void getGetAuditInfoForJobIT() throws Exception {
         final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(SlackChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, slackFields);
+        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, slackFields);
         final UUID jobID = UUID.randomUUID();
         final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
@@ -188,7 +190,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
         final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(SlackChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), slackFields);
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME), slackFields);
 
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
