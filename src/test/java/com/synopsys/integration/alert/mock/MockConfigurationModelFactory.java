@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -30,6 +30,8 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
+    private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
+
     public static List<ConfigurationFieldModel> createSlackDistributionFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
@@ -41,7 +43,8 @@ public class MockConfigurationModelFactory {
         fields.add(username);
         fields.add(webhook);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", SlackChannel.COMPONENT_NAME);
+        SlackChannelKey slackChannelKey = new SlackChannelKey();
+        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", slackChannelKey.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }
@@ -63,7 +66,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", EmailChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", EMAIL_CHANNEL_KEY.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }
@@ -79,7 +82,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", EmailChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", EMAIL_CHANNEL_KEY.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }

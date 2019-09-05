@@ -45,6 +45,8 @@ import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
+    private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
+
     public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     @Autowired
@@ -116,14 +118,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
-        return Optional.of(configurationAccessor.createConfiguration(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
+        return Optional.of(configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
     public ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
-        return configurationAccessor.createConfiguration(EmailChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
+        return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, models);
     }
 
     @Override
@@ -136,7 +138,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
                                                    .build();
         List<ConfigurationModel> models = List.of();
         try {
-            models = configurationAccessor.getConfigurationsByDescriptorName(EmailChannel.COMPONENT_NAME);
+            models = configurationAccessor.getConfigurationsByDescriptorName(EMAIL_CHANNEL_KEY.getUniversalKey());
         } catch (final AlertDatabaseConstraintException e) {
             e.printStackTrace();
         }
@@ -148,7 +150,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         final String createdAt = RestConstants.formatDate(DateRange.createCurrentDateTimestamp());
-        final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EmailChannel.COMPONENT_NAME, createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(),
+        final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(),
             MessageContentGroup.singleton(content), fieldAccessor);
         return event;
     }
@@ -210,7 +212,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public String getDestinationName() {
-        return EmailChannel.COMPONENT_NAME;
+        return EMAIL_CHANNEL_KEY.getUniversalKey();
     }
 
     @Override
