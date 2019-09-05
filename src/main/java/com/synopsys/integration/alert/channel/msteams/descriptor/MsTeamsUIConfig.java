@@ -22,17 +22,15 @@
  */
 package com.synopsys.integration.alert.channel.msteams.descriptor;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsChannel;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
@@ -42,7 +40,7 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public MsTeamsUIConfig(MsTeamsKey msTeamsKey) {
-        super(msTeamsKey.getUniversalKey(), MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
+        super(msTeamsKey, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
     }
 
     @Override

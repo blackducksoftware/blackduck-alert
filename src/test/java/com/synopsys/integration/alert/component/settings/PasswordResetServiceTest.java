@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -34,6 +34,8 @@ import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
 
 public class PasswordResetServiceTest {
+    private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
+
     @Test
     public void resetPasswordInvalidUserTest() throws AlertException {
         final String invalidUsername = "invalid";
@@ -41,7 +43,7 @@ public class PasswordResetServiceTest {
         Mockito.when(userAccessor.getUser(Mockito.eq(invalidUsername))).thenReturn(Optional.empty());
 
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
-        final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService);
+        final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(invalidUsername);
             fail("Expected exception to be thrown");
@@ -58,7 +60,7 @@ public class PasswordResetServiceTest {
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
-        final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService);
+        final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(username);
             fail("Expected exception to be thrown");
@@ -75,10 +77,10 @@ public class PasswordResetServiceTest {
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
+        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
-        final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService);
+        final PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(username);
             fail("Expected exception to be thrown");
@@ -115,11 +117,11 @@ public class PasswordResetServiceTest {
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
+        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
-        final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService);
+        final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         passwordResetService.resetPassword(username);
     }
 
@@ -147,13 +149,13 @@ public class PasswordResetServiceTest {
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
+        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("invalid dir");
 
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
-        final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService);
+        final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(username);
             fail("Expected exception to be thrown");
@@ -173,4 +175,5 @@ public class PasswordResetServiceTest {
     private void assertExceptionMessageContainsText(final AlertException e, final String text) {
         assertTrue(e.getMessage().contains(text), String.format("Exception message did not contain the expected text. Expected [%s], Actual [%s]", text, e.getMessage()));
     }
+
 }

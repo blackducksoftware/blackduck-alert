@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
@@ -56,23 +56,24 @@ public class PasswordResetService {
     private final DefaultUserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
+    private final EmailChannelKey emailChannelKey;
 
     @Autowired
-    public PasswordResetService(final AlertProperties alertProperties, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor,
-        final FreemarkerTemplatingService freemarkerTemplatingService) {
+    public PasswordResetService(AlertProperties alertProperties, DefaultUserAccessor userAccessor, ConfigurationAccessor configurationAccessor, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
         this.alertProperties = alertProperties;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
+        this.emailChannelKey = emailChannelKey;
     }
 
-    public void resetPassword(final String username) throws AlertException {
+    public void resetPassword(String username) throws AlertException {
         final UserModel userModel = userAccessor.getUser(username)
                                         .orElseThrow(() -> new AlertDatabaseConstraintException("No user exists for the username: " + username));
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertException("No email address configured for user: " + username);
         }
-        final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorNameAndContext(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL)
+        final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorNameAndContext(emailChannelKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
                                                    .stream()
                                                    .findFirst()
                                                    .orElseThrow(() -> new AlertException("No global email configuration found"));
@@ -87,7 +88,7 @@ public class PasswordResetService {
         handleSendAndUpdateDatabase(emailProperties, templateFields, userModel.getEmailAddress(), username, tempPassword);
     }
 
-    private void handleSendAndUpdateDatabase(final EmailProperties emailProperties, final Map<String, Object> templateFields, final String emailAddress, final String username, final String tempPassword) throws AlertException {
+    private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress, String username, String tempPassword) throws AlertException {
         try {
             final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
 

@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
@@ -41,8 +41,8 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String SLACK_ICON = "fab/slack";
 
     @Autowired
-    public SlackDescriptor(final SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig) {
-        super(SlackChannel.COMPONENT_NAME, slackUIConfig, slackGlobalUIConfig);
+    public SlackDescriptor(SlackChannelKey slackChannelKey, SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig) {
+        super(slackChannelKey, slackUIConfig, slackGlobalUIConfig);
     }
 
 }

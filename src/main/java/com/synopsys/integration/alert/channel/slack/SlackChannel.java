@@ -52,9 +52,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
-@Component(value = SlackChannel.COMPONENT_NAME)
+@Component
 public class SlackChannel extends NamedDistributionChannel {
-    public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
     private static final int MRKDWN_MAX_SIZE_PRE_SPLIT = 3500;
@@ -90,7 +89,7 @@ public class SlackChannel extends NamedDistributionChannel {
         final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");
 
         if (StringUtils.isBlank(webhook) || StringUtils.isBlank(channelName)) {
-            Map<String, String> fieldErrors = new HashMap();
+            Map<String, String> fieldErrors = new HashMap<>();
             if (StringUtils.isBlank(webhook)) {
                 fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL");
             }
@@ -325,11 +324,6 @@ public class SlackChannel extends NamedDistributionChannel {
         }
 
         return message.length() - 1;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return COMPONENT_NAME;
     }
 
 }

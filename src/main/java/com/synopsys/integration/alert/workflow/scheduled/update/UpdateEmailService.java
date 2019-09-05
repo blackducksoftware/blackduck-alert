@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
@@ -63,18 +63,20 @@ public class UpdateEmailService {
     private final DefaultUserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
+    private final EmailChannelKey emailChannelKey;
 
     @Autowired
-    public UpdateEmailService(final AlertProperties alertProperties, final SettingsKeyAccessor settingsKeyAccessor, final DefaultUserAccessor userAccessor, final ConfigurationAccessor configurationAccessor,
-        final FreemarkerTemplatingService freemarkerTemplatingService) {
+    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, DefaultUserAccessor userAccessor, ConfigurationAccessor configurationAccessor,
+        FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
+        this.emailChannelKey = emailChannelKey;
     }
 
-    public void sendUpdateEmail(final UpdateModel updateModel) {
+    public void sendUpdateEmail(UpdateModel updateModel) {
         final String updateVersion = updateModel.getDockerTagVersion();
         if (wasEmailAlreadySentForVersion(updateVersion)) {
             return;
@@ -86,7 +88,7 @@ public class UpdateEmailService {
                                                           .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorNameAndContext(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL)
+                final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorNameAndContext(emailChannelKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
                                                            .stream()
                                                            .findFirst()
                                                            .orElseThrow(() -> new AlertException("No global email configuration found"));
@@ -110,7 +112,7 @@ public class UpdateEmailService {
         }
     }
 
-    private boolean wasEmailAlreadySentForVersion(final String updateVersion) {
+    private boolean wasEmailAlreadySentForVersion(String updateVersion) {
         return settingsKeyAccessor
                    .getSettingsKeyByKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL)
                    .map(SettingsKeyModel::getValue)
@@ -118,7 +120,7 @@ public class UpdateEmailService {
                    .isPresent();
     }
 
-    private void handleSendAndUpdateDatabase(final EmailProperties emailProperties, final Map<String, Object> templateFields, final String emailAddress) throws AlertException {
+    private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress) throws AlertException {
         try {
             final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
 
@@ -132,4 +134,5 @@ public class UpdateEmailService {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }
     }
+
 }
