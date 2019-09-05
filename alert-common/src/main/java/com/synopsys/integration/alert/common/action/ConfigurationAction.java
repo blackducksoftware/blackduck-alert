@@ -37,7 +37,7 @@ public abstract class ConfigurationAction {
         this.descriptorKey = descriptorKey;
     }
 
-    // TODO change the return type to DescriptorKey
+    // TODO should we change the return type to DescriptorKey?
     public String getDescriptorKey() {
         return descriptorKey.getUniversalKey();
     }
