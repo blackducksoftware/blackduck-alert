@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -47,6 +48,10 @@ public class PermissionMatrixModel extends AlertSerializableModel {
 
     public boolean hasPermissions(PermissionKey permissionKey) {
         return permissions.containsKey(permissionKey) && !permissions.get(permissionKey).isEmpty();
+    }
+
+    public boolean hasPermissions(PermissionKey permissionKey, AccessOperation... operations) {
+        return permissions.containsKey(permissionKey) && Arrays.stream(operations).allMatch(operation -> permissions.get(permissionKey).contains(operation));
     }
 
     public boolean anyPermissionMatch(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
