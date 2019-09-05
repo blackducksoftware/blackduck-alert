@@ -53,6 +53,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 
 @Component
@@ -65,16 +66,18 @@ public class AlertStartupInitializer extends StartupComponent {
     private final ConfigurationAccessor fieldConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final FieldModelProcessor fieldModelProcessor;
+    private final SettingsDescriptorKey settingsDescriptorKey;
 
     @Autowired
-    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final DescriptorAccessor descriptorAccessor, final ConfigurationAccessor fieldConfigurationAccessor,
-        final ConfigurationFieldModelConverter modelConverter, final FieldModelProcessor fieldModelProcessor) {
+    public AlertStartupInitializer(DescriptorMap descriptorMap, Environment environment, DescriptorAccessor descriptorAccessor, ConfigurationAccessor fieldConfigurationAccessor,
+        ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsDescriptorKey settingsDescriptorKey) {
         this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
         this.modelConverter = modelConverter;
         this.fieldModelProcessor = fieldModelProcessor;
+        this.settingsDescriptorKey = settingsDescriptorKey;
     }
 
     @Override
@@ -91,8 +94,8 @@ public class AlertStartupInitializer extends StartupComponent {
         logger.info("Initializing descriptors with environment variables...");
         final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
-        initializeConfiguration(List.of(SettingsDescriptor.SETTINGS_COMPONENT), overwriteCurrentConfig);
-        final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(SettingsDescriptor.SETTINGS_COMPONENT)).sorted().collect(Collectors.toList());
+        initializeConfiguration(List.of(settingsDescriptorKey.getUniversalKey()), overwriteCurrentConfig);
+        final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsDescriptorKey.getUniversalKey())).sorted().collect(Collectors.toList());
         initializeConfiguration(descriptorNames, overwriteCurrentConfig);
     }
 
@@ -103,7 +106,7 @@ public class AlertStartupInitializer extends StartupComponent {
             Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
 
-            final String environmentFieldKey = convertKeyToProperty(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
+            final String environmentFieldKey = convertKeyToProperty(settingsDescriptorKey.getUniversalKey(), fieldKey);
             final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
             if (environmentValue.isPresent() && settingsConfiguration.isPresent()) {
@@ -124,10 +127,11 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private Optional<ConfigurationModel> findSettingsConfiguration() throws AlertDatabaseConstraintException {
-        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL);
+        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL);
         return settingsConfigurationModels.stream().findFirst();
     }
 
+    // TODO consider using a Collection of DescriptorKeys instead
     private void initializeConfiguration(final Collection<String> descriptorNames, final boolean overwriteCurrentConfig) {
         for (final String descriptorName : descriptorNames) {
             logger.info("---------------------------------");
@@ -256,4 +260,5 @@ public class AlertStartupInitializer extends StartupComponent {
         String value = fieldModel.isSensitive() ? "**********" : String.valueOf(fieldModel.getFieldValues());
         logger.info("    {} = {}", fieldModel.getFieldKey(), value);
     }
+
 }

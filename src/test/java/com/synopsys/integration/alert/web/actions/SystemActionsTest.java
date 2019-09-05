@@ -18,12 +18,15 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.web.config.ConfigActions;
 
 public class SystemActionsTest {
+    private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
+
     private SystemStatusUtility systemStatusUtility;
     private SystemMessageUtility systemMessageUtility;
     private ConfigActions configActions;
@@ -40,7 +43,7 @@ public class SystemActionsTest {
 
     @Test
     public void getSystemMessagesSinceStartup() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesSinceStartup();
         Mockito.verify(systemStatusUtility).getStartupTime();
         Mockito.verify(systemMessageUtility).getSystemMessagesAfter(Mockito.any());
@@ -48,35 +51,35 @@ public class SystemActionsTest {
 
     @Test
     public void testGetSystemMessagesAfter() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesAfter("2018-11-13T00:00:00.000Z");
         Mockito.verify(systemMessageUtility).getSystemMessagesAfter(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBefore() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesBefore("2018-11-13T00:00:00.000Z");
         Mockito.verify(systemMessageUtility).getSystemMessagesBefore(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBetween() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesBetween("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemMessageUtility).findBetween(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessages() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessages();
         Mockito.verify(systemMessageUtility).getSystemMessages();
     }
 
     @Test
     public void testIsInitiailzed() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
 
         assertFalse(systemActions.isSystemInitialized());
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
@@ -85,7 +88,7 @@ public class SystemActionsTest {
 
     @Test
     public void testGetCurrentSystemSetup() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         final String defaultAdminPassword = "defaultPassword";
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
@@ -95,7 +98,7 @@ public class SystemActionsTest {
         final String proxyPassword = "password";
 
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        final FieldModel expected = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
+        final FieldModel expected = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
         expected.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
@@ -118,7 +121,7 @@ public class SystemActionsTest {
 
     @Test
     public void testSaveRequiredInformation() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, systemStatusUtility, systemMessageUtility, configActions);
         final String defaultAdminPassword = "defaultPassword";
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
@@ -128,7 +131,7 @@ public class SystemActionsTest {
         final String proxyPassword = "password";
 
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
+        final FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
         model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));

@@ -87,7 +87,7 @@ public class DescriptorProcessor {
 
     public Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
         return allConfigurationActions.stream()
-                   .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
+                   .filter(configurationAction -> configurationAction.getDescriptorKey().equals(descriptorName))
                    .findFirst();
     }
 

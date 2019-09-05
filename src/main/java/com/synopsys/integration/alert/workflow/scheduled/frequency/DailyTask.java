@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 
 @Component
@@ -48,12 +49,15 @@ public class DailyTask extends ProcessingTask {
     public static final String CRON_FORMAT = "0 0 %s 1/1 * ?";
     public static final int DEFAULT_HOUR_OF_DAY = 0;
 
+    private final SchedulingDescriptorKey schedulingDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelEventManager eventManager, final TaskManager taskManager,
-        final ConfigurationAccessor configurationAccessor) {
+    public DailyTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager,
+        NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager,
+        ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, eventManager, taskManager);
+        this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -65,7 +69,7 @@ public class DailyTask extends ProcessingTask {
     @Override
     public String scheduleCronExpression() {
         try {
-            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT);
+            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(schedulingDescriptorKey.getUniversalKey());
             final String dailySavedCronValue = schedulingConfigs.stream()
                                                    .findFirst()
                                                    .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))
@@ -78,4 +82,5 @@ public class DailyTask extends ProcessingTask {
 
         return String.format(CRON_FORMAT, DEFAULT_HOUR_OF_DAY);
     }
+
 }

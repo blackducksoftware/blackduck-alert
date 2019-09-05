@@ -54,8 +54,8 @@ public class PolarisProperties extends ProviderProperties {
     private final Gson gson;
 
     @Autowired
-    public PolarisProperties(final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson) {
-        super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
+    public PolarisProperties(PolarisProviderKey polarisProviderKey, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor, ProxyManager proxyManager, Gson gson) {
+        super(polarisProviderKey, configurationAccessor);
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
         this.gson = gson;

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.channel.ChannelKey;
 
 @Component
-public class SlackChannelKey extends ChannelKey {
+public final class SlackChannelKey extends ChannelKey {
     private static final String COMPONENT_NAME = "channel_slack";
 
     @Override

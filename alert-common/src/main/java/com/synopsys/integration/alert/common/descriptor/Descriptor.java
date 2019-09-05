@@ -56,18 +56,18 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
  * REMOVE_ALL_PERMISSIONS - removes all permissions from the user role for the descriptor and context.
  */
 public abstract class Descriptor extends AlertSerializableModel {
-    private final String name;
+    private final DescriptorKey descriptorKey;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
 
-    public Descriptor(final String name, final DescriptorType type) {
-        this.name = name;
+    public Descriptor(DescriptorKey descriptorKey, DescriptorType type) {
+        this.descriptorKey = descriptorKey;
         this.type = type;
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
-    public String getName() {
-        return name;
+    public DescriptorKey getDescriptorKey() {
+        return descriptorKey;
     }
 
     public DescriptorType getType() {
@@ -118,7 +118,7 @@ public abstract class Descriptor extends AlertSerializableModel {
         final String description = uiConfig.getDescription();
         final boolean autoGenerateUI = uiConfig.autoGenerateUI();
         final String componentNamespace = uiConfig.getComponentNamespace();
-        return new DescriptorMetadata(label, urlName, getName(), description, getType(), context, fontAwesomeIcon, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestLabel());
+        return new DescriptorMetadata(label, urlName, descriptorKey.getUniversalKey(), description, getType(), context, fontAwesomeIcon, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestLabel());
     }
 
 }

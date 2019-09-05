@@ -48,7 +48,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
@@ -73,13 +75,24 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public ProxyManager proxyManager(final ConfigurationAccessor configurationAccessor) {
-        return new ProxyManager(configurationAccessor);
+    public SettingsDescriptorKey settingsDescriptorKey() {
+        return new SettingsDescriptorKey();
     }
 
     @Bean
-    public BlackDuckProperties blackDuckProperties(final ConfigurationAccessor configurationAccessor) {
-        return new BlackDuckProperties(gson(), alertProperties(), configurationAccessor, proxyManager(configurationAccessor));
+    public ProxyManager proxyManager(ConfigurationAccessor configurationAccessor) {
+        return new ProxyManager(settingsDescriptorKey(), configurationAccessor);
+    }
+
+    @Bean
+    public BlackDuckProviderKey blackDuckProviderKey() {
+        return new BlackDuckProviderKey();
+    }
+
+    @Bean
+    // TODO do we still need this to be a Bean?
+    public BlackDuckProperties blackDuckProperties(ConfigurationAccessor configurationAccessor) {
+        return new BlackDuckProperties(blackDuckProviderKey(), gson(), alertProperties(), configurationAccessor, proxyManager(configurationAccessor));
     }
 
     @Bean
@@ -144,9 +157,10 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public AuthorizationManager authorizationManager(final AuthorizationUtil authorizationUtil) {
+    public AuthorizationManager authorizationManager(AuthorizationUtil authorizationUtil) {
         AuthorizationManager authorizationManager = new AuthorizationManager(authorizationUtil);
         authorizationManager.loadPermissionsIntoCache();
         return authorizationManager;
     }
+
 }

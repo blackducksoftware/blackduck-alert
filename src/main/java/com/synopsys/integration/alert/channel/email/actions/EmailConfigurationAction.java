@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 public class EmailConfigurationAction extends ConfigurationAction {
     @Autowired
     protected EmailConfigurationAction(EmailChannelKey emailChannelKey, EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction) {
-        super(emailChannelKey.getUniversalKey());
+        super(emailChannelKey);
         addGlobalTestAction(emailGlobalTestAction);
         addDistributionTestAction(emailDistributionTestAction);
     }

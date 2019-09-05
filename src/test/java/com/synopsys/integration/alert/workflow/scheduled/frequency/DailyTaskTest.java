@@ -14,18 +14,20 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 
 public class DailyTaskTest {
+    private static final SchedulingDescriptorKey SCHEDULING_DESCRIPTOR_KEY = new SchedulingDescriptorKey();
 
     @Test
     public void testDigestType() {
-        final DailyTask task = new DailyTask(null, null, null, null, null, null);
+        final DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
         assertEquals(FrequencyType.DAILY, task.getDigestType());
     }
 
     @Test
     public void testGetTaskName() {
-        final DailyTask task = new DailyTask(null, null, null, null, null, null);
+        final DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
         assertEquals(DailyTask.TASK_NAME, task.getTaskName());
     }
 
@@ -38,7 +40,8 @@ public class DailyTaskTest {
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final DailyTask task = new DailyTask(null, null, null, null, null, configurationAccessor);
+
+        final DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, configurationAccessor);
         final String cronWithNotDefault = task.scheduleCronExpression();
         final String expectedCron = String.format(DailyTask.CRON_FORMAT, notDefaultValue);
 

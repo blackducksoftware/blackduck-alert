@@ -27,7 +27,7 @@ public class ChannelDescriptorTest {
             }
         };
 
-        Assert.assertEquals(name, channelDescriptor.getName());
+        Assert.assertEquals(name, channelDescriptor.getDescriptorKey().getUniversalKey());
     }
 
 }

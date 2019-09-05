@@ -46,6 +46,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private Set<AccessOperation> operations;
     private boolean readOnly;
 
+    // TODO constructor param 'name' can become descriptorKey
     public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon,
         final boolean automaticallyGenerateUI, final String componentNamespace, final List<ConfigField> fields, final String testFieldLabel) {
         this.label = label;

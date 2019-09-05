@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
@@ -55,6 +55,7 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.request.Request;
 
 public class SlackChannelTest extends ChannelTest {
+    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private static final SlackChannelKey CHANNEL_KEY = new SlackChannelKey();
 
     @Test
@@ -72,7 +73,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -350,7 +351,7 @@ public class SlackChannelTest extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         try {
             request = slackChannel.createRequests(event);
@@ -366,7 +367,7 @@ public class SlackChannelTest extends ChannelTest {
 
         fieldAccessor = new FieldAccessor(fieldModels);
         event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         try {
             request = slackChannel.createRequests(event);
@@ -391,7 +392,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendMessage(event);
 
@@ -410,7 +411,7 @@ public class SlackChannelTest extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), new MessageContentGroup(), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), new MessageContentGroup(), fieldAccessor);
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty(), "Expected no requests to be created");

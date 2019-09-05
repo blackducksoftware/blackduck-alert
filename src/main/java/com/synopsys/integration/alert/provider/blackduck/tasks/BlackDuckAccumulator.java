@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -80,14 +80,16 @@ public class BlackDuckAccumulator extends ScheduledTask {
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
     private final Gson gson;
+    private BlackDuckProviderKey providerKey;
 
     @Autowired
-    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil, Gson gson) {
+    public BlackDuckAccumulator(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, Gson gson, BlackDuckProviderKey providerKey) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
         this.gson = gson;
+        this.providerKey = providerKey;
         searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
     }
 
@@ -243,7 +245,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     private NotificationContent createContent(final NotificationView notification) {
         final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
         final Date providerCreationTime = notification.getCreatedAt();
-        final String provider = BlackDuckProvider.COMPONENT_NAME;
+        final String provider = providerKey.getUniversalKey();
         final String notificationType = notification.getType().name();
         final String jsonContent = notification.getJson();
         NotificationContent notificationContent = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
@@ -338,4 +340,5 @@ public class BlackDuckAccumulator extends ScheduledTask {
         }
         return newStartDate;
     }
+
 }

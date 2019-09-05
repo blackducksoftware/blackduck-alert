@@ -25,16 +25,17 @@ package com.synopsys.integration.alert.provider.polaris.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 
 //@Component
 public class PolarisConfigurationAction extends ConfigurationAction {
-
     @Autowired
-    public PolarisConfigurationAction(final PolarisGlobalApiAction polarisGlobalApiAction, final PolarisGlobalTestAction polarisGlobalTestAction, final PolarisDistributionTestAction polarisDistributionTestAction) {
-        super(PolarisProvider.COMPONENT_NAME);
+    public PolarisConfigurationAction(PolarisProviderKey polarisProviderKey, PolarisGlobalApiAction polarisGlobalApiAction, PolarisGlobalTestAction polarisGlobalTestAction,
+        PolarisDistributionTestAction polarisDistributionTestAction) {
+        super(polarisProviderKey);
         addGlobalApiAction(polarisGlobalApiAction);
         addGlobalTestAction(polarisGlobalTestAction);
         addDistributionTestAction(polarisDistributionTestAction);
     }
+
 }

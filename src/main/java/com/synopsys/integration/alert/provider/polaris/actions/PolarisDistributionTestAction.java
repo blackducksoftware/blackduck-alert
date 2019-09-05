@@ -35,15 +35,17 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 //@Component
 public class PolarisDistributionTestAction extends TestAction {
+    private final PolarisProviderKey polarisProviderKey;
     private final ProviderDataAccessor polarisDataAccessor;
 
     @Autowired
-    public PolarisDistributionTestAction(ProviderDataAccessor polarisDataAccessor) {
+    public PolarisDistributionTestAction(PolarisProviderKey polarisProviderKey, ProviderDataAccessor polarisDataAccessor) {
+        this.polarisProviderKey = polarisProviderKey;
         this.polarisDataAccessor = polarisDataAccessor;
     }
 
@@ -57,7 +59,7 @@ public class PolarisDistributionTestAction extends TestAction {
     }
 
     private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
-        final List<ProviderProject> polarisProjects = polarisDataAccessor.findByProviderName(PolarisProvider.COMPONENT_NAME);
+        final List<ProviderProject> polarisProjects = polarisDataAccessor.findByProviderName(polarisProviderKey.getUniversalKey());
         final boolean noProjectsMatchPattern = polarisProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");

@@ -14,7 +14,12 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 public class ProviderPropertiesTest {
-    private static final String PROVIDER_NAME = "provider_name";
+    private static final ProviderKey PROVIDER_KEY = new ProviderKey() {
+        @Override
+        public String getUniversalKey() {
+            return "provider_name";
+        }
+    };
 
     private final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
     private ConfigurationModel configurationModel;
@@ -26,28 +31,29 @@ public class ProviderPropertiesTest {
 
     @Test
     public void getGlobalConfigTest() throws AlertDatabaseConstraintException {
-        final ProviderProperties properties = new ProviderProperties(PROVIDER_NAME, configurationAccessor) {};
+        final ProviderProperties properties = new ProviderProperties(PROVIDER_KEY, configurationAccessor) {};
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
         assertTrue(properties.retrieveGlobalConfig().isPresent());
     }
 
     @Test
     public void getGlobalConfigNotPresentTest() throws AlertDatabaseConstraintException {
-        final ProviderProperties properties = new ProviderProperties(PROVIDER_NAME, configurationAccessor) {};
+        final ProviderProperties properties = new ProviderProperties(PROVIDER_KEY, configurationAccessor) {};
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_NAME, ConfigContextEnum.GLOBAL)).thenReturn(null);
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(null);
         assertTrue(properties.retrieveGlobalConfig().isEmpty());
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of());
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of());
         assertTrue(properties.retrieveGlobalConfig().isEmpty());
     }
 
     @Test
     public void getGlobalConfigThrowsExceptionTest() throws AlertDatabaseConstraintException {
-        final ProviderProperties properties = new ProviderProperties(PROVIDER_NAME, configurationAccessor) {};
+        final ProviderProperties properties = new ProviderProperties(PROVIDER_KEY, configurationAccessor) {};
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_NAME, ConfigContextEnum.GLOBAL)).thenThrow(new AlertDatabaseConstraintException("Fake constraint violated"));
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenThrow(new AlertDatabaseConstraintException("Fake constraint violated"));
         assertTrue(properties.retrieveGlobalConfig().isEmpty());
     }
+
 }

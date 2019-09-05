@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -66,14 +66,15 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     private final BlackDuckProperties blackDuckProperties;
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final ConfigurationAccessor configurationAccessor;
+    private final BlackDuckProviderKey providerKey;
 
     @Autowired
-    public BlackDuckProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ProviderDataAccessor blackDuckDataAccessor,
-        final ConfigurationAccessor configurationAccessor) {
+    public BlackDuckProjectSyncTask(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor, BlackDuckProviderKey providerKey) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.configurationAccessor = configurationAccessor;
+        this.providerKey = providerKey;
     }
 
     @Override
@@ -89,7 +90,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                 final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
                 final Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(currentDataMap.keySet());
                 final Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectUsersService);
-                blackDuckDataAccessor.updateProjectAndUserData(BlackDuckProvider.COMPONENT_NAME, projectToEmailAddresses);
+                blackDuckDataAccessor.updateProjectAndUserData(providerKey.getUniversalKey(), projectToEmailAddresses);
 
                 blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
                 projectUsersService = blackDuckServicesFactory.createProjectUsersService();

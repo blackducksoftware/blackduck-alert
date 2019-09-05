@@ -11,8 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 
 public class PolarisDescriptorTest {
+    private static final PolarisProviderKey POLARIS_PROVIDER_KEY = new PolarisProviderKey();
+
     @Disabled
     @Test
     public void createTopicCollectorsTest() {
@@ -22,7 +25,7 @@ public class PolarisDescriptorTest {
     @Test
     public void getDefinedGlobalFieldsTest() {
         final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
-        final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(polarisGlobalUIConfig, null);
+        final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(POLARIS_PROVIDER_KEY, polarisGlobalUIConfig, null);
         final Set<String> fields = polarisDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
         assertNotNull(fields);
         assertTrue(fields.contains(PolarisDescriptor.KEY_POLARIS_URL));
@@ -38,7 +41,8 @@ public class PolarisDescriptorTest {
 
     @Test
     public void getDefinedFieldsForInvalidContextTest() {
-        final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(null, null);
+        final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(POLARIS_PROVIDER_KEY, null, null);
         assertTrue(polarisDescriptor.getAllDefinedFields(null).isEmpty());
     }
+
 }

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.channel.ChannelKey;
 
 @Component
-public class JiraChannelKey extends ChannelKey {
+public final class JiraChannelKey extends ChannelKey {
     private static final String COMPONENT_NAME = "channel_jira_cloud";
 
     @Override

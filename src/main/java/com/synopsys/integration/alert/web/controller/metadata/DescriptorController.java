@@ -52,7 +52,7 @@ public class DescriptorController extends MetadataController {
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public DescriptorController(final Collection<Descriptor> descriptors, final AuthorizationManager authorizationManager) {
+    public DescriptorController(Collection<Descriptor> descriptors, AuthorizationManager authorizationManager) {
         this.descriptors = descriptors;
         this.authorizationManager = authorizationManager;
     }
@@ -61,7 +61,7 @@ public class DescriptorController extends MetadataController {
     public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
         Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
-            filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getName()));
+            filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getDescriptorKey().getUniversalKey()));
         }
 
         final DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
