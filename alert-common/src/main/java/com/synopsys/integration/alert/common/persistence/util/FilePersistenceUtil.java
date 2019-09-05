@@ -24,6 +24,9 @@ package com.synopsys.integration.alert.common.persistence.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +38,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 
 @Component
 public class FilePersistenceUtil {
-    public static final String ENCODING = "UTF-8";
     private final File parentDataDirectory;
     private final File secretsDirectory;
     private final Gson gson;
@@ -52,7 +54,16 @@ public class FilePersistenceUtil {
     }
 
     public void writeToFile(final String fileName, final String content) throws IOException {
-        FileUtils.write(createFile(fileName), content, ENCODING);
+        writeToFile(createFile(fileName), content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void writeToFile(String fileName, File sourceFile) throws IOException {
+        writeToFile(createFile(fileName), Files.readAllBytes(sourceFile.toPath()));
+    }
+
+    public void writeToFile(File destination, byte[] data) throws IOException {
+        destination.getParentFile().mkdirs();
+        Files.write(destination.toPath(),data,StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     public void writeJsonToFile(final String fileName, final Object content) throws IOException {
@@ -69,7 +80,7 @@ public class FilePersistenceUtil {
     }
 
     private String readFromFile(final File parentDirectory, final String fileName) throws IOException {
-        return FileUtils.readFileToString(createFile(parentDirectory, fileName), ENCODING);
+        return Files.readString(createFile(parentDirectory, fileName).toPath(), StandardCharsets.UTF_8);
     }
 
     public <T> T readJsonFromFile(final String fileName, final Class<T> clazz) throws IOException {
