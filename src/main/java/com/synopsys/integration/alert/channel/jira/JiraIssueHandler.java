@@ -44,6 +44,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
+import com.synopsys.integration.alert.channel.jira.model.IssueDescriptionModel;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.SetMap;
@@ -158,7 +159,9 @@ public class JiraIssueHandler {
                                                         .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
                 final ItemOperation operation = arbitraryItem.getOperation();
                 final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
+
+                final IssueDescriptionModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
 
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
@@ -192,6 +195,9 @@ public class JiraIssueHandler {
                         final String issueKey = issue.getKey();
                         addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                         addComment(issueKey, "This issue was automatically created by Alert.");
+                        for(String additionalComment : contentModel.getAdditionalComments()) {
+                            addComment(issueKey, additionalComment);
+                        }
                         issueKeys.add(issueKey);
                     } else {
                         logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
@@ -314,13 +320,17 @@ public class JiraIssueHandler {
         return commentBuilder.toString();
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
+    private IssueDescriptionModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
-        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
-        fieldsBuilder.setSummary(title);
-        fieldsBuilder.setDescription(description);
+        final IssueDescriptionModel descriptionModel = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
+        return IssueDescriptionModel.of(title, descriptionModel.getDescription(), descriptionModel.getAdditionalComments());
+    }
+
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueDescriptionModel contentModel) {
+        final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
+        fieldsBuilder.setSummary(contentModel.getTitle());
+        fieldsBuilder.setDescription(contentModel.getDescription());
 
         return fieldsBuilder;
     }
