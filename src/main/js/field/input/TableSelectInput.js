@@ -10,26 +10,32 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import PropTypes from 'prop-types';
 import { Modal } from "react-bootstrap";
 
-const { Option, MultiValue, ValueContainer } = components;
+const { MultiValue, ValueContainer } = components;
 
-const typeOptionLabel = props => (
-    <Option {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-    </Option>
-);
+const typeLabel = (props) => {
+    const { data } = props;
+    const missingItem = (data.missing) ? { textDecoration: "line-through" } : {};
 
-const typeLabel = props => (
-    <MultiValue {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-    </MultiValue>
-);
+    return (
+        <MultiValue {...props}>
+            <DescriptorOption style={missingItem} icon={data.icon} label={data.label} value={data.value} />
+        </MultiValue>
+    );
+}
 
 const container = ({ children, getValue, ...props }) => {
     const length = getValue().length;
+    const error = (
+        <span className="missingBlackDuckData">
+            <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+        </span>
+    );
+    const hasError = getValue().find(value => value.missing);
     if (length <= 5) {
         return (
             <ValueContainer {...props}>
                 {children}
+                {hasError && error}
             </ValueContainer>
         );
     }
@@ -39,6 +45,7 @@ const container = ({ children, getValue, ...props }) => {
             {!props.selectProps.menuIsOpen &&
             `${length} Items selected`}
             {React.cloneElement(children[1])}
+            {hasError && error}
         </ValueContainer>
     );
 }
@@ -66,7 +73,12 @@ class TableSelectInput extends Component {
     }
 
     componentWillMount() {
-        this.updateSelectedValues();
+        const { value } = this.props;
+        if (value && value.length > 0) {
+            this.retrieveTableData().then(() => {
+                this.updateSelectedValues();
+            });
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -81,10 +93,12 @@ class TableSelectInput extends Component {
 
     updateSelectedValues() {
         const { value } = this.props;
-        const { selectedData } = this.state;
+        const { selectedData, data } = this.state;
         selectedData.push(...value);
+        const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
         const convertedValues = selectedData.map(selected => {
-            return Object.assign({ label: selected, value: selected });
+            const columnContainsValue = data.map(dataValue => dataValue[keyColumnHeader]).includes(selected);
+            return Object.assign({ label: selected, value: selected, missing: !columnContainsValue });
         });
         this.setState({
             displayedData: convertedValues
@@ -153,16 +167,19 @@ class TableSelectInput extends Component {
         } = this.props;
 
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
-        await request.then((response) => {
+        return request.then((response) => {
             this.setState({
                 progress: false
             });
+            console.log(`Retrieved data`);
             if (response.ok) {
-                response.json().then((data) => {
+                return response.json().then((data) => {
+                    console.log(`found data: ${JSON.stringify(data)}`);
                     this.setState({
                         data,
                         success: true
                     });
+                    return data;
                 });
             } else {
                 response.json().then((data) => {
@@ -219,8 +236,10 @@ class TableSelectInput extends Component {
         }
 
         const okClicked = () => {
+            const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
             const convertedValues = this.state.selectedData.map(selected => {
-                return Object.assign({ label: selected, value: selected });
+                const columnContainsValue = this.state.data.map(dataValue => dataValue[keyColumnHeader]).includes(selected);
+                return Object.assign({ label: selected, value: selected, missing: !columnContainsValue });
             });
             this.setState({
                 showTable: false,
@@ -287,7 +306,6 @@ class TableSelectInput extends Component {
 
     createSelect() {
         const components = {
-            Option: typeOptionLabel,
             MultiValue: typeLabel,
             ValueContainer: container,
             DropdownIndicator: null,
