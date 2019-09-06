@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -47,7 +48,9 @@ import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
+    private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
     private static final Logger logger = LoggerFactory.getLogger(SystemControllerTestIT.class);
+
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String systemMessageBaseUrl = BaseController.BASE_PATH + "/system/messages";
     private final String systemInitialSetupBaseUrl = BaseController.BASE_PATH + "/system/setup/initial";
@@ -111,7 +114,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), false));
         valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), false));
 
-        final FieldModel configuration = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), valueModelMap);
+        final FieldModel configuration = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), valueModelMap);
 
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(systemInitialSetupBaseUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -224,7 +227,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSaveNotAllowed() {
-        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
+        final FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
@@ -236,7 +239,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSaveWithErrors() throws Exception {
-        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
+        final FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("propertyKey", "error");
@@ -252,7 +255,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSaveThrowsAlertException() throws Exception {
-        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
+        final FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("propertyKey", "error");
@@ -268,7 +271,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSave() throws Exception {
-        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
+        final FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
@@ -278,4 +281,5 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
 }

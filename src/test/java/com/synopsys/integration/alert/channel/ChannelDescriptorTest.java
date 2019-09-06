@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
@@ -136,9 +136,10 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     }
 
     public Map<String, String> createValidCommonDistributionFieldMap() {
+        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
         SlackChannelKey slackChannelKey = new SlackChannelKey();
         return Map.of(ChannelDistributionUIConfig.KEY_NAME, "name", ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.name(), ChannelDistributionUIConfig.KEY_CHANNEL_NAME, slackChannelKey.getUniversalKey(),
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
+            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, blackDuckProviderKey.getUniversalKey());
     }
 
     public Map<String, String> createInvalidCommonDistributionFieldMap() {
@@ -288,4 +289,5 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         assertTrue(assertDistributionFields(getDescriptor().getAllDefinedFields(ConfigContextEnum.DISTRIBUTION)));
         assertTrue(getDescriptor().getAllDefinedFields(null).isEmpty());
     }
+
 }

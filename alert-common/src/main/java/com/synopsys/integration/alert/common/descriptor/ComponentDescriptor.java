@@ -26,9 +26,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public class ComponentDescriptor extends Descriptor {
-
-    public ComponentDescriptor(final String name, final UIConfig componentUIConfig) {
-        super(name, DescriptorType.COMPONENT);
+    public ComponentDescriptor(DescriptorKey descriptorKey, UIConfig componentUIConfig) {
+        super(descriptorKey, DescriptorType.COMPONENT);
         addGlobalUiConfig(componentUIConfig);
     }
 

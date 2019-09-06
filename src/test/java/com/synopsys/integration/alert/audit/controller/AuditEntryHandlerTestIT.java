@@ -59,7 +59,7 @@ import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
@@ -89,6 +89,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private FieldValueRepository fieldValueRepository;
+    @Autowired
+    private BlackDuckProviderKey blackDuckProviderKey;
 
     @BeforeEach
     public void init() {
@@ -118,7 +120,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
 
         final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME), slackFields);
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
@@ -187,10 +189,10 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public void resendNotificationTestIT() throws Exception {
         final String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
-        final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
+        final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
         final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME), slackFields);
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
 
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 

@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.rest.RestConstants;
@@ -181,7 +181,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
 
         final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         fieldModel.setFieldValue("false");
-        final ConfigurationJobModel configJob = defaultConfigurationAccessor.createJob(Set.of(BlackDuckProvider.COMPONENT_NAME), Set.of(fieldModel));
+        final ConfigurationJobModel configJob = defaultConfigurationAccessor.createJob(Set.of(new BlackDuckProviderKey().getUniversalKey()), Set.of(fieldModel));
 
         for (final NotificationContent notification : savedNotifications) {
             final MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());

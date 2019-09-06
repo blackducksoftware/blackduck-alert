@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
@@ -110,7 +110,7 @@ public class MockConfigurationModelFactory {
 
         final ConfigurationFieldModel name = createFieldModel(ChannelDistributionUIConfig.KEY_NAME, jobName);
         final ConfigurationFieldModel channelName = createFieldModel(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        final ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
+        final ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new BlackDuckProviderKey().getUniversalKey());
         final ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
 
         fields.add(name);

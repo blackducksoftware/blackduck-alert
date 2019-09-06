@@ -96,6 +96,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
@@ -111,6 +112,8 @@ import com.synopsys.integration.alert.web.security.authentication.saml.UserDetai
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
+
+    private final SettingsDescriptorKey settingsDescriptorKey;
     private final HttpPathManager httpPathManager;
     private final ConfigurationAccessor configurationAccessor;
     private final CsrfTokenRepository csrfTokenRepository;
@@ -118,7 +121,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
 
     @Autowired
-    AuthenticationHandler(final HttpPathManager httpPathManager, final ConfigurationAccessor configurationAccessor, final CsrfTokenRepository csrfTokenRepository, final AlertProperties alertProperties) {
+    AuthenticationHandler(SettingsDescriptorKey settingsDescriptorKey, HttpPathManager httpPathManager, ConfigurationAccessor configurationAccessor, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties) {
+        this.settingsDescriptorKey = settingsDescriptorKey;
         this.httpPathManager = httpPathManager;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
@@ -207,7 +211,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLContext samlContext() {
-        return new SAMLContext(configurationAccessor);
+        return new SAMLContext(settingsDescriptorKey, configurationAccessor);
     }
 
     @Bean

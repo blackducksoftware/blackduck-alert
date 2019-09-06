@@ -51,7 +51,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager, final Integer blackDuckTimeout,
         final boolean trustCertificates) {
-        super(gson, alertProperties, baseConfigurationAccessor, proxyManager);
+        super(new BlackDuckProviderKey(), gson, alertProperties, baseConfigurationAccessor, proxyManager);
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         testProperties = new TestProperties();
@@ -136,4 +136,5 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME),
             testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
+
 }

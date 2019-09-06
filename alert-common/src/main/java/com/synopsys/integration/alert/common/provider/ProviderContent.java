@@ -28,18 +28,18 @@ import com.google.common.collect.ImmutableSet;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 
 public abstract class ProviderContent {
-    private final String providerName;
+    private final ProviderKey providerKey;
     private final Set<ProviderContentType> providerContentTypes;
     private final Set<FormatType> supportedContentFormats;
 
-    public ProviderContent(final String providerName, final Set<ProviderContentType> providerContentTypes, final Set<FormatType> supportedContentFormats) {
-        this.providerName = providerName;
+    public ProviderContent(ProviderKey providerKey, Set<ProviderContentType> providerContentTypes, Set<FormatType> supportedContentFormats) {
+        this.providerKey = providerKey;
         this.providerContentTypes = providerContentTypes;
         this.supportedContentFormats = supportedContentFormats;
     }
 
-    public String getProviderName() {
-        return providerName;
+    public ProviderKey getProviderKey() {
+        return providerKey;
     }
 
     public Set<ProviderContentType> getContentTypes() {

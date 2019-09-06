@@ -27,16 +27,16 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 
 public abstract class Provider {
-    private final String name;
+    private final ProviderKey key;
     private final ProviderContent providerContent;
 
-    public Provider(final String name, final ProviderContent providerContent) {
-        this.name = name;
+    public Provider(ProviderKey key, ProviderContent providerContent) {
+        this.key = key;
         this.providerContent = providerContent;
     }
 
-    public String getName() {
-        return name;
+    public ProviderKey getKey() {
+        return key;
     }
 
     public abstract void initialize();

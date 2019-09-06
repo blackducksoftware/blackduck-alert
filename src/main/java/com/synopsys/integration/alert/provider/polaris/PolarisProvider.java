@@ -40,7 +40,6 @@ import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient
 
 //@Component(PolarisProvider.COMPONENT_NAME)
 public class PolarisProvider extends Provider {
-    public static final String COMPONENT_NAME = "provider_polaris";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskManager taskManager;
@@ -50,9 +49,9 @@ public class PolarisProvider extends Provider {
     private final ObjectFactory<PolarisCollector> polarisCollector;
 
     @Autowired
-    public PolarisProvider(final TaskManager taskManager, final PolarisProjectSyncTask projectSyncTask, final PolarisProperties polarisProperties, final PolarisContent polarisContent,
-        final ObjectFactory<PolarisCollector> polarisCollector) {
-        super(PolarisProvider.COMPONENT_NAME, polarisContent);
+    public PolarisProvider(PolarisProviderKey polarisProviderKey, TaskManager taskManager, PolarisProjectSyncTask projectSyncTask, PolarisProperties polarisProperties,
+        PolarisContent polarisContent, ObjectFactory<PolarisCollector> polarisCollector) {
+        super(polarisProviderKey, polarisContent);
         this.taskManager = taskManager;
         this.projectSyncTask = projectSyncTask;
         this.polarisProperties = polarisProperties;

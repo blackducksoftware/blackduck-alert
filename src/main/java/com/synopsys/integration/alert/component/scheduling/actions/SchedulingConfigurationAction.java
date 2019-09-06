@@ -26,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 
 @Component
 public class SchedulingConfigurationAction extends ConfigurationAction {
-
     @Autowired
-    protected SchedulingConfigurationAction(final SchedulingGlobalApiAction schedulingGlobalApiAction) {
-        super(SchedulingDescriptor.SCHEDULING_COMPONENT);
+    protected SchedulingConfigurationAction(SchedulingDescriptorKey schedulingDescriptorKey, SchedulingGlobalApiAction schedulingGlobalApiAction) {
+        super(schedulingDescriptorKey);
         addGlobalApiAction(schedulingGlobalApiAction);
     }
+
 }

@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
@@ -62,6 +62,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
+    @Autowired
+    private BlackDuckProviderKey blackDuckProviderKey;
     @Autowired
     private SlackChannelKey slackChannelKey;
     @Autowired
@@ -77,7 +79,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME, Map.of());
+        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + slackChannelKey.getUniversalKey();
@@ -100,7 +102,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME, Map.of());
+        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "/" + configId;
@@ -119,7 +121,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME, Map.of());
+        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
         final String jobId = String.valueOf(emptyConfigurationModel.getJobId());
 
         final String urlPath = url + "/" + jobId;
@@ -144,7 +146,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (final FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), BlackDuckProvider.COMPONENT_NAME, fieldValueModels);
+        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
         final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
@@ -202,7 +204,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
         final FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         final FieldValueModel name = new FieldValueModel(List.of("name"), true);
-        final FieldValueModel provider = new FieldValueModel(List.of(BlackDuckProvider.COMPONENT_NAME), true);
+        final FieldValueModel provider = new FieldValueModel(List.of(blackDuckProviderKey.getUniversalKey()), true);
         final FieldValueModel channel = new FieldValueModel(List.of("channel_slack"), true);
         final FieldValueModel webhook = new FieldValueModel(List.of("slack_webhook_url"), true);
 
@@ -217,7 +219,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             fieldModel.setId(channelId);
         }
 
-        final String bdDescriptorName = BlackDuckProvider.COMPONENT_NAME;
+        final String bdDescriptorName = blackDuckProviderKey.getUniversalKey();
         final String bdContext = ConfigContextEnum.DISTRIBUTION.name();
 
         final FieldValueModel notificationType = new FieldValueModel(List.of("vulnerability"), true);

@@ -43,8 +43,7 @@ public class DescriptorMap {
     private final Map<String, ComponentDescriptor> componentDescriptorMapping;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors)
-        throws AlertException {
+    public DescriptorMap(List<ChannelDescriptor> channelDescriptors, List<ProviderDescriptor> providerDescriptors, List<ComponentDescriptor> componentDescriptors) throws AlertException {
         descriptorMapping = new HashMap<>();
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
         providerDescriptorMapping = initDescriptorMap(providerDescriptors);
@@ -91,9 +90,10 @@ public class DescriptorMap {
     }
 
     private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
-        final Map<String, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
-        for (final D descriptor : descriptorList) {
-            final String descriptorName = descriptor.getName();
+        Map<String, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
+        for (D descriptor : descriptorList) {
+            // TODO fix this when descriptor map uses DescriptorKey as its key
+            String descriptorName = descriptor.getDescriptorKey().getUniversalKey();
             if (descriptorMapping.containsKey(descriptorName)) {
                 throw new AlertException("Found duplicate descriptor name of: " + descriptorName);
             }
@@ -102,4 +102,5 @@ public class DescriptorMap {
         }
         return specificDescriptorMapping;
     }
+
 }

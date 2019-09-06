@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.polaris.PolarisApiHelper;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisIssueNotificationContentModel;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 import com.synopsys.integration.exception.IntegrationException;
@@ -70,15 +70,18 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "polaris-project-sync-task";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final PolarisProviderKey polarisProviderKey;
     private final PolarisProperties polarisProperties;
     private final ProviderDataAccessor providerDataAccessor;
     private final PolarisIssueAccessor polarisIssueAccessor;
     private final NotificationManager notificationManager;
     private final Gson gson;
 
-    public PolarisProjectSyncTask(final TaskScheduler taskScheduler, final PolarisProperties polarisProperties, final ProviderDataAccessor providerDataAccessor, final PolarisIssueAccessor polarisIssueAccessor,
-        final DefaultNotificationManager notificationManager, final Gson gson) {
+    public PolarisProjectSyncTask(PolarisProviderKey polarisProviderKey, TaskScheduler taskScheduler, PolarisProperties polarisProperties, ProviderDataAccessor providerDataAccessor, PolarisIssueAccessor polarisIssueAccessor,
+        DefaultNotificationManager notificationManager, Gson gson) {
         super(taskScheduler, TASK_NAME);
+        this.polarisProviderKey = polarisProviderKey;
         this.polarisProperties = polarisProperties;
         this.providerDataAccessor = providerDataAccessor;
         this.polarisIssueAccessor = polarisIssueAccessor;
@@ -161,7 +164,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
         final Collection<AlertPolarisIssueNotificationContentModel> notificationModels = createNotificationModelsForProject(projectLink, project, projectIssues);
         for (final AlertPolarisIssueNotificationContentModel notificationModel : notificationModels) {
             final String notificationContent = gson.toJson(notificationModel);
-            final AlertNotificationWrapper notification = new NotificationContent(providerCreationDate, PolarisProvider.COMPONENT_NAME, providerCreationDate, notificationModel.getNotificationType().name(), notificationContent);
+            final AlertNotificationWrapper notification = new NotificationContent(providerCreationDate, polarisProviderKey.getUniversalKey(), providerCreationDate, notificationModel.getNotificationType().name(), notificationContent);
             notifications.add(notification);
         }
         return notifications;
@@ -189,7 +192,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private void persistProjectData(final Map<ProviderProject, Set<String>> projectUserEmailMappings) {
         logger.info("Updating {} projects", projectUserEmailMappings.keySet().size());
-        providerDataAccessor.updateProjectAndUserData(PolarisProvider.COMPONENT_NAME, projectUserEmailMappings);
+        providerDataAccessor.updateProjectAndUserData(polarisProviderKey.getUniversalKey(), projectUserEmailMappings);
     }
 
     private void persistIssues(final Map<ProviderProject, Set<PolarisIssueModel>> projectIssueMappings) {

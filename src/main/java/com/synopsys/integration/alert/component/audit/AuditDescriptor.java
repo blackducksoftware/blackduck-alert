@@ -38,7 +38,8 @@ public class AuditDescriptor extends ComponentDescriptor {
     public static final String AUDIT_COMPONENT_NAMESPACE = "audit.AuditPage";
 
     @Autowired
-    public AuditDescriptor(final AuditUIConfig auditUIConfig) {
-        super(AUDIT_COMPONENT, auditUIConfig);
+    public AuditDescriptor(AuditDescriptorKey auditDescriptorKey, AuditUIConfig auditUIConfig) {
+        super(auditDescriptorKey, auditUIConfig);
     }
+
 }

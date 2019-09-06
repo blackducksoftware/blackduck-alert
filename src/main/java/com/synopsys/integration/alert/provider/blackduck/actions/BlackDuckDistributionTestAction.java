@@ -36,15 +36,17 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckDistributionTestAction extends TestAction {
+    private final BlackDuckProviderKey blackDuckProviderKey;
     private final ProviderDataAccessor blackDuckDataAccessor;
 
     @Autowired
-    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckDistributionTestAction(BlackDuckProviderKey blackDuckProviderKey, ProviderDataAccessor blackDuckDataAccessor) {
+        this.blackDuckProviderKey = blackDuckProviderKey;
         this.blackDuckDataAccessor = blackDuckDataAccessor;
     }
 
@@ -58,7 +60,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
     }
 
     private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
-        final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
+        final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(blackDuckProviderKey.getUniversalKey());
         final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");

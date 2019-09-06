@@ -22,9 +22,10 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
-import com.synopsys.integration.alert.common.channel.ClassNameChannelKey;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.channel.ClassNameChannelKey;
+
 @Component
-public class MsTeamsKey extends ClassNameChannelKey {
+public final class MsTeamsKey extends ClassNameChannelKey {
 }

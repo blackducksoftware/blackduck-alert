@@ -131,7 +131,7 @@ public class MessageContentAggregator {
 
     private Optional<Provider> getProviderByName(final String name) {
         return providers.stream()
-                   .filter(provider -> name.equals(provider.getName()))
+                   .filter(provider -> name.equals(provider.getKey().getUniversalKey()))
                    .findFirst();
     }
 

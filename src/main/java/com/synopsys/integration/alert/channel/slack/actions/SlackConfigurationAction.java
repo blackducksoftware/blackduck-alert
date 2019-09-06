@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 public class SlackConfigurationAction extends ConfigurationAction {
     @Autowired
     protected SlackConfigurationAction(SlackChannelKey slackChannelKey, SlackDistributionTestAction slackDistributionTestAction) {
-        super(slackChannelKey.getUniversalKey());
+        super(slackChannelKey);
         addDistributionTestAction(slackDistributionTestAction);
     }
 

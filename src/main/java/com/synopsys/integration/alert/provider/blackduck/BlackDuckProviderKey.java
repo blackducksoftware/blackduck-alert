@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,18 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.provider.blackduck;
 
-import com.synopsys.integration.alert.common.channel.ChannelKey;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 
-public abstract class ChannelDescriptor extends Descriptor {
-    public ChannelDescriptor(ChannelKey channelKey, final ChannelDistributionUIConfig distributionUIConfig, final UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
+public final class BlackDuckProviderKey extends ProviderKey {
+    private static final String COMPONENT_NAME = "provider_blackduck";
+
+    @Override
+    public String getUniversalKey() {
+        return COMPONENT_NAME;
     }
 
 }

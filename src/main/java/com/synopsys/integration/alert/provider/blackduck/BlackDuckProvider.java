@@ -41,9 +41,8 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectS
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
-@Component(value = BlackDuckProvider.COMPONENT_NAME)
+@Component
 public class BlackDuckProvider extends Provider {
-    public static final String COMPONENT_NAME = "provider_blackduck";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
 
     private final BlackDuckAccumulator accumulatorTask;
@@ -54,9 +53,9 @@ public class BlackDuckProvider extends Provider {
     private final BlackDuckTopicCollectorFactory topicCollectorFactory;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final BlackDuckProjectSyncTask projectSyncTask, final BlackDuckContent blackDuckContent, final TaskManager taskManager, final BlackDuckProperties blackDuckProperties,
-        final BlackDuckTopicCollectorFactory topicCollectorFactory) {
-        super(BlackDuckProvider.COMPONENT_NAME, blackDuckContent);
+    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckProjectSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager,
+        BlackDuckProperties blackDuckProperties, BlackDuckTopicCollectorFactory topicCollectorFactory) {
+        super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.taskManager = taskManager;

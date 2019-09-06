@@ -29,13 +29,15 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
+    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
+
     @Autowired
     private SlackDescriptor slackDescriptor;
     @Autowired
@@ -58,7 +60,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         provider_global = configurationAccessor
-                              .createConfiguration(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
     }
 
     @Override
@@ -100,7 +102,8 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         final String createdAt = RestConstants.formatDate(DateRange.createCurrentDateTimestamp());
         final DistributionEvent event = new DistributionEvent(
-            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
+            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(content),
+            fieldAccessor);
         return event;
     }
 

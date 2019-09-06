@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 import java.util.List;
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -46,11 +47,11 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private Set<AccessOperation> operations;
     private boolean readOnly;
 
-    public DescriptorMetadata(final String label, final String urlName, final String name, final String description, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon,
-        final boolean automaticallyGenerateUI, final String componentNamespace, final List<ConfigField> fields, final String testFieldLabel) {
+    public DescriptorMetadata(DescriptorKey descriptorKey, String label, String urlName, String description, DescriptorType type, ConfigContextEnum context, String fontAwesomeIcon,
+        boolean automaticallyGenerateUI, String componentNamespace, List<ConfigField> fields, String testFieldLabel) {
         this.label = label;
         this.urlName = urlName;
-        this.name = name;
+        this.name = descriptorKey.getUniversalKey();
         this.description = description;
         this.type = type;
         this.context = context;
@@ -102,7 +103,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         return fields;
     }
 
-    public void setFields(final List<ConfigField> fields) {
+    public void setFields(List<ConfigField> fields) {
         this.fields = fields;
     }
 
@@ -110,7 +111,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         return testFieldLabel;
     }
 
-    public void setTestFieldLabel(final String testFieldLabel) {
+    public void setTestFieldLabel(String testFieldLabel) {
         this.testFieldLabel = testFieldLabel;
     }
 
@@ -118,7 +119,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         return operations;
     }
 
-    public void setOperations(final Set<AccessOperation> operations) {
+    public void setOperations(Set<AccessOperation> operations) {
         this.operations = operations;
     }
 
@@ -126,7 +127,8 @@ public class DescriptorMetadata extends AlertSerializableModel {
         return readOnly;
     }
 
-    public void setReadOnly(final boolean readOnly) {
+    public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
+
 }
