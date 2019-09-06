@@ -118,7 +118,7 @@ public abstract class Descriptor extends AlertSerializableModel {
         final String description = uiConfig.getDescription();
         final boolean autoGenerateUI = uiConfig.autoGenerateUI();
         final String componentNamespace = uiConfig.getComponentNamespace();
-        return new DescriptorMetadata(label, urlName, descriptorKey.getUniversalKey(), description, getType(), context, fontAwesomeIcon, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestLabel());
+        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, fontAwesomeIcon, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestLabel());
     }
 
 }
