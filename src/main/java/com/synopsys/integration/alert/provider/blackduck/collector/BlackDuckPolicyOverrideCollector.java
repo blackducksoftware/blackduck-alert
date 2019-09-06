@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -54,41 +53,33 @@ import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
 
     @Autowired
-    public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, Arrays.asList(BlackDuckContent.POLICY_OVERRIDE), blackDuckProperties);
+    public BlackDuckPolicyOverrideCollector(JsonExtractor jsonExtractor, BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, List.of(BlackDuckContent.POLICY_OVERRIDE), blackDuckProperties);
     }
 
     @Override
     protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         List<ComponentItem> items = new LinkedList<>();
-        final ItemOperation operation = ItemOperation.DELETE;
-        final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
+        ItemOperation operation = ItemOperation.DELETE;
+        List<JsonField<String>> categoryFields = getStringFields(notificationFields);
 
-        final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
+        List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
         List<PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckContent.LABEL_POLICY_INFO_LIST);
 
-        final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
-        final Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
+        Optional<String> componentVersionName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_VERSION_NAME).stream().findFirst();
+        String projectVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX).stream().findFirst().orElse("");
+        String componentName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_NAME).stream().findFirst().orElse("");
+        String generatedLink = getBlackDuckDataHelper().getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK, componentName).orElse(null);
 
-        final Optional<String> componentVersionName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_VERSION_NAME).stream().findFirst();
-        final String projectVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX).stream().findFirst().orElse("");
-        final String componentName = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_COMPONENT_NAME).stream().findFirst().orElse("");
-        final String generatedLink = getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK, componentName).orElse(null);
+        Optional<LinkableItem> componentVersionItem = componentVersionName.map(name -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, name, generatedLink));
+        String linkForComponentName = (componentVersionName.isPresent()) ? null : generatedLink;
+        LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, componentName, linkForComponentName);
 
-        final Optional<LinkableItem> componentVersionItem = componentVersionName.map(name -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_VERSION_NAME, name, generatedLink));
-        final String linkForComponentName = (componentVersionName.isPresent()) ? null : generatedLink;
-        final LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, componentName, linkForComponentName);
+        Optional<String> bomComponentVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX).stream().findFirst();
 
-        final Optional<String> bomComponentVersionUrl = getFieldValueObjectsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX).stream().findFirst();
+        Optional<LinkableItem> nameItem = createNameItem(jsonFieldAccessor, categoryFields);
 
-        Optional<LinkableItem> nameItem = Optional.empty();
-        if (firstName.isPresent() && lastName.isPresent()) {
-            final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
-            LinkableItem overrideBy = new LinkableItem(BlackDuckContent.LABEL_POLICY_OVERRIDE_BY, value);
-            nameItem = Optional.of(overrideBy);
-        }
-
-        for (final PolicyInfo policyItem : policyItems) {
+        for (PolicyInfo policyItem : policyItems) {
             ComponentItemPriority priority = mapSeverityToPriority(policyItem.getSeverity());
             Set<LinkableItem> attributeSet = new LinkedHashSet<>();
             attributeSet.addAll(createPolicyLinkableItems(policyItem, bomComponentVersionUrl.orElse("")));
@@ -98,4 +89,17 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         }
         return items;
     }
+
+    private Optional<LinkableItem> createNameItem(JsonFieldAccessor jsonFieldAccessor, List<JsonField<String>> categoryFields) {
+        Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
+        Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckContent.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
+
+        if (firstName.isPresent() && lastName.isPresent()) {
+            String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
+            LinkableItem overrideBy = new LinkableItem(BlackDuckContent.LABEL_POLICY_OVERRIDE_BY, value);
+            return Optional.of(overrideBy);
+        }
+        return Optional.empty();
+    }
+
 }
