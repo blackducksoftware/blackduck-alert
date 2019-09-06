@@ -87,7 +87,13 @@ class TableSelectInput extends Component {
         const currentSize = value && value.length > 0;
         const emptySelected = this.state.selectedData.length === 0;
         if (prevSize && currentSize && emptySelected) {
-            this.updateSelectedValues();
+            if (this.state.data.length == 0) {
+                this.retrieveTableData().then(() => {
+                    this.updateSelectedValues();
+                });
+            } else {
+                this.updateSelectedValues();
+            }
         }
     }
 
@@ -171,10 +177,8 @@ class TableSelectInput extends Component {
             this.setState({
                 progress: false
             });
-            console.log(`Retrieved data`);
             if (response.ok) {
                 return response.json().then((data) => {
-                    console.log(`found data: ${JSON.stringify(data)}`);
                     this.setState({
                         data,
                         success: true
