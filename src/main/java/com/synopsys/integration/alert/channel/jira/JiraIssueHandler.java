@@ -44,7 +44,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
-import com.synopsys.integration.alert.channel.jira.model.IssueDescriptionModel;
+import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.SetMap;
@@ -160,7 +160,7 @@ public class JiraIssueHandler {
                 final ItemOperation operation = arbitraryItem.getOperation();
                 final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
-                final IssueDescriptionModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                final IssueContentModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
                 final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
 
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
@@ -307,14 +307,14 @@ public class JiraIssueHandler {
         return jiraChannelFormatHelper.createOperationComment(operation, category, provider, componentItems);
     }
 
-    private IssueDescriptionModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
+    private IssueContentModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
         final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
-        final IssueDescriptionModel descriptionModel = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
-        return IssueDescriptionModel.of(title, descriptionModel.getDescription(), descriptionModel.getAdditionalComments());
+        final IssueContentModel descriptionModel = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
+        return IssueContentModel.of(title, descriptionModel.getDescription(), descriptionModel.getAdditionalComments());
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueDescriptionModel contentModel) {
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         fieldsBuilder.setSummary(contentModel.getTitle());
         fieldsBuilder.setDescription(contentModel.getDescription());

@@ -32,7 +32,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.channel.jira.model.IssueDescriptionModel;
+import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.MessageSplitter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
@@ -74,7 +74,7 @@ public class JiraIssueFormatHelper {
         return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
-    public IssueDescriptionModel createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final Collection<ComponentItem> componentItems, final String providerName) {
+    public IssueContentModel createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final Collection<ComponentItem> componentItems, final String providerName) {
         final StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
@@ -104,7 +104,7 @@ public class JiraIssueFormatHelper {
             splitComponentAttributesForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
             description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
         }
-        return IssueDescriptionModel.of(description.toString(), additionalComments);
+        return IssueContentModel.of(description.toString(), additionalComments);
     }
 
     public void splitComponentAttributesForDescription(int descriptionLength, Collection<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
