@@ -8,7 +8,7 @@ import DescriptorOption from 'component/common/DescriptorOption';
 import GeneralButton from 'field/input/GeneralButton';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
-import { Modal } from "react-bootstrap";
+import { Modal } from 'react-bootstrap';
 
 const { MultiValue, ValueContainer } = components;
 
@@ -26,7 +26,7 @@ const typeLabel = (props) => {
 const container = ({ children, getValue, ...props }) => {
     const length = getValue().length;
     const error = (
-        <span className="missingBlackDuckData">
+        <span className="missingData">
             <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
         </span>
     );
@@ -228,7 +228,7 @@ class TableSelectInput extends Component {
 
         const assignDataFormat = (cell, row) => {
             const cellContent = (row.missing && cell && cell !== '') ?
-                <span className="missingBlackDuckData">
+                <span className="missingData">
                     <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
                 </span>
                 : cell;
