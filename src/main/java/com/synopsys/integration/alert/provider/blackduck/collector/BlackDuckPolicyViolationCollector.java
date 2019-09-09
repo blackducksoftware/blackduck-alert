@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +42,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -98,7 +98,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
         Optional<String> projectVersionComponentLink = getBlackDuckDataHelper().getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
 
-        Map<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
+        SetMap<BlackDuckPolicyLinkableItem, PolicyInfo> componentToPolicyMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
         for (Map.Entry<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyEntry : componentToPolicyMapping.entrySet()) {
             BlackDuckPolicyLinkableItem policyComponentData = componentToPolicyEntry.getKey();
             Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
@@ -156,20 +156,15 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         return operation;
     }
 
-    private Map<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> createPolicyComponentToLinkableItemMapping(
+    private SetMap<BlackDuckPolicyLinkableItem, PolicyInfo> createPolicyComponentToLinkableItemMapping(
         Collection<ComponentVersionStatus> componentVersionStatuses, Map<String, PolicyInfo> policyItems, Optional<String> projectVersionUrl) {
-        Map<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyMapping = new HashMap<>();
+        SetMap<BlackDuckPolicyLinkableItem, PolicyInfo> componentToPolicyMapping = new SetMap<>();
         for (ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
             String projectVersionLink = projectVersionUrl.flatMap(url -> getBlackDuckDataHelper().getProjectComponentQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
             Set<PolicyInfo> componentPolicies = getPoliciesForComponent(componentVersionStatus, policyItems);
 
             BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = createBlackDuckPolicyLinkableItem(componentVersionStatus, projectVersionLink);
-
-            if (componentToPolicyMapping.containsKey(blackDuckPolicyLinkableItem)) {
-                blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionStatus.getComponentVersionName(), projectVersionLink);
-                blackDuckPolicyLinkableItem.setComponentVersionStatus(componentVersionStatus);
-            }
-            componentToPolicyMapping.put(blackDuckPolicyLinkableItem, componentPolicies);
+            componentToPolicyMapping.addAll(blackDuckPolicyLinkableItem, componentPolicies);
         }
         return componentToPolicyMapping;
     }
