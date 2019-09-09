@@ -230,6 +230,13 @@ form.form-horizontal.loginForm {
   width: 100%;
 }
 
+.topLevelModal {
+  background-color: $synopsys-color-section-background;
+  border: 0;
+  border-radius: $border-radius;
+  box-shadow: 1px 1px 100px $synopsys-color-dark-gray;
+}
+
 .modal-content {
   border-radius: $border-radius;
 }
