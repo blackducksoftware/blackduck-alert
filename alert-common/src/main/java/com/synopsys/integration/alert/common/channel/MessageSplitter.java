@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.channel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 //TODO use this for SlackChannel to create message chunks.
@@ -48,11 +49,11 @@ public final class MessageSplitter {
         return lineSeparator;
     }
 
-    public final List<String> splitMessages(final List<String> messagePieces) {
+    public final List<String> splitMessages(final Collection<String> messagePieces) {
         return splitMessages(messagePieces, false);
     }
 
-    public final List<String> splitMessages(final List<String> messagePieces, boolean separateChunksByLineSeparator) {
+    public final List<String> splitMessages(final Collection<String> messagePieces, boolean separateChunksByLineSeparator) {
         final List<String> messageChunks = new ArrayList<>();
 
         StringBuilder chunkBuilder = new StringBuilder();

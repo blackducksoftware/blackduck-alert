@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.jira.model.IssueDescriptionModel;
 import com.synopsys.integration.alert.common.channel.MessageSplitter;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKeys;
@@ -106,23 +107,6 @@ public class JiraIssueFormatHelper {
         return IssueDescriptionModel.of(description.toString(), additionalComments);
     }
 
-    public String createComponentAttributesString(Collection<ComponentItem> componentItems) {
-        Set<String> descriptionItems = new LinkedHashSet<>();
-
-        for (ComponentItem componentItem : componentItems) {
-            final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
-            descriptionItems.addAll(descriptionItemsForComponent);
-        }
-
-        StringBuilder attributes = new StringBuilder();
-        for (String descriptionItem : descriptionItems) {
-            attributes.append(descriptionItem);
-            attributes.append(LINE_SEPARATOR);
-        }
-
-        return attributes.toString();
-    }
-
     public void splitComponentAttributesForDescription(int descriptionLength, Collection<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
         Set<String> descriptionItems = new LinkedHashSet<>();
         MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
@@ -147,6 +131,38 @@ public class JiraIssueFormatHelper {
             }
         }
         additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, true));
+    }
+
+    public List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
+        String attributesString = createComponentAttributesString(componentItems);
+        Collection<String> text = new ArrayList<>();
+        String description = String.format("The %s operation was performed for this %s in %s", operation.name(), category, provider);
+        text.add(description);
+        if (StringUtils.isNotBlank(attributesString)) {
+            text.add(".\n----------\n");
+            text.add(attributesString);
+        } else {
+            text.add(".");
+        }
+        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
+        return splitter.splitMessages(text, true);
+    }
+
+    private String createComponentAttributesString(Collection<ComponentItem> componentItems) {
+        Set<String> descriptionItems = new LinkedHashSet<>();
+
+        for (ComponentItem componentItem : componentItems) {
+            final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
+            descriptionItems.addAll(descriptionItemsForComponent);
+        }
+
+        StringBuilder attributes = new StringBuilder();
+        for (String descriptionItem : descriptionItems) {
+            attributes.append(descriptionItem);
+            attributes.append(LINE_SEPARATOR);
+        }
+
+        return attributes.toString();
     }
 
     private String createComponentString(ComponentItem componentItem) {

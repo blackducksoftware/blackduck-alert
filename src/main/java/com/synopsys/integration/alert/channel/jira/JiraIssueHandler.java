@@ -168,8 +168,10 @@ public class JiraIssueHandler {
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
                     if (commentOnIssue) {
-                        String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                        addComment(issueComponent.getKey(), operationComment);
+                        List<String> operationComments = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
+                        for (String operationComment : operationComments) {
+                            addComment(issueComponent.getKey(), operationComment);
+                        }
                         issueKeys.add(issueComponent.getKey());
                     }
 
@@ -195,7 +197,7 @@ public class JiraIssueHandler {
                         final String issueKey = issue.getKey();
                         addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                         addComment(issueKey, "This issue was automatically created by Alert.");
-                        for(String additionalComment : contentModel.getAdditionalComments()) {
+                        for (String additionalComment : contentModel.getAdditionalComments()) {
                             addComment(issueKey, additionalComment);
                         }
                         issueKeys.add(issueKey);
@@ -300,24 +302,9 @@ public class JiraIssueHandler {
         );
     }
 
-    private String createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
+    private List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
         JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        String attributesString = jiraChannelFormatHelper.createComponentAttributesString(componentItems);
-
-        StringBuilder commentBuilder = new StringBuilder();
-        commentBuilder.append("The ");
-        commentBuilder.append(operation.name());
-        commentBuilder.append(" operation was performed for this ");
-        commentBuilder.append(category);
-        commentBuilder.append(" in ");
-        commentBuilder.append(provider);
-        if (StringUtils.isNotBlank(attributesString)) {
-            commentBuilder.append(".\n----------\n");
-            commentBuilder.append(attributesString);
-        } else {
-            commentBuilder.append(".");
-        }
-        return commentBuilder.toString();
+        return jiraChannelFormatHelper.createOperationComment(operation, category, provider, componentItems);
     }
 
     private IssueDescriptionModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
