@@ -4,7 +4,7 @@ import Select, { components } from 'react-select';
 import LabeledField from 'field/LabeledField';
 import DescriptorOption from 'component/common/DescriptorOption';
 
-const { Option, SingleValue } = components;
+const { Option, SingleValue, MultiValue } = components;
 
 function DynamicSelectInput(props) {
     const {
@@ -37,9 +37,16 @@ function DynamicSelectInput(props) {
         </SingleValue>
     );
 
+    const multiTypeLabel = props => (
+        <MultiValue {...props}>
+            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+        </MultiValue>
+    );
+
     const components = {
         Option: typeOptionLabel,
-        SingleValue: typeLabel
+        SingleValue: typeLabel,
+        MultiValue: multiTypeLabel
     }
 
     const selectValue = options.filter(option => value.includes(option.value));
