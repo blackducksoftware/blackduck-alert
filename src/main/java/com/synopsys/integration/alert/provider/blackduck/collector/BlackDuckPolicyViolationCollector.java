@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
@@ -99,12 +98,12 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
         Optional<String> projectVersionComponentLink = getBlackDuckDataHelper().getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
 
-        Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
-        for (Map.Entry<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItem : policyComponentToLinkableItemMapping.entrySet()) {
-            PolicyComponentMapping policyComponentMapping = policyComponentToLinkableItem.getKey();
-            BlackDuckPolicyLinkableItem policyComponentData = policyComponentToLinkableItem.getValue();
+        Map<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
+        for (Map.Entry<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyEntry : componentToPolicyMapping.entrySet()) {
+            BlackDuckPolicyLinkableItem policyComponentData = componentToPolicyEntry.getKey();
+            Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
 
-            for (PolicyInfo policyInfo : policyComponentMapping.getPolicies()) {
+            for (PolicyInfo policyInfo : policies) {
                 ComponentItemPriority priority = mapSeverityToPriority(policyInfo.getSeverity());
 
                 String bomComponentUrl = null;
@@ -157,33 +156,29 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         return operation;
     }
 
-    private Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> createPolicyComponentToLinkableItemMapping(
+    private Map<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> createPolicyComponentToLinkableItemMapping(
         Collection<ComponentVersionStatus> componentVersionStatuses, Map<String, PolicyInfo> policyItems, Optional<String> projectVersionUrl) {
-        Map<PolicyComponentMapping, BlackDuckPolicyLinkableItem> policyComponentToLinkableItemMapping = new HashMap<>();
+        Map<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyMapping = new HashMap<>();
         for (ComponentVersionStatus componentVersionStatus : componentVersionStatuses) {
             String projectVersionLink = projectVersionUrl.flatMap(url -> getBlackDuckDataHelper().getProjectComponentQueryLink(url, componentVersionStatus.getComponentName())).orElse(null);
-            PolicyComponentMapping policyComponentMapping = createPolicyComponentMapping(componentVersionStatus, policyItems);
-            BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = policyComponentToLinkableItemMapping.get(policyComponentMapping);
-            if (blackDuckPolicyLinkableItem == null) {
-                blackDuckPolicyLinkableItem = createBlackDuckPolicyLinkableItem(componentVersionStatus, projectVersionLink);
-            } else {
+            Set<PolicyInfo> componentPolicies = getPoliciesForComponent(componentVersionStatus, policyItems);
+
+            BlackDuckPolicyLinkableItem blackDuckPolicyLinkableItem = createBlackDuckPolicyLinkableItem(componentVersionStatus, projectVersionLink);
+
+            if (componentToPolicyMapping.containsKey(blackDuckPolicyLinkableItem)) {
                 blackDuckPolicyLinkableItem.addComponentVersionItem(componentVersionStatus.getComponentVersionName(), projectVersionLink);
                 blackDuckPolicyLinkableItem.setComponentVersionStatus(componentVersionStatus);
             }
-            policyComponentToLinkableItemMapping.put(policyComponentMapping, blackDuckPolicyLinkableItem);
+            componentToPolicyMapping.put(blackDuckPolicyLinkableItem, componentPolicies);
         }
-        return policyComponentToLinkableItemMapping;
+        return componentToPolicyMapping;
     }
 
-    private PolicyComponentMapping createPolicyComponentMapping(ComponentVersionStatus componentVersionStatus, Map<String, PolicyInfo> policyItems) {
-        String componentName = componentVersionStatus.getComponentName();
-
-        Set<PolicyInfo> policies = componentVersionStatus.getPolicies().stream()
-                                       .filter(policyItems::containsKey)
-                                       .map(policyItems::get)
-                                       .collect(Collectors.toSet());
-
-        return new PolicyComponentMapping(componentName, policies);
+    private Set<PolicyInfo> getPoliciesForComponent(ComponentVersionStatus componentVersionStatus, Map<String, PolicyInfo> policyItems) {
+        return componentVersionStatus.getPolicies().stream()
+                   .filter(policyItems::containsKey)
+                   .map(policyItems::get)
+                   .collect(Collectors.toSet());
     }
 
     private BlackDuckPolicyLinkableItem createBlackDuckPolicyLinkableItem(ComponentVersionStatus componentVersionStatus, String projectVersionWithComponentLink) {
@@ -229,22 +224,6 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                    .stream()
                    .filter(ruleView -> ruleView.getHref().filter(href -> href.equals(policyRuleUrl)).isPresent())
                    .findFirst();
-    }
-
-    private class PolicyComponentMapping extends AlertSerializableModel {
-        // Do not delete this member. This is used for checking equals and filtering.
-        private final String componentName;
-        private final Set<PolicyInfo> policies;
-
-        public PolicyComponentMapping(String componentName, Set<PolicyInfo> policies) {
-            this.componentName = componentName;
-            this.policies = policies;
-        }
-
-        public Set<PolicyInfo> getPolicies() {
-            return policies;
-        }
-
     }
 
 }
