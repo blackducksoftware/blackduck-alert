@@ -208,7 +208,6 @@ public class JobConfigActions {
         return "Valid";
     }
 
-    // TODO abstract duplicate functionality
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         final Collection<FieldModel> otherJobModels = new LinkedList<>();

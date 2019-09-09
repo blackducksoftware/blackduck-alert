@@ -1,9 +1,10 @@
-import React, { Component } from "react";
-import { Modal } from "react-bootstrap";
-import TextInput from "field/input/TextInput";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import { Modal } from 'react-bootstrap';
+import TextInput from 'field/input/TextInput';
+import PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import { CONTEXT_TYPE } from "util/descriptorUtilities";
+import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import TextArea from 'field/input/TextArea';
 
 const TOPIC_ID = 'channel.common.custom.message.topic';
 const MESSAGE_ID = 'channel.common.custom.message.content';
@@ -29,10 +30,8 @@ class JobCustomMessageModal extends Component {
         this.handleHide = this.handleHide.bind(this);
     }
 
-    createCustomMessageFieldModel(jobFieldModel) {
-        const fieldModel = jobFieldModel.fieldModels.find(model => model.descriptorName === this.props.channelDescriptorName);
-        let newModel = FieldModelUtilities.createEmptyFieldModel([TOPIC_ID, MESSAGE_ID], CONTEXT_TYPE.DISTRIBUTION, this.props.channelDescriptorName);
-        newModel = FieldModelUtilities.combineFieldModels(newModel, fieldModel);
+    createCustomMessageFieldModel() {
+        let newModel = FieldModelUtilities.createEmptyFieldModel([TOPIC_ID, MESSAGE_ID], CONTEXT_TYPE.DISTRIBUTION, `${this.props.channelDescriptorName}-CUSTOM_MESSAGE`);
         newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, TOPIC_ID, this.state.topicName);
         newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, MESSAGE_ID, this.state.message);
         return newModel;
@@ -63,8 +62,8 @@ class JobCustomMessageModal extends Component {
                 this.handleHide();
             }
         };
-        const validateMessageCallback = () => this.validateTextField(MESSAGE_ERROR_NAME, this.state.message, sendMessageCallback);
-        this.validateTextField(TOPIC_ERROR_NAME, this.state.topicName, validateMessageCallback);
+        this.validateTextField(MESSAGE_ERROR_NAME, this.state.message, sendMessageCallback);
+        this.validateTextField(TOPIC_ERROR_NAME, this.state.topicName, sendMessageCallback);
     }
 
     validateTextField(errorName, value, callback) {
@@ -81,16 +80,15 @@ class JobCustomMessageModal extends Component {
 
     sendMessage() {
         const { destination } = this.state;
-        const { jobFieldModelBuilder } = this.props;
-        const jobFieldModel = jobFieldModelBuilder();
+        const { jobFieldModel } = this.props;
+        const customMessageFieldModel = this.createCustomMessageFieldModel();
+        const allFieldModels = jobFieldModel.fieldModels;
+        allFieldModels.push(customMessageFieldModel);
         const newJobFieldModel = {
             jobId: jobFieldModel.jobId,
-            fieldModels: []
+            fieldModels: allFieldModels
         };
-        const customMessageFieldModel = this.createCustomMessageFieldModel(jobFieldModel);
-        newJobFieldModel.fieldModels.push(customMessageFieldModel);
-        const otherModels = jobFieldModel.fieldModels.filter(model => model.descriptorName !== this.props.channelDescriptorName);
-        newJobFieldModel.fieldModels = newJobFieldModel.fieldModels.concat(otherModels);
+
         this.props.sendMessage(newJobFieldModel, destination);
     }
 
@@ -118,7 +116,7 @@ class JobCustomMessageModal extends Component {
                         errorName={TOPIC_ERROR_NAME}
                         errorValue={this.state.topicError}
                     />
-                    <TextInput
+                    <TextArea
                         id={MESSAGE_ID}
                         label={this.props.messageLabel}
                         name={MESSAGE_ID}
@@ -150,7 +148,7 @@ JobCustomMessageModal.propTypes = {
     handleCancel: PropTypes.func.isRequired,
     topicLabel: PropTypes.string,
     messageLabel: PropTypes.string,
-    jobFieldModelBuilder: PropTypes.func.isRequired,
+    jobFieldModel: PropTypes.object,
     channelDescriptorName: PropTypes.string.isRequired
 };
 

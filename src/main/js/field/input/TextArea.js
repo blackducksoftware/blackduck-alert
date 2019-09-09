@@ -8,16 +8,10 @@ class TextArea extends Component {
             inputClass, sizeClass, readOnly, name, value, onChange, id
         } = this.props;
 
-        let field = null;
-        if (readOnly) {
-            field = (<div className={sizeClass}>
-                <textarea id={id} rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
+        const field = (
+            <div className={`${sizeClass} d-inline-flex flex-column p-2`}>
+                <textarea id={id} rows="8" cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={!readOnly && onChange} />
             </div>);
-        } else {
-            field = (<div className={sizeClass}>
-                <textarea id={id} rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
-            </div>);
-        }
 
         return (
             <LabeledField field={field} {...this.props} />

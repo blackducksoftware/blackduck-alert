@@ -189,7 +189,7 @@ class DistributionConfiguration extends Component {
                     topicLabel="Topic"
                     messageLabel="Message"
                     showModal={this.state.showSendMessage}
-                    jobFieldModelBuilder={this.buildJsonBody}
+                    jobFieldModel={this.buildJsonBody()}
                     sendMessage={this.props.testDistributionJob}
                     handleCancel={() => this.setSendMessageVisible(false)}
                     channelDescriptorName={channelDescriptorName}

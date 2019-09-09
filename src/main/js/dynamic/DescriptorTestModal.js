@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import TextInput from 'field/input/TextInput';
 
-class ChannelTestModal extends Component {
+class DescriptorTestModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -68,7 +68,7 @@ class ChannelTestModal extends Component {
     }
 }
 
-ChannelTestModal.propTypes = {
+DescriptorTestModal.propTypes = {
     showTestModal: PropTypes.bool,
     sendTestMessage: PropTypes.func.isRequired,
     handleCancel: PropTypes.func.isRequired,
@@ -76,8 +76,8 @@ ChannelTestModal.propTypes = {
     fieldModel: PropTypes.object.isRequired
 };
 
-ChannelTestModal.defaultProps = {
+DescriptorTestModal.defaultProps = {
     showTestModal: false
 };
 
-export default ChannelTestModal;
+export default DescriptorTestModal;

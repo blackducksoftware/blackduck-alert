@@ -11,7 +11,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import * as FieldMapping from 'util/fieldMapping';
 import StatusMessage from 'field/StatusMessage';
-import ChannelTestModal from 'dynamic/ChannelTestModal';
+import DescriptorTestModal from 'dynamic/DescriptorTestModal';
 
 class GlobalConfiguration extends React.Component {
     constructor(props) {
@@ -123,7 +123,7 @@ class GlobalConfiguration extends React.Component {
                         type="submit"
                         onTestClick={this.handleTest}
                     />
-                    <ChannelTestModal
+                    <DescriptorTestModal
                         sendTestMessage={this.props.testConfig}
                         showTestModal={this.state.showTest}
                         handleCancel={this.handleTestCancel}

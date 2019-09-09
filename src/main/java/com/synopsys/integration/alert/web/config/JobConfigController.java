@@ -262,7 +262,6 @@ public class JobConfigController extends BaseController {
         }
         final String id = restModel.getJobId();
         try {
-            // TODO while implementing the UI feature for this, think about handling the empty cases for customTopic and customMessage
             final String responseMessage = messageFunction.apply(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
