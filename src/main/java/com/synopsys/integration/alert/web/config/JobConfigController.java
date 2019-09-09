@@ -287,7 +287,15 @@ public class JobConfigController extends BaseController {
     private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<String, String, Boolean> permissionChecker) {
         return fieldModels
                    .stream()
-                   .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
+                   .allMatch(model -> permissionChecker.apply(model.getContext(), trimCustomMessageName(model.getDescriptorName())));
+    }
+
+    private String trimCustomMessageName(String descriptorName) {
+        final int index = descriptorName.indexOf(JobConfigActions.CUSTOM_MESSAGE);
+        if (index > 0) {
+            return descriptorName.substring(0, index);
+        }
+        return descriptorName;
     }
 
 }

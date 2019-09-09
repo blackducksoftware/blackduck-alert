@@ -62,8 +62,8 @@ class JobCustomMessageModal extends Component {
                 this.handleHide();
             }
         };
-        this.validateTextField(MESSAGE_ERROR_NAME, this.state.message, sendMessageCallback);
-        this.validateTextField(TOPIC_ERROR_NAME, this.state.topicName, sendMessageCallback);
+        const validateMessageCallback = () => this.validateTextField(MESSAGE_ERROR_NAME, this.state.message, sendMessageCallback);
+        this.validateTextField(TOPIC_ERROR_NAME, this.state.topicName, validateMessageCallback);
     }
 
     validateTextField(errorName, value, callback) {

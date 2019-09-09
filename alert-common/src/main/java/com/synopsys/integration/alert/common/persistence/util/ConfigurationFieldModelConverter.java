@@ -83,6 +83,16 @@ public class ConfigurationFieldModelConverter {
         return configurationModel;
     }
 
+    public Optional<ConfigurationFieldModel> convertFromFieldValueModel(String key, FieldValueModel fieldValueModel) {
+        if (!fieldValueModel.hasValues()) {
+            return Optional.empty();
+        }
+
+        final ConfigurationFieldModel configurationModel = ConfigurationFieldModel.create(key);
+        configurationModel.setFieldValues(fieldValueModel.getValues());
+        return Optional.of(configurationModel);
+    }
+
     public final Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
         final ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         final String descriptorName = fieldModel.getDescriptorName();
