@@ -127,7 +127,8 @@ public class JiraIssueHandler {
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
 
                 if (!existingIssues.isEmpty()) {
-                    Set<IssueComponent> updatedIssues = updateExistingIssues(existingIssues, operation, jiraIssueConfig, arbitraryItem, providerName, combinedItems);
+                    List<IssueComponent> issuesToUpdate = filterUpdatableIssues(existingIssues, operation);
+                    Set<IssueComponent> updatedIssues = updateExistingIssues(issuesToUpdate, operation, jiraIssueConfig, arbitraryItem, providerName, combinedItems);
                     updatedIssues
                         .stream()
                         .map(IssueComponent::getKey)
@@ -170,10 +171,9 @@ public class JiraIssueHandler {
         return combinedItems;
     }
 
-    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> existingIssues, ItemOperation operation, JiraIssueConfig jiraIssueConfig, ComponentItem arbitraryItem, String providerName, Collection<ComponentItem> combinedItems)
+    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> issuesToUpdate, ItemOperation operation, JiraIssueConfig jiraIssueConfig, ComponentItem arbitraryItem, String providerName, Collection<ComponentItem> combinedItems)
         throws IntegrationException {
         Set<IssueComponent> updatedIssues = new HashSet<>();
-        List<IssueComponent> issuesToUpdate = filterUpdatableIssues(existingIssues, operation);
         for (IssueComponent issue : issuesToUpdate) {
             if (jiraIssueConfig.getCommentOnIssues()) {
                 String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
@@ -194,20 +194,17 @@ public class JiraIssueHandler {
         initialFieldsBuilder.setProject(jiraIssueConfig.getProjectComponent().getId());
         initialFieldsBuilder.setIssueType(jiraIssueConfig.getIssueType());
         String issueCreator = jiraIssueConfig.getIssueCreator();
-        IssueResponseModel issue = null;
+
         try {
-            issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectComponent().getName(), initialFieldsBuilder, List.of()));
+            IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectComponent().getName(), initialFieldsBuilder, List.of()));
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
+            String issueKey = issue.getKey();
+            addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
+            addComment(issueKey, "This issue was automatically created by Alert.");
+            return issue;
         } catch (IntegrationRestException e) {
-            handleIssueCreationRestException(e, issueCreator);
+            throw improveRestException(e, issueCreator);
         }
-        if (issue == null || StringUtils.isBlank(issue.getKey())) {
-            throw new AlertException("There was an problem when creating this issue.");
-        }
-        String issueKey = issue.getKey();
-        addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
-        addComment(issueKey, "This issue was automatically created by Alert.");
-        return issue;
     }
 
     private List<IssueComponent> retrieveExistingIssues(String jiraProjectKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
@@ -220,24 +217,22 @@ public class JiraIssueHandler {
     // Only the DELETE operation can update more than one issue.
     // If an ADD or UPDATE operation has more than one issue it could operate on, then the issue properties are either not unique enough or the property indexer is not installed.
     private List<IssueComponent> filterUpdatableIssues(List<IssueComponent> issues, ItemOperation operation) {
-        if (!issues.isEmpty()) {
-            if (issues.size() == 1 || ItemOperation.DELETE.equals(operation)) {
-                return issues;
-            } else {
-                logger.error("Found more than one Jira Cloud issue to {} when only one was expected.", operation.name().toLowerCase());
-            }
+        if (issues.size() == 1 || ItemOperation.DELETE.equals(operation)) {
+            return issues;
+        } else {
+            logger.error("Found more than one Jira Cloud issue to {} when only one was expected.", operation.name().toLowerCase());
         }
         return List.of();
     }
 
-    private void handleIssueCreationRestException(IntegrationRestException restException, String issueCreatorEmail) throws IntegrationException {
+    private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
         final JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
         List<String> responseErrors = new ArrayList<>();
         if (null != responseContent) {
             JsonObject errors = responseContent.get("errors").getAsJsonObject();
             JsonElement reporterErrorMessage = errors.get("reporter");
             if (null != reporterErrorMessage) {
-                throw AlertFieldException.singleFieldError(
+                return AlertFieldException.singleFieldError(
                     JiraDescriptor.KEY_ISSUE_CREATOR, String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)
                 );
             }
@@ -254,7 +249,7 @@ public class JiraIssueHandler {
             message += " | Details: " + StringUtils.join(responseErrors, ", ");
         }
 
-        throw new AlertException(message, restException);
+        return new AlertException(message, restException);
     }
 
     private void addIssueProperties(String issueKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId)
