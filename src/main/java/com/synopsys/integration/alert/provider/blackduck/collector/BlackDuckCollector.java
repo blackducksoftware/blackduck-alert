@@ -127,12 +127,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
 
             LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
-            item.setPartOfKey(true);
             item.setSummarizable(true);
             item.setCountable(true);
             item.setCollapsible(true);
 
-            LinkableItem severityItem = getSeverity(vulnerabilityUrl);
+            LinkableItem severityItem = getSeverity(vulnerabilityUrl, false);
             severityItem.setSummarizable(true);
             ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
             List<LinkableItem> attributes = new LinkedList<>();
@@ -187,7 +186,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.empty();
     }
 
-    protected LinkableItem getSeverity(String vulnerabilityUrl) {
+    protected LinkableItem getSeverity(String vulnerabilityUrl, boolean partOfKey) {
         LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, "UNKNOWN");
         try {
             getBucketService().addToTheBucket(getBlackDuckBucket(), vulnerabilityUrl, VulnerabilityView.class);
@@ -203,7 +202,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         }
 
         severityItem.setSummarizable(true);
-        severityItem.setPartOfKey(true);
+        severityItem.setPartOfKey(partOfKey);
         return severityItem;
     }
 

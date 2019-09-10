@@ -57,9 +57,9 @@ import com.synopsys.integration.alert.provider.blackduck.collector.item.BlackDuc
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -129,10 +129,10 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 Optional<ComponentItem> item = addApplicableItems(notificationId, componentItem, optionalComponentVersionItem.orElse(null), policyLinkableItems, operation, priority);
                 item.ifPresent(items::add);
 
-                if (optionalBomComponent.isPresent()) {
-                    VersionBomComponentView bomComponent = optionalBomComponent.get();
-                    Optional<VersionBomPolicyRuleView> optionalPolicyRule = getVersionBomPolicyRuleView(policyInfo.getPolicy(), bomComponent);
-                    if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
+                Optional<PolicyRuleView> optionalPolicyRule = getBlackDuckDataHelper().getPolicyRule(policyInfo);
+                if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
+                    if (optionalBomComponent.isPresent()) {
+                        VersionBomComponentView bomComponent = optionalBomComponent.get();
                         List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
                         items.addAll(vulnerabilityPolicyItems);
                     }
@@ -222,13 +222,6 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             }
         }
         return vulnerabilityPolicyItems;
-    }
-
-    private Optional<VersionBomPolicyRuleView> getVersionBomPolicyRuleView(String policyRuleUrl, VersionBomComponentView bomComponent) {
-        return getBlackDuckDataHelper().getPolicyRulesFromComponent(bomComponent)
-                   .stream()
-                   .filter(ruleView -> ruleView.getHref().filter(href -> href.equals(policyRuleUrl)).isPresent())
-                   .findFirst();
     }
 
     private class PolicyComponentMapping extends AlertSerializableModel {

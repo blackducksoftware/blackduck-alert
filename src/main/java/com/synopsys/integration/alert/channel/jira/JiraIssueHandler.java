@@ -309,9 +309,7 @@ public class JiraIssueHandler {
 
     private IssueContentModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
-        final IssueContentModel descriptionModel = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
-        return IssueContentModel.of(title, descriptionModel.getDescription(), descriptionModel.getAdditionalComments());
+        return jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider, arbitraryItem.getComponentKeys());
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {

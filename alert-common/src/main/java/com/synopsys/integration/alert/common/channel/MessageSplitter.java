@@ -29,16 +29,23 @@ import java.util.List;
 //TODO use this for SlackChannel to create message chunks.
 public final class MessageSplitter {
     public static final String DEFAULT_LINE_SEPARATOR = "\n";
+    public static final char BRACKET_CHARACTER = '[';
     private final int limit;
     private final String lineSeparator;
+    private final char itemDelimeter;
 
-    public MessageSplitter(final int limit) {
-        this(limit, DEFAULT_LINE_SEPARATOR);
+    public MessageSplitter(int limit) {
+        this(limit, DEFAULT_LINE_SEPARATOR, BRACKET_CHARACTER);
     }
 
-    public MessageSplitter(final int limit, final String lineSeparator) {
+    public MessageSplitter(int limit, String lineSeparator) {
+        this(limit, lineSeparator, BRACKET_CHARACTER);
+    }
+
+    public MessageSplitter(int limit, String lineSeparator, char itemDelimeter) {
         this.limit = limit;
         this.lineSeparator = lineSeparator;
+        this.itemDelimeter = itemDelimeter;
     }
 
     public final int getLimit() {
@@ -102,17 +109,16 @@ public final class MessageSplitter {
     }
 
     private int getSplitIndex(final String message) {
-        final char bracket = '[';
         final int initialSplitIndex = getLimit() - 1;
 
         final String preSplit = message.substring(0, initialSplitIndex);
         final String postSplit = message.substring(initialSplitIndex);
 
-        final int bracketIndexBefore = preSplit.lastIndexOf(bracket);
+        final int bracketIndexBefore = preSplit.lastIndexOf(itemDelimeter);
         final int newLineIndexBefore = preSplit.lastIndexOf(lineSeparator);
         final int closestBeforeSplitIndex = Math.max(bracketIndexBefore, newLineIndexBefore);
 
-        final int bracketIndexAfter = postSplit.indexOf(bracket);
+        final int bracketIndexAfter = postSplit.indexOf(itemDelimeter);
         final int newLineIndexAfter = postSplit.indexOf(lineSeparator);
         final int closestAfterSplitIndex = initialSplitIndex + Math.max(bracketIndexAfter, newLineIndexAfter);
 

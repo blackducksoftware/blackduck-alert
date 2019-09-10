@@ -41,8 +41,9 @@ import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraIssueFormatHelper {
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
     private static final int TITLE_LIMIT = 255;
-    private static final int TEXT_LIMIT = 32767;
+    private static final int TEXT_LIMIT = 30000;
     private static final String LINE_SEPARATOR = "\n";
 
     public String createTitle(final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentKeys componentKeys) {
@@ -66,7 +67,7 @@ public class JiraIssueFormatHelper {
         // FIXME make this provider-agnostic
         String prettyPrintedKey;
         if (!componentKeys.getCategory().contains("Vuln")) {
-            prettyPrintedKey = componentKeys.prettyPrint(false);
+            prettyPrintedKey = componentKeys.prettyPrint(true);
         } else {
             prettyPrintedKey = componentKeys.prettyPrint(false);
         }
@@ -74,7 +75,8 @@ public class JiraIssueFormatHelper {
         return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
-    public IssueContentModel createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final Collection<ComponentItem> componentItems, final String providerName) {
+    public IssueContentModel createDescription(LinkableItem commonTopic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, String providerName, ComponentKeys componentKeys) {
+        final String title = createTitle(providerName, commonTopic, subTopic, componentKeys);
         final StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
@@ -104,7 +106,7 @@ public class JiraIssueFormatHelper {
             splitComponentAttributesForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
             description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
         }
-        return IssueContentModel.of(description.toString(), additionalComments);
+        return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
     public void splitComponentAttributesForDescription(int descriptionLength, Collection<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
@@ -120,10 +122,12 @@ public class JiraIssueFormatHelper {
         for (String descriptionItem : descriptionItems) {
             int itemLength = descriptionItem.length();
             if (currentLength >= TEXT_LIMIT) {
+                tempAdditionalComments.add(DESCRIPTION_CONTINUED_TEXT);
                 tempAdditionalComments.add(descriptionItem);
             } else if (itemLength + currentLength >= TEXT_LIMIT) {
+                tempAdditionalComments.add(DESCRIPTION_CONTINUED_TEXT);
                 tempAdditionalComments.add(descriptionItem);
-                currentLength = currentLength + descriptionItem.length();
+                currentLength = currentLength + DESCRIPTION_CONTINUED_TEXT.length() + descriptionItem.length();
             } else {
                 descriptionAttributes.add(descriptionItem);
                 // add one for the newline character.
@@ -136,13 +140,11 @@ public class JiraIssueFormatHelper {
     public List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
         String attributesString = createComponentAttributesString(componentItems);
         Collection<String> text = new ArrayList<>();
-        String description = String.format("The %s operation was performed for this %s in %s", operation.name(), category, provider);
+        String description = String.format("The %s operation was performed for this %s in %s.", operation.name(), category, provider);
         text.add(description);
         if (StringUtils.isNotBlank(attributesString)) {
-            text.add(".\n----------\n");
+            text.add("\n----------\n");
             text.add(attributesString);
-        } else {
-            text.add(".");
         }
         MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
         return splitter.splitMessages(text, true);
