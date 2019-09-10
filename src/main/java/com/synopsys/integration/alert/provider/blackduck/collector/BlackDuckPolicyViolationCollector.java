@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
@@ -135,6 +136,11 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                         VersionBomComponentView bomComponent = optionalBomComponent.get();
                         List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
                         items.addAll(vulnerabilityPolicyItems);
+                    } else {
+                        // A policy violation cleared will cause this case to happen.  At this point we may want a separate collector for policy violation cleared.
+                        // Need to create a vulnerability component item to be able to delete or collapse the vulnerability data created when a policy violation occurs that has vulnerability data.
+                        Optional<ComponentItem> vulnerabilityComponent = createEmptyVulnerabilityItem(policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
+                        vulnerabilityComponent.ifPresent(items::add);
                     }
                 }
             }
@@ -222,6 +228,39 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             }
         }
         return vulnerabilityPolicyItems;
+    }
+
+    private Optional<ComponentItem> createEmptyVulnerabilityItem(LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> optionalComponentVersionItem, Long notificationId, ItemOperation operation) {
+        LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "ALL", null);
+        item.setSummarizable(true);
+        item.setCountable(true);
+        item.setCollapsible(true);
+
+        LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, ComponentItemPriority.NONE.name());
+        severityItem.setSummarizable(true);
+        ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
+        List<LinkableItem> attributes = new LinkedList<>();
+        attributes.add(severityItem);
+        attributes.add(policyNameItem);
+        attributes.add(item);
+
+        ComponentItem.Builder builder = new ComponentItem.Builder();
+        builder.applyComponentData(componentItem)
+            .applyAllComponentAttributes(attributes)
+            .applyPriority(priority)
+            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
+            .applyOperation(operation)
+            .applyNotificationId(notificationId);
+        optionalComponentVersionItem.ifPresent(builder::applySubComponent);
+
+        try {
+            return Optional.of(builder.build());
+        } catch (AlertException ex) {
+            logger
+                .info("Error building policy vulnerability component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, optionalComponentVersionItem.orElse(null));
+            logger.error("Error building policy vulnerability component cause ", ex);
+        }
+        return Optional.empty();
     }
 
     private class PolicyComponentMapping extends AlertSerializableModel {
