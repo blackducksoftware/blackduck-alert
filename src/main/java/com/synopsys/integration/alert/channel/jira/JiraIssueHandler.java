@@ -82,6 +82,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
 
@@ -198,7 +199,8 @@ public class JiraIssueHandler {
                         addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                         addComment(issueKey, "This issue was automatically created by Alert.");
                         for (String additionalComment : contentModel.getAdditionalComments()) {
-                            addComment(issueKey, additionalComment);
+                            String comment = String.format("%s \n %s", DESCRIPTION_CONTINUED_TEXT, additionalComment);
+                            addComment(issueKey, comment);
                         }
                         issueKeys.add(issueKey);
                     } else {

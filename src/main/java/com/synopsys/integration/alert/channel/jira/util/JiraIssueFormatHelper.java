@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraIssueFormatHelper {
-    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
     private static final int TITLE_LIMIT = 255;
     private static final int TEXT_LIMIT = 30000;
     private static final String LINE_SEPARATOR = "\n";
@@ -122,12 +121,10 @@ public class JiraIssueFormatHelper {
         for (String descriptionItem : descriptionItems) {
             int itemLength = descriptionItem.length();
             if (currentLength >= TEXT_LIMIT) {
-                tempAdditionalComments.add(DESCRIPTION_CONTINUED_TEXT);
                 tempAdditionalComments.add(descriptionItem);
             } else if (itemLength + currentLength >= TEXT_LIMIT) {
-                tempAdditionalComments.add(DESCRIPTION_CONTINUED_TEXT);
                 tempAdditionalComments.add(descriptionItem);
-                currentLength = currentLength + DESCRIPTION_CONTINUED_TEXT.length() + descriptionItem.length();
+                currentLength = currentLength + descriptionItem.length();
             } else {
                 descriptionAttributes.add(descriptionItem);
                 // add one for the newline character.
