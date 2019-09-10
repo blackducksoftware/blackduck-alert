@@ -338,7 +338,7 @@ class TableSelectInput extends Component {
 
     render() {
         const tableModal = (
-            <Modal size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
+            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.label}</Modal.Title>
                 </Modal.Header>

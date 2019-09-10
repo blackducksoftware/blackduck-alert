@@ -29,13 +29,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraIssueFormatHelper {
-
+    private static final int TITLE_LIMIT = 255;
     public String createTitle(final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentKeys componentKeys) {
         final StringBuilder title = new StringBuilder();
         title.append("Alert - Provider: ");
@@ -62,7 +64,7 @@ public class JiraIssueFormatHelper {
             prettyPrintedKey = componentKeys.prettyPrint(false);
         }
         title.append(prettyPrintedKey);
-        return title.toString();
+        return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
     public String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final Collection<ComponentItem> componentItems, final String providerName) {
