@@ -43,8 +43,8 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
-import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
 import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
+import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHelper;
@@ -139,8 +139,9 @@ public class JiraIssueHandler {
                         .map(IssueComponent::getKey)
                         .forEach(issueKeys::add);
                 } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
-                    IssueResponseModel issueResponseModel = createIssue(fieldsBuilder, jiraIssueConfig, providerName, topic, subTopic, arbitraryItem, trackingKey);
+                    IssueContentModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                    IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
+                    IssueResponseModel issueResponseModel = createIssue(fieldsBuilder, jiraIssueConfig, providerName, topic, subTopic, arbitraryItem, trackingKey, contentModel);
                     issueKeys.add(issueResponseModel.getKey());
                 } else {
                     logger.warn("Expected to find an existing issue, but none existed.");
@@ -181,8 +182,10 @@ public class JiraIssueHandler {
         Set<IssueComponent> updatedIssues = new HashSet<>();
         for (IssueComponent issue : issuesToUpdate) {
             if (jiraIssueConfig.getCommentOnIssues()) {
-                String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                addComment(issue.getKey(), operationComment);
+                List<String> operationComments = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
+                for (String operationComment : operationComments) {
+                    addComment(issue.getKey(), operationComment);
+                }
                 updatedIssues.add(issue);
             }
 
@@ -195,13 +198,12 @@ public class JiraIssueHandler {
     }
 
     private IssueResponseModel createIssue(IssueRequestModelFieldsBuilder initialFieldsBuilder, JiraIssueConfig jiraIssueConfig, String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem arbitraryItem,
-        String trackingKey) throws IntegrationException {
+        String trackingKey, IssueContentModel contentModel) throws IntegrationException {
         initialFieldsBuilder.setProject(jiraIssueConfig.getProjectComponent().getId());
         initialFieldsBuilder.setIssueType(jiraIssueConfig.getIssueType());
         String issueCreator = jiraIssueConfig.getIssueCreator();
 
         try {
-            final IssueContentModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
             IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectComponent().getName(), initialFieldsBuilder, List.of()));
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
             String issueKey = issue.getKey();
