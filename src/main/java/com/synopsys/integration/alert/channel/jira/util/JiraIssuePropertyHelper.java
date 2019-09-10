@@ -49,7 +49,7 @@ public class JiraIssuePropertyHelper {
         this.issuePropertyService = issuePropertyService;
     }
 
-    public Optional<IssueSearchResponseModel> findIssues(String jiraProjectKey, String provider, LinkableItem topic, @Nullable LinkableItem subTopic, ComponentItem componentItem, String additionalKey) throws IntegrationException {
+    public Optional<IssueSearchResponseModel> findIssues(String jiraProjectKey, String provider, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalKey) throws IntegrationException {
         String subTopicName = null;
         String subTopicValue = null;
         if (null != subTopic) {
@@ -57,13 +57,17 @@ public class JiraIssuePropertyHelper {
             subTopicValue = subTopic.getValue();
         }
 
-        LinkableItem component = componentItem.getComponent();
-        final Optional<LinkableItem> optionalSubComponent = componentItem.getSubComponent();
-        String subComponentName = optionalSubComponent.map(LinkableItem::getName).orElse(null);
-        String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
+        if (null != componentItem) {
+            LinkableItem component = componentItem.getComponent();
+            final Optional<LinkableItem> optionalSubComponent = componentItem.getSubComponent();
+            String subComponentName = optionalSubComponent.map(LinkableItem::getName).orElse(null);
+            String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
 
-        return findIssues(
-            jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
+            return findIssues(
+                jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
+        } else {
+            return findIssues(jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, null, null, null, null, null, additionalKey);
+        }
     }
 
     public Optional<IssueSearchResponseModel> findIssues(

@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckBomE
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckProjectVersionCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 
 @Component
@@ -43,25 +44,29 @@ public class BlackDuckTopicCollectorFactory {
     private final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory;
     private final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory;
     private final ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory;
+    private final ObjectFactory<BlackDuckProjectVersionCollector> blackDuckProjectVersionCollectorFactory;
 
     @Autowired
-    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory,
-        final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory,
-        final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory, final ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory) {
+    public BlackDuckTopicCollectorFactory(ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory,
+        ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory, ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory,
+        ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory, ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory,
+        ObjectFactory<BlackDuckProjectVersionCollector> blackDuckProjectVersionCollectorFactory) {
         this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
         this.policyViolationTopicCollectorFactory = policyViolationTopicCollectorFactory;
         this.policyOverrideTopicCollectorFactory = policyOverrideTopicCollectorFactory;
         this.licenseLimitTopicCollectorFactory = licenseLimitTopicCollectorFactory;
         this.bomEditCollectorFactory = bomEditCollectorFactory;
+        this.blackDuckProjectVersionCollectorFactory = blackDuckProjectVersionCollectorFactory;
     }
 
     public Set<MessageContentCollector> createTopicCollectors() {
-        final Set<MessageContentCollector> collectorSet = new HashSet<>();
+        Set<MessageContentCollector> collectorSet = new HashSet<>();
         collectorSet.add(vulnerabilityTopicCollectorFactory.getObject());
         collectorSet.add(policyViolationTopicCollectorFactory.getObject());
         collectorSet.add(policyOverrideTopicCollectorFactory.getObject());
         collectorSet.add(licenseLimitTopicCollectorFactory.getObject());
         collectorSet.add(bomEditCollectorFactory.getObject());
+        collectorSet.add(blackDuckProjectVersionCollectorFactory.getObject());
         return collectorSet;
     }
 
