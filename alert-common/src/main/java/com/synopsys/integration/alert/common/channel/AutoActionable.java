@@ -20,10 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
-
-import com.synopsys.integration.alert.common.channel.ChannelKey;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
+package com.synopsys.integration.alert.common.channel;
 
 /**
  * This lets the DescriptorProcessor create the appropriate ChannelDistributionTestAction/ConfigurationAction combination when no customization is needed.

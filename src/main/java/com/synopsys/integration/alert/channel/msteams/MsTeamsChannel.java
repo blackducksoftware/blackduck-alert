@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.msteams;
 
 import java.util.HashMap;
 
+import com.synopsys.integration.alert.common.channel.AutoActionable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

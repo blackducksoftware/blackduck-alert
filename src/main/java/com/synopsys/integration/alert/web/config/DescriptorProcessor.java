@@ -1,8 +1,8 @@
 /**
  * blackduck-alert
- *
+ * <p>
  * Copyright (c) 2019 Synopsys, Inc.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -10,9 +10,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,21 +22,13 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
-import com.synopsys.integration.alert.channel.msteams.AutoActionable;
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
-import com.synopsys.integration.alert.common.channel.ChannelKey;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.AutoActionable;
+import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -46,6 +38,13 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import org.apache.commons.lang3.EnumUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DescriptorProcessor {
@@ -64,8 +63,10 @@ public class DescriptorProcessor {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();
 
-            ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {};
-            ConfigurationAction configurationAction = new ConfigurationAction(channelKey.getUniversalKey()) {};
+            ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
+            };
+            ConfigurationAction configurationAction = new ConfigurationAction(channelKey.getUniversalKey()) {
+            };
             configurationAction.addDistributionTestAction(channelDistributionTestAction);
             allConfigurationActions.add(configurationAction);
         }
@@ -102,8 +103,8 @@ public class DescriptorProcessor {
 
     public Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
         return allConfigurationActions.stream()
-                   .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
-                   .findFirst();
+                .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
+                .findFirst();
     }
 
     public List<ConfigField> retrieveUIConfigFields(final String context, final String descriptorName) {
