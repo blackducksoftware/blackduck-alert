@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 
 @Component
 public class SettingsDescriptor extends ComponentDescriptor {
-    public static final String SETTINGS_COMPONENT = "component_settings";
     public static final String SETTINGS_LABEL = "Settings";
     public static final String SETTINGS_URL = "settings";
     public static final String SETTINGS_ICON = "cog";
@@ -82,7 +81,8 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server is missing";
 
     @Autowired
-    public SettingsDescriptor(final SettingsUIConfig uiConfig) {
-        super(SETTINGS_COMPONENT, uiConfig);
+    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig) {
+        super(settingsDescriptorKey, uiConfig);
     }
+
 }

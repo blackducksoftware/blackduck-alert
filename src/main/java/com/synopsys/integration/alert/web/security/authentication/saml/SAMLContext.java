@@ -32,17 +32,21 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
 public class SAMLContext {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
+
+    private final SettingsDescriptorKey settingsDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
 
-    public SAMLContext(final ConfigurationAccessor configurationAccessor) {
+    public SAMLContext(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor) {
+        this.settingsDescriptorKey = settingsDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        return configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT)
+        return configurationAccessor.getConfigurationsByDescriptorName(settingsDescriptorKey.getUniversalKey())
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
@@ -71,4 +75,5 @@ public class SAMLContext {
     public Boolean getFieldValueBoolean(final ConfigurationModel configurationModel, final String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).map(BooleanUtils::toBoolean).orElse(false);
     }
+
 }

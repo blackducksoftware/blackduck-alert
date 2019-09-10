@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 
 //@Component
 public class PolarisDescriptor extends ProviderDescriptor {
@@ -39,8 +39,8 @@ public class PolarisDescriptor extends ProviderDescriptor {
     public static final String POLARIS_DESCRIPTION = "This is the configuration to connect to the Polaris server. Configuring this will cause Alert to start pulling data from Polaris Issues.";
 
     @Autowired
-    public PolarisDescriptor(final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionUIConfig polarisDistributionUIConfig) {
-        super(PolarisProvider.COMPONENT_NAME, polarisGlobalUIConfig, polarisDistributionUIConfig);
+    public PolarisDescriptor(PolarisProviderKey polarisProviderKey, PolarisGlobalUIConfig polarisGlobalUIConfig, PolarisDistributionUIConfig polarisDistributionUIConfig) {
+        super(polarisProviderKey, polarisGlobalUIConfig, polarisDistributionUIConfig);
     }
 
 }

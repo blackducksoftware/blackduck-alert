@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -34,6 +34,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelTestIT extends ChannelTest {
+    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private static final EmailChannelKey CHANNEL_KEY = new EmailChannelKey();
 
     @Test
@@ -63,7 +64,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
         emailChannel.sendAuditedMessage(event);
     }
 
@@ -81,7 +82,7 @@ public class EmailChannelTestIT extends ChannelTest {
             final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
             final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
             final DistributionEvent event = new DistributionEvent(
-                "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, "FORMAT", MessageContentGroup.singleton(content), fieldAccessor);
+                "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), "FORMAT", MessageContentGroup.singleton(content), fieldAccessor);
             emailChannel.sendMessage(event);
             fail();
         } catch (final IntegrationException e) {

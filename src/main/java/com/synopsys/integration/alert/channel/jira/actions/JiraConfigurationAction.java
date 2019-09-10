@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 public class JiraConfigurationAction extends ConfigurationAction {
     @Autowired
     public JiraConfigurationAction(JiraChannelKey jiraChannelKey, JiraGlobalTestAction globalTestAction, JiraDistributionTestAction jiraDistributionTestAction) {
-        super(jiraChannelKey.getUniversalKey());
+        super(jiraChannelKey);
         addGlobalTestAction(globalTestAction);
         addDistributionTestAction(jiraDistributionTestAction);
     }

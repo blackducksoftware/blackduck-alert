@@ -95,9 +95,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
-            LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
             Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
-
+            // for 5.0.0 make the BOM edit either include the component link or the component version link not both to be consistent with the other channels.
+            LinkableItem componentItem = componentVersionItem
+                                             .map(ignored -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName()))
+                                             .orElse(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent()));
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(licenseItems);

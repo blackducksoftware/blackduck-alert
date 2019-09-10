@@ -104,7 +104,7 @@ class JobCustomMessageModal extends Component {
 
     render() {
         return (
-            <Modal show={this.props.showModal} onHide={this.handleHide}>
+            <Modal dialogClassName="topLevelModal" show={this.props.showModal} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Send Message</Modal.Title>
                 </Modal.Header>

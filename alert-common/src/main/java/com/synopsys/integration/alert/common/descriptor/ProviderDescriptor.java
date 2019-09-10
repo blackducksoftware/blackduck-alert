@@ -24,10 +24,11 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 
 public abstract class ProviderDescriptor extends Descriptor {
-    public ProviderDescriptor(final String providerName, final UIConfig providerUiConfig, final UIConfig distributionUIConfig) {
-        super(providerName, DescriptorType.PROVIDER);
+    public ProviderDescriptor(ProviderKey providerKey, UIConfig providerUiConfig, UIConfig distributionUIConfig) {
+        super(providerKey, DescriptorType.PROVIDER);
         addGlobalUiConfig(providerUiConfig);
         addDistributionUiConfig(distributionUIConfig);
     }

@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,18 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.component.scheduling.descriptor;
 
-import com.synopsys.integration.alert.common.channel.ChannelKey;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import org.springframework.stereotype.Component;
 
-public abstract class ChannelDescriptor extends Descriptor {
-    public ChannelDescriptor(ChannelKey channelKey, final ChannelDistributionUIConfig distributionUIConfig, final UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+
+@Component
+public final class SchedulingDescriptorKey extends DescriptorKey {
+    private static final String SCHEDULING_COMPONENT = "component_scheduling";
+
+    @Override
+    public String getUniversalKey() {
+        return SCHEDULING_COMPONENT;
     }
 
 }

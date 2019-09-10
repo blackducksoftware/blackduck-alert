@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 import com.synopsys.integration.alert.provider.polaris.actions.PolarisGlobalTestAction;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -43,6 +44,7 @@ import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class PolarisGlobalTestActionTest {
+    private static final PolarisProviderKey POLARIS_PROVIDER_KEY = new PolarisProviderKey();
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
     private static final String ERROR_POLARIS_TIMEOUT = "Must be an Integer greater than zero (0).";
 
@@ -136,7 +138,7 @@ public class PolarisGlobalTestActionTest {
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager, new Gson());
+        final PolarisProperties polarisProperties = new PolarisProperties(POLARIS_PROVIDER_KEY, alertProperties, null, proxyManager, new Gson());
 
         final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
         try {

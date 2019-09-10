@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class ProxyManagerTest {
@@ -29,8 +30,10 @@ public class ProxyManagerTest {
     public void initTest() throws Exception {
         configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         configurationModel = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
-        proxyManager = new ProxyManager(configurationAccessor);
+
+        SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+        proxyManager = new ProxyManager(settingsDescriptorKey, configurationAccessor);
     }
 
     @Test
@@ -57,4 +60,5 @@ public class ProxyManagerTest {
         assertEquals(PASSWORD, proxyInfo.getPassword().orElse(null));
 
     }
+
 }

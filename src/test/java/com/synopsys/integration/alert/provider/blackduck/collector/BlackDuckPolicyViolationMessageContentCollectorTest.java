@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckPolicyViolationMessageContentCollectorTest {
@@ -97,59 +97,60 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
     @Test
     public void testOperationCircuitBreaker() throws Exception {
-        final String ruleContent = getNotificationContentFromFile(TestConstants.NOTIFICATION_JSON_PATH);
-        final NotificationContent n0 = createNotification(ruleContent, NotificationType.BOM_EDIT);
-        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
+        String ruleContent = getNotificationContentFromFile(TestConstants.NOTIFICATION_JSON_PATH);
+        NotificationContent n0 = createNotification(ruleContent, NotificationType.BOM_EDIT);
+        BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         collector.insert(n0);
         Assert.assertEquals(0, collector.getCollectedContent().size());
     }
 
     @Test
     public void insertionExceptionTest() throws Exception {
-        final BlackDuckPolicyViolationCollector collector = createPolicyViolationCollector();
-        final BlackDuckPolicyViolationCollector spiedCollector = Mockito.spy(collector);
-        final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
-        final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
+        BlackDuckPolicyViolationCollector collector = createPolicyViolationCollector();
+        BlackDuckPolicyViolationCollector spiedCollector = Mockito.spy(collector);
+        String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
+        NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
             .getComponentItems(Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
         spiedCollector.insert(n0);
-        final List<ProviderMessageContent> contentList = spiedCollector.getCollectedContent();
+        List<ProviderMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());
     }
 
     @Test
     public void collectEmptyMapTest() {
-        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
-        final BlackDuckPolicyCollector spiedCollector = Mockito.spy(collector);
-        final List<ProviderMessageContent> contentList = spiedCollector.getCollectedContent();
+        BlackDuckPolicyCollector collector = createPolicyViolationCollector();
+        BlackDuckPolicyCollector spiedCollector = Mockito.spy(collector);
+        List<ProviderMessageContent> contentList = spiedCollector.getCollectedContent();
         assertTrue(contentList.isEmpty());
     }
 
-    private void runSingleTest(final BlackDuckPolicyCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
-        final String content = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
-        final NotificationContent notificationContent = createNotification(content, notificationType);
+    private void runSingleTest(BlackDuckPolicyCollector collector, String notificationJsonFileName, NotificationType notificationType) throws Exception {
+        String content = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
+        NotificationContent notificationContent = createNotification(content, notificationType);
         test(collector, notificationContent);
     }
 
     private BlackDuckPolicyViolationCollector createPolicyViolationCollector() {
-        final BlackDuckProperties blackDuckProperties = BlackDuckCollectorTestHelper.mockProperties();
+        BlackDuckProperties blackDuckProperties = BlackDuckCollectorTestHelper.mockProperties();
         return new BlackDuckPolicyViolationCollector(jsonExtractor, blackDuckProperties);
     }
 
-    private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
-        final ClassPathResource classPathResource = new ClassPathResource(notificationJsonFileName);
-        final File jsonFile = classPathResource.getFile();
+    private String getNotificationContentFromFile(String notificationJsonFileName) throws Exception {
+        ClassPathResource classPathResource = new ClassPathResource(notificationJsonFileName);
+        File jsonFile = classPathResource.getFile();
         return FileUtils.readFileToString(jsonFile, Charset.defaultCharset());
     }
 
-    private NotificationContent createNotification(final String notificationContent, final NotificationType type) {
-        final Date creationDate = Date.from(Instant.now());
-        return new NotificationContent(creationDate, BlackDuckProvider.COMPONENT_NAME, creationDate, type.name(), notificationContent);
+    private NotificationContent createNotification(String notificationContent, NotificationType type) {
+        Date creationDate = Date.from(Instant.now());
+        return new NotificationContent(creationDate, new BlackDuckProviderKey().getUniversalKey(), creationDate, type.name(), notificationContent);
     }
 
-    private void test(final BlackDuckPolicyCollector collector, final NotificationContent notification) {
+    private void test(BlackDuckPolicyCollector collector, NotificationContent notification) {
         collector.insert(notification);
-        final List<ProviderMessageContent> aggregateMessageContentList = collector.getCollectedContent();
+        List<ProviderMessageContent> aggregateMessageContentList = collector.getCollectedContent();
         assertFalse(aggregateMessageContentList.isEmpty());
     }
+
 }

@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
@@ -79,13 +79,15 @@ public abstract class AlertIntegrationTest {
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
-        final ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL).stream().findFirst()
-                                                              .orElse(
+        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(blackDuckProviderKey.getUniversalKey(), ConfigContextEnum.GLOBAL).stream().findFirst()
+                                                        .orElse(
 
-                                                                  configurationAccessor
-                                                                      .createConfiguration(BlackDuckProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))
+                                                            configurationAccessor
+                                                                .createConfiguration(blackDuckProviderKey.getUniversalKey(), ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))
 
-                                                              );
+                                                        );
         configurationAccessor.updateConfiguration(blackDuckConfiguration.getConfigurationId(), List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
     }
+
 }

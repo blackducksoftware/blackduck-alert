@@ -26,13 +26,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
 //@Component
@@ -69,8 +71,9 @@ public class PolarisContent extends ProviderContent {
     public static final ProviderContentType ISSUE_COUNT_INCREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED.name(), POLARIS_FIELDS);
     public static final ProviderContentType ISSUE_COUNT_DECREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_DECREASED.name(), POLARIS_FIELDS);
 
-    public PolarisContent() {
-        super(PolarisProvider.COMPONENT_NAME, Set.of(ISSUE_COUNT_INCREASED, ISSUE_COUNT_DECREASED), EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY));
+    @Autowired
+    public PolarisContent(PolarisProviderKey polarisProviderKey) {
+        super(polarisProviderKey, Set.of(ISSUE_COUNT_INCREASED, ISSUE_COUNT_DECREASED), EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY));
     }
 
 }

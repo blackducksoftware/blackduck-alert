@@ -13,8 +13,8 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 
 public final class MockProviderDataAccessor extends DefaultProviderDataAccessor {
     private final Map<String, Set<ProviderProject>> providerProjectMap;
@@ -23,9 +23,11 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
 
     public MockProviderDataAccessor() {
         super(null, null, null);
+        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        PolarisProviderKey polarisProviderKey = new PolarisProviderKey();
         providerProjectMap = new HashMap<>();
-        providerProjectMap.put(BlackDuckProvider.COMPONENT_NAME, new HashSet<>());
-        providerProjectMap.put(PolarisProvider.COMPONENT_NAME, new HashSet<>());
+        providerProjectMap.put(blackDuckProviderKey.getUniversalKey(), new HashSet<>());
+        providerProjectMap.put(polarisProviderKey.getUniversalKey(), new HashSet<>());
         users = new HashSet<>();
     }
 
@@ -112,4 +114,5 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         }
         return new ArrayList<>(users);
     }
+
 }

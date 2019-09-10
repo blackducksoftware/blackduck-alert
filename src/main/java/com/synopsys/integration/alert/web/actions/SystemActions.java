@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
@@ -50,12 +50,15 @@ import com.synopsys.integration.rest.RestConstants;
 @Component
 public class SystemActions {
     private final Logger logger = LoggerFactory.getLogger(SystemActions.class);
+
+    private final SettingsDescriptorKey settingsDescriptorKey;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
     private final ConfigActions configActions;
 
     @Autowired
-    public SystemActions(final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility, final ConfigActions configActions) {
+    public SystemActions(SettingsDescriptorKey settingsDescriptorKey, SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, ConfigActions configActions) {
+        this.settingsDescriptorKey = settingsDescriptorKey;
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
         this.configActions = configActions;
@@ -90,10 +93,10 @@ public class SystemActions {
 
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), valueMap);
+        FieldModel model = new FieldModel(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), valueMap);
 
         try {
-            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, SettingsDescriptor.SETTINGS_COMPONENT);
+            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsDescriptorKey.getUniversalKey());
             if (fieldModels.size() == 1) {
                 model = fieldModels.get(0);
             }
@@ -123,4 +126,5 @@ public class SystemActions {
         final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
         return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
+
 }

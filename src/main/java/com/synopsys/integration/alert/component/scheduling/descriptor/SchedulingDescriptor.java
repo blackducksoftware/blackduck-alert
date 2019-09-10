@@ -29,8 +29,6 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 
 @Component
 public class SchedulingDescriptor extends ComponentDescriptor {
-    public static final String SCHEDULING_COMPONENT = "component_scheduling";
-
     public static final String SCHEDULING_LABEL = "Scheduling";
     public static final String SCHEDULING_URL = "scheduling";
     public static final String SCHEDULING_ICON = "clock";
@@ -44,8 +42,8 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
 
     @Autowired
-    public SchedulingDescriptor(final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, schedulingUIConfig);
+    public SchedulingDescriptor(SchedulingDescriptorKey schedulingDescriptorKey, SchedulingUIConfig schedulingUIConfig) {
+        super(schedulingDescriptorKey, schedulingUIConfig);
     }
 
 }

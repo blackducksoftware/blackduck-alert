@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 
 public class PurgeTaskTest {
 
@@ -25,7 +26,7 @@ public class PurgeTaskTest {
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final PurgeTask task = new PurgeTask(null, null, null, null, configurationAccessor);
+        final PurgeTask task = new PurgeTask(new SchedulingDescriptorKey(), null, null, null, null, configurationAccessor);
         final String cronWithNotDefault = task.scheduleCronExpression();
         final String expectedCron = String.format(PurgeTask.CRON_FORMAT, notDefaultValue);
 
