@@ -294,6 +294,7 @@ Edit the ```docker-compose.local-overrides.yml``` file to include the environmen
 
 Example:
 ```
+alert:
     environment:
         - ALERT_HOSTNAME=localhost
         - ALERT_LOGGING_LEVEL=INFO
@@ -316,6 +317,7 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
     ```
     - Editing overrides file:
     ```
+    alert:
         environment:
             - ALERT_HOSTNAME=<NEW_HOST_NAME>
     ```
@@ -331,8 +333,9 @@ To change the logging level of Alert add the following environment variable to t
     ```ALERT_LOGGING_LEVEL=DEBUG```
 - Editing overrides file:
     ```
+    alert:
         environment:
-           - ALERT_LOGGING_LEVEL=DEBUG
+            - ALERT_LOGGING_LEVEL=DEBUG
     ```
 
 - Set the value to one of the following:
