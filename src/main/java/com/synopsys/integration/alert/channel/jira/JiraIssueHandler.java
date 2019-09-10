@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -59,7 +58,6 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.request.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.response.IssueResponseModel;
@@ -106,59 +104,33 @@ public class JiraIssueHandler {
     private Set<String> createOrUpdateIssuesPerComponent(String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         SetMap<String, String> missingTransitionToIssues = new SetMap<>();
-
-        ProjectComponent jiraProject = jiraIssueConfig.getProjectComponent();
-        String jiraProjectId = jiraProject.getId();
-        String jiraProjectName = jiraProject.getName();
-        String jiraProjectKey = jiraProject.getKey();
+        String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
 
         Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
         for (List<ComponentItem> combinedItems : combinedItemsMap.values()) {
             try {
-                final ComponentItem arbitraryItem = combinedItems
-                                                        .stream()
-                                                        .findAny()
-                                                        .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
-                final ItemOperation operation = arbitraryItem.getOperation();
-                final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                ComponentItem arbitraryItem = combinedItems
+                                                  .stream()
+                                                  .findAny()
+                                                  .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
+                ItemOperation operation = arbitraryItem.getOperation();
+                String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
-                final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
+                List<IssueComponent> existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, arbitraryItem, trackingKey);
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
-                if (existingIssueComponent.isPresent()) {
-                    final IssueComponent issueComponent = existingIssueComponent.get();
-                    if (jiraIssueConfig.getCommentOnIssues()) {
-                        String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                        addComment(issueComponent.getKey(), operationComment);
-                        issueKeys.add(issueComponent.getKey());
-                    }
 
-                    boolean didUpdateIssue = jiraTransitionHelper.transitionIssueIfNecessary(issueComponent.getKey(), jiraIssueConfig, operation);
-                    if (didUpdateIssue) {
-                        issueKeys.add(issueComponent.getKey());
-                    }
+                if (!existingIssues.isEmpty()) {
+                    Set<IssueComponent> updatedIssues = updateExistingIssues(existingIssues, operation, jiraIssueConfig, arbitraryItem, providerName, combinedItems);
+                    updatedIssues
+                        .stream()
+                        .map(IssueComponent::getKey)
+                        .forEach(issueKeys::add);
+                } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                    IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                    IssueResponseModel issueResponseModel = createIssue(fieldsBuilder, jiraIssueConfig, providerName, topic, subTopic, arbitraryItem, trackingKey);
+                    issueKeys.add(issueResponseModel.getKey());
                 } else {
-                    if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                        fieldsBuilder.setProject(jiraProjectId);
-                        fieldsBuilder.setIssueType(jiraIssueConfig.getIssueType());
-                        String issueCreator = jiraIssueConfig.getIssueCreator();
-                        IssueResponseModel issue = null;
-                        try {
-                            issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraProjectName, fieldsBuilder, List.of()));
-                            logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
-                        } catch (IntegrationRestException e) {
-                            handleIssueCreationRestException(e, issueCreator);
-                        }
-                        if (issue == null || StringUtils.isBlank(issue.getKey())) {
-                            throw new AlertException("There was an problem when creating this issue.");
-                        }
-                        final String issueKey = issue.getKey();
-                        addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
-                        addComment(issueKey, "This issue was automatically created by Alert.");
-                        issueKeys.add(issueKey);
-                    } else {
-                        logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
-                    }
+                    logger.warn("Expected to find an existing issue, but none existed.");
                 }
             } catch (JiraMissingTransitionException e) {
                 missingTransitionToIssues.add(e.getTransition(), e.getIssueKey());
@@ -192,12 +164,64 @@ public class JiraIssueHandler {
         return combinedItems;
     }
 
-    private Optional<IssueComponent> retrieveExistingIssue(String jiraProjectKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
-        final Optional<IssueSearchResponseModel> optionalIssueSearchResponse = jiraIssuePropertyHelper.findIssues(jiraProjectKey, provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId);
-        return optionalIssueSearchResponse
+    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> existingIssues, ItemOperation operation, JiraIssueConfig jiraIssueConfig, ComponentItem arbitraryItem, String providerName, Collection<ComponentItem> combinedItems)
+        throws IntegrationException {
+        Set<IssueComponent> updatedIssues = new HashSet<>();
+        List<IssueComponent> issuesToUpdate = filterUpdatableIssues(existingIssues, operation);
+        for (IssueComponent issue : issuesToUpdate) {
+            if (jiraIssueConfig.getCommentOnIssues()) {
+                String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
+                addComment(issue.getKey(), operationComment);
+                updatedIssues.add(issue);
+            }
+
+            boolean didUpdateIssue = jiraTransitionHelper.transitionIssueIfNecessary(issue.getKey(), jiraIssueConfig, operation);
+            if (didUpdateIssue) {
+                updatedIssues.add(issue);
+            }
+        }
+        return updatedIssues;
+    }
+
+    private IssueResponseModel createIssue(IssueRequestModelFieldsBuilder initialFieldsBuilder, JiraIssueConfig jiraIssueConfig, String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem arbitraryItem,
+        String trackingKey) throws IntegrationException {
+        initialFieldsBuilder.setProject(jiraIssueConfig.getProjectComponent().getId());
+        initialFieldsBuilder.setIssueType(jiraIssueConfig.getIssueType());
+        String issueCreator = jiraIssueConfig.getIssueCreator();
+        IssueResponseModel issue = null;
+        try {
+            issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectComponent().getName(), initialFieldsBuilder, List.of()));
+            logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
+        } catch (IntegrationRestException e) {
+            handleIssueCreationRestException(e, issueCreator);
+        }
+        if (issue == null || StringUtils.isBlank(issue.getKey())) {
+            throw new AlertException("There was an problem when creating this issue.");
+        }
+        String issueKey = issue.getKey();
+        addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
+        addComment(issueKey, "This issue was automatically created by Alert.");
+        return issue;
+    }
+
+    private List<IssueComponent> retrieveExistingIssues(String jiraProjectKey, String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+        return jiraIssuePropertyHelper
+                   .findIssues(jiraProjectKey, provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId)
                    .map(IssueSearchResponseModel::getIssues)
-                   .map(List::stream)
-                   .flatMap(Stream::findFirst);
+                   .orElse(List.of());
+    }
+
+    // Only the DELETE operation can update more than one issue.
+    // If an ADD or UPDATE operation has more than one issue it could operate on, then the issue properties are either not unique enough or the property indexer is not installed.
+    private List<IssueComponent> filterUpdatableIssues(List<IssueComponent> issues, ItemOperation operation) {
+        if (!issues.isEmpty()) {
+            if (issues.size() == 1 || ItemOperation.DELETE.equals(operation)) {
+                return issues;
+            } else {
+                logger.error("Found more than one Jira Cloud issue to {} when only one was expected.", operation.name().toLowerCase());
+            }
+        }
+        return List.of();
     }
 
     private void handleIssueCreationRestException(IntegrationRestException restException, String issueCreatorEmail) throws IntegrationException {
