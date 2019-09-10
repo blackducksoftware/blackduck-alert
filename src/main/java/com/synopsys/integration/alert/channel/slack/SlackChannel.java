@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.channel.slack;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.msteams.SimpleChannelActions;
+import com.synopsys.integration.alert.channel.msteams.AutoActionable;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component(value = SlackChannel.COMPONENT_NAME)
-public class SlackChannel extends NamedDistributionChannel implements SimpleChannelActions {
+public class SlackChannel extends NamedDistributionChannel implements AutoActionable {
     public static final String COMPONENT_NAME = "channel_slack";
 
     private final RestChannelUtility restChannelUtility;

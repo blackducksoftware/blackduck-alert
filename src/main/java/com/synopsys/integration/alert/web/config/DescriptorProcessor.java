@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.channel.msteams.SimpleChannelActions;
+import com.synopsys.integration.alert.channel.msteams.AutoActionable;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.ChannelKey;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
@@ -56,13 +56,13 @@ public class DescriptorProcessor {
     private final List<ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions, final List<SimpleChannelActions> allSimpleChannelActions) {
+    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions, final List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
         this.allConfigurationActions = allConfigurationActions;
-        for (SimpleChannelActions simpleChannelActions : allSimpleChannelActions) {
-            DistributionChannel channel = simpleChannelActions.getChannel();
-            ChannelKey channelKey = simpleChannelActions.getChannelKey();
+        for (AutoActionable autoActionable : autoActionables) {
+            DistributionChannel channel = autoActionable.getChannel();
+            ChannelKey channelKey = autoActionable.getChannelKey();
 
             ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {};
             ConfigurationAction configurationAction = new ConfigurationAction(channelKey.getUniversalKey()) {};

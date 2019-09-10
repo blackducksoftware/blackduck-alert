@@ -6,7 +6,7 @@ import com.synopsys.integration.alert.common.channel.DistributionChannel;
 /**
  * This lets the DescriptorProcessor create the appropriate ChannelDistributionTestAction/ConfigurationAction combination when no customization is needed.
  */
-public interface SimpleChannelActions {
+public interface AutoActionable {
     ChannelKey getChannelKey();
 
     DistributionChannel getChannel();
