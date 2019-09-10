@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.Jira
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
+import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHelper;
@@ -69,6 +70,10 @@ import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
+    public static final String TODO_STATUS_CATEGORY_KEY = "new";
+    public static final String DONE_STATUS_CATEGORY_KEY = "done";
+
     private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
 
     private final IssueService issueService;
@@ -196,11 +201,16 @@ public class JiraIssueHandler {
         String issueCreator = jiraIssueConfig.getIssueCreator();
 
         try {
+            final IssueContentModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
             IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectComponent().getName(), initialFieldsBuilder, List.of()));
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
             String issueKey = issue.getKey();
             addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
             addComment(issueKey, "This issue was automatically created by Alert.");
+            for (String additionalComment : contentModel.getAdditionalComments()) {
+                String comment = String.format("%s \n %s", DESCRIPTION_CONTINUED_TEXT, additionalComment);
+                addComment(issueKey, comment);
+            }
             return issue;
         } catch (IntegrationRestException e) {
             throw improveRestException(e, issueCreator);
@@ -265,33 +275,20 @@ public class JiraIssueHandler {
         );
     }
 
-    private String createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
+    private List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
         JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        String attributesString = jiraChannelFormatHelper.createComponentAttributesString(componentItems);
-
-        StringBuilder commentBuilder = new StringBuilder();
-        commentBuilder.append("The ");
-        commentBuilder.append(operation.name());
-        commentBuilder.append(" operation was performed for this ");
-        commentBuilder.append(category);
-        commentBuilder.append(" in ");
-        commentBuilder.append(provider);
-        if (StringUtils.isNotBlank(attributesString)) {
-            commentBuilder.append(".\n----------\n");
-            commentBuilder.append(attributesString);
-        } else {
-            commentBuilder.append(".");
-        }
-        return commentBuilder.toString();
+        return jiraChannelFormatHelper.createOperationComment(operation, category, provider, componentItems);
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
+    private IssueContentModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
+        return jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider, arbitraryItem.getComponentKeys());
+    }
+
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
-        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
-        fieldsBuilder.setSummary(title);
-        fieldsBuilder.setDescription(description);
+        fieldsBuilder.setSummary(contentModel.getTitle());
+        fieldsBuilder.setDescription(contentModel.getDescription());
 
         return fieldsBuilder;
     }
