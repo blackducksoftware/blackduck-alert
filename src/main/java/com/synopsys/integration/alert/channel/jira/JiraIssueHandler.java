@@ -55,6 +55,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckProjectVersionCollector;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
@@ -116,7 +117,12 @@ public class JiraIssueHandler {
                 ItemOperation operation = arbitraryItem.getOperation();
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
-                List<IssueComponent> existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, arbitraryItem, trackingKey);
+                List<IssueComponent> existingIssues;
+                if (BlackDuckProjectVersionCollector.CATEGORY_TYPE.equals(arbitraryItem.getCategory())) {
+                    existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, null, null);
+                } else {
+                    existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, arbitraryItem, trackingKey);
+                }
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
 
                 if (!existingIssues.isEmpty()) {
@@ -143,8 +149,7 @@ public class JiraIssueHandler {
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s", entry.getKey(), issues));
             }
 
-            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName,
-                missingTransitions.toString());
+            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions.toString());
             throw new AlertException(errorMessage);
         }
 
