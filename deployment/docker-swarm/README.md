@@ -339,6 +339,7 @@ Alert supports configuration of the application's components via environment var
 Edit the ```docker-compose.local-overrides.yml``` file to include the environment variables.
 
 ### Editing the Overrides File
+- Verify that ```alert:``` is uncommented from the service section, otherwise uncomment the ```alert:``` of docker-compose.local-overrides.yml.
 - Uncomment ```environment:``` from the alert service section of docker-compose.local-overrides.yml. 
 - Environment variables have the format ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` 
 - Environment variables are commented out in the ```docker-compose.local-overrides.yml``` file. 
@@ -363,6 +364,7 @@ If any other environment variable is set with no value or an empty string, then 
 ### Alert Hostname Variable
 The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
 - Add the ALERT_HOSTNAME environment variable. (The value must be the hostname only.)
+
     - Editing overrides file:
     ```
     alert:

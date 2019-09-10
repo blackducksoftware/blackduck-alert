@@ -287,6 +287,7 @@ Alert supports configuration of the application's components via environment var
 Edit the ```docker-compose.local-overrides.yml``` file to include the environment variables.
 
 ### Editing the Overrides File
+- Verify that ```alert:``` is uncommented from the service section, otherwise uncomment the ```alert:``` of docker-compose.local-overrides.yml.
 - Uncomment ```environment:``` from the alert service section of docker-compose.local-overrides.yml. 
 - Environment variables have the format ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` 
 - Environment variables are commented out in the ```docker-compose.local-overrides.yml``` file. 
