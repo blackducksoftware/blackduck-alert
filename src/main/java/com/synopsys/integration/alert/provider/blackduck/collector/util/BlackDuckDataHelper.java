@@ -42,11 +42,13 @@ import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpr
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
 import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -56,6 +58,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class BlackDuckDataHelper {
+    public static final String VULNERABILITY_CHECK_TEXT = "vuln";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataHelper.class);
     private BlackDuckProperties blackDuckProperties;
     private BlackDuckService blackDuckService;
@@ -171,15 +174,39 @@ public class BlackDuckDataHelper {
     }
 
     public boolean hasVulnerabilityRule(VersionBomPolicyRuleView policyRule) {
-        String vulnerabilityCheck = "vuln";
         PolicyRuleExpressionSetView expression = policyRule.getExpression();
         List<PolicyRuleExpressionView> expressions = expression.getExpressions();
         for (PolicyRuleExpressionView expressionView : expressions) {
-            if (expressionView.getName().toLowerCase().contains(vulnerabilityCheck)) {
+            if (expressionView.getName().toLowerCase().contains(VULNERABILITY_CHECK_TEXT)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean hasVulnerabilityRule(PolicyRuleView policyRule) {
+        PolicyRuleExpressionSetView expression = policyRule.getExpression();
+        List<PolicyRuleExpressionView> expressions = expression.getExpressions();
+        for (PolicyRuleExpressionView expressionView : expressions) {
+            if (expressionView.getName().toLowerCase().contains(VULNERABILITY_CHECK_TEXT)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Optional<PolicyRuleView> getPolicyRule(PolicyInfo policyInfo) {
+        try {
+            String policyUrl = policyInfo.getPolicy();
+            if (StringUtils.isNotBlank(policyUrl)) {
+                bucketService.addToTheBucket(blackDuckBucket, policyUrl, PolicyRuleView.class);
+                return Optional.of(blackDuckBucket.get(policyUrl, PolicyRuleView.class));
+            }
+        } catch (Exception e) {
+            logger.debug("Unable to get policy rule: {}", policyInfo.getPolicyName());
+            logger.debug("Cause:", e);
+        }
+        return Optional.empty();
     }
 
     public List<LinkableItem> getRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {

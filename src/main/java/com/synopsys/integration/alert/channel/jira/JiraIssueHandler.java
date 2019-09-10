@@ -44,6 +44,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDistributionUIConfig;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
+import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
 import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
 import com.synopsys.integration.alert.common.SetMap;
@@ -81,6 +82,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
 
@@ -158,15 +160,19 @@ public class JiraIssueHandler {
                                                         .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
                 final ItemOperation operation = arbitraryItem.getOperation();
                 final String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(arbitraryItem, combinedItems, topic, subTopic, providerName);
+
+                final IssueContentModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                final IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
 
                 final Optional<IssueComponent> existingIssueComponent = retrieveExistingIssue(jiraProjectKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
                 if (existingIssueComponent.isPresent()) {
                     final IssueComponent issueComponent = existingIssueComponent.get();
                     if (commentOnIssue) {
-                        String operationComment = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
-                        addComment(issueComponent.getKey(), operationComment);
+                        List<String> operationComments = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
+                        for (String operationComment : operationComments) {
+                            addComment(issueComponent.getKey(), operationComment);
+                        }
                         issueKeys.add(issueComponent.getKey());
                     }
 
@@ -192,6 +198,10 @@ public class JiraIssueHandler {
                         final String issueKey = issue.getKey();
                         addIssueProperties(issueKey, providerName, topic, subTopic, arbitraryItem, trackingKey);
                         addComment(issueKey, "This issue was automatically created by Alert.");
+                        for (String additionalComment : contentModel.getAdditionalComments()) {
+                            String comment = String.format("%s \n %s", DESCRIPTION_CONTINUED_TEXT, additionalComment);
+                            addComment(issueKey, comment);
+                        }
                         issueKeys.add(issueKey);
                     } else {
                         logger.warn("Expected to find an existing issue with key '{}' but none existed.", trackingKey);
@@ -294,33 +304,20 @@ public class JiraIssueHandler {
         );
     }
 
-    private String createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
+    private List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
         JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        String attributesString = jiraChannelFormatHelper.createComponentAttributesString(componentItems);
-
-        StringBuilder commentBuilder = new StringBuilder();
-        commentBuilder.append("The ");
-        commentBuilder.append(operation.name());
-        commentBuilder.append(" operation was performed for this ");
-        commentBuilder.append(category);
-        commentBuilder.append(" in ");
-        commentBuilder.append(provider);
-        if (StringUtils.isNotBlank(attributesString)) {
-            commentBuilder.append(".\n----------\n");
-            commentBuilder.append(attributesString);
-        } else {
-            commentBuilder.append(".");
-        }
-        return commentBuilder.toString();
+        return jiraChannelFormatHelper.createOperationComment(operation, category, provider, componentItems);
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
+    private IssueContentModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
+        return jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider, arbitraryItem.getComponentKeys());
+    }
+
+    private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        final String title = jiraChannelFormatHelper.createTitle(provider, commonTopic, subTopic, arbitraryItem.getComponentKeys());
-        final String description = jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider);
-        fieldsBuilder.setSummary(title);
-        fieldsBuilder.setDescription(description);
+        fieldsBuilder.setSummary(contentModel.getTitle());
+        fieldsBuilder.setDescription(contentModel.getDescription());
 
         return fieldsBuilder;
     }
