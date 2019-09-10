@@ -118,6 +118,7 @@ public class JiraIssueHandler {
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
                 List<IssueComponent> existingIssues;
+                // FIXME make this provider-agnostic
                 if (BlackDuckProjectVersionCollector.CATEGORY_TYPE.equals(arbitraryItem.getCategory())) {
                     existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, null, null);
                 } else {
