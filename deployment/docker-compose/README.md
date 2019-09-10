@@ -311,10 +311,6 @@ If any other environment variable is set with no value or an empty string, then 
 ### Alert Hostname Variable
 The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
 - Add the ALERT_HOSTNAME environment variable. (The value must be the hostname only.)
-    - Editing environment file:
-    ```
-    ALERT_HOSTNAME=<NEW_HOST_NAME>
-    ```
     - Editing overrides file:
     ```
     alert:
@@ -329,8 +325,6 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
 ### Alert Logging Level Variable
 To change the logging level of Alert add the following environment variable to the deployment.
 
-- Editing environment file:
-    ```ALERT_LOGGING_LEVEL=DEBUG```
 - Editing overrides file:
     ```
     alert:
