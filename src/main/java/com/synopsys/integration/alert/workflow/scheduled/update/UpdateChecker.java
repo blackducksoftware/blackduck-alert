@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
@@ -61,26 +62,28 @@ public class UpdateChecker {
     private final Gson gson;
     private final AboutReader aboutReader;
     private final ProxyManager proxyManager;
+    private AlertProperties alertProperties;
 
     @Autowired
-    public UpdateChecker(final Gson gson, final AboutReader aboutReader, final ProxyManager proxyManager) {
+    public UpdateChecker(Gson gson, AboutReader aboutReader, ProxyManager proxyManager, AlertProperties alertProperties) {
         this.gson = gson;
         this.aboutReader = aboutReader;
         this.proxyManager = proxyManager;
+        this.alertProperties = alertProperties;
     }
 
     public UpdateModel getUpdateModel() {
-        final IntHttpClient intHttpClient = createHttpClient();
-        final DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
+        IntHttpClient intHttpClient = createHttpClient();
+        DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
 
-        final AboutModel aboutModel = aboutReader.getAboutModel();
-        final String currentVersion = aboutModel.getVersion();
-        final String alertCreated = aboutModel.getCreated();
+        AboutModel aboutModel = aboutReader.getAboutModel();
+        String currentVersion = aboutModel.getVersion();
+        String alertCreated = aboutModel.getCreated();
 
-        final Boolean isProduction = isProductionVersion(currentVersion);
+        Boolean isProduction = isProductionVersion(currentVersion);
 
-        final Optional<VersionDateModel> latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
-        final String repositoryUrl = dockerTagRetriever.getRepositoryUrl();
+        Optional<VersionDateModel> latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
+        String repositoryUrl = dockerTagRetriever.getRepositoryUrl();
 
         // latestAvailableVersion will not be present if Alert can not reach Docker Hub and DockerTagRetriever will log a warning
         // if latestAvailableVersion is empty, use the Alert version and date so we report no update available
@@ -89,11 +92,11 @@ public class UpdateChecker {
         return getUpdateModel(currentVersion, alertCreated, latestVersion, latestDate, repositoryUrl);
     }
 
-    public UpdateModel getUpdateModel(final String currentVersion, final String alertCreated, final String dockerTagVersioName, final String dockerTagUpdatedDate, final String repositoryUrl) {
-        final VersionDateModel alertModel = new VersionDateModel(currentVersion, alertCreated);
-        final VersionDateModel dockerTagModel = new VersionDateModel(dockerTagVersioName, dockerTagUpdatedDate);
+    public UpdateModel getUpdateModel(String currentVersion, String alertCreated, String dockerTagVersionName, String dockerTagUpdatedDate, String repositoryUrl) {
+        VersionDateModel alertModel = new VersionDateModel(currentVersion, alertCreated);
+        VersionDateModel dockerTagModel = new VersionDateModel(dockerTagVersionName, dockerTagUpdatedDate);
 
-        final Boolean isProduction = isProductionVersion(alertModel.getVersionName());
+        Boolean isProduction = isProductionVersion(alertModel.getVersionName());
 
         int comparison;
         if (isProduction) {
@@ -102,20 +105,21 @@ public class UpdateChecker {
             comparison = versionDateModelComparator().compare(alertModel, dockerTagModel);
         }
 
-        final boolean isUpdatable = 1 == comparison;
-        return new UpdateModel(currentVersion, alertCreated, dockerTagVersioName, dockerTagUpdatedDate, repositoryUrl, isUpdatable);
+        boolean isUpdatable = 1 == comparison;
+        return new UpdateModel(currentVersion, alertCreated, dockerTagVersionName, dockerTagUpdatedDate, repositoryUrl, isUpdatable);
     }
 
     private IntHttpClient createHttpClient() {
-        final IntLogger intLogger = new Slf4jIntLogger(logger);
-        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        return new IntHttpClient(intLogger, 120, false, proxyInfo);
+        IntLogger intLogger = new Slf4jIntLogger(logger);
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        Boolean alwaysTrustServerCert = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
+        return new IntHttpClient(intLogger, 120, alwaysTrustServerCert, proxyInfo);
     }
 
-    private Optional<VersionDateModel> getLatestAvailableTag(final DockerTagRetriever dockerTagRetriever, final boolean isProduction) {
+    private Optional<VersionDateModel> getLatestAvailableTag(DockerTagRetriever dockerTagRetriever, boolean isProduction) {
         DockerTagsResponseModel tagsResponseModel = dockerTagRetriever.getTagsModel();
 
-        final List<DockerTagModel> tags = new LinkedList<>();
+        List<DockerTagModel> tags = new LinkedList<>();
         while (!tagsResponseModel.isEmpty()) {
             tags.addAll(tagsResponseModel.getResults());
             tagsResponseModel = dockerTagRetriever.getNextPage(tagsResponseModel);
@@ -133,12 +137,12 @@ public class UpdateChecker {
                    .min(versionDateModelComparator());
     }
 
-    private boolean isProductionVersion(final String version) {
+    private boolean isProductionVersion(String version) {
         return StringUtils.isNotBlank(version) && !version.contains(SNAPSHOT) && isComprisedOfNumericTokens(version);
     }
 
-    private boolean isComprisedOfNumericTokens(final String version) {
-        final String[] versionTokens = StringUtils.split(version, VERSION_SEPARATOR);
+    private boolean isComprisedOfNumericTokens(String version) {
+        String[] versionTokens = StringUtils.split(version, VERSION_SEPARATOR);
         return Stream
                    .of(versionTokens)
                    .allMatch(NumberUtils::isParsable);
@@ -157,9 +161,9 @@ public class UpdateChecker {
         };
     }
 
-    private int compareVersions(final String firstVersion, final String secondVersion) {
-        final String[] firstVersionTokens = StringUtils.split(firstVersion, VERSION_SEPARATOR);
-        final String[] secondVersionTokens = StringUtils.split(secondVersion, VERSION_SEPARATOR);
+    private int compareVersions(String firstVersion, String secondVersion) {
+        String[] firstVersionTokens = StringUtils.split(firstVersion, VERSION_SEPARATOR);
+        String[] secondVersionTokens = StringUtils.split(secondVersion, VERSION_SEPARATOR);
 
         for (int i = 0; i < firstVersionTokens.length && i < secondVersionTokens.length; i++) {
             String firstVersionToken = firstVersionTokens[i];
@@ -172,8 +176,8 @@ public class UpdateChecker {
                 secondVersionToken = secondVersionToken.substring(0, secondVersionToken.indexOf(SNAPSHOT));
             }
 
-            final int firstToken = Integer.parseInt(firstVersionToken);
-            final int secondToken = Integer.parseInt(secondVersionToken);
+            int firstToken = Integer.parseInt(firstVersionToken);
+            int secondToken = Integer.parseInt(secondVersionToken);
 
             // If the first token is greater, it is a newer version.
             if (firstToken > secondToken) {
@@ -191,9 +195,9 @@ public class UpdateChecker {
         return 0;
     }
 
-    private int compareProductionAndSnapshotVersions(final String firstVersion, final String secondVersion) {
-        final boolean firstIsProduction = isProductionVersion(firstVersion);
-        final boolean secondIsProduction = isProductionVersion(secondVersion);
+    private int compareProductionAndSnapshotVersions(String firstVersion, String secondVersion) {
+        boolean firstIsProduction = isProductionVersion(firstVersion);
+        boolean secondIsProduction = isProductionVersion(secondVersion);
 
         if (firstIsProduction && !secondIsProduction) {
             return -1;
@@ -207,16 +211,16 @@ public class UpdateChecker {
     /**
      * The Date Alert has in the About will always be slightly before the Docker Hub date. So if the two are within 1 hour of each other, then we will consider them the same.
      */
-    private int compareDateStrings(final String first, final String second) {
+    private int compareDateStrings(String first, String second) {
         try {
-            final SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-            final Date firstDate = formatter.parse(first);
-            final Date secondDate = formatter.parse(second);
+            SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+            Date firstDate = formatter.parse(first);
+            Date secondDate = formatter.parse(second);
 
-            final Date hourEarlier = DateUtils.addHours(firstDate, -1);
-            final Date hourLater = DateUtils.addHours(firstDate, 1);
+            Date hourEarlier = DateUtils.addHours(firstDate, -1);
+            Date hourLater = DateUtils.addHours(firstDate, 1);
 
-            final boolean secondIsWithinAnHourOfFirst = hourEarlier.before(secondDate) && hourLater.after(secondDate);
+            boolean secondIsWithinAnHourOfFirst = hourEarlier.before(secondDate) && hourLater.after(secondDate);
 
             if (secondIsWithinAnHourOfFirst) {
                 return 0;
@@ -226,7 +230,7 @@ public class UpdateChecker {
             } else if (firstDate.before(secondDate)) {
                 return 1;
             }
-        } catch (final ParseException e) {
+        } catch (ParseException e) {
             logger.debug("Could not parse the date strings with the format {}.", DATE_FORMAT);
             logger.debug(e.getMessage(), e);
         }
@@ -237,7 +241,7 @@ public class UpdateChecker {
         private final String versionName;
         private final String date;
 
-        private VersionDateModel(final String versionName, final String date) {
+        private VersionDateModel(String versionName, String date) {
             this.versionName = versionName;
             this.date = date;
         }
@@ -249,5 +253,7 @@ public class UpdateChecker {
         public String getDate() {
             return date;
         }
+
     }
+
 }
