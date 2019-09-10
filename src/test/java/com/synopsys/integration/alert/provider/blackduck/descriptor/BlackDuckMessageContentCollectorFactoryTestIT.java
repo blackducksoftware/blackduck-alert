@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckBomE
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckProjectVersionCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -30,18 +31,20 @@ public class BlackDuckMessageContentCollectorFactoryTestIT extends AlertIntegrat
     private ObjectFactory<BlackDuckLicenseLimitCollector> licenseTopicCollectorFactory;
     @Autowired
     private ObjectFactory<BlackDuckBomEditCollector> bomEditCollectorFactory;
+    @Autowired
+    private ObjectFactory<BlackDuckProjectVersionCollector> blackDuckProjectVersionCollectorFactory;
 
     @Test
     public void testCollectorCreation() throws AlertException {
         initBlackDuckData();
         final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyViolationTopicCollectorFactory, policyOverrideTopicCollectorFactory,
-            licenseTopicCollectorFactory, bomEditCollectorFactory);
+            licenseTopicCollectorFactory, bomEditCollectorFactory, blackDuckProjectVersionCollectorFactory);
         final Set<MessageContentCollector> messageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
         assertFalse(messageContentCollectorSet.isEmpty());
-        assertEquals(5, messageContentCollectorSet.size());
+        assertEquals(6, messageContentCollectorSet.size());
         final Set<MessageContentCollector> differentReferenceMessageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
         assertFalse(differentReferenceMessageContentCollectorSet.isEmpty());
-        assertEquals(5, differentReferenceMessageContentCollectorSet.size());
+        assertEquals(6, differentReferenceMessageContentCollectorSet.size());
 
         // make sure they are different object references since MessageContentCollector does implement equals or hashcode which is ok. we want different instances.
         assertFalse(messageContentCollectorSet.equals(differentReferenceMessageContentCollectorSet));
