@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckProjectVersionCollector extends BlackDuckCollector {
-    private static final String CATEGORY_TYPE = "Project Event";
+    public static final String CATEGORY_TYPE = "Project Event";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
