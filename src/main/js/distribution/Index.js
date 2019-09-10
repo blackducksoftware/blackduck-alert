@@ -12,7 +12,6 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import NotificationTypeLegend from 'dynamic/loaded/audit/NotificationTypeLegend';
 
 /**
  * Selects className based on field value
@@ -69,12 +68,9 @@ class Index extends Component {
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
         this.reloadJobs = this.reloadJobs.bind(this);
         this.saveBtn = this.saveBtn.bind(this);
-        this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
-        this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
         this.onJobDeleteClose = this.onJobDeleteClose.bind(this);
         this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
-        this.canCreateJobs = this.canCreateJobs.bind(this);
-        this.canDeleteJobs = this.canDeleteJobs.bind(this);
+        this.descriptorDataFormat = this.descriptorDataFormat.bind(this)
 
         this.state = {
             currentRowSelected: null,
@@ -220,53 +216,18 @@ class Index extends Component {
         );
     }
 
-    typeColumnDataFormat(cell) {
+    descriptorDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
-                if (filteredList && filteredList.length > 0) {
-                    const foundDescriptor = filteredList[0];
-                    return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={foundDescriptor} />);
-                }
-                return defaultValue;
+            const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, cell, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            if (descriptorList && descriptorList.length > 0) {
+                const foundDescriptor = descriptorList[0];
+                return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={foundDescriptor} />);
             }
             return defaultValue;
         }
         return defaultValue;
-    }
-
-    providerColumnDataFormat(cell) {
-        const defaultValue = <div className="inline">{cell}</div>;
-        const { descriptors } = this.props;
-        if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-            if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
-                if (filteredList && filteredList.length > 0) {
-                    const foundDescriptor = filteredList[0];
-                    return (<DescriptorLabel keyPrefix="distribution-provider-icon" descriptor={foundDescriptor} />);
-                }
-                return defaultValue;
-            }
-            return defaultValue;
-        }
-        return defaultValue;
-    }
-
-    notificationTypeDataFormat(cell) {
-    const notificationTypes = (!Array.isArray(cell)) ? [cell] : cell;
-
-    return (<NotificationTypeLegend
-        hasPolicyViolation={notificationTypes.includes('RULE_VIOLATION')}
-        hasPolicyViolationCleared={notificationTypes.includes('RULE_VIOLATION_CLEARED')}
-        hasPolicyViolationOverride={notificationTypes.includes('POLICY_OVERRIDE')}
-        hasVulnerability={notificationTypes.includes('VULNERABILITY')}
-        hasLicenseLimit={notificationTypes.includes('LICENSE_LIMIT')}
-        hasBomEdit={notificationTypes.includes('BOM_EDIT')}
-    />);
     }
 
     createTableData(jobs) {
@@ -301,23 +262,12 @@ class Index extends Component {
         return tableData;
     }
 
-    canCreateJobs() {
+    checkJobPermissions(operation) {
         const { descriptors } = this.props;
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE));
-            }
-        }
-        return false;
-    }
-
-    canDeleteJobs() {
-        const { descriptors } = this.props;
-        if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE));
+                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, operation));
             }
         }
         return false;
@@ -346,8 +296,8 @@ class Index extends Component {
             }
         };
 
-        const canCreate = this.canCreateJobs();
-        const canDelete = this.canDeleteJobs();
+        const canCreate = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.DELETE);
 
         const content = (
             <div>
@@ -370,9 +320,8 @@ class Index extends Component {
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                    <TableHeaderColumn dataField="notificationTypes" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
+                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.descriptorDataFormat}>Type</TableHeaderColumn>
+                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.descriptorDataFormat}>Provider</TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
@@ -395,8 +344,8 @@ class Index extends Component {
                     createTableData={this.createTableData}
                     onModalSubmit={this.onJobDeleteSubmit}
                     onModalClose={this.onJobDeleteClose}
-                    typeColumnDataFormat={this.typeColumnDataFormat}
-                    providerColumnDataFormat={this.providerColumnDataFormat}
+                    typeColumnDataFormat={this.descriptorDataFormat}
+                    providerColumnDataFormat={this.descriptorDataFormat}
                     frequencyColumnDataFormat={frequencyColumnDataFormat}
                     statusColumnClassNameFormat={statusColumnClassNameFormat}
                     jobs={this.state.jobsToDelete}
