@@ -152,6 +152,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
                     List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId);
                     items.addAll(vulnerabilityComponentItems);
+                } else {
+                    items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));
                 }
             }
         } catch (Exception e) {
@@ -211,6 +213,21 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return accessor.get(field)
                    .stream()
                    .findFirst();
+    }
+
+    private ComponentItem createPolicyComponentItem(Long notificationId, VersionBomPolicyRuleView rule, LinkableItem componentItem, LinkableItem componentVersionItem, LinkableItem policyNameItem, List<LinkableItem> licenseItems)
+        throws AlertException {
+        ComponentItem.Builder builder = new ComponentItem.Builder();
+
+        builder.applyComponentData(componentItem)
+            .applyComponentAttribute(policyNameItem)
+            .applyAllComponentAttributes(licenseItems)
+            .applySubComponent(componentVersionItem)
+            .applyPriority(getPolicyPriority(rule.getSeverity()))
+            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
+            .applyOperation(ItemOperation.UPDATE)
+            .applyNotificationId(notificationId);
+        return builder.build();
     }
 
 }
