@@ -5,8 +5,6 @@ import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import * as IconUtility from 'util/iconUtility';
 
 class Navigation extends Component {
     constructor(props) {
@@ -27,7 +25,7 @@ class Navigation extends Component {
         const contentList = descriptorList.map(component =>
             (<li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesomeIcon icon={IconUtility.createIconPath(component.fontAwesomeIcon)} size="lg" fixedWidth /> {component.label}
+                    {component.label}
                 </NavLink>
             </li>)
         );
@@ -62,7 +60,7 @@ class Navigation extends Component {
                         </li>
                         <li>
                             <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                                <FontAwesomeIcon icon="truck" className="alert-icon" size="lg" fixedWidth /> Distribution
+                                Distribution
                             </NavLink>
                         </li>
                         <li className="divider" />
@@ -77,7 +75,7 @@ class Navigation extends Component {
                                     this.props.confirmLogout();
                                 }}
                             >
-                                <FontAwesomeIcon icon="sign-out-alt" className="alert-icon" size="lg" fixedWidth /> Logout
+                                Logout
                             </a>
                         </li>
                     </ul>

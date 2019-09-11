@@ -345,7 +345,7 @@ class AuditPage extends Component {
 
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="history" configurationName="Audit" />
+                <ConfigurationLabel configurationName="Audit" />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} />
                 </div>

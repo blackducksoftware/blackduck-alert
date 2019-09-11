@@ -257,16 +257,16 @@ class Index extends Component {
     }
 
     notificationTypeDataFormat(cell) {
-    const notificationTypes = (!Array.isArray(cell)) ? [cell] : cell;
+        const notificationTypes = (!Array.isArray(cell)) ? [cell] : cell;
 
-    return (<NotificationTypeLegend
-        hasPolicyViolation={notificationTypes.includes('RULE_VIOLATION')}
-        hasPolicyViolationCleared={notificationTypes.includes('RULE_VIOLATION_CLEARED')}
-        hasPolicyViolationOverride={notificationTypes.includes('POLICY_OVERRIDE')}
-        hasVulnerability={notificationTypes.includes('VULNERABILITY')}
-        hasLicenseLimit={notificationTypes.includes('LICENSE_LIMIT')}
-        hasBomEdit={notificationTypes.includes('BOM_EDIT')}
-    />);
+        return (<NotificationTypeLegend
+            hasPolicyViolation={notificationTypes.includes('RULE_VIOLATION')}
+            hasPolicyViolationCleared={notificationTypes.includes('RULE_VIOLATION_CLEARED')}
+            hasPolicyViolationOverride={notificationTypes.includes('POLICY_OVERRIDE')}
+            hasVulnerability={notificationTypes.includes('VULNERABILITY')}
+            hasLicenseLimit={notificationTypes.includes('LICENSE_LIMIT')}
+            hasBomEdit={notificationTypes.includes('BOM_EDIT')}
+        />);
     }
 
     createTableData(jobs) {
@@ -403,7 +403,7 @@ class Index extends Component {
                     show={this.state.showDeleteModal}
                 />}
 
-                <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
+                <ConfigurationLabel configurationName="Distribution" />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} />
                 </div>
