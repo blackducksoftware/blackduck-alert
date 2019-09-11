@@ -71,8 +71,6 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JiraIssueHandler {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
-    public static final String TODO_STATUS_CATEGORY_KEY = "new";
-    public static final String DONE_STATUS_CATEGORY_KEY = "done";
 
     private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
 
