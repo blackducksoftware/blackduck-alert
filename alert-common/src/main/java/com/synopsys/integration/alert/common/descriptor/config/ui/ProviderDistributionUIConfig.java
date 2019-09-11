@@ -66,8 +66,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created.";
     private final ProviderContent providerContent;
 
-    public ProviderDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final ProviderContent providerContent) {
-        super(label, label + " provider distribution setup.", urlName, fontAwesomeIcon);
+    public ProviderDistributionUIConfig(final String label, final String urlName, final ProviderContent providerContent) {
+        super(label, label + " provider distribution setup.", urlName);
         this.providerContent = providerContent;
     }
 
@@ -104,8 +104,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private LabelValueSelectOption convertToLabelValueOption(ProviderContentType providerContentType) {
         final String notificationType = providerContentType.getNotificationType();
         final String notificationTypeLabel = WordUtils.capitalizeFully(notificationType.replace("_", " "));
-        final String fontAwesomeIcon = providerContentType.getFontAwesomeIcon();
-        return new LabelValueSelectOption(notificationTypeLabel, notificationType, fontAwesomeIcon);
+        return new LabelValueSelectOption(notificationTypeLabel, notificationType);
     }
 
     private LabelValueSelectOption convertToLabelValueOption(String formatName) {

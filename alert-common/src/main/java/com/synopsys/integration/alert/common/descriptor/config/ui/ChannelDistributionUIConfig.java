@@ -55,8 +55,8 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     private final ChannelKey channelKey;
 
-    public ChannelDistributionUIConfig(final ChannelKey channelKey, final String label, final String urlName, final String fontAwesomeIcon) {
-        super(label, "Channel distribution setup.", urlName, fontAwesomeIcon);
+    public ChannelDistributionUIConfig(final ChannelKey channelKey, final String label, final String urlName) {
+        super(label, "Channel distribution setup.", urlName);
         this.channelKey = channelKey;
     }
 

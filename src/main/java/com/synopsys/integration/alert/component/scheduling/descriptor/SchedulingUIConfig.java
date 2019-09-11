@@ -51,7 +51,7 @@ public class SchedulingUIConfig extends UIConfig {
     private static final String PURGE_DATA_NEXT_RUN_DESCRIPTION = "This is the next time Alert will purge provider data.";
 
     public SchedulingUIConfig() {
-        super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_DESCRIPTION, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
+        super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_DESCRIPTION, SchedulingDescriptor.SCHEDULING_URL);
     }
 
     @Override

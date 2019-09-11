@@ -35,7 +35,6 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public static final String MSTEAMS_LABEL = "MS Teams";
     public static final String MSTEAMS_URL = "msteams";
     public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
-    public static final String MSTEAMS_ICON = "fab/microsoft";
 
     @Autowired
     public MsTeamsDescriptor(MsTeamsKey msTeamsKey, MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {

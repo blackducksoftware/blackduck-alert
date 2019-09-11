@@ -40,7 +40,7 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public MsTeamsUIConfig(MsTeamsKey msTeamsKey) {
-        super(msTeamsKey, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
+        super(msTeamsKey, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL);
     }
 
     @Override

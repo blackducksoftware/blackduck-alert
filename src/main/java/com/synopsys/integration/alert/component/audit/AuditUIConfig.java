@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CustomUIConfig
 public class AuditUIConfig extends CustomUIConfig {
 
     public AuditUIConfig() {
-        super(AuditDescriptor.AUDIT_LABEL, AuditDescriptor.AUDIT_DESCRIPTION, AuditDescriptor.AUDIT_URL, AuditDescriptor.AUDIT_ICON, AuditDescriptor.AUDIT_COMPONENT_NAMESPACE);
+        super(AuditDescriptor.AUDIT_LABEL, AuditDescriptor.AUDIT_DESCRIPTION, AuditDescriptor.AUDIT_URL, AuditDescriptor.AUDIT_COMPONENT_NAMESPACE);
     }
 
 }
