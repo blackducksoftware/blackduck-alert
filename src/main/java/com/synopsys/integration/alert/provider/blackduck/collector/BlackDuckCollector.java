@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     private final BlackDuckService blackDuckService;
     private final BlackDuckBucket blackDuckBucket;
     private final BlackDuckDataHelper blackDuckDataHelper;
+    private final Map<String, ComponentItemPriority> policyPriorityMap = new HashMap<>();
 
     public BlackDuckCollector(JsonExtractor jsonExtractor, Collection<ProviderContentType> contentTypes, BlackDuckProperties blackDuckProperties) {
         super(jsonExtractor, contentTypes);
@@ -86,6 +88,14 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                             .orElseThrow(() -> new AlertRuntimeException("The BlackDuckCollector cannot be used without a valid Black Duck connection"));
         blackDuckBucket = new BlackDuckBucket();
         blackDuckDataHelper = new BlackDuckDataHelper(blackDuckProperties, blackDuckService, blackDuckBucket, bucketService);
+
+        policyPriorityMap.put("blocker", ComponentItemPriority.HIGHEST);
+        policyPriorityMap.put("critical", ComponentItemPriority.HIGH);
+        policyPriorityMap.put("major", ComponentItemPriority.MEDIUM);
+        policyPriorityMap.put("minor", ComponentItemPriority.LOW);
+        policyPriorityMap.put("trivial", ComponentItemPriority.LOWEST);
+        policyPriorityMap.put("unspecified", ComponentItemPriority.NONE);
+
     }
 
     public BlackDuckService getBlackDuckService() {
@@ -234,6 +244,13 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
         }
         return vulnerabilityViewMap;
+    }
+
+    protected ComponentItemPriority getPolicyPriority(String severity) {
+        if (StringUtils.isBlank(severity) || !policyPriorityMap.containsKey(severity.trim().toLowerCase())) {
+            return ComponentItemPriority.NONE;
+        }
+        return policyPriorityMap.get(severity.trim().toLowerCase());
     }
 
 }

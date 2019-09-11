@@ -117,12 +117,4 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
 
         return items;
     }
-
-    protected ComponentItemPriority mapSeverityToPriority(String severity) {
-        if (StringUtils.isBlank(severity) || !priorityMap.containsKey(severity.trim().toLowerCase())) {
-            return ComponentItemPriority.NONE;
-        }
-        return priorityMap.get(severity.trim().toLowerCase());
-    }
-
 }

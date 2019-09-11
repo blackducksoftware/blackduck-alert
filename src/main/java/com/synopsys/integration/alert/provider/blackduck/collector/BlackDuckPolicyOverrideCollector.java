@@ -80,7 +80,7 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
         Optional<LinkableItem> nameItem = createNameItem(jsonFieldAccessor, categoryFields);
 
         for (PolicyInfo policyItem : policyItems) {
-            ComponentItemPriority priority = mapSeverityToPriority(policyItem.getSeverity());
+            ComponentItemPriority priority = getPolicyPriority(policyItem.getSeverity());
             Set<LinkableItem> attributeSet = new LinkedHashSet<>();
             attributeSet.addAll(createPolicyLinkableItems(policyItem, bomComponentVersionUrl.orElse("")));
             nameItem.ifPresent(attributeSet::add);
