@@ -237,11 +237,9 @@ class Index extends Component {
                 if (job && job.fieldModels) {
                     const channelModel = job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
-                    const providerModel = job.fieldModels.find(model => providerName === model.descriptorName);
                     const id = job.jobId;
                     const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
                     const distributionType = channelModel.descriptorName;
-                    const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, 'provider.distribution.notification.types');
                     const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
                     const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
                     const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
@@ -250,7 +248,6 @@ class Index extends Component {
                         name,
                         distributionType,
                         providerName,
-                        notificationTypes,
                         frequency,
                         lastRan,
                         status
@@ -282,7 +279,8 @@ class Index extends Component {
             insertModal: this.createCustomModal,
             handleConfirmDeleteRow: this.customJobConfigDeletionConfirm,
             defaultSortName: 'name',
-            defaultSortOrder: 'asc'
+            defaultSortOrder: 'asc',
+            onRowDoubleClick: this.editButtonClicked
         };
 
         const jobsSelectRowProp = {
@@ -325,8 +323,8 @@ class Index extends Component {
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} />
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} />
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ "text-align": "center" }}>Edit</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ "text-align": "center" }}>Copy</TableHeaderColumn>
                 </BootstrapTable>
 
                 {this.props.inProgress &&
@@ -352,7 +350,7 @@ class Index extends Component {
                     show={this.state.showDeleteModal}
                 />}
 
-                <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" />
+                <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" description="Create jobs from the channels Alert provides. Double click the row to edit that job." />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} />
                 </div>
