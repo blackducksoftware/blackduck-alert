@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +105,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
 
             for (PolicyInfo policyInfo : policies) {
-                ComponentItemPriority priority = mapSeverityToPriority(policyInfo.getSeverity());
+                ComponentItemPriority priority = getPolicyPriority(policyInfo.getSeverity());
 
                 String bomComponentUrl = null;
                 ComponentVersionStatus componentVersionStatus = policyComponentData.getComponentVersionStatus();
