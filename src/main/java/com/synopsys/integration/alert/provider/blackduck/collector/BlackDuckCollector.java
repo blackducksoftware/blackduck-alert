@@ -247,10 +247,10 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     }
 
     protected ComponentItemPriority getPolicyPriority(String severity) {
-        if (StringUtils.isBlank(severity) || !policyPriorityMap.containsKey(severity.trim().toLowerCase())) {
-            return ComponentItemPriority.NONE;
+        if (StringUtils.isNotBlank(severity)) {
+            String severityKey = severity.trim().toLowerCase();
+            return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);
         }
-        return policyPriorityMap.get(severity.trim().toLowerCase());
+        return ComponentItemPriority.NONE;
     }
-
 }
