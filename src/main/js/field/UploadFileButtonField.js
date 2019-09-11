@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
-import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import { createFileUploadRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 
@@ -41,7 +41,7 @@ class UploadFileButtonField extends Component {
             fieldKey, csrfToken, onChange, currentConfig, endpoint
         } = this.props;
 
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, fileData);
+        const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, fileData);
         request.then((response) => {
             this.setState({
                 progress: false
@@ -65,7 +65,7 @@ class UploadFileButtonField extends Component {
             buttonLabel, value, accept, capture, multiple, fieldKey, name, readOnly, statusMessage
         } = this.props;
 
-        const acceptedContentTypes = accept ? accept.join(','): null;
+        const acceptedContentTypes = accept ? accept.join(',') : null;
 
         const endpointField = (
             <div className="d-inline-flex p-2 col-sm-8">

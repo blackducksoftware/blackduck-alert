@@ -104,3 +104,15 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel, destination) {
         }
     });
 }
+
+export function createFileUploadRequest(apiUrl, csrfToken, file) {
+    return fetch(apiUrl, {
+        credentials: 'same-origin',
+        method: 'POST',
+        body: file,
+        headers: {
+            'content-type': 'multipart/form-data',
+            'X-CSRF-TOKEN': csrfToken
+        }
+    });
+}
