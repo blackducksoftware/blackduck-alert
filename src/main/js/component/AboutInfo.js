@@ -68,7 +68,7 @@ class AboutInfo extends React.Component {
         const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All Distributions</NavLink></div>);
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="info" configurationName="About" />
+                <ConfigurationLabel configurationName="About" />
                 <div className="form-horizontal">
                     <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
