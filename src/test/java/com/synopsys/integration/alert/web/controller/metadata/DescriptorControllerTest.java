@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
@@ -186,8 +187,13 @@ public class DescriptorControllerTest {
     private class TestDescriptor extends Descriptor {
         private final List<ConfigContextEnum> contexts;
 
-        public TestDescriptor(final String name, final DescriptorType type, final ConfigContextEnum... contexts) {
-            super(name, type);
+        public TestDescriptor(String descriptorName, DescriptorType type, ConfigContextEnum... contexts) {
+            super(new DescriptorKey() {
+                @Override
+                public String getUniversalKey() {
+                    return descriptorName;
+                }
+            }, type);
             if (contexts != null) {
                 this.contexts = Arrays.asList(contexts);
             } else {
@@ -215,8 +221,6 @@ public class DescriptorControllerTest {
             if (!contexts.contains(context)) {
                 return Optional.empty();
             }
-            final String descriptorName = getName();
-            final DescriptorType descriptorType = getType();
 
             return Optional.of(new UIConfig("Label", "description", "urlName", "fontAwesomeIcon") {
 
@@ -226,5 +230,7 @@ public class DescriptorControllerTest {
                 }
             });
         }
+
     }
+
 }

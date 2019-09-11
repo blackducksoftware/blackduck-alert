@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;
@@ -43,8 +43,9 @@ public class BlackDuckLicenseLimitCollectorTest {
         content.setSoftLimit(80L);
 
         final String notification = String.format("{\"content\":%s}", gson.toJson(content));
-        final NotificationContent notificationContent = new NotificationContent(new Date(), BlackDuckProvider.COMPONENT_NAME, new Date(), NotificationType.LICENSE_LIMIT.name(), notification);
+        final NotificationContent notificationContent = new NotificationContent(new Date(), new BlackDuckProviderKey().getUniversalKey(), new Date(), NotificationType.LICENSE_LIMIT.name(), notification);
         notificationContent.setId(1L);
         return notificationContent;
     }
+
 }

@@ -95,9 +95,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
-            LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
             Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
-
+            // for 5.0.0 make the BOM edit either include the component link or the component version link not both to be consistent with the other channels.
+            LinkableItem componentItem = componentVersionItem
+                                             .map(ignored -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName()))
+                                             .orElse(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent()));
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(licenseItems);
@@ -150,6 +152,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
                     List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId);
                     items.addAll(vulnerabilityComponentItems);
+                } else {
+                    items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));
                 }
             }
         } catch (Exception e) {
@@ -209,6 +213,21 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return accessor.get(field)
                    .stream()
                    .findFirst();
+    }
+
+    private ComponentItem createPolicyComponentItem(Long notificationId, VersionBomPolicyRuleView rule, LinkableItem componentItem, LinkableItem componentVersionItem, LinkableItem policyNameItem, List<LinkableItem> licenseItems)
+        throws AlertException {
+        ComponentItem.Builder builder = new ComponentItem.Builder();
+
+        builder.applyComponentData(componentItem)
+            .applyComponentAttribute(policyNameItem)
+            .applyAllComponentAttributes(licenseItems)
+            .applySubComponent(componentVersionItem)
+            .applyPriority(getPolicyPriority(rule.getSeverity()))
+            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
+            .applyOperation(ItemOperation.UPDATE)
+            .applyNotificationId(notificationId);
+        return builder.build();
     }
 
 }

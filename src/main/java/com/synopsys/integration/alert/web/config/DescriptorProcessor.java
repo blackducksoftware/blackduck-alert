@@ -1,8 +1,8 @@
 /**
  * blackduck-alert
- * <p>
+ *
  * Copyright (c) 2019 Synopsys, Inc.
- * <p>
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -10,9 +10,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,6 +21,14 @@
  * under the License.
  */
 package com.synopsys.integration.alert.web.config;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.EnumUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
@@ -38,20 +46,13 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class DescriptorProcessor {
     private final DescriptorMap descriptorMap;
     private final ConfigurationAccessor configurationAccessor;
 
-    //TODO ekerwin - I think a Map is better here, it is only ever used: configurationAction.getDescriptorName().equals(descriptorName)
+    // TODO ekerwin - I think a Map is better here, it is only ever used: configurationAction.getDescriptorName().equals(descriptorName)
     private final List<ConfigurationAction> allConfigurationActions;
 
     @Autowired
@@ -65,7 +66,7 @@ public class DescriptorProcessor {
 
             ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
             };
-            ConfigurationAction configurationAction = new ConfigurationAction(channelKey.getUniversalKey()) {
+            ConfigurationAction configurationAction = new ConfigurationAction(channelKey) {
             };
             configurationAction.addDistributionTestAction(channelDistributionTestAction);
             allConfigurationActions.add(configurationAction);
@@ -103,8 +104,8 @@ public class DescriptorProcessor {
 
     public Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
         return allConfigurationActions.stream()
-                .filter(configurationAction -> configurationAction.getDescriptorName().equals(descriptorName))
-                .findFirst();
+                   .filter(configurationAction -> configurationAction.getDescriptorKey().getUniversalKey().equals(descriptorName))
+                   .findFirst();
     }
 
     public List<ConfigField> retrieveUIConfigFields(final String context, final String descriptorName) {

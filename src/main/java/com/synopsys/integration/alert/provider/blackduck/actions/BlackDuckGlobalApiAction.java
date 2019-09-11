@@ -35,19 +35,21 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
+    private final BlackDuckProviderKey blackDuckProviderKey;
     private final BlackDuckValidator blackDuckValidator;
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckGlobalApiAction(final BlackDuckValidator blackDuckValidator, final TaskManager taskManager, final ProviderDataAccessor providerDataAccessor) {
+    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckValidator blackDuckValidator, TaskManager taskManager, ProviderDataAccessor providerDataAccessor) {
+        this.blackDuckProviderKey = blackDuckProviderKey;
         this.blackDuckValidator = blackDuckValidator;
         this.taskManager = taskManager;
         this.providerDataAccessor = providerDataAccessor;
@@ -70,8 +72,8 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
         taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
 
-        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME);
-        providerDataAccessor.deleteProjects(BlackDuckProvider.COMPONENT_NAME, blackDuckProjects);
+        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(blackDuckProviderKey.getUniversalKey());
+        providerDataAccessor.deleteProjects(blackDuckProviderKey.getUniversalKey(), blackDuckProjects);
     }
 
     public void handleNewOrUpdatedConfig() {

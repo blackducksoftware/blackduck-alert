@@ -48,7 +48,7 @@ public class ChannelDistributionCustomEndpoint {
     private Gson gson;
 
     @Autowired
-    public ChannelDistributionCustomEndpoint(final CustomEndpointManager customEndpointManager, final DescriptorMap descriptorMap, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+    public ChannelDistributionCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap, ResponseFactory responseFactory, Gson gson) throws AlertException {
         this.descriptorMap = descriptorMap;
         this.responseFactory = responseFactory;
         this.gson = gson;
@@ -69,15 +69,16 @@ public class ChannelDistributionCustomEndpoint {
     }
 
     private ResponseEntity<String> retrieveChannels(Map<String, FieldValueModel> fieldValues) {
-        final List<LabelValueSelectOption> channelOptions = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                                                                .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                                                                .flatMap(Optional::stream)
-                                                                .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                                                                .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelName(),
-                                                                    channelDistributionUIConfig.getFontAwesomeIcon()))
-                                                                .sorted()
-                                                                .collect(Collectors.toList());
+        List<LabelValueSelectOption> channelOptions = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
+                                                          .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
+                                                          .flatMap(Optional::stream)
+                                                          .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
+                                                          .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey(),
+                                                              channelDistributionUIConfig.getFontAwesomeIcon()))
+                                                          .sorted()
+                                                          .collect(Collectors.toList());
         String channelOptionsConverted = gson.toJson(channelOptions);
         return responseFactory.createOkContentResponse(channelOptionsConverted);
     }
+
 }

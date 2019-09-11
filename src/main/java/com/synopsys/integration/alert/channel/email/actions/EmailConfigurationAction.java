@@ -25,14 +25,14 @@ package com.synopsys.integration.alert.channel.email.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class EmailConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction) {
-        super(EmailChannel.COMPONENT_NAME);
+    protected EmailConfigurationAction(EmailChannelKey emailChannelKey, EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction) {
+        super(emailChannelKey);
         addGlobalTestAction(emailGlobalTestAction);
         addDistributionTestAction(emailDistributionTestAction);
     }

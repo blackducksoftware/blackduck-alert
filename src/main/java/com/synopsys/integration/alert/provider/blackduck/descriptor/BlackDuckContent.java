@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
@@ -41,7 +42,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -52,6 +53,7 @@ public class BlackDuckContent extends ProviderContent {
     // common fields
     public static final String JSON_FIELD_CONTENT = "content";
     public static final String JSON_FIELD_PROJECT_NAME = "projectName";
+    public static final String JSON_FIELD_PROJECT = "project";
     public static final String JSON_FIELD_PROJECT_VERSION_NAME = "projectVersionName";
     public static final String JSON_FIELD_PROJECT_VERSION = "projectVersion";
     public static final String JSON_FIELD_COMPONENT_NAME = "componentName";
@@ -75,6 +77,9 @@ public class BlackDuckContent extends ProviderContent {
     public static final String JSON_FIELD_POLICY_SEVERITY = "severity";
     public static final String JSON_FIELD_FIRST_NAME = "firstName";
     public static final String JSON_FIELD_LAST_NAME = "lastName";
+
+    // project fields
+    public static final String JSON_FIELD_OPERATION_TYPE = "operationType";
 
     // vulnerability fields
     public static final String JSON_FIELD_AFFECTED_PROJECT_VERSIONS = "affectedProjectVersions[*]";
@@ -108,6 +113,7 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
 
     public static final String LABEL_BOM_COMPONENT = "Bom Component";
+    public static final String LABEL_OPERATION_TYPE = "Operation Type";
 
     public static final String LABEL_REMEDIATION_FIX_PREVIOUS = "Remediation - Fixes Previous Vulnerabilities";
     public static final String LABEL_REMEDIATION_CLEAN = "Remediation - Without Vulnerabilities";
@@ -131,7 +137,7 @@ public class BlackDuckContent extends ProviderContent {
             createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_BOM_COMPONENT)
         ),
         BOM_EDIT_ICON
-        );
+    );
 
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
         NotificationType.LICENSE_LIMIT.name(),
@@ -172,6 +178,30 @@ public class BlackDuckContent extends ProviderContent {
 
         ),
         POLICY_OVERRIDE_ICON
+    );
+
+    public static final ProviderContentType PROJECT = new ProviderContentType(
+        NotificationType.PROJECT.name(),
+        List.of(
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
+                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT), JSON_FIELD_PROJECT, FieldContentIdentifier.TOPIC_URL, LABEL_PROJECT_NAME + JsonField.LABEL_URL_SUFFIX),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_OPERATION_TYPE), JSON_FIELD_OPERATION_TYPE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_OPERATION_TYPE)
+        ),
+        RULE_VIOLATION_CLEARED_ICON
+    );
+
+    public static final ProviderContentType PROJECT_VERSION = new ProviderContentType(
+        NotificationType.PROJECT_VERSION.name(),
+        List.of(
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
+                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
+                LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
+            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_OPERATION_TYPE), JSON_FIELD_OPERATION_TYPE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_OPERATION_TYPE)
+        ),
+        RULE_VIOLATION_CLEARED_ICON
     );
 
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
@@ -219,22 +249,25 @@ public class BlackDuckContent extends ProviderContent {
         createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
             new TypeRef<List<PolicyInfo>>() {})
     );
+
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),
         RULE_VIOLATION_FIELD_LIST,
         RULE_VIOLATION_ICON
     );
+
     public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
         NotificationType.RULE_VIOLATION_CLEARED.name(),
         RULE_VIOLATION_FIELD_LIST,
         RULE_VIOLATION_CLEARED_ICON
     );
 
-    private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY, BOM_EDIT);
+    private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY, BOM_EDIT, PROJECT, PROJECT_VERSION);
     private static final EnumSet<FormatType> SUPPORTED_CONTENT_FORMATS = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
 
-    public BlackDuckContent() {
-        super(BlackDuckProvider.COMPONENT_NAME, SUPPORTED_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
+    @Autowired
+    public BlackDuckContent(BlackDuckProviderKey blackDuckProviderKey) {
+        super(blackDuckProviderKey, SUPPORTED_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
     }
 
     @Override

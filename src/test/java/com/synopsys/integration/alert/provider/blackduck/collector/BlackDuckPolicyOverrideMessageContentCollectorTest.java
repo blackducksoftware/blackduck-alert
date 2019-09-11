@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -119,7 +119,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
 
     private NotificationContent createNotification(final String notificationContent, final NotificationType type) {
         final Date creationDate = Date.from(Instant.now());
-        return new NotificationContent(creationDate, BlackDuckProvider.COMPONENT_NAME, creationDate, type.name(), notificationContent);
+        return new NotificationContent(creationDate, new BlackDuckProviderKey().getUniversalKey(), creationDate, type.name(), notificationContent);
     }
 
     private void test(final BlackDuckPolicyCollector collector, final NotificationContent notification) {
@@ -138,5 +138,6 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         assertEquals(1, categories.size());
         assertTrue("Policy category not found", categories.contains("Policy"));
     }
+
 }
 

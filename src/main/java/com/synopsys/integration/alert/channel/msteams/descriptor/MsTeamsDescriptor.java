@@ -39,7 +39,7 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
 
     @Autowired
     public MsTeamsDescriptor(MsTeamsKey msTeamsKey, MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
-        super(msTeamsKey.getUniversalKey(), msTeamsUIConfig, msTeamsGlobalUIConfig);
+        super(msTeamsKey, msTeamsUIConfig, msTeamsGlobalUIConfig);
     }
 
 }

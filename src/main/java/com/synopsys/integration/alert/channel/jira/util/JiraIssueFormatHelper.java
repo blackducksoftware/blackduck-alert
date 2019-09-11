@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,12 +30,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.MessageSplitter;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraIssueFormatHelper {
+    private static final int TITLE_LIMIT = 255;
+    private static final int TEXT_LIMIT = 30000;
+    private static final String LINE_SEPARATOR = "\n";
 
     public String createTitle(final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentKeys componentKeys) {
         final StringBuilder title = new StringBuilder();
@@ -62,42 +71,83 @@ public class JiraIssueFormatHelper {
             prettyPrintedKey = componentKeys.prettyPrint(false);
         }
         title.append(prettyPrintedKey);
-        return title.toString();
+        return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
-    public String createDescription(final LinkableItem commonTopic, final Optional<LinkableItem> subTopic, final Collection<ComponentItem> componentItems, final String providerName) {
+    public IssueContentModel createDescription(LinkableItem commonTopic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, String providerName, ComponentKeys componentKeys) {
+        final String title = createTitle(providerName, commonTopic, subTopic, componentKeys);
         final StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
-        description.append("\n");
+        description.append(LINE_SEPARATOR);
         description.append(commonTopic.getName());
         description.append(": ");
         description.append(commonTopic.getValue());
-        description.append("\n");
+        description.append(LINE_SEPARATOR);
         if (subTopic.isPresent()) {
             final LinkableItem linkableItem = subTopic.get();
+            String valueString = createValueString(linkableItem);
             description.append(linkableItem.getName());
             description.append(": ");
-            String valueString = createValueString(linkableItem);
             description.append(valueString);
-            description.append("\n");
+            description.append(LINE_SEPARATOR);
         }
 
         final Optional<ComponentItem> arbitraryItem = componentItems
                                                           .stream()
                                                           .findAny();
+        List<String> additionalComments = new ArrayList<>();
+        List<String> descriptionAttributes = new ArrayList<>();
         if (arbitraryItem.isPresent()) {
             String componentSection = createComponentString(arbitraryItem.get());
             description.append(componentSection);
 
-            final String componentAttributesSection = createComponentAttributesString(componentItems);
-            description.append(componentAttributesSection);
+            splitComponentAttributesForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
+            description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
         }
-
-        return description.toString();
+        return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
-    public String createComponentAttributesString(Collection<ComponentItem> componentItems) {
+    public void splitComponentAttributesForDescription(int descriptionLength, Collection<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
+        Set<String> descriptionItems = new LinkedHashSet<>();
+        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
+        for (ComponentItem componentItem : componentItems) {
+            final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
+            descriptionItems.addAll(descriptionItemsForComponent);
+        }
+
+        int currentLength = descriptionLength;
+        List<String> tempAdditionalComments = new ArrayList<>();
+        for (String descriptionItem : descriptionItems) {
+            int itemLength = descriptionItem.length();
+            if (currentLength >= TEXT_LIMIT) {
+                tempAdditionalComments.add(descriptionItem);
+            } else if (itemLength + currentLength >= TEXT_LIMIT) {
+                tempAdditionalComments.add(descriptionItem);
+                currentLength = currentLength + descriptionItem.length();
+            } else {
+                descriptionAttributes.add(descriptionItem);
+                // add one for the newline character.
+                currentLength = 1 + currentLength + descriptionItem.length();
+            }
+        }
+        additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, true));
+    }
+
+    public List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
+        String attributesString = createComponentAttributesString(componentItems);
+        Collection<String> text = new ArrayList<>();
+        String description = String.format("The %s operation was performed for this %s in %s.", operation.name(), category, provider);
+        text.add(description);
+        if (StringUtils.isNotBlank(attributesString)) {
+            text.add("\n----------\n");
+            text.add(attributesString);
+        }
+        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
+        return splitter.splitMessages(text, true);
+    }
+
+    private String createComponentAttributesString(Collection<ComponentItem> componentItems) {
         Set<String> descriptionItems = new LinkedHashSet<>();
 
         for (ComponentItem componentItem : componentItems) {
@@ -108,7 +158,7 @@ public class JiraIssueFormatHelper {
         StringBuilder attributes = new StringBuilder();
         for (String descriptionItem : descriptionItems) {
             attributes.append(descriptionItem);
-            attributes.append("\n");
+            attributes.append(LINE_SEPARATOR);
         }
 
         return attributes.toString();
@@ -118,7 +168,7 @@ public class JiraIssueFormatHelper {
         StringBuilder componentSection = new StringBuilder();
         componentSection.append("Category: ");
         componentSection.append(componentItem.getCategory());
-        componentSection.append("\n");
+        componentSection.append(LINE_SEPARATOR);
 
         LinkableItem component = componentItem.getComponent();
         componentSection.append(component.getName());
@@ -126,13 +176,13 @@ public class JiraIssueFormatHelper {
         componentSection.append(component.getValue());
 
         componentItem.getSubComponent().ifPresent(subComponent -> {
-            componentSection.append("\n");
+            componentSection.append(LINE_SEPARATOR);
             componentSection.append(subComponent.getName());
             componentSection.append(": ");
             componentSection.append(createValueString(subComponent));
         });
 
-        componentSection.append("\n");
+        componentSection.append(LINE_SEPARATOR);
         return componentSection.toString();
     }
 

@@ -45,7 +45,6 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 @RestController
@@ -96,7 +95,7 @@ public class ProviderDataController extends BaseController {
         }
 
         try {
-            final AlertPagedModel<ProviderUserModel> pageOfUsers = providerDataAccessor.getPageOfUsers(BlackDuckProvider.COMPONENT_NAME, offset, limit, q);
+            final AlertPagedModel<ProviderUserModel> pageOfUsers = providerDataAccessor.getPageOfUsers(provider, offset, limit, q);
             final LinkedHashSet<LabelValueSelectOption> emailOptions = pageOfUsers.getContent()
                                                                            .stream()
                                                                            .filter(user -> !user.getOptOut())

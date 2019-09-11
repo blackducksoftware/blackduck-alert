@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -30,13 +30,14 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class NotificationFilterTestIT extends AlertIntegrationTest {
-    private static final String TEST_DESCRIPTOR_NAME = SlackChannel.COMPONENT_NAME;
+    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
+    private static final String TEST_DESCRIPTOR_NAME = new SlackChannelKey().getUniversalKey();
     private static final String TEST_DESCRIPTOR_FIELD_KEY = "testFieldKeyForDesc";
     private static final ConfigContextEnum TEST_DESCRIPTOR_FIELD_CONTEXT = ConfigContextEnum.DISTRIBUTION;
 
@@ -97,7 +98,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         Mockito.when(jobConfigReader.getAllJobs()).thenReturn(List.of());
 
         final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
-        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW);
         final Collection<AlertNotificationWrapper> filteredNotifications = notificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, List.of(applicableNotification));
         assertEquals(0, filteredNotifications.size());
     }
@@ -114,22 +115,22 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final ConfigurationFieldModel fieldModel = createFieldModel(TEST_DESCRIPTOR_FIELD_KEY, "value");
         configurationAccessor.createConfiguration(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_CONTEXT, List.of(fieldModel));
 
-        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW);
         final Collection<AlertNotificationWrapper> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, List.of(applicableNotification));
         assertEquals(0, filteredNotifications.size());
     }
 
     @Test
     public void shortCircuitIfNoConfiguredNotificationsTest() {
-        final AlertNotificationWrapper applicableNotification = new NotificationContent(NEW, BlackDuckProvider.COMPONENT_NAME, NEW, NotificationType.BOM_EDIT.name(), "{}");
+        final AlertNotificationWrapper applicableNotification = new NotificationContent(NEW, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW, NotificationType.BOM_EDIT.name(), "{}");
         final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, List.of(applicableNotification));
         assertEquals(0, filteredNotifications.size());
     }
 
     @Test
     public void applyWithOutOfOrderNotificationsTest() {
-        final AlertNotificationWrapper applicableNotification1 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
-        final AlertNotificationWrapper applicableNotification2 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, OLD);
+        final AlertNotificationWrapper applicableNotification1 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW);
+        final AlertNotificationWrapper applicableNotification2 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), OLD);
         final List<AlertNotificationWrapper> notifications = List.of(applicableNotification1, applicableNotification2);
 
         final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
@@ -142,10 +143,10 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
     @Test
     public void applyWithOneValidNotificationTest() {
-        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
-        final AlertNotificationWrapper garbage1 = createVulnerabilityNotification("garbage1", BlackDuckProvider.COMPONENT_NAME, new Date());
-        final AlertNotificationWrapper garbage2 = createVulnerabilityNotification("garbage2", BlackDuckProvider.COMPONENT_NAME, new Date());
-        final AlertNotificationWrapper garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
+        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW);
+        final AlertNotificationWrapper garbage1 = createVulnerabilityNotification("garbage1", BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new Date());
+        final AlertNotificationWrapper garbage2 = createVulnerabilityNotification("garbage2", BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new Date());
+        final AlertNotificationWrapper garbage3 = createVulnerabilityNotification("garbage3", BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new Date());
         final List<AlertNotificationWrapper> notifications = List.of(garbage1, applicableNotification, garbage2, garbage3);
 
         // TODO refactor the test to use the ObjectHierarchicalField
@@ -185,4 +186,5 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
         return notification;
     }
+
 }

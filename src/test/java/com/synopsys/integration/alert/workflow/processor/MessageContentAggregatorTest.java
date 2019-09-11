@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckDataHelper;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -52,6 +52,8 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     private NotificationFilter notificationFilter;
     @Autowired
     private List<MessageContentProcessor> messageContentProcessorList;
+    @Autowired
+    private BlackDuckProviderKey blackDuckProviderKey;
 
     private Long idCount = 0L;
 
@@ -64,10 +66,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testNoJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
-        final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(blackDuckProviderKey.getUniversalKey(), policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
-        final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(blackDuckProviderKey.getUniversalKey(), vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
         final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(jobConfigReader, providers, notificationFilter, messageContentProcessorList);
@@ -80,10 +82,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
-        final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(blackDuckProviderKey.getUniversalKey(), policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
-        final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(blackDuckProviderKey.getUniversalKey(), vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
@@ -134,10 +136,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     public void testJobProcessingFrequencyMismatch() throws Exception {
         final FrequencyType frequencyType = FrequencyType.DAILY;
         final String policyContent = getNotificationContentFromFile(TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH);
-        final AlertNotificationWrapper policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
+        final AlertNotificationWrapper policyNotification = createNotification(blackDuckProviderKey.getUniversalKey(), policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile(TestConstants.VULNERABILITY_NOTIFICATION_JSON_PATH);
-        final AlertNotificationWrapper vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
+        final AlertNotificationWrapper vulnerabilityNotification = createNotification(blackDuckProviderKey.getUniversalKey(), vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<AlertNotificationWrapper> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 

@@ -8,34 +8,46 @@ import DescriptorOption from 'component/common/DescriptorOption';
 import GeneralButton from 'field/input/GeneralButton';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
-import { Modal } from "react-bootstrap";
+import { Modal } from 'react-bootstrap';
 
-const { Option, SingleValue, ValueContainer } = components;
+const { MultiValue, ValueContainer } = components;
 
-const typeOptionLabel = props => (
-    <Option {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-    </Option>
-);
+const typeLabel = (props) => {
+    const { data } = props;
+    const missingItem = (data.missing) ? { textDecoration: "line-through" } : {};
 
-const typeLabel = props => (
-    <SingleValue {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
-    </SingleValue>
-);
+    return (
+        <MultiValue {...props}>
+            <DescriptorOption style={missingItem} icon={data.icon} label={data.label} value={data.value} />
+        </MultiValue>
+    );
+}
 
 const container = ({ children, getValue, ...props }) => {
     const length = getValue().length;
-    return (length <= 5) ?
-        <ValueContainer {...props}>
-            {children}
-        </ValueContainer>
-        :
+    const error = (
+        <span className="missingData">
+            <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+        </span>
+    );
+    const hasError = getValue().find(value => value.missing);
+    if (length <= 5) {
+        return (
+            <ValueContainer {...props}>
+                {children}
+                {hasError && error}
+            </ValueContainer>
+        );
+    }
+
+    return (
         <ValueContainer {...props}>
             {!props.selectProps.menuIsOpen &&
             `${length} Items selected`}
             {React.cloneElement(children[1])}
-        </ValueContainer>;
+            {hasError && error}
+        </ValueContainer>
+    );
 }
 
 class TableSelectInput extends Component {
@@ -49,6 +61,7 @@ class TableSelectInput extends Component {
         this.onRowSelected = this.onRowSelected.bind(this);
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
         this.selectOnClick = this.selectOnClick.bind(this);
+        this.createDataList = this.createDataList.bind(this);
 
         this.state = {
             progress: false,
@@ -60,7 +73,12 @@ class TableSelectInput extends Component {
     }
 
     componentWillMount() {
-        this.updateSelectedValues();
+        const { value } = this.props;
+        if (value && value.length > 0) {
+            this.retrieveTableData().then(() => {
+                this.updateSelectedValues();
+            });
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -69,16 +87,24 @@ class TableSelectInput extends Component {
         const currentSize = value && value.length > 0;
         const emptySelected = this.state.selectedData.length === 0;
         if (prevSize && currentSize && emptySelected) {
-            this.updateSelectedValues();
+            if (this.state.data.length == 0) {
+                this.retrieveTableData().then(() => {
+                    this.updateSelectedValues();
+                });
+            } else {
+                this.updateSelectedValues();
+            }
         }
     }
 
     updateSelectedValues() {
         const { value } = this.props;
-        const { selectedData } = this.state;
+        const { selectedData, data } = this.state;
         selectedData.push(...value);
+        const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
         const convertedValues = selectedData.map(selected => {
-            return Object.assign({ label: selected, value: selected });
+            const columnContainsValue = data.map(dataValue => dataValue[keyColumnHeader]).includes(selected);
+            return Object.assign({ label: selected, value: selected, missing: !columnContainsValue });
         });
         this.setState({
             displayedData: convertedValues
@@ -147,16 +173,17 @@ class TableSelectInput extends Component {
         } = this.props;
 
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
-        await request.then((response) => {
+        return request.then((response) => {
             this.setState({
                 progress: false
             });
             if (response.ok) {
-                response.json().then((data) => {
+                return response.json().then((data) => {
                     this.setState({
                         data,
                         success: true
                     });
+                    return data;
                 });
             } else {
                 response.json().then((data) => {
@@ -166,6 +193,24 @@ class TableSelectInput extends Component {
                 });
             }
         });
+    }
+
+    createDataList() {
+        const { data, selectedData } = this.state;
+        const addMissingColumn = data.map(itemData => Object.assign(itemData, { missing: false }));
+
+        const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
+        selectedData.forEach((itemDataValue) => {
+            const dataFound = addMissingColumn.find(foundData => itemDataValue === foundData[keyColumnHeader]);
+            if (!dataFound) {
+                addMissingColumn.unshift({
+                    [keyColumnHeader]: itemDataValue,
+                    missing: true
+                });
+            }
+        });
+
+        return addMissingColumn;
     }
 
     createTable() {
@@ -183,7 +228,7 @@ class TableSelectInput extends Component {
 
         const assignDataFormat = (cell, row) => {
             const cellContent = (row.missing && cell && cell !== '') ?
-                <span className="missingBlackDuckData">
+                <span className="missingData">
                     <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
                 </span>
                 : cell;
@@ -195,8 +240,10 @@ class TableSelectInput extends Component {
         }
 
         const okClicked = () => {
+            const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
             const convertedValues = this.state.selectedData.map(selected => {
-                return Object.assign({ label: selected, value: selected });
+                const columnContainsValue = this.state.data.map(dataValue => dataValue[keyColumnHeader]).includes(selected);
+                return Object.assign({ label: selected, value: selected, missing: !columnContainsValue });
             });
             this.setState({
                 showTable: false,
@@ -212,8 +259,14 @@ class TableSelectInput extends Component {
         }
 
         const columns = columnsProp.map(column => (
-            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }} dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
+            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
+                               dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
         ));
+
+        // Need to add this column to the array as you can't display columns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
+        columns.push(
+            <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>
+        );
 
         const { paged, searchable } = this.props;
 
@@ -226,7 +279,7 @@ class TableSelectInput extends Component {
             :
             <BootstrapTable
                 version="4"
-                data={this.state.data}
+                data={this.createDataList()}
                 containerClass="table"
                 hover
                 condensed
@@ -257,8 +310,7 @@ class TableSelectInput extends Component {
 
     createSelect() {
         const components = {
-            Option: typeOptionLabel,
-            SingleValue: typeLabel,
+            MultiValue: typeLabel,
             ValueContainer: container,
             DropdownIndicator: null,
             MultiValueRemove: () => <div></div>
@@ -286,7 +338,7 @@ class TableSelectInput extends Component {
 
     render() {
         const tableModal = (
-            <Modal size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
+            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.label}</Modal.Title>
                 </Modal.Header>

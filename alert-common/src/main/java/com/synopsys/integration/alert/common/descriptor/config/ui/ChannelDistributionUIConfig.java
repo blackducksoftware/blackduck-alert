@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.synopsys.integration.alert.common.channel.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
@@ -52,11 +53,11 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
     private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
-    private final String channelName;
+    private final ChannelKey channelKey;
 
-    public ChannelDistributionUIConfig(final String channelName, final String label, final String urlName, final String fontAwesomeIcon) {
+    public ChannelDistributionUIConfig(final ChannelKey channelKey, final String label, final String urlName, final String fontAwesomeIcon) {
         super(label, "Channel distribution setup.", urlName, fontAwesomeIcon);
-        this.channelName = channelName;
+        this.channelKey = channelKey;
     }
 
     @Override
@@ -76,8 +77,8 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     public abstract List<ConfigField> createChannelDistributionFields();
 
-    public String getChannelName() {
-        return channelName;
+    public ChannelKey getChannelKey() {
+        return channelKey;
     }
 
 }

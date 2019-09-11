@@ -27,10 +27,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.channel.ChannelKey;
 
 @Component
-public class EmailChannelKey extends ChannelKey {
+public final class EmailChannelKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "channel_email";
+
     @Override
     public String getUniversalKey() {
-        return EmailChannel.COMPONENT_NAME;
+        return COMPONENT_NAME;
     }
 
 }

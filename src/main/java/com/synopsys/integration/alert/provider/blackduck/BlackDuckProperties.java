@@ -54,8 +54,8 @@ public class BlackDuckProperties extends ProviderProperties {
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
 
-    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
-        super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
+    public BlackDuckProperties(BlackDuckProviderKey blackDuckProviderKey, Gson gson, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor, ProxyManager proxyManager) {
+        super(blackDuckProviderKey, configurationAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;

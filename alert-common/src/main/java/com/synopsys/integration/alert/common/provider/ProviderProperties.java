@@ -38,22 +38,22 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 
 public abstract class ProviderProperties {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final String providerName;
+    private final ProviderKey providerKey;
     protected final ConfigurationAccessor configurationAccessor;
 
-    public ProviderProperties(final String providerName, final ConfigurationAccessor configurationAccessor) {
-        this.providerName = providerName;
+    public ProviderProperties(ProviderKey providerKey, ConfigurationAccessor configurationAccessor) {
+        this.providerKey = providerKey;
         this.configurationAccessor = configurationAccessor;
     }
 
     // This assumes that there will only ever be one global config for a provider. This may not be the case in the future.
     public Optional<ConfigurationModel> retrieveGlobalConfig() {
         try {
-            final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(providerName, ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(providerKey.getUniversalKey(), ConfigContextEnum.GLOBAL);
             if (null != configurations && !configurations.isEmpty()) {
                 return Optional.of(configurations.get(0));
             }
-        } catch (final AlertDatabaseConstraintException e) {
+        } catch (AlertDatabaseConstraintException e) {
             logger.error("Problem connecting to DB.", e);
         }
         return Optional.empty();
@@ -65,10 +65,11 @@ public abstract class ProviderProperties {
                    .orElse(new FieldAccessor(Map.of()));
     }
 
-    protected Optional<String> createOptionalString(final String value) {
+    protected Optional<String> createOptionalString(String value) {
         if (StringUtils.isNotBlank(value)) {
             return Optional.of(value);
         }
         return Optional.empty();
     }
+
 }

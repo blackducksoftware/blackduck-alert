@@ -21,21 +21,20 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class ConfigActionTestIT extends AlertIntegrationTest {
-
     @Autowired
     private ConfigurationAccessor configurationAccessor;
-
     @Autowired
     private FieldModelProcessor fieldModelProcessor;
-
     @Autowired
     private DescriptorProcessor descriptorProcessor;
-
     @Autowired
     private ConfigurationFieldModelConverter configurationFieldModelConverter;
+    @Autowired
+    private SettingsDescriptorKey settingsDescriptorKey;
 
     @Test
     public void deleteSensitiveFieldFromConfig() throws AlertException, AlertFieldException {
@@ -50,7 +49,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         proxyUsername.setFieldValue("username");
         final ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_PROXY_PWD);
         proxyPassword.setFieldValue("somestuff");
-        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
+        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
 
         final FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         final FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
@@ -61,7 +60,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         final Long longConfigId = configurationModel.getConfigurationId();
         final String configId = String.valueOf(longConfigId);
 
-        final FieldModel fieldModel = new FieldModel(configId, SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(),
+        final FieldModel fieldModel = new FieldModel(configId, settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(),
             new HashMap<>(Map.of(SettingsDescriptor.KEY_PROXY_HOST, proxyHostFieldValue, SettingsDescriptor.KEY_PROXY_PORT, proxyPortFieldValue,
                 SettingsDescriptor.KEY_PROXY_USERNAME, proxyUsernameFieldValue, SettingsDescriptor.KEY_PROXY_PWD, proxyPasswordFieldValue)));
         final FieldModel updatedConfig = configActions.updateConfig(longConfigId, fieldModel);

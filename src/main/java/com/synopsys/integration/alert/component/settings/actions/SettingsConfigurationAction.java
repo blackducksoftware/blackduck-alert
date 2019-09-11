@@ -26,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
 @Component
 public class SettingsConfigurationAction extends ConfigurationAction {
-
     @Autowired
-    protected SettingsConfigurationAction(final SettingsGlobalApiAction settingsGlobalApiAction) {
-        super(SettingsDescriptor.SETTINGS_COMPONENT);
+    protected SettingsConfigurationAction(SettingsDescriptorKey settingsDescriptorKey, SettingsGlobalApiAction settingsGlobalApiAction) {
+        super(settingsDescriptorKey);
         addGlobalApiAction(settingsGlobalApiAction);
     }
+
 }

@@ -34,21 +34,25 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 public class ProxyManager {
     private static final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
+
+    private final SettingsDescriptorKey settingsDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
 
-    public ProxyManager(final ConfigurationAccessor configurationAccessor) {
+    public ProxyManager(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor) {
+        this.settingsDescriptorKey = settingsDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }
 
     private Optional<ConfigurationModel> getSettingsConfiguration() {
         try {
-            return configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)
+            return configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst();
         } catch (final AlertDatabaseConstraintException ex) {
@@ -106,4 +110,5 @@ public class ProxyManager {
     private Optional<String> getProxySetting(final Optional<ConfigurationModel> settingsConfiguration, final String key) {
         return settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(key)).flatMap(ConfigurationFieldModel::getFieldValue);
     }
+
 }

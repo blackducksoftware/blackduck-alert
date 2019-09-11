@@ -21,13 +21,14 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.alert.web.provider.ProviderDataController;
 
 public class ProviderDataControllerTest {
+    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
     @Test
@@ -35,7 +36,7 @@ public class ProviderDataControllerTest {
         final DefaultProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
         final ResponseFactory responseFactory = new ResponseFactory();
         final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
-        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BlackDuckProvider.COMPONENT_NAME);
+        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("[]", responseEntity.getBody());
     }
@@ -43,10 +44,10 @@ public class ProviderDataControllerTest {
     @Test
     public void testGetHubProjectsThrowException() {
         final DefaultProviderDataAccessor providerDataAccessor = Mockito.mock(DefaultProviderDataAccessor.class);
-        Mockito.when(providerDataAccessor.findByProviderName(BlackDuckProvider.COMPONENT_NAME)).thenThrow(new IllegalStateException("ErrorMessage"));
+        Mockito.when(providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey())).thenThrow(new IllegalStateException("ErrorMessage"));
         final ResponseFactory responseFactory = new ResponseFactory();
         final ProviderDataController blackDuckDataHandler = new ProviderDataController(responseFactory, providerDataAccessor, contentConverter);
-        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BlackDuckProvider.COMPONENT_NAME);
+        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertEquals("{\"message\":\"ErrorMessage\"}", responseEntity.getBody());
     }

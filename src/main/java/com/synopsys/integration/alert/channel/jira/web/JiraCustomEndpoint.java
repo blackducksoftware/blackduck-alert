@@ -33,7 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.JiraChannel;
+import com.synopsys.integration.alert.channel.jira.JiraChannelKey;
 import com.synopsys.integration.alert.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
@@ -54,12 +54,14 @@ import com.synopsys.integration.rest.request.Response;
 public class JiraCustomEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
 
+    private final JiraChannelKey jiraChannelKey;
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
-    public JiraCustomEndpoint(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final ConfigurationAccessor configurationAccessor, final Gson gson) throws AlertException {
+    public JiraCustomEndpoint(JiraChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+        this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
@@ -110,7 +112,7 @@ public class JiraCustomEndpoint {
         final boolean accessTokenSet = fieldAccessToken.isSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             try {
-                return configurationAccessor.getConfigurationByDescriptorNameAndContext(JiraChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL)
+                return configurationAccessor.getConfigurationByDescriptorNameAndContext(jiraChannelKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
                            .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
