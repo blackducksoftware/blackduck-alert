@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,20 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.actions;
+package com.synopsys.integration.alert.common.channel;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+/**
+ * This lets the DescriptorProcessor create the appropriate ChannelDistributionTestAction/ConfigurationAction combination when no customization is needed.
+ */
+public interface AutoActionable {
+    ChannelKey getChannelKey();
 
-import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
-
-@Component
-public class SlackConfigurationAction extends ConfigurationAction {
-    @Autowired
-    protected SlackConfigurationAction(SlackChannelKey slackChannelKey, SlackDistributionTestAction slackDistributionTestAction) {
-        super(slackChannelKey);
-        addDistributionTestAction(slackDistributionTestAction);
-    }
+    DistributionChannel getChannel();
 
 }

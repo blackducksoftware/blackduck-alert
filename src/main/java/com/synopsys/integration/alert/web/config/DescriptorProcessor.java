@@ -31,8 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.AutoActionable;
+import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -47,13 +51,26 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class DescriptorProcessor {
     private final DescriptorMap descriptorMap;
     private final ConfigurationAccessor configurationAccessor;
+
+    // TODO ekerwin - I think a Map is better here, it is only ever used: configurationAction.getDescriptorName().equals(descriptorName)
     private final List<ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions) {
+    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions, final List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
         this.allConfigurationActions = allConfigurationActions;
+        for (AutoActionable autoActionable : autoActionables) {
+            DistributionChannel channel = autoActionable.getChannel();
+            ChannelKey channelKey = autoActionable.getChannelKey();
+
+            ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
+            };
+            ConfigurationAction configurationAction = new ConfigurationAction(channelKey) {
+            };
+            configurationAction.addDistributionTestAction(channelDistributionTestAction);
+            allConfigurationActions.add(configurationAction);
+        }
     }
 
     public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {

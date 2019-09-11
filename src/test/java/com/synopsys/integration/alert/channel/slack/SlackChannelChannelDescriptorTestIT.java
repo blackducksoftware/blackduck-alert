@@ -1,18 +1,8 @@
 package com.synopsys.integration.alert.channel.slack;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
-import com.synopsys.integration.alert.channel.slack.actions.SlackDistributionTestAction;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -33,6 +23,11 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
@@ -152,7 +147,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public TestAction getTestAction() {
-        return new SlackDistributionTestAction(slackChannel);
+        return new ChannelDistributionTestAction(slackChannel){};
     }
 
     @Override
