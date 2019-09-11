@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Tag;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.ProxyManager;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
@@ -223,8 +225,11 @@ public class UpdateCheckerTest {
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(systemStatusUtility.getStartupTime()).thenReturn(new Date());
 
+        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
+
         final AboutReader reader = new AboutReader(gson, systemStatusUtility);
-        final UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager);
+        final UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
         final UpdateModel updateModel = updateChecker.getUpdateModel();
 
@@ -232,7 +237,7 @@ public class UpdateCheckerTest {
     }
 
     private UpdateChecker getEmptyUpdateChecker() {
-        return new UpdateChecker(null, null, null);
+        return new UpdateChecker(null, null, null, null);
     }
 
 }

@@ -44,12 +44,12 @@ public class DockerTagRetriever {
     private final Gson gson;
     private final IntHttpClient intHttpClient;
 
-    public DockerTagRetriever(final Gson gson, final IntHttpClient intHttpClient) {
+    public DockerTagRetriever(Gson gson, IntHttpClient intHttpClient) {
         this.gson = gson;
         this.intHttpClient = intHttpClient;
     }
 
-    public DockerTagsResponseModel getNextPage(final DockerTagsResponseModel currentModel) {
+    public DockerTagsResponseModel getNextPage(DockerTagsResponseModel currentModel) {
         if (null != currentModel && currentModel.hasNextPage()) {
             return getTagResponseModel(currentModel.getNextPageUrl());
         }
@@ -65,13 +65,13 @@ public class DockerTagRetriever {
         return String.format("%s/r/%s/%s", ALERT_DOCKER_REGISTRY_URL, ALERT_ORGANIZATION_NAME, ALERT_REPOSITORY_NAME);
     }
 
-    private DockerTagsResponseModel getTagResponseModel(final String pageUrl) {
-        final Request dockerTagsRequest = new Request.Builder(pageUrl).build();
+    private DockerTagsResponseModel getTagResponseModel(String pageUrl) {
+        Request dockerTagsRequest = new Request.Builder(pageUrl).build();
 
-        try (final Response tagsResponse = intHttpClient.execute(dockerTagsRequest)) {
+        try (Response tagsResponse = intHttpClient.execute(dockerTagsRequest)) {
             tagsResponse.throwExceptionForError();
             return gson.fromJson(tagsResponse.getContentString(), DockerTagsResponseModel.class);
-        } catch (final IOException | IntegrationException e) {
+        } catch (IOException | IntegrationException e) {
             logger.warn("Could not get docker tags from {}: {}", pageUrl, e.getMessage());
         }
         return DockerTagsResponseModel.EMPTY;
