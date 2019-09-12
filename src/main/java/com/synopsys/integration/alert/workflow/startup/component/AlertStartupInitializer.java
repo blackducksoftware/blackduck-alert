@@ -59,6 +59,7 @@ import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 @Component
 @Order(1)
 public class AlertStartupInitializer extends StartupComponent {
+    private static final String LINE_DIVIDER = "---------------------------------";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final Environment environment;
     private final DescriptorMap descriptorMap;
@@ -90,7 +91,7 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private void initializeConfigs() throws IllegalArgumentException, SecurityException {
-        logger.info("** --------------------------------- **");
+        logger.info(String.format("** %s **"), LINE_DIVIDER);
         logger.info("Initializing descriptors with environment variables...");
         final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
@@ -134,9 +135,9 @@ public class AlertStartupInitializer extends StartupComponent {
     // TODO consider using a Collection of DescriptorKeys instead
     private void initializeConfiguration(final Collection<String> descriptorNames, final boolean overwriteCurrentConfig) {
         for (final String descriptorName : descriptorNames) {
-            logger.info("---------------------------------");
+            logger.info("");
             logger.info("Descriptor: {}", descriptorName);
-            logger.info("---------------------------------");
+            logger.info(LINE_DIVIDER);
             logger.info("  Starting Descriptor Initialization...");
             try {
                 final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
@@ -161,7 +162,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 logger.error("error initializing descriptor", ex);
             } finally {
                 logger.info("  Finished Descriptor Initialization...");
-                logger.info("---------------------------------");
+                logger.info(LINE_DIVIDER);
             }
         }
     }

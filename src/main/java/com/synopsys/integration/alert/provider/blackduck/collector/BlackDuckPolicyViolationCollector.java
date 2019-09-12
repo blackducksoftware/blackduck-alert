@@ -82,7 +82,6 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         if (operation == null) {
             return List.of();
         }
-        List<ComponentItem> items = new LinkedList<>();
 
         List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
         List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<ComponentVersionStatus>() {});
@@ -99,48 +98,54 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
         Optional<String> projectVersionComponentLink = getBlackDuckDataHelper().getProjectLink(projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
 
+        List<ComponentItem> items = new LinkedList<>();
         SetMap<BlackDuckPolicyLinkableItem, PolicyInfo> componentToPolicyMapping = createPolicyComponentToLinkableItemMapping(componentVersionStatuses, policyItems, projectVersionComponentLink);
         for (Map.Entry<BlackDuckPolicyLinkableItem, Set<PolicyInfo>> componentToPolicyEntry : componentToPolicyMapping.entrySet()) {
             BlackDuckPolicyLinkableItem policyComponentData = componentToPolicyEntry.getKey();
             Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
+            final List<ComponentItem> componentItems = retrievePolicyItems(policyComponentData, policies, notificationContent.getId(), operation);
+            items.addAll(componentItems);
+        }
+        return items;
+    }
 
-            for (PolicyInfo policyInfo : policies) {
-                ComponentItemPriority priority = getPolicyPriority(policyInfo.getSeverity());
+    private List<ComponentItem> retrievePolicyItems(BlackDuckPolicyLinkableItem policyComponentData, Set<PolicyInfo> policies, Long notificationId, ItemOperation operation) {
+        List<ComponentItem> items = new LinkedList<>();
+        for (PolicyInfo policyInfo : policies) {
+            ComponentItemPriority priority = getPolicyPriority(policyInfo.getSeverity());
 
-                String bomComponentUrl = null;
-                ComponentVersionStatus componentVersionStatus = policyComponentData.getComponentVersionStatus();
-                if (null != componentVersionStatus) {
-                    bomComponentUrl = componentVersionStatus.getBomComponent();
-                }
+            String bomComponentUrl = null;
+            ComponentVersionStatus componentVersionStatus = policyComponentData.getComponentVersionStatus();
+            if (null != componentVersionStatus) {
+                bomComponentUrl = componentVersionStatus.getBomComponent();
+            }
 
-                Optional<VersionBomComponentView> optionalBomComponent = getBlackDuckDataHelper().getBomComponentView(bomComponentUrl);
+            Optional<VersionBomComponentView> optionalBomComponent = getBlackDuckDataHelper().getBomComponentView(bomComponentUrl);
 
-                List<LinkableItem> policyLinkableItems = new ArrayList<>();
-                LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
-                policyLinkableItems.add(policyNameItem);
-                Optional<LinkableItem> optionalPolicySeverityItem = createPolicySeverityItem(policyInfo);
-                optionalPolicySeverityItem.ifPresent(policyLinkableItems::add);
-                optionalBomComponent.ifPresent(bomComponent -> policyLinkableItems.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
+            List<LinkableItem> policyLinkableItems = new ArrayList<>();
+            LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
+            policyLinkableItems.add(policyNameItem);
+            Optional<LinkableItem> optionalPolicySeverityItem = createPolicySeverityItem(policyInfo);
+            optionalPolicySeverityItem.ifPresent(policyLinkableItems::add);
+            optionalBomComponent.ifPresent(bomComponent -> policyLinkableItems.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
 
-                Long notificationId = notificationContent.getId();
-                LinkableItem componentItem = policyComponentData.getComponentItem().orElse(null);
-                Optional<LinkableItem> optionalComponentVersionItem = policyComponentData.getComponentVersion();
+            LinkableItem componentItem = policyComponentData.getComponentItem().orElse(null);
+            Optional<LinkableItem> optionalComponentVersionItem = policyComponentData.getComponentVersion();
 
-                Optional<ComponentItem> item = addApplicableItems(notificationId, componentItem, optionalComponentVersionItem.orElse(null), policyLinkableItems, operation, priority);
-                item.ifPresent(items::add);
+            Optional<ComponentItem> item = addApplicableItems(notificationId, componentItem, optionalComponentVersionItem.orElse(null), policyLinkableItems, operation, priority);
+            item.ifPresent(items::add);
 
-                Optional<PolicyRuleView> optionalPolicyRule = getBlackDuckDataHelper().getPolicyRule(policyInfo);
-                if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
-                    if (optionalBomComponent.isPresent()) {
-                        VersionBomComponentView bomComponent = optionalBomComponent.get();
-                        List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
-                        items.addAll(vulnerabilityPolicyItems);
-                    } else {
-                        // A policy violation cleared will cause this case to happen.  At this point we may want a separate collector for policy violation cleared.
-                        // Need to create a vulnerability component item to be able to delete or collapse the vulnerability data created when a policy violation occurs that has vulnerability data.
-                        Optional<ComponentItem> vulnerabilityComponent = createEmptyVulnerabilityItem(policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
-                        vulnerabilityComponent.ifPresent(items::add);
-                    }
+            Optional<PolicyRuleView> optionalPolicyRule = getBlackDuckDataHelper().getPolicyRule(policyInfo);
+            if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
+                if (optionalBomComponent.isPresent()) {
+                    VersionBomComponentView bomComponent = optionalBomComponent.get();
+                    List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
+                    items.addAll(vulnerabilityPolicyItems);
+                } else {
+                    // A policy violation cleared will cause this case to happen.  At this point we may want a separate collector for policy violation cleared.
+                    // Need to create a vulnerability component item to be able to delete or collapse the vulnerability data created when a policy violation occurs that has vulnerability data.
+                    Optional<ComponentItem> vulnerabilityComponent = createEmptyVulnerabilityItem(policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
+                    vulnerabilityComponent.ifPresent(items::add);
                 }
             }
         }
