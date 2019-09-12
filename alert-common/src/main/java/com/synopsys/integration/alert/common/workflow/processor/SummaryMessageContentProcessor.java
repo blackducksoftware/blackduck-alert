@@ -264,7 +264,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return items
                    .stream()
                    .filter(item -> itemName.equals(item.getName()))
-                   .count();
+                   .collect(Collectors.toSet())
+                   .size();
     }
 
     private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {

@@ -150,7 +150,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 policyNameItem.setCountable(true);
                 if (getBlackDuckDataHelper().hasVulnerabilityRule(rule)) {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
-                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId);
+                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId, ItemOperation.UPDATE);
                     items.addAll(vulnerabilityComponentItems);
                 } else {
                     items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));
