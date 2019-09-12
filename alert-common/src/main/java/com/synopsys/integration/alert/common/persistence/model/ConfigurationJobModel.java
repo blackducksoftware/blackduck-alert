@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class ConfigurationJobModel extends AlertSerializableModel {
     private final UUID jobId;
     private final Set<ConfigurationModel> configurations;
-    private final FieldAccessor fieldAccessor;
+    private final transient FieldAccessor fieldAccessor;
 
     public ConfigurationJobModel(final UUID jobId, final Set<ConfigurationModel> configurations) {
         this.jobId = jobId;

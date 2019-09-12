@@ -53,7 +53,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
     private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
-    private final ChannelKey channelKey;
+    private final transient ChannelKey channelKey;
 
     public ChannelDistributionUIConfig(final ChannelKey channelKey, final String label, final String urlName) {
         super(label, "Channel distribution setup.", urlName);

@@ -31,14 +31,15 @@ import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationExc
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
-public class SAMLContext {
+public class SAMLContext extends AlertSerializableModel {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
 
-    private final SettingsDescriptorKey settingsDescriptorKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final transient SettingsDescriptorKey settingsDescriptorKey;
+    private final transient ConfigurationAccessor configurationAccessor;
 
     public SAMLContext(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor) {
         this.settingsDescriptorKey = settingsDescriptorKey;
