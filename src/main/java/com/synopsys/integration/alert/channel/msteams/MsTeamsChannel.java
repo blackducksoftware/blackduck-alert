@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.msteams;
 
 import java.util.HashMap;
 
+import com.synopsys.integration.alert.common.channel.AutoActionable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
-public class MsTeamsChannel extends NamedDistributionChannel {
+public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
     private RestChannelUtility restChannelUtility;
     private MsTeamsEventParser msTeamsEventParser;
 
