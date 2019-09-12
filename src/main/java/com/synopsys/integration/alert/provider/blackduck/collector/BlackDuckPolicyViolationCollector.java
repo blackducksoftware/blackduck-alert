@@ -139,7 +139,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
                 if (optionalBomComponent.isPresent()) {
                     VersionBomComponentView bomComponent = optionalBomComponent.get();
-                    List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
+                    List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
                     items.addAll(vulnerabilityPolicyItems);
                 } else {
                     // A policy violation cleared will cause this case to happen.  At this point we may want a separate collector for policy violation cleared.

@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public class DistributionEvent extends ContentEvent {
-    private final transient FieldAccessor fieldAccessor;
+    private final FieldAccessor fieldAccessor;
     private final String configId;
     private Map<Long, Long> notificationIdToAuditId;
 
