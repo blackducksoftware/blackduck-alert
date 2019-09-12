@@ -91,7 +91,7 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private void initializeConfigs() throws IllegalArgumentException, SecurityException {
-        logger.info(String.format("** %s **"), LINE_DIVIDER);
+        logger.info(String.format("** %s **", LINE_DIVIDER));
         logger.info("Initializing descriptors with environment variables...");
         final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
