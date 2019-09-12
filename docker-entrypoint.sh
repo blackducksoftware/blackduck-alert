@@ -256,7 +256,7 @@ importBlackDuckWebServerCertificate(){
         if keytool -list -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST"
         then
             keytool -delete -alias "$PUBLIC_HUB_WEBSERVER_HOST" -keystore "$truststoreFile" -storepass changeit
-          echo "Removing the existing certificate after container restart"
+          echo "Removing the existing BlackDuck certificate after container restart"
         fi
 
         if [ -z "$PUBLIC_HUB_WEBSERVER_PORT"];
@@ -265,17 +265,31 @@ importBlackDuckWebServerCertificate(){
           then
             echo "Completed importing BlackDuck Certificate"
           else
-            echo "Unable to add the certificate. Please try to import the certificate manually."
+            echo "Unable to add the BlackDuck certificate. Please try to import the certificate manually."
           fi
         else
           if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
           then
-            echo "Completed importing BlackDuck Certificate"
+            echo "Completed importing BlackDuck certificate"
           else
-            echo "Unable to add the certificate. Please try to import the certificate manually."
+            echo "Unable to add the BlackDuck certificate. Please try to import the certificate manually."
           fi
         fi
     	fi
+    fi
+}
+
+importDockerHubServerCertificate(){
+    if keytool -list -keystore "$truststoreFile" -storepass changeit -alias "hub.docker.com"
+    then
+        echo "The Docker Hub certificate is already imported."
+    else
+        if keytool -printcert -rfc -sslserver "hub.docker.com" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "hub.docker.com" -noprompt
+        then
+            echo "Completed importing Docker Hub certificate."
+        else
+            echo "Unable to add the Docker Hub certificate. Please try to import the certificate manually."
+        fi
     fi
 }
 
@@ -357,6 +371,7 @@ else
   createKeystore
   importBlackDuckSystemCertificateIntoKeystore
   importBlackDuckWebServerCertificate
+  importDockerHubServerCertificate
   createDataBackUp
 
   if [ -f "$truststoreFile" ];
