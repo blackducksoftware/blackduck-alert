@@ -350,7 +350,7 @@ class Index extends Component {
                     show={this.state.showDeleteModal}
                 />}
 
-                <ConfigurationLabel fontAwesomeIcon="truck" configurationName="Distribution" description="Create jobs from the channels Alert provides. Double click the row to edit that job." />
+                <ConfigurationLabel configurationName="Distribution" description="Create jobs from the channels Alert provides. Double click the row to edit that job." />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} />
                 </div>

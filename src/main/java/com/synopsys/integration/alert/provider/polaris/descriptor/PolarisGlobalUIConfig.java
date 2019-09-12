@@ -47,7 +47,7 @@ public class PolarisGlobalUIConfig extends UIConfig {
     private static final String DESCRIPTION_POLARIS_TIMEOUT = "The timeout in seconds for all connections to the Polaris server.";
 
     public PolarisGlobalUIConfig() {
-        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_DESCRIPTION, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON);
+        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_DESCRIPTION, PolarisDescriptor.POLARIS_URL_NAME);
     }
 
     @Override

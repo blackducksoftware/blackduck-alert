@@ -104,7 +104,7 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
 
     public SettingsUIConfig() {
-        super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL, SettingsDescriptor.SETTINGS_ICON);
+        super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL);
     }
 
     @Override

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Tooltip from 'react-bootstrap/Tooltip';
-import Overlay from 'react-bootstrap/Overlay';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as IconUtility from 'util/iconUtility';
 
@@ -31,12 +29,13 @@ class ConfigurationLabel extends Component {
 }
 
 ConfigurationLabel.propTypes = {
-    fontAwesomeIcon: PropTypes.string.isRequired,
+    fontAwesomeIcon: PropTypes.string,
     configurationName: PropTypes.string.isRequired,
     description: PropTypes.string
 };
 
 ConfigurationLabel.defaultProps = {
+    fontAwesomeIcon: null,
     description: ''
 };
 
