@@ -91,7 +91,7 @@ public class JiraIssueHandler {
     }
 
     public JiraMessageResult createOrUpdateIssues(JiraIssueConfig jiraIssueConfig, MessageContentGroup content) throws IntegrationException {
-        String providerName = content.getComonProvider().getValue();
+        String providerName = content.getCommonProvider().getValue();
         LinkableItem commonTopic = content.getCommonTopic();
 
         Set<String> issueKeys = new HashSet<>();

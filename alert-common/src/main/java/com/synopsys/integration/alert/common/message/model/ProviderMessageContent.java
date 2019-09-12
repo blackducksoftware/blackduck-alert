@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
@@ -75,6 +76,15 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
 
     public Date getProviderCreationTime() {
         return providerCreationTime;
+    }
+
+    public SetMap<String, ComponentItem> groupRelatedComponentItems() {
+        SetMap<String, ComponentItem> componentItemSetMap = new SetMap<>();
+        for (ComponentItem componentItem : componentItems) {
+            String key = componentItem.createKey();
+            componentItemSetMap.computeIfAbsent(key, ignored -> new LinkedHashSet<>()).add(componentItem);
+        }
+        return componentItemSetMap;
     }
 
     public static class Builder {

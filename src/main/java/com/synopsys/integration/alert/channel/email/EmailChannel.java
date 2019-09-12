@@ -94,7 +94,7 @@ public class EmailChannel extends NamedDistributionChannel {
         }
 
         final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
-        final LinkableItem comonProvider = content.getComonProvider();
+        final LinkableItem comonProvider = content.getCommonProvider();
         final String providerName = comonProvider.getValue();
         final String providerUrl = comonProvider.getUrl().orElse("#");
 

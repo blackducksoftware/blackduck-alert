@@ -69,7 +69,7 @@ public class MessageContentGroup extends AlertSerializableModel {
         return subContent;
     }
 
-    public LinkableItem getComonProvider() {
+    public LinkableItem getCommonProvider() {
         return comonProvider;
     }
 

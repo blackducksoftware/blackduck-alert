@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,19 +55,19 @@ public class BlackDuckLicenseLimitCollector extends BlackDuckCollector {
     private Logger logger = LoggerFactory.getLogger(BlackDuckLicenseLimitCollector.class);
 
     @Autowired
-    public BlackDuckLicenseLimitCollector(final JsonExtractor jsonExtractor, final BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, Arrays.asList(BlackDuckContent.LICENSE_LIMIT), blackDuckProperties);
+    public BlackDuckLicenseLimitCollector(JsonExtractor jsonExtractor, BlackDuckProperties blackDuckProperties) {
+        super(jsonExtractor, List.of(BlackDuckContent.LICENSE_LIMIT), blackDuckProperties);
         this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
     protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         List<ComponentItem> items = new LinkedList<>();
-        final List<JsonField<Long>> longFields = getLongFields(notificationFields);
+        List<JsonField<Long>> longFields = getLongFields(notificationFields);
 
         final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-        for (final JsonField<Long> field : longFields) {
-            final Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
+        for (JsonField<Long> field : longFields) {
+            Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
             optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
         }
         if (!linkableItems.isEmpty()) {
@@ -76,10 +75,13 @@ public class BlackDuckLicenseLimitCollector extends BlackDuckCollector {
 
             try {
                 ComponentItem.Builder builder = new ComponentItem.Builder();
-                builder.applyComponentData("", "")
-                    .applyAllComponentAttributes(linkableItems)
-                    .applyOperation(ItemOperation.UPDATE)
+                builder
                     .applyCategory(notificationContent.getNotificationType())
+                    .applyOperation(ItemOperation.UPDATE)
+                    .applyComponentData("Component", "Black Duck Server")
+                    // FIXME do something about these empty Strings
+                    .applyCategoryItem("", "")
+                    .applyAllComponentAttributes(linkableItems)
                     .applyNotificationId(notificationContent.getId());
                 items.add(builder.build());
             } catch (AlertException ex) {
@@ -91,13 +93,13 @@ public class BlackDuckLicenseLimitCollector extends BlackDuckCollector {
     }
 
     @Override
-    protected List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
-        final List<LinkableItem> topicItems = super.getTopicItems(accessor, fields);
-        final String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
+    protected List<LinkableItem> getTopicItems(JsonFieldAccessor accessor, List<JsonField<?>> fields) {
+        List<LinkableItem> topicItems = super.getTopicItems(accessor, fields);
+        String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
 
-        final List<LinkableItem> newTopicItems = new ArrayList<>();
-        for (final LinkableItem item : topicItems) {
-            final Optional<String> optionalUrl = item.getUrl();
+        List<LinkableItem> newTopicItems = new ArrayList<>();
+        for (LinkableItem item : topicItems) {
+            Optional<String> optionalUrl = item.getUrl();
             if (optionalUrl.isEmpty()) {
                 newTopicItems.add(new LinkableItem(item.getName(), item.getValue(), blackDuckUrl));
             } else {

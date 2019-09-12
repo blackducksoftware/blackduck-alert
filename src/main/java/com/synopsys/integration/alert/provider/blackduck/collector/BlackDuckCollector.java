@@ -120,7 +120,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return new LinkableItem(ProviderMessageContent.LABEL_PROVIDER, "Black Duck", blackDuckUrl);
     }
 
-    protected List<ComponentItem> createVulnerabilityComponentItems(
+    protected List<ComponentItem> createVulnerabilityPolicyComponentItems(
         Collection<VulnerableComponentView> vulnerableComponentViews, Collection<LinkableItem> licenseItems, LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId,
         ItemOperation operation) {
         Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(vulnerableComponentViews);
@@ -145,9 +145,11 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             LinkableItem severityItem = getSeverity(vulnerabilityUrl);
             severityItem.setSummarizable(true);
             ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
+
             List<LinkableItem> attributes = new LinkedList<>();
             attributes.addAll(licenseItems);
-            attributes.add(policyNameItem);
+            attributes.add(vulnerabilityIdItem);
+            attributes.add(severityItem);
 
             ComponentItem.Builder builder = new ComponentItem.Builder();
             builder
@@ -156,8 +158,9 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                 .applyPriority(priority)
                 .applyComponentData(componentItem)
                 .applySubComponent(componentVersionItem.orElse(null))
-                .applyCategoryItem(vulnerabilityIdItem)
-                .applySubCategoryItem(severityItem)
+                .applyCategoryItem(policyNameItem)
+                // FIXME this should be the Policy Severity
+                // .applySubCategoryItem(severityItem)
                 .applyAllComponentAttributes(attributes)
                 .applyNotificationId(notificationId);
             componentVersionItem.ifPresent(builder::applySubComponent);

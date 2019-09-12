@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,7 +72,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
     @Autowired
     public BlackDuckPolicyViolationCollector(JsonExtractor jsonExtractor, BlackDuckProperties blackDuckProperties) {
-        super(jsonExtractor, Arrays.asList(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
+        super(jsonExtractor, List.of(BlackDuckContent.RULE_VIOLATION, BlackDuckContent.RULE_VIOLATION_CLEARED), blackDuckProperties);
     }
 
     @Override
@@ -209,7 +208,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             try {
                 List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(optionalProjectVersionWrapper.get(), bomComponent);
                 List<LinkableItem> licenseItems = getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent);
-                List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
+                List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityPolicyComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
 
                 ComponentVersionView componentVersionView = getBlackDuckService().getResponse(bomComponent.getComponentVersion(), ComponentVersionView.class);

@@ -32,7 +32,7 @@ public class SetMap<K, S> extends AbstractMap<K, Set<S>> {
     private final Map<K, Set<S>> map;
 
     public SetMap() {
-        this(new HashMap());
+        this(new HashMap<>());
     }
 
     public SetMap(final Map<K, Set<S>> map) {
