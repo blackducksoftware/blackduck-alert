@@ -28,8 +28,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 
 public abstract class CustomUIConfig extends UIConfig {
 
-    public CustomUIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon, final String componentPath) {
-        super(label, description, urlName, fontAwesomeIcon, componentPath);
+    public CustomUIConfig(final String label, final String description, final String urlName, final String componentPath) {
+        super(label, description, urlName, componentPath);
     }
 
     @Override

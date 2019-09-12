@@ -22,17 +22,17 @@
  */
 package com.synopsys.integration.alert.channel.msteams.descriptor;
 
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class MsTeamsGlobalUIConfig extends UIConfig {
     public MsTeamsGlobalUIConfig() {
-        super(MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_DESCRIPTION, MsTeamsDescriptor.MSTEAMS_URL, MsTeamsDescriptor.MSTEAMS_ICON);
+        super(MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_DESCRIPTION, MsTeamsDescriptor.MSTEAMS_URL);
     }
 
     @Override

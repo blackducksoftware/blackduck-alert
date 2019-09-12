@@ -36,7 +36,6 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
 
     public static final String BLACKDUCK_LABEL = "Black Duck";
     public static final String BLACKDUCK_URL = "blackduck";
-    public static final String BLACKDUCK_ICON = "laptop";
     public static final String BLACKDUCK_DESCRIPTION = "This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.";
 
     @Autowired

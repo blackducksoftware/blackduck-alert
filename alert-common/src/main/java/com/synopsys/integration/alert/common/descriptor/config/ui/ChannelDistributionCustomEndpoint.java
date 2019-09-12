@@ -61,7 +61,7 @@ public class ChannelDistributionCustomEndpoint {
         final List<LabelValueSelectOption> providerOptions = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                                                                  .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                                                                  .flatMap(Optional::stream)
-                                                                 .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName(), descriptorMetadata.getFontAwesomeIcon()))
+                                                                 .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
                                                                  .sorted()
                                                                  .collect(Collectors.toList());
         String providerOptionsConverted = gson.toJson(providerOptions);
@@ -73,8 +73,7 @@ public class ChannelDistributionCustomEndpoint {
                                                           .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
                                                           .flatMap(Optional::stream)
                                                           .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                                                          .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey(),
-                                                              channelDistributionUIConfig.getFontAwesomeIcon()))
+                                                          .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
                                                           .sorted()
                                                           .collect(Collectors.toList());
         String channelOptionsConverted = gson.toJson(channelOptions);

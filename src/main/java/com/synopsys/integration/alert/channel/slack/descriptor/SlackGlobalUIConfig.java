@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 @Component
 public class SlackGlobalUIConfig extends UIConfig {
     public SlackGlobalUIConfig() {
-        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_DESCRIPTION, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
+        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_DESCRIPTION, SlackDescriptor.SLACK_URL);
     }
 
     @Override

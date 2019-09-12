@@ -33,7 +33,6 @@ public class AuditDescriptor extends ComponentDescriptor {
 
     public static final String AUDIT_LABEL = "Audit";
     public static final String AUDIT_URL = "audit";
-    public static final String AUDIT_ICON = "history";
     public static final String AUDIT_DESCRIPTION = "Audit tracks all distribution events that have been produced by Alert and displays whether the event was successful or not. If an event fails, this page offers the ability to resend that event and see why it failed.";
     public static final String AUDIT_COMPONENT_NAMESPACE = "audit.AuditPage";
 

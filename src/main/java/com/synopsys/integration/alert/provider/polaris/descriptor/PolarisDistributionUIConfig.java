@@ -34,7 +34,7 @@ public class PolarisDistributionUIConfig extends ProviderDistributionUIConfig {
 
     @Autowired
     public PolarisDistributionUIConfig(final PolarisContent providerContent) {
-        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON, providerContent);
+        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, providerContent);
     }
 
     @Override

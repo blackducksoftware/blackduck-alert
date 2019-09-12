@@ -44,7 +44,7 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public SlackUIConfig(SlackChannelKey slackChannelKey) {
-        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
+        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL);
     }
 
     @Override

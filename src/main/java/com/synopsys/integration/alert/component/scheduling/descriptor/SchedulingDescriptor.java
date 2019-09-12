@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String SCHEDULING_LABEL = "Scheduling";
     public static final String SCHEDULING_URL = "scheduling";
-    public static final String SCHEDULING_ICON = "clock";
     public static final String SCHEDULING_DESCRIPTION = "This page shows when the scheduled tasks will run next as well as allow you to configure the frequency of the tasks.";
 
     public static final String KEY_BLACKDUCK_NEXT_RUN = "scheduling.accumulator.next.run";

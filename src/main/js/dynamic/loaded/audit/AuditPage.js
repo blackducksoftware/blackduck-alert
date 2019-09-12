@@ -151,50 +151,8 @@ class AuditPage extends Component {
     }
 
     notificationTypeDataFormat(cell) {
-        let hasPolicyViolation = false;
-        let hasPolicyViolationCleared = false;
-        let hasPolicyViolationOverride = false;
-        const hasHighVulnerability = false;
-        const hasMediumVulnerability = false;
-        const hasLowVulnerability = false;
-        let hasVulnerability = false;
-        let hasIssueCountIncreased = false;
-        let hasIssueCountDecreased = false;
-        let hasLicenseLimit = false;
-        let hasBomEdit = false;
-
-
-        if (cell === 'RULE_VIOLATION') {
-            hasPolicyViolation = true;
-        } else if (cell === 'RULE_VIOLATION_CLEARED') {
-            hasPolicyViolationCleared = true;
-        } else if (cell === 'POLICY_OVERRIDE') {
-            hasPolicyViolationOverride = true;
-        } else if (cell === 'VULNERABILITY') {
-            hasVulnerability = true;
-        } else if (cell === 'ISSUE_COUNT_INCREASED') {
-            hasIssueCountIncreased = true;
-        } else if (cell === 'ISSUE_COUNT_DECREASED') {
-            hasIssueCountDecreased = true;
-        } else if (cell === 'LICENSE_LIMIT') {
-            hasLicenseLimit = true;
-        } else if (cell === 'BOM_EDIT') {
-            hasBomEdit = true;
-        }
-
-        return (<NotificationTypeLegend
-            hasPolicyViolation={hasPolicyViolation}
-            hasPolicyViolationCleared={hasPolicyViolationCleared}
-            hasPolicyViolationOverride={hasPolicyViolationOverride}
-            hasHighVulnerability={hasHighVulnerability}
-            hasMediumVulnerability={hasMediumVulnerability}
-            hasLowVulnerability={hasLowVulnerability}
-            hasVulnerability={hasVulnerability}
-            hasIssueCountIncreased={hasIssueCountIncreased}
-            hasIssueCountDecreased={hasIssueCountDecreased}
-            hasLicenseLimit={hasLicenseLimit}
-            hasBomEdit={hasBomEdit}
-        />);
+        const types = Array.isArray(cell) ? cell : [cell];
+        return (<NotificationTypeLegend notificationTypes={types} />);
     }
 
     trClassFormat(row, rowIndex) {
@@ -345,7 +303,7 @@ class AuditPage extends Component {
 
         return (
             <div>
-                <ConfigurationLabel fontAwesomeIcon="history" configurationName="Audit" />
+                <ConfigurationLabel configurationName="Audit" />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} />
                 </div>
