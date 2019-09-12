@@ -83,7 +83,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         String policyName = policyInfo.getPolicyName();
         LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
         policyNameItem.setPartOfKey(true);
-        policyNameItem.setCollapsible(true);
+        //policyNameItem.setCollapsible(true);
         policyNameItem.setSummarizable(true);
         policyNameItem.setCountable(true);
         return policyNameItem;

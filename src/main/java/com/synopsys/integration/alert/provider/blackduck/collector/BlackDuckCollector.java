@@ -138,6 +138,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
 
             LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+            item.setPartOfKey(true);
             item.setSummarizable(true);
             item.setCountable(true);
             item.setCollapsible(true);
