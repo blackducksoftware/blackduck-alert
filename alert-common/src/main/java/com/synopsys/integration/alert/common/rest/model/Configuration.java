@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 
 public class Configuration extends AlertSerializableModel {
-    private final transient FieldAccessor fieldAccessor;
+    private final FieldAccessor fieldAccessor;
 
     public Configuration(@NotNull final Map<String, ConfigurationFieldModel> keyToFieldMap) {
         fieldAccessor = new FieldAccessor(keyToFieldMap);

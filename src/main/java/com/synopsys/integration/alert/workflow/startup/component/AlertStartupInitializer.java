@@ -135,7 +135,7 @@ public class AlertStartupInitializer extends StartupComponent {
     // TODO consider using a Collection of DescriptorKeys instead
     private void initializeConfiguration(final Collection<String> descriptorNames, final boolean overwriteCurrentConfig) {
         for (final String descriptorName : descriptorNames) {
-            logger.info("");
+            logger.info(LINE_DIVIDER);
             logger.info("Descriptor: {}", descriptorName);
             logger.info(LINE_DIVIDER);
             logger.info("  Starting Descriptor Initialization...");
