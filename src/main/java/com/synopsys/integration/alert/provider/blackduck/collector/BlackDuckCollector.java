@@ -137,27 +137,28 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                 vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
             }
 
-            LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
-            item.setPartOfKey(true);
-            item.setSummarizable(true);
-            item.setCountable(true);
-            item.setCollapsible(true);
+            LinkableItem vulnerabilityIdItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+            vulnerabilityIdItem.setSummarizable(true);
+            vulnerabilityIdItem.setCountable(true);
+            vulnerabilityIdItem.setCollapsible(true);
 
-            LinkableItem severityItem = getSeverity(vulnerabilityUrl, false);
+            LinkableItem severityItem = getSeverity(vulnerabilityUrl);
             severityItem.setSummarizable(true);
             ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
             List<LinkableItem> attributes = new LinkedList<>();
             attributes.addAll(licenseItems);
-            attributes.add(severityItem);
             attributes.add(policyNameItem);
-            attributes.add(item);
 
             ComponentItem.Builder builder = new ComponentItem.Builder();
-            builder.applyComponentData(componentItem)
-                .applyAllComponentAttributes(attributes)
-                .applyPriority(priority)
+            builder
                 .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
                 .applyOperation(operation)
+                .applyPriority(priority)
+                .applyComponentData(componentItem)
+                .applySubComponent(componentVersionItem.orElse(null))
+                .applyCategoryItem(vulnerabilityIdItem)
+                .applySubCategoryItem(severityItem)
+                .applyAllComponentAttributes(attributes)
                 .applyNotificationId(notificationId);
             componentVersionItem.ifPresent(builder::applySubComponent);
             try {
@@ -198,7 +199,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return Optional.empty();
     }
 
-    protected LinkableItem getSeverity(String vulnerabilityUrl, boolean partOfKey) {
+    protected LinkableItem getSeverity(String vulnerabilityUrl) {
         LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, "UNKNOWN");
         try {
             getBucketService().addToTheBucket(getBlackDuckBucket(), vulnerabilityUrl, VulnerabilityView.class);
@@ -214,7 +215,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         }
 
         severityItem.setSummarizable(true);
-        severityItem.setPartOfKey(partOfKey);
         return severityItem;
     }
 
@@ -255,4 +255,5 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         }
         return ComponentItemPriority.NONE;
     }
+
 }

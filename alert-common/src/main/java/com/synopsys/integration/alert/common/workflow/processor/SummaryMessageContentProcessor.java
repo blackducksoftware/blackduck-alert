@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentAttributeMap;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -57,19 +56,19 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public SummaryMessageContentProcessor(final MessageOperationCombiner messageOperationCombiner) {
+    public SummaryMessageContentProcessor(MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.SUMMARY);
         this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
-        final List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
+    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
+        List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
 
-        final List<MessageContentGroup> newGroups = new ArrayList<>();
+        List<MessageContentGroup> newGroups = new ArrayList<>();
 
-        for (final ProviderMessageContent message : collapsedMessages) {
-            final ProviderMessageContent summarizedMessage = summarize(message);
+        for (ProviderMessageContent message : collapsedMessages) {
+            ProviderMessageContent summarizedMessage = summarize(message);
             newGroups
                 .stream()
                 .filter(group -> group.applies(summarizedMessage))
@@ -79,17 +78,17 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return newGroups;
     }
 
-    private ProviderMessageContent summarize(final ProviderMessageContent message) {
-        final Set<ComponentItem> originalComponentItems = message.getComponentItems();
+    private ProviderMessageContent summarize(ProviderMessageContent message) {
+        Set<ComponentItem> originalComponentItems = message.getComponentItems();
         if (null == originalComponentItems) {
             return message;
         }
 
-        final Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = sortByOperation(originalComponentItems);
+        Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = sortByOperation(originalComponentItems);
 
-        final Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
-        for (final LinkedHashSet<ComponentItem> componentSet : itemsByOperation.values()) {
-            final LinkedHashSet<ComponentItem> summarizedComponentCounts = summarizeCategoryComponentCounts(componentSet);
+        Set<ComponentItem> summarizedComponentItems = new LinkedHashSet<>();
+        for (LinkedHashSet<ComponentItem> componentSet : itemsByOperation.values()) {
+            LinkedHashSet<ComponentItem> summarizedComponentCounts = summarizeCategoryComponentCounts(componentSet);
             summarizedComponentItems.addAll(summarizedComponentCounts);
         }
 
@@ -101,9 +100,9 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         }
     }
 
-    private Map<ItemOperation, LinkedHashSet<ComponentItem>> sortByOperation(final Set<ComponentItem> originalComponentItems) {
-        final Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = new LinkedHashMap<>();
-        for (final ComponentItem componentItem : originalComponentItems) {
+    private Map<ItemOperation, LinkedHashSet<ComponentItem>> sortByOperation(Set<ComponentItem> originalComponentItems) {
+        Map<ItemOperation, LinkedHashSet<ComponentItem>> itemsByOperation = new LinkedHashMap<>();
+        for (ComponentItem componentItem : originalComponentItems) {
             itemsByOperation.computeIfAbsent(componentItem.getOperation(), ignored -> new LinkedHashSet<>()).add(componentItem);
         }
         return itemsByOperation;
@@ -114,7 +113,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         // Then have the item priority with the set of components.
         Map<String, Map<ComponentItemPriority, Set<ComponentItem>>> itemsByCategory = new LinkedHashMap<>();
 
-        for (final ComponentItem item : componentItems) {
+        for (ComponentItem item : componentItems) {
             Map<ComponentItemPriority, Set<ComponentItem>> itemsByPriority = itemsByCategory.computeIfAbsent(item.getCategory(), ignored -> new LinkedHashMap<>());
             Set<ComponentItem> itemList = itemsByPriority.computeIfAbsent(item.getPriority(), ignored -> new LinkedHashSet<>());
             itemList.add(item);
@@ -146,15 +145,13 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                         builder.applyOperation(operation);
 
                         Map<String, Long> componentCounts = items.stream()
-                                                                .map(ComponentItem::getComponentKeys)
-                                                                .map(ComponentKeys::getShallowKey)
+                                                                .map(ComponentItem::createKey)
                                                                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
                         LinkableItem countItem = new LinkableItem(COMPONENT_ITEM_NAME_COMPONENTS, String.valueOf(componentCounts.keySet().size()));
                         countItem.setCollapsible(true);
                         countItem.setCountable(true);
                         countItem.setSummarizable(true);
-                        countItem.setPartOfKey(true);
                         builder.applyComponentAttribute(countItem);
 
                         final Collection<LinkableItem> summarizedLinkableItems = summarizeComponentItemData(summarizableAttributes);
@@ -174,8 +171,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
             return List.of();
         }
         ComponentAttributeMap attributeMap = new ComponentAttributeMap();
-        for (final LinkableItem item : attributes) {
-            final String name = item.getName();
+        for (LinkableItem item : attributes) {
+            String name = item.getName();
             attributeMap.computeIfAbsent(name, ignored -> new LinkedList<>()).add(item);
         }
         return createSummarizedLinkableItems(attributeMap);
@@ -183,7 +180,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
     private List<LinkableItem> createSummarizedLinkableItems(ComponentAttributeMap componentAttributeMap) {
         final List<LinkableItem> summarizedLinkableItems = new LinkedList<>();
-        for (final Map.Entry<String, List<LinkableItem>> similarItemEntries : componentAttributeMap.entrySet()) {
+        for (Map.Entry<String, List<LinkableItem>> similarItemEntries : componentAttributeMap.entrySet()) {
             similarItemEntries.getValue()
                 .stream()
                 .findAny()
@@ -194,18 +191,18 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return summarizedLinkableItems.stream().sorted().collect(Collectors.toList());
     }
 
-    private void createNewItems(final LinkableItem item, final Collection<LinkableItem> summarizedLinkableItems, final String oldItemName, final Collection<LinkableItem> linkableItems) {
-        final boolean isCountable = item.isCountable();
-        final boolean isNumericValue = item.isNumericValue();
-        final String newItemName = generateSummaryItemName(oldItemName, isCountable, isNumericValue);
+    private void createNewItems(LinkableItem item, Collection<LinkableItem> summarizedLinkableItems, String oldItemName, Collection<LinkableItem> linkableItems) {
+        boolean isCountable = item.isCountable();
+        boolean isNumericValue = item.isNumericValue();
+        String newItemName = generateSummaryItemName(oldItemName, isCountable, isNumericValue);
 
         if (isCountable) {
-            final String newItemValue = generateCountAsString(oldItemName, linkableItems, isNumericValue);
-            final LinkableItem newLinkableItem = new LinkableItem(newItemName, newItemValue);
+            String newItemValue = generateCountAsString(oldItemName, linkableItems, isNumericValue);
+            LinkableItem newLinkableItem = new LinkableItem(newItemName, newItemValue);
             updateSummarizability(newLinkableItem, true, true);
             summarizedLinkableItems.add(newLinkableItem);
         } else {
-            final Collection<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
+            Collection<LinkableItem> newDetailedItems = createLinkableItemsByValue(newItemName, linkableItems);
             if (newDetailedItems.isEmpty()) {
                 final LinkableItem summarizedLinkableItem = new LinkableItem(newItemName, item.getValue());
                 updateSummarizability(summarizedLinkableItem, false, isNumericValue);
@@ -216,7 +213,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         }
     }
 
-    private String generateSummaryItemName(final String oldItemName, final boolean isCountable, final boolean isNumeric) {
+    private String generateSummaryItemName(String oldItemName, boolean isCountable, boolean isNumeric) {
         if (isCountable) {
             if (isNumeric) {
                 return String.format("Total %s Count", oldItemName);
@@ -226,34 +223,34 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return oldItemName;
     }
 
-    private List<LinkableItem> createLinkableItemsByValue(final String itemName, final Collection<LinkableItem> linkableItems) {
-        final List<String> uniqueValuesMatchingName = linkableItems
-                                                          .stream()
-                                                          .filter(item -> itemName.equals(item.getName()))
-                                                          .map(LinkableItem::getValue)
-                                                          .collect(Collectors.toList());
-        final List<LinkableItem> summarizedLinkableItems = new LinkedList<>();
-        for (final String uniqueValue : uniqueValuesMatchingName) {
-            final LinkableItem newLinkableItem = new LinkableItem(itemName, uniqueValue);
+    private List<LinkableItem> createLinkableItemsByValue(String itemName, Collection<LinkableItem> linkableItems) {
+        List<String> uniqueValuesMatchingName = linkableItems
+                                                    .stream()
+                                                    .filter(item -> itemName.equals(item.getName()))
+                                                    .map(LinkableItem::getValue)
+                                                    .collect(Collectors.toList());
+        List<LinkableItem> summarizedLinkableItems = new LinkedList<>();
+        for (String uniqueValue : uniqueValuesMatchingName) {
+            LinkableItem newLinkableItem = new LinkableItem(itemName, uniqueValue);
             newLinkableItem.setSummarizable(true);
             summarizedLinkableItems.add(newLinkableItem);
         }
         return summarizedLinkableItems;
     }
 
-    private String generateCountAsString(final String itemName, final Collection<LinkableItem> items, final boolean isNumericValue) {
-        final long count = generateCount(itemName, items, isNumericValue);
+    private String generateCountAsString(String itemName, Collection<LinkableItem> items, boolean isNumericValue) {
+        long count = generateCount(itemName, items, isNumericValue);
         return Long.toString(count);
     }
 
-    private long generateCount(final String itemName, final Collection<LinkableItem> items, final boolean isNumericValue) {
+    private long generateCount(String itemName, Collection<LinkableItem> items, boolean isNumericValue) {
         if (isNumericValue) {
             long count = 0;
-            for (final LinkableItem item : items) {
+            for (LinkableItem item : items) {
                 if (itemName.equals(item.getName())) {
-                    final String value = item.getValue();
+                    String value = item.getValue();
                     if (StringUtils.isNumeric(value)) {
-                        final int numericValue = Integer.parseInt(value);
+                        int numericValue = Integer.parseInt(value);
                         count += numericValue;
                     }
                 }
@@ -268,7 +265,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                    .size();
     }
 
-    private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {
+    private void updateSummarizability(LinkableItem item, boolean isCountable, boolean isNumeric) {
         item.setCountable(isCountable);
         item.setNumericValueFlag(isNumeric);
         item.setSummarizable(true);

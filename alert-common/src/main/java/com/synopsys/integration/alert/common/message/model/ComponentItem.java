@@ -38,24 +38,40 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
 public class ComponentItem extends AlertSerializableModel implements Buildable {
-    private final LinkableItem component;
-    private final LinkableItem subComponent;
-    private final Set<LinkableItem> componentAttributes;
-    private final ComponentItemPriority priority;
-    private final String category;
-    private final ComponentKeys componentKeys;
-    private final ItemOperation operation;
-    private final Set<Long> notificationIds;
+    private String category;
+    private ItemOperation operation;
+    private ComponentItemPriority priority;
 
-    private ComponentItem(LinkableItem component, LinkableItem subComponent, Set<LinkableItem> componentAttributes, ComponentItemPriority priority, String category, ComponentKeys componentKeys, ItemOperation operation,
-        Set<Long> notificationIds) {
+    private LinkableItem component;
+    private LinkableItem subComponent;
+
+    private LinkableItem categoryItem;
+    private LinkableItem subCategoryItem;
+    private boolean collapseOnCategory;
+
+    private Set<LinkableItem> componentAttributes;
+    private Set<Long> notificationIds;
+
+    private ComponentItem(
+        String category,
+        ItemOperation operation,
+        ComponentItemPriority priority,
+        LinkableItem component,
+        LinkableItem subComponent,
+        LinkableItem categoryItem,
+        LinkableItem subCategoryItem,
+        boolean collapseOnCategory, Set<LinkableItem> componentAttributes,
+        Set<Long> notificationIds
+    ) {
+        this.category = category;
+        this.operation = operation;
+        this.priority = priority;
         this.component = component;
         this.subComponent = subComponent;
+        this.categoryItem = categoryItem;
+        this.subCategoryItem = subCategoryItem;
+        this.collapseOnCategory = collapseOnCategory;
         this.componentAttributes = componentAttributes;
-        this.priority = priority;
-        this.category = category;
-        this.componentKeys = componentKeys;
-        this.operation = operation;
         this.notificationIds = notificationIds;
     }
 
@@ -64,7 +80,33 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
                    .comparing(ComponentItem::getCategory)
                    .thenComparing(ComponentItem::getOperation)
                    .thenComparing(ComponentItem::getPriority)
-                   .thenComparing(ComponentItem::getComponentKeys);
+                   .thenComparing(ComponentItem::getComponent)
+                   .thenComparing(ComponentItem::getSubComponent, ComponentItem::compareOptionalItems)
+                   .thenComparing(ComponentItem::getCategoryItem);
+    }
+
+    private static int compareOptionalItems(Optional<LinkableItem> optionalItem1, Optional<LinkableItem> optionalItem2) {
+        if (optionalItem1.isPresent()) {
+            return optionalItem2
+                       .map(item2 -> optionalItem1.get().compareTo(item2))
+                       .orElse(1);
+        } else if (optionalItem2.isPresent()) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public ItemOperation getOperation() {
+        return operation;
+    }
+
+    public ComponentItemPriority getPriority() {
+        return priority;
     }
 
     public LinkableItem getComponent() {
@@ -75,28 +117,52 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return Optional.ofNullable(subComponent);
     }
 
+    public LinkableItem getCategoryItem() {
+        return categoryItem;
+    }
+
+    public Optional<LinkableItem> getSubCategoryItem() {
+        return Optional.ofNullable(subCategoryItem);
+    }
+
+    public boolean getCollapseOnCategory() {
+        return collapseOnCategory;
+    }
+
+    /**
+     * Alias for getCollapseOnCategory()
+     */
+    public boolean collapseOnCategory() {
+        return getCollapseOnCategory();
+    }
+
     public Set<LinkableItem> getComponentAttributes() {
         return componentAttributes;
     }
 
-    public ComponentItemPriority getPriority() {
-        return priority;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public ComponentKeys getComponentKeys() {
-        return componentKeys;
-    }
-
-    public ItemOperation getOperation() {
-        return operation;
-    }
-
     public Set<Long> getNotificationIds() {
         return notificationIds;
+    }
+
+    public String createKey() {
+        StringBuilder keyBuilder = new StringBuilder();
+        keyBuilder.append(getCategory());
+        keyBuilder.append(getOperation());
+
+        appendLinkableItem(keyBuilder, getComponent());
+        getSubComponent().ifPresent(subComponent -> appendLinkableItem(keyBuilder, subComponent));
+
+        if (!collapseOnCategory()) {
+            appendLinkableItem(keyBuilder, getCategoryItem());
+        }
+
+        return keyBuilder.toString();
+    }
+
+    private void appendLinkableItem(StringBuilder stringBuilder, LinkableItem linkableItem) {
+        stringBuilder.append(linkableItem.getName());
+        stringBuilder.append(linkableItem.getValue());
+        linkableItem.getUrl().ifPresent(stringBuilder::append);
     }
 
     /**
@@ -116,36 +182,65 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
     public static class Builder {
         private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
-        private ComponentItemPriority priority;
         private String category;
+        private ItemOperation operation;
+        private ComponentItemPriority priority;
+
         private String componentName;
         private String componentValue;
         private String componentUrl;
         private String subComponentName;
         private String subComponentValue;
         private String subComponentUrl;
-        private ItemOperation operation;
+        private boolean collapseOnCategory = false;
+
+        private String categoryItemName;
+        private String categoryItemValue;
+        private String categoryItemUrl;
+        private String subCategoryItemName;
+        private String subCategoryItemValue;
+        private String subCategoryItemUrl;
+
         private Set<Long> notificationIds = new LinkedHashSet<>();
 
         public ComponentItem build() throws AlertException {
-            if (null == componentName || null == componentValue || null == category || null == operation || (null == notificationIds || notificationIds.isEmpty())) {
+            if (null == category || null == operation || null == componentName || null == componentValue || null == categoryItemName || null == categoryItemValue || (null == notificationIds || notificationIds.isEmpty())) {
                 throw new AlertException("Missing required field(s)");
             }
 
-            final LinkableItem component = new LinkableItem(componentName, componentValue, componentUrl);
+            LinkableItem component = new LinkableItem(componentName, componentValue, componentUrl);
             LinkableItem subComponent = null;
             if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
                 subComponent = new LinkableItem(subComponentName, subComponentValue, subComponentUrl);
             }
 
-            final String additionalDataString = ComponentKeys.generateAdditionalDataString(componentAttributes);
-            ComponentKeys key = new ComponentKeys(category, componentName, componentValue, subComponentName, subComponentValue, additionalDataString);
+            LinkableItem categoryItem = new LinkableItem(categoryItemName, categoryItemValue, categoryItemUrl);
+            LinkableItem subCategoryItem = null;
+            if (StringUtils.isNotBlank(subCategoryItemName) && StringUtils.isNotBlank(subCategoryItemValue)) {
+                subCategoryItem = new LinkableItem(subCategoryItemName, subCategoryItemValue, subCategoryItemUrl);
+            }
+
             ComponentItemPriority componentPriority = ComponentItemPriority.NONE;
             if (null != priority) {
                 componentPriority = priority;
             }
 
-            return new ComponentItem(component, subComponent, componentAttributes, componentPriority, category, key, operation, notificationIds);
+            return new ComponentItem(category, operation, componentPriority, component, subComponent, categoryItem, subCategoryItem, collapseOnCategory, componentAttributes, notificationIds);
+        }
+
+        public Builder applyCategory(final String category) {
+            this.category = category;
+            return this;
+        }
+
+        public Builder applyOperation(final ItemOperation operation) {
+            this.operation = operation;
+            return this;
+        }
+
+        public Builder applyPriority(ComponentItemPriority priority) {
+            this.priority = priority;
+            return this;
         }
 
         public Builder applyComponentData(LinkableItem component) {
@@ -157,20 +252,20 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return this;
         }
 
-        public Builder applyComponentData(final String componentName, final String componentValue) {
+        public Builder applyComponentData(String componentName, String componentValue) {
             this.componentName = componentName;
             this.componentValue = componentValue;
             return this;
         }
 
-        public Builder applyComponentData(final String componentName, final String componentValue, final String componentUrl) {
+        public Builder applyComponentData(String componentName, String componentValue, String componentUrl) {
             this.componentName = componentName;
             this.componentValue = componentValue;
             applyComponentUrl(componentUrl);
             return this;
         }
 
-        public Builder applyComponentUrl(final String componentUrl) {
+        public Builder applyComponentUrl(String componentUrl) {
             this.componentUrl = componentUrl;
             return this;
         }
@@ -184,61 +279,75 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return this;
         }
 
-        public Builder applySubComponent(final String subComponentName, final String subComponentValue) {
+        public Builder applySubComponent(String subComponentName, String subComponentValue) {
             this.subComponentName = subComponentName;
             this.subComponentValue = subComponentValue;
             return this;
         }
 
-        public Builder applySubComponent(final String subComponentName, final String subComponentValue, final String subComponentUrl) {
+        public Builder applySubComponent(String subComponentName, String subComponentValue, String subComponentUrl) {
             this.subComponentName = subComponentName;
             this.subComponentValue = subComponentValue;
             addSubComponentUrl(subComponentUrl);
             return this;
         }
 
-        public Builder addSubComponentUrl(final String subComponentUrl) {
+        public Builder addSubComponentUrl(String subComponentUrl) {
             this.subComponentUrl = subComponentUrl;
             return this;
         }
 
-        public Builder applyPriority(ComponentItemPriority priority) {
-            this.priority = priority;
+        public Builder applyCategoryItem(LinkableItem categoryItem) {
+            if (null != categoryItem) {
+                this.categoryItemName = categoryItem.getName();
+                this.categoryItemValue = categoryItem.getValue();
+                this.categoryItemUrl = categoryItem.getUrl().orElse(null);
+            }
             return this;
         }
 
-        public Builder applyCategory(final String category) {
-            this.category = category;
+        public Builder applyCategoryItem(String name, String value) {
+            this.categoryItemName = name;
+            this.categoryItemValue = value;
             return this;
         }
 
-        public Builder applyOperation(final ItemOperation operation) {
-            this.operation = operation;
+        public Builder applySubCategoryItem(LinkableItem subCategoryItem) {
+            if (null != subCategoryItem) {
+                this.subCategoryItemName = subCategoryItem.getName();
+                this.subCategoryItemValue = subCategoryItem.getValue();
+                this.subCategoryItemUrl = subCategoryItem.getUrl().orElse(null);
+            }
             return this;
         }
 
-        public Builder applyNotificationId(final Long notificationId) {
+        public Builder applySubCategoryItem(String name, String value) {
+            this.subCategoryItemName = name;
+            this.subCategoryItemValue = value;
+            return this;
+        }
+
+        public Builder applyCollapseOnCategory(boolean collapseOnCategory) {
+            this.collapseOnCategory = collapseOnCategory;
+            return this;
+        }
+
+        public Builder applyNotificationId(Long notificationId) {
             this.notificationIds.add(notificationId);
             return this;
         }
 
-        public Builder applyNotificationIds(final Collection<Long> notificationIds) {
+        public Builder applyNotificationIds(Collection<Long> notificationIds) {
             this.notificationIds.addAll(notificationIds);
             return this;
         }
 
-        public Builder applyComponentAttribute(final LinkableItem componentAttribute) {
+        public Builder applyComponentAttribute(LinkableItem componentAttribute) {
             this.componentAttributes.add(componentAttribute);
             return this;
         }
 
-        public Builder applyComponentAttribute(final LinkableItem componentAttribute, boolean isPartOfKey) {
-            componentAttribute.setPartOfKey(isPartOfKey);
-            this.componentAttributes.add(componentAttribute);
-            return this;
-        }
-
-        public Builder applyAllComponentAttributes(final Collection<LinkableItem> componentAttributes) {
+        public Builder applyAllComponentAttributes(Collection<LinkableItem> componentAttributes) {
             this.componentAttributes.addAll(componentAttributes);
             return this;
         }

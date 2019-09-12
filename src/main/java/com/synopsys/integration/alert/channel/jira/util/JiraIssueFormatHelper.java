@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.common.channel.MessageSplitter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraIssueFormatHelper {
@@ -45,7 +44,7 @@ public class JiraIssueFormatHelper {
     private static final int TEXT_LIMIT = 30000;
     private static final String LINE_SEPARATOR = "\n";
 
-    public String createTitle(final String provider, final LinkableItem topic, final Optional<LinkableItem> subTopic, final ComponentKeys componentKeys) {
+    public String createTitle(String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem arbitraryItem) {
         final StringBuilder title = new StringBuilder();
         title.append("Alert - Provider: ");
         title.append(provider);
@@ -63,19 +62,33 @@ public class JiraIssueFormatHelper {
             title.append(", ");
         }
 
-        // FIXME make this provider-agnostic
-        String prettyPrintedKey;
-        if (!componentKeys.getCategory().contains("Vuln")) {
-            prettyPrintedKey = componentKeys.prettyPrint(true);
-        } else {
-            prettyPrintedKey = componentKeys.prettyPrint(false);
+        LinkableItem component = arbitraryItem.getComponent();
+        title.append(component.getName());
+        title.append(": ");
+        title.append(component.getName());
+
+        Optional<LinkableItem> optionalSubComponent = arbitraryItem.getSubComponent();
+        if (optionalSubComponent.isPresent()) {
+            title.append(", ");
+            LinkableItem subComponent = optionalSubComponent.get();
+            title.append(subComponent.getName());
+            title.append(": ");
+            title.append(subComponent.getValue());
         }
-        title.append(prettyPrintedKey);
+
+        if (!arbitraryItem.collapseOnCategory()) {
+            title.append(", ");
+            LinkableItem categoryItem = arbitraryItem.getCategoryItem();
+            title.append(categoryItem.getName());
+            title.append(": ");
+            title.append(categoryItem.getValue());
+        }
+
         return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
-    public IssueContentModel createDescription(LinkableItem commonTopic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, String providerName, ComponentKeys componentKeys) {
-        final String title = createTitle(providerName, commonTopic, subTopic, componentKeys);
+    public IssueContentModel createDescription(LinkableItem commonTopic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, String providerName, ComponentItem arbitraryItem) {
+        final String title = createTitle(providerName, commonTopic, subTopic, arbitraryItem);
         final StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
@@ -93,18 +106,13 @@ public class JiraIssueFormatHelper {
             description.append(LINE_SEPARATOR);
         }
 
-        final Optional<ComponentItem> arbitraryItem = componentItems
-                                                          .stream()
-                                                          .findAny();
         List<String> additionalComments = new ArrayList<>();
         List<String> descriptionAttributes = new ArrayList<>();
-        if (arbitraryItem.isPresent()) {
-            String componentSection = createComponentString(arbitraryItem.get());
-            description.append(componentSection);
+        String componentSection = createComponentString(arbitraryItem);
+        description.append(componentSection);
 
-            splitComponentAttributesForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
-            description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
-        }
+        splitComponentAttributesForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
+        description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
         return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 

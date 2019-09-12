@@ -35,36 +35,33 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class MessageCombiner {
-
     public List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
-        final Map<ContentKey, List<ProviderMessageContent>> messagesGroupedByKey = new LinkedHashMap<>();
+        Map<ContentKey, List<ProviderMessageContent>> messagesGroupedByKey = new LinkedHashMap<>();
         for (ProviderMessageContent message : messages) {
             messagesGroupedByKey.computeIfAbsent(message.getContentKey(), k -> new LinkedList<>()).add(message);
         }
 
         List<ProviderMessageContent> combinedMessages = new ArrayList<>();
-        for (final Map.Entry<ContentKey, List<ProviderMessageContent>> groupedMessageEntry : messagesGroupedByKey.entrySet()) {
-            final List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
-            final LinkedHashSet<ComponentItem> combinedComponentItems = gatherComponentItems(groupedMessages);
+        for (Map.Entry<ContentKey, List<ProviderMessageContent>> groupedMessageEntry : messagesGroupedByKey.entrySet()) {
+            List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
+            LinkedHashSet<ComponentItem> combinedComponentItems = gatherComponentItems(groupedMessages);
 
-            final Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
-                                                                          .stream()
-                                                                          .findAny();
+            Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
+                                                                    .stream()
+                                                                    .findAny();
 
             if (arbitraryMessage.isPresent()) {
                 try {
-                    final ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
+                    ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
                     combinedMessages.add(newMessage);
                 } catch (AlertException e) {
                     // If this happens, it means there is a bug in the Collector logic.
@@ -75,7 +72,7 @@ public class MessageCombiner {
         return combinedMessages;
     }
 
-    protected LinkedHashSet<ComponentItem> gatherComponentItems(final List<ProviderMessageContent> groupedMessages) {
+    protected LinkedHashSet<ComponentItem> gatherComponentItems(List<ProviderMessageContent> groupedMessages) {
         final List<ComponentItem> allComponentItems = groupedMessages
                                                           .stream()
                                                           .map(ProviderMessageContent::getComponentItems)
@@ -84,24 +81,24 @@ public class MessageCombiner {
         return combineComponentItems(allComponentItems);
     }
 
-    protected LinkedHashSet<ComponentItem> combineComponentItems(final List<ComponentItem> allComponentItems) {
+    protected LinkedHashSet<ComponentItem> combineComponentItems(List<ComponentItem> allComponentItems) {
         // The amount of collapsing we do makes this impossible to map back to a single notification.
-        final Map<String, ComponentItem> keyToItems = new LinkedHashMap<>();
-        for (final ComponentItem componentItem : allComponentItems) {
-            final Set<LinkableItem> componentAttributes = componentItem.getComponentAttributes();
-            final String key = generateKey(componentItem.getComponentKeys(), componentAttributes, componentItem.getOperation());
-            final ComponentItem oldItem = keyToItems.get(key);
+        Map<String, ComponentItem> keyToItems = new LinkedHashMap<>();
+        for (ComponentItem componentItem : allComponentItems) {
+            Set<LinkableItem> componentAttributes = componentItem.getComponentAttributes();
+            String key = componentItem.createKey();
+            ComponentItem oldItem = keyToItems.get(key);
 
-            final Set<LinkableItem> linkableItems = new LinkedHashSet<>();
+            Set<LinkableItem> combinedAttributes = new LinkedHashSet<>();
             if (null != oldItem) {
-                linkableItems.addAll(oldItem.getComponentAttributes());
-                linkableItems.addAll(componentAttributes);
+                combinedAttributes.addAll(oldItem.getComponentAttributes());
+                combinedAttributes.addAll(componentAttributes);
             } else {
-                linkableItems.addAll(componentAttributes);
+                combinedAttributes.addAll(componentAttributes);
             }
 
             try {
-                ComponentItem newComponentItem = createNewComponentItem(componentItem, linkableItems);
+                ComponentItem newComponentItem = createNewComponentItem(componentItem, combinedAttributes);
                 keyToItems.put(key, newComponentItem);
             } catch (AlertException e) {
                 // If this happens, it means there is a bug in the Collector logic.
@@ -128,32 +125,18 @@ public class MessageCombiner {
     }
 
     public ComponentItem createNewComponentItem(ComponentItem oldItem, Collection<LinkableItem> componentAttributes) throws AlertException {
-        LinkableItem component = oldItem.getComponent();
-        LinkableItem nullableSubComponent = oldItem.getSubComponent().orElse(null);
         return new ComponentItem.Builder()
                    .applyCategory(oldItem.getCategory())
-                   .applyPriority(oldItem.getPriority())
-                   .applyComponentData(component.getName(), component.getValue(), component.getUrl().orElse(null))
-                   .applySubComponent(nullableSubComponent)
                    .applyOperation(oldItem.getOperation())
-                   .applyNotificationIds(oldItem.getNotificationIds())
+                   .applyPriority(oldItem.getPriority())
+                   .applyComponentData(oldItem.getComponent())
+                   .applySubComponent(oldItem.getSubComponent().orElse(null))
+                   .applyCategoryItem(oldItem.getCategoryItem())
+                   .applySubCategoryItem(oldItem.getSubCategoryItem().orElse(null))
+                   .applyCollapseOnCategory(oldItem.collapseOnCategory())
                    .applyAllComponentAttributes(componentAttributes)
+                   .applyNotificationIds(oldItem.getNotificationIds())
                    .build();
-    }
-
-    private String generateKey(ComponentKeys componentKey, Collection<LinkableItem> componentAttributes, ItemOperation operation) {
-        StringBuilder keyBuilder = new StringBuilder();
-        keyBuilder.append(componentKey.getShallowKey());
-        componentAttributes
-            .stream()
-            .filter(item -> !item.isCollapsible())
-            .forEach(item -> {
-                keyBuilder.append(item.getName());
-                keyBuilder.append(item.getValue());
-                item.getUrl().ifPresent(keyBuilder::append);
-            });
-        keyBuilder.append(operation.toString());
-        return keyBuilder.toString();
     }
 
     private LinkedHashSet<ComponentItem> sortComponentItems(Collection<ComponentItem> componentItems) {
@@ -162,4 +145,5 @@ public class MessageCombiner {
                    .sorted(ComponentItem.createDefaultComparator())
                    .collect(Collectors.toCollection(LinkedHashSet::new));
     }
+
 }

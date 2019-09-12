@@ -32,7 +32,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
-    private static final String[] EXCLUDED_FIELDS = { "collapsible", "countable", "isNumericValue", "summarizable", "isPartOfKey" };
+    private static final String[] EXCLUDED_FIELDS = { "collapsible", "countable", "isNumericValue", "summarizable" };
 
     private final String name;
     private final String value;
@@ -42,7 +42,6 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private boolean countable;
     private boolean isNumericValue;
     private boolean summarizable;
-    private boolean isPartOfKey;
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
@@ -56,7 +55,6 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.countable = false;
         this.isNumericValue = false;
         this.summarizable = false;
-        this.isPartOfKey = false;
     }
 
     public String getName() {
@@ -110,24 +108,12 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.summarizable = summarizable;
     }
 
-    public boolean isPartOfKey() {
-        return isPartOfKey;
-    }
-
-    public void setPartOfKey(final boolean partOfKey) {
-        isPartOfKey = partOfKey;
-    }
-
     @Override
     public int compareTo(final LinkableItem otherItem) {
         if (!this.getName().equals(otherItem.getName())) {
             if (!this.isCollapsible() && otherItem.isCollapsible()) {
                 return -1;
             } else if (this.isCollapsible() && !otherItem.isCollapsible()) {
-                return 1;
-            } else if (this.isPartOfKey() && !otherItem.isPartOfKey()) {
-                return -1;
-            } else if (!this.isPartOfKey() && otherItem.isPartOfKey()) {
                 return 1;
             }
         }

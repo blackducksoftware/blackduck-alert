@@ -22,13 +22,13 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
+// FIXME delete this after ComponentItem update is complete (i.e. when it includes categoryItem and subCategoryItem)
 public class ComponentKeys extends AlertSerializableModel implements Comparable<ComponentKeys> {
     private static final char KEY_SEPARATOR = '_';
 
@@ -50,21 +50,6 @@ public class ComponentKeys extends AlertSerializableModel implements Comparable<
 
     public String getCategory() {
         return category;
-    }
-
-    public static String generateAdditionalDataString(Collection<LinkableItem> componentAttributes) {
-        StringBuilder additionalData = new StringBuilder();
-        for (LinkableItem attribute : componentAttributes) {
-            if (attribute.isPartOfKey()) {
-                if (additionalData.length() > 0) {
-                    additionalData.append(", ");
-                }
-                additionalData.append(attribute.getName());
-                additionalData.append(": ");
-                additionalData.append(attribute.getValue());
-            }
-        }
-        return additionalData.toString();
     }
 
     public String getShallowKey() {

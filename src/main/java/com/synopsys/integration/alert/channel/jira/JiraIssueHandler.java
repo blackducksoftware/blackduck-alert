@@ -166,17 +166,9 @@ public class JiraIssueHandler {
     private Map<String, List<ComponentItem>> combineComponentItems(Collection<ComponentItem> componentItems) {
         final Map<String, List<ComponentItem>> combinedItems = new LinkedHashMap<>();
         componentItems
-            .stream()
             .forEach(item -> {
-                StringBuilder keyBuilder = new StringBuilder(JiraIssueFormatHelper.TITLE_LIMIT);
-                keyBuilder.append(item.getComponentKeys().getShallowKey());
-                // FIXME find a way to make this provider-agnostic
-                if (!item.getCategory().contains("Vuln")) {
-                    Optional<LinkableItem> policyNameItem = findPolicyName(item.getComponentAttributes());
-                    keyBuilder.append(policyNameItem.map(LinkableItem::getValue).orElse(""));
-                }
-                keyBuilder.append(item.getOperation());
-                combinedItems.computeIfAbsent(keyBuilder.toString(), ignored -> new LinkedList<>()).add(item);
+                String key = item.createKey();
+                combinedItems.computeIfAbsent(key, ignored -> new LinkedList<>()).add(item);
             });
         return combinedItems;
     }
@@ -288,7 +280,7 @@ public class JiraIssueHandler {
 
     private IssueContentModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
         final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        return jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider, arbitraryItem.getComponentKeys());
+        return jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider, arbitraryItem);
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
