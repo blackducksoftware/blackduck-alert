@@ -133,7 +133,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
                     if (optionalBomComponent.isPresent()) {
                         VersionBomComponentView bomComponent = optionalBomComponent.get();
-                        List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
+                        List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(bomComponent, policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
                         items.addAll(vulnerabilityPolicyItems);
                     } else {
                         // A policy violation cleared will cause this case to happen.  At this point we may want a separate collector for policy violation cleared.
@@ -200,14 +200,15 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         return blackDuckPolicyLinkableItem;
     }
 
-    private List<ComponentItem> createVulnerabilityPolicyItems(VersionBomComponentView bomComponent, LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> optionalComponentVersionItem, Long notificationId) {
+    private List<ComponentItem> createVulnerabilityPolicyItems(VersionBomComponentView bomComponent, LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> optionalComponentVersionItem, Long notificationId,
+        ItemOperation operation) {
         List<ComponentItem> vulnerabilityPolicyItems = new ArrayList<>();
         Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = getBlackDuckDataHelper().getProjectVersionWrapper(bomComponent);
         if (optionalProjectVersionWrapper.isPresent()) {
             try {
                 List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(optionalProjectVersionWrapper.get(), bomComponent);
                 List<LinkableItem> licenseItems = getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent);
-                List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, optionalComponentVersionItem, notificationId);
+                List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, optionalComponentVersionItem, notificationId, operation);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
 
                 ComponentVersionView componentVersionView = getBlackDuckService().getResponse(bomComponent.getComponentVersion(), ComponentVersionView.class);

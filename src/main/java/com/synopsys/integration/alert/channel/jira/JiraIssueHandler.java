@@ -56,6 +56,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
@@ -231,12 +232,15 @@ public class JiraIssueHandler {
         componentItems
             .stream()
             .forEach(item -> {
-                String key = item.getComponentKeys().getShallowKey() + item.getOperation();
+                StringBuilder keyBuilder = new StringBuilder(JiraIssueFormatHelper.TITLE_LIMIT);
+                keyBuilder.append(item.getComponentKeys().getShallowKey());
                 // FIXME find a way to make this provider-agnostic
                 if (!item.getCategory().contains("Vuln")) {
-                    key = item.getComponentKeys().getDeepKey() + item.getOperation();
+                    Optional<LinkableItem> policyNameItem = findPolicyName(item.getComponentAttributes());
+                    keyBuilder.append(policyNameItem.map(LinkableItem::getValue).orElse(""));
                 }
-                combinedItems.computeIfAbsent(key, ignored -> new LinkedList<>()).add(item);
+                keyBuilder.append(item.getOperation());
+                combinedItems.computeIfAbsent(keyBuilder.toString(), ignored -> new LinkedList<>()).add(item);
             });
         return combinedItems;
     }
@@ -390,19 +394,19 @@ public class JiraIssueHandler {
         if (componentItem.getCategory().contains("Vuln")) {
             return StringUtils.EMPTY;
         }
-        StringBuilder keyBuilder = new StringBuilder();
-        final Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
-        for (List<LinkableItem> componentAttributeList : itemsOfSameName.values()) {
-            componentAttributeList
-                .stream()
-                .findFirst()
-                .filter(LinkableItem::isPartOfKey)
-                .ifPresent(item -> {
-                    keyBuilder.append(item.getName());
-                    keyBuilder.append(item.getValue());
-                });
-        }
+        StringBuilder keyBuilder = new StringBuilder(JiraIssueFormatHelper.TITLE_LIMIT);
+        Optional<LinkableItem> policyNameItem = findPolicyName(componentItem.getComponentAttributes());
+        policyNameItem.ifPresent(item -> {
+            keyBuilder.append(item.getName());
+            keyBuilder.append(item.getValue());
+        });
         return keyBuilder.toString();
+    }
+
+    private Optional<LinkableItem> findPolicyName(Collection<LinkableItem> attributes) {
+        return attributes.stream()
+                   .filter(attribute -> attribute.getName().equals(BlackDuckContent.LABEL_POLICY_NAME))
+                   .findFirst();
     }
 
     private String createStatusMessage(final Collection<String> issueKeys, final String jiraUrl) {

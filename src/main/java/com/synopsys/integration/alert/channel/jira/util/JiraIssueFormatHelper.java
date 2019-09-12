@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraIssueFormatHelper {
-    private static final int TITLE_LIMIT = 255;
+    public static final int TITLE_LIMIT = 255;
     private static final int TEXT_LIMIT = 30000;
     private static final String LINE_SEPARATOR = "\n";
 
