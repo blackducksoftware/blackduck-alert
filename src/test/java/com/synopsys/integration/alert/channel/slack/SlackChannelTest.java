@@ -32,10 +32,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.slack.parser.SlackChannelEventParser;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -46,7 +45,6 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -60,7 +58,7 @@ public class SlackChannelTest extends ChannelTest {
 
     private SlackChannel createSlackChannel() {
         final RestChannelUtility restChannelUtility = createRestChannelUtility();
-        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(restChannelUtility);
+        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtility);
         return new SlackChannel(CHANNEL_KEY, gson, createAuditUtility(), restChannelUtility, slackChannelEventParser);
     }
 
@@ -318,7 +316,7 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestExceptions() throws Exception {
-        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(null);
+        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, null);
         final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
         List<Request> request = null;
 
@@ -367,7 +365,7 @@ public class SlackChannelTest extends ChannelTest {
         final RestChannelUtility restChannelUtility = new RestChannelUtility(null);
         final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessage(Mockito.any(), Mockito.anyString());
-        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(restChannelUtilitySpy);
+        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtilitySpy);
         final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, restChannelUtilitySpy, slackChannelEventParser);
         final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
@@ -388,7 +386,7 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(null);
+        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, null);
         final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();

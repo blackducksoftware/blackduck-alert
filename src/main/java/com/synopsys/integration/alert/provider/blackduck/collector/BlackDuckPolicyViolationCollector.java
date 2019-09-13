@@ -114,18 +114,16 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
                 Optional<VersionBomComponentView> optionalBomComponent = getBlackDuckDataHelper().getBomComponentView(bomComponentUrl);
 
-                List<LinkableItem> policyLinkableItems = new ArrayList<>();
+                List<LinkableItem> policyAttributes = new ArrayList<>();
                 LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
-                policyLinkableItems.add(policyNameItem);
                 Optional<LinkableItem> optionalPolicySeverityItem = createPolicySeverityItem(policyInfo);
-                optionalPolicySeverityItem.ifPresent(policyLinkableItems::add);
-                optionalBomComponent.ifPresent(bomComponent -> policyLinkableItems.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
+                optionalBomComponent.ifPresent(bomComponent -> policyAttributes.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
 
                 Long notificationId = notificationContent.getId();
                 LinkableItem componentItem = policyComponentData.getComponentItem().orElse(null);
                 Optional<LinkableItem> optionalComponentVersionItem = policyComponentData.getComponentVersion();
 
-                Optional<ComponentItem> item = addApplicableItems(notificationId, componentItem, optionalComponentVersionItem.orElse(null), policyLinkableItems, operation, priority);
+                Optional<ComponentItem> item = addApplicableItems(operation, priority, componentItem, optionalComponentVersionItem.orElse(null), policyNameItem, optionalPolicySeverityItem.orElse(null), policyAttributes, notificationId);
                 item.ifPresent(items::add);
 
                 Optional<PolicyRuleView> optionalPolicyRule = getBlackDuckDataHelper().getPolicyRule(policyInfo);

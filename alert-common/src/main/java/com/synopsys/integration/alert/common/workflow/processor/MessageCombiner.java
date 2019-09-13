@@ -132,7 +132,7 @@ public class MessageCombiner {
                    .applyComponentData(oldItem.getComponent())
                    .applySubComponent(oldItem.getSubComponent().orElse(null))
                    .applyCategoryItem(oldItem.getCategoryItem())
-                   .applySubCategoryItem(oldItem.getSubCategoryItem().orElse(null))
+                   .applyCategoryGroupingAttribute(oldItem.getCategoryGroupingAttribute().orElse(null))
                    .applyCollapseOnCategory(oldItem.collapseOnCategory())
                    .applyAllComponentAttributes(componentAttributes)
                    .applyNotificationIds(oldItem.getNotificationIds())

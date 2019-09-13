@@ -46,7 +46,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     private LinkableItem subComponent;
 
     private LinkableItem categoryItem;
-    private LinkableItem subCategoryItem;
+    private LinkableItem categoryGroupingAttribute;
     private boolean collapseOnCategory;
 
     private Set<LinkableItem> componentAttributes;
@@ -59,7 +59,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         LinkableItem component,
         LinkableItem subComponent,
         LinkableItem categoryItem,
-        LinkableItem subCategoryItem,
+        LinkableItem categoryGroupingAttribute,
         boolean collapseOnCategory, Set<LinkableItem> componentAttributes,
         Set<Long> notificationIds
     ) {
@@ -69,7 +69,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         this.component = component;
         this.subComponent = subComponent;
         this.categoryItem = categoryItem;
-        this.subCategoryItem = subCategoryItem;
+        this.categoryGroupingAttribute = categoryGroupingAttribute;
         this.collapseOnCategory = collapseOnCategory;
         this.componentAttributes = componentAttributes;
         this.notificationIds = notificationIds;
@@ -121,8 +121,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return categoryItem;
     }
 
-    public Optional<LinkableItem> getSubCategoryItem() {
-        return Optional.ofNullable(subCategoryItem);
+    public Optional<LinkableItem> getCategoryGroupingAttribute() {
+        return Optional.ofNullable(categoryGroupingAttribute);
     }
 
     public boolean getCollapseOnCategory() {
@@ -207,9 +207,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String categoryItemName;
         private String categoryItemValue;
         private String categoryItemUrl;
-        private String subCategoryItemName;
-        private String subCategoryItemValue;
-        private String subCategoryItemUrl;
+        private String categoryGroupingAttributeName;
+        private String categoryGroupingAttributeValue;
 
         private Set<Long> notificationIds = new LinkedHashSet<>();
 
@@ -226,8 +225,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
             LinkableItem categoryItem = new LinkableItem(categoryItemName, categoryItemValue, categoryItemUrl);
             LinkableItem subCategoryItem = null;
-            if (StringUtils.isNotBlank(subCategoryItemName) && StringUtils.isNotBlank(subCategoryItemValue)) {
-                subCategoryItem = new LinkableItem(subCategoryItemName, subCategoryItemValue, subCategoryItemUrl);
+            if (StringUtils.isNotBlank(categoryGroupingAttributeName) && StringUtils.isNotBlank(categoryGroupingAttributeValue)) {
+                subCategoryItem = new LinkableItem(categoryGroupingAttributeName, categoryGroupingAttributeValue);
             }
 
             ComponentItemPriority componentPriority = ComponentItemPriority.NONE;
@@ -322,18 +321,17 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return this;
         }
 
-        public Builder applySubCategoryItem(LinkableItem subCategoryItem) {
-            if (null != subCategoryItem) {
-                this.subCategoryItemName = subCategoryItem.getName();
-                this.subCategoryItemValue = subCategoryItem.getValue();
-                this.subCategoryItemUrl = subCategoryItem.getUrl().orElse(null);
+        public Builder applyCategoryGroupingAttribute(LinkableItem categoryGroupingAttribute) {
+            if (null != categoryGroupingAttribute) {
+                this.categoryGroupingAttributeName = categoryGroupingAttribute.getName();
+                this.categoryGroupingAttributeValue = categoryGroupingAttribute.getValue();
             }
             return this;
         }
 
-        public Builder applySubCategoryItem(String name, String value) {
-            this.subCategoryItemName = name;
-            this.subCategoryItemValue = value;
+        public Builder applyCategoryGroupingAttribute(String name, String value) {
+            this.categoryGroupingAttributeName = name;
+            this.categoryGroupingAttributeValue = value;
             return this;
         }
 

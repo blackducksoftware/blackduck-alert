@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -59,8 +58,8 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         priorityMap.put("unspecified", ComponentItemPriority.NONE);
     }
 
-    protected Optional<ComponentItem> addApplicableItems(Long notificationId, LinkableItem componentItem, LinkableItem componentVersionItem, Collection<LinkableItem> policyItems, ItemOperation operation,
-        ComponentItemPriority priority) {
+    protected Optional<ComponentItem> addApplicableItems(ItemOperation operation, ComponentItemPriority priority, LinkableItem componentItem, LinkableItem componentVersionItem, LinkableItem policyItem, LinkableItem policySeverityItem,
+        Collection<LinkableItem> policyAttributes, Long notificationId) {
         try {
             ComponentItem.Builder builder = new ComponentItem.Builder();
             builder
@@ -69,9 +68,10 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
                 .applyPriority(priority)
                 .applyComponentData(componentItem)
                 .applySubComponent(componentVersionItem)
-                .applyAllComponentAttributes(policyItems)
+                .applyCategoryItem(policyItem)
+                .applyCategoryGroupingAttribute(policySeverityItem)
+                .applyAllComponentAttributes(policyAttributes)
                 .applyNotificationId(notificationId);
-
             return Optional.of(builder.build());
         } catch (Exception ex) {
             logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, componentVersionItem);
@@ -100,20 +100,10 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         return Optional.empty();
     }
 
-    protected List<LinkableItem> createPolicyLinkableItems(PolicyInfo policyInfo, String bomComponentUrl) {
-        ArrayList<LinkableItem> items = new ArrayList<>();
-
-        LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
-        items.add(policyNameItem);
-
-        Optional<LinkableItem> policySeverityItem = createPolicySeverityItem(policyInfo);
-        policySeverityItem.ifPresent(items::add);
-
-        if (StringUtils.isNotBlank(bomComponentUrl)) {
-            getBlackDuckDataHelper().getBomComponentView(bomComponentUrl).ifPresent(bomComponent -> items.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
-        }
-
-        return items;
+    protected List<LinkableItem> createLicenseLinkableItems(String bomComponentUrl) {
+        return getBlackDuckDataHelper().getBomComponentView(bomComponentUrl)
+                   .map(getBlackDuckDataHelper()::getLicenseLinkableItems)
+                   .orElse(List.of());
     }
 
 }

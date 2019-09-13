@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public class JiraIssueHandler {
         for (ProviderMessageContent messageContent : content.getSubContent()) {
             Optional<LinkableItem> subTopic = messageContent.getSubTopic();
 
-            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(providerName, commonTopic, subTopic, messageContent.getComponentItems(), jiraIssueConfig);
+            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(providerName, commonTopic, subTopic, messageContent.groupRelatedComponentItems(), jiraIssueConfig);
             issueKeys.addAll(issueKeysForMessage);
         }
 
@@ -106,10 +107,17 @@ public class JiraIssueHandler {
         return new JiraMessageResult(statusMessage, issueKeys);
     }
 
-    private Set<String> createOrUpdateIssuesPerComponent(String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
+    private Set<String> createOrUpdateIssuesPerComponent(String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, SetMap<String, ComponentItem> groupedComponentItems, JiraIssueConfig jiraIssueConfig)
+        throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         SetMap<String, String> missingTransitionToIssues = new SetMap<>();
         String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
+
+        // FIXME use the map rather than flattening it
+        Set<ComponentItem> componentItems = groupedComponentItems.values()
+                                                .stream()
+                                                .flatMap(Set::stream)
+                                                .collect(Collectors.toSet());
 
         Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
         for (List<ComponentItem> combinedItems : combinedItemsMap.values()) {

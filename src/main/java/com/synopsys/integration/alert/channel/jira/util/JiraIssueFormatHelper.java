@@ -45,7 +45,7 @@ public class JiraIssueFormatHelper {
     private static final String LINE_SEPARATOR = "\n";
 
     public String createTitle(String provider, LinkableItem topic, Optional<LinkableItem> subTopic, ComponentItem arbitraryItem) {
-        final StringBuilder title = new StringBuilder();
+        StringBuilder title = new StringBuilder();
         title.append("Alert - Provider: ");
         title.append(provider);
         title.append(", ");
@@ -54,7 +54,7 @@ public class JiraIssueFormatHelper {
         title.append(topic.getValue());
 
         if (subTopic.isPresent()) {
-            final LinkableItem subTopicItem = subTopic.get();
+            LinkableItem subTopicItem = subTopic.get();
             title.append(", ");
             title.append(subTopicItem.getName());
             title.append(": ");
@@ -65,7 +65,7 @@ public class JiraIssueFormatHelper {
         LinkableItem component = arbitraryItem.getComponent();
         title.append(component.getName());
         title.append(": ");
-        title.append(component.getName());
+        title.append(component.getValue());
 
         Optional<LinkableItem> optionalSubComponent = arbitraryItem.getSubComponent();
         if (optionalSubComponent.isPresent()) {
@@ -76,7 +76,10 @@ public class JiraIssueFormatHelper {
             title.append(subComponent.getValue());
         }
 
-        if (!arbitraryItem.collapseOnCategory()) {
+        if (arbitraryItem.collapseOnCategory()) {
+            title.append(", ");
+            title.append(arbitraryItem.getCategory());
+        } else {
             title.append(", ");
             LinkableItem categoryItem = arbitraryItem.getCategoryItem();
             title.append(categoryItem.getName());
@@ -88,8 +91,8 @@ public class JiraIssueFormatHelper {
     }
 
     public IssueContentModel createDescription(LinkableItem commonTopic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, String providerName, ComponentItem arbitraryItem) {
-        final String title = createTitle(providerName, commonTopic, subTopic, arbitraryItem);
-        final StringBuilder description = new StringBuilder();
+        String title = createTitle(providerName, commonTopic, subTopic, arbitraryItem);
+        StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
         description.append(LINE_SEPARATOR);
@@ -98,7 +101,7 @@ public class JiraIssueFormatHelper {
         description.append(commonTopic.getValue());
         description.append(LINE_SEPARATOR);
         if (subTopic.isPresent()) {
-            final LinkableItem linkableItem = subTopic.get();
+            LinkableItem linkableItem = subTopic.get();
             String valueString = createValueString(linkableItem);
             description.append(linkableItem.getName());
             description.append(": ");
@@ -111,16 +114,16 @@ public class JiraIssueFormatHelper {
         String componentSection = createComponentString(arbitraryItem);
         description.append(componentSection);
 
-        splitComponentAttributesForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
+        splitAdditionalComponentInfoForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
         description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
         return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
-    public void splitComponentAttributesForDescription(int descriptionLength, Collection<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
+    public void splitAdditionalComponentInfoForDescription(int descriptionLength, Collection<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
         Set<String> descriptionItems = new LinkedHashSet<>();
         MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
         for (ComponentItem componentItem : componentItems) {
-            final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
+            Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
             descriptionItems.addAll(descriptionItemsForComponent);
         }
 
@@ -159,7 +162,7 @@ public class JiraIssueFormatHelper {
         Set<String> descriptionItems = new LinkedHashSet<>();
 
         for (ComponentItem componentItem : componentItems) {
-            final Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
+            Set<String> descriptionItemsForComponent = createDescriptionItems(componentItem);
             descriptionItems.addAll(descriptionItemsForComponent);
         }
 
@@ -183,12 +186,13 @@ public class JiraIssueFormatHelper {
         componentSection.append(": ");
         componentSection.append(component.getValue());
 
-        componentItem.getSubComponent().ifPresent(subComponent -> {
-            componentSection.append(LINE_SEPARATOR);
-            componentSection.append(subComponent.getName());
-            componentSection.append(": ");
-            componentSection.append(createValueString(subComponent));
-        });
+        componentItem.getSubComponent()
+            .ifPresent(subComponent -> {
+                componentSection.append(LINE_SEPARATOR);
+                componentSection.append(subComponent.getName());
+                componentSection.append(": ");
+                componentSection.append(createValueString(subComponent));
+            });
 
         componentSection.append(LINE_SEPARATOR);
         return componentSection.toString();
@@ -198,7 +202,7 @@ public class JiraIssueFormatHelper {
         Set<String> descriptionItems = new LinkedHashSet<>();
         Map<String, List<LinkableItem>> itemsOfSameName = componentItem.getItemsOfSameName();
 
-        for (final Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
+        for (Map.Entry<String, List<LinkableItem>> entry : itemsOfSameName.entrySet()) {
             String itemName = entry.getKey();
             String valuesString = createValuesString(entry.getValue());
 
@@ -211,15 +215,15 @@ public class JiraIssueFormatHelper {
 
     private String createValuesString(Collection<LinkableItem> linkableItems) {
         if (linkableItems.size() == 1) {
-            final LinkableItem item = linkableItems
-                                          .stream()
-                                          .findAny()
-                                          .orElseThrow(() -> new AlertRuntimeException("A non-empty list had no elements"));
+            LinkableItem item = linkableItems
+                                    .stream()
+                                    .findAny()
+                                    .orElseThrow(() -> new AlertRuntimeException("A non-empty list had no elements"));
             return createValueString(item);
         } else {
             StringBuilder valuesBuilder = new StringBuilder();
             for (LinkableItem item : linkableItems) {
-                final String valueString = createValueString(item);
+                String valueString = createValueString(item);
                 valuesBuilder.append("[ ");
                 valuesBuilder.append(valueString);
                 valuesBuilder.append(" ] ");
@@ -230,7 +234,7 @@ public class JiraIssueFormatHelper {
 
     private String createValueString(LinkableItem linkableItem) {
         StringBuilder valueBuilder = new StringBuilder();
-        final Optional<String> url = linkableItem.getUrl();
+        Optional<String> url = linkableItem.getUrl();
         if (url.isPresent()) {
             valueBuilder.append('[');
             valueBuilder.append(linkableItem.getValue());
