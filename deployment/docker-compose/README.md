@@ -86,13 +86,14 @@ This section will walk through each step of the installation procedure.
     - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
     
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
-
 - Create a file containing the encryption salt for Alert in the secrets directory.
     ```
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
     - Replace <SALT_TEXT> with the salt to use.
     - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
+    
+    Note: If you created the secret ALERT_ENCRYPTION_SALT in a version of Alert prior to 5.x, please rename the file to ALERT_ENCRYPTION_GLOBAL_SALT to use the same salt as the previous version.
     
 ##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
@@ -172,6 +173,8 @@ This section will walk through each step of the installation procedure.
     ```
     - Replace <SALT_TEXT> with the salt to use.
     - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
+    
+    Note: If you created the secret ALERT_ENCRYPTION_SALT in a version of Alert prior to 5.x, please rename the file to ALERT_ENCRYPTION_GLOBAL_SALT to use the same salt as the previous version.
     
 ##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
