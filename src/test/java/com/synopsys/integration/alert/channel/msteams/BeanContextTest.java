@@ -1,25 +1,21 @@
 package com.synopsys.integration.alert.channel.msteams;
 
-import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.ApplicationConfiguration;
-import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.web.config.DescriptorProcessor;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class })
-@TestPropertySource(locations = "classpath:spring-test.properties")
-@WebAppConfiguration
-public class BeanContextTest {
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.web.config.DescriptorProcessor;
+
+//@ExtendWith(SpringExtension.class)
+//@ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class })
+//@TestPropertySource(locations = "classpath:spring-test.properties")
+//@WebAppConfiguration
+//TODO the AlertIntegrationTest is wiring components correctly to avou an exception wiring a JMX MBean for 'datasource' need to figure out why extending AlertIntegrationTest solves this.  I suspect the dependsOn solves the autowiring issue.
+public class BeanContextTest extends AlertIntegrationTest {
     @Autowired
     DescriptorProcessor descriptorProcessor;
 
