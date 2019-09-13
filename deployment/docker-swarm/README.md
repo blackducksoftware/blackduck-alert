@@ -354,7 +354,6 @@ Example:
 alert:
     environment:
         - ALERT_HOSTNAME=localhost
-        - ALERT_LOGGING_LEVEL=INFO
 ```
 
 ### Environment Variable Overrides
