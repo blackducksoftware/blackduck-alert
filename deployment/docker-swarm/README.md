@@ -87,6 +87,8 @@ This section will walk through each step of the installation procedure.
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
+    Note: If you created the secret ALERT_ENCRYPTION_SALT in a version of Alert prior to 5.x, please use the same salt value for the ALERT_ENCRYPTION_GLOBAL_SALT secret.
+    
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
     ```
@@ -173,6 +175,8 @@ This section will walk through each step of the installation procedure.
     ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
+    
+    Note: If you created the secret ALERT_ENCRYPTION_SALT in a version of Alert prior to 5.x, please use the same salt value for the ALERT_ENCRYPTION_GLOBAL_SALT secret.
     
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
 - Uncomment the following from the docker-compose.local-overrides.yml file to the alert service section.

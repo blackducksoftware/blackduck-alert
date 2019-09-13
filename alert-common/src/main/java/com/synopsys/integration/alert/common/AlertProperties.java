@@ -39,6 +39,9 @@ public class AlertProperties {
     @Value("${alert.images.dir:}")
     private String alertImagesDir;
 
+    @Value("${alert.secrets.dir:/run/secrets}")
+    private String alertSecretsDir;
+
     @Value("${alert.trust.cert:}")
     private Boolean alertTrustCertificate;
 
@@ -114,6 +117,10 @@ public class AlertProperties {
             return imagesDirectory + "/synopsys.png";
         }
         return System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
+    }
+
+    public String getAlertSecretsDir() {
+        return StringUtils.trimToNull(alertSecretsDir);
     }
 
     public Boolean getH2ConsoleEnabled() {

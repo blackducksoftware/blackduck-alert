@@ -8,6 +8,7 @@ public class TestAlertProperties extends AlertProperties {
     private String alertConfigHome;
     private String alertTemplatesDir;
     private String alertImagesDir;
+    private String alertSecretsDir;
     private Boolean alertTrustCertificate;
     private String alertProxyHost;
     private String alertProxyPort;
@@ -20,6 +21,7 @@ public class TestAlertProperties extends AlertProperties {
     public TestAlertProperties() {
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";
+        this.alertSecretsDir = "./testDB/run/secrets";
     }
 
     @Override
@@ -83,5 +85,14 @@ public class TestAlertProperties extends AlertProperties {
 
     public void setEncryptionSalt(final String encryptionSalt) {
         this.encryptionSalt = encryptionSalt;
+    }
+
+    @Override
+    public String getAlertSecretsDir() {
+        return this.alertSecretsDir;
+    }
+
+    public void setAlertSecretsDir(final String alertSecretsDir) {
+        this.alertSecretsDir = alertSecretsDir;
     }
 }
