@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.security;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -44,6 +45,8 @@ public class EncryptionUtility {
     private static final String DATA_FILE_NAME = "alert_encryption_data.json";
     private static final String SECRETS_ENCRYPTION_PASSWORD = "ALERT_ENCRYPTION_PASSWORD";
     private static final String SECRETS_ENCRYPTION_SALT = "ALERT_ENCRYPTION_GLOBAL_SALT";
+    // TODO: In 6.x remove the old salt variable.
+    private static final String SECRETS_ENCRYPTION_SALT_OLD = "ALERT_ENCRYPTION_SALT";
     private final AlertProperties alertProperties;
     private final FilePersistenceUtil filePersistenceUtil;
 
@@ -161,9 +164,23 @@ public class EncryptionUtility {
     private Optional<String> readGlobalSaltFromSecretsFile() {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
+        } catch (FileNotFoundException ex) {
+            // TODO in 6.x remove this catch block
+            // ignore so we can attempt the old file.
         } catch (final IOException ex) {
-            return Optional.empty();
+            logger.debug("Error getting new global salt file.", ex);
         }
+
+        // TODO remove in 6.x
+        try {
+            return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT_OLD));
+        } catch (FileNotFoundException ex) {
+            // ignore if not found.
+        } catch (final IOException ex) {
+            logger.debug("Error getting old global salt file.", ex);
+        }
+
+        return Optional.empty();
     }
 
     private String readGlobalSaltFromVolumeDataFile() {
