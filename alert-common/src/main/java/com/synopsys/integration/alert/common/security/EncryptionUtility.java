@@ -165,11 +165,13 @@ public class EncryptionUtility {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
         } catch (FileNotFoundException ex) {
+            // TODO in 6.x remove this catch block
             // ignore so we can attempt the old file.
         } catch (final IOException ex) {
             logger.debug("Error getting new global salt file.", ex);
         }
 
+        // TODO remove in 6.x
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT_OLD));
         } catch (FileNotFoundException ex) {
