@@ -8,6 +8,7 @@ public class TestAlertProperties extends AlertProperties {
     private String alertConfigHome;
     private String alertTemplatesDir;
     private String alertImagesDir;
+    private String alertSecretsDir;
     private Boolean alertTrustCertificate;
     private String alertProxyHost;
     private String alertProxyPort;
@@ -16,6 +17,7 @@ public class TestAlertProperties extends AlertProperties {
     private Boolean sslEnabled = false;
 
     public TestAlertProperties() {
+        this.alertSecretsDir = "./testDB/run/secrets";
     }
 
     @Override
@@ -61,5 +63,14 @@ public class TestAlertProperties extends AlertProperties {
 
     public void setSslEnabled(final Boolean sslEnabled) {
         this.sslEnabled = sslEnabled;
+    }
+
+    @Override
+    public String getAlertSecretsDir() {
+        return this.alertSecretsDir;
+    }
+
+    public void setAlertSecretsDir(final String alertSecretsDir) {
+        this.alertSecretsDir = alertSecretsDir;
     }
 }

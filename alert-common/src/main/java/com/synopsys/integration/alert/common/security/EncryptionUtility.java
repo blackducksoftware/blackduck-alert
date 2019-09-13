@@ -44,6 +44,8 @@ public class EncryptionUtility {
     private static final String DATA_FILE_NAME = "alert_encryption_data.json";
     private static final String SECRETS_ENCRYPTION_PASSWORD = "ALERT_ENCRYPTION_PASSWORD";
     private static final String SECRETS_ENCRYPTION_SALT = "ALERT_ENCRYPTION_GLOBAL_SALT";
+    // TODO: In 6.x remove the old salt variable.
+    private static final String SECRETS_ENCRYPTION_SALT_OLD = "ALERT_ENCRYPTION_SALT";
     private final AlertProperties alertProperties;
     private final FilePersistenceUtil filePersistenceUtil;
 
@@ -162,8 +164,16 @@ public class EncryptionUtility {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
         } catch (final IOException ex) {
-            return Optional.empty();
+            logger.debug("New global salt file not found ", ex);
         }
+
+        try {
+            return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT_OLD));
+        } catch (final IOException ex) {
+            logger.debug("Old global salt file not found ", ex);
+        }
+
+        return Optional.empty();
     }
 
     private String readGlobalSaltFromVolumeDataFile() {
