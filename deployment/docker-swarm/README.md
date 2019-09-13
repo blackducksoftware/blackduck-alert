@@ -83,7 +83,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a docker secret containing the encryption salt for Alert.
     
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
+    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
@@ -172,7 +172,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a docker secret containing the encryption salt for Alert.
         
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
+    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
