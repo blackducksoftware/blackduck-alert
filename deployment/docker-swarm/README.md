@@ -123,7 +123,7 @@ Please see [Environment Variables](#environment-variables)
 ##### 5. Deploy the stack.
 - Execute the command:
     ```
-    docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
+    docker stack deploy -c <PATH>/docker-swarm/standalone/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <PATH> with the directory path to the Alert installation files. 
