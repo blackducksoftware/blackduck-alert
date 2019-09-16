@@ -27,9 +27,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.util.Stringable;
 
-public abstract class UIConfig extends AlertSerializableModel {
+public abstract class UIConfig extends Stringable {
     private final String label;
     private final String description;
     private final String urlName;

@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.util.Stringable;
 
 /**
  * Note when creating a new descriptor you will need to register descriptors in the database.
@@ -55,7 +55,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
  * <br/>
  * REMOVE_ALL_PERMISSIONS - removes all permissions from the user role for the descriptor and context.
  */
-public abstract class Descriptor extends AlertSerializableModel {
+public abstract class Descriptor extends Stringable {
     private final DescriptorKey descriptorKey;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;

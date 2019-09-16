@@ -38,6 +38,7 @@ public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
     private final SortedSet<LinkableItem> componentData;
     private LinkableItem componentItem;
     private LinkableItem componentVersion;
+    // TODO Sonarcloud wants this variable to be serializable (or transient). Perhaps there's another object we can use here?
     private ComponentVersionStatus componentVersionStatus;
 
     public BlackDuckPolicyLinkableItem() {

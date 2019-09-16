@@ -43,6 +43,9 @@ import com.synopsys.integration.alert.database.provider.project.ProviderProjectR
 @Component
 @Transactional
 public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
+    private static final String ERROR_BLANK_HREF = "The field projectHref cannot be blank";
+    private static final String ERROR_HREF_DOES_NOT_EXIST = "No project with that href existed: ";
+    private static final String ERROR_BLANK_ISSUE_TYPE = "The field issueType cannot be blank";
     private final PolarisIssueRepository polarisIssueRepository;
     private final ProviderProjectRepository providerProjectRepository;
 
@@ -56,11 +59,11 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<PolarisIssueModel> getProjectIssues(final String projectHref) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(projectHref)) {
-            throw new AlertDatabaseConstraintException("The field projectHref cannot be blank");
+            throw new AlertDatabaseConstraintException(ERROR_BLANK_HREF);
         }
         final Long projectId = providerProjectRepository.findFirstByHref(projectHref)
                                    .map(ProviderProjectEntity::getId)
-                                   .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
+                                   .orElseThrow(() -> new AlertDatabaseConstraintException(ERROR_HREF_DOES_NOT_EXIST + projectHref));
         return polarisIssueRepository.findByProjectId(projectId)
                    .stream()
                    .filter(entity -> projectId.equals(entity.getProjectId()))
@@ -71,10 +74,10 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
     @Override
     public Optional<PolarisIssueModel> getProjectIssueByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(projectHref)) {
-            throw new AlertDatabaseConstraintException("The field projectHref cannot be blank");
+            throw new AlertDatabaseConstraintException(ERROR_BLANK_HREF);
         }
         if (StringUtils.isBlank(issueType)) {
-            throw new AlertDatabaseConstraintException("The field issueType cannot be blank");
+            throw new AlertDatabaseConstraintException(ERROR_BLANK_ISSUE_TYPE);
         }
 
         final Optional<Long> optionalProjectId = providerProjectRepository.findFirstByHref(projectHref).map(ProviderProjectEntity::getId);
@@ -91,10 +94,10 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
     @Override
     public PolarisIssueModel updateIssueType(final String projectHref, final String issueType, final Integer newCount) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(projectHref)) {
-            throw new AlertDatabaseConstraintException("The field projectHref cannot be blank");
+            throw new AlertDatabaseConstraintException(ERROR_BLANK_HREF);
         }
         if (StringUtils.isBlank(issueType)) {
-            throw new AlertDatabaseConstraintException("The field issueType cannot be blank");
+            throw new AlertDatabaseConstraintException(ERROR_BLANK_ISSUE_TYPE);
         }
         if (null == newCount) {
             throw new AlertDatabaseConstraintException("The field newCount cannot be null");
@@ -102,7 +105,7 @@ public class DefaultPolarisIssueAccessor implements PolarisIssueAccessor {
 
         final Long projectId = providerProjectRepository.findFirstByHref(projectHref)
                                    .map(ProviderProjectEntity::getId)
-                                   .orElseThrow(() -> new AlertDatabaseConstraintException("No project with that href existed: " + projectHref));
+                                   .orElseThrow(() -> new AlertDatabaseConstraintException(ERROR_HREF_DOES_NOT_EXIST + projectHref));
         final Optional<PolarisIssueEntity> optionalIssueEntity = polarisIssueRepository.findFirstByIssueTypeAndProjectId(issueType, projectId);
 
         final PolarisIssueEntity newIssueEntity;

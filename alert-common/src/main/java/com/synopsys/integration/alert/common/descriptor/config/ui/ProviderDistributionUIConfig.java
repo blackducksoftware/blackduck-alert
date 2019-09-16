@@ -64,6 +64,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String LABEL_FORMAT = "Format";
     private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
     private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created.";
+
     private final ProviderContent providerContent;
 
     public ProviderDistributionUIConfig(final String label, final String urlName, final ProviderContent providerContent) {
