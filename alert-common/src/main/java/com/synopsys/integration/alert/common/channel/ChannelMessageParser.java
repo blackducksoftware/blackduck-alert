@@ -30,11 +30,8 @@ public abstract class ChannelMessageParser {
                 .ifPresent(messagePieces::add);
             messagePieces.add(getTopicSectionSeparator() + getLineSeparator());
 
-            SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
-            for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
-                List<String> componentItemMessagePieces = createComponentItemMessagePieces(similarItems);
-                messagePieces.addAll(componentItemMessagePieces);
-            }
+            List<String> componentMessagePieces = createAggregateComponentMessagePieces(messageContent);
+            messagePieces.addAll(componentMessagePieces);
 
             if (!messagePieces.isEmpty()) {
                 String lastString = messagePieces.removeLast();
@@ -45,19 +42,14 @@ public abstract class ChannelMessageParser {
         return messagePieces;
     }
 
-    public List<String> createComponentItemMessagePieces(Set<ComponentItem> componentItems) {
-        List<String> componentItemPieces = new LinkedList<>();
-        boolean collapseOnCategory = componentItems
-                                         .stream()
-                                         .allMatch(ComponentItem::collapseOnCategory);
-        if (collapseOnCategory) {
-            List<String> collapsedComponentPieces = createCollapsedComponentPieces(componentItems);
-            componentItemPieces.addAll(collapsedComponentPieces);
-        } else {
-            List<String> nonCollapsibleComponentPieces = createNonCollapsibleComponentPieces(componentItems);
-            componentItemPieces.addAll(nonCollapsibleComponentPieces);
+    public List<String> createAggregateComponentMessagePieces(ProviderMessageContent messageContent) {
+        List<String> messagePieces = new LinkedList<>();
+        SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
+        for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
+            List<String> componentItemMessagePieces = createComponentItemMessagePieces(similarItems);
+            messagePieces.addAll(componentItemMessagePieces);
         }
-        return componentItemPieces;
+        return messagePieces;
     }
 
     public String createCommonComponentItemString(ComponentItem componentItem) {
@@ -100,6 +92,15 @@ public abstract class ChannelMessageParser {
         return formattedString + getLineSeparator();
     }
 
+    protected List<String> createLinkableItemValuesPieces(Collection<LinkableItem> linkableItems) {
+        List<String> messagePieces = new LinkedList<>();
+        for (LinkableItem categoryItem : linkableItems) {
+            String linkableItemValueString = createLinkableItemValueString(categoryItem);
+            messagePieces.add("[" + linkableItemValueString + "]");
+        }
+        return messagePieces;
+    }
+
     protected String createLinkableItemValueString(LinkableItem linkableItem) {
         String value = encodeString(linkableItem.getValue());
         Optional<String> optionalUrl = linkableItem.getUrl();
@@ -122,6 +123,21 @@ public abstract class ChannelMessageParser {
 
     protected String getTopicSectionSeparator() {
         return "- - - - - - - - - - - - - - - - - - - -";
+    }
+
+    private List<String> createComponentItemMessagePieces(Set<ComponentItem> componentItems) {
+        List<String> componentItemPieces = new LinkedList<>();
+        boolean collapseOnCategory = componentItems
+                                         .stream()
+                                         .allMatch(ComponentItem::collapseOnCategory);
+        if (collapseOnCategory) {
+            List<String> collapsedComponentPieces = createCollapsedComponentPieces(componentItems);
+            componentItemPieces.addAll(collapsedComponentPieces);
+        } else {
+            List<String> nonCollapsibleComponentPieces = createNonCollapsibleComponentPieces(componentItems);
+            componentItemPieces.addAll(nonCollapsibleComponentPieces);
+        }
+        return componentItemPieces;
     }
 
     private List<String> createCollapsedComponentPieces(Collection<ComponentItem> componentItems) {
@@ -161,10 +177,8 @@ public abstract class ChannelMessageParser {
                                                           .stream()
                                                           .map(ComponentItem::getCategoryItem)
                                                           .collect(Collectors.toSet());
-                    for (LinkableItem categoryItem : categoryItems) {
-                        String linkableItemValueString = createLinkableItemValueString(categoryItem);
-                        componentItemPieces.add("[" + linkableItemValueString + "]");
-                    }
+                    List<String> categoryItemValues = createLinkableItemValuesPieces(categoryItems);
+                    componentItemPieces.addAll(categoryItemValues);
                     componentItemPieces.add(getLineSeparator() + getLineSeparator());
                 }
             }

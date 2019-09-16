@@ -78,6 +78,9 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         return providerCreationTime;
     }
 
+    /**
+     * Creates a logical grouping of ComponentItems using ComponentItem.createKey()
+     */
     public SetMap<String, ComponentItem> groupRelatedComponentItems() {
         SetMap<String, ComponentItem> componentItemSetMap = new SetMap<>();
         for (ComponentItem componentItem : componentItems) {

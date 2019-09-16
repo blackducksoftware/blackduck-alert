@@ -144,6 +144,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return notificationIds;
     }
 
+    /**
+     * Intended to be used for logical grouping of ComponentItems.
+     * @return A String that will identify this ComponentItem by category, operation, component, subComponent, and categoryItem if applicable.
+     */
     public String createKey() {
         return createKey(false);
     }
