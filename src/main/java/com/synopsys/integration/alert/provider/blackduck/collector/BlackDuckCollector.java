@@ -121,7 +121,8 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
     }
 
     protected List<ComponentItem> createVulnerabilityComponentItems(
-        Collection<VulnerableComponentView> vulnerableComponentViews, Collection<LinkableItem> licenseItems, LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId) {
+        Collection<VulnerableComponentView> vulnerableComponentViews, Collection<LinkableItem> licenseItems, LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId,
+        ItemOperation operation) {
         Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(vulnerableComponentViews);
         Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                 .map(VulnerableComponentView::getVulnerabilityWithRemediation)
@@ -137,6 +138,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
 
             LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+            item.setPartOfKey(true);
             item.setSummarizable(true);
             item.setCountable(true);
             item.setCollapsible(true);
@@ -155,7 +157,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                 .applyAllComponentAttributes(attributes)
                 .applyPriority(priority)
                 .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
-                .applyOperation(ItemOperation.UPDATE)
+                .applyOperation(operation)
                 .applyNotificationId(notificationId);
             componentVersionItem.ifPresent(builder::applySubComponent);
             try {

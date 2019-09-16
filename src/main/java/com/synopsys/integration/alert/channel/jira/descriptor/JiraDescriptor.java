@@ -44,8 +44,6 @@ public class JiraDescriptor extends ChannelDescriptor {
 
     public static final String JIRA_LABEL = "Jira Cloud";
     public static final String JIRA_URL = "jira";
-    // brands are in the fab icon set use the / character to delimit the icon set.
-    public static final String JIRA_ICON = "fab/jira";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
     @Autowired

@@ -53,7 +53,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public EmailDistributionUIConfig(EmailChannelKey emailChannelKey) {
-        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
+        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);
     }
 
     @Override

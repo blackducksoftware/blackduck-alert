@@ -31,8 +31,9 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class FieldAccessor {
+public class FieldAccessor extends AlertSerializableModel {
     private final Map<String, ConfigurationFieldModel> fields;
 
     public FieldAccessor(Map<String, ConfigurationFieldModel> fields) {

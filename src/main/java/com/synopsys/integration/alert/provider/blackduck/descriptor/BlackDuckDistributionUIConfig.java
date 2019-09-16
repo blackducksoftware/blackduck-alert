@@ -35,7 +35,7 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Autowired
     public BlackDuckDistributionUIConfig(final BlackDuckContent blackDuckContent) {
-        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON, blackDuckContent);
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, blackDuckContent);
     }
 
     @Override

@@ -54,6 +54,7 @@ public class ConfigurationJobModel extends AlertSerializableModel {
     }
 
     public FieldAccessor getFieldAccessor() {
+
         return fieldAccessor;
     }
 

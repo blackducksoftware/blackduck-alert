@@ -28,15 +28,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
 
 public class AlertSAMLEntryPoint extends SAMLEntryPoint {
-    private final Logger logger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
-
     private final SAMLContext samlContext;
 
     public AlertSAMLEntryPoint(final SAMLContext samlContext) {

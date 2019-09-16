@@ -222,7 +222,7 @@ public class DescriptorControllerTest {
                 return Optional.empty();
             }
 
-            return Optional.of(new UIConfig("Label", "description", "urlName", "fontAwesomeIcon") {
+            return Optional.of(new UIConfig("Label", "description", "urlName") {
 
                 @Override
                 public List<ConfigField> createFields() {

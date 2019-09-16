@@ -136,8 +136,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         }
         Collection<ComponentItem> items = new LinkedList<>();
         try {
-            LinkableItem componentItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent());
             Optional<LinkableItem> componentVersionItem = createComponentVersionItem(versionBomComponent);
+            // for 5.0.0 make the BOM edit either include the component link or the component version link not both to be consistent with the other channels.
+            LinkableItem componentItem = componentVersionItem
+                                             .map(ignored -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName()))
+                                             .orElse(new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, versionBomComponent.getComponentName(), versionBomComponent.getComponent()));
             List<VersionBomPolicyRuleView> policyRules = getBlackDuckService().getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (VersionBomPolicyRuleView rule : policyRules) {
                 if (!PolicySummaryStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
@@ -150,7 +153,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 policyNameItem.setCountable(true);
                 if (getBlackDuckDataHelper().hasVulnerabilityRule(rule)) {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
-                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId);
+                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId, ItemOperation.UPDATE);
                     items.addAll(vulnerabilityComponentItems);
                 } else {
                     items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));

@@ -50,7 +50,7 @@ public class FilePersistenceUtil {
             dataDirectory = String.format("%s/data", alertProperties.getAlertConfigHome());
         }
         this.parentDataDirectory = new File(dataDirectory);
-        this.secretsDirectory = new File("/run/secrets");
+        this.secretsDirectory = new File(alertProperties.getAlertSecretsDir());
     }
 
     public void writeToFile(final String fileName, final String content) throws IOException {

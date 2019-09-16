@@ -51,7 +51,8 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class SummaryMessageContentProcessor extends MessageContentProcessor {
-    public static final String COMPONENT_ITEM_NAME_SUMMARY = "Summary";
+    public static final String COMPONENT_ITEM_NAME_SUMMARY_VALUE = "Summary";
+    public static final String COMPONENT_ITEM_NAME_SUMMARY_LABEL = "Format";
     public static final String COMPONENT_ITEM_NAME_COMPONENTS = "Components";
     private final MessageOperationCombiner messageOperationCombiner;
 
@@ -141,7 +142,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                         builder.applyNotificationIds(notificationIds);
                         builder.applyPriority(priorityEntries.getKey());
                         builder.applyCategory(entry.getKey());
-                        builder.applyComponentData(COMPONENT_ITEM_NAME_SUMMARY, "");
+                        builder.applyComponentData(COMPONENT_ITEM_NAME_SUMMARY_LABEL, COMPONENT_ITEM_NAME_SUMMARY_VALUE);
                         builder.applyOperation(operation);
 
                         Map<String, Long> componentCounts = items.stream()
@@ -263,7 +264,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
         return items
                    .stream()
                    .filter(item -> itemName.equals(item.getName()))
-                   .count();
+                   .collect(Collectors.toSet())
+                   .size();
     }
 
     private void updateSummarizability(final LinkableItem item, final boolean isCountable, final boolean isNumeric) {

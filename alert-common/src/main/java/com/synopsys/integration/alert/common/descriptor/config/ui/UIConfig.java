@@ -27,25 +27,23 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.util.Stringable;
 
-public abstract class UIConfig extends AlertSerializableModel {
+public abstract class UIConfig extends Stringable {
     private final String label;
     private final String description;
     private final String urlName;
-    private final String fontAwesomeIcon;
     private final String componentNamespace;
 
-    protected UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon, final String componentNamespace) {
+    protected UIConfig(final String label, final String description, final String urlName, final String componentNamespace) {
         this.label = label;
         this.description = description;
         this.urlName = urlName;
-        this.fontAwesomeIcon = fontAwesomeIcon;
         this.componentNamespace = componentNamespace;
     }
 
-    public UIConfig(final String label, final String description, final String urlName, final String fontAwesomeIcon) {
-        this(label, description, urlName, fontAwesomeIcon, "");
+    public UIConfig(final String label, final String description, final String urlName) {
+        this(label, description, urlName, "");
     }
 
     public abstract List<ConfigField> createFields();
@@ -64,10 +62,6 @@ public abstract class UIConfig extends AlertSerializableModel {
 
     public String getUrlName() {
         return urlName;
-    }
-
-    public String getFontAwesomeIcon() {
-        return fontAwesomeIcon;
     }
 
     public boolean autoGenerateUI() {

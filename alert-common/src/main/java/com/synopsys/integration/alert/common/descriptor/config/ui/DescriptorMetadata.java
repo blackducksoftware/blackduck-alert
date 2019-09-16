@@ -39,7 +39,6 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private final String description;
     private final DescriptorType type;
     private final ConfigContextEnum context;
-    private final String fontAwesomeIcon;
     private final boolean automaticallyGenerateUI;
     private final String componentNamespace;
     private List<ConfigField> fields;
@@ -47,7 +46,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private Set<AccessOperation> operations;
     private boolean readOnly;
 
-    public DescriptorMetadata(DescriptorKey descriptorKey, String label, String urlName, String description, DescriptorType type, ConfigContextEnum context, String fontAwesomeIcon,
+    public DescriptorMetadata(DescriptorKey descriptorKey, String label, String urlName, String description, DescriptorType type, ConfigContextEnum context,
         boolean automaticallyGenerateUI, String componentNamespace, List<ConfigField> fields, String testFieldLabel) {
         this.label = label;
         this.urlName = urlName;
@@ -55,7 +54,6 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.description = description;
         this.type = type;
         this.context = context;
-        this.fontAwesomeIcon = fontAwesomeIcon;
         this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.componentNamespace = componentNamespace;
         this.fields = fields;
@@ -85,10 +83,6 @@ public class DescriptorMetadata extends AlertSerializableModel {
 
     public ConfigContextEnum getContext() {
         return context;
-    }
-
-    public String getFontAwesomeIcon() {
-        return fontAwesomeIcon;
     }
 
     public boolean isAutomaticallyGenerateUI() {
