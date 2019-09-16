@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
@@ -37,76 +37,47 @@ import com.synopsys.integration.alert.common.channel.MessageSplitter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {
     public static final int TITLE_LIMIT = 255;
     private static final int TEXT_LIMIT = 30000;
-    private static final String LINE_SEPARATOR = "\n";
 
-    public IssueContentModel createIssueContentModel(ProviderMessageContent providerMessageContent, ComponentItem arbitraryItem) {
-        String providerName = providerMessageContent.getProvider().getValue();
-        LinkableItem messageTopic = providerMessageContent.getTopic();
-        LinkableItem nullableSubTopic = providerMessageContent.getSubTopic().orElse(null);
-
-        String title = createTitle(providerName, messageTopic, nullableSubTopic, arbitraryItem);
+    public IssueContentModel createIssueContentModel(String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
+        String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
         description.append("Provider: ");
         description.append(providerName);
-        description.append(LINE_SEPARATOR);
-        description.append(messageTopic.getName());
-        description.append(": ");
-        description.append(messageTopic.getValue());
-        description.append(LINE_SEPARATOR);
-        if (null != nullableSubTopic) {
-            String valueString = createLinkableItemValueString(nullableSubTopic);
-            description.append(nullableSubTopic);
-            description.append(": ");
-            description.append(valueString);
-            description.append(LINE_SEPARATOR);
+        description.append(getLineSeparator());
+        description.append(createLinkableItemString(topic, true));
+        description.append(getLineSeparator());
+        if (null != subTopic) {
+            description.append(createLinkableItemString(subTopic, true));
+            description.append(getLineSeparator());
         }
 
         List<String> additionalComments = new ArrayList<>();
         List<String> descriptionAttributes = new ArrayList<>();
-        String componentSection = createCommonComponentItemString(arbitraryItem);
-        description.append(componentSection);
-
-        splitAdditionalComponentInfoForDescription(description.length(), providerMessageContent, descriptionAttributes, additionalComments);
-        description.append(StringUtils.join(descriptionAttributes, LINE_SEPARATOR));
+        splitAdditionalComponentInfoForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
+        description.append(StringUtils.join(descriptionAttributes, getLineSeparator()));
         return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
     public List<String> createOperationComment(String provider, String category, ItemOperation operation, Collection<ComponentItem> componentItems) {
-        String attributesString = createComponentAttributesString(componentItems);
+        List<String> attributesPieces = createComponentAttributeMessagePieces(componentItems);
         Collection<String> text = new ArrayList<>();
         String description = String.format("The %s operation was performed for this %s in %s.", operation.name(), category, provider);
         text.add(description);
-        if (StringUtils.isNotBlank(attributesString)) {
-            text.add("\n----------\n");
+        if (!attributesPieces.isEmpty()) {
+            text.add(getLineSeparator());
+            text.add("----------");
+            text.add(getLineSeparator());
+            String attributesString = String.join("", attributesPieces);
             text.add(attributesString);
         }
-        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
+        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, getLineSeparator());
         return splitter.splitMessages(text, true);
-    }
-
-    private String createComponentAttributesString(Collection<ComponentItem> componentItems) {
-        Set<String> descriptionItems = componentItems
-                                           .stream()
-                                           .map(ComponentItem::getComponentAttributes)
-                                           .flatMap(Set::stream)
-                                           .distinct()
-                                           .map(this::createLinkableItemString)
-                                           .collect(Collectors.toSet());
-
-        StringBuilder attributes = new StringBuilder();
-        for (String descriptionItem : descriptionItems) {
-            attributes.append(descriptionItem);
-            attributes.append(LINE_SEPARATOR);
-        }
-
-        return attributes.toString();
     }
 
     @Override
@@ -155,9 +126,9 @@ public class JiraMessageParser extends ChannelMessageParser {
         return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
-    private void splitAdditionalComponentInfoForDescription(int descriptionLength, ProviderMessageContent messageContent, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
-        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, LINE_SEPARATOR);
-        List<String> componentItemMessagePieces = createAggregateComponentMessagePieces(messageContent);
+    private void splitAdditionalComponentInfoForDescription(int descriptionLength, Set<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
+        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, getLineSeparator());
+        List<String> componentItemMessagePieces = createComponentItemMessagePieces(componentItems);
 
         int currentLength = descriptionLength;
         List<String> tempAdditionalComments = new ArrayList<>();

@@ -74,4 +74,8 @@ public class SetMap<K, S> extends AbstractMap<K, Set<S>> {
         return map;
     }
 
+    public void combine(SetMap<K, S> other) {
+        other.forEach(this::addAll);
+    }
+
 }

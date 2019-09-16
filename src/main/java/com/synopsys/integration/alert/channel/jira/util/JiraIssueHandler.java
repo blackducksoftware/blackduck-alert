@@ -135,7 +135,7 @@ public class JiraIssueHandler {
                         .map(IssueComponent::getKey)
                         .forEach(issueKeys::add);
                 } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(messageContent, arbitraryItem);
+                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, topic, subTopic.orElse(null), componentItems, arbitraryItem);
                     IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
                     IssueResponseModel issueResponseModel = createIssue(fieldsBuilder, jiraIssueConfig, providerName, topic, subTopic, arbitraryItem, trackingKey, contentModel);
                     issueKeys.add(issueResponseModel.getKey());

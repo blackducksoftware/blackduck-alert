@@ -225,34 +225,33 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
     }
 
     private Optional<ComponentItem> createEmptyVulnerabilityItem(LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> optionalComponentVersionItem, Long notificationId, ItemOperation operation) {
-        LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "ALL", null);
-        item.setSummarizable(true);
-        item.setCollapsible(true);
+        LinkableItem vulnerabilityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "ALL", null);
+        vulnerabilityItem.setSummarizable(true);
+        vulnerabilityItem.setCollapsible(true);
 
         LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, ComponentItemPriority.NONE.name());
         severityItem.setSummarizable(true);
         ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
-        List<LinkableItem> attributes = new LinkedList<>();
-        attributes.add(severityItem);
-        attributes.add(policyNameItem);
-        attributes.add(item);
 
         ComponentItem.Builder builder = new ComponentItem.Builder();
-        builder.applyComponentData(componentItem)
-            .applyAllComponentAttributes(attributes)
-            .applyPriority(priority)
+        builder
             .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
             .applyOperation(operation)
+            .applyPriority(priority)
+            .applyComponentData(componentItem)
+            .applyCategoryItem(policyNameItem)
+            .applyCategoryGroupingAttribute(severityItem)
+            .applyAllComponentAttributes(Set.of(vulnerabilityItem))
             .applyNotificationId(notificationId);
         optionalComponentVersionItem.ifPresent(builder::applySubComponent);
 
         try {
             return Optional.of(builder.build());
         } catch (AlertException ex) {
-            logger
-                .info("Error building policy vulnerability component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, optionalComponentVersionItem.orElse(null));
+            logger.info("Error building policy vulnerability component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, optionalComponentVersionItem.orElse(null));
             logger.error("Error building policy vulnerability component cause ", ex);
         }
         return Optional.empty();
     }
+
 }
