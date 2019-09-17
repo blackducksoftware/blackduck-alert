@@ -85,6 +85,9 @@ This section will walk through each step of the installation procedure.
     - Replace <PASSWORD_TEXT> with the password to use.
     - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
     
+    Note: With the command shown above ```echo``` will put the password in your shell history. 
+    If you do not want the password in the shell history, then use a text editor like ```vi``` and create the ALERT_ENCRYPTION_PASSWORD file. 
+    
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 - Create a file containing the encryption salt for Alert in the secrets directory.
     ```
@@ -94,6 +97,8 @@ This section will walk through each step of the installation procedure.
     - Replace <PATH_TO_SECRETS> with the path created in step 1 above.
     
     Note: If you created the secret ALERT_ENCRYPTION_SALT in a version of Alert prior to 5.x, please rename the file to ALERT_ENCRYPTION_GLOBAL_SALT to use the same salt as the previous version.
+    Also note, with the command shown above ```echo``` will put the salt in your shell history. 
+    If you do not want the salt in the shell history, then use a text editor like ```vi``` and create the ALERT_ENCRYPTION_GLOBAL_SALT file.
     
 ##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
@@ -108,11 +113,12 @@ Please see [Environment Variables](#environment-variables)
 ##### 6. Bring the containers up.
 - Start the containers
     ```
-    docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
+    docker-compose -f <PATH>/docker-compose/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
+- Replace <PATH> with the path to the Alert installation files.
 - Replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
     ```
-    docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose.local-overrides.yml -p blackduck up -d
+    docker-compose -f <PATH>/docker-compose/docker-compose.yml -f <PATH>/docker-compose.local-overrides.yml -p blackduck up -d
     ```
 
     Note: Don't forget the -d option at the end of the command line to run the command as a daemon process otherwise the container logs will go to standard output and ```ctrl+c``` will stop the application.
@@ -215,9 +221,10 @@ The steps in the upgrade procedure are the same as the installation procedure af
 ### Standalone Upgrade
 1. Execute the command:  
     ```
-    docker-compose -f ./docker-compose/docker-compose.yml -f ./docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
+    docker-compose -f <PATH>/docker-compose/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
     - Replace <PROFILE_NAME> with the name of the profile that was used during installation.
+    - Replace <PATH> with the path to the Alert installation files.
 2. Follow the [Standalone Installation](#standalone-installation)
 
 ### Upgrade with Black Duck
@@ -301,7 +308,6 @@ Example:
 alert:
     environment:
         - ALERT_HOSTNAME=localhost
-        - ALERT_LOGGING_LEVEL=INFO
 ```
 
 ### Environment Variable Overrides

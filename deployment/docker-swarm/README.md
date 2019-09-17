@@ -83,7 +83,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a docker secret containing the encryption salt for Alert.
     
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
+    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
@@ -123,7 +123,7 @@ Please see [Environment Variables](#environment-variables)
 ##### 5. Deploy the stack.
 - Execute the command:
     ```
-    docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
+    docker stack deploy -c <PATH>/docker-swarm/standalone/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <PATH> with the directory path to the Alert installation files. 
@@ -172,7 +172,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a docker secret containing the encryption salt for Alert.
         
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT - <FILE_CONTAINING_SALT>```
+    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
@@ -310,7 +310,7 @@ This section describes how to configure the optional certificates.  Please verif
             - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
             - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
             
-    - Uncomment the following from the docker-compose.local-overrides.yml file from the alert service section.
+    - Uncomment the following from the docker-compose.local-overrides.yml file from the secrets section near the bottom of the file.
     ```
         secrets:
             jssecacerts:
@@ -325,7 +325,22 @@ This section describes how to configure the optional certificates.  Please verif
                 name: "<STACK_NAME>_cacerts"
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-
+    - Uncomment the following from the docker-compose.local-overrides.yml file from the services alert section
+    ```
+        secrets:
+            - source: jssecacerts
+              target: jssecacerts
+              mode: 0664
+    ```
+    or
+    ```
+        secrets:
+            - source: cacerts
+              target: cacerts
+              mode: 0664
+    ```
+    Note: The mode (file permissions) must be specified because the certificate file is copied to a location Alert uses internally. Read/Write permissions are required to copy the file and import certificates into the TrustStore.
+    
 ### Insecure Trust of All Certificates
 WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
 Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
@@ -354,7 +369,6 @@ Example:
 alert:
     environment:
         - ALERT_HOSTNAME=localhost
-        - ALERT_LOGGING_LEVEL=INFO
 ```
 
 ### Environment Variable Overrides
