@@ -71,16 +71,14 @@ public class BlackDuckLicenseLimitCollector extends BlackDuckCollector {
             optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
         }
         if (!linkableItems.isEmpty()) {
-            linkableItems.forEach(item -> item.setSummarizable(true));
-
             try {
                 ComponentItem.Builder builder = new ComponentItem.Builder();
                 builder
                     .applyCategory(notificationContent.getNotificationType())
                     .applyOperation(ItemOperation.UPDATE)
                     .applyComponentData("Component", "Black Duck Server")
-                    // FIXME do something about these empty Strings
-                    .applyCategoryItem("", "")
+                    // FIXME do something about these Strings
+                    .applyCategoryItem("Warning", "")
                     .applyAllComponentAttributes(linkableItems)
                     .applyNotificationId(notificationContent.getId());
                 items.add(builder.build());

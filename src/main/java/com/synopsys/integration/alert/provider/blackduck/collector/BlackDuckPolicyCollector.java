@@ -83,8 +83,6 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     protected LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
         String policyName = policyInfo.getPolicyName();
         LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
-        policyNameItem.setSummarizable(true);
-        policyNameItem.setCountable(true);
         return policyNameItem;
     }
 
@@ -92,9 +90,6 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
         String severity = policyInfo.getSeverity();
         if (StringUtils.isNotBlank(severity)) {
             final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
-            severityItem.setCollapsible(false);
-            severityItem.setSummarizable(true);
-            severityItem.setCountable(false);
             return Optional.of(severityItem);
         }
         return Optional.empty();

@@ -154,10 +154,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
     /**
      * Intended to be used for logical grouping of ComponentItems.
-     * @param includeCategoryItemEvenIfCollapsible By default, if collapseOnCategory() returns true, categoryItem will be excluded from the key. Setting this to true will always include it.
+     * @param forceInclusionOfCategoryItem By default, if collapseOnCategory() returns true, categoryItem will be excluded from the key. Setting this to true will always include it.
      * @return A String that will identify this ComponentItem by category, operation, priority, component, subComponent, and categoryItem if applicable.
      */
-    public String createKey(boolean includeCategoryItemEvenIfCollapsible) {
+    public String createKey(boolean forceInclusionOfCategoryItem) {
         StringBuilder keyBuilder = new StringBuilder();
         keyBuilder.append(getCategory());
         keyBuilder.append(getOperation());
@@ -165,7 +165,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         appendLinkableItem(keyBuilder, getComponent());
         getSubComponent().ifPresent(subComponent -> appendLinkableItem(keyBuilder, subComponent));
 
-        if (!collapseOnCategory() || includeCategoryItemEvenIfCollapsible) {
+        if (!collapseOnCategory() || forceInclusionOfCategoryItem) {
             appendLinkableItem(keyBuilder, getCategoryItem());
         }
 

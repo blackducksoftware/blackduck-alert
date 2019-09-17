@@ -138,12 +138,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
 
             LinkableItem vulnerabilityIdItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
-            vulnerabilityIdItem.setSummarizable(true);
-            vulnerabilityIdItem.setCountable(true);
-            vulnerabilityIdItem.setCollapsible(true);
-
             LinkableItem severityItem = getSeverity(vulnerabilityUrl);
-            severityItem.setSummarizable(true);
             ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
             List<LinkableItem> attributes = new LinkedList<>();
@@ -217,7 +212,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             logger.debug("Error fetching vulnerability view", e);
         }
 
-        severityItem.setSummarizable(true);
         return severityItem;
     }
 

@@ -97,7 +97,7 @@ public class MessageOperationCombiner extends MessageCombiner {
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createAddFunction() {
         return (categoryDataCache, componentItem) -> {
-            String key = componentItem.createKey();
+            String key = componentItem.createKey(true);
             categoryDataCache.put(key, componentItem);
             return null;
         };
@@ -105,7 +105,7 @@ public class MessageOperationCombiner extends MessageCombiner {
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createDeleteFunction() {
         return (categoryDataCache, componentItem) -> {
-            String key = componentItem.createKey();
+            String key = componentItem.createKey(true);
             if (categoryDataCache.containsKey(key)) {
                 categoryDataCache.remove(key);
             } else {

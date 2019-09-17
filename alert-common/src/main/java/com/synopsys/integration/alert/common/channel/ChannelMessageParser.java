@@ -30,7 +30,7 @@ public abstract class ChannelMessageParser {
 
             SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
             for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
-                List<String> componentItemMessagePieces = createComponentItemMessagePieces(similarItems);
+                List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(similarItems);
                 messagePieces.addAll(componentItemMessagePieces);
             }
 
@@ -43,17 +43,25 @@ public abstract class ChannelMessageParser {
         return messagePieces;
     }
 
-    protected List<String> createComponentItemMessagePieces(Set<ComponentItem> componentItems) {
+    protected List<String> createComponentAndCategoryMessagePieces(Set<ComponentItem> componentItems) {
         List<String> componentItemPieces = createCommonComponentMessagePieces(componentItems);
+        List<String> categoryItemMessagePieces = createCategoryMessagePieces(componentItems);
+
+        componentItemPieces.addAll(categoryItemMessagePieces);
+        return componentItemPieces;
+    }
+
+    protected List<String> createCategoryMessagePieces(Set<ComponentItem> componentItems) {
+        List<String> categoryItemMessagePieces = new LinkedList<>();
         boolean collapseOnCategory = componentItems.stream().allMatch(ComponentItem::collapseOnCategory);
         if (collapseOnCategory) {
-            List<String> collapsedComponentPieces = createCollapsedComponentPieces(componentItems);
-            componentItemPieces.addAll(collapsedComponentPieces);
+            List<String> collapsedComponentPieces = createCollapsedCategoryItemPieces(componentItems);
+            categoryItemMessagePieces.addAll(collapsedComponentPieces);
         } else {
-            List<String> nonCollapsibleComponentPieces = createNonCollapsibleComponentPieces(componentItems);
-            componentItemPieces.addAll(nonCollapsibleComponentPieces);
+            List<String> nonCollapsibleComponentPieces = createNonCollapsibleCategoryItemPieces(componentItems);
+            categoryItemMessagePieces.addAll(nonCollapsibleComponentPieces);
         }
-        return componentItemPieces;
+        return categoryItemMessagePieces;
     }
 
     protected abstract String encodeString(String txt);
@@ -107,13 +115,14 @@ public abstract class ChannelMessageParser {
             if (optionalAttribute.isPresent()) {
                 LinkableItem attribute = optionalAttribute.get();
                 if (similarAttributes.size() == 1) {
-                    attributeStrings.add(createLinkableItemString(attribute) + getLineSeparator());
+                    attributeStrings.add(createLinkableItemString(attribute));
                 } else {
                     List<String> valuePieces = createLinkableItemValuesPieces(similarAttributes);
                     String valueString = String.join("", valuePieces);
                     String similarAttributesString = String.format("%s: %s", attribute.getName(), valueString);
-                    attributeStrings.add(similarAttributesString + getLineSeparator());
+                    attributeStrings.add(similarAttributesString);
                 }
+                attributeStrings.add(getLineSeparator());
             }
         }
         return attributeStrings;
@@ -143,11 +152,12 @@ public abstract class ChannelMessageParser {
 
             commonComponentMessagePieces.add(componentItemBuilder.toString());
             commonComponentMessagePieces.addAll(createComponentAttributeMessagePieces(componentItems));
+            commonComponentMessagePieces.add(getLineSeparator());
         }
         return commonComponentMessagePieces;
     }
 
-    private List<String> createCollapsedComponentPieces(Collection<ComponentItem> componentItems) {
+    private List<String> createCollapsedCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
         SetMap<String, ComponentItem> groupedItems = groupAndPrioritizeCollapsibleItems(componentItems);
         for (Map.Entry<String, Set<ComponentItem>> groupedItemsEntry : groupedItems.entrySet()) {
@@ -174,7 +184,7 @@ public abstract class ChannelMessageParser {
         return componentItemPieces;
     }
 
-    private List<String> createNonCollapsibleComponentPieces(Collection<ComponentItem> componentItems) {
+    private List<String> createNonCollapsibleCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
         for (ComponentItem componentItem : componentItems) {
             createCategoryGroupingString(componentItem)

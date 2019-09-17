@@ -149,9 +149,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 }
 
                 LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
-                policyNameItem.setCollapsible(true);
-                policyNameItem.setSummarizable(true);
-                policyNameItem.setCountable(true);
                 if (getBlackDuckDataHelper().hasVulnerabilityRule(rule)) {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
                     List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityPolicyComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId,

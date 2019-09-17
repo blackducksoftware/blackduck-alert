@@ -31,17 +31,14 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem>, Summarizable {
-    private static final String[] EXCLUDED_FIELDS = { "collapsible", "countable", "isNumericValue", "summarizable" };
+public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
+    private static final String[] EXCLUDED_FIELDS = { "isNumericValue" };
 
     private final String name;
     private final String value;
     private final String url;
 
-    private boolean collapsible;
-    private boolean countable;
     private boolean isNumericValue;
-    private boolean summarizable;
 
     public LinkableItem(final String name, final String value) {
         this(name, value, null);
@@ -51,10 +48,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         this.name = name;
         this.value = value;
         this.url = url;
-        this.collapsible = false;
-        this.countable = false;
         this.isNumericValue = false;
-        this.summarizable = false;
     }
 
     public String getName() {
@@ -72,25 +66,6 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return Optional.empty();
     }
 
-    @Override
-    public boolean isCollapsible() {
-        return collapsible;
-    }
-
-    public void setCollapsible(final boolean collapsible) {
-        this.collapsible = collapsible;
-    }
-
-    @Override
-    public boolean isCountable() {
-        return countable;
-    }
-
-    public void setCountable(final boolean countable) {
-        this.countable = countable;
-    }
-
-    @Override
     public boolean isNumericValue() {
         return isNumericValue;
     }
@@ -100,23 +75,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     }
 
     @Override
-    public boolean isSummarizable() {
-        return summarizable;
-    }
-
-    public void setSummarizable(final boolean summarizable) {
-        this.summarizable = summarizable;
-    }
-
-    @Override
     public int compareTo(final LinkableItem otherItem) {
-        if (!this.getName().equals(otherItem.getName())) {
-            if (!this.isCollapsible() && otherItem.isCollapsible()) {
-                return -1;
-            } else if (this.isCollapsible() && !otherItem.isCollapsible()) {
-                return 1;
-            }
-        }
         return CompareToBuilder.reflectionCompare(this, otherItem, EXCLUDED_FIELDS);
     }
 

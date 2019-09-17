@@ -58,18 +58,23 @@ public class JiraMessageParser extends ChannelMessageParser {
         }
 
         List<String> additionalComments = new ArrayList<>();
-        List<String> descriptionAttributes = new ArrayList<>();
-        splitAdditionalComponentInfoForDescription(description.length(), componentItems, descriptionAttributes, additionalComments);
-        description.append(StringUtils.join(descriptionAttributes, getLineSeparator()));
+        String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
+        description.append(String.join("", additionalDescriptionInfo));
         return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
-    public List<String> createOperationComment(String provider, String category, ItemOperation operation, Collection<ComponentItem> componentItems) {
+    public List<String> createOperationComment(String provider, String category, ItemOperation operation, Set<ComponentItem> componentItems) {
+        List<String> categoryItemMessagePieces = createCategoryMessagePieces(componentItems);
         List<String> attributesPieces = createComponentAttributeMessagePieces(componentItems);
         Collection<String> text = new ArrayList<>();
         String description = String.format("The %s operation was performed for this %s in %s.", operation.name(), category, provider);
         text.add(description);
         if (!attributesPieces.isEmpty()) {
+            text.add(getLineSeparator());
+            text.add("----------");
+            text.add(getLineSeparator());
+            String categoryItemString = String.join("", categoryItemMessagePieces);
+            text.add(categoryItemString);
             text.add(getLineSeparator());
             text.add("----------");
             text.add(getLineSeparator());
@@ -126,12 +131,12 @@ public class JiraMessageParser extends ChannelMessageParser {
         return StringUtils.abbreviate(title.toString(), TITLE_LIMIT);
     }
 
-    private void splitAdditionalComponentInfoForDescription(int descriptionLength, Set<ComponentItem> componentItems, Collection<String> descriptionAttributes, Collection<String> additionalComments) {
-        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, getLineSeparator());
-        List<String> componentItemMessagePieces = createComponentItemMessagePieces(componentItems);
-
-        int currentLength = descriptionLength;
+    private String createAdditionalDescriptionInfoOrAddToAdditionalComments(int initialDescriptionLength, Set<ComponentItem> componentItems, Collection<String> additionalComments) {
+        StringBuilder additionalDescriptionInfo = new StringBuilder();
         List<String> tempAdditionalComments = new ArrayList<>();
+
+        int currentLength = initialDescriptionLength;
+        List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(componentItems);
         for (String descriptionItem : componentItemMessagePieces) {
             int itemLength = descriptionItem.length();
             if (currentLength >= TEXT_LIMIT) {
@@ -140,12 +145,15 @@ public class JiraMessageParser extends ChannelMessageParser {
                 tempAdditionalComments.add(descriptionItem);
                 currentLength = currentLength + descriptionItem.length();
             } else {
-                descriptionAttributes.add(descriptionItem);
-                // add one for the newline character.
-                currentLength = 1 + currentLength + descriptionItem.length();
+                additionalDescriptionInfo.append(descriptionItem);
+                currentLength = initialDescriptionLength + additionalDescriptionInfo.length();
             }
         }
+
+        MessageSplitter splitter = new MessageSplitter(TEXT_LIMIT, getLineSeparator());
         additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, true));
+
+        return additionalDescriptionInfo.toString();
     }
 
     private String createTitlePartStringPrefixedWithComma(LinkableItem linkableItem) {

@@ -160,7 +160,7 @@ public class JiraIssueHandler {
         return issueKeys;
     }
 
-    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> issuesToUpdate, JiraIssueConfig jiraIssueConfig, String providerName, String category, ItemOperation operation, Collection<ComponentItem> componentItems)
+    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> issuesToUpdate, JiraIssueConfig jiraIssueConfig, String providerName, String category, ItemOperation operation, Set<ComponentItem> componentItems)
         throws IntegrationException {
         Set<IssueComponent> updatedIssues = new HashSet<>();
         for (IssueComponent issue : issuesToUpdate) {

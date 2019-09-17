@@ -226,11 +226,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
     private Optional<ComponentItem> createEmptyVulnerabilityItem(LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> optionalComponentVersionItem, Long notificationId, ItemOperation operation) {
         LinkableItem vulnerabilityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "ALL", null);
-        vulnerabilityItem.setSummarizable(true);
-        vulnerabilityItem.setCollapsible(true);
-
         LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, ComponentItemPriority.NONE.name());
-        severityItem.setSummarizable(true);
         ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
         ComponentItem.Builder builder = new ComponentItem.Builder();

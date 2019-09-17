@@ -141,9 +141,7 @@ public class BlackDuckDataHelper {
                    .map(licenseView -> {
                        // blackduck displays the license data in a modal dialog.  Therefore a link to the license doesn't make sense.
                        // Also the VersionBomLicenseView doesn't have any link mappings to the text link.
-                       LinkableItem item = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay());
-                       item.setCollapsible(true);
-                       return item;
+                       return new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay());
                    })
                    .collect(Collectors.toList());
     }
