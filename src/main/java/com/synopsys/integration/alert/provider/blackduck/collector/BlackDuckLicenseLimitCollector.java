@@ -72,15 +72,14 @@ public class BlackDuckLicenseLimitCollector extends BlackDuckCollector {
         }
         if (!linkableItems.isEmpty()) {
             try {
-                ComponentItem.Builder builder = new ComponentItem.Builder();
-                builder
-                    .applyCategory(notificationContent.getNotificationType())
-                    .applyOperation(ItemOperation.UPDATE)
-                    .applyComponentData("Component", "Black Duck Server")
-                    // FIXME do something about these Strings
-                    .applyCategoryItem("Warning", "")
-                    .applyAllComponentAttributes(linkableItems)
-                    .applyNotificationId(notificationContent.getId());
+                ComponentItem.Builder builder = new ComponentItem.Builder()
+                                                    .applyCategory(notificationContent.getNotificationType())
+                                                    .applyOperation(ItemOperation.UPDATE)
+                                                    .applyComponentData("Component", "Black Duck Server")
+                                                    // FIXME do something about these Strings
+                                                    .applyCategoryItem("Warning", "")
+                                                    .applyAllComponentAttributes(linkableItems)
+                                                    .applyNotificationId(notificationContent.getId());
                 items.add(builder.build());
             } catch (AlertException ex) {
                 logger.error("Error building license limit component item ", ex);

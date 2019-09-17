@@ -61,17 +61,16 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     protected Optional<ComponentItem> addApplicableItems(ItemOperation operation, ComponentItemPriority priority, LinkableItem componentItem, LinkableItem componentVersionItem, LinkableItem policyItem, LinkableItem policySeverityItem,
         Collection<LinkableItem> policyAttributes, Long notificationId) {
         try {
-            ComponentItem.Builder builder = new ComponentItem.Builder();
-            builder
-                .applyCategory(CATEGORY_TYPE)
-                .applyOperation(operation)
-                .applyPriority(priority)
-                .applyComponentData(componentItem)
-                .applySubComponent(componentVersionItem)
-                .applyCategoryItem(policyItem)
-                .applyCategoryGroupingAttribute(policySeverityItem)
-                .applyAllComponentAttributes(policyAttributes)
-                .applyNotificationId(notificationId);
+            ComponentItem.Builder builder = new ComponentItem.Builder()
+                                                .applyCategory(CATEGORY_TYPE)
+                                                .applyOperation(operation)
+                                                .applyPriority(priority)
+                                                .applyComponentData(componentItem)
+                                                .applySubComponent(componentVersionItem)
+                                                .applyCategoryItem(policyItem)
+                                                .applyCategoryGroupingAttribute(policySeverityItem)
+                                                .applyAllComponentAttributes(policyAttributes)
+                                                .applyNotificationId(notificationId);
             return Optional.of(builder.build());
         } catch (Exception ex) {
             logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, componentVersionItem);

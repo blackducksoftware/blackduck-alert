@@ -106,16 +106,15 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
                 componentAttributes.addAll(remediationItems);
 
-                ComponentItem.Builder builder = new ComponentItem.Builder();
-                builder
-                    .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
-                    .applyOperation(ItemOperation.UPDATE)
-                    .applyComponentData(componentItem)
-                    // FIXME get the vulnerability id(s) and create a ComponentItem from each of them
-                    .applyCategoryItem(new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "Present"))
-                    .applyCollapseOnCategory(true)
-                    .applyAllComponentAttributes(componentAttributes)
-                    .applyNotificationId(notificationId);
+                ComponentItem.Builder builder = new ComponentItem.Builder()
+                                                    .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
+                                                    .applyOperation(ItemOperation.UPDATE)
+                                                    .applyComponentData(componentItem)
+                                                    // FIXME get the vulnerability id(s) and create a ComponentItem from each of them
+                                                    .applyCategoryItem(new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "Present"))
+                                                    .applyCollapseOnCategory(true)
+                                                    .applyAllComponentAttributes(componentAttributes)
+                                                    .applyNotificationId(notificationId);
                 componentVersionItem.ifPresent(builder::applySubComponent);
                 try {
                     items.add(builder.build());

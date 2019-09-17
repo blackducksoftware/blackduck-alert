@@ -229,16 +229,15 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
         LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, ComponentItemPriority.NONE.name());
         ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
-        ComponentItem.Builder builder = new ComponentItem.Builder();
-        builder
-            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
-            .applyOperation(operation)
-            .applyPriority(priority)
-            .applyComponentData(componentItem)
-            .applyCategoryItem(policyNameItem)
-            .applyCategoryGroupingAttribute(severityItem)
-            .applyAllComponentAttributes(Set.of(vulnerabilityItem))
-            .applyNotificationId(notificationId);
+        ComponentItem.Builder builder = new ComponentItem.Builder()
+                                            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
+                                            .applyOperation(operation)
+                                            .applyPriority(priority)
+                                            .applyComponentData(componentItem)
+                                            .applyCategoryItem(policyNameItem)
+                                            .applyCategoryGroupingAttribute(severityItem)
+                                            .applyAllComponentAttributes(Set.of(vulnerabilityItem))
+                                            .applyNotificationId(notificationId);
         optionalComponentVersionItem.ifPresent(builder::applySubComponent);
 
         try {

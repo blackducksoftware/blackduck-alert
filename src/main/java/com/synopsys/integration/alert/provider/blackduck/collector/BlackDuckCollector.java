@@ -95,7 +95,6 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         policyPriorityMap.put("minor", ComponentItemPriority.LOW);
         policyPriorityMap.put("trivial", ComponentItemPriority.LOWEST);
         policyPriorityMap.put("unspecified", ComponentItemPriority.NONE);
-
     }
 
     public BlackDuckService getBlackDuckService() {
@@ -138,13 +137,14 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             }
 
             LinkableItem vulnerabilityIdItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+            vulnerabilityIdItem.setCollapsible(true);
             LinkableItem severityItem = getSeverity(vulnerabilityUrl);
             ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
             List<LinkableItem> attributes = new LinkedList<>();
             attributes.addAll(licenseItems);
-            attributes.add(vulnerabilityIdItem);
             attributes.add(severityItem);
+            attributes.add(vulnerabilityIdItem);
 
             ComponentItem.Builder builder = new ComponentItem.Builder();
             builder
@@ -155,7 +155,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                 .applySubComponent(componentVersionItem.orElse(null))
                 .applyCategoryItem(policyNameItem)
                 // FIXME this should be the Policy Severity
-                // .applySubCategoryItem(severityItem)
+                //  .applyCategoryGroupingAttribute()
                 .applyAllComponentAttributes(attributes)
                 .applyNotificationId(notificationId);
             componentVersionItem.ifPresent(builder::applySubComponent);
