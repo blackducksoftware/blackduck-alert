@@ -106,8 +106,12 @@ services:
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
 #      - WEBSERVER_CUSTOM_CERT_FILE
 #      - WEBSERVER_CUSTOM_KEY_FILE
-#      - jssecacerts
-#      - cacerts
+#      - source: jssecacerts
+#        target: jssecacerts
+#        mode: 0664
+#      - source: cacerts
+#        target: cacerts
+#        mode: 0664
 #
 # uncomment the secrets in use; both the required and the optional secrets.
 #secrets:
