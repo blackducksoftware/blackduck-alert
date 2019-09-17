@@ -4,6 +4,7 @@ import LabeledField from 'field/LabeledField';
 import { createFileUploadRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
+import GeneralButton from "./input/GeneralButton";
 
 class UploadFileButtonField extends Component {
     constructor(props) {
@@ -38,9 +39,10 @@ class UploadFileButtonField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint
+            fieldKey, csrfToken, onChange, currentConfig, endpoint, multiple
         } = this.props;
-        const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, fileData);
+        const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, "file", fileData);
+
         request.then((response) => {
             this.setState({
                 progress: false
@@ -61,23 +63,30 @@ class UploadFileButtonField extends Component {
 
     render() {
         const {
-            buttonLabel, value, accept, capture, multiple, fieldKey, name, readOnly, statusMessage
+            buttonLabel, value, accept, capture, fieldKey, name, readOnly, statusMessage
         } = this.props;
 
         const acceptedContentTypes = accept ? accept.join(',') : null;
         const endpointField = (
             <div className="d-inline-flex p-2 col-sm-8">
-                <input
-                    ref="fileInputField"
-                    type="file"
-                    id={fieldKey}
-                    name={name}
-                    onChange={this.onUploadClick}
-                    disabled={readOnly}
-                    accept={acceptedContentTypes}
-                    capture={capture}
-                    multiple={multiple}
-                />
+                <div className={""}>
+                    <input
+                        ref="fileInputField"
+                        type="file"
+                        id={fieldKey}
+                        name={name}
+                        disabled={readOnly}
+                        accept={acceptedContentTypes}
+                        capture={capture}
+                    />>
+                    <GeneralButton
+                        id={fieldKey}
+                        onClick={this.onUploadClick}
+                        disabled={readOnly}
+                        performingAction={this.state.progress}
+                    >{buttonLabel}
+                    </GeneralButton>
+                </div>
                 {this.state.success &&
                 <StatusMessage actionMessage={statusMessage} />
                 }

@@ -105,10 +105,12 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel, destination) {
     });
 }
 
-export function createFileUploadRequest(apiUrl, csrfToken, files) {
-    const fileData = {};
-    if (files) {
-        Object.keys(files).forEach(file => fileData[file.name] = file);
+export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
+    const fileData = new FormData();
+    if (files && files.length) {
+        for (const file of files) {
+            fileData.append(fieldName, file);
+        }
     }
     return fetch(apiUrl, {
         credentials: 'same-origin',
