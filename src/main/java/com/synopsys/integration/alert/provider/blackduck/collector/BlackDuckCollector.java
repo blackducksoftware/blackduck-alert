@@ -170,23 +170,22 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return vulnerabilityItems;
     }
 
-    protected Optional<ComponentItem> createRemediationComponentItem(ComponentVersionView componentVersionView, String categoryType, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId) {
-        return createRemediationComponentItem(componentVersionView, categoryType, componentItem, componentVersionItem, Set.of(), notificationId);
-    }
-
-    protected Optional<ComponentItem> createRemediationComponentItem(
-        ComponentVersionView componentVersionView, String categoryType, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Collection<LinkableItem> additionalAttributes, Long notificationId) {
+    protected Optional<ComponentItem> createRemediationComponentItem(String categoryType, ComponentVersionView componentVersionView, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem,
+        LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory,
+        Long notificationId) {
         try {
             List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
             if (!remediationItems.isEmpty()) {
-                ComponentItem.Builder remediationComponent = new ComponentItem.Builder();
-                remediationComponent.applyComponentData(componentItem)
-                    .applyAllComponentAttributes(remediationItems)
-                    .applyAllComponentAttributes(additionalAttributes)
-                    .applyCategory(categoryType)
-                    .applyOperation(ItemOperation.UPDATE)
-                    .applyNotificationId(notificationId)
-                    .applyPriority(ComponentItemPriority.NONE);
+                ComponentItem.Builder remediationComponent = new ComponentItem.Builder()
+                                                                 .applyCategory(categoryType)
+                                                                 .applyOperation(ItemOperation.UPDATE)
+                                                                 .applyPriority(ComponentItemPriority.NONE)
+                                                                 .applyComponentData(componentItem)
+                                                                 .applyCategoryItem(categoryItem)
+                                                                 .applyCategoryGroupingAttribute(categoryGrouping)
+                                                                 .applyCollapseOnCategory(collapseOnCategory)
+                                                                 .applyAllComponentAttributes(remediationItems)
+                                                                 .applyNotificationId(notificationId);
                 componentVersionItem.ifPresent(remediationComponent::applySubComponent);
 
                 return Optional.of(remediationComponent.build());

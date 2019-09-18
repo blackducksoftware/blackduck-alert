@@ -81,8 +81,7 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
 
     protected LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
         String policyName = policyInfo.getPolicyName();
-        LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
-        return policyNameItem;
+        return new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
     }
 
     protected Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
