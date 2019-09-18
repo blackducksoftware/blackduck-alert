@@ -6,6 +6,7 @@
     <include file="changelog-authentication-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-initialization.xml" relativeToChangelogFile="true"/>
-    <include file="changelog-global-slack.xml" relativeToChangelogFile="true" />
-    <include file="changelog-distribution-msteams.xml" relativeToChangelogFile="true" />
+    <include file="changelog-authentication.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-global-slack.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-distribution-msteams.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.action;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class UploadEndpointManager {
 
         UploadTarget target = uploadTargets.get(targetKey);
         // check permissions
-        if(!authorizationManager.hasAllPermissions(target.getContext().name(), target.getDescriptorKey().getUniversalKey(), AccessOperation.EXECUTE, AccessOperation.WRITE)) {
+        if (!authorizationManager.hasAllPermissions(target.getContext().name(), target.getDescriptorKey().getUniversalKey(), AccessOperation.EXECUTE, AccessOperation.WRITE)) {
             return responseFactory.createForbiddenResponse();
         }
 
@@ -84,19 +85,16 @@ public class UploadEndpointManager {
     }
 
     private ResponseEntity<String> writeFile(UploadTarget target, Resource fileResource) {
-        try {
-            if (fileResource.isFile()) {
-                //TODO add a validation function to apply for further security
-                filePersistenceUtil.writeToFile(target.getFilename(), fileResource.getFile());
-                return responseFactory.createCreatedResponse("", "File uploaded.");
-            }
-        } catch(IOException ex) {
+        try (InputStream inputStream = fileResource.getInputStream()) {
+            //TODO add a validation function to apply for further security
+            filePersistenceUtil.writeToFile(target.getFilename(), inputStream);
+            return responseFactory.createCreatedResponse("", "File uploaded.");
+        } catch (IOException ex) {
             // add logger to log details.  Don't want to send internal path details back to the client in the response.
             logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
-            logger.error("Caused by: ",ex);
+            logger.error("Caused by: ", ex);
             return responseFactory.createInternalServerErrorResponse("", "Error uploading file to server.");
         }
-        return responseFactory.createBadRequestResponse("", "The file could not be uploaded.");
     }
 
     private class UploadTarget {

@@ -24,8 +24,10 @@ package com.synopsys.integration.alert.common.persistence.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.FileUtils;
@@ -57,14 +59,20 @@ public class FilePersistenceUtil {
         writeToFile(createFile(fileName), content.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void writeToFile(String fileName, File sourceFile) throws IOException {
-        writeToFile(createFile(fileName), Files.readAllBytes(sourceFile.toPath()));
-    }
-
     public void writeToFile(File destination, byte[] data) throws IOException {
         // destination is a path to a file.  Make sure all parent directories exist before writing.
         destination.getParentFile().mkdirs();
-        Files.write(destination.toPath(),data,StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(destination.toPath(), data, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    public void writeToFile(String fileName, InputStream inputStream) throws IOException {
+        writeToFile(createFile(fileName), inputStream);
+    }
+
+    public void writeToFile(File destination, InputStream inputStream) throws IOException {
+        // destination is a path to a file.  Make sure all parent directories exist before writing.
+        destination.getParentFile().mkdirs();
+        Files.copy(inputStream, destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public void writeJsonToFile(final String fileName, final Object content) throws IOException {

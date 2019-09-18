@@ -70,7 +70,6 @@ public class SettingsUIConfig extends UIConfig {
     private static final String LABEL_SAML_ENTITY_BASE_URL = "Entity Base URL";
     private static final String LABEL_SAML_METADATA_FILE = "Identity Provider Metadata File";
 
-
     private static final String SETTINGS_ADMIN_EMAIL_DESCRIPTION = "The email address of the Alert system administrator. Used in case a password reset is needed.";
     private static final String SETTINGS_USER_PASSWORD_DESCRIPTION = "The password of the Alert system administrator. Used when logging in as the \"sysadmin\" user.";
     private static final String SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION = "The password used when encrypting sensitive fields. Must be at least 8 characters long.";
@@ -180,7 +179,9 @@ public class SettingsUIConfig extends UIConfig {
         // Saml settings
         final ConfigField samlForceAuth = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, SETTINGS_SAML_FORCE_AUTH_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
-        final ConfigField samlMetaDataFile = UploadFileButtonField.create(SettingsDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, SETTINGS_SAML_METADATA_FILE_DESCRIPTION, BUTTON_LABEL_SAML_METADATA_FILE,List.of("text/xml"), "", false).setPanel(SETTINGS_PANEL_SAML);
+        final ConfigField samlMetaDataFile = UploadFileButtonField.create(SettingsDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, SETTINGS_SAML_METADATA_FILE_DESCRIPTION, BUTTON_LABEL_SAML_METADATA_FILE, List.of(
+            "text/xml", "application/xml", ".xml"), "", false)
+                                                 .setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEntityId = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, SETTINGS_SAML_ENTITY_ID_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEntityBaseURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL, LABEL_SAML_ENTITY_BASE_URL, SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_ENABLED, LABEL_SAML_ENABLED, SETTINGS_SAML_ENABLED_DESCRIPTION)
