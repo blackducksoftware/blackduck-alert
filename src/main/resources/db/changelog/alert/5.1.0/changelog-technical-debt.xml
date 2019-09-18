@@ -48,4 +48,14 @@
                 onDelete="CASCADE"
         />
     </changeSet>
+
+    <changeSet author="bmandel" id="1568408188123-1">
+        <update
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS"
+        >
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+            <where>SOURCE_KEY = 'settings.encryption.password' OR SOURCE_KEY = 'settings.encryption.global.salt'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>

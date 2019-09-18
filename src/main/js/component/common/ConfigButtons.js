@@ -72,7 +72,7 @@ class ConfigButtons extends Component {
         if (isFixed) {
             fixedStyle = 'fixedButtonGroup';
         }
-        const wrapperStyles = `${fixedStyle} d-inline-flex offset-sm-3 col-sm-8`;
+        const wrapperStyles = `${fixedStyle} d-inline-flex offset-sm-4 col-sm-8`;
         return (
             <div className="form-group">
                 {isFixed &&
