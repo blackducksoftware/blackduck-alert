@@ -113,12 +113,12 @@ Please see [Environment Variables](#environment-variables)
 ##### 6. Bring the containers up.
 - Start the containers
     ```
-    docker-compose -f <PATH>/docker-compose/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
+    docker-compose -f <PATH>/docker-compose/standalone/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
 - Replace <PATH> with the path to the Alert installation files.
 - Replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
     ```
-    docker-compose -f <PATH>/docker-compose/docker-compose.yml -f <PATH>/docker-compose.local-overrides.yml -p blackduck up -d
+    docker-compose -f <PATH>/docker-compose/standalone/docker-compose.yml -f <PATH>/docker-compose.local-overrides.yml -p blackduck up -d
     ```
 
     Note: Don't forget the -d option at the end of the command line to run the command as a daemon process otherwise the container logs will go to standard output and ```ctrl+c``` will stop the application.
@@ -221,7 +221,7 @@ The steps in the upgrade procedure are the same as the installation procedure af
 ### Standalone Upgrade
 1. Execute the command:  
     ```
-    docker-compose -f <PATH>/docker-compose/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
+    docker-compose -f <PATH>/docker-compose/standalone/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
     - Replace <PROFILE_NAME> with the name of the profile that was used during installation.
     - Replace <PATH> with the path to the Alert installation files.
@@ -230,7 +230,7 @@ The steps in the upgrade procedure are the same as the installation procedure af
 ### Upgrade with Black Duck
 1. Execute the command:
     ```
-    docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
+    docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/hub/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
    - Replace <PATH_TO_BLACK_DUCK> with the directory path to the Black Duck installation files.
    - Replace <PATH_TO_ALERT> with the directory path to the Alert installation files.
