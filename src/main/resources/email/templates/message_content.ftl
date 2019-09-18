@@ -79,29 +79,7 @@
 </#macro>
 
 <#if content??>
-    <#if content.commonTopic??>
-        <strong>
-            <@printLinkableItem content.commonTopic/>
-        </strong>
-        <#list content.subContent as providerMessageContent>
-            <strong>
-                <#if providerMessageContent.subTopic.isPresent()>
-                    <br />
-                    <@printLinkableItem providerMessageContent.subTopic.get()/>
-                </#if>
-            </strong>
-            <br />- - - - - - - - - - - - - - - - - - - -
-            <#if providerMessageContent.componentItems??>
-                <#list providerMessageContent.componentItems as componentItem>
-                    <@printComponentData componentItem/>
-                </#list>
-            <#else>
-                <br /><i>A notification was received, but it was empty.</i>
-            </#if>
-        </#list>
-    <#else>
-        <br /><i>A notification was received, but no information was defined.</i>
-    </#if>
+    ${content}
 <#else>
     <br /><i>A notification was received, but no information was defined.</i>
 </#if>

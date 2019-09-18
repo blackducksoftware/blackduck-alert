@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -57,55 +58,59 @@ public class EmailChannel extends NamedDistributionChannel {
     private final EmailAddressHandler emailAddressHandler;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final AlertProperties alertProperties;
+    private final EmailChannelMessageParser emailChannelMessageParser;
 
     @Autowired
-    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, DefaultAuditUtility auditUtility, EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService) {
+    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, DefaultAuditUtility auditUtility,
+        EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser) {
         super(emailChannelKey, gson, auditUtility);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;
+        this.emailChannelMessageParser = emailChannelMessageParser;
     }
 
     @Override
-    public void distributeMessage(final DistributionEvent event) throws IntegrationException {
-        final FieldAccessor fieldAccessor = event.getFieldAccessor();
+    public void distributeMessage(DistributionEvent event) throws IntegrationException {
+        FieldAccessor fieldAccessor = event.getFieldAccessor();
 
-        final Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        final Optional<String> from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+        Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        Optional<String> from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
 
         if (!host.isPresent() || !from.isPresent()) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
         // FIXME this should update addresses based on Provider event.getProvider()
-        final FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getContent(), fieldAccessor);
+        FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getContent(), fieldAccessor);
 
-        final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
-        final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
-        final String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
+        Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
+        EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
+        String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());
     }
 
-    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String formatType, final MessageContentGroup content)
-        throws IntegrationException {
+    public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, MessageContentGroup messageContent) throws IntegrationException {
         String topicValue = null;
-        if (!content.isEmpty()) {
-            topicValue = content.getCommonTopic().getValue();
+        if (!messageContent.isEmpty()) {
+            topicValue = messageContent.getCommonTopic().getValue();
         }
 
-        final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
-        final LinkableItem comonProvider = content.getCommonProvider();
-        final String providerName = comonProvider.getValue();
-        final String providerUrl = comonProvider.getUrl().orElse("#");
+        String alertServerUrl = alertProperties.getServerUrl().orElse(null);
+        LinkableItem comonProvider = messageContent.getCommonProvider();
+        String providerName = comonProvider.getValue();
+        String providerUrl = comonProvider.getUrl().orElse("#");
 
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            final String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", providerName, topicValue);
+            String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", providerName, topicValue);
             throw new AlertException(errorMessage);
         }
-        final HashMap<String, Object> model = new HashMap<>();
-        final Map<String, String> contentIdsToFilePaths = new HashMap<>();
+        HashMap<String, Object> model = new HashMap<>();
+        Map<String, String> contentIdsToFilePaths = new HashMap<>();
 
-        model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
+        String formattedContent = emailChannelMessageParser.createMessage(messageContent);
+
+        model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), formattedContent);
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
@@ -115,27 +120,27 @@ public class EmailChannel extends NamedDistributionChannel {
         model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
 
-        final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
+        EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
         if (!model.isEmpty()) {
-            final EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
+            EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
             emailService.sendEmailMessage(emailTarget);
         }
     }
 
-    private String createEnhancedSubjectLine(final String originalSubjectLine, final String providerProjectName) {
+    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName) {
         if (StringUtils.isNotBlank(providerProjectName)) {
             return String.format("%s | For: %s", originalSubjectLine, providerProjectName);
         }
         return originalSubjectLine;
     }
 
-    private String getImagePath(final String imageFileName) {
-        final String imagesDirectory = alertProperties.getAlertImagesDir();
+    private String getImagePath(String imageFileName) {
+        String imagesDirectory = alertProperties.getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/" + imageFileName;
         }
-        final String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
+        String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
         return userDirectory + DIRECTORY_EMAIL_IMAGE_RESOURCES + imageFileName;
     }
 

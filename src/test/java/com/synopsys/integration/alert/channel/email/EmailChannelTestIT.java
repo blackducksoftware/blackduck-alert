@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -40,17 +41,18 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
+        DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
+        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
 
-        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
-        final EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
-        final ProviderMessageContent content = createMessageContent(getClass().getSimpleName());
-        final Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
-        final String subjectLine = "Integration test subject line";
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
+        EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
+        EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser);
+        ProviderMessageContent content = createMessageContent(getClass().getSimpleName());
+        Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
+        String subjectLine = "Integration test subject line";
 
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, EmailDescriptor.KEY_EMAIL_ADDRESSES, emailAddresses);
         addConfigurationFieldToMap(fieldModels, EmailDescriptor.KEY_SUBJECT_LINE, subjectLine);
 
@@ -62,8 +64,8 @@ public class EmailChannelTestIT extends ChannelTest {
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent(
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        DistributionEvent event = new DistributionEvent(
             "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
         emailChannel.sendAuditedMessage(event);
     }
@@ -71,21 +73,22 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     public void sendEmailNullGlobalTest() {
         try {
-            final EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null);
-            final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-            final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                       .applyProvider("testProvider")
-                                                       .applyTopic("testTopic", "topic")
-                                                       .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                       .build();
+            EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
+            EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser);
+            LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+            ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                 .applyProvider("testProvider")
+                                                 .applyTopic("testTopic", "topic")
+                                                 .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                                 .build();
 
-            final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-            final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-            final DistributionEvent event = new DistributionEvent(
+            Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+            FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+            DistributionEvent event = new DistributionEvent(
                 "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), "FORMAT", MessageContentGroup.singleton(content), fieldAccessor);
             emailChannel.sendMessage(event);
             fail();
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             assertEquals("ERROR: Missing global config.", e.getMessage());
         }
     }

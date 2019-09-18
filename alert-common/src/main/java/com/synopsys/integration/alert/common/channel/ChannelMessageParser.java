@@ -15,6 +15,11 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 public abstract class ChannelMessageParser {
+    public String createMessage(MessageContentGroup messageContentGroup) {
+        List<String> messagePieces = createMessagePieces(messageContentGroup);
+        return String.join("", messagePieces);
+    }
+
     public List<String> createMessagePieces(MessageContentGroup messageContentGroup) {
         LinkedList<String> messagePieces = new LinkedList<>();
 
