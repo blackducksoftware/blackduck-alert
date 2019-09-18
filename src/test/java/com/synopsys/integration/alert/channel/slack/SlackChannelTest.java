@@ -165,9 +165,10 @@ public class SlackChannelTest extends ChannelTest {
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue"));
         final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .applyComponentData("", "")
                                                 .applyCategory("category")
                                                 .applyOperation(ItemOperation.ADD)
+                                                .applyComponentData("", "")
+                                                .applyCategoryItem("", "")
                                                 .applyNotificationId(1L)
                                                 .applyAllComponentAttributes(items)
                                                 .build();
@@ -201,9 +202,10 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue", "url"));
 
         final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .applyComponentData("", "")
                                                 .applyCategory("category")
                                                 .applyOperation(ItemOperation.ADD)
+                                                .applyComponentData("", "")
+                                                .applyCategoryItem("", "")
                                                 .applyNotificationId(1L)
                                                 .applyAllComponentAttributes(items)
                                                 .build();
@@ -238,17 +240,19 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue_2"));
 
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(1L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
 
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(2L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
@@ -282,17 +286,19 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue_1", "itemUrl"));
         items.add(new LinkableItem("itemName", "itemvalue_2", "itemUrl"));
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(1L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
 
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(2L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();

@@ -63,6 +63,11 @@ public class MsTeamsMessage implements FreemarkerDataModel {
             componentItem.getSubComponent().map(item -> "/" + item.getValue()).ifPresent(componentTextBuilder::append);
             msTeamsComponent.setText(componentTextBuilder.toString());
 
+            StringBuilder categoryItemTextBuilder = new StringBuilder();
+            componentItem.getCategoryGroupingAttribute().map(this::createLinkableItemString).map(txt -> txt + ", ").ifPresent(categoryItemTextBuilder::append);
+            categoryItemTextBuilder.append(createLinkableItemString(componentItem.getCategoryItem()));
+            msTeamsComponent.setCategoryItemText(categoryItemTextBuilder.toString());
+
             String allAttributeDetails = createDetails(componentItem.getComponentAttributes());
             msTeamsComponent.setAllAttributeDetails(allAttributeDetails);
 
@@ -75,7 +80,7 @@ public class MsTeamsMessage implements FreemarkerDataModel {
         //TODO determine if we should be including the URLs
         return componentAttributes
                    .stream()
-                   .map(linkableItem -> String.format("%s: %s", linkableItem.getName(), linkableItem.getValue()))
+                   .map(this::createLinkableItemString)
                    .collect(Collectors.joining(", "));
     }
 
@@ -85,6 +90,10 @@ public class MsTeamsMessage implements FreemarkerDataModel {
 
     public List<MsTeamsSection> getSections() {
         return sections;
+    }
+
+    private String createLinkableItemString(LinkableItem item) {
+        return String.format("%s: %s", item.getName(), item.getValue());
     }
 
 }

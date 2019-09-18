@@ -73,6 +73,7 @@ public abstract class ChannelTest {
 
         componentBuilder1
             .applyComponentData("component", "componentValue")
+            .applyCategoryItem("categoryItem", "categoryValue")
             .applyCategory("category")
             .applyNotificationId(1L)
             .applyOperation(ItemOperation.ADD)
@@ -81,6 +82,7 @@ public abstract class ChannelTest {
 
         componentBuilder2
             .applyComponentData("component", "componentValue")
+            .applyCategoryItem("categoryItem", "categoryValue")
             .applyCategory("category")
             .applyNotificationId(2L)
             .applyOperation(ItemOperation.UPDATE)
@@ -88,6 +90,7 @@ public abstract class ChannelTest {
 
         componentBuilder3
             .applyComponentData("component", "componentValue")
+            .applyCategoryItem("categoryItem", "categoryValue")
             .applyCategory("category")
             .applyNotificationId(1L)
             .applyOperation(ItemOperation.DELETE)

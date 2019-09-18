@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.channel.email.actions;
 
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -40,7 +38,6 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -69,23 +66,17 @@ public class EmailGlobalTestAction extends TestAction {
             emailAddresses = Set.of(destination);
         }
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+        ComponentItem.Builder componentBuilder = new ComponentItem.Builder()
+                                                     .applyCategory("Test")
+                                                     .applyOperation(ItemOperation.ADD)
+                                                     .applyComponentData("Component", "Global Email Configuration")
+                                                     .applyCategoryItem("Message", "This is a test message from Alert.")
+                                                     .applyNotificationId(1L);
 
-        final SortedSet<LinkableItem> set = new TreeSet<>();
-        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from Alert.", null);
-        set.add(linkableItem);
-        ComponentItem.Builder componentBuilder = new ComponentItem.Builder();
-        componentBuilder
-            .applyComponentData("Component", "Global Email Configuration")
-            .applyCategory("Test")
-            .applyOperation(ItemOperation.ADD)
-            .applyNotificationId(1L)
-            .applyComponentAttribute(linkableItem);
-
-        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder
-            .applyProvider("Test Provider")
-            .applyTopic("Message Content", "Test from Alert")
-            .applyAllComponentItems(List.of(componentBuilder.build()));
+        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
+                                                     .applyProvider("Test Provider")
+                                                     .applyTopic("Message Content", "Test from Alert")
+                                                     .applyAllComponentItems(List.of(componentBuilder.build()));
 
         ProviderMessageContent messageContent = builder.build();
         emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", MessageContentGroup.singleton(messageContent));
