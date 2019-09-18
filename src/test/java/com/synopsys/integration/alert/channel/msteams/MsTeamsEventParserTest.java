@@ -41,6 +41,8 @@ public class MsTeamsEventParserTest {
         componentItemBuilder.applyComponentData("not used", "Apache Struts");
         componentItemBuilder.applySubComponent("not used", "1.2.2");
         componentItemBuilder.applyComponentAttribute(new LinkableItem("Component License", "Apache License 2.0"));
+        componentItemBuilder.applyCollapseOnCategory(true);
+
         componentItemBuilder.applyCategoryGroupingAttribute("Severity", "HIGH");
 
         componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2016-0785");
