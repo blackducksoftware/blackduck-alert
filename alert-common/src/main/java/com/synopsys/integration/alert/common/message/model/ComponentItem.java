@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.message.model;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -176,22 +175,6 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         stringBuilder.append(linkableItem.getName());
         stringBuilder.append(linkableItem.getValue());
         linkableItem.getUrl().ifPresent(stringBuilder::append);
-    }
-
-    /**
-     * Intended to be used for display purposes (such as freemarker templates).
-     */
-    // FIXME remove this, this logic will be moved up a level to ProviderMessageContent
-    public ComponentAttributeMap getItemsOfSameName() {
-        final ComponentAttributeMap map = new ComponentAttributeMap();
-        if (null == componentAttributes || componentAttributes.isEmpty()) {
-            return map;
-        }
-        for (final LinkableItem item : componentAttributes) {
-            final String name = item.getName();
-            map.computeIfAbsent(name, ignored -> new LinkedList<>()).add(item);
-        }
-        return map;
     }
 
     public static class Builder {

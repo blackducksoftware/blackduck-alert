@@ -24,9 +24,7 @@ package com.synopsys.integration.alert.common.message.model;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -84,8 +82,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
      * Creates a logical grouping of ComponentItems using ComponentItem.createKey()
      */
     public SetMap<String, ComponentItem> groupRelatedComponentItems() {
-        Map<String, Set<ComponentItem>> initializer = new LinkedHashMap<>();
-        SetMap<String, ComponentItem> componentItemSetMap = new SetMap<>(initializer);
+        SetMap<String, ComponentItem> componentItemSetMap = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
             String key = componentItem.createKey();
             componentItemSetMap.add(key, componentItem);

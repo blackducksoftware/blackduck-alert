@@ -53,6 +53,7 @@ public class MessageOperationCombiner extends MessageCombiner {
         operationFunctionMap = new EnumMap<>(ItemOperation.class);
         operationFunctionMap.put(ItemOperation.ADD, addFunction);
         operationFunctionMap.put(ItemOperation.UPDATE, addFunction);
+        operationFunctionMap.put(ItemOperation.INFO, addFunction);
         operationFunctionMap.put(ItemOperation.DELETE, deleteFunction);
     }
 

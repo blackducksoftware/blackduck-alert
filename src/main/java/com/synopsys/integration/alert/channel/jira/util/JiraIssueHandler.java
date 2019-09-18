@@ -101,7 +101,7 @@ public class JiraIssueHandler {
 
     private Set<String> createOrUpdateIssuesPerComponent(ProviderMessageContent messageContent, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        SetMap<String, String> missingTransitionToIssues = new SetMap<>();
+        SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
 
         String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
         String providerName = messageContent.getProvider().getValue();

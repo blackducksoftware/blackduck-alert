@@ -24,9 +24,9 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -119,15 +120,14 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return new LinkableItem(ProviderMessageContent.LABEL_PROVIDER, "Black Duck", blackDuckUrl);
     }
 
-    protected List<ComponentItem> createVulnerabilityPolicyComponentItems(
-        Collection<VulnerableComponentView> vulnerableComponentViews, Collection<LinkableItem> licenseItems, LinkableItem policyNameItem, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId,
-        ItemOperation operation) {
+    protected List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
+        LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId) {
         Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(vulnerableComponentViews);
-        Set<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
-                                                                                .map(VulnerableComponentView::getVulnerabilityWithRemediation)
-                                                                                .collect(Collectors.toSet());
-
-        List<ComponentItem> vulnerabilityItems = new ArrayList<>();
+        List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
+                                                                                 .map(VulnerableComponentView::getVulnerabilityWithRemediation)
+                                                                                 .sorted(Comparator.comparing(VulnerabilityWithRemediationView::getSeverity))
+                                                                                 .collect(Collectors.toList());
+        SetMap<LinkableItem, LinkableItem> severityToVulns = SetMap.createLinked();
         for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
             // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
             String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
@@ -139,40 +139,28 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
             LinkableItem vulnerabilityIdItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             vulnerabilityIdItem.setCollapsible(true);
             LinkableItem severityItem = getSeverity(vulnerabilityUrl);
-            ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
-            List<LinkableItem> attributes = new LinkedList<>();
-            attributes.addAll(licenseItems);
-            attributes.add(severityItem);
-            attributes.add(vulnerabilityIdItem);
-
-            ComponentItem.Builder builder = new ComponentItem.Builder();
-            builder
-                .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
-                .applyOperation(operation)
-                .applyPriority(priority)
-                .applyComponentData(componentItem)
-                .applySubComponent(componentVersionItem.orElse(null))
-                .applyCategoryItem(policyNameItem)
-                // FIXME this should be the Policy Severity
-                //  .applyCategoryGroupingAttribute()
-                .applyAllComponentAttributes(attributes)
-                .applyNotificationId(notificationId);
-            componentVersionItem.ifPresent(builder::applySubComponent);
-            try {
-                vulnerabilityItems.add(builder.build());
-            } catch (AlertException ex) {
-                logger
-                    .info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentItem, componentVersionItem.orElse(null));
-                logger.error("Error building policy bom edit component cause ", ex);
-            }
+            severityToVulns.add(severityItem, vulnerabilityIdItem);
         }
+
+        List<ComponentItem> vulnerabilityItems = new ArrayList<>();
+        for (Map.Entry<LinkableItem, Set<LinkableItem>> groupedVulnEntries : severityToVulns.entrySet()) {
+            String severityValue = groupedVulnEntries.getKey().getValue();
+            ComponentItemPriority priority = ComponentItemPriority.findPriority(severityValue);
+
+            List<LinkableItem> vulnAttributes = groupedVulnEntries.getValue()
+                                                    .stream()
+                                                    .map(vulnItem -> createVulnerabilityAttributeItem(severityValue, vulnItem))
+                                                    .collect(Collectors.toList());
+            createVulnerabilityPolicyComponentItem(priority, componentItem, componentVersionItem.orElse(null), policyNameItem, policySeverity, notificationId, vulnAttributes)
+                .ifPresent(vulnerabilityItems::add);
+        }
+
         return vulnerabilityItems;
     }
 
     protected Optional<ComponentItem> createRemediationComponentItem(String categoryType, ComponentVersionView componentVersionView, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem,
-        LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory,
-        Long notificationId) {
+        LinkableItem categoryItem, LinkableItem categoryGrouping, Long notificationId) {
         try {
             List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
             if (!remediationItems.isEmpty()) {
@@ -183,7 +171,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                                                                  .applyComponentData(componentItem)
                                                                  .applyCategoryItem(categoryItem)
                                                                  .applyCategoryGroupingAttribute(categoryGrouping)
-                                                                 .applyCollapseOnCategory(collapseOnCategory)
+                                                                 .applyCollapseOnCategory(false)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
                 componentVersionItem.ifPresent(remediationComponent::applySubComponent);
@@ -212,6 +200,14 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         }
 
         return severityItem;
+    }
+
+    protected ComponentItemPriority getPolicyPriority(String severity) {
+        if (StringUtils.isNotBlank(severity)) {
+            String severityKey = severity.trim().toLowerCase();
+            return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);
+        }
+        return ComponentItemPriority.NONE;
     }
 
     // TODO update this code with an Object from blackduck-common-api when available
@@ -244,12 +240,35 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         return vulnerabilityViewMap;
     }
 
-    protected ComponentItemPriority getPolicyPriority(String severity) {
-        if (StringUtils.isNotBlank(severity)) {
-            String severityKey = severity.trim().toLowerCase();
-            return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);
+    private Optional<ComponentItem> createVulnerabilityPolicyComponentItem(
+        ComponentItemPriority priority, LinkableItem component, LinkableItem nullableSubComponent, LinkableItem policy, LinkableItem policySeverity, Long notificationId, Collection<LinkableItem> vulnAttributes) {
+        ComponentItem.Builder builder = new ComponentItem.Builder()
+                                            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
+                                            .applyOperation(ItemOperation.INFO)
+                                            .applyPriority(priority)
+                                            .applyComponentData(component)
+                                            .applySubComponent(nullableSubComponent)
+                                            .applyCategoryItem(policy)
+                                            .applyCategoryGroupingAttribute(policySeverity)
+                                            .applyCollapseOnCategory(false)
+                                            .applyAllComponentAttributes(vulnAttributes)
+                                            .applyNotificationId(notificationId);
+        try {
+            return Optional.of(builder.build());
+        } catch (AlertException ex) {
+            logger.info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, component, nullableSubComponent);
+            logger.error("Error building policy bom edit component cause ", ex);
         }
-        return ComponentItemPriority.NONE;
+        return Optional.empty();
+    }
+
+    private LinkableItem createVulnerabilityAttributeItem(String severityValue, LinkableItem vulnerabilityItem) {
+        String capitalizedSeverityValue = StringUtils.capitalize(severityValue.toLowerCase());
+        String attributeName = String.format("%s %s", capitalizedSeverityValue, vulnerabilityItem.getName());
+
+        LinkableItem attributeItem = new LinkableItem(attributeName, vulnerabilityItem.getValue(), vulnerabilityItem.getUrl().orElse(null));
+        attributeItem.setCollapsible(vulnerabilityItem.isCollapsible());
+        return attributeItem;
     }
 
 }

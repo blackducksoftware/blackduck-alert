@@ -98,7 +98,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     }
 
     private SetMap<String, ComponentItem> sortByCategoryOperationPriorityGrouping(Set<ComponentItem> originalComponentItems) {
-        SetMap<String, ComponentItem> itemsByOperation = new SetMap<>();
+        SetMap<String, ComponentItem> itemsByOperation = SetMap.createDefault();
         for (ComponentItem componentItem : originalComponentItems) {
             StringBuilder keyBuilder = new StringBuilder()
                                            .append(componentItem.getCategory())

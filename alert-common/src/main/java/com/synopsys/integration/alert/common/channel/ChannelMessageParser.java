@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.common.channel;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +104,7 @@ public abstract class ChannelMessageParser {
                                                          .stream()
                                                          .map(ComponentItem::getComponentAttributes)
                                                          .flatMap(Set::stream)
-                                                         .collect(SetMap::new, (map, item) -> map.add(item.getName(), item), SetMap::combine);
+                                                         .collect(SetMap::createDefault, (map, item) -> map.add(item.getName(), item), SetMap::combine);
         List<String> attributeStrings = new LinkedList<>();
         for (Set<LinkableItem> similarAttributes : attributesMap.values()) {
             Optional<LinkableItem> optionalAttribute = getArbitraryElement(similarAttributes);
@@ -120,6 +119,7 @@ public abstract class ChannelMessageParser {
                     similarAttributes
                         .stream()
                         .map(this::createLinkableItemString)
+                        .map(str -> str + getLineSeparator())
                         .forEach(attributeStrings::add);
                 }
                 attributeStrings.add(getLineSeparator());
@@ -193,8 +193,7 @@ public abstract class ChannelMessageParser {
     }
 
     private SetMap<String, ComponentItem> groupAndPrioritizeCollapsibleItems(Collection<ComponentItem> componentItems) {
-        Map<String, Set<ComponentItem>> initializer = new LinkedHashMap<>();
-        SetMap<String, ComponentItem> groupedAndPrioritizedItems = new SetMap<>(initializer);
+        SetMap<String, ComponentItem> groupedAndPrioritizedItems = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
             String groupingString = componentItem.getCategoryGroupingAttribute()
                                         .map(item -> item.getName() + item.getValue())

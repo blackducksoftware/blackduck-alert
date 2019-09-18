@@ -148,10 +148,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 }
 
                 LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
+                LinkableItem policySeverityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, rule.getSeverity());
                 if (getBlackDuckDataHelper().hasVulnerabilityRule(rule)) {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
-                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityPolicyComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId,
-                        ItemOperation.UPDATE);
+                    List<ComponentItem> vulnerabilityComponentItems =
+                        createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverityItem, componentItem, componentVersionItem, notificationId);
                     items.addAll(vulnerabilityComponentItems);
                 } else {
                     items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));
