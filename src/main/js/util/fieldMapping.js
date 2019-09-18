@@ -188,7 +188,7 @@ function buildUploadFileButtonField(items, field) {
     const {
         buttonLabel, endpoint, successBox, subFields, key
     } = field;
-    const { readOnly } = field;
+    const { readOnly, accept, multiple } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, {
         className: 'form-control',
@@ -200,6 +200,8 @@ function buildUploadFileButtonField(items, field) {
         endpoint={endpoint}
         successBox={successBox}
         fieldKey={key}
+        accept={accept}
+        multiple={multiple}
         {...items}
     />);
 }

@@ -39,7 +39,7 @@ class UploadFileButtonField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint, multiple
+            fieldKey, csrfToken, endpoint
         } = this.props;
         const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, "file", fileData);
 
@@ -69,7 +69,7 @@ class UploadFileButtonField extends Component {
         const acceptedContentTypes = accept ? accept.join(',') : null;
         const endpointField = (
             <div className="d-inline-flex p-2 col-sm-8">
-                <div className={""}>
+                <div>
                     <input
                         ref="fileInputField"
                         type="file"
@@ -78,9 +78,10 @@ class UploadFileButtonField extends Component {
                         disabled={readOnly}
                         accept={acceptedContentTypes}
                         capture={capture}
-                    />>
+                    />
                     <GeneralButton
                         id={fieldKey}
+                        className="uploadButton"
                         onClick={this.onUploadClick}
                         disabled={readOnly}
                         performingAction={this.state.progress}

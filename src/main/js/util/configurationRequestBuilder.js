@@ -109,7 +109,7 @@ export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
     const fileData = new FormData();
     if (files && files.length) {
         for (const file of files) {
-            fileData.append(fieldName, file);
+            fileData.append(`${fieldName}`, file);
         }
     }
     return fetch(apiUrl, {
@@ -117,7 +117,6 @@ export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
         method: 'POST',
         body: fileData,
         headers: {
-            'content-type': 'multipart/form-data',
             'X-CSRF-TOKEN': csrfToken
         }
     });
