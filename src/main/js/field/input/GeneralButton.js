@@ -5,23 +5,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const GeneralButton = ({
                            onClick, children, className, id, disabled, performingAction
                        }) => (
-   <div>
-       <button
-           id={id}
-           className={`btn btn-primary ${className}`}
-           type="button"
-           onClick={onClick}
-           disabled={disabled}
-       >{children}
-       </button>
-       <div className="progressContainer">
-           <div className="progressIcon">
-               {performingAction &&
+    <div>
+        <button
+            id={id}
+            className={`btn btn-primary ${className}`}
+            type="button"
+            onClick={onClick}
+            disabled={disabled}
+        >{children}
+        </button>
+        {performingAction &&
+        <div className="progressContainer">
+            <div className="progressIcon">
                 <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-               }
-           </div>
-       </div>
-   </div>
+            </div>
+        </div>
+        }
+    </div>
 
 );
 
