@@ -24,7 +24,9 @@ package com.synopsys.integration.alert.component.settings.descriptor;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -36,6 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.UploadFileButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
@@ -108,8 +111,12 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
 
-    public SettingsUIConfig() {
+    private final FilePersistenceUtil filePersistenceUtil;
+
+    @Autowired
+    public SettingsUIConfig(FilePersistenceUtil filePersistenceUtil) {
         super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL);
+        this.filePersistenceUtil = filePersistenceUtil;
     }
 
     @Override
@@ -178,15 +185,15 @@ public class SettingsUIConfig extends UIConfig {
 
         // Saml settings
         final ConfigField samlForceAuth = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, SETTINGS_SAML_FORCE_AUTH_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
-        final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
+        final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION, this::validateMetaDataUrl).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlMetaDataFile = UploadFileButtonField.create(SettingsDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, SETTINGS_SAML_METADATA_FILE_DESCRIPTION, BUTTON_LABEL_SAML_METADATA_FILE, List.of(
-            "text/xml", "application/xml", ".xml"), "", false)
+            "text/xml", "application/xml", ".xml"), "", false, this::validateMetaDataFile)
                                                  .setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEntityId = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, SETTINGS_SAML_ENTITY_ID_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
-        final ConfigField samlEntityBaseURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL, LABEL_SAML_ENTITY_BASE_URL, SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
+        final ConfigField samlEntityBaseURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL, LABEL_SAML_ENTITY_BASE_URL, SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION, this::validateMetaDataUrl)
+                                                  .setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEnabled = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_ENABLED, LABEL_SAML_ENABLED, SETTINGS_SAML_ENABLED_DESCRIPTION)
                                             .requireField(samlForceAuth.getKey())
-                                            .requireField(samlMetaDataURL.getKey())
                                             .requireField(samlEntityId.getKey())
                                             .requireField(samlEntityBaseURL.getKey())
                                             .disallowField(SettingsDescriptor.KEY_LDAP_ENABLED)
@@ -204,4 +211,31 @@ public class SettingsUIConfig extends UIConfig {
         return List.of();
     }
 
+    private Collection<String> validateMetaDataUrl(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        Optional<FieldValueModel> samlEnabledField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED);
+        boolean samlEnabled = samlEnabledField.flatMap(field -> field.getValue())
+                                  .map(value -> Boolean.valueOf(value))
+                                  .orElse(false);
+        if (samlEnabled) {
+            if (!fieldToValidate.hasValues() && !filePersistenceUtil.exists(SettingsDescriptor.SAML_METADATA_FILE)) {
+                return List.of(SettingsDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
+            }
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateMetaDataFile(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        Optional<FieldValueModel> samlEnabledField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED);
+        boolean samlEnabled = samlEnabledField.flatMap(field -> field.getValue())
+                                  .map(value -> Boolean.valueOf(value))
+                                  .orElse(false);
+        if (samlEnabled) {
+            Optional<FieldValueModel> metadataUrlField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
+            boolean metadataUrlEmpty = metadataUrlField.map(field -> !field.hasValues()).orElse(true);
+            if (metadataUrlEmpty && !filePersistenceUtil.exists(SettingsDescriptor.SAML_METADATA_FILE)) {
+                return List.of(SettingsDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+            }
+        }
+        return List.of();
+    }
 }

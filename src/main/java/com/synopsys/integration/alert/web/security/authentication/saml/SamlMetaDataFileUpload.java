@@ -33,10 +33,9 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 
 @Component
 public class SamlMetaDataFileUpload {
-    public final static String SAML_METADATA_FILE = "uploads/saml_metadata.xml";
 
     @Autowired
     public SamlMetaDataFileUpload(UploadEndpointManager uploadEndpointManager, SettingsDescriptorKey descriptorKey) throws AlertException {
-        uploadEndpointManager.registerTarget(SettingsDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, SAML_METADATA_FILE);
+        uploadEndpointManager.registerTarget(SettingsDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, SettingsDescriptor.SAML_METADATA_FILE);
     }
 }
