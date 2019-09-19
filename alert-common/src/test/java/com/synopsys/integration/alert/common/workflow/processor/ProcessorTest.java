@@ -14,25 +14,22 @@ public abstract class ProcessorTest {
         return new LinkableItem(name, value);
     }
 
-    public ComponentItem createCategoryItem(String component, String componentValue, final ItemOperation operation, LinkableItem item) throws AlertException {
+    public ComponentItem createComponentItem(String component, String componentValue, final ItemOperation operation, LinkableItem categoryItem) throws AlertException {
         ComponentItem.Builder componentBuilder = new ComponentItem.Builder();
         componentBuilder
-            .applyComponentData(component, componentValue)
             .applyCategory("category")
-            .applyNotificationId(1L)
             .applyOperation(operation)
-            .applyComponentAttribute(item);
+            .applyComponentData(component, componentValue)
+            .applyCategoryItem(categoryItem)
+            .applyNotificationId(1L);
 
         return componentBuilder.build();
     }
 
     public ProviderMessageContent createProviderMessageContent(final String name, final String value, final ComponentItem... componentItems) throws AlertException {
-        LinkableItem provider = new LinkableItem("Provider", "BlackDuck");
-        LinkableItem topic = new LinkableItem(name, value);
-
-        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder.applyProvider("BlackDuck");
-        builder.applyTopic(name, value);
+        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
+                                                     .applyProvider("Black Duck")
+                                                     .applyTopic(name, value);
         for (ComponentItem componentItem : componentItems) {
             builder.applyComponentItem(componentItem);
         }
@@ -40,14 +37,14 @@ public abstract class ProcessorTest {
     }
 
     public List<ProviderMessageContent> createDefaultMessages() throws AlertException {
-        ComponentItem categoryItem1 = createCategoryItem("Category 1", "key1",
+        ComponentItem categoryItem1 = createComponentItem("Category 1", "key1",
             ItemOperation.ADD, createLinkableItem("data 1", "value1")
         );
-        ComponentItem categoryItem2 = createCategoryItem("Category 2", "key2",
+        ComponentItem categoryItem2 = createComponentItem("Category 2", "key2",
             ItemOperation.ADD, createLinkableItem("data 2", "value2")
         );
 
-        ComponentItem categoryItem3 = createCategoryItem("Category 1", "key1",
+        ComponentItem categoryItem3 = createComponentItem("Category 1", "key1",
             ItemOperation.DELETE, createLinkableItem("data 1", "value1")
         );
 
@@ -55,11 +52,11 @@ public abstract class ProcessorTest {
         String value1 = "Value One";
         ProviderMessageContent aggregateMessageContent1 = createProviderMessageContent(topic1, value1, categoryItem1, categoryItem2, categoryItem3);
 
-        ComponentItem categoryItem4 = createCategoryItem("Category 2", "key2",
+        ComponentItem categoryItem4 = createComponentItem("Category 2", "key2",
             ItemOperation.DELETE, createLinkableItem("data 2", "value2")
         );
 
-        ComponentItem categoryItem5 = createCategoryItem("Category 1", "key1",
+        ComponentItem categoryItem5 = createComponentItem("Category 1", "key1",
             ItemOperation.ADD, createLinkableItem("data 1", "value1")
         );
 

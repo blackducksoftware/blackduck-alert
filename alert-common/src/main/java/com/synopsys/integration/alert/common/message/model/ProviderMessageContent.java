@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
@@ -77,6 +78,18 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         return providerCreationTime;
     }
 
+    /**
+     * Creates a logical grouping of ComponentItems using ComponentItem.createKey()
+     */
+    public SetMap<String, ComponentItem> groupRelatedComponentItems() {
+        SetMap<String, ComponentItem> componentItemSetMap = SetMap.createLinked();
+        for (ComponentItem componentItem : componentItems) {
+            String key = componentItem.createKey();
+            componentItemSetMap.add(key, componentItem);
+        }
+        return componentItemSetMap;
+    }
+
     public static class Builder {
         private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
         private String providerName;
@@ -94,8 +107,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
                 throw new AlertException("Missing required field(s)");
             }
 
-            final LinkableItem provider = new LinkableItem(LABEL_PROVIDER, providerName, providerUrl);
-            final LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
+            LinkableItem provider = new LinkableItem(LABEL_PROVIDER, providerName, providerUrl);
+            LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
             LinkableItem subTopic = null;
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
@@ -108,64 +121,64 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
             return ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
         }
 
-        public Builder applyProvider(final String providerName) {
+        public Builder applyProvider(String providerName) {
             this.providerName = providerName;
             return this;
         }
 
-        public Builder applyProvider(final String providerName, final String providerUrl) {
+        public Builder applyProvider(String providerName, String providerUrl) {
             this.providerName = providerName;
             this.providerUrl = providerUrl;
             return this;
         }
 
-        public Builder applyProviderUrl(final String providerUrl) {
+        public Builder applyProviderUrl(String providerUrl) {
             this.providerUrl = providerUrl;
             return this;
         }
 
-        public Builder applyTopic(final String topicName, final String topicValue) {
+        public Builder applyTopic(String topicName, String topicValue) {
             this.topicName = topicName;
             this.topicValue = topicValue;
             return this;
         }
 
-        public Builder applyTopic(final String topicName, final String topicValue, final String topicUrl) {
+        public Builder applyTopic(String topicName, String topicValue, String topicUrl) {
             this.topicName = topicName;
             this.topicValue = topicValue;
             this.topicUrl = topicUrl;
             return this;
         }
 
-        public Builder applyTopicUrl(final String topicUrl) {
+        public Builder applyTopicUrl(String topicUrl) {
             this.topicUrl = topicUrl;
             return this;
         }
 
-        public Builder applySubTopic(final String subTopicName, final String subTopicValue) {
+        public Builder applySubTopic(String subTopicName, String subTopicValue) {
             this.subTopicName = subTopicName;
             this.subTopicValue = subTopicValue;
             return this;
         }
 
-        public Builder applySubTopic(final String subTopicName, final String subTopicValue, final String subTopicUrl) {
+        public Builder applySubTopic(String subTopicName, String subTopicValue, String subTopicUrl) {
             this.subTopicName = subTopicName;
             this.subTopicValue = subTopicValue;
             this.subTopicUrl = subTopicUrl;
             return this;
         }
 
-        public Builder applySubTopicUrl(final String subTopicUrl) {
+        public Builder applySubTopicUrl(String subTopicUrl) {
             this.subTopicUrl = subTopicUrl;
             return this;
         }
 
-        public Builder applyComponentItem(final ComponentItem componentItem) {
+        public Builder applyComponentItem(ComponentItem componentItem) {
             this.componentItems.add(componentItem);
             return this;
         }
 
-        public Builder applyAllComponentItems(final Collection<ComponentItem> componentItems) {
+        public Builder applyAllComponentItems(Collection<ComponentItem> componentItems) {
             this.componentItems.addAll(componentItems);
             return this;
         }

@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -31,12 +32,21 @@ import java.util.Set;
 public class SetMap<K, S> extends AbstractMap<K, Set<S>> {
     private final Map<K, Set<S>> map;
 
-    public SetMap() {
-        this(new HashMap());
+    public static final <K, S> SetMap<K, S> createDefault() {
+        return new SetMap<>();
+    }
+
+    public static final <K, S> SetMap<K, S> createLinked() {
+        LinkedHashMap<K, Set<S>> initializer = new LinkedHashMap<>();
+        return new SetMap<>(initializer);
     }
 
     public SetMap(final Map<K, Set<S>> map) {
         this.map = map;
+    }
+
+    private SetMap() {
+        this(new HashMap<>());
     }
 
     public Set<S> getValue(K key) {
@@ -72,6 +82,10 @@ public class SetMap<K, S> extends AbstractMap<K, Set<S>> {
 
     public Map<K, Set<S>> getMap() {
         return map;
+    }
+
+    public void combine(SetMap<K, S> other) {
+        other.forEach(this::addAll);
     }
 
 }

@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
+import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -160,14 +161,15 @@ public class EmailGlobalTestActionTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testConfigITTest() throws Exception {
-        final TestProperties properties = new TestProperties();
-        final DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
+        TestProperties properties = new TestProperties();
+        DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
 
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        TestAlertProperties testAlertProperties = new TestAlertProperties();
 
-        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
-        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
-        final EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), new Gson(), testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService);
+        EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
+        EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
+        EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), new Gson(), testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser);
         //////////////////////////////////////
         final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 

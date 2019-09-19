@@ -43,22 +43,21 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import com.synopsys.integration.exception.IntegrationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.email.template.MimeMultipartBuilder;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.exception.IntegrationException;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
     public static final String EMAIL_SUBJECT_LINE_TEMPLATE = "subjectLineTemplate";
@@ -67,12 +66,12 @@ public class EmailMessagingService {
     private final EmailProperties emailProperties;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final EmailProperties emailProperties, final FreemarkerTemplatingService freemarkerTemplatingService) {
+    public EmailMessagingService(EmailProperties emailProperties, FreemarkerTemplatingService freemarkerTemplatingService) {
         this.emailProperties = emailProperties;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
-    public void sendEmailMessage(final EmailTarget emailTarget) throws AlertException {
+    public void sendEmailMessage(EmailTarget emailTarget) throws AlertException {
         try {
             final String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
             final Set<String> emailAddresses = emailTarget.getEmailAddresses()
@@ -113,13 +112,13 @@ public class EmailMessagingService {
         }
     }
 
-    public void addTemplateImage(final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths, final String key, final String value) {
+    public void addTemplateImage(Map<String, Object> model, Map<String, String> contentIdsToFilePaths, String key, String value) {
         final String cid = generateContentId(key);
         model.put(cleanForFreemarker(key), cid);
         contentIdsToFilePaths.put("<" + cid + ">", value);
     }
 
-    private Session createMailSession(final EmailProperties emailProperties) {
+    private Session createMailSession(EmailProperties emailProperties) {
         final Map<String, String> sessionProps = emailProperties.getJavamailConfigProperties();
         final Properties props = new Properties();
         props.putAll(sessionProps);
@@ -127,7 +126,7 @@ public class EmailMessagingService {
         return Session.getInstance(props);
     }
 
-    private List<Message> createMessages(final Collection<String> emailAddresses, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties)
+    private List<Message> createMessages(Collection<String> emailAddresses, String subjectLine, Session session, MimeMultipart mimeMultipart, EmailProperties emailProperties)
         throws AlertException, MessagingException {
         final List<InternetAddress> addresses = new ArrayList<>();
         for (final String emailAddress : emailAddresses) {
@@ -170,7 +169,7 @@ public class EmailMessagingService {
         return messages;
     }
 
-    public void sendMessages(final EmailProperties emailProperties, final Session session, final List<Message> messages) throws AlertException {
+    public void sendMessages(EmailProperties emailProperties, Session session, List<Message> messages) throws AlertException {
         final Set<String> errorMessages = new HashSet<>();
         final Set<String> invalidRecipients = new HashSet<>();
         for (final Message message : messages) {
@@ -201,7 +200,7 @@ public class EmailMessagingService {
         }
     }
 
-    private void sendAuthenticated(final EmailProperties emailProperties, final Message message, final Session session) throws MessagingException {
+    private void sendAuthenticated(EmailProperties emailProperties, Message message, Session session) throws MessagingException {
         final String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY);
         final int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY));
         final String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY);
@@ -216,11 +215,11 @@ public class EmailMessagingService {
         }
     }
 
-    private String generateContentId(final String value) {
+    private String generateContentId(String value) {
         return value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@synopsys.com";
     }
 
-    private String cleanForFreemarker(final String s) {
+    private String cleanForFreemarker(String s) {
         return s.replace(".", "_");
     }
 

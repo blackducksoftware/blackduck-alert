@@ -19,10 +19,14 @@ public class ComponentItemTest {
     public void testComparatorEquals() throws Exception {
         String componentName = "component";
         String subComponent = "1.0.0";
+        String categoryItemName = "category";
+        String categoryGroup = "group 1";
 
         ComponentItem componentItem_1 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.NONE)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -33,6 +37,8 @@ public class ComponentItemTest {
         ComponentItem componentItem_2 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.NONE)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -49,10 +55,14 @@ public class ComponentItemTest {
     public void testComparatorCategoryDifferent() throws Exception {
         String componentName = "component";
         String subComponent = "1.0.0";
+        String categoryItemName = "category";
+        String categoryGroup = "group 1";
 
         ComponentItem componentItem_1 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.MEDIUM)
                                             .applyCategory("category B")
                                             .applyNotificationId(1L)
@@ -63,6 +73,8 @@ public class ComponentItemTest {
         ComponentItem componentItem_2 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.MEDIUM)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -80,10 +92,14 @@ public class ComponentItemTest {
     public void testComparatorPriorityDifferent() throws Exception {
         String componentName = "component";
         String subComponent = "1.0.0";
+        String categoryItemName = "category";
+        String categoryGroup = "group 1";
 
         ComponentItem componentItem_1 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.MEDIUM)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -94,6 +110,8 @@ public class ComponentItemTest {
         ComponentItem componentItem_2 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.HIGH)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -111,10 +129,14 @@ public class ComponentItemTest {
     public void testComparatorMissingPriority() throws Exception {
         String componentName = "component";
         String subComponent = "1.0.0";
+        String categoryItemName = "category";
+        String categoryGroup = "group 1";
 
         ComponentItem componentItem_1 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
                                             .applyOperation(ItemOperation.ADD)
@@ -124,6 +146,8 @@ public class ComponentItemTest {
         ComponentItem componentItem_2 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.LOW)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -141,9 +165,13 @@ public class ComponentItemTest {
     public void testComparatorMissingSubComponent() throws Exception {
         String componentName = "component";
         String subComponent = "1.0.0";
+        String categoryItemName = "category";
+        String categoryGroup = "group 1";
 
         ComponentItem componentItem_1 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.MEDIUM)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -154,6 +182,8 @@ public class ComponentItemTest {
         ComponentItem componentItem_2 = new ComponentItem.Builder()
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyPriority(ComponentItemPriority.HIGH)
                                             .applyCategory("category A")
                                             .applyNotificationId(1L)
@@ -173,6 +203,8 @@ public class ComponentItemTest {
     public void testSortedOrder() throws Exception {
         String componentName = "component";
         String subComponent = "1.0.0";
+        String categoryItemName = "category";
+        String categoryGroup = "group 1";
 
         LinkableItem vuln_1 = new LinkableItem("NEW", "id-1");
         LinkableItem vuln_2 = new LinkableItem("NEW", "id-2");
@@ -183,59 +215,71 @@ public class ComponentItemTest {
         final String category = "vulnerability";
 
         ComponentItem componentItem_1 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyPriority(ComponentItemPriority.MEDIUM)
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.MEDIUM)
-                                            .applyCategory(category)
-                                            .applyNotificationId(1L)
-                                            .applyOperation(ItemOperation.ADD)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyAllComponentAttributes(List.of(vuln_1))
+                                            .applyNotificationId(1L)
                                             .build();
 
         ComponentItem componentItem_2 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyPriority(ComponentItemPriority.LOW)
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.LOW)
-                                            .applyCategory(category)
-                                            .applyNotificationId(1L)
-                                            .applyOperation(ItemOperation.ADD)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyAllComponentAttributes(List.of(vuln_2))
+                                            .applyNotificationId(1L)
                                             .build();
 
         ComponentItem componentItem_3 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyPriority(ComponentItemPriority.HIGH)
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.HIGH)
-                                            .applyCategory(category)
-                                            .applyNotificationId(1L)
-                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyAllComponentAttributes(List.of(vuln_3))
+                                            .applyNotificationId(1L)
                                             .build();
         ComponentItem componentItem_4 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyPriority(ComponentItemPriority.MEDIUM)
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.MEDIUM)
-                                            .applyCategory(category)
-                                            .applyNotificationId(1L)
-                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyAllComponentAttributes(List.of(vuln_4))
+                                            .applyNotificationId(1L)
                                             .build();
         ComponentItem componentItem_5 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyPriority(ComponentItemPriority.LOW)
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.LOW)
-                                            .applyCategory(category)
-                                            .applyNotificationId(1L)
-                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyAllComponentAttributes(List.of(vuln_5))
+                                            .applyNotificationId(1L)
                                             .build();
         ComponentItem componentItem_6 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.UPDATE)
+                                            .applyPriority(ComponentItemPriority.HIGH)
                                             .applyComponentData(componentName, componentName)
                                             .applySubComponent("subComponent", subComponent)
-                                            .applyPriority(ComponentItemPriority.HIGH)
-                                            .applyCategory(category)
+                                            .applyCategoryItem(categoryItemName, categoryItemName)
+                                            .applyCategoryGroupingAttribute(categoryGroup, categoryGroup)
                                             .applyNotificationId(1L)
-                                            .applyOperation(ItemOperation.UPDATE)
                                             .applyAllComponentAttributes(List.of(vuln_6))
                                             .build();
 
@@ -245,4 +289,5 @@ public class ComponentItemTest {
                                               .sorted(ComponentItem.createDefaultComparator()).collect(Collectors.toList());
         assertEquals(expected, items);
     }
+
 }

@@ -126,28 +126,31 @@ public class AuditEntryAccessorTest {
         final String category = "category";
 
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
+                                                  .applyCategory(category)
                                                   .applyOperation(ItemOperation.ADD)
-                                                  .applyNotificationId(1L)
                                                   .applyComponentData("component", "component_1")
+                                                  .applyCategoryItem("category item", "category_item_1")
+                                                  .applyNotificationId(1L)
                                                   .applyComponentAttribute(linkableItem1)
                                                   .applyComponentAttribute(linkableItem2)
-                                                  .applyCategory(category)
                                                   .build();
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
+                                                  .applyCategory(category)
                                                   .applyOperation(ItemOperation.UPDATE)
                                                   .applyNotificationId(2L)
                                                   .applyComponentData("component", "component_2")
+                                                  .applyCategoryItem("category item", "category_item_2")
                                                   .applyComponentAttribute(linkableItem2)
-                                                  .applyCategory(category)
                                                   .build();
         final ComponentItem componentItem_3 = new ComponentItem.Builder()
+                                                  .applyCategory(category)
                                                   .applyOperation(ItemOperation.DELETE)
                                                   .applyNotificationId(1L)
                                                   .applyComponentData("component", "component_1")
+                                                  .applyCategoryItem("category item", "category_item_1")
                                                   .applyComponentAttribute(linkableItem3)
                                                   .applyComponentAttribute(linkableItem4)
                                                   .applyComponentAttribute(linkableItem5)
-                                                  .applyCategory(category)
                                                   .build();
 
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");

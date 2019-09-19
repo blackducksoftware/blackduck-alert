@@ -12,21 +12,23 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 public class DefaultMessageContentProcessorTest extends ProcessorTest {
-
     @Test
     public void processTest() throws AlertException {
         DefaultMessageContentProcessor defaultMessageContentProcessor = new DefaultMessageContentProcessor(new MessageCombiner());
         List<ProviderMessageContent> messages = createDefaultMessages();
-        final List<MessageContentGroup> messageGroups = defaultMessageContentProcessor.process(messages);
+
+        List<MessageContentGroup> messageGroups = defaultMessageContentProcessor.process(messages);
         assertFalse(messageGroups.isEmpty());
         assertEquals(2, messageGroups.size());
         messageGroups.forEach(group -> assertEquals(1, group.getSubContent().size()));
-        final MessageContentGroup firstGroup = messageGroups.get(0);
+
+        MessageContentGroup firstGroup = messageGroups.get(0);
         assertEquals("Topic One", firstGroup.getCommonTopic().getName());
         assertEquals(4, firstGroup.getSubContent().get(0).getComponentItems().size());
 
-        final MessageContentGroup secondGroup = messageGroups.get(1);
+        MessageContentGroup secondGroup = messageGroups.get(1);
         assertEquals("Topic Two", secondGroup.getCommonTopic().getName());
         assertEquals(1, secondGroup.getSubContent().get(0).getComponentItems().size());
     }
+
 }

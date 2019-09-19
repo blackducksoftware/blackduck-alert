@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.channel.jira.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
-import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHelper;
+import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -91,13 +91,13 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     private JiraMessageResult testTransitions(String jobId, FieldAccessor fieldAccessor, String messageId, IssueService issueService, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
-        JiraTransitionHelper transitionHelper = new JiraTransitionHelper(issueService);
+        JiraTransitionHandler transitionHelper = new JiraTransitionHandler(issueService);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();
         try {
             Map<String, String> transitionErrors = new HashMap<>();
-            Optional<String> resolveError = validateTransition(transitionHelper, initialIssueKey, resolveTransitionName, JiraTransitionHelper.DONE_STATUS_CATEGORY_KEY);
+            Optional<String> resolveError = validateTransition(transitionHelper, initialIssueKey, resolveTransitionName, JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY);
             resolveError.ifPresent(message -> transitionErrors.put(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, message));
             JiraMessageResult finalResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
 
@@ -105,7 +105,7 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
             if (optionalReopenTransitionName.isPresent()) {
                 fromStatus = toStatus;
                 toStatus = "Reopen";
-                Optional<String> reopenError = validateTransition(transitionHelper, initialIssueKey, optionalReopenTransitionName.get(), JiraTransitionHelper.TODO_STATUS_CATEGORY_KEY);
+                Optional<String> reopenError = validateTransition(transitionHelper, initialIssueKey, optionalReopenTransitionName.get(), JiraTransitionHandler.TODO_STATUS_CATEGORY_KEY);
                 reopenError.ifPresent(message -> transitionErrors.put(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, message));
                 JiraMessageResult reopenResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.ADD, messageId);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
@@ -116,7 +116,7 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
                 if (reopenError.isEmpty()) {
                     fromStatus = toStatus;
                     toStatus = "Resolve";
-                    Optional<String> reResolveError = validateTransition(transitionHelper, initialIssueKey, resolveTransitionName, JiraTransitionHelper.DONE_STATUS_CATEGORY_KEY);
+                    Optional<String> reResolveError = validateTransition(transitionHelper, initialIssueKey, resolveTransitionName, JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY);
                     reResolveError.ifPresent(message -> transitionErrors.put(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, message));
                     finalResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
                 }
@@ -156,7 +156,7 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         return messageResult;
     }
 
-    private Optional<String> validateTransition(JiraTransitionHelper jiraTransitionHelper, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
+    private Optional<String> validateTransition(JiraTransitionHandler jiraTransitionHelper, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
         Optional<TransitionComponent> transitionComponent = jiraTransitionHelper.retrieveIssueTransition(issueKey, transitionName);
         if (transitionComponent.isPresent()) {
             boolean isValidTransition = jiraTransitionHelper.doesTransitionToExpectedStatusCategory(transitionComponent.get(), statusCategoryKey);

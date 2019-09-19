@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.action;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -38,24 +37,24 @@ public abstract class TestAction {
     public abstract MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException;
 
     public ProviderMessageContent createTestNotificationContent(FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
-        final String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
-        final String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
-        ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
-        builder.applyProvider("Alert");
-        builder.applyTopic("Test Topic", customTopic);
-        builder.applySubTopic("Test SubTopic", "Test message sent by Alert");
-        builder.applyComponentItem(createTestComponentItem(operation, messageId, customMessage));
-        return builder.build();
+        String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
+        String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
+        return new ProviderMessageContent.Builder()
+                   .applyProvider("Alert")
+                   .applyTopic("Test Topic", customTopic)
+                   .applySubTopic("Test SubTopic", "Test message sent by Alert")
+                   .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))
+                   .build();
     }
 
     private ComponentItem createTestComponentItem(ItemOperation operation, String messageId, String customMessage) throws AlertException {
-        final ComponentItem.Builder builder = new ComponentItem.Builder();
-        builder.applyOperation(operation);
-        builder.applyCategory("Test Category");
-        builder.applyComponentData("Message ID", messageId);
-        builder.applyComponentAttribute(new LinkableItem("Details", customMessage));
-        builder.applyNotificationId(1L);
-        return builder.build();
+        return new ComponentItem.Builder()
+                   .applyOperation(operation)
+                   .applyCategory("Test Category")
+                   .applyComponentData("Message ID", messageId)
+                   .applyCategoryItem("Details", customMessage)
+                   .applyNotificationId(1L)
+                   .build();
     }
 
 }

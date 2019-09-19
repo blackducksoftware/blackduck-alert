@@ -37,14 +37,14 @@ import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResp
 import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
 
-public class JiraIssuePropertyHelper {
+public class JiraIssuePropertyHandler {
     private static final String SEARCH_CONJUNCTION = "AND";
     private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'');
 
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
 
-    public JiraIssuePropertyHelper(IssueSearchService issueSearchService, IssuePropertyService issuePropertyService) {
+    public JiraIssuePropertyHandler(IssueSearchService issueSearchService, IssuePropertyService issuePropertyService) {
         this.issueSearchService = issueSearchService;
         this.issuePropertyService = issuePropertyService;
     }
@@ -149,7 +149,6 @@ public class JiraIssuePropertyHelper {
         return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
     }
 
-    // TODO move this code to int-jira-common
     private String escapeSearchString(String originalString) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Character character : originalString.toCharArray()) {

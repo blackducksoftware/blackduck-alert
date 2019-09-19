@@ -23,12 +23,15 @@
 package com.synopsys.integration.alert.channel.msteams;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.channel.util.FreemarkerDataModel;
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -53,29 +56,66 @@ public class MsTeamsMessage implements FreemarkerDataModel {
             .ifPresent(msTeamsSection::setSubTopic);
         sections.add(msTeamsSection);
 
-        List<MsTeamsComponent> components = new ArrayList<>(providerMessageContent.getComponentItems().size());
-        for (ComponentItem componentItem : providerMessageContent.getComponentItems()) {
-            MsTeamsComponent msTeamsComponent = new MsTeamsComponent();
-            msTeamsComponent.setCategory(componentItem.getCategory());
-            msTeamsComponent.setOperation(componentItem.getOperation().toString());
+        SetMap<String, ComponentItem> groupedComponentItems = providerMessageContent.groupRelatedComponentItems();
+        List<MsTeamsComponent> components = new ArrayList<>();
+        for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
+            SetMap<String, ComponentItem> groupingToItems = createGrouping(componentItems);
+            for (Set<ComponentItem> groupedItems : groupingToItems.values()) {
+                Optional<ComponentItem> optionalArbitraryItem = groupedItems
+                                                                    .stream()
+                                                                    .findAny();
+                if (optionalArbitraryItem.isPresent()) {
+                    ComponentItem arbitraryItem = optionalArbitraryItem.get();
 
-            StringBuilder componentTextBuilder = new StringBuilder(componentItem.getComponent().getValue());
-            componentItem.getSubComponent().map(item -> "/" + item.getValue()).ifPresent(componentTextBuilder::append);
-            msTeamsComponent.setText(componentTextBuilder.toString());
+                    MsTeamsComponent msTeamsComponent = new MsTeamsComponent();
+                    msTeamsComponent.setCategory(arbitraryItem.getCategory());
+                    msTeamsComponent.setOperation(arbitraryItem.getOperation().toString());
 
-            String allAttributeDetails = createDetails(componentItem.getComponentAttributes());
-            msTeamsComponent.setAllAttributeDetails(allAttributeDetails);
+                    StringBuilder componentTextBuilder = new StringBuilder(arbitraryItem.getComponent().getValue());
+                    arbitraryItem.getSubComponent().map(item -> "/" + item.getValue()).ifPresent(componentTextBuilder::append);
+                    msTeamsComponent.setText(componentTextBuilder.toString());
+                    msTeamsComponent.setCategoryItemText(createCategoryItemsString(arbitraryItem, groupedItems));
 
-            components.add(msTeamsComponent);
+                    String allAttributeDetails = createDetails(arbitraryItem.getComponentAttributes());
+                    msTeamsComponent.setAllAttributeDetails(allAttributeDetails);
+
+                    components.add(msTeamsComponent);
+                }
+            }
         }
         msTeamsSection.setComponents(components);
     }
 
+    private SetMap<String, ComponentItem> createGrouping(Set<ComponentItem> componentItems) {
+        SetMap<String, ComponentItem> groupingToItems = SetMap.createLinked();
+        for (ComponentItem item : componentItems) {
+            String key = item.getCategoryGroupingAttribute()
+                             .map(LinkableItem::getValue)
+                             .orElse("DEFAULT_GROUPING_STRING");
+            groupingToItems.add(key, item);
+        }
+        return groupingToItems;
+    }
+
+    private String createCategoryItemsString(ComponentItem arbitraryItem, Collection<ComponentItem> groupedItems) {
+        StringBuilder categoryItemTextBuilder = new StringBuilder();
+        arbitraryItem.getCategoryGroupingAttribute()
+            .map(this::createLinkableItemString)
+            .map(grouping -> grouping + ", ")
+            .ifPresent(categoryItemTextBuilder::append);
+        String categoryItemsString = groupedItems
+                                         .stream()
+                                         .map(ComponentItem::getCategoryItem)
+                                         .map(this::createLinkableItemString)
+                                         .collect(Collectors.joining(", "));
+        categoryItemTextBuilder.append(categoryItemsString);
+        return categoryItemTextBuilder.toString();
+    }
+
     private String createDetails(Set<LinkableItem> componentAttributes) {
-        //TODO determine if we should be including the URLs
         return componentAttributes
                    .stream()
-                   .map(linkableItem -> String.format("%s: %s", linkableItem.getName(), linkableItem.getValue()))
+                   .map(this::createLinkableItemString)
                    .collect(Collectors.joining(", "));
     }
 
@@ -85,6 +125,14 @@ public class MsTeamsMessage implements FreemarkerDataModel {
 
     public List<MsTeamsSection> getSections() {
         return sections;
+    }
+
+    private String createLinkableItemString(LinkableItem item) {
+        String valueString = item.getValue();
+        if (item.getUrl().isPresent()) {
+            valueString = String.format("[%s](%s)", valueString, item.getUrl().get());
+        }
+        return String.format("%s: %s", item.getName(), valueString);
     }
 
 }
