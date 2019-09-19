@@ -39,9 +39,10 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 
 @Component
-public class FilePersistenceUtil {
+public final class FilePersistenceUtil {
     private final File parentDataDirectory;
     private final File secretsDirectory;
+    private final File uploadsDirectory;
     private final Gson gson;
 
     @Autowired
@@ -53,6 +54,7 @@ public class FilePersistenceUtil {
         }
         this.parentDataDirectory = new File(dataDirectory);
         this.secretsDirectory = new File(alertProperties.getAlertSecretsDir());
+        this.uploadsDirectory = new File(parentDataDirectory, "uploads");
     }
 
     public void writeToFile(final String fileName, final String content) throws IOException {
@@ -65,10 +67,6 @@ public class FilePersistenceUtil {
         Files.write(destination.toPath(), data, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public void writeToFile(String fileName, InputStream inputStream) throws IOException {
-        writeToFile(createFile(fileName), inputStream);
-    }
-
     public void writeToFile(File destination, InputStream inputStream) throws IOException {
         // destination is a path to a file.  Make sure all parent directories exist before writing.
         destination.getParentFile().mkdirs();
@@ -78,6 +76,11 @@ public class FilePersistenceUtil {
     public void writeJsonToFile(final String fileName, final Object content) throws IOException {
         final String jsonString = gson.toJson(content);
         writeToFile(fileName, jsonString);
+    }
+
+    public void writeFileToUploadsDirectory(final String fileName, InputStream inputStream) throws IOException {
+        File uploadFile = createUploadsFile(fileName);
+        writeToFile(uploadFile, inputStream);
     }
 
     public String readFromFile(final String fileName) throws IOException {
@@ -111,7 +114,15 @@ public class FilePersistenceUtil {
         FileUtils.forceDelete(file);
     }
 
-    public File createFile(final String fileName) {
+    public void delete(File file) throws IOException {
+        FileUtils.forceDelete(file);
+    }
+
+    public File createUploadsFile(String fileName) {
+        return new File(uploadsDirectory, fileName);
+    }
+
+    private File createFile(final String fileName) {
         return createFile(parentDataDirectory, fileName);
     }
 

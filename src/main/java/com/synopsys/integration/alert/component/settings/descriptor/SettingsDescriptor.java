@@ -82,7 +82,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_SAML_METADATA_URL_MISSING = "SAML Metadata URL is missing and a Metadata file has not been uploaded.";
     public static final String FIELD_ERROR_SAML_METADATA_FILE_MISSING = "SAML Metadata file has not been uploaded and a Metadata URL has not been specified.";
 
-    public final static String SAML_METADATA_FILE = "uploads/saml_metadata.xml";
+    public final static String SAML_METADATA_FILE = "saml_metadata.xml";
 
     @Autowired
 

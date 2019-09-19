@@ -122,7 +122,7 @@ public class SAMLManager {
 
     private MetadataProvider createFileProvider() throws MetadataProviderException {
         final Timer backgroundTaskTimer = new Timer(true);
-        File metadataFile = filePersistenceUtil.createFile(SettingsDescriptor.SAML_METADATA_FILE);
+        File metadataFile = filePersistenceUtil.createUploadsFile(SettingsDescriptor.SAML_METADATA_FILE);
         FilesystemMetadataProvider provider = new FilesystemMetadataProvider(backgroundTaskTimer, metadataFile);
         provider.setParserPool(parserPool);
         return createDelegate(provider);

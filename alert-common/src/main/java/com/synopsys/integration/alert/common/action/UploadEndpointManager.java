@@ -22,11 +22,15 @@
  */
 package com.synopsys.integration.alert.common.action;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.config.field.UploadValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -63,10 +68,14 @@ public class UploadEndpointManager {
     }
 
     public void registerTarget(String targetKey, ConfigContextEnum context, DescriptorKey descriptorKey, String fileName) throws AlertException {
+        registerTarget(targetKey, context, descriptorKey, fileName, null);
+    }
+
+    public void registerTarget(String targetKey, ConfigContextEnum context, DescriptorKey descriptorKey, String fileName, UploadValidationFunction validationFunction) throws AlertException {
         if (containsTarget(targetKey)) {
             throw new AlertException("A custom endpoint is already registered for " + targetKey);
         }
-        uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, targetKey, fileName));
+        uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, targetKey, fileName, validationFunction));
     }
 
     public ResponseEntity<String> performUpload(String targetKey, Resource fileResource) {
@@ -83,15 +92,41 @@ public class UploadEndpointManager {
     }
 
     private ResponseEntity<String> writeFile(UploadTarget target, Resource fileResource) {
-        try (InputStream inputStream = fileResource.getInputStream()) {
-            //TODO add a validation function to apply for further security
-            filePersistenceUtil.writeToFile(target.getFilename(), inputStream);
-            return responseFactory.createCreatedResponse("", "File uploaded.");
+        try {
+            String targetFilename = target.getFilename();
+            String tempFilename = "temp_" + targetFilename;
+
+            Optional<UploadValidationFunction> validationFunction = target.getValidationFunction();
+            if (validationFunction.isPresent()) {
+                writeFile(tempFilename, fileResource);
+                File fileToValidate = filePersistenceUtil.createUploadsFile(tempFilename);
+                Collection<String> errors = validationFunction.get().apply(fileToValidate);
+                filePersistenceUtil.delete(fileToValidate);
+                // TODO Implement a ValidationResult object that UploadValidationFunction and ConfigValidationFunction can return.
+                if (errors.isEmpty()) {
+                    writeFile(targetFilename, fileResource);
+                    return responseFactory.createCreatedResponse("", "File uploaded.");
+                }
+                return responseFactory.createBadRequestResponse("", StringUtils.join(errors, ","));
+            } else {
+                writeFile(targetFilename, fileResource);
+                return responseFactory.createCreatedResponse("", "File uploaded.");
+            }
         } catch (IOException ex) {
-            // add logger to log details.  Don't want to send internal path details back to the client in the response.
             logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
             logger.error("Caused by: ", ex);
             return responseFactory.createInternalServerErrorResponse("", "Error uploading file to server.");
+        }
+
+    }
+
+    private void writeFile(String fileName, Resource fileResource) throws IOException {
+        try (InputStream inputStream = fileResource.getInputStream()) {
+            filePersistenceUtil.writeFileToUploadsDirectory(fileName, inputStream);
+        } catch (IOException ex) {
+            logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", fileName);
+            logger.error("Caused by: ", ex);
+            throw ex;
         }
     }
 
@@ -101,12 +136,14 @@ public class UploadEndpointManager {
         private DescriptorKey descriptorKey;
         private String targetKey;
         private String filename;
+        private UploadValidationFunction validationFunction;
 
-        public UploadTarget(final ConfigContextEnum context, final DescriptorKey descriptorKey, final String targetKey, final String filename) {
+        public UploadTarget(ConfigContextEnum context, DescriptorKey descriptorKey, String targetKey, String filename, UploadValidationFunction validationFunction) {
             this.context = context;
             this.descriptorKey = descriptorKey;
             this.targetKey = targetKey;
             this.filename = filename;
+            this.validationFunction = validationFunction;
         }
 
         public ConfigContextEnum getContext() {
@@ -123,6 +160,10 @@ public class UploadEndpointManager {
 
         public String getFilename() {
             return filename;
+        }
+
+        public Optional<UploadValidationFunction> getValidationFunction() {
+            return Optional.ofNullable(validationFunction);
         }
     }
 }
