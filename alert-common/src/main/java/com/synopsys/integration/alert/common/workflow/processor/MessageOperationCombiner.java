@@ -69,9 +69,9 @@ public class MessageOperationCombiner extends MessageCombiner {
             List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
 
             List<ComponentItem> groupCategoryItems = new ArrayList<>();
-            for (ProviderMessageContent aggregateMessageContent : groupedMessageEntry.getValue()) {
+            for (ProviderMessageContent messageContent : groupedMessageEntry.getValue()) {
                 Map<String, ComponentItem> messageDataCache = new LinkedHashMap<>();
-                aggregateMessageContent.getComponentItems().forEach(item -> processOperation(messageDataCache, item));
+                messageContent.getComponentItems().forEach(item -> processOperation(messageDataCache, item));
                 groupCategoryItems.addAll(messageDataCache.values());
             }
             Map<String, ComponentItem> groupDataCache = new LinkedHashMap<>();
@@ -98,7 +98,7 @@ public class MessageOperationCombiner extends MessageCombiner {
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createAddFunction() {
         return (categoryDataCache, componentItem) -> {
-            String key = componentItem.createKey(true);
+            String key = componentItem.createKey(false, true);
             categoryDataCache.put(key, componentItem);
             return null;
         };
@@ -106,7 +106,7 @@ public class MessageOperationCombiner extends MessageCombiner {
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createDeleteFunction() {
         return (categoryDataCache, componentItem) -> {
-            String key = componentItem.createKey(true);
+            String key = componentItem.createKey(false, true);
             if (categoryDataCache.containsKey(key)) {
                 categoryDataCache.remove(key);
             } else {

@@ -86,7 +86,7 @@ public class MessageCombiner {
         Map<String, ComponentItem> keyToItems = new LinkedHashMap<>();
         for (ComponentItem componentItem : allComponentItems) {
             Set<LinkableItem> componentAttributes = componentItem.getComponentAttributes();
-            String key = componentItem.createKey(true);
+            String key = componentItem.createKey(true, true);
             ComponentItem oldItem = keyToItems.get(key);
 
             Set<LinkableItem> combinedAttributes = new LinkedHashSet<>();

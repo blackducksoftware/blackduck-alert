@@ -144,27 +144,30 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     }
 
     /**
-     * Intended to be used for logical grouping of ComponentItems.
+     * Intended to be used for logical grouping of ComponentItems. By default, operation is included and categoryItem is only included if collapseOnCategoryItem is false.
      * @return A String that will identify this ComponentItem by category, operation, component, subComponent, and categoryItem if applicable.
      */
     public String createKey() {
-        return createKey(false);
+        return createKey(true, false);
     }
 
     /**
      * Intended to be used for logical grouping of ComponentItems.
-     * @param forceInclusionOfCategoryItem By default, if collapseOnCategory() returns true, categoryItem will be excluded from the key. Setting this to true will always include it.
-     * @return A String that will identify this ComponentItem by category, operation, priority, component, subComponent, and categoryItem if applicable.
+     * @param includeOperation         Indicates whether or not to include operation in the key.
+     * @param forceIncludeCategoryItem By default, if collapseOnCategory() returns true, categoryItem will be excluded from the key. Setting this to true will always include it.
+     * @return A String that will identify this ComponentItem by category, operation (if applicable), priority, component, subComponent, and categoryItem (if applicable).
      */
-    public String createKey(boolean forceInclusionOfCategoryItem) {
+    public String createKey(boolean includeOperation, boolean forceIncludeCategoryItem) {
         StringBuilder keyBuilder = new StringBuilder();
         keyBuilder.append(getCategory());
-        keyBuilder.append(getOperation());
+        if (includeOperation) {
+            keyBuilder.append(getOperation());
+        }
 
         appendLinkableItem(keyBuilder, getComponent());
         getSubComponent().ifPresent(subComponent -> appendLinkableItem(keyBuilder, subComponent));
 
-        if (!collapseOnCategory() || forceInclusionOfCategoryItem) {
+        if (!collapseOnCategory() || forceIncludeCategoryItem) {
             appendLinkableItem(keyBuilder, getCategoryItem());
         }
 
