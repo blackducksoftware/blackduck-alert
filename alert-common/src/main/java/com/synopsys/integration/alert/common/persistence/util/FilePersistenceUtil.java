@@ -111,7 +111,7 @@ public class FilePersistenceUtil {
         FileUtils.forceDelete(file);
     }
 
-    private File createFile(final String fileName) {
+    public File createFile(final String fileName) {
         return createFile(parentDataDirectory, fileName);
     }
 

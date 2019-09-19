@@ -22,12 +22,15 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
+import java.io.File;
 import java.util.List;
 import java.util.Timer;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
 import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.ParserPool;
 import org.slf4j.Logger;
@@ -40,6 +43,7 @@ import org.springframework.security.saml.metadata.MetadataManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 public class SAMLManager {
@@ -49,13 +53,16 @@ public class SAMLManager {
     private final ExtendedMetadata extendedMetadata;
     private final MetadataManager metadataManager;
     private final MetadataGenerator metadataGenerator;
+    private final FilePersistenceUtil filePersistenceUtil;
 
-    public SAMLManager(final SAMLContext samlContext, final ParserPool parserPool, final ExtendedMetadata extendedMetadata, final MetadataManager metadataManager, final MetadataGenerator metadataGenerator) {
+    public SAMLManager(final SAMLContext samlContext, final ParserPool parserPool, final ExtendedMetadata extendedMetadata, final MetadataManager metadataManager, final MetadataGenerator metadataGenerator,
+        FilePersistenceUtil filePersistenceUtil) {
         this.samlContext = samlContext;
         this.parserPool = parserPool;
         this.extendedMetadata = extendedMetadata;
         this.metadataManager = metadataManager;
         this.metadataGenerator = metadataGenerator;
+        this.filePersistenceUtil = filePersistenceUtil;
     }
 
     public void initializeSAML() {
@@ -98,19 +105,33 @@ public class SAMLManager {
         metadataGenerator.setEntityId(entityId);
         metadataGenerator.setEntityBaseURL(entityBaseUrl);
 
-        final Timer backgroundTaskTimer = new Timer(true);
-
         // The URL can not end in a '/' because it messes with the paths for saml
         final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
-        final HTTPMetadataProvider httpMetadataProvider;
-        httpMetadataProvider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
-        httpMetadataProvider.setParserPool(parserPool);
-
-        final ExtendedMetadataDelegate idpMetadata = new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata);
-        idpMetadata.setMetadataTrustCheck(true);
-        idpMetadata.setMetadataRequireSignature(false);
-        metadataManager.setProviders(List.of(idpMetadata));
+        MetadataProvider httpProvider = createHttpProvider(correctedMetadataURL);
+        MetadataProvider fileProvider = createFileProvider();
+        metadataManager.setProviders(List.of(httpProvider, fileProvider));
         metadataManager.afterPropertiesSet();
     }
 
+    private MetadataProvider createHttpProvider(String metadataUrl) throws MetadataProviderException {
+        final Timer backgroundTaskTimer = new Timer(true);
+        HTTPMetadataProvider provider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), metadataUrl);
+        provider.setParserPool(parserPool);
+        return createDelegate(provider);
+    }
+
+    private MetadataProvider createFileProvider() throws MetadataProviderException {
+        final Timer backgroundTaskTimer = new Timer(true);
+        File metadataFile = filePersistenceUtil.createFile(SamlMetaDataFileUpload.SAML_METADATA_FILE);
+        FilesystemMetadataProvider provider = new FilesystemMetadataProvider(backgroundTaskTimer, metadataFile);
+        provider.setParserPool(parserPool);
+        return createDelegate(provider);
+    }
+
+    private ExtendedMetadataDelegate createDelegate(MetadataProvider provider) {
+        ExtendedMetadataDelegate delegate = new ExtendedMetadataDelegate(provider, extendedMetadata);
+        delegate.setMetadataTrustCheck(true);
+        delegate.setMetadataRequireSignature(false);
+        return delegate;
+    }
 }

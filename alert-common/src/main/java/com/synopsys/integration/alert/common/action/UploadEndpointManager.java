@@ -36,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -76,8 +75,7 @@ public class UploadEndpointManager {
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
-        // check permissions
-        if (!authorizationManager.hasAllPermissions(target.getContext().name(), target.getDescriptorKey().getUniversalKey(), AccessOperation.EXECUTE, AccessOperation.WRITE)) {
+        if (!authorizationManager.hasWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
             return responseFactory.createForbiddenResponse();
         }
 
