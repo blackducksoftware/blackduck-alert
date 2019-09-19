@@ -47,8 +47,8 @@ public class JiraMessageParser extends ChannelMessageParser {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
-        description.append("Provider: ");
-        description.append(providerName);
+        description.append(emphasize("Provider: "));
+        description.append(emphasize(providerName));
         description.append(getLineSeparator());
         description.append(createLinkableItemString(topic, true));
         description.append(getLineSeparator());
