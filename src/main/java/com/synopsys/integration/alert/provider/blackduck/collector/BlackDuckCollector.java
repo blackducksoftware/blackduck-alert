@@ -161,6 +161,12 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
 
     protected Optional<ComponentItem> createRemediationComponentItem(String categoryType, ComponentVersionView componentVersionView, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem,
         LinkableItem categoryItem, LinkableItem categoryGrouping, Long notificationId) {
+        return createRemediationComponentItem(categoryType, componentVersionView, componentItem, componentVersionItem,
+            categoryItem, categoryGrouping, false, notificationId);
+    }
+
+    protected Optional<ComponentItem> createRemediationComponentItem(String categoryType, ComponentVersionView componentVersionView, LinkableItem componentItem, Optional<LinkableItem> componentVersionItem,
+        LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory, Long notificationId) {
         try {
             List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
             if (!remediationItems.isEmpty()) {
@@ -171,7 +177,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
                                                                  .applyComponentData(componentItem)
                                                                  .applyCategoryItem(categoryItem)
                                                                  .applyCategoryGroupingAttribute(categoryGrouping)
-                                                                 .applyCollapseOnCategory(false)
+                                                                 .applyCollapseOnCategory(collapseOnCategory)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
                 componentVersionItem.ifPresent(remediationComponent::applySubComponent);
