@@ -59,7 +59,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         LinkableItem subComponent,
         LinkableItem categoryItem,
         LinkableItem categoryGroupingAttribute,
-        boolean collapseOnCategory, Set<LinkableItem> componentAttributes,
+        boolean collapseOnCategory,
+        Set<LinkableItem> componentAttributes,
         Set<Long> notificationIds
     ) {
         this.category = category;

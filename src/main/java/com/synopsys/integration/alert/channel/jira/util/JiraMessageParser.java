@@ -92,8 +92,7 @@ public class JiraMessageParser extends ChannelMessageParser {
 
     @Override
     protected String emphasize(String txt) {
-        // TODO emphasize?
-        return txt;
+        return String.format("*%s*", txt);
     }
 
     @Override

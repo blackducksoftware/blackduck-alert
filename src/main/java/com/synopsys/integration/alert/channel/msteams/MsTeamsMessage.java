@@ -127,9 +127,12 @@ public class MsTeamsMessage implements FreemarkerDataModel {
         return sections;
     }
 
-    //TODO determine if we should be including the URLs
     private String createLinkableItemString(LinkableItem item) {
-        return String.format("%s: %s", item.getName(), item.getValue());
+        String valueString = item.getValue();
+        if (item.getUrl().isPresent()) {
+            valueString = String.format("[%s](%s)", valueString, item.getUrl().get());
+        }
+        return String.format("%s: %s", item.getName(), valueString);
     }
 
 }
