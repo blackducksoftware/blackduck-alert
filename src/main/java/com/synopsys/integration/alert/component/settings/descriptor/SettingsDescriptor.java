@@ -85,7 +85,6 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public final static String SAML_METADATA_FILE = "saml_metadata.xml";
 
     @Autowired
-
     public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig) {
         super(settingsDescriptorKey, uiConfig);
     }
