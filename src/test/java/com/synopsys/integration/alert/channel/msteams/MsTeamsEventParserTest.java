@@ -1,5 +1,19 @@
 package com.synopsys.integration.alert.channel.msteams;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashSet;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+
 import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -9,19 +23,6 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.exception.IntegrationException;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashSet;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MsTeamsEventParserTest {
     @Test
@@ -40,33 +41,48 @@ public class MsTeamsEventParserTest {
         componentItemBuilder.applyComponentData("not used", "Apache Struts");
         componentItemBuilder.applySubComponent("not used", "1.2.2");
         componentItemBuilder.applyComponentAttribute(new LinkableItem("Component License", "Apache License 2.0"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Severity", "HIGH"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2016-0785"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2014-0114"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2006-1546"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2006-1547"));
-        contentBuilder.applyComponentItem(componentItemBuilder.build());
-        componentItemBuilder.clearAttributes();
+        componentItemBuilder.applyCollapseOnCategory(true);
 
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Component License", "Apache License 2.0"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Severity", "MEDIUM"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2012-0394"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2006-1548"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2015-0899"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2016-1182"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "CVE-2016-1181"));
-        contentBuilder.applyComponentItem(componentItemBuilder.build());
-        componentItemBuilder.clearAttributes();
+        componentItemBuilder.applyCategoryGroupingAttribute("Severity", "HIGH");
 
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Component License", "Apache License 2.0"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Severity", "LOW"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Vulnerabilities", "BDSA-2008-0016"));
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2016-0785");
         contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2014-0114");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2006-1546");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2006-1547");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryGroupingAttribute("Severity", "MEDIUM");
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2012-0394");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2006-1548");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2015-0899");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2016-1182");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "CVE-2016-1181");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
+        componentItemBuilder.applyCategoryGroupingAttribute("Severity", "LOW");
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "BDSA-2008-0016");
+        contentBuilder.applyComponentItem(componentItemBuilder.build());
+
         componentItemBuilder.clearAttributes();
 
         componentItemBuilder.applyOperation(ItemOperation.UPDATE);
         componentItemBuilder.applyComponentAttribute(new LinkableItem("Component License", "Apache License 2.0"));
-        componentItemBuilder.applyComponentAttribute(new LinkableItem("Severity", "LOW"));
+        componentItemBuilder.applyCategoryItem("Vulnerabilities", "ALL");
+        componentItemBuilder.applyCategoryGroupingAttribute("Severity", "LOW");
         componentItemBuilder.applyComponentAttribute(new LinkableItem("Remediation - Fixes Previous Vulnerabilities", "2"));
         componentItemBuilder.applyComponentAttribute(new LinkableItem("Remediation - Latest Version", "2.5.20"));
         componentItemBuilder.applyComponentAttribute(new LinkableItem("Remediation - Without Vulnerabilities", "2"));

@@ -22,12 +22,10 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -50,7 +48,6 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAcce
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckDataHelper;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.blackduck.api.core.BlackDuckView;
 import com.synopsys.integration.blackduck.api.generated.component.RiskCountView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.RiskCountType;
@@ -109,12 +106,15 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 List<LinkableItem> remediationItems = getBlackDuckDataHelper().getRemediationItems(componentVersionView);
                 componentAttributes.addAll(remediationItems);
 
-                ComponentItem.Builder builder = new ComponentItem.Builder();
-                builder.applyComponentData(componentItem)
-                    .applyAllComponentAttributes(componentAttributes)
-                    .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
-                    .applyOperation(ItemOperation.UPDATE)
-                    .applyNotificationId(notificationId);
+                ComponentItem.Builder builder = new ComponentItem.Builder()
+                                                    .applyCategory(BlackDuckVulnerabilityCollector.CATEGORY_TYPE)
+                                                    .applyOperation(ItemOperation.UPDATE)
+                                                    .applyComponentData(componentItem)
+                                                    // FIXME get the vulnerability id(s) and create a ComponentItem from each of them
+                                                    .applyCategoryItem(new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, "Present"))
+                                                    .applyCollapseOnCategory(true)
+                                                    .applyAllComponentAttributes(componentAttributes)
+                                                    .applyNotificationId(notificationId);
                 componentVersionItem.ifPresent(builder::applySubComponent);
                 try {
                     items.add(builder.build());
@@ -148,12 +148,11 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                 }
 
                 LinkableItem policyNameItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, rule.getName(), null);
-                policyNameItem.setCollapsible(true);
-                policyNameItem.setSummarizable(true);
-                policyNameItem.setCountable(true);
+                LinkableItem policySeverityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, rule.getSeverity());
                 if (getBlackDuckDataHelper().hasVulnerabilityRule(rule)) {
                     List<VulnerableComponentView> vulnerableComponentViews = getBlackDuckDataHelper().getVulnerableComponentViews(projectVersionWrapper, versionBomComponent);
-                    List<ComponentItem> vulnerabilityComponentItems = createVulnerabilityComponentItems(vulnerableComponentViews, licenseItems, policyNameItem, componentItem, componentVersionItem, notificationId, ItemOperation.UPDATE);
+                    List<ComponentItem> vulnerabilityComponentItems =
+                        createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverityItem, componentItem, componentVersionItem, notificationId);
                     items.addAll(vulnerabilityComponentItems);
                 } else {
                     items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));
@@ -162,19 +161,6 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         } catch (Exception e) {
             logger.error("BOM Edit: Error processing policy ", e);
         }
-
-        return items;
-    }
-
-    private List<LinkableItem> getItemFromProjectVersionWrapper(JsonFieldAccessor accessor, JsonField<String> field, Function<ProjectVersionWrapper, BlackDuckView> viewMapper, Function<BlackDuckView, LinkableItem> itemMapper) {
-        List<LinkableItem> items = new ArrayList<>();
-        BlackDuckDataHelper blackDuckDataHelper = getBlackDuckDataHelper();
-        getBomComponentUrl(accessor, field)
-            .flatMap(blackDuckDataHelper::getBomComponentView)
-            .flatMap(blackDuckDataHelper::getProjectVersionWrapper)
-            .map(viewMapper)
-            .map(itemMapper)
-            .ifPresent(items::add);
 
         return items;
     }
@@ -222,13 +208,14 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         throws AlertException {
         ComponentItem.Builder builder = new ComponentItem.Builder();
 
-        builder.applyComponentData(componentItem)
-            .applyComponentAttribute(policyNameItem)
-            .applyAllComponentAttributes(licenseItems)
-            .applySubComponent(componentVersionItem)
-            .applyPriority(getPolicyPriority(rule.getSeverity()))
+        builder
             .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
             .applyOperation(ItemOperation.UPDATE)
+            .applyPriority(getPolicyPriority(rule.getSeverity()))
+            .applyComponentData(componentItem)
+            .applySubComponent(componentVersionItem)
+            .applyCategoryItem(policyNameItem)
+            .applyAllComponentAttributes(licenseItems)
             .applyNotificationId(notificationId);
         return builder.build();
     }

@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
+import com.synopsys.integration.alert.channel.jira.util.JiraIssueHandler;
+import com.synopsys.integration.alert.channel.jira.util.JiraMessageParser;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -51,11 +53,13 @@ public class JiraChannel extends DistributionChannel {
     private final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
 
     private final JiraChannelKey jiraChannelKey;
+    private final JiraMessageParser jiraMessageParser;
 
     @Autowired
-    public JiraChannel(Gson gson, AuditUtility auditUtility, JiraChannelKey jiraChannelKey) {
+    public JiraChannel(JiraChannelKey jiraChannelKey, JiraMessageParser jiraMessageParser, Gson gson, AuditUtility auditUtility) {
         super(gson, auditUtility);
         this.jiraChannelKey = jiraChannelKey;
+        this.jiraMessageParser = jiraMessageParser;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class JiraChannel extends DistributionChannel {
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
         IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
 
-        JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(issueService, issueSearchService, issuePropertyService, jiraProperties, getGson());
+        JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(issueService, issueSearchService, issuePropertyService, jiraProperties, jiraMessageParser, getGson());
         return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
     }
 

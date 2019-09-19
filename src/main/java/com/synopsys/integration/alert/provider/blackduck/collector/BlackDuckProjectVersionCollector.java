@@ -72,10 +72,12 @@ public class BlackDuckProjectVersionCollector extends BlackDuckCollector {
             String operationType = optionalOperationType.get();
             ItemOperation operation = getOperation(operationType);
             LinkableItem item = createDescriptionItem(jsonFieldAccessor, notificationFields, operationType);
-            builder.applyComponentData(item)
-                .applyPriority(ComponentItemPriority.HIGHEST)
+            builder
                 .applyCategory(CATEGORY_TYPE)
                 .applyOperation(operation)
+                .applyPriority(ComponentItemPriority.HIGHEST)
+                .applyComponentData("Components Affected", "ALL")
+                .applyCategoryItem(item)
                 .applyNotificationId(notificationId);
             try {
                 return Set.of(builder.build());

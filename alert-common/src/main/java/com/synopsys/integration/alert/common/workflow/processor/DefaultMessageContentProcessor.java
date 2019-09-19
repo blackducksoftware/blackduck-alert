@@ -36,13 +36,13 @@ public class DefaultMessageContentProcessor extends MessageContentProcessor {
     private final MessageCombiner messageCombiner;
 
     @Autowired
-    public DefaultMessageContentProcessor(final MessageCombiner messageCombiner) {
+    public DefaultMessageContentProcessor(MessageCombiner messageCombiner) {
         super(FormatType.DEFAULT);
         this.messageCombiner = messageCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> process(final List<ProviderMessageContent> messages) {
+    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
         List<ProviderMessageContent> combinedMessages = messageCombiner.combine(messages);
         return createMessageContentGroups(combinedMessages);
     }

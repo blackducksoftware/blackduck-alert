@@ -39,17 +39,17 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
     private final AuditUtility auditUtility;
 
-    public DistributionChannel(final Gson gson, final AuditUtility auditUtility) {
+    public DistributionChannel(Gson gson, AuditUtility auditUtility) {
         super(gson, DistributionEvent.class);
         this.auditUtility = auditUtility;
     }
 
     @Override
-    public void handleEvent(final DistributionEvent event) {
+    public void handleEvent(DistributionEvent event) {
         if (event.getDestination().equals(getDestinationName())) {
             try {
                 sendAuditedMessage(event);
-            } catch (final IntegrationException ex) {
+            } catch (IntegrationException ex) {
                 logger.error("There was an error sending the message.", ex);
             }
         } else {
@@ -58,20 +58,20 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
 
     }
 
-    public void sendAuditedMessage(final DistributionEvent event) throws IntegrationException {
+    public void sendAuditedMessage(DistributionEvent event) throws IntegrationException {
         try {
             sendMessage(event);
             auditUtility.setAuditEntrySuccess(event.getAuditIds());
-        } catch (final IntegrationRestException irex) {
+        } catch (IntegrationRestException irex) {
             auditUtility.setAuditEntryFailure(event.getAuditIds(), irex.getMessage(), irex);
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
             throw new AlertException(irex.getMessage());
-        } catch (final Exception e) {
+        } catch (Exception e) {
             auditUtility.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);
             throw new AlertException(e.getMessage());
         }
     }
 
-    public abstract MessageResult sendMessage(final DistributionEvent event) throws IntegrationException;
+    public abstract MessageResult sendMessage(DistributionEvent event) throws IntegrationException;
 
 }

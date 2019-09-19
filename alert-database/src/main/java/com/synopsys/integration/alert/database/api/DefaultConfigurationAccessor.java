@@ -94,7 +94,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public List<ConfigurationJobModel> getAllJobs() {
         final List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
-        final SetMap<UUID, ConfigGroupEntity> jobMap = new SetMap();
+        final SetMap<UUID, ConfigGroupEntity> jobMap = SetMap.createDefault();
         for (final ConfigGroupEntity entity : jobEntities) {
             final UUID entityJobId = entity.getJobId();
             jobMap.add(entityJobId, entity);

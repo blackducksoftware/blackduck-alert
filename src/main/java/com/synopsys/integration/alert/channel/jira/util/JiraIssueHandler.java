@@ -20,13 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira;
+package com.synopsys.integration.alert.channel.jira.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,13 +39,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
+import com.synopsys.integration.alert.channel.jira.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.exception.JiraMissingTransitionException;
 import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
 import com.synopsys.integration.alert.channel.jira.model.JiraMessageResult;
-import com.synopsys.integration.alert.channel.jira.util.JiraIssueFormatHelper;
-import com.synopsys.integration.alert.channel.jira.util.JiraIssuePropertyHelper;
-import com.synopsys.integration.alert.channel.jira.util.JiraTransitionHelper;
 import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -57,7 +53,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckProjectVersionCollector;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
@@ -77,28 +72,26 @@ public class JiraIssueHandler {
 
     private final IssueService issueService;
     private final JiraProperties jiraProperties;
+    private final JiraMessageParser jiraMessageParser;
     private final Gson gson;
 
-    private final JiraTransitionHelper jiraTransitionHelper;
-    private final JiraIssuePropertyHelper jiraIssuePropertyHelper;
+    private final JiraTransitionHandler jiraTransitionHelper;
+    private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public JiraIssueHandler(IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, JiraProperties jiraProperties, Gson gson) {
+    public JiraIssueHandler(IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, JiraProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson) {
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
+        this.jiraMessageParser = jiraMessageParser;
         this.gson = gson;
-        this.jiraTransitionHelper = new JiraTransitionHelper(issueService);
-        this.jiraIssuePropertyHelper = new JiraIssuePropertyHelper(issueSearchService, issuePropertyService);
+        this.jiraTransitionHelper = new JiraTransitionHandler(issueService);
+        this.jiraIssuePropertyHelper = new JiraIssuePropertyHandler(issueSearchService, issuePropertyService);
     }
 
     public JiraMessageResult createOrUpdateIssues(JiraIssueConfig jiraIssueConfig, MessageContentGroup content) throws IntegrationException {
-        String providerName = content.getComonProvider().getValue();
-        LinkableItem commonTopic = content.getCommonTopic();
 
         Set<String> issueKeys = new HashSet<>();
         for (ProviderMessageContent messageContent : content.getSubContent()) {
-            Optional<LinkableItem> subTopic = messageContent.getSubTopic();
-
-            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(providerName, commonTopic, subTopic, messageContent.getComponentItems(), jiraIssueConfig);
+            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(messageContent, jiraIssueConfig);
             issueKeys.addAll(issueKeysForMessage);
         }
 
@@ -106,18 +99,22 @@ public class JiraIssueHandler {
         return new JiraMessageResult(statusMessage, issueKeys);
     }
 
-    private Set<String> createOrUpdateIssuesPerComponent(String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, Collection<ComponentItem> componentItems, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
+    private Set<String> createOrUpdateIssuesPerComponent(ProviderMessageContent messageContent, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        SetMap<String, String> missingTransitionToIssues = new SetMap<>();
-        String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
+        SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
 
-        Map<String, List<ComponentItem>> combinedItemsMap = combineComponentItems(componentItems);
-        for (List<ComponentItem> combinedItems : combinedItemsMap.values()) {
+        String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
+        String providerName = messageContent.getProvider().getValue();
+        LinkableItem topic = messageContent.getTopic();
+        Optional<LinkableItem> subTopic = messageContent.getSubTopic();
+
+        SetMap<String, ComponentItem> groupedComponentItems = messageContent.groupRelatedComponentItems();
+        for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
             try {
-                ComponentItem arbitraryItem = combinedItems
+                ComponentItem arbitraryItem = componentItems
                                                   .stream()
                                                   .findAny()
-                                                  .orElseThrow(() -> new AlertException("Unable to successfully combine component items for Jira Cloud issue handling."));
+                                                  .orElseThrow(() -> new AlertException("No actionable component items were found for the current message content: " + messageContent));
                 ItemOperation operation = arbitraryItem.getOperation();
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
@@ -132,13 +129,13 @@ public class JiraIssueHandler {
 
                 if (!existingIssues.isEmpty()) {
                     List<IssueComponent> issuesToUpdate = filterUpdatableIssues(existingIssues, operation);
-                    Set<IssueComponent> updatedIssues = updateExistingIssues(issuesToUpdate, operation, jiraIssueConfig, arbitraryItem, providerName, combinedItems);
+                    Set<IssueComponent> updatedIssues = updateExistingIssues(issuesToUpdate, jiraIssueConfig, providerName, arbitraryItem.getCategory(), arbitraryItem.getOperation(), componentItems);
                     updatedIssues
                         .stream()
                         .map(IssueComponent::getKey)
                         .forEach(issueKeys::add);
                 } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
-                    IssueContentModel contentModel = createContentModel(arbitraryItem, combinedItems, topic, subTopic, providerName);
+                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, topic, subTopic.orElse(null), componentItems, arbitraryItem);
                     IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
                     IssueResponseModel issueResponseModel = createIssue(fieldsBuilder, jiraIssueConfig, providerName, topic, subTopic, arbitraryItem, trackingKey, contentModel);
                     issueKeys.add(issueResponseModel.getKey());
@@ -163,30 +160,12 @@ public class JiraIssueHandler {
         return issueKeys;
     }
 
-    private Map<String, List<ComponentItem>> combineComponentItems(Collection<ComponentItem> componentItems) {
-        final Map<String, List<ComponentItem>> combinedItems = new LinkedHashMap<>();
-        componentItems
-            .stream()
-            .forEach(item -> {
-                StringBuilder keyBuilder = new StringBuilder(JiraIssueFormatHelper.TITLE_LIMIT);
-                keyBuilder.append(item.getComponentKeys().getShallowKey());
-                // FIXME find a way to make this provider-agnostic
-                if (!item.getCategory().contains("Vuln")) {
-                    Optional<LinkableItem> policyNameItem = findPolicyName(item.getComponentAttributes());
-                    keyBuilder.append(policyNameItem.map(LinkableItem::getValue).orElse(""));
-                }
-                keyBuilder.append(item.getOperation());
-                combinedItems.computeIfAbsent(keyBuilder.toString(), ignored -> new LinkedList<>()).add(item);
-            });
-        return combinedItems;
-    }
-
-    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> issuesToUpdate, ItemOperation operation, JiraIssueConfig jiraIssueConfig, ComponentItem arbitraryItem, String providerName, Collection<ComponentItem> combinedItems)
+    private Set<IssueComponent> updateExistingIssues(List<IssueComponent> issuesToUpdate, JiraIssueConfig jiraIssueConfig, String providerName, String category, ItemOperation operation, Set<ComponentItem> componentItems)
         throws IntegrationException {
         Set<IssueComponent> updatedIssues = new HashSet<>();
         for (IssueComponent issue : issuesToUpdate) {
             if (jiraIssueConfig.getCommentOnIssues()) {
-                List<String> operationComments = createOperationComment(operation, arbitraryItem.getCategory(), providerName, combinedItems);
+                List<String> operationComments = jiraMessageParser.createOperationComment(providerName, category, operation, componentItems);
                 for (String operationComment : operationComments) {
                     addComment(issue.getKey(), operationComment);
                 }
@@ -281,16 +260,6 @@ public class JiraIssueHandler {
         );
     }
 
-    private List<String> createOperationComment(ItemOperation operation, String category, String provider, Collection<ComponentItem> componentItems) {
-        JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        return jiraChannelFormatHelper.createOperationComment(operation, category, provider, componentItems);
-    }
-
-    private IssueContentModel createContentModel(ComponentItem arbitraryItem, Collection<ComponentItem> componentItems, LinkableItem commonTopic, Optional<LinkableItem> subTopic, String provider) {
-        final JiraIssueFormatHelper jiraChannelFormatHelper = new JiraIssueFormatHelper();
-        return jiraChannelFormatHelper.createDescription(commonTopic, subTopic, componentItems, provider, arbitraryItem.getComponentKeys());
-    }
-
     private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
         final IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         fieldsBuilder.setSummary(contentModel.getTitle());
@@ -305,23 +274,11 @@ public class JiraIssueHandler {
     }
 
     private String createAdditionalTrackingKey(ComponentItem componentItem) {
-        // FIXME make this provider-agnostic
-        if (componentItem.getCategory().contains("Vuln")) {
-            return StringUtils.EMPTY;
+        if (!componentItem.collapseOnCategory()) {
+            LinkableItem categoryItem = componentItem.getCategoryItem();
+            return categoryItem.getName() + categoryItem.getValue();
         }
-        StringBuilder keyBuilder = new StringBuilder(JiraIssueFormatHelper.TITLE_LIMIT);
-        Optional<LinkableItem> policyNameItem = findPolicyName(componentItem.getComponentAttributes());
-        policyNameItem.ifPresent(item -> {
-            keyBuilder.append(item.getName());
-            keyBuilder.append(item.getValue());
-        });
-        return keyBuilder.toString();
-    }
-
-    private Optional<LinkableItem> findPolicyName(Collection<LinkableItem> attributes) {
-        return attributes.stream()
-                   .filter(attribute -> attribute.getName().equals(BlackDuckContent.LABEL_POLICY_NAME))
-                   .findFirst();
+        return StringUtils.EMPTY;
     }
 
     private String createStatusMessage(Collection<String> issueKeys, String jiraUrl) {

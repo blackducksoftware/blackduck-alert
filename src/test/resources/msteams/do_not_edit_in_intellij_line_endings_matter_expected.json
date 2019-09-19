@@ -15,7 +15,7 @@ Component License: Apache License 2.0, Severity: MEDIUM, Vulnerabilities: CVE-20
 * Vulnerability (ADD): Apache Struts/1.2.2  
 Component License: Apache License 2.0, Severity: LOW, Vulnerabilities: BDSA-2008-0016
 * Vulnerability (UPDATE): Apache Struts/1.2.2  
-Component License: Apache License 2.0, Severity: LOW, Remediation - Fixes Previous Vulnerabilities: 2, Remediation - Latest Version: 2.5.20, Remediation - Without Vulnerabilities: 2"
+Component License: Apache License 2.0, Remediation - Fixes Previous Vulnerabilities: 2, Remediation - Latest Version: 2.5.20, Remediation - Without Vulnerabilities: 2, Severity: LOW, Vulnerabilities: ALL"
     }
   ]
 }

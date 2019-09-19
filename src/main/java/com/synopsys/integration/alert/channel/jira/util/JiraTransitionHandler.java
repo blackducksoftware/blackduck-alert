@@ -43,14 +43,14 @@ import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestMode
 import com.synopsys.integration.jira.common.cloud.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
 
-public class JiraTransitionHelper {
+public class JiraTransitionHandler {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
 
-    private final Logger logger = LoggerFactory.getLogger(JiraTransitionHelper.class);
+    private final Logger logger = LoggerFactory.getLogger(JiraTransitionHandler.class);
     private IssueService issueService;
 
-    public JiraTransitionHelper(IssueService issueService) {
+    public JiraTransitionHandler(IssueService issueService) {
         this.issueService = issueService;
     }
 

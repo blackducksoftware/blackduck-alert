@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.slack.parser.SlackChannelEventParser;
+import com.synopsys.integration.alert.channel.slack.parser.SlackChannelMessageParser;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -59,8 +58,9 @@ public class SlackChannelTest extends ChannelTest {
     private static final SlackChannelKey CHANNEL_KEY = new SlackChannelKey();
 
     private SlackChannel createSlackChannel() {
-        final RestChannelUtility restChannelUtility = createRestChannelUtility();
-        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(restChannelUtility);
+        RestChannelUtility restChannelUtility = createRestChannelUtility();
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtility);
         return new SlackChannel(CHANNEL_KEY, gson, createAuditUtility(), restChannelUtility, slackChannelEventParser);
     }
 
@@ -165,9 +165,10 @@ public class SlackChannelTest extends ChannelTest {
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue"));
         final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .applyComponentData("", "")
                                                 .applyCategory("category")
                                                 .applyOperation(ItemOperation.ADD)
+                                                .applyComponentData("", "")
+                                                .applyCategoryItem("", "")
                                                 .applyNotificationId(1L)
                                                 .applyAllComponentAttributes(items)
                                                 .build();
@@ -201,9 +202,10 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue", "url"));
 
         final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .applyComponentData("", "")
                                                 .applyCategory("category")
                                                 .applyOperation(ItemOperation.ADD)
+                                                .applyComponentData("", "")
+                                                .applyCategoryItem("", "")
                                                 .applyNotificationId(1L)
                                                 .applyAllComponentAttributes(items)
                                                 .build();
@@ -238,17 +240,19 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue_2"));
 
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(1L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
 
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(2L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
@@ -282,17 +286,19 @@ public class SlackChannelTest extends ChannelTest {
         items.add(new LinkableItem("itemName", "itemvalue_1", "itemUrl"));
         items.add(new LinkableItem("itemName", "itemvalue_2", "itemUrl"));
         final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(1L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
 
         final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyComponentData("", "")
                                                   .applyCategory("category")
                                                   .applyOperation(ItemOperation.ADD)
+                                                  .applyComponentData("", "")
+                                                  .applyCategoryItem("", "")
                                                   .applyNotificationId(2L)
                                                   .applyAllComponentAttributes(items)
                                                   .build();
@@ -318,16 +324,17 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateRequestExceptions() throws Exception {
-        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(null);
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, null);
+        SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
         List<Request> request = null;
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
-                                                          .applyProvider("testProvider")
-                                                          .applyTopic("testTopic", "")
-                                                          .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                          .build();
+        LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
+                                                    .applyProvider("testProvider")
+                                                    .applyTopic("testTopic", "")
+                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                                    .build();
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "");
@@ -357,27 +364,28 @@ public class SlackChannelTest extends ChannelTest {
         try {
             request = slackChannel.createRequests(event);
             fail();
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             assertNull(request, "Expected the request to be null");
         }
     }
 
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final RestChannelUtility restChannelUtility = new RestChannelUtility(null);
-        final RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
+        RestChannelUtility restChannelUtility = new RestChannelUtility(null);
+        RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessage(Mockito.any(), Mockito.anyString());
-        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(restChannelUtilitySpy);
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, restChannelUtilitySpy, slackChannelEventParser);
-        final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtilitySpy);
+        SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, restChannelUtilitySpy, slackChannelEventParser);
+        ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent(
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        DistributionEvent event = new DistributionEvent(
             "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendMessage(event);
@@ -388,19 +396,20 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(null);
-        final SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, null);
+        SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
 
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent(
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        DistributionEvent event = new DistributionEvent(
             "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), new MessageContentGroup(), fieldAccessor);
-        final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
-        final List<Request> requests = slackChannel.createRequests(event);
+        SlackChannel spySlackChannel = Mockito.spy(slackChannel);
+        List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty(), "Expected no requests to be created");
         Mockito.verify(spySlackChannel, Mockito.times(0)).sendMessage(Mockito.any());
     }

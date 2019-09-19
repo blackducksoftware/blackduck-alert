@@ -55,7 +55,6 @@ public class BlackDuckPolicyLinkableItem extends AlertSerializableModel {
 
     public void addComponentNameItem(final String name, final String url) {
         final LinkableItem newItem = new LinkableItem(BlackDuckContent.LABEL_COMPONENT_NAME, name, url);
-        newItem.setCollapsible(false);
         this.componentItem = newItem;
         addComponentData(newItem);
     }
