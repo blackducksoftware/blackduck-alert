@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,30 +63,27 @@ public class SlackChannelEventParser {
         String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElse("");
         String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");
 
-        if (StringUtils.isBlank(webhook) || StringUtils.isBlank(channelName)) {
-            Map<String, String> fieldErrors = new HashMap<>();
-            if (StringUtils.isBlank(webhook)) {
-                fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL");
-            }
-            if (StringUtils.isBlank(channelName)) {
-                fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name");
-            }
-            throw new AlertFieldException(fieldErrors);
-        } else {
-            Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
-
-            MessageContentGroup eventContent = event.getContent();
-            if (eventContent.isEmpty()) {
-                return List.of();
-            } else {
-                Map<String, String> requestHeaders = new HashMap<>();
-                requestHeaders.put("Content-Type", "application/json");
-
-                String actualChannelUsername = channelUsername.orElse(SLACK_DEFAULT_USERNAME);
-                List<String> mrkdwnMessagePieces = slackChannelMessageParser.createMessagePieces(eventContent);
-                return createRequestsForMessage(channelName, actualChannelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
-            }
+        Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isBlank(webhook)) {
+            fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL");
         }
+        if (StringUtils.isBlank(channelName)) {
+            fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name");
+        }
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+
+        String channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME).orElse(SLACK_DEFAULT_USERNAME);
+        MessageContentGroup eventContent = event.getContent();
+        if (!eventContent.isEmpty()) {
+            Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/json");
+
+            List<String> mrkdwnMessagePieces = slackChannelMessageParser.createMessagePieces(eventContent);
+            return createRequestsForMessage(channelName, channelUsername, webhook, mrkdwnMessagePieces, requestHeaders);
+        }
+        return List.of();
     }
 
     private List<Request> createRequestsForMessage(String channelName, String channelUsername, String webhook, List<String> mrkdwnMessagePieces, Map<String, String> requestHeaders) {

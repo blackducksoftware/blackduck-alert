@@ -129,8 +129,8 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             LinkableItem componentItem = policyComponentData.getComponentItem().orElse(null);
             Optional<LinkableItem> optionalComponentVersionItem = policyComponentData.getComponentVersion();
 
-            Optional<ComponentItem> policyComponentItem = addApplicableItems(operation, priority, componentItem, optionalComponentVersionItem.orElse(null), policyNameItem, nullablePolicySeverityItem, policyAttributes, notificationId);
-            policyComponentItem.ifPresent(componentItems::add);
+            addApplicableItems(operation, priority, componentItem, optionalComponentVersionItem.orElse(null), policyNameItem, nullablePolicySeverityItem, policyAttributes, notificationId)
+                .ifPresent(componentItems::add);
 
             Optional<PolicyRuleView> optionalPolicyRule = getBlackDuckDataHelper().getPolicyRule(policyInfo);
             if (optionalPolicyRule.isPresent() && getBlackDuckDataHelper().hasVulnerabilityRule(optionalPolicyRule.get())) {
