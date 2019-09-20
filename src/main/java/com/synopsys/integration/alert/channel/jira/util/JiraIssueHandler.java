@@ -88,7 +88,6 @@ public class JiraIssueHandler {
     }
 
     public JiraMessageResult createOrUpdateIssues(JiraIssueConfig jiraIssueConfig, MessageContentGroup content) throws IntegrationException {
-
         Set<String> issueKeys = new HashSet<>();
         for (ProviderMessageContent messageContent : content.getSubContent()) {
             Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(messageContent, jiraIssueConfig);

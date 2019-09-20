@@ -185,6 +185,7 @@ public abstract class ChannelMessageParser {
     private List<String> createCollapsedCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
         SetMap<String, ComponentItem> groupedItems = groupAndPrioritizeCollapsibleItems(componentItems);
+        // TODO just get groupedItems.values()
         for (Map.Entry<String, Set<ComponentItem>> groupedItemsEntry : groupedItems.entrySet()) {
             Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(groupedItemsEntry.getValue());
             if (optionalGroupedItem.isPresent()) {

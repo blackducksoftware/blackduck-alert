@@ -124,7 +124,10 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             List<LinkableItem> policyAttributes = new ArrayList<>();
             LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = createPolicySeverityItem(policyInfo).orElse(null);
-            optionalBomComponent.ifPresent(bomComponent -> policyAttributes.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
+            optionalBomComponent.ifPresent(bomComponent -> {
+                policyAttributes.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent));
+                policyAttributes.addAll(getBlackDuckDataHelper().getUsageLinkableItems(bomComponent));
+            });
 
             LinkableItem componentItem = policyComponentData.getComponentItem().orElse(null);
             Optional<LinkableItem> optionalComponentVersionItem = policyComponentData.getComponentVersion();
