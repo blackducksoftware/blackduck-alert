@@ -76,7 +76,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         providerDataAccessor.deleteProjects(blackDuckProviderKey.getUniversalKey(), blackDuckProjects);
     }
 
-    public void handleNewOrUpdatedConfig() {
+    private void handleNewOrUpdatedConfig() {
         final boolean valid = blackDuckValidator.validate();
         if (valid) {
             final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);

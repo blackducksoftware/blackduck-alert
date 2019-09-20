@@ -54,7 +54,6 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
-import com.synopsys.integration.alert.common.function.ThrowingFunction;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
@@ -63,6 +62,7 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.function.ThrowingFunction;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
