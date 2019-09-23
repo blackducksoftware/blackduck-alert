@@ -142,6 +142,7 @@ public abstract class ChannelMessageParser {
                     String valueString = String.join("", valuePieces);
                     String similarAttributesString = String.format("%s: %s", attribute.getName(), valueString);
                     attributeStrings.add(similarAttributesString);
+                    attributeStrings.add(getLineSeparator());
                 } else {
                     similarAttributes
                         .stream()
@@ -149,9 +150,9 @@ public abstract class ChannelMessageParser {
                         .map(str -> str + getLineSeparator())
                         .forEach(attributeStrings::add);
                 }
-                attributeStrings.add(getLineSeparator());
             }
         }
+        attributeStrings.add(getLineSeparator());
         return attributeStrings;
     }
 
@@ -185,6 +186,7 @@ public abstract class ChannelMessageParser {
     private List<String> createCollapsedCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
         SetMap<String, ComponentItem> groupedItems = groupAndPrioritizeCollapsibleItems(componentItems);
+        // TODO just get groupedItems.values()
         for (Map.Entry<String, Set<ComponentItem>> groupedItemsEntry : groupedItems.entrySet()) {
             Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(groupedItemsEntry.getValue());
             if (optionalGroupedItem.isPresent()) {

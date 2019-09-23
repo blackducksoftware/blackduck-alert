@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
 import com.synopsys.integration.blackduck.api.generated.response.RemediationOptionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
@@ -138,11 +139,15 @@ public class BlackDuckDataHelper {
     public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
         return bomComponentView.getLicenses()
                    .stream()
-                   .map(licenseView -> {
-                       // blackduck displays the license data in a modal dialog.  Therefore a link to the license doesn't make sense.
-                       // Also the VersionBomLicenseView doesn't have any link mappings to the text link.
-                       return new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay());
-                   })
+                   .map(licenseView -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
+                   .collect(Collectors.toList());
+    }
+
+    public List<LinkableItem> getUsageLinkableItems(VersionBomComponentView bomComponentView) {
+        return bomComponentView.getUsages()
+                   .stream()
+                   .map(MatchedFileUsagesType::prettyPrint)
+                   .map(usage -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_USAGE, usage))
                    .collect(Collectors.toList());
     }
 
