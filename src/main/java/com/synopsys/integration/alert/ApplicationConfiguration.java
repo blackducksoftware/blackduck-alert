@@ -44,13 +44,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
@@ -72,27 +68,6 @@ public class ApplicationConfiguration {
     @Bean
     public EncryptionUtility encryptionUtility() {
         return new EncryptionUtility(alertProperties(), filePersistenceUtil());
-    }
-
-    @Bean
-    public SettingsDescriptorKey settingsDescriptorKey() {
-        return new SettingsDescriptorKey();
-    }
-
-    @Bean
-    public ProxyManager proxyManager(ConfigurationAccessor configurationAccessor) {
-        return new ProxyManager(settingsDescriptorKey(), configurationAccessor);
-    }
-
-    @Bean
-    public BlackDuckProviderKey blackDuckProviderKey() {
-        return new BlackDuckProviderKey();
-    }
-
-    @Bean
-    // TODO do we still need this to be a Bean?
-    public BlackDuckProperties blackDuckProperties(ConfigurationAccessor configurationAccessor) {
-        return new BlackDuckProperties(blackDuckProviderKey(), gson(), alertProperties(), configurationAccessor, proxyManager(configurationAccessor));
     }
 
     @Bean
