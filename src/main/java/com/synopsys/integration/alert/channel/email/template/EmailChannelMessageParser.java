@@ -30,7 +30,6 @@ import com.synopsys.integration.alert.common.channel.ChannelMessageParser;
 public class EmailChannelMessageParser extends ChannelMessageParser {
     @Override
     protected String encodeString(String txt) {
-        // TODO is this required?
         return txt;
     }
 
@@ -47,6 +46,11 @@ public class EmailChannelMessageParser extends ChannelMessageParser {
     @Override
     protected String getLineSeparator() {
         return "<br />";
+    }
+
+    @Override
+    protected String getMessageSeparator(String title) {
+        return "";
     }
 
 }

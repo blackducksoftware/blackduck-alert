@@ -104,6 +104,11 @@ public class JiraMessageParser extends ChannelMessageParser {
         return "\n";
     }
 
+    @Override
+    protected String getSectionSeparator() {
+        return "";
+    }
+
     private String createTitle(String provider, LinkableItem topic, LinkableItem subTopic, ComponentItem arbitraryItem) {
         StringBuilder title = new StringBuilder();
         title.append("Alert - Provider: ");
