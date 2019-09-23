@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.channel;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -131,8 +132,8 @@ public abstract class ChannelMessageParser {
         SetMap<String, LinkableItem> attributesMap = componentItems
                                                          .stream()
                                                          .map(ComponentItem::getComponentAttributes)
-                                                         .flatMap(Set::stream)
-                                                         .collect(SetMap::createDefault, (map, item) -> map.add(item.getName(), item), SetMap::combine);
+                                                         .flatMap(LinkedHashSet::stream)
+                                                         .collect(SetMap::createLinked, (map, item) -> map.add(item.getName(), item), SetMap::combine);
         List<String> attributeStrings = new LinkedList<>();
         for (Set<LinkableItem> similarAttributes : attributesMap.values()) {
             Optional<LinkableItem> optionalAttribute = getArbitraryElement(similarAttributes);

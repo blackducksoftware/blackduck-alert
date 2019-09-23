@@ -218,9 +218,9 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
 
                 ComponentVersionView componentVersionView = getBlackDuckService().getResponse(bomComponent.getComponentVersion(), ComponentVersionView.class);
-                Optional<ComponentItem> remediationComponentItem =
-                    createRemediationComponentItem(CATEGORY_TYPE, componentVersionView, componentItem, optionalComponentVersionItem, policyNameItem, policySeverity, notificationId);
+                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(CATEGORY_TYPE, componentVersionView, componentItem, optionalComponentVersionItem, policyNameItem, policySeverity, true, notificationId);
                 remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
+
             } catch (IntegrationException e) {
                 logger.debug("Could not get the project/version. Skipping vulnerability info for this policy: {}. Exception: {}", policyNameItem, e);
             }
