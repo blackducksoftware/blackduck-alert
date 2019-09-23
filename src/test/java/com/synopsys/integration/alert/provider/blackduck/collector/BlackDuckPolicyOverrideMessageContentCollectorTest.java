@@ -42,7 +42,6 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
     @Test
     public void insertMultipleAndVerifyCorrectNumberOfComponentAttributesTest() throws Exception {
         final String topicName = "example";
-        final int numberOfPoliciesOverridden = 1;
         final int linkableItemsPerCategory = 1;
 
         final String overrideContent = getNotificationContentFromFile(TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
@@ -58,16 +57,9 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final BlackDuckPolicyCollector collector = createCollector();
 
         int totalPolicies = 1;
-        // add 1 item for the policy override name linkable items
         int linkableItemsCount = totalPolicies * linkableItemsPerCategory;
         BlackDuckPolicyViolationMessageContentCollectorTest.insertAndAssertCountsOnTopic(collector, n0, topicName, totalPolicies, linkableItemsCount);
-
-        totalPolicies += numberOfPoliciesOverridden;
-        linkableItemsCount = totalPolicies * linkableItemsPerCategory;
         BlackDuckPolicyViolationMessageContentCollectorTest.insertAndAssertCountsOnTopic(collector, n1, topicName, totalPolicies, linkableItemsCount);
-
-        totalPolicies += numberOfPoliciesOverridden;
-        linkableItemsCount = totalPolicies * linkableItemsPerCategory;
         BlackDuckPolicyViolationMessageContentCollectorTest.insertAndAssertCountsOnTopic(collector, n2, topicName, totalPolicies, linkableItemsCount);
 
         Assert.assertEquals(1, collector.getCollectedContent().size());
