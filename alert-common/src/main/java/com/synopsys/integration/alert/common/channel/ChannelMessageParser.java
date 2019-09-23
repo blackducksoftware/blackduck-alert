@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.channel;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -185,10 +184,10 @@ public abstract class ChannelMessageParser {
 
     private List<String> createCollapsedCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
-        SetMap<String, ComponentItem> groupedItems = groupAndPrioritizeCollapsibleItems(componentItems);
+        SetMap<String, ComponentItem> groupedAndPrioritizedItems = groupAndPrioritizeCollapsibleItems(componentItems);
         // TODO just get groupedItems.values()
-        for (Map.Entry<String, Set<ComponentItem>> groupedItemsEntry : groupedItems.entrySet()) {
-            Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(groupedItemsEntry.getValue());
+        for (Set<ComponentItem> itemGroup : groupedAndPrioritizedItems.values()) {
+            Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(itemGroup);
             if (optionalGroupedItem.isPresent()) {
                 ComponentItem groupedItem = optionalGroupedItem.get();
                 createCategoryGroupingString(groupedItem)
@@ -198,7 +197,7 @@ public abstract class ChannelMessageParser {
                 String categoryItemNameString = encodeString(groupedItem.getCategoryItem().getName() + ": ");
                 componentItemPieces.add(categoryItemNameString);
 
-                Set<LinkableItem> categoryItems = groupedItemsEntry.getValue()
+                Set<LinkableItem> categoryItems = itemGroup
                                                       .stream()
                                                       .map(ComponentItem::getCategoryItem)
                                                       .collect(Collectors.toSet());
