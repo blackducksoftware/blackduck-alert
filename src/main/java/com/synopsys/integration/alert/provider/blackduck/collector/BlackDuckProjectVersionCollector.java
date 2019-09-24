@@ -34,11 +34,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
@@ -49,8 +46,6 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BlackDuckProjectVersionCollector extends BlackDuckCollector {
-    public static final String CATEGORY_TYPE = "Project Event";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -59,44 +54,23 @@ public class BlackDuckProjectVersionCollector extends BlackDuckCollector {
     }
 
     @Override
-    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
-        ComponentItem.Builder builder = new ComponentItem.Builder();
-
+    protected Optional<ItemOperation> getTopLevelAction(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
         Long notificationId = notificationContent.getId();
-        Optional<String> optionalOperationType = getStringFields(notificationFields)
-                                                     .stream()
-                                                     .filter(field -> BlackDuckContent.LABEL_OPERATION_TYPE.equals(field.getLabel()))
-                                                     .findFirst()
-                                                     .flatMap(jsonFieldAccessor::getFirst);
-        if (optionalOperationType.isPresent()) {
-            String operationType = optionalOperationType.get();
-            ItemOperation operation = getOperation(operationType);
-            LinkableItem item = createDescriptionItem(jsonFieldAccessor, notificationFields, operationType);
-            builder
-                .applyCategory(CATEGORY_TYPE)
-                .applyOperation(operation)
-                .applyPriority(ComponentItemPriority.HIGHEST)
-                .applyComponentData("Components Affected", "ALL")
-                .applyCategoryItem(item)
-                .applyNotificationId(notificationId);
-            try {
-                return Set.of(builder.build());
-            } catch (AlertException e) {
-                logger.error("Could not get component items for Project / Version notification", e);
-            }
-        } else {
+        Optional<ItemOperation> optionalOperation = getStringFields(notificationFields)
+                                                        .stream()
+                                                        .filter(field -> BlackDuckContent.LABEL_OPERATION_TYPE.equals(field.getLabel()))
+                                                        .findFirst()
+                                                        .flatMap(jsonFieldAccessor::getFirst)
+                                                        .map(this::getOperation);
+        if (optionalOperation.isEmpty()) {
             logger.warn("No operation type provided. Skipping this notification (id: {}, type: {}).", notificationId, notificationContent.getNotificationType());
         }
-        return Set.of();
+        return optionalOperation;
     }
 
-    private LinkableItem createDescriptionItem(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, String operationTypeString) {
-        Optional<LinkableItem> subTopicItem = getSubTopicItems(jsonFieldAccessor, notificationFields)
-                                                  .stream()
-                                                  .findFirst();
-
-        String projectVersionString = subTopicItem.isPresent() ? "project version" : "project";
-        return new LinkableItem("Description", String.format("This %s was %sd in Black Duck.", projectVersionString, operationTypeString.toLowerCase()));
+    @Override
+    protected Collection<ComponentItem> getComponentItems(JsonFieldAccessor jsonFieldAccessor, List<JsonField<?>> notificationFields, AlertNotificationWrapper notificationContent) {
+        return Set.of();
     }
 
     private ItemOperation getOperation(String operationType) {

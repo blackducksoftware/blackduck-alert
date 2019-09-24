@@ -48,12 +48,16 @@ public abstract class MessageContentProcessor {
     public List<MessageContentGroup> createMessageContentGroups(List<ProviderMessageContent> messages) {
         final Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();
         messages.stream()
-            .filter(message -> !message.getComponentItems().isEmpty())
+            .filter(this::filterEmptyContent)
             .forEach(message -> {
                 messageGroups.computeIfAbsent(message.getContentKey(), ignored -> new MessageContentGroup()).add(message);
             });
 
         return new ArrayList<>(messageGroups.values());
+    }
+
+    private boolean filterEmptyContent(ProviderMessageContent message) {
+        return !message.getComponentItems().isEmpty() || message.isTopLevelActionOnly();
     }
 
 }

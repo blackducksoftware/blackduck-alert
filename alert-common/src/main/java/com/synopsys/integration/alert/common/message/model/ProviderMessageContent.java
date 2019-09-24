@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
@@ -42,14 +43,21 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     private final LinkableItem topic;
     private final LinkableItem subTopic;
     private final ContentKey contentKey;
+
+    private final ItemOperation action;
+    private final Long notificationId;
+
     private final Set<ComponentItem> componentItems;
     private final Date providerCreationTime;
 
-    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, Set<ComponentItem> componentItems, Date providerCreationTime) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
+        Date providerCreationTime) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
         this.contentKey = contentKey;
+        this.action = action;
+        this.notificationId = notificationId;
         this.componentItems = componentItems;
         this.providerCreationTime = providerCreationTime;
     }
@@ -68,6 +76,21 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
 
     public ContentKey getContentKey() {
         return contentKey;
+    }
+
+    public Optional<ItemOperation> getAction() {
+        return Optional.ofNullable(action);
+    }
+
+    public Optional<Long> getNotificationId() {
+        return Optional.ofNullable(notificationId);
+    }
+
+    /**
+     * Indicates whether the information conveyed in this ProviderMessageContent is only relevant to the topic (and subTopic) rather than to the componentItems.
+     */
+    public boolean isTopLevelActionOnly() {
+        return getAction().isPresent() && getNotificationId().isPresent() && getComponentItems().isEmpty();
     }
 
     public Set<ComponentItem> getComponentItems() {
@@ -108,6 +131,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         private String subTopicName;
         private String subTopicValue;
         private String subTopicUrl;
+        private ItemOperation action;
+        private Long notificationId;
         private Date providerCreationTime;
 
         public ProviderMessageContent build() throws AlertException {
@@ -121,12 +146,12 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
             }
-            ContentKey key = ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
-            return new ProviderMessageContent(provider, topic, subTopic, key, componentItems, providerCreationTime);
+            ContentKey key = ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
+            return new ProviderMessageContent(provider, topic, subTopic, key, action, notificationId, componentItems, providerCreationTime);
         }
 
         public ContentKey getCurrentContentKey() {
-            return ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
+            return ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
         }
 
         public Builder applyProvider(String providerName) {
@@ -178,6 +203,16 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
 
         public Builder applySubTopicUrl(String subTopicUrl) {
             this.subTopicUrl = subTopicUrl;
+            return this;
+        }
+
+        public Builder applyAction(ItemOperation action) {
+            this.action = action;
+            return this;
+        }
+
+        public Builder applyNotificationId(Long notificationId) {
+            this.notificationId = notificationId;
             return this;
         }
 

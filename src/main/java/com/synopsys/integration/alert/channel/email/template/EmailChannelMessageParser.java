@@ -49,7 +49,7 @@ public class EmailChannelMessageParser extends ChannelMessageParser {
     }
 
     @Override
-    protected String getMessageSeparator(String title) {
+    protected String createMessageSeparator(String title) {
         return "";
     }
 

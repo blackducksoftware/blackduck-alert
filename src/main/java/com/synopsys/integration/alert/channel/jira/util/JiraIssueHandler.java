@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,7 +53,6 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckProjectVersionCollector;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.model.components.IssueComponent;
@@ -99,36 +99,53 @@ public class JiraIssueHandler {
     }
 
     private Set<String> createOrUpdateIssuesPerComponent(ProviderMessageContent messageContent, JiraIssueConfig jiraIssueConfig) throws IntegrationException {
-        Set<String> issueKeys = new HashSet<>();
-        SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
-
-        String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
         String providerName = messageContent.getProvider().getValue();
         LinkableItem topic = messageContent.getTopic();
         Optional<LinkableItem> subTopic = messageContent.getSubTopic();
 
-        SetMap<String, ComponentItem> groupedComponentItems = messageContent.groupRelatedComponentItems();
+        Set<String> issueKeys;
+        if (messageContent.isTopLevelActionOnly()) {
+            issueKeys = updateIssueByTopLevelAction(jiraIssueConfig, providerName, topic, subTopic, messageContent.getAction().orElse(ItemOperation.INFO));
+        } else {
+            issueKeys = createOrUpdateIssuesByComponentGroup(jiraIssueConfig, providerName, topic, subTopic, messageContent.groupRelatedComponentItems());
+        }
+        return issueKeys;
+    }
+
+    private Set<String> updateIssueByTopLevelAction(JiraIssueConfig jiraIssueConfig, String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, ItemOperation action) throws IntegrationException {
+        if (ItemOperation.DELETE == action) {
+            List<IssueComponent> existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, null, null);
+            logger.debug("Attempting to resolve issues in the Jira Cloud project {} for Provider: {}, Provider Project: {}[{}].", jiraIssueConfig.getProjectComponent().getKey(), providerName, topic.getValue(), subTopic.orElse(null));
+            Set<IssueComponent> updatedIssues = updateExistingIssues(existingIssues, jiraIssueConfig, providerName, topic.getName(), action, Set.of());
+            return updatedIssues
+                       .stream()
+                       .map(IssueComponent::getKey)
+                       .collect(Collectors.toSet());
+        } else {
+            logger.debug("The top level action was not a DELETE action so it will be ignored");
+        }
+        return Set.of();
+    }
+
+    private Set<String> createOrUpdateIssuesByComponentGroup(JiraIssueConfig jiraIssueConfig, String providerName, LinkableItem topic, Optional<LinkableItem> subTopic, SetMap<String, ComponentItem> groupedComponentItems)
+        throws IntegrationException {
+        Set<String> issueKeys = new HashSet<>();
+        String jiraProjectName = jiraIssueConfig.getProjectComponent().getName();
+
+        SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
             try {
                 ComponentItem arbitraryItem = componentItems
                                                   .stream()
                                                   .findAny()
-                                                  .orElseThrow(() -> new AlertException("No actionable component items were found for the current message content: " + messageContent));
+                                                  .orElseThrow(() -> new AlertException(String.format("No actionable component items were found. Provider: %s, Topic: %s, SubTopic: %s", providerName, topic, subTopic)));
                 ItemOperation operation = arbitraryItem.getOperation();
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
-                List<IssueComponent> existingIssues;
-                // FIXME make this provider-agnostic
-                if (BlackDuckProjectVersionCollector.CATEGORY_TYPE.equals(arbitraryItem.getCategory())) {
-                    existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, null, null);
-                } else {
-                    existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, arbitraryItem, trackingKey);
-                }
+                List<IssueComponent> existingIssues = retrieveExistingIssues(jiraIssueConfig.getProjectComponent().getKey(), providerName, topic, subTopic, arbitraryItem, trackingKey);
                 logJiraCloudAction(operation, jiraProjectName, providerName, topic, subTopic, arbitraryItem);
-
                 if (!existingIssues.isEmpty()) {
-                    List<IssueComponent> issuesToUpdate = filterUpdatableIssues(existingIssues, operation);
-                    Set<IssueComponent> updatedIssues = updateExistingIssues(issuesToUpdate, jiraIssueConfig, providerName, arbitraryItem.getCategory(), arbitraryItem.getOperation(), componentItems);
+                    Set<IssueComponent> updatedIssues = updateExistingIssues(existingIssues, jiraIssueConfig, providerName, arbitraryItem.getCategory(), arbitraryItem.getOperation(), componentItems);
                     updatedIssues
                         .stream()
                         .map(IssueComponent::getKey)
@@ -155,7 +172,6 @@ public class JiraIssueHandler {
             String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions.toString());
             throw new AlertException(errorMessage);
         }
-
         return issueKeys;
     }
 
@@ -206,17 +222,6 @@ public class JiraIssueHandler {
                    .findIssues(jiraProjectKey, provider, topic, subTopic.orElse(null), componentItem, alertIssueUniqueId)
                    .map(IssueSearchResponseModel::getIssues)
                    .orElse(List.of());
-    }
-
-    // Only the DELETE or INFO operations can update more than one issue.
-    // If an ADD or UPDATE operation has more than one issue it could operate on, then the issue properties are either not unique enough or the property indexer is not installed.
-    private List<IssueComponent> filterUpdatableIssues(List<IssueComponent> issues, ItemOperation operation) {
-        if (issues.size() == 1 || ItemOperation.INFO == operation || ItemOperation.DELETE == operation) {
-            return issues;
-        } else {
-            logger.error("Found more than one Jira Cloud issue to {} when only one was expected.", operation.name().toLowerCase());
-        }
-        return List.of();
     }
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {

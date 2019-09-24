@@ -41,21 +41,21 @@ public class ChannelEventManager extends EventManager {
     private final AuditUtility auditUtility;
 
     @Autowired
-    public ChannelEventManager(final ContentConverter contentConverter, final JmsTemplate jmsTemplate, final AuditUtility auditUtility) {
+    public ChannelEventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate, AuditUtility auditUtility) {
         super(contentConverter, jmsTemplate);
         this.auditUtility = auditUtility;
     }
 
     @Override
     @Transactional
-    public void sendEvent(final AlertEvent alertEvent) {
+    public void sendEvent(AlertEvent alertEvent) {
         if (alertEvent instanceof DistributionEvent) {
-            final String destination = alertEvent.getDestination();
-            final DistributionEvent distributionEvent = (DistributionEvent) alertEvent;
-            final UUID jobId = UUID.fromString(distributionEvent.getConfigId());
-            final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
+            String destination = alertEvent.getDestination();
+            DistributionEvent distributionEvent = (DistributionEvent) alertEvent;
+            UUID jobId = UUID.fromString(distributionEvent.getConfigId());
+            Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
             distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
-            final String jsonMessage = getContentConverter().getJsonString(distributionEvent);
+            String jsonMessage = getContentConverter().getJsonString(distributionEvent);
             getJmsTemplate().convertAndSend(destination, jsonMessage);
         }
     }

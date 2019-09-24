@@ -22,10 +22,12 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ContentKey extends AlertSerializableModel {
@@ -35,28 +37,35 @@ public class ContentKey extends AlertSerializableModel {
     private String topicValue;
     private String subTopicName;
     private String subTopicValue;
+    private ItemOperation action;
 
     private String value;
 
-    public ContentKey(final String providerName, final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
+    public ContentKey(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue, ItemOperation action) {
         this.providerName = providerName;
         this.topicName = topicName;
         this.topicValue = topicValue;
         this.subTopicName = subTopicName;
         this.subTopicValue = subTopicValue;
-        this.value = generateContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue);
+        this.action = action;
+        this.value = generateContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
     }
 
-    public static final ContentKey of(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue) {
-        return new ContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue);
+    public static final ContentKey of(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue, ItemOperation action) {
+        return new ContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
     }
 
-    private String generateContentKey(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue) {
-        final List<String> keyParts;
+    private String generateContentKey(String providerName, String topicName, String topicValue, String subTopicName, String subTopicValue, ItemOperation action) {
+        final List<String> keyParts = new ArrayList<>(6);
+        keyParts.add(providerName);
+        keyParts.add(topicName);
+        keyParts.add(topicValue);
         if (StringUtils.isNotBlank(subTopicName)) {
-            keyParts = List.of(providerName, topicName, topicValue, subTopicName, subTopicValue);
-        } else {
-            keyParts = List.of(providerName, topicName, topicValue);
+            keyParts.add(subTopicName);
+            keyParts.add(subTopicValue);
+        }
+        if (null != action) {
+            keyParts.add(action.name());
         }
         return StringUtils.join(keyParts, KEY_SEPARATOR);
     }
