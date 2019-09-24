@@ -84,6 +84,4 @@ public class ContentKey extends AlertSerializableModel {
     public String getValue() {
         return value;
     }
-
-    //TODO add pretty print method.
 }
