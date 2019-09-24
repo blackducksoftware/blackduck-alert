@@ -37,6 +37,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -81,8 +82,8 @@ public class DefaultAuditUtility implements AuditUtility {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final ConfigurationAccessor configurationAccessor,
-        final DefaultNotificationManager notificationManager, final ContentConverter contentConverter) {
+    public DefaultAuditUtility(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
+        DefaultNotificationManager notificationManager, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
@@ -91,52 +92,62 @@ public class DefaultAuditUtility implements AuditUtility {
     }
 
     @Override
-    public Optional<Long> findMatchingAuditId(final Long notificationId, final UUID commonDistributionId) {
+    public Optional<Long> findMatchingAuditId(Long notificationId, UUID commonDistributionId) {
         return auditEntryRepository.findMatchingAudit(notificationId, commonDistributionId).map(AuditEntryEntity::getId);
     }
 
     @Override
     @Transactional
-    public Optional<AuditJobStatusModel> findFirstByJobId(final UUID jobId) {
-        final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
+    public Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId) {
+        Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
         return auditEntryEntity.map(this::convertToJobStatusModel);
     }
 
     @Override
     @Transactional
-    public AlertPagedModel<AuditEntryModel> getPageOfAuditEntries(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder, final boolean onlyShowSentNotifications,
-        final Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter) {
-        final Page<AlertNotificationWrapper> auditPage = getPageOfNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
-        final List<AuditEntryModel> auditEntries = convertToAuditEntryModelFromNotificationsSorted(auditPage.getContent(), notificationToAuditEntryConverter, sortField, sortOrder);
+    public AlertPagedModel<AuditEntryModel> getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
+        Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter) {
+        Page<AlertNotificationWrapper> auditPage = getPageOfNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
+        List<AuditEntryModel> auditEntries = convertToAuditEntryModelFromNotificationsSorted(auditPage.getContent(), notificationToAuditEntryConverter, sortField, sortOrder);
         return new AlertPagedModel<>(auditPage.getTotalPages(), auditPage.getNumber(), auditEntries.size(), auditEntries);
     }
 
     @Override
     @Transactional
-    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final MessageContentGroup contentGroup) {
-        final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        final Set<Long> notificationIds = contentGroup.getSubContent()
-                                              .stream()
-                                              .map(ProviderMessageContent::getComponentItems)
-                                              .flatMap(Collection::stream)
-                                              .map(ComponentItem::getNotificationIds)
-                                              .flatMap(Set::stream)
-                                              .collect(Collectors.toSet());
-        for (final Long notificationId : notificationIds) {
+    public Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup contentGroup) {
+        Map<Long, Long> notificationIdToAuditId = new HashMap<>();
+        List<ProviderMessageContent> subContent = contentGroup.getSubContent();
+        Set<Long> componentNotificationIds = subContent
+                                                 .stream()
+                                                 .map(ProviderMessageContent::getComponentItems)
+                                                 .flatMap(Collection::stream)
+                                                 .map(ComponentItem::getNotificationIds)
+                                                 .flatMap(Set::stream)
+                                                 .collect(Collectors.toSet());
+        Set<Long> topLevelActionNotificationIds = subContent
+                                                      .stream()
+                                                      .filter(ProviderMessageContent::isTopLevelActionOnly)
+                                                      .map(ProviderMessageContent::getNotificationId)
+                                                      .flatMap(Optional::stream)
+                                                      .collect(Collectors.toSet());
+        Set<Long> allMessageNotificationIds = Stream
+                                                  .concat(componentNotificationIds.stream(), topLevelActionNotificationIds.stream())
+                                                  .collect(Collectors.toSet());
+        for (Long notificationId : allMessageNotificationIds) {
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
 
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
-                final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
+                Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
                 if (null != auditEntryId) {
                     auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
                 }
             }
 
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
-            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+            AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
-            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+            AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
             auditNotificationRepository.save(auditNotificationRelation);
         }
         return notificationIdToAuditId;
@@ -144,20 +155,20 @@ public class DefaultAuditUtility implements AuditUtility {
 
     @Override
     @Transactional
-    public void setAuditEntrySuccess(final Collection<Long> auditEntryIds) {
-        for (final Long auditEntryId : auditEntryIds) {
+    public void setAuditEntrySuccess(Collection<Long> auditEntryIds) {
+        for (Long auditEntryId : auditEntryIds) {
             try {
-                final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
+                Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (auditEntryEntityOptional.isEmpty()) {
                     logger.error("Could not find the audit entry {} to set the success status.", auditEntryId);
                 }
-                final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
+                AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
                 auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS.toString());
                 auditEntryEntity.setErrorMessage(null);
                 auditEntryEntity.setErrorStackTrace(null);
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 auditEntryRepository.save(auditEntryEntity);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -165,20 +176,20 @@ public class DefaultAuditUtility implements AuditUtility {
 
     @Override
     @Transactional
-    public void setAuditEntryFailure(final Collection<Long> auditEntryIds, final String errorMessage, final Throwable t) {
-        for (final Long auditEntryId : auditEntryIds) {
+    public void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t) {
+        for (Long auditEntryId : auditEntryIds) {
             try {
-                final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
+                Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (auditEntryEntityOptional.isEmpty()) {
                     logger.error("Could not find the audit entry {} to set the failure status. Error: {}", auditEntryId, errorMessage);
                 }
-                final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
+                AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
                 auditEntryEntity.setId(auditEntryId);
                 auditEntryEntity.setStatus(AuditEntryStatus.FAILURE.toString());
                 auditEntryEntity.setErrorMessage(errorMessage);
-                final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
+                String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
                 String exceptionStackTrace = "";
-                for (final String line : rootCause) {
+                for (String line : rootCause) {
                     if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
                         exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
                     } else {
@@ -188,7 +199,7 @@ public class DefaultAuditUtility implements AuditUtility {
                 auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 auditEntryRepository.save(auditEntryEntity);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -196,26 +207,26 @@ public class DefaultAuditUtility implements AuditUtility {
 
     @Override
     @Transactional
-    public AuditEntryModel convertToAuditEntryModelFromNotification(final AlertNotificationWrapper notificationContentEntry) {
-        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByNotificationId(notificationContentEntry.getId());
-        final List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
-        final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
+    public AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationWrapper notificationContentEntry) {
+        List<AuditNotificationRelation> relations = auditNotificationRepository.findByNotificationId(notificationContentEntry.getId());
+        List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
+        List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
 
         AuditEntryStatus overallStatus = null;
         String lastSent = null;
         Date lastSentDate = null;
-        final List<JobAuditModel> jobAuditModels = new ArrayList<>();
-        for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
-            final UUID commonConfigId = auditEntryEntity.getCommonConfigId();
+        List<JobAuditModel> jobAuditModels = new ArrayList<>();
+        for (AuditEntryEntity auditEntryEntity : auditEntryEntities) {
+            UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
             if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.before(auditEntryEntity.getTimeLastSent()))) {
                 lastSentDate = auditEntryEntity.getTimeLastSent();
                 lastSent = contentConverter.getStringValue(lastSentDate);
             }
-            final String id = contentConverter.getStringValue(auditEntryEntity.getId());
-            final String configId = contentConverter.getStringValue(commonConfigId);
-            final String timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
-            final String timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
+            String id = contentConverter.getStringValue(auditEntryEntity.getId());
+            String configId = contentConverter.getStringValue(commonConfigId);
+            String timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
+            String timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
 
             AuditEntryStatus status = null;
             if (auditEntryEntity.getStatus() != null) {
@@ -223,13 +234,13 @@ public class DefaultAuditUtility implements AuditUtility {
                 overallStatus = getWorstStatus(overallStatus, status);
             }
 
-            final String errorMessage = auditEntryEntity.getErrorMessage();
-            final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
+            String errorMessage = auditEntryEntity.getErrorMessage();
+            String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
             Optional<ConfigurationJobModel> commonConfig = Optional.empty();
             try {
                 commonConfig = configurationAccessor.getJobById(commonConfigId);
-            } catch (final AlertDatabaseConstraintException e) {
+            } catch (AlertDatabaseConstraintException e) {
                 logger.error("There was an issue accessing the job.");
             }
             String distributionConfigName = null;
@@ -243,11 +254,11 @@ public class DefaultAuditUtility implements AuditUtility {
             if (null != status) {
                 statusDisplayName = status.getDisplayName();
             }
-            final AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(timeCreated, timeLastSent, statusDisplayName);
+            AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(timeCreated, timeLastSent, statusDisplayName);
             jobAuditModels.add(new JobAuditModel(id, configId, distributionConfigName, eventType, auditJobStatusModel, errorMessage, errorStackTrace));
         }
-        final String id = contentConverter.getStringValue(notificationContentEntry.getId());
-        final NotificationConfig notificationConfig = populateConfigFromEntity(notificationContentEntry);
+        String id = contentConverter.getStringValue(notificationContentEntry.getId());
+        NotificationConfig notificationConfig = populateConfigFromEntity(notificationContentEntry);
 
         String overallStatusDisplayName = null;
         if (null != overallStatus) {
@@ -257,7 +268,7 @@ public class DefaultAuditUtility implements AuditUtility {
     }
 
     @Override
-    public AuditEntryStatus getWorstStatus(final AuditEntryStatus overallStatus, final AuditEntryStatus currentStatus) {
+    public AuditEntryStatus getWorstStatus(AuditEntryStatus overallStatus, AuditEntryStatus currentStatus) {
         AuditEntryStatus newOverallStatus = overallStatus;
         if (null == overallStatus || currentStatus == AuditEntryStatus.FAILURE || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
             newOverallStatus = currentStatus;
@@ -265,8 +276,8 @@ public class DefaultAuditUtility implements AuditUtility {
         return newOverallStatus;
     }
 
-    private List<AuditEntryModel> convertToAuditEntryModelFromNotificationsSorted(final List<AlertNotificationWrapper> notificationContentEntries, final Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter,
-        final String sortField, final String sortOrder) {
+    private List<AuditEntryModel> convertToAuditEntryModelFromNotificationsSorted(List<AlertNotificationWrapper> notificationContentEntries, Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter,
+        String sortField, String sortOrder) {
         final List<AuditEntryModel> auditEntryModels = notificationContentEntries
                                                            .stream()
                                                            .map(notificationToAuditEntryConverter)
@@ -279,7 +290,7 @@ public class DefaultAuditUtility implements AuditUtility {
             }
             Comparator<AuditEntryModel> comparator;
             if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent")) {
-                final Function<AuditEntryModel, Date> function = auditEntryModel -> {
+                Function<AuditEntryModel, Date> function = auditEntryModel -> {
                     Date date = null;
                     if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
                         date = parseDateString(auditEntryModel.getLastSent());
@@ -298,7 +309,7 @@ public class DefaultAuditUtility implements AuditUtility {
         return auditEntryModels;
     }
 
-    private AuditJobStatusModel convertToJobStatusModel(final AuditEntryEntity auditEntryEntity) {
+    private AuditJobStatusModel convertToJobStatusModel(AuditEntryEntity auditEntryEntity) {
         String timeCreated = null;
         if (null != auditEntryEntity.getTimeCreated()) {
             timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
@@ -314,9 +325,9 @@ public class DefaultAuditUtility implements AuditUtility {
         return new AuditJobStatusModel(timeCreated, timeLastSent, status);
     }
 
-    private Page<AlertNotificationWrapper> getPageOfNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageNumber, final Integer pageSize, final boolean onlyShowSentNotifications) {
-        final PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
-        final Page<AlertNotificationWrapper> auditPage;
+    private Page<AlertNotificationWrapper> getPageOfNotifications(String sortField, String sortOrder, String searchTerm, Integer pageNumber, Integer pageSize, boolean onlyShowSentNotifications) {
+        PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
+        Page<AlertNotificationWrapper> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
             auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
         } else {
@@ -325,20 +336,20 @@ public class DefaultAuditUtility implements AuditUtility {
         return auditPage;
     }
 
-    private NotificationConfig populateConfigFromEntity(final AlertNotificationWrapper notificationEntity) {
-        final String id = contentConverter.getStringValue(notificationEntity.getId());
-        final String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
-        final String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());
+    private NotificationConfig populateConfigFromEntity(AlertNotificationWrapper notificationEntity) {
+        String id = contentConverter.getStringValue(notificationEntity.getId());
+        String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
+        String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());
         return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
     }
 
-    private Date parseDateString(final String dateString) {
-        final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+    private Date parseDateString(String dateString) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = null;
         try {
             date = sdf.parse(dateString);
-        } catch (final ParseException e) {
+        } catch (ParseException e) {
             logger.error(e.toString());
         }
         return date;
