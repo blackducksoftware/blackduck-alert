@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.web.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.mock.model.MockNotificationRestModel;
@@ -11,20 +10,6 @@ public class NotificationRestModelTest extends RestModelTest<NotificationConfig>
     @Override
     public MockNotificationRestModel getMockUtil() {
         return new MockNotificationRestModel();
-    }
-
-    @Override
-    public Class<NotificationConfig> getRestModelClass() {
-        return NotificationConfig.class;
-    }
-
-    @Override
-    public void assertRestModelFieldsNull(final NotificationConfig restModel) {
-        assertNull(restModel.getCreatedAt());
-        assertNull(restModel.getProvider());
-        assertNull(restModel.getNotificationType());
-        assertNull(restModel.getContent());
-
     }
 
     @Override

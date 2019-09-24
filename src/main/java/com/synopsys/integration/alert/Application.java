@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,7 +48,7 @@ import com.synopsys.integration.alert.web.security.authentication.database.UserD
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication(exclude = { BatchAutoConfiguration.class })
 public class Application {
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+
     @Autowired
     private UserDatabaseService userDatabaseService;
 

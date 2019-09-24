@@ -82,7 +82,6 @@ public class ConfigurationJobModel extends AlertSerializableModel {
         return Set.copyOf(getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
     }
 
-    // TODO find out if collisions are possible and how to avoid them
     private Map<String, ConfigurationFieldModel> createKeyToFieldMap() {
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         for (final ConfigurationModel config : configurations) {

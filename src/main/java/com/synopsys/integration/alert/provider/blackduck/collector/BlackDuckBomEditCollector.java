@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -81,14 +83,15 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         if (versionBomComponentView.isPresent()) {
             // have both the component view and the project wrapper.
             List<LinkableItem> licenseItems = blackDuckDataHelper.getLicenseLinkableItems(versionBomComponentView.get());
-            componentItems.addAll(addVulnerabilityData(notificationContent.getId(), versionBomComponentView.get(), licenseItems));
-            projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(notificationContent.getId(), versionWrapper, versionBomComponentView.get(), licenseItems)));
+            List<LinkableItem> usageItems = blackDuckDataHelper.getUsageLinkableItems(versionBomComponentView.get());
+            componentItems.addAll(addVulnerabilityData(notificationContent.getId(), versionBomComponentView.get(), licenseItems, usageItems));
+            projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(notificationContent.getId(), versionWrapper, versionBomComponentView.get(), licenseItems, usageItems)));
         }
 
         return componentItems;
     }
 
-    private Collection<ComponentItem> addVulnerabilityData(Long notificationId, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
+    private Collection<ComponentItem> addVulnerabilityData(Long notificationId, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems, List<LinkableItem> usageItems) {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
@@ -100,6 +103,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(licenseItems);
+                componentAttributes.addAll(usageItems);
 
                 getBucketService().addToTheBucket(getBlackDuckBucket(), versionBomComponent.getComponentVersion(), ComponentVersionView.class);
                 ComponentVersionView componentVersionView = getBlackDuckBucket().get(versionBomComponent.getComponentVersion(), ComponentVersionView.class);
@@ -130,7 +134,7 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
         return items;
     }
 
-    private Collection<ComponentItem> createPolicyItems(Long notificationId, ProjectVersionWrapper projectVersionWrapper, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems) {
+    private Collection<ComponentItem> createPolicyItems(Long notificationId, ProjectVersionWrapper projectVersionWrapper, VersionBomComponentView versionBomComponent, List<LinkableItem> licenseItems, List<LinkableItem> usageItems) {
         if (!PolicySummaryStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
             return List.of();
         }
@@ -155,7 +159,8 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                         createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverityItem, componentItem, componentVersionItem, notificationId);
                     items.addAll(vulnerabilityComponentItems);
                 } else {
-                    items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, licenseItems));
+                    List<LinkableItem> componentAttributes = Stream.concat(licenseItems.stream(), usageItems.stream()).collect(Collectors.toList());
+                    items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem.orElse(null), policyNameItem, componentAttributes));
                 }
             }
         } catch (Exception e) {
@@ -204,20 +209,18 @@ public class BlackDuckBomEditCollector extends BlackDuckCollector {
                    .findFirst();
     }
 
-    private ComponentItem createPolicyComponentItem(Long notificationId, VersionBomPolicyRuleView rule, LinkableItem componentItem, LinkableItem componentVersionItem, LinkableItem policyNameItem, List<LinkableItem> licenseItems)
+    private ComponentItem createPolicyComponentItem(Long notificationId, VersionBomPolicyRuleView rule, LinkableItem componentItem, LinkableItem componentVersionItem, LinkableItem policyNameItem, List<LinkableItem> attributes)
         throws AlertException {
-        ComponentItem.Builder builder = new ComponentItem.Builder();
-
-        builder
-            .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
-            .applyOperation(ItemOperation.UPDATE)
-            .applyPriority(getPolicyPriority(rule.getSeverity()))
-            .applyComponentData(componentItem)
-            .applySubComponent(componentVersionItem)
-            .applyCategoryItem(policyNameItem)
-            .applyAllComponentAttributes(licenseItems)
-            .applyNotificationId(notificationId);
-        return builder.build();
+        return new ComponentItem.Builder()
+                   .applyCategory(BlackDuckPolicyCollector.CATEGORY_TYPE)
+                   .applyOperation(ItemOperation.UPDATE)
+                   .applyPriority(getPolicyPriority(rule.getSeverity()))
+                   .applyComponentData(componentItem)
+                   .applySubComponent(componentVersionItem)
+                   .applyCategoryItem(policyNameItem)
+                   .applyAllComponentAttributes(attributes)
+                   .applyNotificationId(notificationId)
+                   .build();
     }
 
 }

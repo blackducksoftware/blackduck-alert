@@ -39,11 +39,6 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
     }
 
     @Override
-    public LoginConfig createEmptyRestModel() {
-        return new LoginConfig();
-    }
-
-    @Override
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("id", id);

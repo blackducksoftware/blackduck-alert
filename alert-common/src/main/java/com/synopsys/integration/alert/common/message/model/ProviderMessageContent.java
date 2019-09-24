@@ -82,9 +82,17 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
      * Creates a logical grouping of ComponentItems using ComponentItem.createKey()
      */
     public SetMap<String, ComponentItem> groupRelatedComponentItems() {
+        return groupRelatedComponentItems(true);
+    }
+
+    /**
+     * Creates a logical grouping of ComponentItems using ComponentItem.createKey()
+     * @param includeOperation Indicates whether or not to include operation in the key.
+     */
+    public SetMap<String, ComponentItem> groupRelatedComponentItems(boolean includeOperation) {
         SetMap<String, ComponentItem> componentItemSetMap = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
-            String key = componentItem.createKey();
+            String key = componentItem.createKey(includeOperation, false);
             componentItemSetMap.add(key, componentItem);
         }
         return componentItemSetMap;

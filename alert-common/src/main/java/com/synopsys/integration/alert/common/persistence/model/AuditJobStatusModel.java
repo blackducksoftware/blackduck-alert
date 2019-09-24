@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.alert.common.rest.model.MaskedModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AuditJobStatusModel extends MaskedModel {
+public class AuditJobStatusModel extends AlertSerializableModel {
     private String timeAuditCreated;
     private String timeLastSent;
     private String status;

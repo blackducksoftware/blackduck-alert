@@ -22,8 +22,11 @@
  */
 package com.synopsys.integration.alert.component.settings.descriptor;
 
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
+@Component
 public final class SettingsDescriptorKey extends DescriptorKey {
     private static final String SETTINGS_COMPONENT = "component_settings";
 

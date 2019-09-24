@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
@@ -94,8 +96,16 @@ public abstract class BlackDuckPolicyCollector extends BlackDuckCollector {
     }
 
     protected List<LinkableItem> createLicenseLinkableItems(String bomComponentUrl) {
+        return createLinkableItems(bomComponentUrl, getBlackDuckDataHelper()::getLicenseLinkableItems);
+    }
+
+    protected List<LinkableItem> createUsageLinkableItems(String bomComponentUrl) {
+        return createLinkableItems(bomComponentUrl, getBlackDuckDataHelper()::getUsageLinkableItems);
+    }
+
+    private List<LinkableItem> createLinkableItems(String bomComponentUrl, Function<VersionBomComponentView, List<LinkableItem>> linkableItemExtractor) {
         return getBlackDuckDataHelper().getBomComponentView(bomComponentUrl)
-                   .map(getBlackDuckDataHelper()::getLicenseLinkableItems)
+                   .map(linkableItemExtractor)
                    .orElse(List.of());
     }
 

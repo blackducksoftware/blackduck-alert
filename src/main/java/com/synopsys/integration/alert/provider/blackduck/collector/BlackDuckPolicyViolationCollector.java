@@ -124,7 +124,10 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
             List<LinkableItem> policyAttributes = new ArrayList<>();
             LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = createPolicySeverityItem(policyInfo).orElse(null);
-            optionalBomComponent.ifPresent(bomComponent -> policyAttributes.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent)));
+            optionalBomComponent.ifPresent(bomComponent -> {
+                policyAttributes.addAll(getBlackDuckDataHelper().getLicenseLinkableItems(bomComponent));
+                policyAttributes.addAll(getBlackDuckDataHelper().getUsageLinkableItems(bomComponent));
+            });
 
             LinkableItem componentItem = policyComponentData.getComponentItem().orElse(null);
             Optional<LinkableItem> optionalComponentVersionItem = policyComponentData.getComponentVersion();
@@ -215,8 +218,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
 
                 ComponentVersionView componentVersionView = getBlackDuckService().getResponse(bomComponent.getComponentVersion(), ComponentVersionView.class);
-                Optional<ComponentItem> remediationComponentItem =
-                    createRemediationComponentItem(CATEGORY_TYPE, componentVersionView, componentItem, optionalComponentVersionItem, policyNameItem, policySeverity, notificationId);
+                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(CATEGORY_TYPE, componentVersionView, componentItem, optionalComponentVersionItem, policyNameItem, policySeverity, true, notificationId);
                 remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
             } catch (IntegrationException e) {
                 logger.debug("Could not get the project/version. Skipping vulnerability info for this policy: {}. Exception: {}", policyNameItem, e);

@@ -23,9 +23,9 @@
 package com.synopsys.integration.alert.common.channel;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +44,7 @@ public abstract class ChannelMessageParser {
 
     public List<String> createMessagePieces(MessageContentGroup messageContentGroup) {
         LinkedList<String> messagePieces = new LinkedList<>();
+        messagePieces.add(getMessageSeparator("Begin Content") + getLineSeparator());
 
         String commonTopicString = createLinkableItemString(messageContentGroup.getCommonTopic(), true);
         messagePieces.add(commonTopicString + getLineSeparator());
@@ -52,20 +53,17 @@ public abstract class ChannelMessageParser {
             messageContent.getSubTopic()
                 .map(item -> createLinkableItemString(item, true) + getLineSeparator())
                 .ifPresent(messagePieces::add);
-            messagePieces.add(getTopicSectionSeparator() + getLineSeparator());
 
             SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
             for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
+                messagePieces.add(getSectionSeparator() + getLineSeparator());
                 List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(similarItems);
                 messagePieces.addAll(componentItemMessagePieces);
             }
-
-            if (!messagePieces.isEmpty()) {
-                String lastString = messagePieces.removeLast();
-                String modifiedLastString = lastString + getLineSeparator();
-                messagePieces.addLast(modifiedLastString);
-            }
+            messagePieces.add(getLineSeparator());
         }
+
+        messagePieces.add(getMessageSeparator("End Content") + getLineSeparator());
         return messagePieces;
     }
 
@@ -77,8 +75,16 @@ public abstract class ChannelMessageParser {
 
     protected abstract String getLineSeparator();
 
-    protected String getTopicSectionSeparator() {
+    protected String getListItemPrefix() {
+        return "- ";
+    }
+
+    protected String getSectionSeparator() {
         return "- - - - - - - - - - - - - - - - - - - -";
+    }
+
+    protected String getMessageSeparator(String title) {
+        return getSectionSeparator() + " " + title + " " + getSectionSeparator();
     }
 
     protected List<String> createComponentAndCategoryMessagePieces(Set<ComponentItem> componentItems) {
@@ -130,8 +136,8 @@ public abstract class ChannelMessageParser {
         SetMap<String, LinkableItem> attributesMap = componentItems
                                                          .stream()
                                                          .map(ComponentItem::getComponentAttributes)
-                                                         .flatMap(Set::stream)
-                                                         .collect(SetMap::createDefault, (map, item) -> map.add(item.getName(), item), SetMap::combine);
+                                                         .flatMap(LinkedHashSet::stream)
+                                                         .collect(SetMap::createLinked, (map, item) -> map.add(item.getName(), item), SetMap::combine);
         List<String> attributeStrings = new LinkedList<>();
         for (Set<LinkableItem> similarAttributes : attributesMap.values()) {
             Optional<LinkableItem> optionalAttribute = getArbitraryElement(similarAttributes);
@@ -140,18 +146,19 @@ public abstract class ChannelMessageParser {
                 if (attribute.isCollapsible()) {
                     List<String> valuePieces = createLinkableItemValuesPieces(similarAttributes);
                     String valueString = String.join("", valuePieces);
-                    String similarAttributesString = String.format("%s: %s", attribute.getName(), valueString);
+                    String similarAttributesString = String.format("%s%s: %s", getListItemPrefix(), attribute.getName(), valueString);
                     attributeStrings.add(similarAttributesString);
+                    attributeStrings.add(getLineSeparator());
                 } else {
                     similarAttributes
                         .stream()
                         .map(this::createLinkableItemString)
-                        .map(str -> str + getLineSeparator())
+                        .map(str -> getListItemPrefix() + str + getLineSeparator())
                         .forEach(attributeStrings::add);
                 }
-                attributeStrings.add(getLineSeparator());
             }
         }
+        attributeStrings.add(getLineSeparator());
         return attributeStrings;
     }
 
@@ -161,19 +168,18 @@ public abstract class ChannelMessageParser {
         if (optionalArbitraryItem.isPresent()) {
             ComponentItem arbitraryItem = optionalArbitraryItem.get();
             StringBuilder componentItemBuilder = new StringBuilder()
-                                                     .append("Category: ")
                                                      .append(arbitraryItem.getCategory())
-                                                     .append(getLineSeparator())
-                                                     .append("Operation: ")
+                                                     .append(" (")
                                                      .append(arbitraryItem.getOperation())
-                                                     .append(getLineSeparator())
-                                                     .append(createLinkableItemString(arbitraryItem.getComponent()))
-                                                     .append(getLineSeparator());
+                                                     .append(") - ")
+                                                     .append(createLinkableItemValueString(arbitraryItem.getComponent()))
+                                                     .append(' ');
             arbitraryItem
                 .getSubComponent()
-                .map(this::createLinkableItemString)
-                .map(str -> str + getLineSeparator())
+                .map(this::createLinkableItemValueString)
+                .map(str -> String.format("[%s]", str))
                 .ifPresent(componentItemBuilder::append);
+            componentItemBuilder.append(getLineSeparator());
 
             commonComponentMessagePieces.add(componentItemBuilder.toString());
             commonComponentMessagePieces.addAll(createComponentAttributeMessagePieces(componentItems));
@@ -184,9 +190,10 @@ public abstract class ChannelMessageParser {
 
     private List<String> createCollapsedCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
-        SetMap<String, ComponentItem> groupedItems = groupAndPrioritizeCollapsibleItems(componentItems);
-        for (Map.Entry<String, Set<ComponentItem>> groupedItemsEntry : groupedItems.entrySet()) {
-            Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(groupedItemsEntry.getValue());
+        SetMap<String, ComponentItem> groupedAndPrioritizedItems = groupAndPrioritizeCollapsibleItems(componentItems);
+
+        for (Set<ComponentItem> itemGroup : groupedAndPrioritizedItems.values()) {
+            Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(itemGroup);
             if (optionalGroupedItem.isPresent()) {
                 ComponentItem groupedItem = optionalGroupedItem.get();
                 createCategoryGroupingString(groupedItem)
@@ -196,7 +203,7 @@ public abstract class ChannelMessageParser {
                 String categoryItemNameString = encodeString(groupedItem.getCategoryItem().getName() + ": ");
                 componentItemPieces.add(categoryItemNameString);
 
-                Set<LinkableItem> categoryItems = groupedItemsEntry.getValue()
+                Set<LinkableItem> categoryItems = itemGroup
                                                       .stream()
                                                       .map(ComponentItem::getCategoryItem)
                                                       .collect(Collectors.toSet());

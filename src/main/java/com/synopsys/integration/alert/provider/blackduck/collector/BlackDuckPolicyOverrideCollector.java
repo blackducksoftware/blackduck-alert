@@ -84,7 +84,10 @@ public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
             Optional<LinkableItem> policySeverityItem = createPolicySeverityItem(policyItem);
             ComponentItemPriority priority = getPolicyPriority(policyItem.getSeverity());
             Set<LinkableItem> attributeSet = new LinkedHashSet<>();
-            attributeSet.addAll(createLicenseLinkableItems(bomComponentVersionUrl.orElse("")));
+            bomComponentVersionUrl.ifPresent(url -> {
+                attributeSet.addAll(createLicenseLinkableItems(url));
+                attributeSet.addAll(createUsageLinkableItems(url));
+            });
             nameItem.ifPresent(attributeSet::add);
             Optional<ComponentItem> item = addApplicableItems(operation, priority, componentItem, componentVersionItem.orElse(null), policyNameItem, policySeverityItem.orElse(null), attributeSet, notificationContent.getId());
             item.ifPresent(items::add);

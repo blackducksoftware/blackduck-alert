@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-public abstract class Config extends MaskedModel {
+public abstract class Config extends AlertSerializableModel {
     private String id;
 
     public Config() {
