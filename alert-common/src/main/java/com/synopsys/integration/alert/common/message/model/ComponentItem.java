@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -37,6 +39,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
 public class ComponentItem extends AlertSerializableModel implements Buildable {
+    private static final String[] EXCLUDED_COMPARISON_FIELDS = { "notificationIds" };
+
     private String category;
     private ItemOperation operation;
     private ComponentItemPriority priority;
@@ -48,7 +52,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     private LinkableItem categoryGroupingAttribute;
     private boolean collapseOnCategory;
 
-    private Set<LinkableItem> componentAttributes;
+    private LinkedHashSet<LinkableItem> componentAttributes;
     private Set<Long> notificationIds;
 
     private ComponentItem(
@@ -60,7 +64,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         LinkableItem categoryItem,
         LinkableItem categoryGroupingAttribute,
         boolean collapseOnCategory,
-        Set<LinkableItem> componentAttributes,
+        LinkedHashSet<LinkableItem> componentAttributes,
         Set<Long> notificationIds
     ) {
         this.category = category;
@@ -136,7 +140,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return getCollapseOnCategory();
     }
 
-    public Set<LinkableItem> getComponentAttributes() {
+    public LinkedHashSet<LinkableItem> getComponentAttributes() {
         return componentAttributes;
     }
 
@@ -156,7 +160,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
      * Intended to be used for logical grouping of ComponentItems.
      * @param includeOperation         Indicates whether or not to include operation in the key.
      * @param forceIncludeCategoryItem By default, if collapseOnCategory() returns true, categoryItem will be excluded from the key. Setting this to true will always include it.
-     * @return A String that will identify this ComponentItem by category, operation (if applicable), priority, component, subComponent, and categoryItem (if applicable).
+     * @return A String that will identify this ComponentItem by category, operation (if applicable), component, subComponent, and categoryItem (if applicable).
      */
     public String createKey(boolean includeOperation, boolean forceIncludeCategoryItem) {
         StringBuilder keyBuilder = new StringBuilder();
@@ -175,6 +179,16 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return keyBuilder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, EXCLUDED_COMPARISON_FIELDS);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, EXCLUDED_COMPARISON_FIELDS);
+    }
+
     private void appendLinkableItem(StringBuilder stringBuilder, LinkableItem linkableItem) {
         stringBuilder.append(linkableItem.getName());
         stringBuilder.append(linkableItem.getValue());
@@ -182,7 +196,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     }
 
     public static class Builder {
-        private final Set<LinkableItem> componentAttributes = new LinkedHashSet<>();
+        private final LinkedHashSet<LinkableItem> componentAttributes = new LinkedHashSet<>();
         private String category;
         private ItemOperation operation;
         private ComponentItemPriority priority;
