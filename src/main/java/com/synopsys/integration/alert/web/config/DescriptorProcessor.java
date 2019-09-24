@@ -24,7 +24,10 @@ package com.synopsys.integration.alert.web.config;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +54,13 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class DescriptorProcessor {
     private final DescriptorMap descriptorMap;
     private final ConfigurationAccessor configurationAccessor;
-
-    // TODO ekerwin - I think a Map is better here, it is only ever used: configurationAction.getDescriptorName().equals(descriptorName)
-    private final List<ConfigurationAction> allConfigurationActions;
+    private final Map<String, ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> allConfigurationActions, final List<AutoActionable> autoActionables) {
+    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> configurationActions, final List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
-        this.allConfigurationActions = allConfigurationActions;
+        this.allConfigurationActions = configurationActions.stream().collect(Collectors.toMap(action -> action.getDescriptorKey().getUniversalKey(), Function.identity()));
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();
@@ -69,7 +70,7 @@ public class DescriptorProcessor {
             ConfigurationAction configurationAction = new ConfigurationAction(channelKey) {
             };
             configurationAction.addDistributionTestAction(channelDistributionTestAction);
-            allConfigurationActions.add(configurationAction);
+            allConfigurationActions.put(configurationAction.getDescriptorKey().getUniversalKey(), configurationAction);
         }
     }
 
@@ -103,9 +104,7 @@ public class DescriptorProcessor {
     }
 
     public Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
-        return allConfigurationActions.stream()
-                   .filter(configurationAction -> configurationAction.getDescriptorKey().getUniversalKey().equals(descriptorName))
-                   .findFirst();
+        return Optional.ofNullable(allConfigurationActions.get(descriptorName));
     }
 
     public List<ConfigField> retrieveUIConfigFields(final String context, final String descriptorName) {

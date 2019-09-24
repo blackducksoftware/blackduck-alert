@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,19 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.settings.descriptor;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import org.springframework.stereotype.Component;
+import java.io.File;
+import java.util.Collection;
+import java.util.function.Function;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
-@Component
-public final class SettingsDescriptorKey extends DescriptorKey {
-    private static final String SETTINGS_COMPONENT = "component_settings";
-
-    @Override
-    public String getUniversalKey() {
-        return SETTINGS_COMPONENT;
-    }
-
+public interface UploadValidationFunction extends Function<File, Collection<String>> {
 }

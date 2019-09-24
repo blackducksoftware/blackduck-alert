@@ -11,6 +11,7 @@ import CounterField from 'field/CounterField';
 import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
+import UploadFileButtonField from "field/UploadFileButtonField";
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -182,6 +183,29 @@ function buildTableSelectInput(items, field) {
     return <TableSelectInput endpoint={endpoint} fieldKey={key} columns={columns} {...items} />
 }
 
+function buildUploadFileButtonField(items, field) {
+    const { value } = items;
+    const {
+        buttonLabel, endpoint, successBox, subFields, key
+    } = field;
+    const { readOnly, accept, multiple } = field;
+    const isReadOnly = convertStringToBoolean(readOnly);
+    Object.assign(items, {
+        className: 'form-control',
+        readOnly: isReadOnly
+    });
+    return (<UploadFileButtonField
+        fields={subFields}
+        buttonLabel={buttonLabel}
+        endpoint={endpoint}
+        successBox={successBox}
+        fieldKey={key}
+        accept={accept}
+        multiple={multiple}
+        {...items}
+    />);
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -194,7 +218,8 @@ export const FIELDS = {
     ReadOnlyField: buildReadOnlyField,
     CountdownField: buildCounterField,
     TableSelectInput: buildTableSelectInput,
-    EndpointButtonField: buildEndpointField
+    EndpointButtonField: buildEndpointField,
+    UploadFileButtonField: buildUploadFileButtonField
 };
 
 export function getField(fieldType, props, field) {
