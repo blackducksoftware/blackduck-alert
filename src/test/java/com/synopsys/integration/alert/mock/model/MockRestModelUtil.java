@@ -25,19 +25,7 @@ public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
 
     public abstract R createRestModel();
 
-    public abstract R createEmptyRestModel();
-
     public abstract String getRestModelJson();
-
-    public String getEmptyRestModelJson() {
-        return "{}";
-    }
-
-    public void verifyEmptyRestModel() throws JSONException {
-        final String emptyRestModel = createEmptyRestModel().toString();
-        final String json = getEmptyRestModelJson();
-        JSONAssert.assertEquals(emptyRestModel, json, false);
-    }
 
     public void verifyRestModel() throws JSONException {
         final String restModel = gson.toJson(createRestModel());
@@ -48,7 +36,6 @@ public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
     @Test
     @Override
     public void testConfiguration() throws JSONException {
-        verifyEmptyRestModel();
         verifyRestModel();
     }
 }

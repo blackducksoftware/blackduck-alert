@@ -8,8 +8,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 
 public class MockAuditJobStatusModel {
     private final Gson gson = new Gson();
@@ -21,10 +21,6 @@ public class MockAuditJobStatusModel {
         return new AuditJobStatusModel(timeAuditCreated, timeLastSent, status);
     }
 
-    public AuditJobStatusModel createEmptyRestModel() {
-        return new AuditJobStatusModel();
-    }
-
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("timeAuditCreated", timeAuditCreated);
@@ -32,16 +28,6 @@ public class MockAuditJobStatusModel {
         json.addProperty("status", status);
 
         return json.toString();
-    }
-
-    public String getEmptyRestModelJson() {
-        return "{}";
-    }
-
-    public void verifyEmptyRestModel() throws JSONException {
-        final String emptyRestModel = createEmptyRestModel().toString();
-        final String json = getEmptyRestModelJson();
-        JSONAssert.assertEquals(emptyRestModel, json, false);
     }
 
     public void verifyRestModel() throws JSONException {
@@ -52,7 +38,6 @@ public class MockAuditJobStatusModel {
 
     @Test
     public void testConfiguration() throws JSONException {
-        verifyEmptyRestModel();
         verifyRestModel();
     }
 

@@ -22,13 +22,14 @@
  */
 package com.synopsys.integration.alert.web.model;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.synopsys.integration.alert.common.rest.model.Config;
 
 public class LoginConfig extends Config {
     private String blackDuckUsername;
-    
+
     // If this variable name changes be sure to change the value in the toString
     private String blackDuckPassword;
 
@@ -51,6 +52,8 @@ public class LoginConfig extends Config {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "blackDuckPassword");
+        return new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE)
+                   .setExcludeFieldNames("blackDuckPassword")
+                   .toString();
     }
 }
