@@ -75,6 +75,10 @@ public abstract class ChannelMessageParser {
 
     protected abstract String getLineSeparator();
 
+    protected String getListItemPrefix() {
+        return "- ";
+    }
+
     protected String getSectionSeparator() {
         return "- - - - - - - - - - - - - - - - - - - -";
     }
@@ -142,14 +146,14 @@ public abstract class ChannelMessageParser {
                 if (attribute.isCollapsible()) {
                     List<String> valuePieces = createLinkableItemValuesPieces(similarAttributes);
                     String valueString = String.join("", valuePieces);
-                    String similarAttributesString = String.format("- %s: %s", attribute.getName(), valueString);
+                    String similarAttributesString = String.format("%s%s: %s", getListItemPrefix(), attribute.getName(), valueString);
                     attributeStrings.add(similarAttributesString);
                     attributeStrings.add(getLineSeparator());
                 } else {
                     similarAttributes
                         .stream()
                         .map(this::createLinkableItemString)
-                        .map(str -> "- " + str + getLineSeparator())
+                        .map(str -> getListItemPrefix() + str + getLineSeparator())
                         .forEach(attributeStrings::add);
                 }
             }
