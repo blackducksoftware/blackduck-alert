@@ -98,7 +98,8 @@ public class SamlManagerTest {
 
         Mockito.verify(metadataGenerator).setEntityId(Mockito.anyString());
         Mockito.verify(metadataGenerator).setEntityBaseURL(Mockito.anyString());
-        Mockito.verify(metadataManager).setProviders(Mockito.anyList());
-        Mockito.verify(metadataManager).afterPropertiesSet();
+        // these methods are called to clear the existing metadata and then set it if true.
+        Mockito.verify(metadataManager, Mockito.times(2)).setProviders(Mockito.anyList());
+        Mockito.verify(metadataManager, Mockito.times(2)).afterPropertiesSet();
     }
 }
