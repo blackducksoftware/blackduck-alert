@@ -104,6 +104,10 @@ public final class FilePersistenceUtil {
         return exists(parentDataDirectory, fileName);
     }
 
+    public boolean uploadFileExists(String fileName) {
+        return exists(uploadsDirectory, fileName);
+    }
+
     public boolean exists(final File parentDirectory, final String fileName) {
         final File file = createFile(parentDirectory, fileName);
         return file.exists();

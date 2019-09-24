@@ -157,8 +157,8 @@ public class SettingsGlobalApiAction extends ApiAction {
         final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
         final Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_ID);
         final Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
-        if (metadataURLFieldValueOptional.isPresent() && metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
-            final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
+        if (metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
+            final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.orElse(null);
             final FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
             final FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
             final String metadataURL = metadataURLFieldValue.getValue().orElse("");

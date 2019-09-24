@@ -114,7 +114,6 @@ UploadFileButtonField.propTypes = {
     fieldKey: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    fields: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
     errorValue: PropTypes.string,
@@ -127,11 +126,10 @@ UploadFileButtonField.propTypes = {
 
 UploadFileButtonField.defaultProps = {
     value: false,
-    fields: [],
     name: '',
     errorValue: null,
     readOnly: false,
-    statusMessage: 'Success',
+    statusMessage: 'Upload Metadata File Success',
     capture: null,
     accept: null,
     multiple: false

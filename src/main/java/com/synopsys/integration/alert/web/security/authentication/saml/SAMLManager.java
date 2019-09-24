@@ -24,7 +24,9 @@ package com.synopsys.integration.alert.web.security.authentication.saml;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.Timer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang3.StringUtils;
@@ -82,19 +84,17 @@ public class SAMLManager {
 
     public void updateSAMLConfiguration(final boolean samlEnabled, final String metadataURL, final String entityId, final String entityBaseUrl) {
         try {
+            final List<ExtendedMetadataDelegate> currentProviders = metadataManager.getAvailableProviders();
+            currentProviders.forEach(ExtendedMetadataDelegate::destroy);
+            metadataManager.setProviders(List.of());
+            metadataManager.setDefaultIDP(null);
+            metadataManager.setHostedSPName(null);
+            metadataManager.afterPropertiesSet();
+            metadataGenerator.setEntityId(null);
+            metadataGenerator.setEntityBaseURL(null);
+
             if (samlEnabled) {
-                if (StringUtils.isNotBlank(metadataURL)) {
-                    setupMetadataManager(metadataURL, entityId, entityBaseUrl);
-                }
-            } else {
-                final List<ExtendedMetadataDelegate> currentProviders = metadataManager.getAvailableProviders();
-                currentProviders.forEach(ExtendedMetadataDelegate::destroy);
-                metadataManager.setProviders(List.of());
-                metadataManager.setDefaultIDP(null);
-                metadataManager.setHostedSPName(null);
-                metadataManager.afterPropertiesSet();
-                metadataGenerator.setEntityId(null);
-                metadataGenerator.setEntityBaseURL(null);
+                setupMetadataManager(metadataURL, entityId, entityBaseUrl);
             }
         } catch (final MetadataProviderException e) {
             logger.error("Error updating the SAML identity provider.", e);
@@ -105,27 +105,36 @@ public class SAMLManager {
         metadataGenerator.setEntityId(entityId);
         metadataGenerator.setEntityBaseURL(entityBaseUrl);
 
-        // The URL can not end in a '/' because it messes with the paths for saml
-        final String correctedMetadataURL = StringUtils.removeEnd(metadataURL, "/");
-        MetadataProvider httpProvider = createHttpProvider(correctedMetadataURL);
-        MetadataProvider fileProvider = createFileProvider();
-        metadataManager.setProviders(List.of(httpProvider, fileProvider));
+        Optional<MetadataProvider> httpProvider = createHttpProvider(metadataURL);
+        Optional<MetadataProvider> fileProvider = createFileProvider();
+        List<MetadataProvider> providers = List.of(httpProvider, fileProvider).stream()
+                                               .flatMap(Optional::stream)
+                                               .collect(Collectors.toList());
+        metadataManager.setProviders(providers);
         metadataManager.afterPropertiesSet();
     }
 
-    private MetadataProvider createHttpProvider(String metadataUrl) throws MetadataProviderException {
+    private Optional<MetadataProvider> createHttpProvider(String metadataUrl) throws MetadataProviderException {
+        if (StringUtils.isBlank(metadataUrl)) {
+            return Optional.empty();
+        }
+        // The URL can not end in a '/' because it messes with the paths for saml
+        final String correctedMetadataURL = StringUtils.removeEnd(metadataUrl, "/");
         final Timer backgroundTaskTimer = new Timer(true);
-        HTTPMetadataProvider provider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), metadataUrl);
+        HTTPMetadataProvider provider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
         provider.setParserPool(parserPool);
-        return createDelegate(provider);
+        return Optional.of(createDelegate(provider));
     }
 
-    private MetadataProvider createFileProvider() throws MetadataProviderException {
+    private Optional<MetadataProvider> createFileProvider() throws MetadataProviderException {
         final Timer backgroundTaskTimer = new Timer(true);
+        if (!filePersistenceUtil.uploadFileExists(SettingsDescriptor.SAML_METADATA_FILE)) {
+            return Optional.empty();
+        }
         File metadataFile = filePersistenceUtil.createUploadsFile(SettingsDescriptor.SAML_METADATA_FILE);
         FilesystemMetadataProvider provider = new FilesystemMetadataProvider(backgroundTaskTimer, metadataFile);
         provider.setParserPool(parserPool);
-        return createDelegate(provider);
+        return Optional.of(createDelegate(provider));
     }
 
     private ExtendedMetadataDelegate createDelegate(MetadataProvider provider) {

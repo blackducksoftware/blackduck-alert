@@ -102,7 +102,7 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION = "This should be the URL of the Alert system.";
     private static final String SETTINGS_SAML_METADATA_FILE_DESCRIPTION = "The file to upload to the server containing the Metadata from the external Identity Provider.";
 
-    private static final String BUTTON_LABEL_SAML_METADATA_FILE = "Upload Metadata File";
+    private static final String BUTTON_LABEL_SAML_METADATA_FILE = "Upload";
 
     private static final String SETTINGS_PANEL_PROXY = "Proxy Configuration";
     private static final String SETTINGS_PANEL_LDAP = "LDAP Configuration";
@@ -217,7 +217,7 @@ public class SettingsUIConfig extends UIConfig {
                                   .map(value -> Boolean.valueOf(value))
                                   .orElse(false);
         if (samlEnabled) {
-            if (!fieldToValidate.hasValues() && !filePersistenceUtil.exists(SettingsDescriptor.SAML_METADATA_FILE)) {
+            if (!fieldToValidate.hasValues() && !filePersistenceUtil.uploadFileExists(SettingsDescriptor.SAML_METADATA_FILE)) {
                 return List.of(SettingsDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
             }
         }
@@ -232,7 +232,7 @@ public class SettingsUIConfig extends UIConfig {
         if (samlEnabled) {
             Optional<FieldValueModel> metadataUrlField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
             boolean metadataUrlEmpty = metadataUrlField.map(field -> !field.hasValues()).orElse(true);
-            if (metadataUrlEmpty && !filePersistenceUtil.exists(SettingsDescriptor.SAML_METADATA_FILE)) {
+            if (metadataUrlEmpty && !filePersistenceUtil.uploadFileExists(SettingsDescriptor.SAML_METADATA_FILE)) {
                 return List.of(SettingsDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
             }
         }

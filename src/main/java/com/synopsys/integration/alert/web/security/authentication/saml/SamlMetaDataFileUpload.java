@@ -58,6 +58,7 @@ public class SamlMetaDataFileUpload {
     }
 
     private Collection<String> validateXMLFile(File file) {
+
         try (InputStream fileInputStream = new FileInputStream(file)) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(false);
