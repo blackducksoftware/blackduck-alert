@@ -146,7 +146,6 @@ public class MessageContentAggregator {
     private Map<String, MessageContentCollector> createCollectorMap(final Set<MessageContentCollector> providerMessageContentCollectors) {
         final Map<String, MessageContentCollector> collectorMap = new HashMap<>();
 
-        //TODO need better performance to map the notification type to the processor
         for (final MessageContentCollector collector : providerMessageContentCollectors) {
             for (final String notificationType : collector.getSupportedNotificationTypes()) {
                 collectorMap.put(notificationType, collector);

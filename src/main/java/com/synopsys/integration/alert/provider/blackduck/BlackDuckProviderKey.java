@@ -22,8 +22,11 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 
+@Component
 public final class BlackDuckProviderKey extends ProviderKey {
     private static final String COMPONENT_NAME = "provider_blackduck";
 
