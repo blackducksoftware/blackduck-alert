@@ -160,7 +160,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
      * Intended to be used for logical grouping of ComponentItems.
      * @param includeOperation         Indicates whether or not to include operation in the key.
      * @param forceIncludeCategoryItem By default, if collapseOnCategory() returns true, categoryItem will be excluded from the key. Setting this to true will always include it.
-     * @return A String that will identify this ComponentItem by category, operation (if applicable), priority, component, subComponent, and categoryItem (if applicable).
+     * @return A String that will identify this ComponentItem by category, operation (if applicable), component, subComponent, and categoryItem (if applicable).
      */
     public String createKey(boolean includeOperation, boolean forceIncludeCategoryItem) {
         StringBuilder keyBuilder = new StringBuilder();

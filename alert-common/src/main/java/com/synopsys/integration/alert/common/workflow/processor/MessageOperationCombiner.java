@@ -50,11 +50,12 @@ public class MessageOperationCombiner extends MessageCombiner {
     public MessageOperationCombiner() {
         final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> addFunction = createAddFunction();
         final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> deleteFunction = createDeleteFunction();
+        final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> infoFunction = createInfoFunction();
         operationFunctionMap = new EnumMap<>(ItemOperation.class);
         operationFunctionMap.put(ItemOperation.ADD, addFunction);
         operationFunctionMap.put(ItemOperation.UPDATE, addFunction);
-        operationFunctionMap.put(ItemOperation.INFO, addFunction);
         operationFunctionMap.put(ItemOperation.DELETE, deleteFunction);
+        operationFunctionMap.put(ItemOperation.INFO, infoFunction);
     }
 
     @Override
@@ -112,6 +113,14 @@ public class MessageOperationCombiner extends MessageCombiner {
             } else {
                 categoryDataCache.put(key, componentItem);
             }
+            return null;
+        };
+    }
+
+    private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createInfoFunction() {
+        return (categoryDataCache, componentItem) -> {
+            String key = componentItem.createKey(true, true);
+            categoryDataCache.put(key, componentItem);
             return null;
         };
     }
