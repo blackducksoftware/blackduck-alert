@@ -143,9 +143,6 @@ public abstract class ChannelMessageParser {
     }
 
     protected List<String> createComponentAttributeMessagePieces(Collection<ComponentItem> componentItems) {
-        if (componentItems.isEmpty()) {
-            return List.of();
-        }
         SetMap<String, LinkableItem> attributesMap = componentItems
                                                          .stream()
                                                          .map(ComponentItem::getComponentAttributes)
@@ -171,7 +168,9 @@ public abstract class ChannelMessageParser {
                 }
             }
         }
-        attributeStrings.add(getLineSeparator());
+        if (!attributeStrings.isEmpty()) {
+            attributeStrings.add(getLineSeparator());
+        }
         return attributeStrings;
     }
 
