@@ -72,7 +72,7 @@ public final class MessageSplitter {
                     }
                 } else {
                     chunkBuilder = flushChunks(messageChunks, chunkBuilder);
-                    messageChunks.add(messagePiece);
+                    chunkBuilder.append(messagePiece);
                 }
             } else {
                 chunkBuilder = flushChunks(messageChunks, chunkBuilder);
