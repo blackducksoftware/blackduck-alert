@@ -49,11 +49,6 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
     }
 
     @Override
-    public NotificationConfig createEmptyRestModel() {
-        return new NotificationConfig();
-    }
-
-    @Override
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("createdAt", createdAt);

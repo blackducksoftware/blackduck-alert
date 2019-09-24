@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.audit.controller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.audit.mock.MockJobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
@@ -12,22 +11,6 @@ public class JobAuditModelTest extends RestModelTest<JobAuditModel> {
     @Override
     public MockJobAuditModel getMockUtil() {
         return new MockJobAuditModel();
-    }
-
-    @Override
-    public Class<JobAuditModel> getRestModelClass() {
-        return JobAuditModel.class;
-    }
-
-    @Override
-    public void assertRestModelFieldsNull(final JobAuditModel restModel) {
-        assertNull(restModel.getErrorMessage());
-        assertNull(restModel.getErrorStackTrace());
-        assertNull(restModel.getEventType());
-        assertNull(restModel.getName());
-        assertNull(restModel.getAuditJobStatusModel());
-        assertNull(restModel.getConfigId());
-        assertNull(restModel.getId());
     }
 
     @Override

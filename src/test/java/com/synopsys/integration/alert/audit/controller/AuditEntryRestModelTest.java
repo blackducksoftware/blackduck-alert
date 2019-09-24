@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.audit.controller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryRestModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -12,20 +11,6 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {
     @Override
     public MockAuditEntryRestModel getMockUtil() {
         return new MockAuditEntryRestModel();
-    }
-
-    @Override
-    public Class<AuditEntryModel> getRestModelClass() {
-        return AuditEntryModel.class;
-    }
-
-    @Override
-    public void assertRestModelFieldsNull(final AuditEntryModel restModel) {
-        assertNull(restModel.getNotification());
-        assertNull(restModel.getJobs());
-        assertNull(restModel.getOverallStatus());
-        assertNull(restModel.getLastSent());
-        assertNull(restModel.getId());
     }
 
     @Override

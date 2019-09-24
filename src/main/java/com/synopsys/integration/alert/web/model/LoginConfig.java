@@ -22,13 +22,15 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import com.synopsys.integration.alert.common.annotation.SensitiveField;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.synopsys.integration.alert.common.rest.model.Config;
 
 public class LoginConfig extends Config {
     private String blackDuckUsername;
 
-    @SensitiveField
+    // If this variable name changes be sure to change the value in the toString
     private String blackDuckPassword;
 
     public LoginConfig() {
@@ -48,4 +50,10 @@ public class LoginConfig extends Config {
         return blackDuckPassword;
     }
 
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE)
+                   .setExcludeFieldNames("blackDuckPassword")
+                   .toString();
+    }
 }
