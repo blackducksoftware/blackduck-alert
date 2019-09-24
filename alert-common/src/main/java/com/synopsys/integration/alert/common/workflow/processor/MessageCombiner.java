@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -44,35 +44,19 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class MessageCombiner {
-    public List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
-        Map<ContentKey, List<ProviderMessageContent>> messagesGroupedByKey = new LinkedHashMap<>();
-        for (ProviderMessageContent message : messages) {
-            messagesGroupedByKey.computeIfAbsent(message.getContentKey(), k -> new LinkedList<>()).add(message);
-        }
+    public final List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
+        SetMap<ContentKey, ProviderMessageContent> messagesGroupedByKey = SetMap.createLinked();
+        messages.forEach(message -> messagesGroupedByKey.add(message.getContentKey(), message));
 
         List<ProviderMessageContent> combinedMessages = new ArrayList<>();
-        for (Map.Entry<ContentKey, List<ProviderMessageContent>> groupedMessageEntry : messagesGroupedByKey.entrySet()) {
-            List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
-            LinkedHashSet<ComponentItem> combinedComponentItems = gatherComponentItems(groupedMessages);
-
-            Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
-                                                                    .stream()
-                                                                    .findAny();
-
-            if (arbitraryMessage.isPresent()) {
-                try {
-                    ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
-                    combinedMessages.add(newMessage);
-                } catch (AlertException e) {
-                    // If this happens, it means there is a bug in the Collector logic.
-                    throw new AlertRuntimeException(e);
-                }
-            }
+        for (Set<ProviderMessageContent> groupedMessages : messagesGroupedByKey.values()) {
+            combineGroupedMessages(groupedMessages)
+                .ifPresent(combinedMessages::add);
         }
         return combinedMessages;
     }
 
-    protected LinkedHashSet<ComponentItem> gatherComponentItems(List<ProviderMessageContent> groupedMessages) {
+    protected LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages) {
         final List<ComponentItem> allComponentItems = groupedMessages
                                                           .stream()
                                                           .map(ProviderMessageContent::getComponentItems)
@@ -108,7 +92,7 @@ public class MessageCombiner {
         return sortComponentItems(keyToItems.values());
     }
 
-    public ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
+    protected ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
         LinkableItem provider = oldMessage.getProvider();
         LinkableItem topic = oldMessage.getTopic();
         Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();
@@ -124,7 +108,25 @@ public class MessageCombiner {
                    .build();
     }
 
-    public ComponentItem createNewComponentItem(ComponentItem oldItem, Collection<LinkableItem> componentAttributes) throws AlertException {
+    private Optional<ProviderMessageContent> combineGroupedMessages(Collection<ProviderMessageContent> groupedMessages) {
+        LinkedHashSet<ComponentItem> combinedComponentItems = gatherComponentItems(groupedMessages);
+
+        Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
+                                                                .stream()
+                                                                .findAny();
+        if (arbitraryMessage.isPresent()) {
+            try {
+                ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
+                return Optional.of(newMessage);
+            } catch (AlertException e) {
+                // If this happens, it means there is a bug in the Collector logic.
+                throw new AlertRuntimeException(e);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private ComponentItem createNewComponentItem(ComponentItem oldItem, Collection<LinkableItem> componentAttributes) throws AlertException {
         return new ComponentItem.Builder()
                    .applyCategory(oldItem.getCategory())
                    .applyOperation(oldItem.getOperation())

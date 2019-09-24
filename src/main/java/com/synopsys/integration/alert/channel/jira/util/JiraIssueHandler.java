@@ -133,7 +133,7 @@ public class JiraIssueHandler {
                         .stream()
                         .map(IssueComponent::getKey)
                         .forEach(issueKeys::add);
-                } else if (ItemOperation.ADD.equals(operation) || ItemOperation.UPDATE.equals(operation)) {
+                } else if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
                     IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, topic, subTopic.orElse(null), componentItems, arbitraryItem);
                     IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
                     IssueResponseModel issueResponseModel = createIssue(fieldsBuilder, jiraIssueConfig, providerName, topic, subTopic, arbitraryItem, trackingKey, contentModel);
@@ -211,7 +211,7 @@ public class JiraIssueHandler {
     // Only the DELETE or INFO operations can update more than one issue.
     // If an ADD or UPDATE operation has more than one issue it could operate on, then the issue properties are either not unique enough or the property indexer is not installed.
     private List<IssueComponent> filterUpdatableIssues(List<IssueComponent> issues, ItemOperation operation) {
-        if (issues.size() == 1 || ItemOperation.INFO.equals(operation) || ItemOperation.DELETE.equals(operation)) {
+        if (issues.size() == 1 || ItemOperation.INFO == operation || ItemOperation.DELETE == operation) {
             return issues;
         } else {
             logger.error("Found more than one Jira Cloud issue to {} when only one was expected.", operation.name().toLowerCase());

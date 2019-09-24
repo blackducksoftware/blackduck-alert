@@ -23,23 +23,19 @@
 package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
@@ -59,42 +55,17 @@ public class MessageOperationCombiner extends MessageCombiner {
     }
 
     @Override
-    public List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
-        Map<ContentKey, List<ProviderMessageContent>> messagesGroupedByKey = new LinkedHashMap<>();
-        for (ProviderMessageContent message : messages) {
-            messagesGroupedByKey.computeIfAbsent(message.getContentKey(), k -> new LinkedList<>()).add(message);
+    protected LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages) {
+        List<ComponentItem> groupedComponentItems = new ArrayList<>();
+        for (ProviderMessageContent messageContent : groupedMessages) {
+            Map<String, ComponentItem> messageDataCache = new LinkedHashMap<>();
+            messageContent.getComponentItems().forEach(item -> processOperation(messageDataCache, item));
+            groupedComponentItems.addAll(messageDataCache.values());
         }
+        Map<String, ComponentItem> groupDataCache = new LinkedHashMap<>();
+        groupedComponentItems.forEach(item -> processOperation(groupDataCache, item));
 
-        List<ProviderMessageContent> combinedMessages = new ArrayList<>();
-        for (Map.Entry<ContentKey, List<ProviderMessageContent>> groupedMessageEntry : messagesGroupedByKey.entrySet()) {
-            List<ProviderMessageContent> groupedMessages = groupedMessageEntry.getValue();
-
-            List<ComponentItem> groupCategoryItems = new ArrayList<>();
-            for (ProviderMessageContent messageContent : groupedMessageEntry.getValue()) {
-                Map<String, ComponentItem> messageDataCache = new LinkedHashMap<>();
-                messageContent.getComponentItems().forEach(item -> processOperation(messageDataCache, item));
-                groupCategoryItems.addAll(messageDataCache.values());
-            }
-            Map<String, ComponentItem> groupDataCache = new LinkedHashMap<>();
-            groupCategoryItems.forEach(item -> processOperation(groupDataCache, item));
-
-            LinkedHashSet<ComponentItem> combinedComponentItems = combineComponentItems(new ArrayList<>(groupDataCache.values()));
-
-            Optional<ProviderMessageContent> arbitraryMessage = groupedMessages
-                                                                    .stream()
-                                                                    .findAny();
-
-            if (arbitraryMessage.isPresent()) {
-                try {
-                    ProviderMessageContent newMessage = createNewMessage(arbitraryMessage.get(), combinedComponentItems);
-                    combinedMessages.add(newMessage);
-                } catch (AlertException e) {
-                    // If this happens, it means there is a bug in the Collector logic.
-                    throw new AlertRuntimeException(e);
-                }
-            }
-        }
-        return combinedMessages;
+        return combineComponentItems(new ArrayList<>(groupDataCache.values()));
     }
 
     private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createAddFunction() {

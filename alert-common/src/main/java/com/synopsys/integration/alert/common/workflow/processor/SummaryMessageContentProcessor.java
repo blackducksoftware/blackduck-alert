@@ -101,7 +101,8 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private SetMap<String, ComponentItem> sortByCategoryOperationPriorityGrouping(Set<ComponentItem> originalComponentItems) {
         SetMap<String, ComponentItem> itemsByOperation = SetMap.createDefault();
         for (ComponentItem componentItem : originalComponentItems) {
-            if (ItemOperation.INFO.equals(componentItem.getOperation())) {
+            if (ItemOperation.INFO == componentItem.getOperation()) {
+                // INFO messages are usually to follow up on a previous message with additional attributes, and therefore irrelevant to Summary Format.
                 continue;
             }
             StringBuilder keyBuilder = new StringBuilder()
