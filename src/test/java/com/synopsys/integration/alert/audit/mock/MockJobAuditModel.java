@@ -3,9 +3,9 @@ package com.synopsys.integration.alert.audit.mock;
 import java.util.Date;
 
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 
 public class MockJobAuditModel extends MockRestModelUtil<JobAuditModel> {
@@ -54,11 +54,6 @@ public class MockJobAuditModel extends MockRestModelUtil<JobAuditModel> {
     @Override
     public JobAuditModel createRestModel() {
         return new JobAuditModel(id, configId, name, eventType, new AuditJobStatusModel(timeAuditCreated, timeLastSent, status), errorMessage, errorStackTrace);
-    }
-
-    @Override
-    public JobAuditModel createEmptyRestModel() {
-        return new JobAuditModel();
     }
 
     @Override

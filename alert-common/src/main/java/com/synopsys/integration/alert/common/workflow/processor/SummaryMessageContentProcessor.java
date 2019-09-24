@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -100,6 +101,10 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
     private SetMap<String, ComponentItem> sortByCategoryOperationPriorityGrouping(Set<ComponentItem> originalComponentItems) {
         SetMap<String, ComponentItem> itemsByOperation = SetMap.createDefault();
         for (ComponentItem componentItem : originalComponentItems) {
+            if (ItemOperation.INFO == componentItem.getOperation()) {
+                // INFO messages are usually to follow up on a previous message with additional attributes, and therefore irrelevant to Summary Format.
+                continue;
+            }
             StringBuilder keyBuilder = new StringBuilder()
                                            .append(componentItem.getCategory())
                                            .append(componentItem.getOperation().name())
