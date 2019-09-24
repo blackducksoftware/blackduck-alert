@@ -10,4 +10,10 @@
             CALL DEFINE_FIELD('email.additional.addresses.only', FALSE, 'channel_email', 'DISTRIBUTION');
         </sql>
     </changeSet>
+    <!-- Register new SAML global field. -->
+    <changeSet author="psantos" id="1567694372073-2">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.metadata.file', FALSE, 'component_settings','GLOBAL');
+        </sql>
+    </changeSet>
 </databaseChangeLog>

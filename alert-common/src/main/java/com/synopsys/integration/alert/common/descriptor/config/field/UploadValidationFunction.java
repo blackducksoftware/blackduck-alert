@@ -20,36 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-public enum FieldType {
-    SELECT("Select"),
-    TEXT_INPUT("TextInput"),
-    TEXT_AREA("TextArea"),
-    PASSWORD_INPUT("PasswordInput"),
-    NUMBER_INPUT("NumberInput"),
-    CHECKBOX_INPUT("CheckboxInput"),
-    HIDE_CHECKBOX_INPUT("HideCheckboxInput"),
-    READ_ONLY("ReadOnlyField"),
-    COUNTDOWN("CountdownField"),
-    ENDPOINT_BUTTON("EndpointButtonField"),
-    ENDPOINT_SELECT("EndpointSelectField"),
-    TABLE_SELECT_INPUT("TableSelectInput"),
-    UPLOAD_FILE_BUTTON("UploadFileButtonField");
+import java.io.File;
+import java.util.Collection;
+import java.util.function.Function;
 
-    private final String fieldTypeName;
-
-    FieldType(final String fieldTypeName) {
-        this.fieldTypeName = fieldTypeName;
-    }
-
-    public String getFieldTypeName() {
-        return fieldTypeName;
-    }
-
-    @Override
-    public String toString() {
-        return getFieldTypeName();
-    }
-
+public interface UploadValidationFunction extends Function<File, Collection<String>> {
 }

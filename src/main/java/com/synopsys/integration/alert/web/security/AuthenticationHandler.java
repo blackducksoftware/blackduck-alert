@@ -96,6 +96,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
@@ -119,14 +120,17 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
+    private final FilePersistenceUtil filePersistenceUtil;
 
     @Autowired
-    AuthenticationHandler(SettingsDescriptorKey settingsDescriptorKey, HttpPathManager httpPathManager, ConfigurationAccessor configurationAccessor, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties) {
+    AuthenticationHandler(SettingsDescriptorKey settingsDescriptorKey, HttpPathManager httpPathManager, ConfigurationAccessor configurationAccessor, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
+        FilePersistenceUtil filePersistenceUtil) {
         this.settingsDescriptorKey = settingsDescriptorKey;
         this.httpPathManager = httpPathManager;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
+        this.filePersistenceUtil = filePersistenceUtil;
     }
 
     @Bean
@@ -216,7 +220,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLManager samlManager() throws MetadataProviderException {
-        return new SAMLManager(samlContext(), parserPool(), extendedMetadata(), metadata(), metadataGenerator());
+        return new SAMLManager(samlContext(), parserPool(), extendedMetadata(), metadata(), metadataGenerator(), filePersistenceUtil);
     }
 
     @Bean

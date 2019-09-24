@@ -66,6 +66,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_METADATA_URL = "settings.saml.metadata.url";
     public static final String KEY_SAML_ENTITY_ID = "settings.saml.entity.id";
     public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
+    public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";
 
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
@@ -77,6 +78,11 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server is missing";
+
+    public static final String FIELD_ERROR_SAML_METADATA_URL_MISSING = "SAML Metadata URL is missing and a Metadata file has not been uploaded.";
+    public static final String FIELD_ERROR_SAML_METADATA_FILE_MISSING = "SAML Metadata file has not been uploaded and a Metadata URL has not been specified.";
+
+    public final static String SAML_METADATA_FILE = "saml_metadata.xml";
 
     @Autowired
     public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig) {

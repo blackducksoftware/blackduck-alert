@@ -116,6 +116,13 @@ public class AuthorizationManager {
         return currentUserHasPermission(AccessOperation.EXECUTE, context, descriptorName);
     }
 
+    public final boolean hasAllPermissions(String context, String descriptorName, AccessOperation... operations) {
+        PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+        Collection<String> roleNames = getCurrentUserRoleNames();
+        return roleNames.stream()
+                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
+    }
+
     public final boolean hasAlertRole() {
         final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return getCurrentUserRoleNames().stream()
