@@ -48,6 +48,10 @@ public class ResponseFactory {
         return createMessageResponse(status, EMPTY_ID, message);
     }
 
+    public ResponseEntity<String> createEmptyResponse(HttpStatus status) {
+        return new ResponseEntity<>(status);
+    }
+
     public ResponseEntity<String> createNotFoundResponse(final String message) {
         return createMessageResponse(HttpStatus.NOT_FOUND, message);
     }
@@ -64,6 +68,10 @@ public class ResponseFactory {
 
     public ResponseEntity<String> createAcceptedResponse(final String id, final String message) {
         return createMessageResponse(HttpStatus.ACCEPTED, id, message);
+    }
+
+    public ResponseEntity<String> createNoContentResponse() {
+        return createEmptyResponse(HttpStatus.NO_CONTENT);
     }
 
     public ResponseEntity<String> createOkResponse(final String id, final String message) {

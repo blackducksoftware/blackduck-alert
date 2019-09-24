@@ -91,6 +91,28 @@ public class UploadEndpointManager {
         return writeFile(target, fileResource);
     }
 
+    public ResponseEntity<String> deleteUploadedFile(String targetKey) {
+        if (!containsTarget(targetKey)) {
+            return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+        }
+
+        UploadTarget target = uploadTargets.get(targetKey);
+        if (!authorizationManager.hasWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+            return responseFactory.createForbiddenResponse();
+        }
+
+        try {
+            String targetFilename = target.getFilename();
+            File fileToValidate = filePersistenceUtil.createUploadsFile(targetFilename);
+            filePersistenceUtil.delete(fileToValidate);
+            return responseFactory.createNoContentResponse();
+        } catch (IOException ex) {
+            logger.error("Error deleting file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
+            logger.error("Caused by: ", ex);
+            return responseFactory.createInternalServerErrorResponse("", "Error deleting uploaded file from server.");
+        }
+    }
+
     private ResponseEntity<String> writeFile(UploadTarget target, Resource fileResource) {
         try {
             String targetFilename = target.getFilename();
