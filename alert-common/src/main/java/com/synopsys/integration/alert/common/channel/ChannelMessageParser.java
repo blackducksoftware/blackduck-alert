@@ -60,7 +60,7 @@ public abstract class ChannelMessageParser {
                 messageContent
                     .getAction()
                     .map(ItemOperation::name)
-                    .map(action -> String.format("Action: %s%s", action, getLineSeparator()))
+                    .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
                     .ifPresent(messagePieces::add);
             } else {
                 SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
