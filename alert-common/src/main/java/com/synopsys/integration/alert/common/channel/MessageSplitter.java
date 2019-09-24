@@ -65,14 +65,12 @@ public final class MessageSplitter {
         StringBuilder chunkBuilder = new StringBuilder();
         for (final String messagePiece : messagePieces) {
             if (messagePiece.length() <= getLimit()) {
-                if (messagePiece.length() + chunkBuilder.length() <= getLimit()) {
-                    chunkBuilder.append(messagePiece);
-                    if (separateChunksByLineSeparator) {
-                        chunkBuilder.append(lineSeparator);
-                    }
-                } else {
+                if (messagePiece.length() + chunkBuilder.length() > getLimit()) {
                     chunkBuilder = flushChunks(messageChunks, chunkBuilder);
-                    messageChunks.add(messagePiece);
+                }
+                chunkBuilder.append(messagePiece);
+                if (separateChunksByLineSeparator) {
+                    chunkBuilder.append(lineSeparator);
                 }
             } else {
                 chunkBuilder = flushChunks(messageChunks, chunkBuilder);
