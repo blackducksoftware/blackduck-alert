@@ -65,8 +65,12 @@ export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldMod
     });
 }
 
-export function createDeleteRequest(apiUrl, csrfToken, configurationId) {
-    const url = `${apiUrl}/${configurationId}`;
+export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
+    let url = apiUrl;
+    if (configurationId) {
+        url = url.concat(`/${configurationId}`);
+    }
+
     return fetch(url, {
         credentials: 'same-origin',
         method: 'DELETE',

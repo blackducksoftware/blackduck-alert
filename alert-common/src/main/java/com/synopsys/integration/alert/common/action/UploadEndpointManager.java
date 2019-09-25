@@ -146,7 +146,7 @@ public class UploadEndpointManager {
         try (InputStream inputStream = fileResource.getInputStream()) {
             filePersistenceUtil.writeFileToUploadsDirectory(fileName, inputStream);
         } catch (IOException ex) {
-            logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", fileName);
+            logger.error("Error uploading file - file: {}", fileName);
             logger.error("Caused by: ", ex);
             throw ex;
         }
