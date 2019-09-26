@@ -27,5 +27,8 @@ public enum AccessOperation {
     DELETE,
     READ,
     WRITE,
-    EXECUTE
+    EXECUTE,
+    UPLOAD_FILE_READ,
+    UPLOAD_FILE_WRITE,
+    UPLOAD_FILE_DELETE
 }

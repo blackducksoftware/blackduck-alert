@@ -116,6 +116,18 @@ public class AuthorizationManager {
         return currentUserHasPermission(AccessOperation.EXECUTE, context, descriptorName);
     }
 
+    public final boolean hasUploadReadPermission(String context, String descriptorName) {
+        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_READ, context, descriptorName);
+    }
+
+    public final boolean hasUploadWritePermission(String context, String descriptorName) {
+        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_WRITE, context, descriptorName);
+    }
+
+    public final boolean hasUploadDeletePermission(String context, String descriptorName) {
+        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_DELETE, context, descriptorName);
+    }
+
     public final boolean hasAllPermissions(String context, String descriptorName, AccessOperation... operations) {
         PermissionKey permissionKey = new PermissionKey(context, descriptorName);
         Collection<String> roleNames = getCurrentUserRoleNames();
