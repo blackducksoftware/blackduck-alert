@@ -120,8 +120,9 @@ bootJar {
 distributions {
     boot {
         contents {
-            from('src/main/resources/email/images/') { into 'images/' }
-            from('src/main/resources/email/templates/') { into 'templates/email' }
+            from('src/main/resources/images/') { into 'images/' }
+            from('src/main/resources/templates/email') { into 'templates/email' }
+            from('src/main/resources/templates/msteams') { into 'templates/msteams' }
         }
     }
 }
@@ -189,7 +190,9 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
     def applicationVariables = ["--server.ssl.key-store=${project.buildDir}/certs/blackduck-alert.keystore",
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
-                                '--spring.h2.console.enabled=true']
+                                '--spring.h2.console.enabled=true',
+                                "--alert.images.dir=${project.buildDir}/resources/main/images",
+                                "--alert.templates.dir=${project.buildDir}/resources/main/templates"]
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(debugVariables)

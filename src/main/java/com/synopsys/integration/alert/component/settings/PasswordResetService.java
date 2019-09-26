@@ -90,7 +90,7 @@ public class PasswordResetService {
 
     private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress, String username, String tempPassword) throws AlertException {
         try {
-            final String imageDirectoryPath = alertProperties.getAlertImagesDirPath();
+            final String imageDirectoryPath = alertProperties.getAlertLogo();
 
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
             final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);

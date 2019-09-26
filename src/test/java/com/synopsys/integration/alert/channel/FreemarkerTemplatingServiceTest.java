@@ -1,22 +1,27 @@
 package com.synopsys.integration.alert.channel;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.junit.jupiter.api.Test;
-
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.util.TestAlertProperties;
-
-import java.io.IOException;
 
 public class FreemarkerTemplatingServiceTest {
     @Test
-    public void testExpectedDirectoryPaths() {
+    public void testExpectedDirectoryPaths() throws AlertException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
+
         final String directory = "directory";
         testAlertProperties.setAlertTemplatesDir(directory);
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
@@ -34,9 +39,12 @@ public class FreemarkerTemplatingServiceTest {
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
 
         final String testChannel = "testChannel";
-        final String templatePathMissingDirectory = freemarkerTemplatingService.getTemplatePath(testChannel);
-        final String userDirectory = System.getProperties().getProperty("user.dir");
-        assertEquals(userDirectory + "/src/main/resources/" + testChannel + "/templates", templatePathMissingDirectory);
+        try {
+            freemarkerTemplatingService.getTemplatePath(testChannel);
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getClass().equals(AlertException.class));
+        }
     }
 
     @Test
