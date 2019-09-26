@@ -28,12 +28,13 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.DatabaseRelation;
 import com.synopsys.integration.alert.database.configuration.key.FieldContextRelationPK;
 
 @Entity
 @IdClass(FieldContextRelationPK.class)
 @Table(schema = "ALERT", name = "FIELD_CONTEXTS")
-public class FieldContextRelation {
+public class FieldContextRelation extends DatabaseRelation {
     @Id
     @Column(name = "FIELD_ID")
     private Long fieldId;

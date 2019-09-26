@@ -137,7 +137,7 @@ public class UploadEndpointManager {
             return responseFactory.createNoContentResponse();
         } catch (IOException ex) {
             logger.error("Error deleting file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
-            logger.error("Caused by: ", ex);
+            logger.error("Error deleting file caused by: ", ex);
             return responseFactory.createInternalServerErrorResponse("", "Error deleting uploaded file from server.");
         }
     }
@@ -165,7 +165,7 @@ public class UploadEndpointManager {
             }
         } catch (IOException ex) {
             logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
-            logger.error("Caused by: ", ex);
+            logger.error("Error uploading file caused by: ", ex);
             return responseFactory.createInternalServerErrorResponse("", "Error uploading file to server.");
         }
 
@@ -175,8 +175,7 @@ public class UploadEndpointManager {
         try (InputStream inputStream = fileResource.getInputStream()) {
             filePersistenceUtil.writeFileToUploadsDirectory(fileName, inputStream);
         } catch (IOException ex) {
-            logger.error("Error uploading file - file: {}", fileName);
-            logger.error("Caused by: ", ex);
+            logger.error("Error writing file to resource - file: {}", fileName);
             throw ex;
         }
     }
