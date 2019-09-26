@@ -73,7 +73,7 @@ public class ProviderDataController extends BaseController {
         try {
             List<ProviderProject> projects = providerDataAccessor.findByProviderName(provider);
             if (projects.isEmpty()) {
-                logger.info("No projects found in the database for the provider: {}", provider);
+                logger.info("No projects found in the database for the provider: {}", BaseController.createSaferLoggableString(provider));
             }
             String usersJson = contentConverter.getJsonString(projects);
             return responseFactory.createOkContentResponse(usersJson);
@@ -104,7 +104,7 @@ public class ProviderDataController extends BaseController {
                                                                            .map(LabelValueSelectOption::new)
                                                                            .collect(Collectors.toCollection(LinkedHashSet::new));
             if (emailOptions.isEmpty()) {
-                logger.info("No user emails found in the database for the provider: {}", provider);
+                logger.info("No user emails found in the database for the provider: {}", BaseController.createSaferLoggableString(provider));
             }
             final String usersJson = contentConverter.getJsonString(emailOptions);
             return responseFactory.createOkContentResponse(usersJson);
