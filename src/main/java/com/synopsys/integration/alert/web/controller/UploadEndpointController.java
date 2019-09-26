@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 @RequestMapping(UploadEndpointManager.UPLOAD_ENDPOINT_URL)
 public class UploadEndpointController {
 
+    public static final String TARGET_KEY_MISSING = "Must be given the key associated with the custom functionality.";
     private final UploadEndpointManager uploadEndpointManager;
     private final ResponseFactory responseFactory;
 
@@ -53,7 +54,7 @@ public class UploadEndpointController {
     @GetMapping("/{key}/exists")
     public ResponseEntity<String> checkUploadedFileExists(@PathVariable final String key) {
         if (StringUtils.isBlank(key)) {
-            return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
+            return responseFactory.createBadRequestResponse("", TARGET_KEY_MISSING);
         }
         return uploadEndpointManager.checkExists(key);
     }
@@ -61,7 +62,7 @@ public class UploadEndpointController {
     @PostMapping("/{key}")
     public ResponseEntity<String> postFileUpload(@PathVariable final String key, @RequestParam("file") MultipartFile file) {
         if (StringUtils.isBlank(key)) {
-            return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
+            return responseFactory.createBadRequestResponse("", TARGET_KEY_MISSING);
         }
         return uploadEndpointManager.performUpload(key, file.getResource());
     }
@@ -69,7 +70,7 @@ public class UploadEndpointController {
     @DeleteMapping("/{key}")
     public ResponseEntity<String> deleteUploadedFile(@PathVariable final String key) {
         if (StringUtils.isBlank(key)) {
-            return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
+            return responseFactory.createBadRequestResponse("", TARGET_KEY_MISSING);
         }
         return uploadEndpointManager.deleteUploadedFile(key);
     }

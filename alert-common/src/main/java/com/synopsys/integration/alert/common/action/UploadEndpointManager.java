@@ -52,6 +52,8 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Component
 public class UploadEndpointManager {
     public static final String UPLOAD_ENDPOINT_URL = "/api/uploads";
+    public static final String NO_UPLOAD_FUNCTIONALITY_REGISTERED = "No upload functionality has been created for this endpoint.";
+    public static final String CUSTOM_ENDPOINT_ALREADY_REGISTERED = "A custom endpoint is already registered for ";
     private static final Logger logger = LoggerFactory.getLogger(UploadEndpointManager.class);
     private Map<String, UploadTarget> uploadTargets = new HashMap<>();
     private FilePersistenceUtil filePersistenceUtil;
@@ -77,21 +79,21 @@ public class UploadEndpointManager {
 
     public void registerTarget(String targetKey, ConfigContextEnum context, DescriptorKey descriptorKey, String fileName, UploadValidationFunction validationFunction) throws AlertException {
         if (containsTarget(targetKey)) {
-            throw new AlertException("A custom endpoint is already registered for " + targetKey);
+            throw new AlertException(CUSTOM_ENDPOINT_ALREADY_REGISTERED + targetKey);
         }
         uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, targetKey, fileName, validationFunction));
     }
 
     public void unRegisterTarget(String targetKey) throws AlertException {
         if (!containsTarget(targetKey)) {
-            throw new AlertException("A custom endpoint is not registered for " + targetKey);
+            throw new AlertException(CUSTOM_ENDPOINT_ALREADY_REGISTERED + targetKey);
         }
         uploadTargets.remove(targetKey);
     }
 
     public ResponseEntity<String> performUpload(String targetKey, Resource fileResource) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity(NO_UPLOAD_FUNCTIONALITY_REGISTERED, HttpStatus.NOT_IMPLEMENTED);
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
@@ -104,7 +106,7 @@ public class UploadEndpointManager {
 
     public ResponseEntity<String> checkExists(String targetKey) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity(NO_UPLOAD_FUNCTIONALITY_REGISTERED, HttpStatus.NOT_IMPLEMENTED);
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
@@ -120,7 +122,7 @@ public class UploadEndpointManager {
 
     public ResponseEntity<String> deleteUploadedFile(String targetKey) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity(NO_UPLOAD_FUNCTIONALITY_REGISTERED, HttpStatus.NOT_IMPLEMENTED);
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
