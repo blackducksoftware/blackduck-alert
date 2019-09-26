@@ -27,11 +27,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsMessage;
-import com.synopsys.integration.exception.IntegrationException;
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
-import freemarker.cache.TemplateLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +35,11 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.exception.IntegrationException;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -57,12 +56,12 @@ public class FreemarkerTemplatingService {
         this.alertProperties = alertProperties;
     }
 
-    public String getTemplatePath(final String channelDirectory) {
+    public String getTemplatePath(final String channelDirectory) throws AlertException {
         final String templatesDirectory = alertProperties.getAlertTemplatesDir();
         if (StringUtils.isNotBlank(templatesDirectory)) {
             return String.format("%s/%s", templatesDirectory, channelDirectory);
         }
-        return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), channelDirectory);
+        throw new AlertException(String.format("Could not find the Alert template directory '%s'", templatesDirectory));
     }
 
     public Configuration createFreemarkerConfig(final File templateLoadingDirectory) throws IOException {

@@ -29,10 +29,13 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
+
 public class AlertProperties {
     @Value("${alert.config.home:}")
     private String alertConfigHome;
 
+    @Deprecated
     @Value("${alert.templates.dir:}")
     private String alertTemplatesDir;
 
@@ -103,6 +106,7 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertConfigHome);
     }
 
+    @Deprecated
     public String getAlertTemplatesDir() {
         return StringUtils.trimToNull(alertTemplatesDir);
     }
@@ -111,12 +115,12 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertImagesDir);
     }
 
-    public String getAlertImagesDirPath() {
+    public String getAlertLogo() throws AlertException {
         final String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/synopsys.png";
         }
-        return System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
+        throw new AlertException(String.format("Could not find the Alert logo in the images directory '%s'", imagesDirectory));
     }
 
     public String getAlertSecretsDir() {

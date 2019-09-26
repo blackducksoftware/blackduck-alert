@@ -104,7 +104,7 @@ class GlobalConfiguration extends React.Component {
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const body = (!Array.isArray(fields) || !fields.length) ?
             (
-                <div className="form-horizontal">There is no configuration required.</div>
+                <div className="form-horizontal">There is no global configuration required. The configuration is handled in the distribution jobs.</div>
             ) : (
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                     <div>
