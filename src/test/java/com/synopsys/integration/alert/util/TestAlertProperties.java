@@ -5,6 +5,11 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.AlertProperties;
 
 public class TestAlertProperties extends AlertProperties {
+    public static final String PROPERTY_USER_DIR = "user.dir";
+    public static final String RESOURCES_PATH = "/src/main/resources";
+    public static final String IMAGES_PATH = RESOURCES_PATH + "/images/";
+    public static final String TEMPLATES_PATH = RESOURCES_PATH + "/templates/";
+
     private String alertConfigHome;
     private String alertTemplatesDir;
     private String alertImagesDir;
@@ -19,6 +24,10 @@ public class TestAlertProperties extends AlertProperties {
     private String encryptionSalt;
 
     public TestAlertProperties() {
+        String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
+        alertImagesDir = userDirectory + IMAGES_PATH;
+        alertTemplatesDir = userDirectory + TEMPLATES_PATH;
+
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";
         this.alertSecretsDir = "./testDB/run/secrets";

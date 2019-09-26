@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -53,9 +54,20 @@ public class JsonFieldFilterBuilder implements JsonFilterBuilder {
             final List<String> contentValues = jsonExtractor.getValuesFromJson(jsonField, notification.getContent());
             logger.debug("Comparing values {} to the configured matcher: {}", contentValues, value);
             for (final String contentValue : contentValues) {
-                if (StringUtils.isNotBlank(contentValue) && (contentValue.equals(value.trim()) || contentValue.matches(value))) {
-                    logger.debug("Match: {}", contentValue);
-                    return true;
+                if (StringUtils.isNotBlank(contentValue)) {
+                    if (contentValue.equals(value.trim())) {
+                        logger.debug("Match: {}", contentValue);
+                        return true;
+                    }
+                    try {
+                        // the contentValue could be a pattern defined in the job or it could be a project name. Project names typically are not valid patterns if they include special characters and will cause a PatternSyntaxException
+                        if (contentValue.matches(value)) {
+                            logger.debug("Match: {}", contentValue);
+                            return true;
+                        }
+                    } catch (PatternSyntaxException e) {
+                        logger.warn("{} is not a valid pattern.", contentValue);
+                    }
                 }
             }
             logger.debug("No value matched");

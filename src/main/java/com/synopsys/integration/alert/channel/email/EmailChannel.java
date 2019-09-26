@@ -50,10 +50,8 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailChannel extends NamedDistributionChannel {
-    public static final String PROPERTY_USER_DIR = "user.dir";
     public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
-    public static final String DIRECTORY_EMAIL_IMAGE_RESOURCES = "/src/main/resources/email/images/";
 
     private final EmailAddressHandler emailAddressHandler;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
@@ -135,13 +133,12 @@ public class EmailChannel extends NamedDistributionChannel {
         return originalSubjectLine;
     }
 
-    private String getImagePath(String imageFileName) {
+    private String getImagePath(String imageFileName) throws AlertException {
         String imagesDirectory = alertProperties.getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/" + imageFileName;
         }
-        String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
-        return userDirectory + DIRECTORY_EMAIL_IMAGE_RESOURCES + imageFileName;
+        throw new AlertException(String.format("Could not find the email image directory '%s'", imagesDirectory));
     }
 
 }

@@ -33,6 +33,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
+
 @Component
 public class AlertResourceLoader {
     private final AlertProperties alertProperties;
@@ -55,18 +57,18 @@ public class AlertResourceLoader {
         return new ClassPathResource(path);
     }
 
-    public String getTemplatePath(String channelDirectory) {
+    public String getTemplatePath(String channelDirectory) throws AlertException {
         return getPath(alertProperties.getAlertTemplatesDir(), channelDirectory);
     }
 
-    public String getImagePath(String channelDirectory) {
+    public String getImagePath(String channelDirectory) throws AlertException {
         return getPath(alertProperties.getAlertImagesDir(), channelDirectory);
     }
 
-    private String getPath(String directory, String subDirectory) {
+    private String getPath(String directory, String subDirectory) throws AlertException {
         if (StringUtils.isNotBlank(directory)) {
             return String.format("%s/%s", directory, subDirectory);
         }
-        return String.format("%s/src/main/resources/%s/templates", System.getProperties().getProperty("user.dir"), subDirectory);
+        throw new AlertException(String.format("Could not find the resource directory '%s'", directory));
     }
 }

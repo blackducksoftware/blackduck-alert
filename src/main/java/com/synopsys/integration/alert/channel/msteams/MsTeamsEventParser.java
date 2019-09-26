@@ -22,23 +22,18 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.exception.IntegrationException;
-import freemarker.cache.TemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.mail.Session;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Map;
-import java.util.function.Function;
+import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.exception.IntegrationException;
+
+import freemarker.cache.TemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 @Component
 public class MsTeamsEventParser {
@@ -49,8 +44,7 @@ public class MsTeamsEventParser {
     @Autowired
     public MsTeamsEventParser(FreemarkerTemplatingService freemarkerTemplatingService) throws IntegrationException {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
-        //TODO ekerwin - when we fix email template loading, we can consolidate the configurations to just load /templates
-        TemplateLoader msTeamsLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/channel/msteams");
+        TemplateLoader msTeamsLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/msteams");
         this.freemarkerConfiguration = freemarkerTemplatingService.createFreemarkerConfig(msTeamsLoader);
         try {
             this.msTeamsTemplate = freemarkerConfiguration.getTemplate("message_content.ftl");
@@ -66,10 +60,10 @@ public class MsTeamsEventParser {
 
     public MsTeamsMessage createMessage(DistributionEvent distributionEvent) {
         return distributionEvent
-                .getContent()
-                .getSubContent()
-                .stream()
-                .collect(MsTeamsMessage::new, MsTeamsMessage::addContent, MsTeamsMessage::addAllContent);
+                   .getContent()
+                   .getSubContent()
+                   .stream()
+                   .collect(MsTeamsMessage::new, MsTeamsMessage::addContent, MsTeamsMessage::addAllContent);
     }
 
     public String toJson(MsTeamsMessage msTeamsMessage) throws IntegrationException {
