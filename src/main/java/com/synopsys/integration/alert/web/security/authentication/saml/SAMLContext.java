@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
-public class SAMLContext implements Serializable {
+public class SAMLContext {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
 
     private final SettingsDescriptorKey settingsDescriptorKey;
