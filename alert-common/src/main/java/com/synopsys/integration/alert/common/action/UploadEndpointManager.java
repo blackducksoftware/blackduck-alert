@@ -82,6 +82,13 @@ public class UploadEndpointManager {
         uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, targetKey, fileName, validationFunction));
     }
 
+    public void unRegisterTarget(String targetKey) throws AlertException {
+        if (!containsTarget(targetKey)) {
+            throw new AlertException("A custom endpoint is not registered for " + targetKey);
+        }
+        uploadTargets.remove(targetKey);
+    }
+
     public ResponseEntity<String> performUpload(String targetKey, Resource fileResource) {
         if (!containsTarget(targetKey)) {
             return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
@@ -194,10 +201,6 @@ public class UploadEndpointManager {
 
         public DescriptorKey getDescriptorKey() {
             return descriptorKey;
-        }
-
-        public String getTargetKey() {
-            return targetKey;
         }
 
         public String getFilename() {
