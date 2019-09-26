@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,14 @@ public class UploadEndpointController {
     public UploadEndpointController(UploadEndpointManager uploadEndpointManager, ResponseFactory responseFactory) {
         this.uploadEndpointManager = uploadEndpointManager;
         this.responseFactory = responseFactory;
+    }
+
+    @GetMapping("/{key}/exists")
+    public ResponseEntity<String> checkUploadedFileExists(@PathVariable final String key) {
+        if (StringUtils.isBlank(key)) {
+            return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
+        }
+        return uploadEndpointManager.checkExists(key);
     }
 
     @PostMapping("/{key}")

@@ -39,6 +39,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.UploadValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -55,12 +57,14 @@ public class UploadEndpointManager {
     private FilePersistenceUtil filePersistenceUtil;
     private AuthorizationManager authorizationManager;
     private ResponseFactory responseFactory;
+    private Gson gson;
 
     @Autowired
-    public UploadEndpointManager(FilePersistenceUtil filePersistenceUtil, AuthorizationManager authorizationManager, ResponseFactory responseFactory) {
+    public UploadEndpointManager(Gson gson, FilePersistenceUtil filePersistenceUtil, AuthorizationManager authorizationManager, ResponseFactory responseFactory) {
         this.filePersistenceUtil = filePersistenceUtil;
         this.authorizationManager = authorizationManager;
         this.responseFactory = responseFactory;
+        this.gson = gson;
     }
 
     public boolean containsTarget(String targetKey) {
@@ -84,11 +88,27 @@ public class UploadEndpointManager {
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
-        if (!authorizationManager.hasWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+        if (!authorizationManager.hasUploadWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
             return responseFactory.createForbiddenResponse();
         }
 
         return writeFile(target, fileResource);
+    }
+
+    public ResponseEntity<String> checkExists(String targetKey) {
+        if (!containsTarget(targetKey)) {
+            return new ResponseEntity("No upload functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+        }
+
+        UploadTarget target = uploadTargets.get(targetKey);
+        if (!authorizationManager.hasUploadReadPermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+            return responseFactory.createForbiddenResponse();
+        }
+        String targetFilename = target.getFilename();
+        Boolean exists = filePersistenceUtil.uploadFileExists(targetFilename);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("exists", exists);
+        return responseFactory.createOkContentResponse(gson.toJson(jsonObject));
     }
 
     public ResponseEntity<String> deleteUploadedFile(String targetKey) {
@@ -97,7 +117,7 @@ public class UploadEndpointManager {
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
-        if (!authorizationManager.hasWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+        if (!authorizationManager.hasUploadDeletePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
             return responseFactory.createForbiddenResponse();
         }
 

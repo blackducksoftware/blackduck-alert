@@ -30,8 +30,11 @@ export function createReadAllGlobalContextRequest(csrfToken, descriptorName) {
     return createReadAllRequest(CONFIG_API_URL, csrfToken, 'GLOBAL', descriptorName);
 }
 
-export function createReadRequest(apiUrl, csrfToken, configurationId) {
-    const url = `${apiUrl}/${configurationId}`;
+export function createReadRequest(apiUrl, csrfToken, configurationId = null) {
+    let url = apiUrl;
+    if (configurationId) {
+        url = url.concat(`/${configurationId}`);
+    }
     return fetch(url, {
         credentials: 'same-origin',
         headers: {

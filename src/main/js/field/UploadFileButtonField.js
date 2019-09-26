@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
-import { createDeleteRequest, createFileUploadRequest } from 'util/configurationRequestBuilder';
+import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 import GeneralButton from "./input/GeneralButton";
@@ -12,14 +12,20 @@ class UploadFileButtonField extends Component {
 
         this.onUploadClick = this.onUploadClick.bind(this);
         this.onDeleteClick = this.onDeleteClick.bind(this);
+        this.checkFileExists = this.checkFileExists.bind(this);
 
         this.state = {
             showModal: false,
             fieldError: this.props.errorValue,
             success: false,
             progress: false,
-            statusMessage: this.props.statusMessage
+            statusMessage: this.props.statusMessage,
+            fileUploaded: false
         };
+    }
+
+    componentDidMount() {
+        this.checkFileExists();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -33,6 +39,27 @@ class UploadFileButtonField extends Component {
         }
     }
 
+    checkFileExists() {
+        const {
+            fieldKey, csrfToken, endpoint
+        } = this.props;
+        const request = createReadRequest(`/alert${endpoint}/${fieldKey}/exists`, csrfToken);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    const { exists } = data;
+                    this.setState({
+                        fileUploaded: exists
+                    });
+                });
+            } else {
+                this.setState({
+                    fileUploaded: false
+                });
+            }
+        });
+    }
+
     onUploadClick() {
         const fileData = this.refs.fileInputField.files;
         this.setState({
@@ -40,45 +67,38 @@ class UploadFileButtonField extends Component {
             progress: true,
             success: false
         });
-        const {
-            fieldKey, csrfToken, endpoint, onChange, name
-        } = this.props;
-        const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, "file", fileData);
 
-        request.then((response) => {
+        if (!fileData || fileData.length <= 0) {
             this.setState({
-                progress: false
+                progress: false,
+                fieldError: "Please select a file to upload."
             });
-            if (response.ok) {
+        } else {
+            const {
+                fieldKey, csrfToken, endpoint,
+            } = this.props;
+            const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, "file", fileData);
+
+            request.then((response) => {
                 this.setState({
-                    success: true,
-                    statusMessage: 'Upload Metadata File Success'
+                    progress: false
                 });
-                const value = this.getFileNames(fileData);
-                const targetData = {
-                    target: {
-                        name,
-                        value
-                    }
-                };
-                onChange(targetData);
-            } else {
-                response.json().then((data) => {
+                if (response.ok) {
                     this.setState({
-                        fieldError: data.message
+                        success: true,
+                        statusMessage: 'Upload Metadata File Success',
+                        fileUploaded: true
                     });
-                });
-            }
-        });
-    }
 
-    getFileNames(files) {
-        const fileNames = [];
-        for (let index = 0, numFiles = files.length; index < numFiles; index++) {
-            fileNames.push(files[index].name);
+                } else {
+                    response.json().then((data) => {
+                        this.setState({
+                            fieldError: data.message
+                        });
+                    });
+                }
+            });
         }
-
-        return fileNames.join(",");
     }
 
     onDeleteClick() {
@@ -88,7 +108,7 @@ class UploadFileButtonField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, endpoint, onChange, name
+            fieldKey, csrfToken, endpoint
         } = this.props;
         const request = createDeleteRequest(`/alert${endpoint}/${fieldKey}`, csrfToken);
         request.then((response) => {
@@ -98,16 +118,9 @@ class UploadFileButtonField extends Component {
             if (response.ok) {
                 this.setState({
                     success: true,
-                    statusMessage: 'Delete Metadata File Success'
+                    statusMessage: 'Delete Metadata File Success',
+                    fileUploaded: false
                 });
-                const value = [];
-                const targetData = {
-                    target: {
-                        name,
-                        value
-                    }
-                };
-                onChange(targetData);
             } else {
                 response.json().then((data) => {
                     this.setState({
@@ -122,7 +135,6 @@ class UploadFileButtonField extends Component {
         const {
             buttonLabel, value, accept, capture, fieldKey, name, readOnly
         } = this.props;
-        const showRemoveButton = value && (value.length > 0);
 
         const acceptedContentTypes = accept ? accept.join(',') : null;
         const endpointField = (
@@ -147,7 +159,7 @@ class UploadFileButtonField extends Component {
                                 performingAction={this.state.progress}
                             >{buttonLabel}
                             </GeneralButton>
-                            {showRemoveButton &&
+                            {this.state.fileUploaded &&
                             <button id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={this.onDeleteClick}>Remove Uploaded File</button>
                             }
                         </div>
