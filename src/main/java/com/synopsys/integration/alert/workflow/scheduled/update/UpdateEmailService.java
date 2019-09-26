@@ -122,11 +122,11 @@ public class UpdateEmailService {
 
     private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress) throws AlertException {
         try {
-            final String imageDirectoryPath = alertProperties.getAlertLogo();
+            final String alertLogo = alertProperties.getAlertLogo();
 
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
             final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
-            emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
+            emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);
 
             final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
             emailService.sendEmailMessage(passwordResetEmail);
