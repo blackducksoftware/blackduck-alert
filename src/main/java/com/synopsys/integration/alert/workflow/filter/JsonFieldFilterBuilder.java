@@ -62,7 +62,7 @@ public class JsonFieldFilterBuilder implements JsonFilterBuilder {
                     try {
                         // the contentValue could be a pattern defined in the job or it could be a project name. Project names typically are not valid patterns if they include special characters and will cause a PatternSyntaxException
                         if (contentValue.matches(value)) {
-                            logger.debug("Match: {}", contentValue);
+                            logger.debug("Pattern match: {}", contentValue);
                             return true;
                         }
                     } catch (PatternSyntaxException e) {

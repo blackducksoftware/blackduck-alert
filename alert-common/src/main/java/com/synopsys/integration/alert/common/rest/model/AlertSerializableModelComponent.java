@@ -20,36 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table;
+package com.synopsys.integration.alert.common.rest.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModelComponent;
+import java.io.Serializable;
 
-public class TableSelectColumn extends AlertSerializableModelComponent {
-    private String header;
-    private String headerLabel;
-    private boolean isKey;
-    private boolean sortBy;
+import com.synopsys.integration.util.Stringable;
 
-    public TableSelectColumn(final String header, String headerLabel, final boolean isKey, final boolean sortBy) {
-        this.header = header;
-        this.headerLabel = headerLabel;
-        this.isKey = isKey;
-        this.sortBy = sortBy;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public String getHeaderLabel() {
-        return headerLabel;
-    }
-
-    public boolean isIsKey() {
-        return isKey;
-    }
-
-    public boolean isSortBy() {
-        return sortBy;
-    }
+public abstract class AlertSerializableModelComponent extends Stringable implements Serializable {
 }

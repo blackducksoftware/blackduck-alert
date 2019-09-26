@@ -77,17 +77,17 @@ public class SamlMetaDataFileUpload {
 
         @Override
         public void warning(final SAXParseException exception) throws SAXException {
-            logger.warn("File upload exception:", exception);
+            logger.warn("File upload exception warning:", exception);
         }
 
         @Override
         public void error(final SAXParseException exception) throws SAXException {
-            logger.error("File upload exception:", exception);
+            logger.error("File upload exception error:", exception);
         }
 
         @Override
         public void fatalError(final SAXParseException exception) throws SAXException {
-            logger.error("File upload exception:", exception);
+            logger.error("File upload exception fatal error:", exception);
         }
     }
 }
