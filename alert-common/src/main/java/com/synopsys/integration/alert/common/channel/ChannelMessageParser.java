@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -44,7 +45,8 @@ public abstract class ChannelMessageParser {
 
     public List<String> createMessagePieces(MessageContentGroup messageContentGroup) {
         LinkedList<String> messagePieces = new LinkedList<>();
-        messagePieces.add(getMessageSeparator("Begin Content") + getLineSeparator());
+        String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
+        messagePieces.add(createMessageSeparator(messageHeader) + getLineSeparator());
 
         String commonTopicString = createLinkableItemString(messageContentGroup.getCommonTopic(), true);
         messagePieces.add(commonTopicString + getLineSeparator());
@@ -54,16 +56,24 @@ public abstract class ChannelMessageParser {
                 .map(item -> createLinkableItemString(item, true) + getLineSeparator())
                 .ifPresent(messagePieces::add);
 
-            SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
-            for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
-                messagePieces.add(getSectionSeparator() + getLineSeparator());
-                List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(similarItems);
-                messagePieces.addAll(componentItemMessagePieces);
+            if (messageContent.isTopLevelActionOnly()) {
+                messageContent
+                    .getAction()
+                    .map(ItemOperation::name)
+                    .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
+                    .ifPresent(messagePieces::add);
+            } else {
+                SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
+                for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
+                    messagePieces.add(getSectionSeparator() + getLineSeparator());
+                    List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(similarItems);
+                    messagePieces.addAll(componentItemMessagePieces);
+                }
+                messagePieces.add(getLineSeparator());
             }
-            messagePieces.add(getLineSeparator());
         }
 
-        messagePieces.add(getMessageSeparator("End Content") + getLineSeparator());
+        messagePieces.add(createMessageSeparator("End Content") + getLineSeparator());
         return messagePieces;
     }
 
@@ -83,7 +93,7 @@ public abstract class ChannelMessageParser {
         return "- - - - - - - - - - - - - - - - - - - -";
     }
 
-    protected String getMessageSeparator(String title) {
+    protected String createMessageSeparator(String title) {
         return getSectionSeparator() + " " + title + " " + getSectionSeparator();
     }
 
@@ -158,7 +168,9 @@ public abstract class ChannelMessageParser {
                 }
             }
         }
-        attributeStrings.add(getLineSeparator());
+        if (!attributeStrings.isEmpty()) {
+            attributeStrings.add(getLineSeparator());
+        }
         return attributeStrings;
     }
 

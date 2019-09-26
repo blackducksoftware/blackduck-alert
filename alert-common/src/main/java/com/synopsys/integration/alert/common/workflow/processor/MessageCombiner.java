@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -99,11 +100,15 @@ public class MessageCombiner {
         String subTopicName = optionalSubTopic.map(LinkableItem::getName).orElse(null);
         String subTopicValue = optionalSubTopic.map(LinkableItem::getValue).orElse(null);
         String subTopicUrl = optionalSubTopic.flatMap(LinkableItem::getUrl).orElse(null);
+        ItemOperation action = oldMessage.getAction().orElse(null);
+        Long notificationId = oldMessage.getNotificationId().orElse(null);
 
         return new ProviderMessageContent.Builder()
                    .applyProvider(provider.getValue(), provider.getUrl().orElse(null))
                    .applyTopic(topic.getName(), topic.getValue(), topic.getUrl().orElse(null))
                    .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
+                   .applyAction(action)
+                   .applyNotificationId(notificationId)
                    .applyAllComponentItems(componentItems)
                    .build();
     }

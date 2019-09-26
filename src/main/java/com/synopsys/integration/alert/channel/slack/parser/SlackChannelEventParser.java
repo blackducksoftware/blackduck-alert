@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.slack.parser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
+import com.synopsys.integration.alert.common.channel.MessageSplitter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -87,7 +87,8 @@ public class SlackChannelEventParser {
     }
 
     private List<Request> createRequestsForMessage(String channelName, String channelUsername, String webhook, List<String> mrkdwnMessagePieces, Map<String, String> requestHeaders) {
-        List<String> mrkdwnMessageChunks = splitMessages(mrkdwnMessagePieces);
+        MessageSplitter messageSplitter = new MessageSplitter(MRKDWN_MAX_SIZE_PRE_SPLIT);
+        List<String> mrkdwnMessageChunks = messageSplitter.splitMessages(mrkdwnMessagePieces);
         return mrkdwnMessageChunks
                    .stream()
                    .filter(StringUtils::isNotBlank)
@@ -105,82 +106,4 @@ public class SlackChannelEventParser {
 
         return json.toString();
     }
-
-    private List<String> splitMessages(List<String> messagePieces) {
-        List<String> messageChunks = new ArrayList<>();
-
-        StringBuilder chunkBuilder = new StringBuilder();
-        for (String messagePiece : messagePieces) {
-            if (messagePiece.length() <= MRKDWN_MAX_SIZE_PRE_SPLIT) {
-                if (messagePiece.length() + chunkBuilder.length() <= MRKDWN_MAX_SIZE_PRE_SPLIT) {
-                    chunkBuilder.append(messagePiece);
-                } else {
-                    chunkBuilder = flushChunks(messageChunks, chunkBuilder);
-                    messageChunks.add(messagePiece);
-                }
-            } else {
-                chunkBuilder = flushChunks(messageChunks, chunkBuilder);
-                messageChunks.addAll(splitMessage(messagePiece));
-            }
-        }
-
-        if (chunkBuilder.length() > 0) {
-            flushChunks(messageChunks, chunkBuilder);
-        }
-        return messageChunks;
-    }
-
-    private StringBuilder flushChunks(List<String> messageChunks, StringBuilder chunkBuilder) {
-        messageChunks.add(chunkBuilder.toString());
-        return new StringBuilder();
-    }
-
-    private List<String> splitMessage(String message) {
-        if (message.length() <= MRKDWN_MAX_SIZE_PRE_SPLIT) {
-            return List.of(message);
-        }
-
-        int splitIndex = getSplitIndex(message);
-        String preSplit = message.substring(0, splitIndex);
-        String postSplit = message.substring(splitIndex);
-
-        List<String> messages = new ArrayList<>();
-        messages.add(preSplit);
-        messages.addAll(splitMessage(postSplit));
-
-        return messages;
-    }
-
-    private int getSplitIndex(String message) {
-        char bracket = '[';
-        int initialSplitIndex = MRKDWN_MAX_SIZE_PRE_SPLIT - 1;
-
-        String preSplit = message.substring(0, initialSplitIndex);
-        String postSplit = message.substring(initialSplitIndex);
-
-        int bracketIndexBefore = preSplit.lastIndexOf(bracket);
-        int newLineIndexBefore = preSplit.lastIndexOf(slackChannelMessageParser.getLineSeparator());
-        int closestBeforeSplitIndex = Math.max(bracketIndexBefore, newLineIndexBefore);
-
-        int bracketIndexAfter = postSplit.indexOf(bracket);
-        int newLineIndexAfter = postSplit.indexOf(slackChannelMessageParser.getLineSeparator());
-        int closestAfterSplitIndex = initialSplitIndex + Math.max(bracketIndexAfter, newLineIndexAfter);
-
-        int beforeDistance = initialSplitIndex - Math.abs(closestBeforeSplitIndex);
-        int afterDistance = Math.abs(closestAfterSplitIndex) - initialSplitIndex;
-
-        int closestToSplitIndex;
-        if (beforeDistance < afterDistance) {
-            closestToSplitIndex = closestBeforeSplitIndex;
-        } else {
-            closestToSplitIndex = closestAfterSplitIndex;
-        }
-
-        if (closestToSplitIndex != -1) {
-            return closestToSplitIndex;
-        }
-
-        return message.length() - 1;
-    }
-
 }

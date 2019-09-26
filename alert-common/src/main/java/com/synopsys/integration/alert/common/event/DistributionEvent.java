@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -66,7 +65,7 @@ public class DistributionEvent extends ContentEvent {
                        .filter(Objects::nonNull)
                        .collect(Collectors.toSet());
         }
-        return Collections.emptySet();
+        return Set.of();
     }
 
 }
