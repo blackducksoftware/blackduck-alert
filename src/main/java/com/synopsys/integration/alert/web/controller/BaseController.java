@@ -30,7 +30,6 @@ public abstract class BaseController {
     protected static final String LOGGER_PATTERN_BREAKING_EXPRESSION = "[\n|\r|\t]";
 
     public static String createSaferLoggableString(String taintedString) {
-        String saferString = taintedString.replaceAll(LOGGER_PATTERN_BREAKING_EXPRESSION, "_");
-        return saferString;
+        return taintedString.replaceAll(LOGGER_PATTERN_BREAKING_EXPRESSION, "_");
     }
 }
