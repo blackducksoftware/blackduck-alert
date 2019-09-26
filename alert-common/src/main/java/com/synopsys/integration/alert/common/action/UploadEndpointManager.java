@@ -81,7 +81,7 @@ public class UploadEndpointManager {
         if (containsTarget(targetKey)) {
             throw new AlertException(CUSTOM_ENDPOINT_ALREADY_REGISTERED + targetKey);
         }
-        uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, targetKey, fileName, validationFunction));
+        uploadTargets.put(targetKey, new UploadTarget(context, descriptorKey, fileName, validationFunction));
     }
 
     public void unRegisterTarget(String targetKey) throws AlertException {
@@ -185,14 +185,12 @@ public class UploadEndpointManager {
 
         private ConfigContextEnum context;
         private DescriptorKey descriptorKey;
-        private String targetKey;
         private String filename;
         private UploadValidationFunction validationFunction;
 
-        public UploadTarget(ConfigContextEnum context, DescriptorKey descriptorKey, String targetKey, String filename, UploadValidationFunction validationFunction) {
+        public UploadTarget(ConfigContextEnum context, DescriptorKey descriptorKey, String filename, UploadValidationFunction validationFunction) {
             this.context = context;
             this.descriptorKey = descriptorKey;
-            this.targetKey = targetKey;
             this.filename = filename;
             this.validationFunction = validationFunction;
         }

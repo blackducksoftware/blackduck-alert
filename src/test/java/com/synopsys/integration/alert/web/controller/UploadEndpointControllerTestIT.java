@@ -44,21 +44,21 @@ public class UploadEndpointControllerTestIT extends AlertIntegrationTest {
     public void testUploadForEmptyKey() throws Exception {
         UploadEndpointController controller = new UploadEndpointController(endpointManager, responseFactory);
         ResponseEntity<String> response = controller.postFileUpload("", null);
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void testExistsForEmptyKey() throws Exception {
         UploadEndpointController controller = new UploadEndpointController(endpointManager, responseFactory);
         ResponseEntity<String> response = controller.checkUploadedFileExists("");
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void testDeleteForEmptyKey() throws Exception {
         UploadEndpointController controller = new UploadEndpointController(endpointManager, responseFactory);
         ResponseEntity<String> response = controller.deleteUploadedFile("");
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
