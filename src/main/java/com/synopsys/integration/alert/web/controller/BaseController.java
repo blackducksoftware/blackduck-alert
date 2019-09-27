@@ -27,5 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(BaseController.BASE_PATH)
 public abstract class BaseController {
     public static final String BASE_PATH = "/api";
+    protected static final String LOGGER_PATTERN_BREAKING_EXPRESSION = "[\n|\r|\t]";
 
+    public static String createSaferLoggableString(String taintedString) {
+        return taintedString.replaceAll(LOGGER_PATTERN_BREAKING_EXPRESSION, "_");
+    }
 }
