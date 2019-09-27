@@ -32,18 +32,26 @@ import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.web.security.authentication.database.UserPrincipal;
 
 public class UserDetailsService implements SAMLUserDetailsService {
+    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
+
+    public UserDetailsService(UserManagementAuthoritiesPopulator authoritiesPopulator) {
+        this.authoritiesPopulator = authoritiesPopulator;
+    }
+
     @Override
     public Object loadUserBySAML(final SAMLCredential credential) throws UsernameNotFoundException {
         final String userName = credential.getAttributeAsString("Name");
         final String emailAddress = credential.getAttributeAsString("Email");
-        final String[] alertRoles = credential.getAttributeAsStringArray("AlertRoles");
+        final String[] alertRoles = credential.getAttributeAsStringArray(authoritiesPopulator.getSAMLRoleAttributeName("AlertRoles"));
         Set<UserRoleModel> roles = Set.of();
 
         if (alertRoles != null) {
-            roles = Arrays.stream(alertRoles)
+            Set<String> roleNames = authoritiesPopulator.addAdditionalRoleNames(Arrays.stream(alertRoles).collect(Collectors.toSet()), false);
+            roles = roleNames.stream()
                         .map(UserRoleModel::of)
                         .collect(Collectors.toSet());
         }

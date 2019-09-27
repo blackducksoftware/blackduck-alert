@@ -35,7 +35,6 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
-import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 
 @Component
 public class LdapManager {
@@ -53,13 +53,15 @@ public class LdapManager {
 
     private final SettingsDescriptorKey settingsDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
+    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private LdapContextSource contextSource;
     private LdapAuthenticationProvider authenticationProvider;
 
     @Autowired
-    public LdapManager(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor) {
+    public LdapManager(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, UserManagementAuthoritiesPopulator authoritiesPopulator) {
         this.settingsDescriptorKey = settingsDescriptorKey;
         this.configurationAccessor = configurationAccessor;
+        this.authoritiesPopulator = authoritiesPopulator;
     }
 
     public boolean isLdapEnabled() {
@@ -160,7 +162,7 @@ public class LdapManager {
         final String groupSearchBase = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
         final String groupSearchFilter = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
         final String groupRoleAttribute = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
-        final DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource, groupSearchBase);
+        final MappingLdapAuthoritiesPopulator authoritiesPopulator = new MappingLdapAuthoritiesPopulator(contextSource, groupSearchBase, this.authoritiesPopulator);
         authoritiesPopulator.setGroupSearchFilter(groupSearchFilter);
         authoritiesPopulator.setGroupRoleAttribute(groupRoleAttribute);
         // expect the LDAP group name for the role to be ROLE_<ROLE_NAME> where ROLE_NAME defined in UserRoles
