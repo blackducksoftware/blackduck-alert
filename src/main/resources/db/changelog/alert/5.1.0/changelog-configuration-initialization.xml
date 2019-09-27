@@ -16,4 +16,13 @@
             CALL DEFINE_FIELD('settings.saml.metadata.file', FALSE, 'component_settings','GLOBAL');
         </sql>
     </changeSet>
+    <!-- Register new user management fields. -->
+    <changeSet author="psantos" id="1567694372073-3">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.role.mapping.name.admin', FALSE, 'component_settings','GLOBAL');
+            CALL DEFINE_FIELD('settings.role.mapping.name.job.manager', FALSE, 'component_settings','GLOBAL');
+            CALL DEFINE_FIELD('settings.role.mapping.name.user', FALSE, 'component_settings','GLOBAL');
+            CALL DEFINE_FIELD('settings.saml.role.attribute.mapping.name', FALSE, 'component_settings','GLOBAL');
+        </sql>
+    </changeSet>
 </databaseChangeLog>

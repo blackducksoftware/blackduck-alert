@@ -188,10 +188,10 @@ public class SettingsUIConfig extends UIConfig {
                                                       .create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER, SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION)
                                                       .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
                                                       .setHeader(SETTINGS_HEADER_ROLE_MAPPING);
-        final ConfigField userRoleMapping = TextInputConfigField.create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER, SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION)
+        final ConfigField userRoleMapping = TextInputConfigField.create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_USER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER, SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION)
                                                 .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
                                                 .setHeader(SETTINGS_HEADER_ROLE_MAPPING);
-        final ConfigField samlAttributeMapping = TextInputConfigField.create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, SETTINGS_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
+        final ConfigField samlAttributeMapping = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, SETTINGS_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
                                                      .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
                                                      .setHeader(SETTINGS_HEADER_USER_MANAGEMENT_SAML);
 
