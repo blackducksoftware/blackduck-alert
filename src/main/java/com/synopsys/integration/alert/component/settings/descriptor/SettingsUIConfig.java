@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.component.settings.descriptor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -72,6 +73,11 @@ public class SettingsUIConfig extends UIConfig {
     private static final String LABEL_SAML_ENTITY_ID = "Entity ID";
     private static final String LABEL_SAML_ENTITY_BASE_URL = "Entity Base URL";
     private static final String LABEL_SAML_METADATA_FILE = "Identity Provider Metadata File";
+    private static final String LABEL_SAML_METADATA_FILE_UPLOAD = "Upload";
+    private static final String LABEL_USER_MANAGEMENT_ROLE_MAPPING_ADMIN = "Admin User Role Name";
+    private static final String LABEL_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER = "Job Manager Role Name";
+    private static final String LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER = "User Role Name";
+    private static final String LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING = "SAML Role Attribute Mapping";
 
     private static final String SETTINGS_ADMIN_EMAIL_DESCRIPTION = "The email address of the Alert system administrator. Used in case a password reset is needed.";
     private static final String SETTINGS_USER_PASSWORD_DESCRIPTION = "The password of the Alert system administrator. Used when logging in as the \"sysadmin\" user.";
@@ -102,14 +108,20 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_SAML_ENTITY_BASE_URL_DESCRIPTION = "This should be the URL of the Alert system.";
     private static final String SETTINGS_SAML_METADATA_FILE_DESCRIPTION = "The file to upload to the server containing the Metadata from the external Identity Provider.";
 
-    private static final String BUTTON_LABEL_SAML_METADATA_FILE = "Upload";
+    private static final String SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION = "The role name to map to the Administrator role of Alert.";
+    private static final String SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION = "The role name to map to the Job Manager role of Alert.";
+    private static final String SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION = "The role name to map to a User role of Alert.";
+    private static final String SETTINGS_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION = "The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert.  The roles contained in the Attribute Statement can be the role names defined in the mapping fields above.";
 
     private static final String SETTINGS_PANEL_PROXY = "Proxy Configuration";
     private static final String SETTINGS_PANEL_LDAP = "LDAP Configuration";
     private static final String SETTINGS_PANEL_SAML = "SAML Configuration";
+    private static final String SETTINGS_PANEL_USER_MANAGEMENT = "User Management";
 
     private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
+    private static final String SETTINGS_HEADER_ROLE_MAPPING = "User Role Mapping";
+    private static final String SETTINGS_HEADER_USER_MANAGEMENT_SAML = "SAML";
 
     private final FilePersistenceUtil filePersistenceUtil;
 
@@ -121,7 +133,18 @@ public class SettingsUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        // Startup settings
+        List<ConfigField> defaultPanelFields = createDefaultSettingsPanel();
+        List<ConfigField> proxyPanelFields = createProxyPanel();
+        List<ConfigField> ldapPanelFields = createLDAPPanel();
+        List<ConfigField> samlPanelFields = createSAMLPanel();
+        List<ConfigField> userManagement = createUserManagementPanel();
+
+        List<List<ConfigField>> fieldLists = List.of(defaultPanelFields, proxyPanelFields, ldapPanelFields, samlPanelFields, userManagement);
+
+        return fieldLists.stream().flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    private List<ConfigField> createDefaultSettingsPanel() {
         final ConfigField sysAdminEmail = TextInputConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
                                               .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
         final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION)
@@ -132,8 +155,10 @@ public class SettingsUIConfig extends UIConfig {
                                                .setHeader(SETTINGS_HEADER_ENCRYPTION);
         final ConfigField environmentVariableOverride = CheckboxConfigField
                                                             .create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
+        return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride);
+    }
 
-        // Proxy settings
+    private List<ConfigField> createProxyPanel() {
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, LABEL_PROXY_HOST, SETTINGS_PROXY_HOST_DESCRIPTION);
         final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, LABEL_PROXY_PORT, SETTINGS_PROXY_PORT_DESCRIPTION);
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
@@ -152,8 +177,28 @@ public class SettingsUIConfig extends UIConfig {
             .setPanel(SETTINGS_PANEL_PROXY)
             .requireField(proxyHost.getKey())
             .requireField(proxyUsername.getKey());
+        return List.of(proxyHost, proxyPort, proxyUsername, proxyPassword);
+    }
 
-        // Ldap settings
+    private List<ConfigField> createUserManagementPanel() {
+        final ConfigField adminRoleMapping = TextInputConfigField.create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_ROLE_MAPPING_ADMIN, SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION)
+                                                 .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
+                                                 .setHeader(SETTINGS_HEADER_ROLE_MAPPING);
+        final ConfigField jobManagerRoleMapping = TextInputConfigField
+                                                      .create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER, SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION)
+                                                      .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
+                                                      .setHeader(SETTINGS_HEADER_ROLE_MAPPING);
+        final ConfigField userRoleMapping = TextInputConfigField.create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER, SETTINGS_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION)
+                                                .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
+                                                .setHeader(SETTINGS_HEADER_ROLE_MAPPING);
+        final ConfigField samlAttributeMapping = TextInputConfigField.create(SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, SETTINGS_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
+                                                     .setPanel(SETTINGS_PANEL_USER_MANAGEMENT)
+                                                     .setHeader(SETTINGS_HEADER_USER_MANAGEMENT_SAML);
+
+        return List.of(adminRoleMapping, jobManagerRoleMapping, userRoleMapping, samlAttributeMapping);
+    }
+
+    private List<ConfigField> createLDAPPanel() {
         final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION)
                                            .setPanel(SETTINGS_PANEL_LDAP);
         final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION).setPanel(SETTINGS_PANEL_LDAP);
@@ -182,11 +227,14 @@ public class SettingsUIConfig extends UIConfig {
                                             .requireField(ldapManagerPassword.getKey())
                                             .disallowField(SettingsDescriptor.KEY_SAML_ENABLED)
                                             .setPanel(SETTINGS_PANEL_LDAP);
+        return List.of(ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword, ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase,
+            ldapGroupSearchFilter, ldapGroupRoleAttribute);
+    }
 
-        // Saml settings
+    private List<ConfigField> createSAMLPanel() {
         final ConfigField samlForceAuth = CheckboxConfigField.create(SettingsDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, SETTINGS_SAML_FORCE_AUTH_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlMetaDataURL = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, SETTINGS_SAML_METADATA_URL_DESCRIPTION, this::validateMetaDataUrl).setPanel(SETTINGS_PANEL_SAML);
-        final ConfigField samlMetaDataFile = UploadFileButtonField.create(SettingsDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, SETTINGS_SAML_METADATA_FILE_DESCRIPTION, BUTTON_LABEL_SAML_METADATA_FILE, List.of(
+        final ConfigField samlMetaDataFile = UploadFileButtonField.create(SettingsDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, SETTINGS_SAML_METADATA_FILE_DESCRIPTION, LABEL_SAML_METADATA_FILE_UPLOAD, List.of(
             "text/xml", "application/xml", ".xml"), "", false, this::validateMetaDataFile)
                                                  .setPanel(SETTINGS_PANEL_SAML);
         final ConfigField samlEntityId = TextInputConfigField.create(SettingsDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, SETTINGS_SAML_ENTITY_ID_DESCRIPTION).setPanel(SETTINGS_PANEL_SAML);
@@ -198,10 +246,7 @@ public class SettingsUIConfig extends UIConfig {
                                             .requireField(samlEntityBaseURL.getKey())
                                             .disallowField(SettingsDescriptor.KEY_LDAP_ENABLED)
                                             .setPanel(SETTINGS_PANEL_SAML);
-
-        return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
-            ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, samlEnabled, samlForceAuth,
-            samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL);
+        return List.of(samlEnabled, samlForceAuth, samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL);
     }
 
     private Collection<String> minimumEncryptionFieldLength(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
