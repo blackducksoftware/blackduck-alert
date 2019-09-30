@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.provider;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.cache.ProviderNotificationContentClassMap;
 
 public abstract class Provider {
     private final ProviderKey key;
@@ -42,6 +43,8 @@ public abstract class Provider {
     public abstract void initialize();
 
     public abstract void destroy();
+
+    public abstract ProviderNotificationContentClassMap getClassMap();
 
     public abstract Set<MessageContentCollector> createTopicCollectors();
 

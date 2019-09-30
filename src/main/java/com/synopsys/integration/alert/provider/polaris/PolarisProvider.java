@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.cache.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
@@ -79,4 +81,9 @@ public class PolarisProvider extends Provider {
         return Set.of(polarisCollector.getObject());
     }
 
+    @Override
+    public ProviderNotificationContentClassMap getClassMap() {
+        // add legitimate class mappings if needed
+        return new ProviderNotificationContentClassMap(Map.of());
+    }
 }

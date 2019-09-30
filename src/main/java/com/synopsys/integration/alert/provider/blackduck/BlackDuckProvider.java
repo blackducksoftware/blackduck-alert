@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,12 +34,23 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.cache.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckTopicCollectorFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.VersionBomCodeLocationBomComputedNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
@@ -81,6 +94,21 @@ public class BlackDuckProvider extends Provider {
         logger.info("Destroying Black Duck provider...");
         taskManager.unregisterTask(accumulatorTask.getTaskName());
         taskManager.unregisterTask(projectSyncTask.getTaskName());
+    }
+
+    @Override
+    public ProviderNotificationContentClassMap getClassMap() {
+        Map<String, Class<?>> notificationTypeToContentClass = new HashMap<>();
+        notificationTypeToContentClass.put(NotificationType.BOM_EDIT.name(), BomEditNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.LICENSE_LIMIT.name(), LicenseLimitNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.POLICY_OVERRIDE.name(), PolicyOverrideNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.PROJECT.name(), ProjectNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.PROJECT_VERSION.name(), ProjectVersionNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.RULE_VIOLATION.name(), RuleViolationNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.RULE_VIOLATION_CLEARED.name(), RuleViolationClearedNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED.name(), VersionBomCodeLocationBomComputedNotificationContent.class);
+        notificationTypeToContentClass.put(NotificationType.VULNERABILITY.name(), VulnerabilityNotificationContent.class);
+        return new ProviderNotificationContentClassMap(notificationTypeToContentClass);
     }
 
     @Override

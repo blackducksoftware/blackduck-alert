@@ -20,10 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.filter.notification;
+package com.synopsys.integration.alert.common.provider.notification;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
-public interface ProviderNotificationFilter<W extends ProviderNotificationFieldWrapper> {
-    boolean doesNotificationApplyToConfiguration(W notification, ConfigurationJobModel configurationJobModel);
+public interface ProviderDistributionFilter {
+    boolean doesNotificationApplyToConfiguration(AlertNotificationWrapper notification, ConfigurationJobModel configurationJobModel);
+
+    NotificationDeserializationCache getCache();
 }

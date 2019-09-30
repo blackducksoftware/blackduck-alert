@@ -24,19 +24,35 @@ package com.synopsys.integration.alert.provider.blackduck.filter;
 
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.workflow.filter.notification.ProviderNotificationFilter;
+import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
-import com.synopsys.integration.alert.provider.blackduck.filter.field.BlackDuckNotificationFieldWrapper;
 
 @Component
-public class BlackDuckFilter implements ProviderNotificationFilter<BlackDuckNotificationFieldWrapper> {
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
+    private BlackDuckProjectNameExtractor blackDuckProjectNameExtractor;
+    private NotificationDeserializationCache cache;
+
+    @Autowired
+    public BlackDuckDistributionFilter(Gson gson, BlackDuckProvider blackDuckProvider, BlackDuckProjectNameExtractor blackDuckProjectNameExtractor) {
+        this.cache = new NotificationDeserializationCache(gson, blackDuckProvider.getClassMap());
+        this.blackDuckProjectNameExtractor = blackDuckProjectNameExtractor;
+    }
+
     @Override
-    public boolean doesNotificationApplyToConfiguration(BlackDuckNotificationFieldWrapper notification, ConfigurationJobModel configurationJobModel) {
+    public boolean doesNotificationApplyToConfiguration(AlertNotificationWrapper notification, ConfigurationJobModel configurationJobModel) {
         FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
         Boolean filterByProject = fieldAccessor.getBooleanOrFalse(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         if (filterByProject) {
@@ -47,8 +63,14 @@ public class BlackDuckFilter implements ProviderNotificationFilter<BlackDuckNoti
         return true;
     }
 
-    private boolean doProjectsFromNotificationMatchConfiguredProjects(BlackDuckNotificationFieldWrapper notification, Collection<String> configuredProjects, @Nullable String nullablePattern) {
-        for (String notificationProjectName : notification.getProjectNames()) {
+    @Override
+    public NotificationDeserializationCache getCache() {
+        return cache;
+    }
+
+    private boolean doProjectsFromNotificationMatchConfiguredProjects(AlertNotificationWrapper notification, Collection<String> configuredProjects, @Nullable String nullablePattern) {
+        Collection<String> notificationProjectNames = blackDuckProjectNameExtractor.getProjectNames(getCache(), notification);
+        for (String notificationProjectName : notificationProjectNames) {
             if (configuredProjects.contains(notificationProjectName)) {
                 return true;
             } else if (null != nullablePattern && notificationProjectName.matches(nullablePattern)) {

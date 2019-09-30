@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,18 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.filter.field;
+package com.synopsys.integration.alert.common.workflow.cache;
 
-import java.util.List;
+import java.util.Map;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.filter.notification.ProviderNotificationFieldWrapper;
+public class ProviderNotificationContentClassMap {
+    private Map<String, Class<?>> notificationTypeToClass;
 
-public abstract class BlackDuckNotificationFieldWrapper extends ProviderNotificationFieldWrapper {
-    public BlackDuckNotificationFieldWrapper(AlertNotificationWrapper originalNotification) {
-        super(originalNotification);
+    public ProviderNotificationContentClassMap(Map<String, Class<?>> notificationTypeToClass) {
+        this.notificationTypeToClass = notificationTypeToClass;
     }
 
-    public abstract List<String> getProjectNames();
+    public Class<?> get(String notificationType) {
+        return notificationTypeToClass.get(notificationType);
+    }
 
 }
