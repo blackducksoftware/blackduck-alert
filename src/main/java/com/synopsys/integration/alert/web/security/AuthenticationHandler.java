@@ -98,6 +98,7 @@ import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
@@ -121,16 +122,18 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
     private final FilePersistenceUtil filePersistenceUtil;
+    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
 
     @Autowired
     AuthenticationHandler(SettingsDescriptorKey settingsDescriptorKey, HttpPathManager httpPathManager, ConfigurationAccessor configurationAccessor, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
-        FilePersistenceUtil filePersistenceUtil) {
+        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator) {
         this.settingsDescriptorKey = settingsDescriptorKey;
         this.httpPathManager = httpPathManager;
         this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.filePersistenceUtil = filePersistenceUtil;
+        this.authoritiesPopulator = authoritiesPopulator;
     }
 
     @Bean
@@ -435,7 +438,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLUserDetailsService samlUserDetailsService() {
-        return new UserDetailsService();
+        return new UserDetailsService(authoritiesPopulator);
     }
 
 }

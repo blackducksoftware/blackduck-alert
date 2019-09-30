@@ -72,6 +72,7 @@ public class AuthorizationManager {
         PermissionKey permissionKey = new PermissionKey(context, descriptorName);
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
+                   .filter(this::isAlertRole)
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey));
     }
 
@@ -79,6 +80,7 @@ public class AuthorizationManager {
         PermissionKey permissionKey = new PermissionKey(context, descriptorName);
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
+                   .filter(this::isAlertRole)
                    .allMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).isReadOnly(permissionKey));
     }
 
@@ -132,6 +134,7 @@ public class AuthorizationManager {
         PermissionKey permissionKey = new PermissionKey(context, descriptorName);
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
+                   .filter(this::isAlertRole)
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
@@ -141,6 +144,10 @@ public class AuthorizationManager {
                    .map(UserRole::findUserRole)
                    .flatMap(Optional::stream)
                    .anyMatch(allowedRoles::contains);
+    }
+
+    private boolean isAlertRole(String roleName) {
+        return UserRole.findUserRole(roleName).isPresent();
     }
 
     private boolean currentUserAnyPermission(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
