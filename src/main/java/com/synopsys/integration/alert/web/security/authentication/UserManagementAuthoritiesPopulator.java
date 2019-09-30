@@ -61,9 +61,6 @@ public class UserManagementAuthoritiesPopulator {
     public Set<GrantedAuthority> addAdditionalRoles(Set<GrantedAuthority> existingRoles) {
         Set<String> existingRoleNames = existingRoles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         Set<String> alertRoles = addAdditionalRoleNames(existingRoleNames, true);
-        if (alertRoles.isEmpty()) {
-            return existingRoles;
-        }
         return alertRoles.stream()
                    .map(SimpleGrantedAuthority::new)
                    .collect(Collectors.toSet());
@@ -77,8 +74,8 @@ public class UserManagementAuthoritiesPopulator {
         }
         Set<String> roles = new LinkedHashSet<>(existingRoles);
         roles.addAll(existingRoles.stream()
-                         .filter(roleName -> roleMap.containsKey(roleName))
-                         .map(roleName -> roleMap.get(roleName))
+                         .filter(roleMap::containsKey)
+                         .map(roleMap::get)
                          .collect(Collectors.toSet()));
         return roles;
     }
@@ -97,7 +94,7 @@ public class UserManagementAuthoritiesPopulator {
         Map<String, String> roleMapping = new HashMap<>(UserRole.values().length);
         try {
             ConfigurationModel configuration = getCurrentConfiguration();
-            final Function<UserRole, String> function = appendRolePrefix ? this::createRoleWithPrefix : (role) -> role.name();
+            final Function<UserRole, String> function = appendRolePrefix ? this::createRoleWithPrefix : UserRole::name;
             final Optional<String> adminRoleMappingName = getFieldValue(configuration, SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN);
             final Optional<String> jobManagerMappingName = getFieldValue(configuration, SettingsDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER);
             final Optional<String> userMappingName = getFieldValue(configuration, SettingsDescriptor.KEY_ROLE_MAPPING_NAME_USER);

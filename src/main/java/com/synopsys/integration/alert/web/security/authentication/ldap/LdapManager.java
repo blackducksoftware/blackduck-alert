@@ -135,8 +135,8 @@ public class LdapManager {
 
     private void updateAuthenticationProvider(final ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
         final LdapAuthenticator authenticator = createAuthenticator(configurationModel);
-        final LdapAuthoritiesPopulator authoritiesPopulator = createAuthoritiesPopulator(configurationModel);
-        authenticationProvider = new LdapAuthenticationProvider(authenticator, authoritiesPopulator);
+        final LdapAuthoritiesPopulator ldapAuthoritiesPopulator = createAuthoritiesPopulator(configurationModel);
+        authenticationProvider = new LdapAuthenticationProvider(authenticator, ldapAuthoritiesPopulator);
     }
 
     private LdapAuthenticator createAuthenticator(final ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
