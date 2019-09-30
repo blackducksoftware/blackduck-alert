@@ -31,8 +31,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.cache.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -74,6 +78,21 @@ public class PolarisProvider extends Provider {
     public void destroy() {
         logger.info("Destroying Polaris provider...");
         taskManager.unregisterTask(projectSyncTask.getTaskName());
+    }
+
+    @Override
+    public ProviderDistributionFilter createDistributionFilter() {
+        return new ProviderDistributionFilter() {
+            @Override
+            public boolean doesNotificationApplyToConfiguration(AlertNotificationWrapper notification, ConfigurationJobModel configurationJobModel) {
+                return false;
+            }
+
+            @Override
+            public NotificationDeserializationCache getCache() {
+                return null;
+            }
+        };
     }
 
     @Override
