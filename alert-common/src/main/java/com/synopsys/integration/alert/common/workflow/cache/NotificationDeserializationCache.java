@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 
 public class NotificationDeserializationCache {

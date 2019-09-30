@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.polaris;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -31,13 +32,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
-import com.synopsys.integration.alert.common.workflow.cache.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisContent;
@@ -91,6 +95,16 @@ public class PolarisProvider extends Provider {
             @Override
             public NotificationDeserializationCache getCache() {
                 return null;
+            }
+        };
+    }
+
+    @Override
+    public ProviderMessageContentCollector createMessageContentCollector() {
+        return new ProviderMessageContentCollector(List.of()) {
+            @Override
+            protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
+                return List.of();
             }
         };
     }

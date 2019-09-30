@@ -28,27 +28,37 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.util.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
 @Component
 public class NewNotificationProcessor {
+    private final Logger logger = LoggerFactory.getLogger(NewNotificationProcessor.class);
+
     private ConfigurationAccessor configurationAccessor;
     private Map<String, Provider> providerKeyToProvider;
+    private NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NewNotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers) {
+    public NewNotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
         this.configurationAccessor = configurationAccessor;
         this.providerKeyToProvider = initializeProviderMap(providers);
+        this.notificationToEventConverter = notificationToEventConverter;
     }
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationWrapper> notifications) {
@@ -65,9 +75,12 @@ public class NewNotificationProcessor {
         for (ConfigurationJobModel job : jobsForFrequency) {
             Provider provider = providerKeyToProvider.get(job.getProviderName());
             ProviderDistributionFilter distributionFilter = provider.createDistributionFilter();
-            List<AlertNotificationWrapper> filteredNotifications = filterNotificationsByJobFields(job, distributionFilter, notifications);
+            List<AlertNotificationWrapper> notificationsByType = filterNotificationsByType(job, notifications);
+            List<AlertNotificationWrapper> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
+
             if (!filteredNotifications.isEmpty()) {
-                List<DistributionEvent> events = createDistributionEventsForNotifications(job, distributionFilter.getCache(), filteredNotifications);
+                ProviderMessageContentCollector messageContentCollector = provider.createMessageContentCollector();
+                List<DistributionEvent> events = createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
                 distributionEvents.addAll(events);
             }
         }
@@ -75,13 +88,21 @@ public class NewNotificationProcessor {
     }
 
     private List<ConfigurationJobModel> getJobsForFrequency(FrequencyType frequency) {
+        // TODO add a method on the ConfigurationAccessor to filter by FrequencyType
         return configurationAccessor.getAllJobs()
                    .stream()
                    .filter(job -> frequency == job.getFrequencyType())
                    .collect(Collectors.toList());
     }
 
-    private List<AlertNotificationWrapper> filterNotificationsByJobFields(ConfigurationJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationWrapper> notifications) {
+    private List<AlertNotificationWrapper> filterNotificationsByType(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
+        return notifications
+                   .stream()
+                   .filter(notification -> job.getNotificationTypes().contains(notification.getNotificationType()))
+                   .collect(Collectors.toList());
+    }
+
+    private List<AlertNotificationWrapper> filterNotificationsByProviderFields(ConfigurationJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationWrapper> notifications) {
         List<AlertNotificationWrapper> filteredNotifications = new LinkedList<>();
         for (AlertNotificationWrapper notification : notifications) {
             if (distributionFilter.doesNotificationApplyToConfiguration(notification, job)) {
@@ -91,8 +112,13 @@ public class NewNotificationProcessor {
         return filteredNotifications;
     }
 
-    private List<DistributionEvent> createDistributionEventsForNotifications(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) {
-        // FIXME implement
+    private List<DistributionEvent> createDistributionEventsForNotifications(ProviderMessageContentCollector collector, ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) {
+        try {
+            List<MessageContentGroup> messageGroups = collector.createMessageContentGroups(job, cache, notifications);
+            return notificationToEventConverter.convertToEvents(job, messageGroups);
+        } catch (AlertException e) {
+            logger.error("Could not create distribution events", e);
+        }
         return List.of();
     }
 

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,34 +53,39 @@ public class NotificationToDistributionEventConverter {
         this.configurationAccessor = configurationAccessor;
     }
 
-    public List<DistributionEvent> convertToEvents(final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentMap) {
-        final List<DistributionEvent> distributionEvents = new ArrayList<>();
-        for (final Map.Entry<ConfigurationJobModel, List<MessageContentGroup>> entry : messageContentMap.entrySet()) {
-            for (final MessageContentGroup contentGroup : entry.getValue()) {
-                final ConfigurationJobModel config = entry.getKey();
-                final String descriptorName = config.getChannelName();
-                final Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
-                config.getFieldAccessor().addFields(globalFields);
-                distributionEvents.add(createChannelEvent(config, contentGroup));
-            }
+    public List<DistributionEvent> convertToEvents(ConfigurationJobModel job, List<MessageContentGroup> messages) {
+        String descriptorName = job.getChannelName();
+        Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
+        job.getFieldAccessor().addFields(globalFields);
+        List<DistributionEvent> events = messages
+                                             .stream()
+                                             .map(message -> createChannelEvent(job, message))
+                                             .collect(Collectors.toList());
+        logger.debug("Created {} events for job: {}", events.size(), job.getName());
+        return events;
+    }
+
+    public List<DistributionEvent> convertToEvents(Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentMap) {
+        List<DistributionEvent> distributionEvents = new ArrayList<>();
+        for (Map.Entry<ConfigurationJobModel, List<MessageContentGroup>> entry : messageContentMap.entrySet()) {
+            List<DistributionEvent> eventsForJob = convertToEvents(entry.getKey(), entry.getValue());
+            distributionEvents.addAll(eventsForJob);
         }
-        logger.debug("Created {} events.", distributionEvents.size());
         return distributionEvents;
     }
 
-    private Map<String, ConfigurationFieldModel> getGlobalFields(final String descriptorName) {
+    private Map<String, ConfigurationFieldModel> getGlobalFields(String descriptorName) {
         try {
-            final List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
             return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
-        } catch (final AlertDatabaseConstraintException e) {
+        } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an error retrieving global config : {}", e.getMessage());
             return Map.of();
         }
     }
 
-    private DistributionEvent createChannelEvent(final ConfigurationJobModel commonDistributionConfig, final MessageContentGroup contentGroup) {
-        return new DistributionEvent(commonDistributionConfig.getJobId().toString(), commonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(),
-            commonDistributionConfig.getFormatType().name(), contentGroup, commonDistributionConfig.getFieldAccessor());
+    private DistributionEvent createChannelEvent(ConfigurationJobModel job, MessageContentGroup contentGroup) {
+        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderName(), job.getFormatType().name(), contentGroup, job.getFieldAccessor());
     }
 
 }
