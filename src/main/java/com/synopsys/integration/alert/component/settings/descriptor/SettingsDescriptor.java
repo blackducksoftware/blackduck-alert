@@ -68,6 +68,14 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
     public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";
 
+    // User Management
+    // Role Mappings
+    public static final String KEY_ROLE_MAPPING_NAME_ADMIN = "settings.role.mapping.name.admin";
+    public static final String KEY_ROLE_MAPPING_NAME_JOB_MANAGER = "settings.role.mapping.name.job.manager";
+    public static final String KEY_ROLE_MAPPING_NAME_USER = "settings.role.mapping.name.user";
+    // SAML Role Attribute Mapping
+    public static final String KEY_SAML_ROLE_ATTRIBUTE_MAPPING = "settings.saml.role.attribute.mapping.name";
+
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
