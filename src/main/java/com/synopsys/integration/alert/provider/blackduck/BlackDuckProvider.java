@@ -29,16 +29,19 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.cache.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckTopicCollectorFactory;
+import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -63,16 +66,18 @@ public class BlackDuckProvider extends Provider {
     private final TaskManager taskManager;
     private final BlackDuckProperties blackDuckProperties;
 
+    private final ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory;
     private final BlackDuckTopicCollectorFactory topicCollectorFactory;
 
     @Autowired
     public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckProjectSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager,
-        BlackDuckProperties blackDuckProperties, BlackDuckTopicCollectorFactory topicCollectorFactory) {
+        BlackDuckProperties blackDuckProperties, ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, BlackDuckTopicCollectorFactory topicCollectorFactory) {
         super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.taskManager = taskManager;
         this.blackDuckProperties = blackDuckProperties;
+        this.distributionFilterFactory = distributionFilterFactory;
         this.topicCollectorFactory = topicCollectorFactory;
     }
 
@@ -97,7 +102,12 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public ProviderNotificationContentClassMap getClassMap() {
+    public ProviderDistributionFilter createDistributionFilter() {
+        return distributionFilterFactory.getObject();
+    }
+
+    @Override
+    public ProviderNotificationContentClassMap getNotificationContentClassMap() {
         Map<String, Class<?>> notificationTypeToContentClass = new HashMap<>();
         notificationTypeToContentClass.put(NotificationType.BOM_EDIT.name(), BomEditNotificationContent.class);
         notificationTypeToContentClass.put(NotificationType.LICENSE_LIMIT.name(), LicenseLimitNotificationContent.class);

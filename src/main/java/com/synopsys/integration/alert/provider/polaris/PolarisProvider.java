@@ -82,7 +82,7 @@ public class PolarisProvider extends Provider {
     }
 
     @Override
-    public ProviderNotificationContentClassMap getClassMap() {
+    public ProviderNotificationContentClassMap getNotificationContentClassMap() {
         // add legitimate class mappings if needed
         return new ProviderNotificationContentClassMap(Map.of());
     }

@@ -47,7 +47,7 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
 
     @Autowired
     public BlackDuckDistributionFilter(Gson gson, BlackDuckProvider blackDuckProvider, BlackDuckProjectNameExtractor blackDuckProjectNameExtractor) {
-        this.cache = new NotificationDeserializationCache(gson, blackDuckProvider.getClassMap());
+        this.cache = new NotificationDeserializationCache(gson, blackDuckProvider.getNotificationContentClassMap());
         this.blackDuckProjectNameExtractor = blackDuckProjectNameExtractor;
     }
 
