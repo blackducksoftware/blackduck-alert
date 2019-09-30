@@ -39,7 +39,7 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
     }
 
     @Override
-    public Set<GrantedAuthority> getGroupMembershipRoles(final String userDn, final String username) {
+    public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String username) {
         return authoritiesPopulator.addAdditionalRoles(super.getGroupMembershipRoles(userDn, username));
     }
 }
