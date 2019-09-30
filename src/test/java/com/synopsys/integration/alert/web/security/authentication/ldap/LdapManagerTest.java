@@ -18,10 +18,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 
 public class LdapManagerTest {
-    private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
-
     public static final String DEFAULT_ENABLED = "true";
     public static final String DEFAULT_SERVER = "aserver";
     public static final String DEFAULT_MANAGER_DN = "managerDN";
@@ -35,6 +34,7 @@ public class LdapManagerTest {
     public static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
     public static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
     public static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "roleAttribute";
+    private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
 
     private ConfigurationModel createConfigurationModel() {
         final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.GLOBAL);
@@ -88,8 +88,10 @@ public class LdapManagerTest {
     public void testUpdate() throws Exception {
         final ConfigurationModel configurationModel = createConfigurationModel();
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
 
         final ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
         assertEquals(DEFAULT_ENABLED, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
@@ -111,8 +113,9 @@ public class LdapManagerTest {
     public void testIsEnabled() throws Exception {
         final ConfigurationModel configurationModel = createConfigurationModel();
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         assertTrue(ldapManager.isLdapEnabled());
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED).ifPresent(field -> field.setFieldValue("false"));
         assertFalse(ldapManager.isLdapEnabled());
@@ -125,7 +128,8 @@ public class LdapManagerTest {
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.updateContext();
         final ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
         assertEquals(authenticationType, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
@@ -138,7 +142,8 @@ public class LdapManagerTest {
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.updateContext();
         final ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
         assertEquals(authenticationType, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
@@ -149,7 +154,8 @@ public class LdapManagerTest {
         final ConfigurationModel configurationModel = createConfigurationModel();
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         assertNotNull(ldapManager.getAuthenticationProvider());
     }
 
@@ -164,7 +170,8 @@ public class LdapManagerTest {
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).get().setFieldValue(managerPassword);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         try {
             ldapManager.updateContext();
             fail();
@@ -186,7 +193,8 @@ public class LdapManagerTest {
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS).get().setFieldValue(userDNPatterns);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor);
+        final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
+        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         try {
             ldapManager.updateContext();
             fail();
