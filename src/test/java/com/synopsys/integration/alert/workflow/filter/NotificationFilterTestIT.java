@@ -7,11 +7,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
@@ -20,14 +21,13 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContent;
+import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -57,10 +57,8 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     @Autowired
     private DescriptorMocker descriptorMocker;
 
-    @Autowired
-    private DefaultConfigurationAccessor configurationAccessor;
-
     private NotificationFilter defaultNotificationFilter;
+    private ConfigurationJobModel defaultJob;
 
     @BeforeEach
     public void init() {
@@ -77,11 +75,9 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         project.setFieldValues(List.of(TEST_CONFIG_PROJECT_NAME));
         distributionJob.getFieldAccessor().addFields(Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, project));
 
-        final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
-        MockConfigurationModelFactory.createDistributionJob(fieldList);
-        Mockito.when(jobConfigReader.getAllJobs()).thenReturn(List.of(distributionJob));
+        defaultJob = distributionJob;
 
-        defaultNotificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
+        defaultNotificationFilter = new NotificationFilter(jsonExtractor);
 
         descriptorMocker.registerDescriptor(TEST_DESCRIPTOR_NAME, DescriptorType.CHANNEL);
         descriptorMocker.addFieldToDescriptor(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_KEY, TEST_DESCRIPTOR_FIELD_CONTEXT, Boolean.FALSE);
@@ -93,37 +89,21 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void shortCircuitIfNoCommonConfigsTest() {
-        final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(jobConfigReader.getAllJobs()).thenReturn(List.of());
+    public void shortCircuitIfNoNotificationTypesTest() {
+        final List<ConfigurationFieldModel> fieldList = MockConfigurationModelFactory.createBlackDuckDistributionFields();
+        fieldList.addAll(MockConfigurationModelFactory.createSlackDistributionFields());
+        final ConfigurationJobModel distributionJob = MockConfigurationModelFactory.createDistributionJob(fieldList);
 
-        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
+        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor);
         final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW);
-        final Collection<AlertNotificationWrapper> filteredNotifications = notificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, List.of(applicableNotification));
+        final Collection<AlertNotificationWrapper> filteredNotifications = notificationFilter.extractApplicableNotifications(getProviderContentTypes(), distributionJob, List.of(applicableNotification));
         assertEquals(0, filteredNotifications.size());
     }
 
     @Test
-    public void shortCircuitIfNoCommonConfigsForFrequencyTest() throws AlertDatabaseConstraintException {
-        final ConfigurationJobModel config = Mockito.mock(ConfigurationJobModel.class);
-        Mockito.when(config.getFrequencyType()).thenReturn(FrequencyType.DAILY);
-
-        final ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(jobConfigReader.getAllJobs()).thenReturn(List.of(config));
-
-        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providers, jobConfigReader);
-        final ConfigurationFieldModel fieldModel = createFieldModel(TEST_DESCRIPTOR_FIELD_KEY, "value");
-        configurationAccessor.createConfiguration(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_CONTEXT, List.of(fieldModel));
-
-        final AlertNotificationWrapper applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW);
-        final Collection<AlertNotificationWrapper> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, List.of(applicableNotification));
-        assertEquals(0, filteredNotifications.size());
-    }
-
-    @Test
-    public void shortCircuitIfNoConfiguredNotificationsTest() {
+    public void shortCircuitIfNoMatchingNotificationTypeTest() {
         final AlertNotificationWrapper applicableNotification = new NotificationContent(NEW, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), NEW, NotificationType.BOM_EDIT.name(), "{}");
-        final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, List.of(applicableNotification));
+        final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(getProviderContentTypes(), defaultJob, List.of(applicableNotification));
         assertEquals(0, filteredNotifications.size());
     }
 
@@ -133,7 +113,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final AlertNotificationWrapper applicableNotification2 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), OLD);
         final List<AlertNotificationWrapper> notifications = List.of(applicableNotification1, applicableNotification2);
 
-        final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
+        final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(getProviderContentTypes(), defaultJob, notifications);
 
         assertEquals(2, filteredNotifications.size());
         final List<AlertNotificationWrapper> randomAccessNotifications = new ArrayList<>(filteredNotifications);
@@ -151,10 +131,19 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
         // TODO refactor the test to use the ObjectHierarchicalField
 
-        final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
+        final Collection<AlertNotificationWrapper> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(getProviderContentTypes(), defaultJob, notifications);
 
         assertEquals(1, filteredNotifications.size());
         assertEquals(applicableNotification, filteredNotifications.iterator().next());
+    }
+
+    private Set<ProviderContentType> getProviderContentTypes() {
+        return providers
+                   .parallelStream()
+                   .map(Provider::getProviderContent)
+                   .map(ProviderContent::getContentTypes)
+                   .flatMap(Set::stream)
+                   .collect(Collectors.toSet());
     }
 
     private ConfigurationFieldModel createFieldModel(final String fieldKey, final String fieldValue) {
