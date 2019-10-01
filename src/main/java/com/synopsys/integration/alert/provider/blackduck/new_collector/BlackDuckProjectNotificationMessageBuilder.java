@@ -29,19 +29,20 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
-public class BlackDuckProjectNotificationMessageBuilder implements BlackDuckMessageBuilder {
+public class BlackDuckProjectNotificationMessageBuilder implements BlackDuckMessageBuilder<ProjectNotificationContent> {
     @Override
     public String getNotificationType() {
         return NotificationType.PROJECT.name();
     }
 
     @Override
-    public <T> List<ProviderMessageContent> buildMessageContents(ConfigurationJobModel job, T notificationContent, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(final ConfigurationJobModel job, final ProjectNotificationContent notificationContent, final BlackDuckBucket blackDuckBucket,
+        final BlackDuckServicesFactory blackDuckServicesFactory) {
         return null;
     }
-
 }

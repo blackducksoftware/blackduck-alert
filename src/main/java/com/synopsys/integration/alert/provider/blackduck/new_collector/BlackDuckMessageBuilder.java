@@ -29,8 +29,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
-public interface BlackDuckMessageBuilder {
+public interface BlackDuckMessageBuilder<T> {
     String getNotificationType();
 
-    <T> List<ProviderMessageContent> buildMessageContents(ConfigurationJobModel job, T notificationContent, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
+    List<ProviderMessageContent> buildMessageContents(ConfigurationJobModel job, T notificationContent, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 }
