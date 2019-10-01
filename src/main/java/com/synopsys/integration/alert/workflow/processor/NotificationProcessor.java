@@ -94,7 +94,8 @@ public class NotificationProcessor {
     private List<DistributionEvent> processNotificationsForJobs(Collection<ConfigurationJobModel> jobs, List<AlertNotificationWrapper> notifications) {
         List<DistributionEvent> distributionEvents = new LinkedList<>();
         for (ConfigurationJobModel job : jobs) {
-            processNotifications(job, notifications);
+            List<DistributionEvent> distributionEventsForJob = processNotifications(job, notifications);
+            distributionEvents.addAll(distributionEventsForJob);
         }
         return distributionEvents;
     }
