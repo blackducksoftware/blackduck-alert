@@ -44,7 +44,6 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
-import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
@@ -95,12 +94,6 @@ public class BlackDuckProjectNameExtractor {
             }
         }
         logger.warn("Could not get project name for Bom Edit notification");
-        return Set.of();
-    }
-
-    private Collection<String> getLicenseLimitProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        LicenseLimitNotificationView notificationView = cache.getTypedContent(notification, LicenseLimitNotificationView.class);
-        // FIXME this doesn't make sense for License Limit
         return Set.of();
     }
 
@@ -157,7 +150,7 @@ public class BlackDuckProjectNameExtractor {
 
     private void initializeExtractorMap() {
         extractorMap.put(NotificationType.BOM_EDIT.name(), this::getBomEditProjectNames);
-        extractorMap.put(NotificationType.LICENSE_LIMIT.name(), this::getLicenseLimitProjectNames);
+        extractorMap.put(NotificationType.LICENSE_LIMIT.name(), DEFAULT_EXTRACTOR);
         extractorMap.put(NotificationType.POLICY_OVERRIDE.name(), this::getPolicyOverrideProjectNames);
         extractorMap.put(NotificationType.PROJECT.name(), this::getProjectNotificationProjectNames);
         extractorMap.put(NotificationType.PROJECT_VERSION.name(), this::getProjectVersionNotificationProjectNames);
