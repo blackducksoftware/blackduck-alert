@@ -22,8 +22,12 @@
  */
 package com.synopsys.integration.alert.workflow.processor;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,40 +37,107 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.util.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
 @Component
 public class NotificationProcessor {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final MessageContentAggregator messageContentAggregator;
-    private final NotificationToDistributionEventConverter notificationToEventConverter;
+    private final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
+
+    private ConfigurationAccessor configurationAccessor;
+    private Map<String, Provider> providerKeyToProvider;
+    private NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(final MessageContentAggregator messageContentAggregator, final NotificationToDistributionEventConverter notificationToEventConverter) {
-        this.messageContentAggregator = messageContentAggregator;
+    public NotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
+        this.configurationAccessor = configurationAccessor;
+        this.providerKeyToProvider = initializeProviderMap(providers);
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
-    public List<DistributionEvent> processNotifications(final List<AlertNotificationWrapper> notificationList) {
-        final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentList = messageContentAggregator.processNotifications(notificationList);
-        return notificationToEventConverter.convertToEvents(messageContentList);
+    public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationWrapper> notifications) {
+        logger.info("Notifications to Process: {}", notifications.size());
+        List<ConfigurationJobModel> jobsForFrequency = getJobsForFrequency(frequency);
+        return processNotificationsForJobs(jobsForFrequency, notifications);
     }
 
-    public List<DistributionEvent> processNotifications(final FrequencyType frequencyType, final List<AlertNotificationWrapper> notificationList) {
-        logger.info("Notifications to Process: {}", notificationList.size());
-        if (notificationList.isEmpty()) {
+    public List<DistributionEvent> processNotifications(List<AlertNotificationWrapper> notifications) {
+        // TODO should this only look for Real Time jobs?
+        List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        return processNotificationsForJobs(allJobs, notifications);
+    }
+
+    public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
+        if (notifications.isEmpty()) {
             return List.of();
         }
-        final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
-        return notificationToEventConverter.convertToEvents(messageContentList);
 
+        Provider provider = providerKeyToProvider.get(job.getProviderName());
+        ProviderDistributionFilter distributionFilter = provider.createDistributionFilter();
+        List<AlertNotificationWrapper> notificationsByType = filterNotificationsByType(job, notifications);
+        List<AlertNotificationWrapper> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
+
+        if (!filteredNotifications.isEmpty()) {
+            ProviderMessageContentCollector messageContentCollector = provider.createMessageContentCollector();
+            return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
+        }
+        return List.of();
     }
 
-    public List<DistributionEvent> processNotifications(final ConfigurationJobModel commonDistributionConfig, final List<AlertNotificationWrapper> notificationList) {
-        final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentList = messageContentAggregator.processNotifications(List.of(commonDistributionConfig), notificationList);
-        return notificationToEventConverter.convertToEvents(messageContentList);
+    private List<DistributionEvent> processNotificationsForJobs(Collection<ConfigurationJobModel> jobs, List<AlertNotificationWrapper> notifications) {
+        List<DistributionEvent> distributionEvents = new LinkedList<>();
+        for (ConfigurationJobModel job : jobs) {
+            processNotifications(job, notifications);
+        }
+        return distributionEvents;
+    }
+
+    private List<ConfigurationJobModel> getJobsForFrequency(FrequencyType frequency) {
+        // TODO add a method on the ConfigurationAccessor to filter by FrequencyType
+        return configurationAccessor.getAllJobs()
+                   .stream()
+                   .filter(job -> frequency == job.getFrequencyType())
+                   .collect(Collectors.toList());
+    }
+
+    private List<AlertNotificationWrapper> filterNotificationsByType(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
+        return notifications
+                   .stream()
+                   .filter(notification -> job.getNotificationTypes().contains(notification.getNotificationType()))
+                   .collect(Collectors.toList());
+    }
+
+    private List<AlertNotificationWrapper> filterNotificationsByProviderFields(ConfigurationJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationWrapper> notifications) {
+        List<AlertNotificationWrapper> filteredNotifications = new LinkedList<>();
+        for (AlertNotificationWrapper notification : notifications) {
+            if (distributionFilter.doesNotificationApplyToConfiguration(notification, job)) {
+                filteredNotifications.add(notification);
+            }
+        }
+        return filteredNotifications;
+    }
+
+    private List<DistributionEvent> createDistributionEventsForNotifications(ProviderMessageContentCollector collector, ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) {
+        try {
+            List<MessageContentGroup> messageGroups = collector.createMessageContentGroups(job, cache, notifications);
+            return notificationToEventConverter.convertToEvents(job, messageGroups);
+        } catch (AlertException e) {
+            logger.error("Could not create distribution events", e);
+        }
+        return List.of();
+    }
+
+    private Map<String, Provider> initializeProviderMap(List<Provider> providers) {
+        return providers
+                   .stream()
+                   .collect(Collectors.toMap(provider -> provider.getKey().getUniversalKey(), Function.identity()));
     }
 
 }
