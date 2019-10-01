@@ -24,14 +24,16 @@ package com.synopsys.integration.alert.common.provider.notification;
 
 import java.util.Map;
 
-public class ProviderNotificationContentClassMap {
-    private Map<String, Class<?>> notificationTypeToClass;
+import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 
-    public ProviderNotificationContentClassMap(Map<String, Class<?>> notificationTypeToClass) {
+public class ProviderNotificationContentClassMap {
+    private Map<String, Class<? extends NotificationView>> notificationTypeToClass;
+
+    public ProviderNotificationContentClassMap(Map<String, Class<? extends NotificationView>> notificationTypeToClass) {
         this.notificationTypeToClass = notificationTypeToClass;
     }
 
-    public Class<?> get(String notificationType) {
+    public Class<? extends NotificationView> get(String notificationType) {
         return notificationTypeToClass.get(notificationType);
     }
 

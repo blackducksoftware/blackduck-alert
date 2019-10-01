@@ -28,11 +28,12 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 
 public class NotificationDeserializationCache {
     private Gson gson;
     private ProviderNotificationContentClassMap providerNotificationClassMap;
-    private Map<Long, Object> idToDeserializedContent;
+    private Map<Long, NotificationView> idToDeserializedContent;
 
     public NotificationDeserializationCache(Gson gson, ProviderNotificationContentClassMap providerNotificationClassMap) {
         this.gson = gson;
@@ -44,17 +45,17 @@ public class NotificationDeserializationCache {
         return clazz.cast(getTypedContent(notification));
     }
 
-    public Object getTypedContent(AlertNotificationWrapper notification) {
-        Object deserializedNotification = idToDeserializedContent.get(notification.getId());
+    public NotificationView getTypedContent(AlertNotificationWrapper notification) {
+        NotificationView deserializedNotification = idToDeserializedContent.get(notification.getId());
         if (null == deserializedNotification) {
             deserializedNotification = deserializeNotification(notification);
         }
         return deserializedNotification;
     }
 
-    private Object deserializeNotification(AlertNotificationWrapper notification) {
-        Class<?> notificationTypeClass = providerNotificationClassMap.get(notification.getNotificationType());
-        Object deserializedNotification = gson.fromJson(notification.getContent(), notificationTypeClass);
+    private NotificationView deserializeNotification(AlertNotificationWrapper notification) {
+        Class<? extends NotificationView> notificationTypeClass = providerNotificationClassMap.get(notification.getNotificationType());
+        NotificationView deserializedNotification = gson.fromJson(notification.getContent(), notificationTypeClass);
         idToDeserializedContent.put(notification.getId(), deserializedNotification);
         return deserializedNotification;
     }
