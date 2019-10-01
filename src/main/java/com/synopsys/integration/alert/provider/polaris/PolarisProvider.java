@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
-import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
@@ -115,8 +115,8 @@ public class PolarisProvider extends Provider {
     }
 
     @Override
-    public ProviderNotificationContentClassMap getNotificationContentClassMap() {
+    public ProviderNotificationClassMap getNotificationClassMap() {
         // add legitimate class mappings if needed
-        return new ProviderNotificationContentClassMap(Map.of());
+        return new ProviderNotificationClassMap(Map.of());
     }
 }

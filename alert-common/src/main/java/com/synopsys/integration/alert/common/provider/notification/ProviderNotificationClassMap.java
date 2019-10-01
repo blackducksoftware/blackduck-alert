@@ -24,10 +24,10 @@ package com.synopsys.integration.alert.common.provider.notification;
 
 import java.util.Map;
 
-public class ProviderNotificationContentClassMap {
+public class ProviderNotificationClassMap {
     private Map<String, Class<?>> notificationTypeToClass;
 
-    public ProviderNotificationContentClassMap(Map<String, Class<?>> notificationTypeToClass) {
+    public ProviderNotificationClassMap(Map<String, Class<?>> notificationTypeToClass) {
         this.notificationTypeToClass = notificationTypeToClass;
     }
 
