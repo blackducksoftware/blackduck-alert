@@ -26,11 +26,10 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
-public interface BlackDuckMessageBuilder<T extends NotificationView> {
+public interface BlackDuckMessageBuilder<T> {
     String getNotificationType();
 
     List<ProviderMessageContent> buildMessageContents(ConfigurationJobModel job, T notificationContent, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
