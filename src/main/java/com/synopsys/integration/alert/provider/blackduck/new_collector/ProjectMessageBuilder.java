@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -45,6 +46,7 @@ public class ProjectMessageBuilder implements BlackDuckMessageBuilder<ProjectNot
     private final Logger logger = LoggerFactory.getLogger(ProjectMessageBuilder.class);
     private OperationUtil operationUtil;
 
+    @Autowired
     public ProjectMessageBuilder(OperationUtil operationUtil) {
         this.operationUtil = operationUtil;
     }
