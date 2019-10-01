@@ -37,5 +37,5 @@ public interface BlackDuckMessageBuilder<T> {
 
     String getNotificationType();
 
-    List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, T notificationContent, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
+    List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 }
