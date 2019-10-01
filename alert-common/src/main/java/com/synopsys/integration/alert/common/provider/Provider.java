@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.provider;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
-import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 
@@ -48,7 +48,7 @@ public abstract class Provider {
 
     public abstract ProviderDistributionFilter createDistributionFilter();
 
-    public abstract ProviderNotificationContentClassMap getNotificationContentClassMap();
+    public abstract ProviderNotificationClassMap getNotificationClassMap();
 
     public abstract ProviderMessageContentCollector createMessageContentCollector();
 

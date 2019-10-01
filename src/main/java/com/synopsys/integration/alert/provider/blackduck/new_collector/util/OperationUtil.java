@@ -20,22 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.new_collector;
+package com.synopsys.integration.alert.provider.blackduck.new_collector.util;
 
-import java.util.Date;
-import java.util.List;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
 
-public interface BlackDuckMessageBuilder<T> {
-    default String getProviderName() {
-        return "Black Duck";
+@Component
+public class OperationUtil {
+    public ItemOperation getItemOperation(OperationType operationType) {
+        switch (operationType) {
+            case CREATE:
+                return ItemOperation.ADD;
+            case DELETE:
+                return ItemOperation.DELETE;
+            default:
+                return ItemOperation.UPDATE;
+        }
     }
 
-    String getNotificationType();
-
-    List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, T notificationContent, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 }

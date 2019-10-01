@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
-import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
@@ -117,7 +117,7 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public ProviderNotificationContentClassMap getNotificationContentClassMap() {
+    public ProviderNotificationClassMap getNotificationClassMap() {
         Map<String, Class<?>> notificationTypeToContentClass = new HashMap<>();
         notificationTypeToContentClass.put(NotificationType.BOM_EDIT.name(), BomEditNotificationView.class);
         notificationTypeToContentClass.put(NotificationType.LICENSE_LIMIT.name(), LicenseLimitNotificationView.class);
@@ -128,7 +128,7 @@ public class BlackDuckProvider extends Provider {
         notificationTypeToContentClass.put(NotificationType.RULE_VIOLATION_CLEARED.name(), RuleViolationClearedNotificationView.class);
         notificationTypeToContentClass.put(NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED.name(), VersionBomCodeLocationBomComputedNotificationView.class);
         notificationTypeToContentClass.put(NotificationType.VULNERABILITY.name(), VulnerabilityNotificationView.class);
-        return new ProviderNotificationContentClassMap(notificationTypeToContentClass);
+        return new ProviderNotificationClassMap(notificationTypeToContentClass);
     }
 
     @Override

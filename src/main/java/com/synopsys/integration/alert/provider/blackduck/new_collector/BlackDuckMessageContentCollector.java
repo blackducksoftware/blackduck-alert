@@ -69,7 +69,9 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
         for (AlertNotificationWrapper notification : notifications) {
             String notificationType = notification.getNotificationType();
             BlackDuckMessageBuilder blackDuckMessageBuilder = messageBuilderMap.get(notificationType);
-            List<ProviderMessageContent> providerMessageContentsForNotification = blackDuckMessageBuilder.buildMessageContents(job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+            List<ProviderMessageContent> providerMessageContentsForNotification =
+                blackDuckMessageBuilder
+                    .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
             providerMessageContents.addAll(providerMessageContentsForNotification);
         }
         return providerMessageContents;

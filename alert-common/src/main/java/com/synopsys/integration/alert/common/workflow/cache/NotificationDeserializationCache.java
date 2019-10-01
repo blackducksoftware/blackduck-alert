@@ -26,15 +26,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 
 public class NotificationDeserializationCache {
     private Gson gson;
-    private ProviderNotificationContentClassMap providerNotificationClassMap;
+    private ProviderNotificationClassMap providerNotificationClassMap;
     private Map<Long, Object> idToDeserializedContent;
 
-    public NotificationDeserializationCache(Gson gson, ProviderNotificationContentClassMap providerNotificationClassMap) {
+    public NotificationDeserializationCache(Gson gson, ProviderNotificationClassMap providerNotificationClassMap) {
         this.gson = gson;
         this.providerNotificationClassMap = providerNotificationClassMap;
         this.idToDeserializedContent = new HashMap<>();
