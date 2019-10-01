@@ -37,13 +37,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationContentClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -53,14 +51,11 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
     private BlackDuckProperties blackDuckProperties;
-    // FIXME remove this variable
-    private ProviderNotificationContentClassMap notificationContentClassMap;
     private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
 
     @Autowired
-    public BlackDuckMessageContentCollector(BlackDuckProvider blackDuckProvider, BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
+    public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
-        this.notificationContentClassMap = blackDuckProvider.getNotificationContentClassMap();
         this.blackDuckProperties = blackDuckProperties;
         this.messageBuilderMap = initializeBuilderMap(messageBuilders);
     }
