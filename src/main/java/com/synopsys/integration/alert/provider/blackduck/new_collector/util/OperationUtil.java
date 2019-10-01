@@ -35,8 +35,10 @@ public class OperationUtil {
                 return ItemOperation.ADD;
             case DELETE:
                 return ItemOperation.DELETE;
-            default:
+            case UPDATE:
                 return ItemOperation.UPDATE;
+            default:
+                return ItemOperation.INFO;
         }
     }
 
