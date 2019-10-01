@@ -44,12 +44,12 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
     public static final String COMPONENT_NAME = "notification_receiver";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final NotificationManager notificationManager;
-    private final NotificationProcessor notificationProcessor;
-    private final ChannelEventManager eventManager;
+    private NotificationManager notificationManager;
+    private NotificationProcessor notificationProcessor;
+    private ChannelEventManager eventManager;
 
     @Autowired
-    public NotificationReceiver(final Gson gson, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelEventManager eventManager) {
+    public NotificationReceiver(Gson gson, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager) {
         super(gson, NotificationEvent.class);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
@@ -57,15 +57,15 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
     }
 
     @Override
-    public void handleEvent(final NotificationEvent event) {
+    public void handleEvent(NotificationEvent event) {
         if (NotificationEvent.NOTIFICATION_EVENT_TYPE.equals(event.getDestination())) {
             if (null == event.getNotificationIds() || event.getNotificationIds().isEmpty()) {
                 logger.warn("Can not process a notification event without notification Id's.");
                 return;
             }
             logger.info("Processing event for {} notifications.", event.getNotificationIds().size());
-            final List<AlertNotificationWrapper> notifications = notificationManager.findByIds(event.getNotificationIds());
-            final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
+            List<AlertNotificationWrapper> notifications = notificationManager.findByIds(event.getNotificationIds());
+            List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
             eventManager.sendEvents(distributionEvents);
         } else {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);

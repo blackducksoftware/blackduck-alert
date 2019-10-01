@@ -49,13 +49,12 @@ public class DailyTask extends ProcessingTask {
     public static final String CRON_FORMAT = "0 0 %s 1/1 * ?";
     public static final int DEFAULT_HOUR_OF_DAY = 0;
 
-    private final SchedulingDescriptorKey schedulingDescriptorKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private SchedulingDescriptorKey schedulingDescriptorKey;
+    private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DailyTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager,
-        NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager,
-        ConfigurationAccessor configurationAccessor) {
+    public DailyTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,
+        TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, eventManager, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.configurationAccessor = configurationAccessor;
@@ -69,17 +68,16 @@ public class DailyTask extends ProcessingTask {
     @Override
     public String scheduleCronExpression() {
         try {
-            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(schedulingDescriptorKey.getUniversalKey());
-            final String dailySavedCronValue = schedulingConfigs.stream()
-                                                   .findFirst()
-                                                   .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))
-                                                   .flatMap(ConfigurationFieldModel::getFieldValue)
-                                                   .orElse(String.valueOf(DEFAULT_HOUR_OF_DAY));
+            List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(schedulingDescriptorKey.getUniversalKey());
+            String dailySavedCronValue = schedulingConfigs.stream()
+                                             .findFirst()
+                                             .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))
+                                             .flatMap(ConfigurationFieldModel::getFieldValue)
+                                             .orElse(String.valueOf(DEFAULT_HOUR_OF_DAY));
             return String.format(CRON_FORMAT, dailySavedCronValue);
-        } catch (final AlertDatabaseConstraintException e) {
+        } catch (AlertDatabaseConstraintException e) {
             logger.error("Error connecting to DB", e);
         }
-
         return String.format(CRON_FORMAT, DEFAULT_HOUR_OF_DAY);
     }
 

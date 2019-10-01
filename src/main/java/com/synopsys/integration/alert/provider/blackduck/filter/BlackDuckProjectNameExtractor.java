@@ -43,14 +43,13 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -83,8 +82,8 @@ public class BlackDuckProjectNameExtractor {
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
             BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
 
-            BomEditNotificationContent notificationContent = cache.getTypedContent(notification, BomEditNotificationContent.class);
-            String bomComponentUri = notificationContent.getBomComponent();
+            BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
+            String bomComponentUri = notificationView.getContent().getBomComponent();
             try {
                 VersionBomComponentView bomComponentView = blackDuckService.getResponse(bomComponentUri, VersionBomComponentView.class);
                 return getProjectName(blackDuckService, bomComponentView)
@@ -98,40 +97,34 @@ public class BlackDuckProjectNameExtractor {
         return Set.of();
     }
 
-    private Collection<String> getLicenseLimitProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        LicenseLimitNotificationContent notificationContent = cache.getTypedContent(notification, LicenseLimitNotificationContent.class);
-        // FIXME this doesn't make sense for License Limit
-        return Set.of();
-    }
-
     private Collection<String> getPolicyOverrideProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        PolicyOverrideNotificationContent notificationContent = cache.getTypedContent(notification, PolicyOverrideNotificationContent.class);
-        return Set.of(notificationContent.getProjectName());
+        PolicyOverrideNotificationView notificationView = cache.getTypedContent(notification, PolicyOverrideNotificationView.class);
+        return Set.of(notificationView.getContent().getProjectName());
     }
 
     private Collection<String> getProjectNotificationProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        ProjectNotificationContent notificationContent = cache.getTypedContent(notification, ProjectNotificationContent.class);
-        return Set.of(notificationContent.getProjectName());
+        ProjectNotificationView notificationView = cache.getTypedContent(notification, ProjectNotificationView.class);
+        return Set.of(notificationView.getContent().getProjectName());
     }
 
     private Collection<String> getProjectVersionNotificationProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        ProjectVersionNotificationContent notificationContent = cache.getTypedContent(notification, ProjectVersionNotificationContent.class);
-        return Set.of(notificationContent.getProjectName());
+        ProjectVersionNotificationView notificationView = cache.getTypedContent(notification, ProjectVersionNotificationView.class);
+        return Set.of(notificationView.getContent().getProjectName());
     }
 
     private Collection<String> getRuleViolationProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        RuleViolationNotificationContent notificationContent = cache.getTypedContent(notification, RuleViolationNotificationContent.class);
-        return Set.of(notificationContent.getProjectName());
+        RuleViolationNotificationView notificationView = cache.getTypedContent(notification, RuleViolationNotificationView.class);
+        return Set.of(notificationView.getContent().getProjectName());
     }
 
     private Collection<String> getRuleViolationClearedProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        RuleViolationClearedNotificationContent notificationContent = cache.getTypedContent(notification, RuleViolationClearedNotificationContent.class);
-        return Set.of(notificationContent.getProjectName());
+        RuleViolationClearedNotificationView notificationView = cache.getTypedContent(notification, RuleViolationClearedNotificationView.class);
+        return Set.of(notificationView.getContent().getProjectName());
     }
 
     private Collection<String> getVulnerabilityProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
-        VulnerabilityNotificationContent notificationContent = cache.getTypedContent(notification, VulnerabilityNotificationContent.class);
-        return notificationContent.getAffectedProjectVersions()
+        VulnerabilityNotificationView notificationView = cache.getTypedContent(notification, VulnerabilityNotificationView.class);
+        return notificationView.getContent().getAffectedProjectVersions()
                    .stream()
                    .map(AffectedProjectVersion::getProjectName)
                    .collect(Collectors.toSet());
@@ -157,7 +150,7 @@ public class BlackDuckProjectNameExtractor {
 
     private void initializeExtractorMap() {
         extractorMap.put(NotificationType.BOM_EDIT.name(), this::getBomEditProjectNames);
-        extractorMap.put(NotificationType.LICENSE_LIMIT.name(), this::getLicenseLimitProjectNames);
+        extractorMap.put(NotificationType.LICENSE_LIMIT.name(), DEFAULT_EXTRACTOR);
         extractorMap.put(NotificationType.POLICY_OVERRIDE.name(), this::getPolicyOverrideProjectNames);
         extractorMap.put(NotificationType.PROJECT.name(), this::getProjectNotificationProjectNames);
         extractorMap.put(NotificationType.PROJECT_VERSION.name(), this::getProjectVersionNotificationProjectNames);

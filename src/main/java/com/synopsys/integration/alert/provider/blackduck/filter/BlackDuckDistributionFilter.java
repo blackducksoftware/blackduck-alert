@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -53,6 +54,11 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
 
     @Override
     public boolean doesNotificationApplyToConfiguration(AlertNotificationWrapper notification, ConfigurationJobModel configurationJobModel) {
+        if (NotificationType.LICENSE_LIMIT.name().equals(notification.getNotificationType())) {
+            // License Limit notifications are always allowed because they do not have projects.
+            return true;
+        }
+
         FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
         Boolean filterByProject = fieldAccessor.getBooleanOrFalse(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         if (filterByProject) {
