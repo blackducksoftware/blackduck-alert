@@ -22,33 +22,20 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createJsonPath;
-import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createLongField;
-import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createObjectField;
-import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createOptionalStringField;
-import static com.synopsys.integration.alert.common.workflow.filter.field.JsonField.createStringField;
-
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jayway.jsonpath.TypeRef;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilitySourceQualifiedId;
 
 @Component
+// FIXME should this be removed?
 public class BlackDuckContent extends ProviderContent {
     // common fields
     public static final String JSON_FIELD_CONTENT = "content";
@@ -121,131 +108,35 @@ public class BlackDuckContent extends ProviderContent {
     public static final String LABEL_REMEDIATION_LATEST = "Remediation - Latest Version";
 
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
-        NotificationType.BOM_EDIT.name(),
-        List.of(
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
-                LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_BOM_COMPONENT)
-        )
+        NotificationType.BOM_EDIT.name()
     );
 
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
-        NotificationType.LICENSE_LIMIT.name(),
-        List.of(
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_MESSAGE), JSON_FIELD_MESSAGE, FieldContentIdentifier.TOPIC, LABEL_LICENSE_LIMIT_MESSAGE),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_MARKETING_URL), JSON_FIELD_MARKETING_URL, FieldContentIdentifier.TOPIC_URL,
-                LABEL_LICENSE_LIMIT_MESSAGE + JsonField.LABEL_URL_SUFFIX),
-            createLongField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_CODE_SIZE), JSON_FIELD_CODE_SIZE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_USED_CODE_SIZE),
-            createLongField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LIMIT_HARD), JSON_FIELD_LIMIT_HARD, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_HARD),
-            createLongField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LIMIT_SOFT), JSON_FIELD_LIMIT_SOFT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_SOFT)
-        )
+        NotificationType.LICENSE_LIMIT.name()
     );
 
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
-        NotificationType.POLICY_OVERRIDE.name(),
-        List.of(
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
-                LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
-            createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
-            createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_COMPONENT_NAME + JsonField.LABEL_URL_SUFFIX),
-            createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_NAME), JSON_FIELD_COMPONENT_VERSION_NAME, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_COMPONENT_VERSION_NAME),
-            createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_COMPONENT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_FIRST_NAME), JSON_FIELD_FIRST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_FIRST_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_LAST_NAME), JSON_FIELD_LAST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
-            createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
-                new TypeRef<List<PolicyInfo>>() {})
-
-        )
+        NotificationType.POLICY_OVERRIDE.name()
     );
 
     public static final ProviderContentType PROJECT = new ProviderContentType(
-        NotificationType.PROJECT.name(),
-        List.of(
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT), JSON_FIELD_PROJECT, FieldContentIdentifier.TOPIC_URL, LABEL_PROJECT_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_OPERATION_TYPE), JSON_FIELD_OPERATION_TYPE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_OPERATION_TYPE)
-        )
+        NotificationType.PROJECT.name()
     );
 
     public static final ProviderContentType PROJECT_VERSION = new ProviderContentType(
-        NotificationType.PROJECT_VERSION.name(),
-        List.of(
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
-                LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_OPERATION_TYPE), JSON_FIELD_OPERATION_TYPE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_OPERATION_TYPE)
-        )
+        NotificationType.PROJECT_VERSION.name()
     );
 
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
-        NotificationType.VULNERABILITY.name(),
-        List.of(
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC,
-                LABEL_PROJECT_VERSION_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
-                LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
-            createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
-            createOptionalStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_COMPONENT_NAME + JsonField.LABEL_URL_SUFFIX),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_VERSION_NAME), JSON_FIELD_VERSION_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
-            createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_COMPONENT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-            createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_NEW_VULNERABILITY_IDS), JSON_FIELD_NEW_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_NEW,
-                new TypeRef<List<VulnerabilitySourceQualifiedId>>() {}),
-            createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
-            createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_UPDATED_VULNERABILITY_IDS), JSON_FIELD_UPDATED_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_VULNERABILITY_UPDATED,
-                new TypeRef<List<VulnerabilitySourceQualifiedId>>() {}),
-            createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_DELETED_VULNERABILITY_IDS), JSON_FIELD_DELETED_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM,
-                LABEL_VULNERABILITY_DELETED,
-                new TypeRef<List<VulnerabilitySourceQualifiedId>>() {})
-        )
-    );
-
-    private static final List<JsonField<?>> RULE_VIOLATION_FIELD_LIST = List.of(
-        createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-            List.of(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)),
-        createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-        createStringField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
-            LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-        createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION_STATUSES, FieldContentIdentifier.CATEGORY_ITEM,
-            LABEL_COMPONENT_VERSION_STATUS,
-            new TypeRef<List<ComponentVersionStatus>>() {}),
-        createStringField(createJsonPath(JsonField.FORMAT_TRIPLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_BOM_COMPONENT), JSON_FIELD_BOM_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-            LABEL_BOM_COMPONENT + JsonField.LABEL_URL_SUFFIX),
-        createObjectField(createJsonPath(JsonField.FORMAT_DOUBLE_REPLACEMENT, JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST,
-            new TypeRef<List<PolicyInfo>>() {})
+        NotificationType.VULNERABILITY.name()
     );
 
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
-        NotificationType.RULE_VIOLATION.name(),
-        RULE_VIOLATION_FIELD_LIST
+        NotificationType.RULE_VIOLATION.name()
     );
 
     public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
-        NotificationType.RULE_VIOLATION_CLEARED.name(),
-        RULE_VIOLATION_FIELD_LIST
+        NotificationType.RULE_VIOLATION_CLEARED.name()
     );
 
     private static final Set<ProviderContentType> SUPPORTED_CONTENT_TYPES = Set.of(LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY, BOM_EDIT, PROJECT, PROJECT_VERSION);

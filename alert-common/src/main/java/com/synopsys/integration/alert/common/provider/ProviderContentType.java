@@ -22,39 +22,20 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.util.Stringable;
 
+// FIXME should this class be removed?
 public class ProviderContentType extends Stringable {
     private final String notificationType;
-    private final Collection<JsonField<?>> notificationFields;
 
-    public ProviderContentType(@NotNull String notificationType, @NotNull Collection<JsonField<?>> notificationFields) {
+    public ProviderContentType(@NotNull String notificationType) {
         this.notificationType = notificationType;
-        this.notificationFields = notificationFields;
     }
 
     public String getNotificationType() {
         return notificationType;
-    }
-
-    public List<JsonField<?>> getNotificationFields() {
-        return notificationFields.parallelStream().collect(Collectors.toList());
-    }
-
-    public List<JsonField<String>> getFilterableFields() {
-        return notificationFields
-                   .parallelStream()
-                   .filter(field -> !field.getConfigKeyMappings().isEmpty())
-                   .filter(field -> field.isOfType(String.class))
-                   .map(field -> (JsonField<String>) field)
-                   .collect(Collectors.toList());
     }
 
 }
