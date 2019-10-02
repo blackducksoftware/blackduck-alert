@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.new_collector;
+package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 
 import java.util.Date;
 import java.util.List;
@@ -47,4 +47,5 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
         final BlackDuckServicesFactory blackDuckServicesFactory) {
         return List.of();
     }
+
 }
