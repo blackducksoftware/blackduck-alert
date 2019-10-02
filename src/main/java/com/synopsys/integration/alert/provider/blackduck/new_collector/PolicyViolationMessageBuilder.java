@@ -353,28 +353,6 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         return Optional.empty();
     }
 
-    private List<ComponentItem> createVulnerabilityPolicyItems(VersionBomComponentView bomComponent, LinkableItem policyNameItem, LinkableItem policySeverity,
-        LinkableItem componentItem, Optional<LinkableItem> optionalComponentVersionItem, Long notificationId, BlackDuckService blackDuckService, ComponentService componentService, BlackDuckResponseCache blackDuckResponseCache) {
-        List<ComponentItem> vulnerabilityPolicyItems = new ArrayList<>();
-        Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = getProjectVersionWrapper(blackDuckResponseCache, bomComponent);
-        if (optionalProjectVersionWrapper.isPresent()) {
-            try {
-                List<VulnerableComponentView> vulnerableComponentViews = vulnerabilityUtil.getVulnerableComponentViews(blackDuckService, optionalProjectVersionWrapper.get(), bomComponent);
-                List<ComponentItem> vulnerabilityComponentItems =
-                    createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentItem, optionalComponentVersionItem, notificationId, blackDuckService, blackDuckResponseCache);
-                vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
-
-                ComponentVersionView componentVersionView = blackDuckService.getResponse(bomComponent.getComponentVersion(), ComponentVersionView.class);
-                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(CATEGORY_TYPE, componentService, componentVersionView, componentItem, optionalComponentVersionItem, policyNameItem, policySeverity, true,
-                    notificationId);
-                remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
-            } catch (IntegrationException e) {
-                logger.debug("Could not get the project/version. Skipping vulnerability info for this policy: {}. Exception: {}", policyNameItem, e);
-            }
-        }
-        return vulnerabilityPolicyItems;
-    }
-
     protected List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
         LinkableItem componentItem, Optional<LinkableItem> componentVersionItem, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
         Map<String, VulnerabilityView> vulnerabilityViews = createVulnerabilityViewMap(blackDuckService, vulnerableComponentViews);
