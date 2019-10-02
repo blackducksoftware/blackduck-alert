@@ -64,7 +64,7 @@ public class ProjectMessageBuilder implements BlackDuckMessageBuilder<ProjectNot
         try {
             ProviderMessageContent.Builder projectMessageBuilder = new ProviderMessageContent.Builder()
                                                                        .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                       .applyTopic("Project", notificationContent.getProjectName(), notificationContent.getProject())
+                                                                       .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
                                                                        .applyAction(projectLevelAction)
                                                                        .applyNotificationId(notificationId)
                                                                        .applyProviderCreationTime(providerCreationDate);
