@@ -67,11 +67,11 @@ public class BlackDuckResponseCache {
 
     public Optional<String> getProjectComponentQueryLink(String projectVersionUrl, String link, String componentName) {
         Optional<String> projectLink = getProjectLink(projectVersionUrl, link);
-        return projectLink.flatMap(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
+        return projectLink.map(optionalProjectLink -> getProjectComponentQueryLink(optionalProjectLink, componentName));
     }
 
-    public Optional<String> getProjectComponentQueryLink(String projectLink, String componentName) {
-        return Optional.of(String.format("%s?q=componentName:%s", projectLink, componentName));
+    public String getProjectComponentQueryLink(String projectLink, String componentName) {
+        return String.format("%s?q=componentName:%s", projectLink, componentName);
     }
 
     public Optional<String> getProjectLink(String projectVersionUrl, String link) {

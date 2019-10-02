@@ -51,7 +51,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyCollector;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.new_collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.new_collector.util.VulnerabilityUtil;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
@@ -116,10 +115,8 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         try {
             ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
                                                                               .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                              .applyTopic("Project", violationContent.getProjectName())
-                                                                              .applySubTopic("Project Version", violationContent.getProjectVersionName(), violationContent.getProjectVersion())
-                                                                              .applyAction(operation)
-                                                                              .applyNotificationId(notificationId)
+                                                                              .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName())
+                                                                              .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion())
                                                                               .applyProviderCreationTime(providerCreationDate);
             Map<String, PolicyInfo> policyUrlToInfoMap = violationContent.getPolicyInfos().stream().collect(Collectors.toMap(PolicyInfo::getPolicy, Function.identity()));
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
@@ -127,7 +124,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                final List<ComponentItem> componentItems = retrievePolicyItems(responseCache, blackDuckService, componentService, componentVersionStatus, policies, notificationId, operation);
+                final List<ComponentItem> componentItems = retrievePolicyItems(responseCache, blackDuckService, componentService, componentVersionStatus, policies, notificationId, operation, violationContent.getProjectVersion());
                 items.addAll(componentItems);
             }
             projectVersionMessageBuilder.applyAllComponentItems(items);
@@ -140,7 +137,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
     }
 
     private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckService blackDuckService, ComponentService componentService, ComponentVersionStatus componentVersionStatus,
-        Set<PolicyInfo> policies, Long notificationId, ItemOperation operation) {
+        Set<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
             ComponentItemPriority priority = getPolicyPriority(policyInfo.getSeverity());
@@ -159,9 +156,17 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
                 policyAttributes.addAll(getLicenseLinkableItems(bomComponent));
                 policyAttributes.addAll(getUsageLinkableItems(bomComponent));
             });
-
-            LinkableItem componentItem = new LinkableItem("Component", componentVersionStatus.getComponentName(), componentVersionStatus.getComponent());
-            Optional<LinkableItem> optionalComponentVersionItem = Optional.of(new LinkableItem("Component Version", componentVersionStatus.getComponentVersionName(), componentVersionStatus.getComponentVersion()));
+            String componentName = componentVersionStatus.getComponentName();
+            String componentVersionName = componentVersionStatus.getComponentVersionName();
+            String projectQueryLink = blackDuckResponseCache.getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentName).orElse(null);
+            LinkableItem componentItem;
+            Optional<LinkableItem> optionalComponentVersionItem = Optional.empty();
+            if (StringUtils.isNotBlank(componentVersionName)) {
+                optionalComponentVersionItem = Optional.of(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersionName, projectQueryLink));
+                componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName);
+            } else {
+                componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName, projectQueryLink);
+            }
 
             addApplicableItems(operation, priority, componentItem, optionalComponentVersionItem.orElse(null), policyNameItem, nullablePolicySeverityItem, policyAttributes, notificationId)
                 .ifPresent(componentItems::add);
@@ -202,13 +207,13 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
 
     protected LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
         String policyName = policyInfo.getPolicyName();
-        return new LinkableItem(BlackDuckContent.LABEL_POLICY_NAME, policyName, null);
+        return new LinkableItem(MessageBuilderConstants.LABEL_POLICY_NAME, policyName);
     }
 
     protected Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
         String severity = policyInfo.getSeverity();
         if (StringUtils.isNotBlank(severity)) {
-            final LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_POLICY_SEVERITY_NAME, severity, null);
+            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_POLICY_SEVERITY_NAME, severity);
             return Optional.of(severityItem);
         }
         return Optional.empty();
@@ -249,7 +254,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
     public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
         return bomComponentView.getLicenses()
                    .stream()
-                   .map(licenseView -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
+                   .map(licenseView -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
                    .collect(Collectors.toList());
     }
 
@@ -257,7 +262,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         return bomComponentView.getUsages()
                    .stream()
                    .map(MatchedFileUsagesType::prettyPrint)
-                   .map(usage -> new LinkableItem(BlackDuckContent.LABEL_COMPONENT_USAGE, usage))
+                   .map(usage -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_USAGE, usage))
                    .collect(Collectors.toList());
     }
 
@@ -386,9 +391,9 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
                 vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
             }
 
-            LinkableItem vulnerabilityIdItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
+            LinkableItem vulnerabilityIdItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             vulnerabilityIdItem.setCollapsible(true);
-            LinkableItem severityItem = new LinkableItem(BlackDuckContent.LABEL_VULNERABILITY_SEVERITY, blackDuckResponseCache.getSeverity(vulnerabilityUrl));
+            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, blackDuckResponseCache.getSeverity(vulnerabilityUrl));
 
             severityToVulns.add(severityItem, vulnerabilityIdItem);
         }
