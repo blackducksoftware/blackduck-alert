@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 
@@ -34,24 +34,24 @@ public class LdapManagerTest {
     public static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
     public static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
     public static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "roleAttribute";
-    private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
+    private static final AuthenticationDescriptorKey AUTHENTICATION_DESCRIPTOR_KEY = new AuthenticationDescriptorKey();
 
     private ConfigurationModel createConfigurationModel() {
         final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.GLOBAL);
 
-        final ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_ENABLED);
-        final ConfigurationFieldModel serverField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_SERVER);
-        final ConfigurationFieldModel managerDNField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN);
-        final ConfigurationFieldModel managerPasswordField = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_LDAP_MANAGER_PWD);
-        final ConfigurationFieldModel authenticationTypeField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
-        final ConfigurationFieldModel referralField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_REFERRAL);
-        final ConfigurationFieldModel userSearchBaseField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE);
-        final ConfigurationFieldModel userSearchFilterField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER);
-        final ConfigurationFieldModel userDNPatternsField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS);
-        final ConfigurationFieldModel userAttributesField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES);
-        final ConfigurationFieldModel groupSearchBaseField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
-        final ConfigurationFieldModel groupSearchFilterField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
-        final ConfigurationFieldModel groupRoleAttributeField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
+        final ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_ENABLED);
+        final ConfigurationFieldModel serverField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_SERVER);
+        final ConfigurationFieldModel managerDNField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN);
+        final ConfigurationFieldModel managerPasswordField = ConfigurationFieldModel.createSensitive(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD);
+        final ConfigurationFieldModel authenticationTypeField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
+        final ConfigurationFieldModel referralField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_REFERRAL);
+        final ConfigurationFieldModel userSearchBaseField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE);
+        final ConfigurationFieldModel userSearchFilterField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER);
+        final ConfigurationFieldModel userDNPatternsField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS);
+        final ConfigurationFieldModel userAttributesField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES);
+        final ConfigurationFieldModel groupSearchBaseField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
+        final ConfigurationFieldModel groupSearchFilterField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
+        final ConfigurationFieldModel groupRoleAttributeField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
 
         enabledField.setFieldValue(DEFAULT_ENABLED);
         serverField.setFieldValue(DEFAULT_SERVER);
@@ -91,22 +91,22 @@ public class LdapManagerTest {
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
 
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
 
         final ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(DEFAULT_ENABLED, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_SERVER, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_SERVER).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_MANAGER_PASSWORD, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_AUTHENTICATION_TYPE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_REFERRAL, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_REFERRAL).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_USER_SEARCH_BASE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_USER_SEARCH_FILTER, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_USER_DN_PATTERNS, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_USER_ATTRIBUTES, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_GROUP_SEARCH_BASE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_GROUP_SEARCH_FILTER, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_GROUP_ROLE_ATTRIBUTE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_ENABLED, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_SERVER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_MANAGER_PASSWORD, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_REFERRAL, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_REFERRAL).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_SEARCH_BASE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_SEARCH_FILTER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_DN_PATTERNS, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_ATTRIBUTES, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_GROUP_SEARCH_BASE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_GROUP_SEARCH_FILTER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_GROUP_ROLE_ATTRIBUTE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test
@@ -115,9 +115,9 @@ public class LdapManagerTest {
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         assertTrue(ldapManager.isLdapEnabled());
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED).ifPresent(field -> field.setFieldValue("false"));
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).ifPresent(field -> field.setFieldValue("false"));
         assertFalse(ldapManager.isLdapEnabled());
     }
 
@@ -125,28 +125,28 @@ public class LdapManagerTest {
     public void testAuthenticationTypeSimple() throws Exception {
         final String authenticationType = "simple";
         final ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.updateContext();
         final ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(authenticationType, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test
     public void testAuthenticationTypeDigest() throws Exception {
         final String authenticationType = "digest";
         final ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.updateContext();
         final ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(authenticationType, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class LdapManagerTest {
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         assertNotNull(ldapManager.getAuthenticationProvider());
     }
 
@@ -165,13 +165,13 @@ public class LdapManagerTest {
         final String managerPassword = "";
 
         final ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_SERVER).get().setFieldValue(null);
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).get().setFieldValue(managerDN);
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).get().setFieldValue(managerPassword);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).get().setFieldValue(null);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).get().setFieldValue(managerDN);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD).get().setFieldValue(managerPassword);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         try {
             ldapManager.updateContext();
             fail();
@@ -188,13 +188,13 @@ public class LdapManagerTest {
         final String userDNPatterns = "";
 
         final ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE).get().setFieldValue(userSearchBase);
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER).get().setFieldValue(userSearchFilter);
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS).get().setFieldValue(userDNPatterns);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE).get().setFieldValue(userSearchBase);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER).get().setFieldValue(userSearchFilter);
+        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS).get().setFieldValue(userDNPatterns);
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
         final UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        final LdapManager ldapManager = new LdapManager(SETTINGS_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
+        final LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         try {
             ldapManager.updateContext();
             fail();

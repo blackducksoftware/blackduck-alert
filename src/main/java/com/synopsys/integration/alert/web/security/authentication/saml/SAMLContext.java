@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationExc
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
 public class SAMLContext {
@@ -65,7 +65,7 @@ public class SAMLContext {
     }
 
     public boolean isSAMLEnabled(final ConfigurationModel configurationModel) {
-        return getFieldValueBoolean(configurationModel, SettingsDescriptor.KEY_SAML_ENABLED);
+        return getFieldValueBoolean(configurationModel, AuthenticationDescriptor.KEY_SAML_ENABLED);
     }
 
     public String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
