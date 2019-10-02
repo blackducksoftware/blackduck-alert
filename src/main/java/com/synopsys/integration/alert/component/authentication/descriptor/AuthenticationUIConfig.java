@@ -1,3 +1,25 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (c) 2019 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.component.authentication.descriptor;
 
 import java.util.Collection;
@@ -117,8 +139,8 @@ public class AuthenticationUIConfig extends UIConfig {
     private List<ConfigField> createLDAPPanel() {
         final ConfigField ldapServer = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, SETTINGS_LDAP_SERVER_DESCRIPTION)
                                            .setHeader(SETTINGS_HEADER_LDAP);
-        final ConfigField ldapManagerDn = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION).setPanel(SETTINGS_HEADER_LDAP);
-        final ConfigField ldapManagerPassword = PasswordConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION).setPanel(SETTINGS_HEADER_LDAP);
+        final ConfigField ldapManagerDn = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, SETTINGS_LDAP_MANAGER_DN_DESCRIPTION).setHeader(SETTINGS_HEADER_LDAP);
+        final ConfigField ldapManagerPassword = PasswordConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, SETTINGS_LDAP_MANAGER_PASSWORD_DESCRIPTION).setHeader(SETTINGS_HEADER_LDAP);
         final ConfigField ldapAuthenticationType = SelectConfigField
                                                        .create(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, LABEL_LDAP_AUTHENTICATION_TYPE, SETTINGS_LDAP_AUTHENTICATION_TYPE_DESCRIPTION, List.of(
                                                            new LabelValueSelectOption("Simple", "simple"),
