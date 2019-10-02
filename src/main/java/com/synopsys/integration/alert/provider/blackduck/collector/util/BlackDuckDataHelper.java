@@ -151,15 +151,6 @@ public class BlackDuckDataHelper {
                    .collect(Collectors.toList());
     }
 
-    public List<VersionBomPolicyRuleView> getPolicyRulesFromComponent(VersionBomComponentView bomComponentView) {
-        try {
-            return blackDuckService.getAllResponses(bomComponentView, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
-        } catch (IntegrationException e) {
-            logger.debug("Unable to get policy rules from component: {}[{}]", bomComponentView.getComponentName(), bomComponentView.getComponentVersionName());
-        }
-        return List.of();
-    }
-
     public List<VulnerabilityView> getVulnerabilitiesForComponent(VulnerableComponentView vulnerableComponentView) {
         try {
             return blackDuckService.getAllResponses(vulnerableComponentView, VulnerableComponentView.VULNERABILITIES_LINK_RESPONSE);

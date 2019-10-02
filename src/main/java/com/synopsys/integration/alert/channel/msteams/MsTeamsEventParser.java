@@ -53,11 +53,6 @@ public class MsTeamsEventParser {
         }
     }
 
-    public String toJson(DistributionEvent distributionEvent) throws IntegrationException {
-        MsTeamsMessage msTeamsMessage = createMessage(distributionEvent);
-        return toJson(msTeamsMessage);
-    }
-
     public MsTeamsMessage createMessage(DistributionEvent distributionEvent) {
         return distributionEvent
                    .getContent()
