@@ -64,8 +64,8 @@ public class ProjectVersionMessageBuilder implements BlackDuckMessageBuilder<Pro
         try {
             ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
                                                                               .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                              .applyTopic("Project", notificationContent.getProjectName(), notificationContent.getProject())
-                                                                              .applySubTopic("Project Version", notificationContent.getProjectVersionName(), notificationContent.getProjectVersion())
+                                                                              .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
+                                                                              .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion())
                                                                               .applyAction(projectLevelAction)
                                                                               .applyNotificationId(notificationId)
                                                                               .applyProviderCreationTime(providerCreationDate);
