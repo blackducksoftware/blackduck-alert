@@ -77,7 +77,6 @@ public class PolarisApiHelper {
                 }
             } catch (final IntegrationException e) {
                 logger.error("Problem getting issues from Polaris: {}", projectName, e);
-                continue;
             }
         }
         return issuesForProjectFromServer;

@@ -146,7 +146,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
 
                 Map<String, ConfigurationFieldModel> existingConfiguredFields = new HashMap<>();
-                foundConfigurationModels.stream()
+                foundConfigurationModels
                     .forEach(config ->
                                  existingConfiguredFields.putAll(
                                      config.getCopyOfKeyToFieldMap().entrySet().stream()

@@ -179,7 +179,7 @@ public class JobConfigActions {
             final String jobName = jobNameFieldOptional.get().getValue().orElse(null);
             if (StringUtils.isNotBlank(jobName)) {
                 final List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
-                final Boolean foundDuplicateName = jobs.stream()
+                final boolean foundDuplicateName = jobs.stream()
                                                        .flatMap(job -> job.getCopyOfConfigurations().stream())
                                                        .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
                                                        .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())

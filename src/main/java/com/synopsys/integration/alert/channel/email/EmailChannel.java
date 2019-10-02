@@ -23,10 +23,10 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +75,14 @@ public class EmailChannel extends NamedDistributionChannel {
         Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
         Optional<String> from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
 
-        if (!host.isPresent() || !from.isPresent()) {
+        if (host.isEmpty() || from.isEmpty()) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
         // FIXME this should update addresses based on Provider event.getProvider()
         FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getContent(), fieldAccessor);
 
-        Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
+        Set<String> emailAddresses = new HashSet<>(updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES));
         EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
         String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());

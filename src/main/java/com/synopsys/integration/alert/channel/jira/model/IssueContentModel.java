@@ -35,10 +35,6 @@ public class IssueContentModel {
         this.additionalComments = additionalComments;
     }
 
-    public static final IssueContentModel of(String description, Collection<String> additionalComments) {
-        return new IssueContentModel("", description, additionalComments);
-    }
-
     public static final IssueContentModel of(String title, String description, Collection<String> additionalComments) {
         return new IssueContentModel(title, description, additionalComments);
     }

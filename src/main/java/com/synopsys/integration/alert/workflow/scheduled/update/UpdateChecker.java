@@ -80,7 +80,7 @@ public class UpdateChecker {
         String currentVersion = aboutModel.getVersion();
         String alertCreated = aboutModel.getCreated();
 
-        Boolean isProduction = isProductionVersion(currentVersion);
+        boolean isProduction = isProductionVersion(currentVersion);
 
         Optional<VersionDateModel> latestAvailableVersion = getLatestAvailableTag(dockerTagRetriever, isProduction);
         String repositoryUrl = dockerTagRetriever.getRepositoryUrl();
@@ -96,7 +96,7 @@ public class UpdateChecker {
         VersionDateModel alertModel = new VersionDateModel(currentVersion, alertCreated);
         VersionDateModel dockerTagModel = new VersionDateModel(dockerTagVersionName, dockerTagUpdatedDate);
 
-        Boolean isProduction = isProductionVersion(alertModel.getVersionName());
+        boolean isProduction = isProductionVersion(alertModel.getVersionName());
 
         int comparison;
         if (isProduction) {

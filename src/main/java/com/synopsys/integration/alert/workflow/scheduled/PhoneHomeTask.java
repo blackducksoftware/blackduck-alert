@@ -195,7 +195,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             }
             // We need to wrap this because this will most likely fail unless they are running as an admin
 
-        } catch (final IntegrationException e) {
+        } catch (final IntegrationException ignored) {
         }
         // We must check if the reg id is blank because of an edge case in which Black Duck can authenticate (while the webserver is coming up) without registration
         if (StringUtils.isBlank(registrationId)) {
