@@ -78,7 +78,7 @@ public class FieldValidationAction {
     }
 
     private Boolean hasValueOrIsCheckbox(final FieldValueModel fieldValueModel, final String type) {
-        final Boolean isCheckbox = isCheckbox(type);
+        final boolean isCheckbox = isCheckbox(type);
         return isCheckbox || !fieldValueModel.containsNoData();
     }
 

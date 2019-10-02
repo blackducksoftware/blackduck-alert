@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.util;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -63,15 +62,6 @@ public class NotificationToDistributionEventConverter {
                                              .collect(Collectors.toList());
         logger.debug("Created {} events for job: {}", events.size(), job.getName());
         return events;
-    }
-
-    public List<DistributionEvent> convertToEvents(Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentMap) {
-        List<DistributionEvent> distributionEvents = new ArrayList<>();
-        for (Map.Entry<ConfigurationJobModel, List<MessageContentGroup>> entry : messageContentMap.entrySet()) {
-            List<DistributionEvent> eventsForJob = convertToEvents(entry.getKey(), entry.getValue());
-            distributionEvents.addAll(eventsForJob);
-        }
-        return distributionEvents;
     }
 
     private Map<String, ConfigurationFieldModel> getGlobalFields(String descriptorName) {
