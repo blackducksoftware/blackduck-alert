@@ -79,9 +79,8 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(final Long notificationId, final Date providerCreationDate, final ConfigurationJobModel job, final PolicyOverrideNotificationView notificationView,
-        final BlackDuckBucket blackDuckBucket,
-        final BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, PolicyOverrideNotificationView notificationView,
+        BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);

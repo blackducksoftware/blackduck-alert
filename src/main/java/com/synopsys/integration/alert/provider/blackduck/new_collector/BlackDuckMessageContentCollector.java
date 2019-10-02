@@ -70,7 +70,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             String notificationType = notification.getNotificationType();
             BlackDuckMessageBuilder blackDuckMessageBuilder = messageBuilderMap.get(notificationType);
             if (null == blackDuckMessageBuilder) {
-                logger.error("Could not find a message builder for notification type: {}", notificationType);
+                logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
