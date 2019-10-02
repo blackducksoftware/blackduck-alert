@@ -51,6 +51,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.new_collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.new_collector.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.new_collector.util.VulnerabilityUtil;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
@@ -59,7 +60,6 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
@@ -78,21 +78,14 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<RuleViolationNotificationView> {
-    public static final String CATEGORY_TYPE = "Policy";
-    public static final String VULNERABILITY_CHECK_TEXT = "vuln";
     private final Logger logger = LoggerFactory.getLogger(PolicyViolationMessageBuilder.class);
-    private final Map<String, ComponentItemPriority> policyPriorityMap = new HashMap<>();
+    private PolicyPriorityUtil policyPriorityUtil;
     private VulnerabilityUtil vulnerabilityUtil;
 
     @Autowired
-    public PolicyViolationMessageBuilder(VulnerabilityUtil vulnerabilityUtil) {
+    public PolicyViolationMessageBuilder(final PolicyPriorityUtil policyPriorityUtil, final VulnerabilityUtil vulnerabilityUtil) {
+        this.policyPriorityUtil = policyPriorityUtil;
         this.vulnerabilityUtil = vulnerabilityUtil;
-        policyPriorityMap.put("blocker", ComponentItemPriority.HIGHEST);
-        policyPriorityMap.put("critical", ComponentItemPriority.HIGH);
-        policyPriorityMap.put("major", ComponentItemPriority.MEDIUM);
-        policyPriorityMap.put("minor", ComponentItemPriority.LOW);
-        policyPriorityMap.put("trivial", ComponentItemPriority.LOWEST);
-        policyPriorityMap.put("unspecified", ComponentItemPriority.NONE);
     }
 
     @Override
@@ -138,7 +131,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         Set<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
-            ComponentItemPriority priority = getPolicyPriority(policyInfo.getSeverity());
+            ComponentItemPriority priority = policyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
             String bomComponentUrl = null;
             if (null != componentVersionStatus) {
@@ -168,7 +161,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
 
             try {
                 ComponentItem.Builder builder = new ComponentItem.Builder()
-                                                    .applyCategory(CATEGORY_TYPE)
+                                                    .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                                     .applyOperation(operation)
                                                     .applyPriority(priority)
                                                     .applyComponentData(componentItem)
@@ -213,7 +206,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         PolicyRuleExpressionSetView expression = policyRule.getExpression();
         List<PolicyRuleExpressionView> expressions = expression.getExpressions();
         for (PolicyRuleExpressionView expressionView : expressions) {
-            if (expressionView.getName().toLowerCase().contains(VULNERABILITY_CHECK_TEXT)) {
+            if (expressionView.getName().toLowerCase().contains(MessageBuilderConstants.VULNERABILITY_CHECK_TEXT)) {
                 return true;
             }
         }
@@ -231,14 +224,6 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             logger.debug("Cause:", e);
         }
         return Optional.empty();
-    }
-
-    protected ComponentItemPriority getPolicyPriority(String severity) {
-        if (StringUtils.isNotBlank(severity)) {
-            String severityKey = severity.trim().toLowerCase();
-            return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);
-        }
-        return ComponentItemPriority.NONE;
     }
 
     public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
@@ -277,7 +262,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         LinkableItem policyNameItem, LinkableItem policySeverity,
         LinkableItem componentItem, LinkableItem componentVersionItem, Long notificationId) {
         List<ComponentItem> vulnerabilityPolicyItems = new ArrayList<>();
-        Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = getProjectVersionWrapper(blackDuckResponseCache, bomComponent);
+        Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = blackDuckResponseCache.getProjectVersionWrapper(bomComponent);
         if (optionalProjectVersionWrapper.isPresent()) {
             try {
                 List<VulnerableComponentView> vulnerableComponentViews = vulnerabilityUtil.getVulnerableComponentViews(blackDuckService, optionalProjectVersionWrapper.get(), bomComponent);
@@ -288,7 +273,8 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
                 // TODO: remove the orElse null.
                 ComponentVersionView componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, bomComponent.getComponentVersion()).orElse(null);
 
-                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(CATEGORY_TYPE, componentService, componentVersionView, componentItem, componentVersionItem, policyNameItem, policySeverity, true,
+                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(MessageBuilderConstants.CATEGORY_TYPE_POLICY, componentService, componentVersionView, componentItem, componentVersionItem, policyNameItem,
+                    policySeverity, true,
                     notificationId);
                 remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
             } catch (IntegrationException e) {
@@ -296,26 +282,6 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             }
         }
         return vulnerabilityPolicyItems;
-    }
-
-    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(BlackDuckResponseCache blackDuckResponseCache, VersionBomComponentView versionBomComponent) {
-        // TODO Stop using this when Black Duck supports going back to the project-version
-        final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
-        if (versionBomComponentHref.isPresent()) {
-            String versionHref = versionBomComponentHref.get();
-            int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
-            String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
-
-            Optional<ProjectVersionView> projectVersion = blackDuckResponseCache.getItem(ProjectVersionView.class, projectVersionUri);
-            ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
-            projectVersion.ifPresent(wrapper::setProjectVersionView);
-            projectVersion.flatMap(version -> blackDuckResponseCache.getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).orElse("")))
-                .ifPresent(wrapper::setProjectView);
-            return Optional.of(wrapper);
-
-        }
-
-        return Optional.empty();
     }
 
     protected Optional<ComponentItem> createRemediationComponentItem(String categoryType, ComponentService componentService, ComponentVersionView componentVersionView, LinkableItem componentItem, LinkableItem componentVersionItem,
@@ -385,7 +351,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
     private Optional<ComponentItem> createVulnerabilityPolicyComponentItem(
         ComponentItemPriority priority, LinkableItem component, LinkableItem nullableSubComponent, LinkableItem policy, LinkableItem policySeverity, Long notificationId, Collection<LinkableItem> vulnAttributes) {
         ComponentItem.Builder builder = new ComponentItem.Builder()
-                                            .applyCategory(CATEGORY_TYPE)
+                                            .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                             .applyOperation(ItemOperation.INFO)
                                             .applyPriority(priority)
                                             .applyComponentData(component)
