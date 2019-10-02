@@ -25,8 +25,24 @@
         />
     </changeSet>
 
-    <!-- Add foreign keys to provider tables -->
+    <!-- Delete table contents before adding new constraints -->
     <changeSet author="gavink" id="1563194312055-2">
+        <delete
+                schemaName="ALERT"
+                tableName="PROVIDER_USER_PROJECT_RELATION"
+        />
+        <delete
+                schemaName="ALERT"
+                tableName="PROVIDER_PROJECTS"
+        />
+        <delete
+                schemaName="ALERT"
+                tableName="PROVIDER_USERS"
+        />
+    </changeSet>
+
+    <!-- Add foreign keys to provider tables -->
+    <changeSet author="gavink" id="1563194312055-3">
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
                 baseTableName="PROVIDER_USER_PROJECT_RELATION"
