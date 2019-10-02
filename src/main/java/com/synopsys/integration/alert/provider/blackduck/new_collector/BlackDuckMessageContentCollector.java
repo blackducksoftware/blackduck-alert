@@ -69,10 +69,14 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
         for (AlertNotificationWrapper notification : notifications) {
             String notificationType = notification.getNotificationType();
             BlackDuckMessageBuilder blackDuckMessageBuilder = messageBuilderMap.get(notificationType);
-            List<ProviderMessageContent> providerMessageContentsForNotification =
-                blackDuckMessageBuilder
-                    .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
-            providerMessageContents.addAll(providerMessageContentsForNotification);
+            if (null == blackDuckMessageBuilder) {
+                logger.error("Could not find a message builder for notification type: {}", notificationType);
+            } else {
+                List<ProviderMessageContent> providerMessageContentsForNotification =
+                    blackDuckMessageBuilder
+                        .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+                providerMessageContents.addAll(providerMessageContentsForNotification);
+            }
         }
         return providerMessageContents;
     }

@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
@@ -50,7 +50,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyCollector;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.new_collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.alert.provider.blackduck.new_collector.util.VulnerabilityUtil;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
@@ -68,16 +67,14 @@ import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 
-public class PolicyClearerMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
+@Component
+public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
     public static final String CATEGORY_TYPE = "Policy";
     public static final String VULNERABILITY_CHECK_TEXT = "vuln";
-    private final Logger logger = LoggerFactory.getLogger(PolicyViolationMessageBuilder.class);
+    private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
     private final Map<String, ComponentItemPriority> policyPriorityMap = new HashMap<>();
-    private VulnerabilityUtil vulnerabilityUtil;
 
-    @Autowired
-    public PolicyClearerMessageBuilder(VulnerabilityUtil vulnerabilityUtil) {
-        this.vulnerabilityUtil = vulnerabilityUtil;
+    public PolicyClearedMessageBuilder() {
         policyPriorityMap.put("blocker", ComponentItemPriority.HIGHEST);
         policyPriorityMap.put("critical", ComponentItemPriority.HIGH);
         policyPriorityMap.put("major", ComponentItemPriority.MEDIUM);
@@ -120,7 +117,7 @@ public class PolicyClearerMessageBuilder implements BlackDuckMessageBuilder<Rule
             projectVersionMessageBuilder.applyAllComponentItems(items);
             return List.of(projectVersionMessageBuilder.build());
         } catch (AlertException ex) {
-            logger.error("Error creating policy violation message.", ex);
+            logger.error("Error creating policy violation cleared message.", ex);
         }
 
         return List.of();
@@ -146,6 +143,7 @@ public class PolicyClearerMessageBuilder implements BlackDuckMessageBuilder<Rule
                 policyAttributes.addAll(getLicenseLinkableItems(bomComponent));
                 policyAttributes.addAll(getUsageLinkableItems(bomComponent));
             });
+
             String componentName = componentVersionStatus.getComponentName();
             String componentVersionName = componentVersionStatus.getComponentVersionName();
             String projectQueryLink = blackDuckResponseCache.getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentName).orElse(null);
