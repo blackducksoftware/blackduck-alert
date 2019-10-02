@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.message.builder.util;
+package com.synopsys.integration.alert.provider.blackduck.collector.util;
 
 import java.util.Optional;
 import java.util.concurrent.Future;

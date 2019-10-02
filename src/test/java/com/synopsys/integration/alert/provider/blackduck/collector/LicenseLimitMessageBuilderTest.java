@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.message.builder;
+package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.LicenseLimitMessageBuilder;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;

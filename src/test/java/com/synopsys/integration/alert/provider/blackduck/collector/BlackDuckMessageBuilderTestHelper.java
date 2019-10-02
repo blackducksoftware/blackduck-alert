@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.message.builder;
+package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Optional;
 

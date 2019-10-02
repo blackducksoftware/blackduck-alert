@@ -38,9 +38,9 @@ import com.synopsys.integration.alert.common.provider.notification.ProviderNotif
 import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
-import com.synopsys.integration.alert.provider.blackduck.message.builder.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;

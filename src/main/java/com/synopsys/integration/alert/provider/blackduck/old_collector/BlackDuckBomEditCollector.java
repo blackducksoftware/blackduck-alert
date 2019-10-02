@@ -48,8 +48,8 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonExtractor
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonField;
 import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.VulnerabilityNotificationMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.alert.provider.blackduck.message.builder.VulnerabilityNotificationMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.old_collector.util.BlackDuckDataHelper;
 import com.synopsys.integration.blackduck.api.generated.component.RiskCountView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;

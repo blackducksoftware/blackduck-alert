@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.workflow.filter.field.JsonFieldAcce
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.message.builder.BlackDuckMessageBuilderTestHelper;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageBuilderTestHelper;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckPolicyViolationMessageContentCollectorTest {

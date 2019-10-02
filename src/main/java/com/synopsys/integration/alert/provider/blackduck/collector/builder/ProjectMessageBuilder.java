@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.message.builder;
+package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 
 import java.util.Date;
 import java.util.List;
@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.provider.blackduck.message.builder.util.OperationUtil;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.OperationUtil;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;

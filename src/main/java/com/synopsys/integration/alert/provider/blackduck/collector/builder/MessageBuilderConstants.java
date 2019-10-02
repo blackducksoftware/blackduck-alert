@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.message.builder;
+package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 
 public class MessageBuilderConstants {
     public static final String LABEL_COMPONENT_VERSION_STATUS = "Component Version Status";
