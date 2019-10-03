@@ -33,10 +33,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 
 public class BlackDuckResponseCache {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckResponseCache.class);
@@ -104,6 +106,26 @@ public class BlackDuckResponseCache {
         }
 
         return severity;
+    }
+
+    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(VersionBomComponentView versionBomComponent) {
+        // TODO Stop using this when Black Duck supports going back to the project-version
+        final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
+        if (versionBomComponentHref.isPresent()) {
+            String versionHref = versionBomComponentHref.get();
+            int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
+            String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
+
+            Optional<ProjectVersionView> projectVersion = getItem(ProjectVersionView.class, projectVersionUri);
+            ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
+            projectVersion.ifPresent(wrapper::setProjectVersionView);
+            projectVersion.flatMap(version -> getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).orElse("")))
+                .ifPresent(wrapper::setProjectView);
+            return Optional.of(wrapper);
+
+        }
+
+        return Optional.empty();
     }
 
     // TODO update this code with an Object from blackduck-common-api when available

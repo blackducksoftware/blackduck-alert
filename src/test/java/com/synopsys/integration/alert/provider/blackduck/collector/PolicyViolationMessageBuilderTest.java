@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.PolicyClearedMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.PolicyViolationMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.VulnerabilityUtil;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
@@ -32,14 +33,16 @@ public class PolicyViolationMessageBuilderTest {
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
-        PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder();
+        PolicyPriorityUtil policyPriorityUtil = new PolicyPriorityUtil();
+        PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(policyPriorityUtil);
         runSingleTest(policyViolationClearedMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
+        PolicyPriorityUtil policyPriorityUtil = new PolicyPriorityUtil();
         VulnerabilityUtil vulnUtil = Mockito.mock(VulnerabilityUtil.class);
-        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(vulnUtil);
+        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyPriorityUtil, vulnUtil);
         runSingleTest(policyViolationMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }
 

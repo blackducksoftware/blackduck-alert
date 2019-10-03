@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.SetMap;
@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
@@ -67,18 +68,12 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 
 @Component
 public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
-    public static final String CATEGORY_TYPE = "Policy";
-    public static final String VULNERABILITY_CHECK_TEXT = "vuln";
     private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
-    private final Map<String, ComponentItemPriority> policyPriorityMap = new HashMap<>();
+    private PolicyPriorityUtil policyPriorityUtil;
 
-    public PolicyClearedMessageBuilder() {
-        policyPriorityMap.put("blocker", ComponentItemPriority.HIGHEST);
-        policyPriorityMap.put("critical", ComponentItemPriority.HIGH);
-        policyPriorityMap.put("major", ComponentItemPriority.MEDIUM);
-        policyPriorityMap.put("minor", ComponentItemPriority.LOW);
-        policyPriorityMap.put("trivial", ComponentItemPriority.LOWEST);
-        policyPriorityMap.put("unspecified", ComponentItemPriority.NONE);
+    @Autowired
+    public PolicyClearedMessageBuilder(PolicyPriorityUtil policyPriorityUtil) {
+        this.policyPriorityUtil = policyPriorityUtil;
     }
 
     @Override
@@ -124,7 +119,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         Set<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
-            ComponentItemPriority priority = getPolicyPriority(policyInfo.getSeverity());
+            ComponentItemPriority priority = policyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
             String bomComponentUrl = null;
             if (null != componentVersionStatus) {
@@ -155,7 +150,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
 
             try {
                 ComponentItem.Builder builder = new ComponentItem.Builder()
-                                                    .applyCategory(CATEGORY_TYPE)
+                                                    .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                                     .applyOperation(operation)
                                                     .applyPriority(priority)
                                                     .applyComponentData(componentItem)
@@ -196,7 +191,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         PolicyRuleExpressionSetView expression = policyRule.getExpression();
         List<PolicyRuleExpressionView> expressions = expression.getExpressions();
         for (PolicyRuleExpressionView expressionView : expressions) {
-            if (expressionView.getName().toLowerCase().contains(VULNERABILITY_CHECK_TEXT)) {
+            if (expressionView.getName().toLowerCase().contains(MessageBuilderConstants.VULNERABILITY_CHECK_TEXT)) {
                 return true;
             }
         }
@@ -214,14 +209,6 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
             logger.debug("Cause:", e);
         }
         return Optional.empty();
-    }
-
-    protected ComponentItemPriority getPolicyPriority(String severity) {
-        if (StringUtils.isNotBlank(severity)) {
-            String severityKey = severity.trim().toLowerCase();
-            return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);
-        }
-        return ComponentItemPriority.NONE;
     }
 
     public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
@@ -262,7 +249,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
         ComponentItem.Builder builder = new ComponentItem.Builder()
-                                            .applyCategory(CATEGORY_TYPE)
+                                            .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                             .applyOperation(operation)
                                             .applyPriority(priority)
                                             .applyComponentData(componentItem)
@@ -271,7 +258,6 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
                                             .applyCategoryGroupingAttribute(severityItem)
                                             .applyAllComponentAttributes(Set.of(vulnerabilityItem))
                                             .applyNotificationId(notificationId);
-
         try {
             return Optional.of(builder.build());
         } catch (AlertException ex) {
@@ -280,4 +266,5 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         }
         return Optional.empty();
     }
+
 }
