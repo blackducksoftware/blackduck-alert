@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.collector.builder;
+package com.synopsys.integration.alert.provider.blackduck.collector.builder.policy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,11 +42,12 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
@@ -62,10 +62,12 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<PolicyOverrideNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
     private PolicyPriorityUtil policyPriorityUtil;
+    private ComponentBuilderUtil componentBuilderUtil;
 
     @Autowired
-    public PolicyOverrideMessageBuilder(PolicyPriorityUtil policyPriorityUtil) {
+    public PolicyOverrideMessageBuilder(PolicyPriorityUtil policyPriorityUtil, ComponentBuilderUtil componentBuilderUtil) {
         this.policyPriorityUtil = policyPriorityUtil;
+        this.componentBuilderUtil = componentBuilderUtil;
     }
 
     @Override
@@ -115,8 +117,8 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
             LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = createPolicySeverityItem(policyInfo).orElse(null);
             optionalBomComponent.ifPresent(bomComponent -> {
-                policyAttributes.addAll(getLicenseLinkableItems(bomComponent));
-                policyAttributes.addAll(getUsageLinkableItems(bomComponent));
+                policyAttributes.addAll(componentBuilderUtil.getLicenseLinkableItems(bomComponent));
+                policyAttributes.addAll(componentBuilderUtil.getUsageLinkableItems(bomComponent));
             });
 
             String firstName = overrideContent.getFirstName();
@@ -127,49 +129,24 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
 
             String componentName = overrideContent.getComponentName();
             String componentVersionName = overrideContent.getComponentVersionName();
-            String projectQueryLink = blackDuckResponseCache.getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentName).orElse(null);
-            LinkableItem componentItem;
-            LinkableItem componentVersionItem = null;
-            if (StringUtils.isNotBlank(componentVersionName)) {
-                componentVersionItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersionName, projectQueryLink);
-                componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName);
-            } else {
-                componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName, projectQueryLink);
-            }
 
             try {
                 ComponentItem.Builder builder = new ComponentItem.Builder()
                                                     .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                                     .applyOperation(operation)
                                                     .applyPriority(priority)
-                                                    .applyComponentData(componentItem)
-                                                    .applySubComponent(componentVersionItem)
                                                     .applyCategoryItem(policyNameItem)
                                                     .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                     .applyAllComponentAttributes(policyAttributes)
                                                     .applyNotificationId(notificationId);
+                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentName, componentVersionName, projectVersionUrl);
                 componentItems.add(builder.build());
             } catch (Exception ex) {
-                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, componentVersionItem);
+                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentName, componentVersionName);
                 logger.error("Error building policy component cause ", ex);
             }
         }
         return componentItems;
-    }
-
-    public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
-        return bomComponentView.getLicenses()
-                   .stream()
-                   .map(licenseView -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
-                   .collect(Collectors.toList());
-    }
-
-    public List<LinkableItem> getUsageLinkableItems(VersionBomComponentView bomComponentView) {
-        return bomComponentView.getUsages()
-                   .stream()
-                   .map(MatchedFileUsagesType::prettyPrint)
-                   .map(usage -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_USAGE, usage))
-                   .collect(Collectors.toList());
     }
 
     protected LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {

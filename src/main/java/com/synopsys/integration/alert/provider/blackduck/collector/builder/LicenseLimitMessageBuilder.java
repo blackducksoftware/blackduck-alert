@@ -56,8 +56,8 @@ public class LicenseLimitMessageBuilder implements BlackDuckMessageBuilder<Licen
             String usageMessage = createUsageMessage(notificationContent);
             ProviderMessageContent.Builder projectMessageBuilder = new ProviderMessageContent.Builder()
                                                                        .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                       .applyTopic("License Limit Message", notificationContent.getMessage())
-                                                                       .applySubTopic("Usage Info", usageMessage)
+                                                                       .applyTopic(MessageBuilderConstants.LABEL_LICENSE_LIMIT_MESSAGE, notificationContent.getMessage())
+                                                                       .applySubTopic(MessageBuilderConstants.LABEL_USAGE_INFO, usageMessage)
                                                                        .applyAction(ItemOperation.INFO)
                                                                        .applyNotificationId(notificationId)
                                                                        .applyProviderCreationTime(providerCreationDate);

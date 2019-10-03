@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.collector.builder;
+package com.synopsys.integration.alert.provider.blackduck.collector.builder.policy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,14 +47,15 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -70,10 +71,12 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
     private PolicyPriorityUtil policyPriorityUtil;
+    private ComponentBuilderUtil componentBuilderUtil;
 
     @Autowired
-    public PolicyClearedMessageBuilder(PolicyPriorityUtil policyPriorityUtil) {
+    public PolicyClearedMessageBuilder(PolicyPriorityUtil policyPriorityUtil, ComponentBuilderUtil componentBuilderUtil) {
         this.policyPriorityUtil = policyPriorityUtil;
+        this.componentBuilderUtil = componentBuilderUtil;
     }
 
     @Override
@@ -132,41 +135,31 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
             LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = createPolicySeverityItem(policyInfo).orElse(null);
             optionalBomComponent.ifPresent(bomComponent -> {
-                policyAttributes.addAll(getLicenseLinkableItems(bomComponent));
-                policyAttributes.addAll(getUsageLinkableItems(bomComponent));
+                policyAttributes.addAll(componentBuilderUtil.getLicenseLinkableItems(bomComponent));
+                policyAttributes.addAll(componentBuilderUtil.getUsageLinkableItems(bomComponent));
             });
 
             String componentName = componentVersionStatus.getComponentName();
             String componentVersionName = componentVersionStatus.getComponentVersionName();
-            String projectQueryLink = blackDuckResponseCache.getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentName).orElse(null);
-            LinkableItem componentItem;
-            LinkableItem componentVersionItem = null;
-            if (StringUtils.isNotBlank(componentVersionName)) {
-                componentVersionItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersionName, projectQueryLink);
-                componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName);
-            } else {
-                componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName, projectQueryLink);
-            }
 
             try {
                 ComponentItem.Builder builder = new ComponentItem.Builder()
                                                     .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                                     .applyOperation(operation)
                                                     .applyPriority(priority)
-                                                    .applyComponentData(componentItem)
-                                                    .applySubComponent(componentVersionItem)
                                                     .applyCategoryItem(policyNameItem)
                                                     .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                     .applyAllComponentAttributes(policyAttributes)
                                                     .applyNotificationId(notificationId);
+                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentName, componentVersionName, projectVersionUrl);
                 componentItems.add(builder.build());
             } catch (Exception ex) {
-                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, componentVersionItem);
+                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentName, componentVersionName);
                 logger.error("Error building policy component cause ", ex);
             }
             Optional<PolicyRuleView> optionalPolicyRule = getPolicyRule(blackDuckResponseCache, policyInfo);
             if (optionalPolicyRule.isPresent() && hasVulnerabilityRule(optionalPolicyRule.get())) {
-                Optional<ComponentItem> vulnerabilityComponent = createEmptyVulnerabilityItem(policyNameItem, componentItem, componentVersionItem, notificationId, operation);
+                Optional<ComponentItem> vulnerabilityComponent = createEmptyVulnerabilityItem(blackDuckResponseCache, policyNameItem, componentName, componentVersionName, projectVersionUrl, notificationId, operation);
                 vulnerabilityComponent.ifPresent(componentItems::add);
             }
         }
@@ -211,21 +204,6 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         return Optional.empty();
     }
 
-    public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
-        return bomComponentView.getLicenses()
-                   .stream()
-                   .map(licenseView -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
-                   .collect(Collectors.toList());
-    }
-
-    public List<LinkableItem> getUsageLinkableItems(VersionBomComponentView bomComponentView) {
-        return bomComponentView.getUsages()
-                   .stream()
-                   .map(MatchedFileUsagesType::prettyPrint)
-                   .map(usage -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_USAGE, usage))
-                   .collect(Collectors.toList());
-    }
-
     private SetMap<ComponentVersionStatus, PolicyInfo> createComponentToPolicyMapping(
         Collection<ComponentVersionStatus> componentVersionStatuses, Map<String, PolicyInfo> policyItems) {
         SetMap<ComponentVersionStatus, PolicyInfo> componentToPolicyMapping = SetMap.createDefault();
@@ -243,7 +221,8 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
                    .collect(Collectors.toSet());
     }
 
-    private Optional<ComponentItem> createEmptyVulnerabilityItem(LinkableItem policyNameItem, LinkableItem componentItem, LinkableItem componentVersionItem, Long notificationId, ItemOperation operation) {
+    private Optional<ComponentItem> createEmptyVulnerabilityItem(BlackDuckResponseCache blackDuckResponseCache, LinkableItem policyNameItem, String componentName, String componentVersionName, String projectVersionUrl, Long notificationId,
+        ItemOperation operation) {
         LinkableItem vulnerabilityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, "ALL", null);
         LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, ComponentItemPriority.NONE.name());
         ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
@@ -252,16 +231,15 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
                                             .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                             .applyOperation(operation)
                                             .applyPriority(priority)
-                                            .applyComponentData(componentItem)
-                                            .applySubComponent(componentVersionItem)
                                             .applyCategoryItem(policyNameItem)
                                             .applyCategoryGroupingAttribute(severityItem)
                                             .applyAllComponentAttributes(Set.of(vulnerabilityItem))
                                             .applyNotificationId(notificationId);
+        componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentName, componentVersionName, projectVersionUrl);
         try {
             return Optional.of(builder.build());
         } catch (AlertException ex) {
-            logger.info("Error building policy vulnerability component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentItem, componentVersionItem);
+            logger.info("Error building policy vulnerability component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentName, componentVersionName);
             logger.error("Error building policy vulnerability component cause ", ex);
         }
         return Optional.empty();

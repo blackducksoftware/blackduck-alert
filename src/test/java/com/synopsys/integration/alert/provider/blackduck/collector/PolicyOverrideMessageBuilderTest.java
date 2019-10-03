@@ -22,7 +22,8 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.PolicyOverrideMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyOverrideMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -34,7 +35,8 @@ public class PolicyOverrideMessageBuilderTest {
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
         PolicyPriorityUtil policyPriorityUtil = new PolicyPriorityUtil();
-        PolicyOverrideMessageBuilder policyOverrideMessageBuilder = new PolicyOverrideMessageBuilder(policyPriorityUtil);
+        ComponentBuilderUtil componentBuilderUtil = new ComponentBuilderUtil();
+        PolicyOverrideMessageBuilder policyOverrideMessageBuilder = new PolicyOverrideMessageBuilder(policyPriorityUtil, componentBuilderUtil);
         runSingleTest(policyOverrideMessageBuilder, TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
     }
 
