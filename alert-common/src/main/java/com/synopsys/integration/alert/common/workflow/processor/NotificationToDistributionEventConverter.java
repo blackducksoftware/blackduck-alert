@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.util;
+package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.Date;
 import java.util.List;

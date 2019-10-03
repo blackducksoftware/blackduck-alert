@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.processor;
+package com.synopsys.integration.alert.workflow.message;
 
 import java.util.List;
 
@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
+import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
 public class NotificationReceiver extends MessageReceiver<NotificationEvent> implements AlertEventListener {
