@@ -25,11 +25,9 @@ package com.synopsys.integration.alert.provider.polaris;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -39,7 +37,6 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
@@ -56,16 +53,12 @@ public class PolarisProvider extends Provider {
     private final PolarisProjectSyncTask projectSyncTask;
     private final PolarisProperties polarisProperties;
 
-    private final ObjectFactory<PolarisCollector> polarisCollector;
-
     @Autowired
-    public PolarisProvider(PolarisProviderKey polarisProviderKey, TaskManager taskManager, PolarisProjectSyncTask projectSyncTask, PolarisProperties polarisProperties,
-        PolarisContent polarisContent, ObjectFactory<PolarisCollector> polarisCollector) {
+    public PolarisProvider(PolarisProviderKey polarisProviderKey, TaskManager taskManager, PolarisProjectSyncTask projectSyncTask, PolarisProperties polarisProperties, PolarisContent polarisContent) {
         super(polarisProviderKey, polarisContent);
         this.taskManager = taskManager;
         this.projectSyncTask = projectSyncTask;
         this.polarisProperties = polarisProperties;
-        this.polarisCollector = polarisCollector;
     }
 
     @Override
@@ -110,13 +103,9 @@ public class PolarisProvider extends Provider {
     }
 
     @Override
-    public Set<MessageContentCollector> createTopicCollectors() {
-        return Set.of(polarisCollector.getObject());
-    }
-
-    @Override
     public ProviderNotificationClassMap getNotificationClassMap() {
         // add legitimate class mappings if needed
         return new ProviderNotificationClassMap(Map.of());
     }
+
 }

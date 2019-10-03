@@ -22,26 +22,19 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import java.util.Set;
+import javax.validation.constraints.NotNull;
 
-import com.google.common.collect.ImmutableSet;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.util.Stringable;
 
-public abstract class ProviderContent {
-    private final Set<ProviderNotificationType> supportedNotificationTypes;
-    private final Set<FormatType> supportedContentFormats;
+public class ProviderNotificationType extends Stringable {
+    private final String notificationType;
 
-    public ProviderContent(Set<ProviderNotificationType> supportedNotificationTypes, Set<FormatType> supportedContentFormats) {
-        this.supportedNotificationTypes = supportedNotificationTypes;
-        this.supportedContentFormats = supportedContentFormats;
+    public ProviderNotificationType(@NotNull String notificationType) {
+        this.notificationType = notificationType;
     }
 
-    public Set<ProviderNotificationType> getContentTypes() {
-        return ImmutableSet.copyOf(supportedNotificationTypes);
-    }
-
-    public Set<FormatType> getSupportedContentFormats() {
-        return ImmutableSet.copyOf(supportedContentFormats);
+    public String getNotificationType() {
+        return notificationType;
     }
 
 }
