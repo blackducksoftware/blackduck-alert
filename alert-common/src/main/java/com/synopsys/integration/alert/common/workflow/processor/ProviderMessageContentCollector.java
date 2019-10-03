@@ -37,15 +37,15 @@ import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserial
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 
 public abstract class ProviderMessageContentCollector {
-    private Map<FormatType, MessageContentFormatter> messageContentProcessorMap;
+    private Map<FormatType, MessageContentFormatter> messageContentFormatterMap;
 
-    public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentProcessors) {
-        this.messageContentProcessorMap = initializeProcessorMap(messageContentProcessors);
+    public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentFormatters) {
+        this.messageContentFormatterMap = initializeProcessorMap(messageContentFormatters);
     }
 
     public final List<MessageContentGroup> createMessageContentGroups(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
         List<ProviderMessageContent> messages = createProviderMessageContents(job, cache, notifications);
-        return messageContentProcessorMap.get(job.getFormatType()).format(messages);
+        return messageContentFormatterMap.get(job.getFormatType()).format(messages);
     }
 
     protected abstract List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException;
