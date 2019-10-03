@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.jayway.jsonpath.JsonPath;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.ContentConverter;
@@ -64,6 +64,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
 import com.synopsys.integration.util.ResourceUtil;
+
+import net.minidev.json.JSONArray;
 
 @Transactional
 public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
@@ -139,13 +141,13 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertNotNull(auditEntryResponse);
         assertEquals(HttpStatus.OK, auditEntryResponse.getStatusCode());
 
-        final JsonArray jsonContentArray = JsonPath.read(response.getBody(), "$.content");
-        final JsonArray message = jsonContentArray.get(0).getAsJsonArray();
-        final AuditEntryModel auditEntry = gson.fromJson(message.get(0), AuditEntryModel.class);
+        JSONArray jsonContentArray = JsonPath.read(response.getBody(), "$.content");
+        LinkedHashMap auditEntryModelFieldMap = (LinkedHashMap) jsonContentArray.get(0);
+        String auditEntryModelString = gson.toJson(auditEntryModelFieldMap);
+        AuditEntryModel auditEntry = gson.fromJson(auditEntryModelString, AuditEntryModel.class);
 
-        final JsonArray jsonArrayById = JsonPath.read(auditEntryResponse.getBody(), "$.message");
-        final String messageById = jsonArrayById.get(0).getAsString();
-        final AuditEntryModel auditEntryById = gson.fromJson(messageById, AuditEntryModel.class);
+        String auditEntryModelByIdString = JsonPath.read(auditEntryResponse.getBody(), "$.message");
+        final AuditEntryModel auditEntryById = gson.fromJson(auditEntryModelByIdString, AuditEntryModel.class);
         assertEquals(auditEntryById, auditEntry);
 
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
