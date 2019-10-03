@@ -50,7 +50,7 @@ public class PolarisProviderTest {
 
     @Test
     public void getSupportedFormatTypes() {
-        final PolarisContent polarisContent = new PolarisContent(POLARIS_PROVIDER_KEY);
+        final PolarisContent polarisContent = new PolarisContent();
         final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, null, null, null, polarisContent);
         final Set<FormatType> formatTypes = polarisProvider.getProviderContent().getSupportedContentFormats();
 

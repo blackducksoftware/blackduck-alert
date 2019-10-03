@@ -29,33 +29,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
+import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.provider.polaris.model.AlertPolarisNotificationTypeEnum;
 
 //@Component
-// FIXME should this be removed?
 public class PolarisContent extends ProviderContent {
-    public static final String LABEL_PROJECT_NAME = "Project";
-    public static final String LABEL_BRANCHES = "Branches";
-    public static final String LABEL_ISSUE_TYPE = "Issue Type";
-    public static final String LABEL_NUMBER_OF_ISSUES_UPDATED = "Issues Updated";
-    public static final String LABEL_NEW_ISSUE_TOTAL = "New Total";
-
-    public static final String JSON_FIELD_PROJECT_NAME = "projectName";
-    public static final String JSON_FIELD_PROJECT_LINK = "projectLink";
-    public static final String JSON_FIELD_DESCRIPTION = "description";
-
-    public static final String JSON_FIELD_ISSUE_TYPE = "issueType";
-    public static final String JSON_FIELD_CHANGED_COUNT = "numberChanged";
-    public static final String JSON_FIELD_NEW_TOTAL = "newTotal";
-
-    public static final ProviderContentType ISSUE_COUNT_INCREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED.name());
-    public static final ProviderContentType ISSUE_COUNT_DECREASED = new ProviderContentType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_DECREASED.name());
+    public static final ProviderNotificationType ISSUE_COUNT_INCREASED = new ProviderNotificationType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_INCREASED.name());
+    public static final ProviderNotificationType ISSUE_COUNT_DECREASED = new ProviderNotificationType(AlertPolarisNotificationTypeEnum.ISSUE_COUNT_DECREASED.name());
 
     @Autowired
-    public PolarisContent(PolarisProviderKey polarisProviderKey) {
-        super(polarisProviderKey, Set.of(ISSUE_COUNT_INCREASED, ISSUE_COUNT_DECREASED), EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY));
+    public PolarisContent() {
+        super(Set.of(ISSUE_COUNT_INCREASED, ISSUE_COUNT_DECREASED), EnumSet.of(FormatType.DEFAULT, FormatType.SUMMARY));
     }
 
 }

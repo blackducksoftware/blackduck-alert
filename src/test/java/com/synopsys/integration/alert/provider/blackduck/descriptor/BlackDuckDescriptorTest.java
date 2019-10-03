@@ -14,7 +14,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetDefinedFields() {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        BlackDuckContent blackDuckContent = new BlackDuckContent(blackDuckProviderKey);
+        BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(blackDuckContent);
         BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig();
         BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig);

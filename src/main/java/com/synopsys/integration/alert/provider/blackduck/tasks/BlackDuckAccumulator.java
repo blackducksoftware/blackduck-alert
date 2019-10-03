@@ -40,9 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -51,18 +48,11 @@ import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
-import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.NotificationService;
-import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -70,20 +60,19 @@ import com.synopsys.integration.rest.RestConstants;
 public class BlackDuckAccumulator extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-accumulator-task";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
+
     private final BlackDuckProperties blackDuckProperties;
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
-    private final Gson gson;
     private BlackDuckProviderKey providerKey;
 
     @Autowired
-    public BlackDuckAccumulator(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, Gson gson, BlackDuckProviderKey providerKey) {
+    public BlackDuckAccumulator(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, BlackDuckProviderKey providerKey) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
-        this.gson = gson;
         this.providerKey = providerKey;
         searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
     }
@@ -92,7 +81,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         return searchRangeFileName;
     }
 
-    public String formatDate(final Date date) {
+    public String formatDate(Date date) {
         return RestConstants.formatDate(date);
     }
 
@@ -106,17 +95,17 @@ public class BlackDuckAccumulator extends ScheduledTask {
             if (!filePersistenceUtil.exists(getSearchRangeFileName())) {
                 initializeSearchRangeFile();
             }
-            final DateRange dateRange = createDateRange(getSearchRangeFileName());
-            final Date nextSearchStartTime = accumulate(dateRange);
-            final String nextSearchStartString = formatDate(nextSearchStartTime);
+            DateRange dateRange = createDateRange(getSearchRangeFileName());
+            Date nextSearchStartTime = accumulate(dateRange);
+            String nextSearchStartString = formatDate(nextSearchStartTime);
             logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
             saveNextSearchStart(nextSearchStartString);
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             logger.error("Error occurred accumulating data! ", ex);
         } finally {
-            final Optional<Long> nextRun = getMillisecondsToNextRun();
+            Optional<Long> nextRun = getMillisecondsToNextRun();
             if (nextRun.isPresent()) {
-                final Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
+                Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
                 logger.debug("Accumulator next run: {} seconds", seconds);
             }
         }
@@ -126,73 +115,73 @@ public class BlackDuckAccumulator extends ScheduledTask {
         ZonedDateTime zonedDate = ZonedDateTime.now();
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withSecond(0).withNano(0);
-        final Date date = Date.from(zonedDate.toInstant());
+        Date date = Date.from(zonedDate.toInstant());
         filePersistenceUtil.writeToFile(getSearchRangeFileName(), formatDate(date));
     }
 
-    protected void saveNextSearchStart(final String nextSearchStart) throws IOException {
+    protected void saveNextSearchStart(String nextSearchStart) throws IOException {
         filePersistenceUtil.writeToFile(getSearchRangeFileName(), nextSearchStart);
     }
 
-    protected DateRange createDateRange(final String lastSearchFileName) {
+    protected DateRange createDateRange(String lastSearchFileName) {
         ZonedDateTime zonedEndDate = ZonedDateTime.now();
         zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
         ZonedDateTime zonedStartDate = zonedEndDate;
-        final Date endDate = Date.from(zonedEndDate.toInstant());
+        Date endDate = Date.from(zonedEndDate.toInstant());
 
         Date startDate = Date.from(zonedStartDate.toInstant());
         try {
             if (filePersistenceUtil.exists(lastSearchFileName)) {
-                final String lastRunValue = readSearchStartTime(lastSearchFileName);
-                final Date startTime = parseDateString(lastRunValue);
+                String lastRunValue = readSearchStartTime(lastSearchFileName);
+                Date startTime = parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
                 zonedStartDate = zonedEndDate.minusMinutes(1);
             }
             startDate = Date.from(zonedStartDate.toInstant());
-        } catch (final IOException | ParseException e) {
+        } catch (IOException | ParseException e) {
             logger.error("Error creating date range", e);
         }
         return DateRange.of(startDate, endDate);
     }
 
-    protected String readSearchStartTime(final String lastSearchFileName) throws IOException {
+    protected String readSearchStartTime(String lastSearchFileName) throws IOException {
         return filePersistenceUtil.readFromFile(lastSearchFileName);
     }
 
-    protected Date parseDateString(final String date) throws ParseException {
+    protected Date parseDateString(String date) throws ParseException {
         return RestConstants.parseDateString(date);
     }
 
-    protected Date accumulate(final DateRange dateRange) {
+    protected Date accumulate(DateRange dateRange) {
         final Date currentStartTime = dateRange.getStart();
         Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
 
         final List<NotificationView> notifications = read(dateRange);
         if (!notifications.isEmpty()) {
-            final List<NotificationView> sortedNotifications = sort(notifications);
-            final List<AlertNotificationWrapper> contentList = process(sortedNotifications);
+            List<NotificationView> sortedNotifications = sort(notifications);
+            List<AlertNotificationWrapper> contentList = process(sortedNotifications);
             write(contentList);
             latestNotificationCreatedAtDate = getLatestNotificationCreatedAtDate(sortedNotifications);
         }
         return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
     }
 
-    protected List<NotificationView> read(final DateRange dateRange) {
+    protected List<NotificationView> read(DateRange dateRange) {
         final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
         if (optionalBlackDuckHttpClient.isPresent()) {
             try {
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-                final Date startDate = dateRange.getStart();
-                final Date endDate = dateRange.getEnd();
+                BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
+                Date startDate = dateRange.getStart();
+                Date endDate = dateRange.getEnd();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
 
-                final NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
-                final List<NotificationView> notificationViews = notificationService.getFilteredNotifications(startDate, endDate, getNotificationTypes());
+                NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
+                List<NotificationView> notificationViews = notificationService.getFilteredNotifications(startDate, endDate, getNotificationTypes());
                 logger.debug("Read Notification Count: {}", notificationViews.size());
                 return notificationViews;
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 logger.error("Error Reading notifications", ex);
             }
         }
@@ -205,7 +194,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
                    .map(Enum::name).collect(Collectors.toList());
     }
 
-    protected List<AlertNotificationWrapper> process(final List<NotificationView> notifications) {
+    protected List<AlertNotificationWrapper> process(List<NotificationView> notifications) {
         logger.info("Processing accumulated notifications");
         return notifications
                    .stream()
@@ -213,94 +202,29 @@ public class BlackDuckAccumulator extends ScheduledTask {
                    .collect(Collectors.toList());
     }
 
-    protected void write(final List<AlertNotificationWrapper> contentList) {
+    protected void write(List<AlertNotificationWrapper> contentList) {
         logger.info("Writing Notifications...");
         notificationManager.saveAllNotifications(contentList);
     }
 
-    private List<NotificationView> sort(final List<NotificationView> notifications) {
+    private List<NotificationView> sort(List<NotificationView> notifications) {
         return notifications
                    .stream()
                    .sorted(Comparator.comparing(NotificationView::getCreatedAt))
                    .collect(Collectors.toList());
     }
 
-    private NotificationContent createContent(final NotificationView notification) {
-        final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
-        final Date providerCreationTime = notification.getCreatedAt();
-        final String provider = providerKey.getUniversalKey();
-        final String notificationType = notification.getType().name();
-        final String jsonContent = notification.getJson();
-        NotificationContent notificationContent = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
-        if (NotificationType.BOM_EDIT == notification.getType()) {
-            notificationContent = createBomEditContent(createdAt, provider, providerCreationTime, notificationType, notification);
-        }
-        return notificationContent;
-    }
-
-    private NotificationContent createBomEditContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, NotificationView notification) {
-        JsonElement originalContent = notification.getJsonElement();
-        JsonElement newContent = originalContent;
-        final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-        if (optionalBlackDuckHttpClient.isPresent()) {
-            try {
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-                final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
-
-                BomEditNotificationView bomEditNotification = (BomEditNotificationView) notification;
-                final Optional<VersionBomComponentView> versionBomComponentView = this.getBomComponentView(blackDuckService, bomEditNotification.getContent().getBomComponent());
-                if (versionBomComponentView.isPresent()) {
-                    final Optional<ProjectVersionWrapper> projectVersionWrapper = this.getProjectVersionWrapper(blackDuckService, versionBomComponentView.get());
-                    if (projectVersionWrapper.isPresent()) {
-                        ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
-                        JsonObject contentElement = originalContent.getAsJsonObject().get("content").getAsJsonObject();
-                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_NAME, projectVersionData.getProjectView().getName());
-                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName());
-                        contentElement.addProperty(BlackDuckContent.JSON_FIELD_PROJECT_VERSION, projectVersionData.getProjectVersionView().getHref().orElse(""));
-                        JsonObject objectContent = new JsonObject();
-                        objectContent.add("content", contentElement);
-                        newContent = objectContent;
-                    }
-                }
-            } catch (Exception ex) {
-                logger.error("Error processing BOM EDIT notification ", ex);
-            }
-        }
-        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, gson.toJson(newContent));
-    }
-
-    public Optional<VersionBomComponentView> getBomComponentView(BlackDuckService blackDuckService, String bomComponentUrl) {
-        try {
-            return Optional.of(blackDuckService.getResponse(bomComponentUrl, VersionBomComponentView.class));
-        } catch (Exception genericException) {
-            logger.error("Error retrieving bom component", genericException);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<ProjectVersionWrapper> getProjectVersionWrapper(BlackDuckService blackDuckService, VersionBomComponentView versionBomComponent) {
-        try {
-            final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
-            if (versionBomComponentHref.isPresent()) {
-                final String versionHref = versionBomComponentHref.get();
-                final int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
-                final String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
-
-                final ProjectVersionView projectVersion = blackDuckService.getResponse(projectVersionUri, ProjectVersionView.class);
-                final ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
-                wrapper.setProjectVersionView(projectVersion);
-                blackDuckService.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).ifPresent(wrapper::setProjectView);
-                return Optional.of(wrapper);
-            }
-        } catch (final IntegrationException ie) {
-            logger.error("Error getting project version for Bom Component. ", ie);
-        }
-
-        return Optional.empty();
+    private NotificationContent createContent(NotificationView notification) {
+        Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+        Date providerCreationTime = notification.getCreatedAt();
+        String provider = providerKey.getUniversalKey();
+        String notificationType = notification.getType().name();
+        String jsonContent = notification.getJson();
+        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
     }
 
     // Expects that the notifications are sorted oldest to newest
-    private Optional<Date> getLatestNotificationCreatedAtDate(final List<NotificationView> sortedNotificationList) {
+    private Optional<Date> getLatestNotificationCreatedAtDate(List<NotificationView> sortedNotificationList) {
         if (!sortedNotificationList.isEmpty()) {
             final int lastIndex = sortedNotificationList.size() - 1;
             final NotificationView notificationView = sortedNotificationList.get(lastIndex);
@@ -309,7 +233,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         return Optional.empty();
     }
 
-    private Date calculateNextStartTime(final Optional<Date> latestNotificationCreatedAt, final Date currentStartDate) {
+    private Date calculateNextStartTime(Optional<Date> latestNotificationCreatedAt, Date currentStartDate) {
         Date newStartDate = currentStartDate;
         if (latestNotificationCreatedAt.isPresent()) {
             final Date latestNotification = latestNotificationCreatedAt.get();

@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ta
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
-import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
@@ -102,7 +102,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     public abstract List<ConfigField> createProviderDistributionFields();
 
-    private LabelValueSelectOption convertToLabelValueOption(ProviderContentType providerContentType) {
+    private LabelValueSelectOption convertToLabelValueOption(ProviderNotificationType providerContentType) {
         final String notificationType = providerContentType.getNotificationType();
         final String notificationTypeLabel = WordUtils.capitalizeFully(notificationType.replace("_", " "));
         return new LabelValueSelectOption(notificationTypeLabel, notificationType);

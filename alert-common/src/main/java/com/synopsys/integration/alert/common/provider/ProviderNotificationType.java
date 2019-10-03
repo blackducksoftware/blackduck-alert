@@ -26,11 +26,10 @@ import javax.validation.constraints.NotNull;
 
 import com.synopsys.integration.util.Stringable;
 
-// FIXME should this class be removed?
-public class ProviderContentType extends Stringable {
+public class ProviderNotificationType extends Stringable {
     private final String notificationType;
 
-    public ProviderContentType(@NotNull String notificationType) {
+    public ProviderNotificationType(@NotNull String notificationType) {
         this.notificationType = notificationType;
     }
 

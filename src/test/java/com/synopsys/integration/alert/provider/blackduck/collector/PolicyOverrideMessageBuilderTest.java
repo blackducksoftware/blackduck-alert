@@ -21,8 +21,8 @@ import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.PolicyOverrideMessageBuilder;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -59,7 +59,7 @@ public class PolicyOverrideMessageBuilderTest {
         for (ProviderMessageContent messageContent : messageContentGroups) {
             for (ComponentItem componentItem : messageContent.getComponentItems()) {
                 categories.add(componentItem.getCategory());
-                assertTrue(componentItem.getComponentAttributes().stream().anyMatch(item -> item.getName().equals(BlackDuckContent.LABEL_POLICY_OVERRIDE_BY)));
+                assertTrue(componentItem.getComponentAttributes().stream().anyMatch(item -> item.getName().equals(MessageBuilderConstants.LABEL_POLICY_OVERRIDE_BY)));
             }
         }
 
