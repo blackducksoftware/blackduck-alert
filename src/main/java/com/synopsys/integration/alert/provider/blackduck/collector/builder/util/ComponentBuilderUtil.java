@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.provider.blackduck.collector.builder.util;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuc
 import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 @Component
 public class ComponentBuilderUtil {
@@ -52,6 +54,20 @@ public class ComponentBuilderUtil {
                    .map(MatchedFileUsagesType::prettyPrint)
                    .map(usage -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_USAGE, usage))
                    .collect(Collectors.toList());
+    }
+
+    public LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
+        String policyName = policyInfo.getPolicyName();
+        return new LinkableItem(MessageBuilderConstants.LABEL_POLICY_NAME, policyName);
+    }
+
+    public Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
+        String severity = policyInfo.getSeverity();
+        if (StringUtils.isNotBlank(severity)) {
+            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_POLICY_SEVERITY_NAME, severity);
+            return Optional.of(severityItem);
+        }
+        return Optional.empty();
     }
 
     public void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, String componentName, String componentVersionName, String projectVersionUrl) {

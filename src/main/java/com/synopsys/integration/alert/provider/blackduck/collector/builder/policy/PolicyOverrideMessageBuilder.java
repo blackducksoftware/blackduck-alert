@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,8 +113,8 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
             Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
 
             List<LinkableItem> policyAttributes = new ArrayList<>();
-            LinkableItem policyNameItem = createPolicyNameItem(policyInfo);
-            LinkableItem nullablePolicySeverityItem = createPolicySeverityItem(policyInfo).orElse(null);
+            LinkableItem policyNameItem = componentBuilderUtil.createPolicyNameItem(policyInfo);
+            LinkableItem nullablePolicySeverityItem = componentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
             optionalBomComponent.ifPresent(bomComponent -> {
                 policyAttributes.addAll(componentBuilderUtil.getLicenseLinkableItems(bomComponent));
                 policyAttributes.addAll(componentBuilderUtil.getUsageLinkableItems(bomComponent));
@@ -149,17 +148,4 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
         return componentItems;
     }
 
-    protected LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
-        String policyName = policyInfo.getPolicyName();
-        return new LinkableItem(MessageBuilderConstants.LABEL_POLICY_NAME, policyName);
-    }
-
-    protected Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
-        String severity = policyInfo.getSeverity();
-        if (StringUtils.isNotBlank(severity)) {
-            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_POLICY_SEVERITY_NAME, severity);
-            return Optional.of(severityItem);
-        }
-        return Optional.empty();
-    }
 }
