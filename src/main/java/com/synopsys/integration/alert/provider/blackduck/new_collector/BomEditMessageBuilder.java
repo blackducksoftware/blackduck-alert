@@ -107,7 +107,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
         Optional<VersionBomComponentView> bomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
-        Optional<ProjectVersionWrapper> projectVersionWrapper = bomComponent.flatMap(url -> responseCache.getProjectVersionWrapper(url));
+        Optional<ProjectVersionWrapper> projectVersionWrapper = bomComponent.flatMap(responseCache::getProjectVersionWrapper);
 
         if (bomComponent.isPresent() && projectVersionWrapper.isPresent()) {
             try {
@@ -121,11 +121,10 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                                                                                   .applyProviderCreationTime(providerCreationDate);
 
                 List<ComponentItem> componentItems = new LinkedList<>();
-                // have both the component view and the project wrapper.
-                List<LinkableItem> licenseItems = getLicenseLinkableItems(bomComponent.get());
-                List<LinkableItem> usageItems = getUsageLinkableItems(bomComponent.get());
-                componentItems.addAll(addVulnerabilityData(responseCache, componentService, notificationId, versionBomComponentView, projectVersionData, licenseItems, usageItems));
-                projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(responseCache, blackDuckService, notificationId, versionWrapper, versionBomComponentView, licenseItems, usageItems)));
+                List<LinkableItem> commonAttributes = Stream.concat(getLicenseLinkableItems(bomComponent.get()).stream(), getUsageLinkableItems(bomComponent.get()).stream()).collect(Collectors.toList());
+
+                componentItems.addAll(addVulnerabilityData(responseCache, componentService, notificationId, versionBomComponentView, projectVersionData, commonAttributes));
+                projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(responseCache, blackDuckService, notificationId, versionWrapper, versionBomComponentView, commonAttributes)));
 
                 projectVersionMessageBuilder.applyAllComponentItems(componentItems);
                 return List.of(projectVersionMessageBuilder.build());
@@ -153,8 +152,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
     }
 
     private Collection<ComponentItem> addVulnerabilityData(BlackDuckResponseCache blackDuckResponseCache, ComponentService componentService, Long notificationId, VersionBomComponentView versionBomComponent,
-        ProjectVersionWrapper projectVersionWrapper, List<LinkableItem> licenseItems,
-        List<LinkableItem> usageItems) {
+        ProjectVersionWrapper projectVersionWrapper, List<LinkableItem> commonAttributes) {
         Collection<ComponentItem> items = new LinkedList<>();
         try {
             RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
@@ -172,8 +170,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
 
             if (doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
-                componentAttributes.addAll(licenseItems);
-                componentAttributes.addAll(usageItems);
+                componentAttributes.addAll(commonAttributes);
 
                 Optional<ComponentVersionView> componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, versionBomComponent.getComponentVersion());
                 if (componentVersionView.isPresent()) {
@@ -205,8 +202,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
     }
 
     private Collection<ComponentItem> createPolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckService blackDuckService, Long notificationId, ProjectVersionWrapper projectVersionWrapper,
-        VersionBomComponentView versionBomComponent,
-        List<LinkableItem> licenseItems, List<LinkableItem> usageItems) {
+        VersionBomComponentView versionBomComponent, List<LinkableItem> commonAttributes) {
         if (!PolicySummaryStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
             return List.of();
         }
@@ -237,8 +233,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                         createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverityItem, componentItem, componentVersionItem, notificationId, blackDuckService, blackDuckResponseCache);
                     items.addAll(vulnerabilityComponentItems);
                 } else {
-                    List<LinkableItem> componentAttributes = Stream.concat(licenseItems.stream(), usageItems.stream()).collect(Collectors.toList());
-                    items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem, policyNameItem, componentAttributes));
+                    items.add(createPolicyComponentItem(notificationId, rule, componentItem, componentVersionItem, policyNameItem, commonAttributes));
                 }
             }
         } catch (Exception e) {
