@@ -28,16 +28,16 @@ import com.google.common.collect.ImmutableSet;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 
 public abstract class ProviderContent {
-    private final Set<ProviderNotificationType> providerContentTypes;
+    private final Set<ProviderNotificationType> supportedNotificationTypes;
     private final Set<FormatType> supportedContentFormats;
 
-    public ProviderContent(Set<ProviderNotificationType> providerContentTypes, Set<FormatType> supportedContentFormats) {
-        this.providerContentTypes = providerContentTypes;
+    public ProviderContent(Set<ProviderNotificationType> supportedNotificationTypes, Set<FormatType> supportedContentFormats) {
+        this.supportedNotificationTypes = supportedNotificationTypes;
         this.supportedContentFormats = supportedContentFormats;
     }
 
     public Set<ProviderNotificationType> getContentTypes() {
-        return ImmutableSet.copyOf(providerContentTypes);
+        return ImmutableSet.copyOf(supportedNotificationTypes);
     }
 
     public Set<FormatType> getSupportedContentFormats() {

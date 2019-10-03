@@ -63,9 +63,4 @@ public class BlackDuckContent extends ProviderContent {
         super(SUPPORTED_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
     }
 
-    @Override
-    public Set<ProviderNotificationType> getContentTypes() {
-        return super.getContentTypes();
-    }
-
 }
