@@ -125,11 +125,11 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
     private Collection<ComponentItem> addVulnerabilityData(BlackDuckResponseCache blackDuckResponseCache, ComponentService componentService, Long notificationId, VersionBomComponentView versionBomComponent,
         ProjectVersionWrapper projectVersionWrapper, List<LinkableItem> commonAttributes) {
         Collection<ComponentItem> items = new LinkedList<>();
+        RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
+        String componentName = versionBomComponent.getComponentName();
+        String componentVersionName = versionBomComponent.getComponentVersionName();
+        String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
         try {
-            RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
-            String componentName = versionBomComponent.getComponentName();
-            String componentVersionName = versionBomComponent.getComponentVersionName();
-            String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
             ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
             if (vulnerabilityUtil.doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
@@ -149,14 +149,10 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                                                     .applyAllComponentAttributes(componentAttributes)
                                                     .applyNotificationId(notificationId);
                 componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
-                try {
-                    items.add(builder.build());
-                } catch (AlertException alertException) {
-                    logger.warn("Error building vulnerability BOM edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentName, componentVersionName);
-                    logger.error("Error building vulnerability BOM edit component cause ", alertException);
-                }
+                items.add(builder.build());
             }
         } catch (Exception genericException) {
+            logger.warn("Error building vulnerability BOM edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentName, componentVersionName);
             logger.error("BOM Edit: Error processing vulnerabilities ", genericException);
         }
         return items;
