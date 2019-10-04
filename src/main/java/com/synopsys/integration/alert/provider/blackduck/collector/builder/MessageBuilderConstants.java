@@ -33,20 +33,15 @@ public class MessageBuilderConstants {
     public static final String LABEL_PROJECT_VERSION_NAME = "Project Version";
     public static final String LABEL_POLICY_OVERRIDE_BY = "Policy Overridden by";
     public static final String LABEL_LICENSE_LIMIT_MESSAGE = "License Limit Message";
-
     public static final String LABEL_VULNERABILITIES = "Vulnerabilities";
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
-
-    public static final String LABEL_BOM_COMPONENT = "Bom Component";
-    public static final String LABEL_OPERATION_TYPE = "Operation Type";
-
     public static final String LABEL_REMEDIATION_FIX_PREVIOUS = "Remediation - Fixes Previous Vulnerabilities";
     public static final String LABEL_REMEDIATION_CLEAN = "Remediation - Without Vulnerabilities";
     public static final String LABEL_REMEDIATION_LATEST = "Remediation - Latest Version";
-
     public static final String VULNERABILITY_CHECK_TEXT = "vuln";
     public static final String CATEGORY_TYPE_POLICY = "Policy";
     public static final String CATEGORY_TYPE_VULNERABILITY = "Vulnerability";
-
     public static final String LABEL_USAGE_INFO = "Usage Info";
+
+    private MessageBuilderConstants() {}
 }

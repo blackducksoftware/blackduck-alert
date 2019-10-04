@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
@@ -62,13 +61,11 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 @Component
 public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
-    private PolicyPriorityUtil policyPriorityUtil;
     private ComponentBuilderUtil componentBuilderUtil;
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
-    public PolicyClearedMessageBuilder(PolicyPriorityUtil policyPriorityUtil, ComponentBuilderUtil componentBuilderUtil, PolicyCommonBuilder policyCommonBuilder) {
-        this.policyPriorityUtil = policyPriorityUtil;
+    public PolicyClearedMessageBuilder(ComponentBuilderUtil componentBuilderUtil, PolicyCommonBuilder policyCommonBuilder) {
         this.componentBuilderUtil = componentBuilderUtil;
         this.policyCommonBuilder = policyCommonBuilder;
     }

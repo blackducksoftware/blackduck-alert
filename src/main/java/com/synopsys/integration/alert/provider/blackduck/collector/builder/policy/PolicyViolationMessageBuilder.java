@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -71,14 +70,12 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<RuleViolationNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyViolationMessageBuilder.class);
-    private PolicyPriorityUtil policyPriorityUtil;
     private VulnerabilityUtil vulnerabilityUtil;
     private ComponentBuilderUtil componentBuilderUtil;
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
-    public PolicyViolationMessageBuilder(PolicyPriorityUtil policyPriorityUtil, VulnerabilityUtil vulnerabilityUtil, ComponentBuilderUtil componentBuilderUtil, PolicyCommonBuilder policyCommonBuilder) {
-        this.policyPriorityUtil = policyPriorityUtil;
+    public PolicyViolationMessageBuilder(VulnerabilityUtil vulnerabilityUtil, ComponentBuilderUtil componentBuilderUtil, PolicyCommonBuilder policyCommonBuilder) {
         this.vulnerabilityUtil = vulnerabilityUtil;
         this.componentBuilderUtil = componentBuilderUtil;
         this.policyCommonBuilder = policyCommonBuilder;
@@ -128,10 +125,8 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         List<ComponentItem> componentItems = new LinkedList<>();
         String componentName = componentVersionStatus.getComponentName();
         String componentVersionName = componentVersionStatus.getComponentVersionName();
-        String bomComponentUrl = null;
-        if (null != componentVersionStatus) {
-            bomComponentUrl = componentVersionStatus.getBomComponent();
-        }
+        String bomComponentUrl = componentVersionStatus.getBomComponent();
+
         Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
 
         componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentName, componentVersionName, policies, notificationId, operation, projectVersionUrl,
@@ -140,13 +135,11 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             LinkableItem policyNameItem = componentBuilderUtil.createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = componentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
             Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
-            if (optionalPolicyRule.isPresent() && policyCommonBuilder.hasVulnerabilityRule(optionalPolicyRule.get())) {
-                if (optionalBomComponent.isPresent()) {
-                    List<ComponentItem> vulnerabilityPolicyItems =
-                        createVulnerabilityPolicyItems(blackDuckResponseCache, blackDuckService, componentService, optionalBomComponent.get(), policyNameItem, nullablePolicySeverityItem, componentName, componentVersionName,
-                            notificationId);
-                    componentItems.addAll(vulnerabilityPolicyItems);
-                }
+            if (optionalPolicyRule.isPresent() && optionalBomComponent.isPresent() && policyCommonBuilder.hasVulnerabilityRule(optionalPolicyRule.get())) {
+                List<ComponentItem> vulnerabilityPolicyItems =
+                    createVulnerabilityPolicyItems(blackDuckResponseCache, blackDuckService, componentService, optionalBomComponent.get(), policyNameItem, nullablePolicySeverityItem, componentName, componentVersionName,
+                        notificationId);
+                componentItems.addAll(vulnerabilityPolicyItems);
             }
         }
         return componentItems;

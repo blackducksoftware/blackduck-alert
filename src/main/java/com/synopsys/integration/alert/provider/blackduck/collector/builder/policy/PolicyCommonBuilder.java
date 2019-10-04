@@ -129,18 +129,16 @@ public class PolicyCommonBuilder {
 
     public boolean hasVulnerabilityRule(VersionBomPolicyRuleView policyRule) {
         PolicyRuleExpressionSetView expression = policyRule.getExpression();
-        List<PolicyRuleExpressionView> expressions = expression.getExpressions();
-        for (PolicyRuleExpressionView expressionView : expressions) {
-            if (expressionView.getName().toLowerCase().contains(MessageBuilderConstants.VULNERABILITY_CHECK_TEXT)) {
-                return true;
-            }
-        }
-        return false;
+        return hasVulnerabilityRule(expression);
     }
 
     public boolean hasVulnerabilityRule(PolicyRuleView policyRule) {
         PolicyRuleExpressionSetView expression = policyRule.getExpression();
-        List<PolicyRuleExpressionView> expressions = expression.getExpressions();
+        return hasVulnerabilityRule(expression);
+    }
+
+    private boolean hasVulnerabilityRule(PolicyRuleExpressionSetView expressionSet) {
+        List<PolicyRuleExpressionView> expressions = expressionSet.getExpressions();
         for (PolicyRuleExpressionView expressionView : expressions) {
             if (expressionView.getName().toLowerCase().contains(MessageBuilderConstants.VULNERABILITY_CHECK_TEXT)) {
                 return true;

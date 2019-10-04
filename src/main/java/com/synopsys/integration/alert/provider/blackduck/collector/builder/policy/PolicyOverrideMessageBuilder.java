@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector.builder.poli
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -51,7 +50,7 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 
 @Component
 public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<PolicyOverrideNotificationView> {
-    private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
+    private final Logger logger = LoggerFactory.getLogger(PolicyOverrideMessageBuilder.class);
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
@@ -100,9 +99,8 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
 
         String componentName = overrideContent.getComponentName();
         String componentVersionName = overrideContent.getComponentVersionName();
-        List<ComponentItem> componentItems = new LinkedList<>(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentName, componentVersionName, policies, notificationId, operation, projectVersionUrl,
-            null, List.of(policyOverride)));
-        return componentItems;
+        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentName, componentVersionName, policies, notificationId, operation, projectVersionUrl,
+            null, List.of(policyOverride));
     }
 
 }

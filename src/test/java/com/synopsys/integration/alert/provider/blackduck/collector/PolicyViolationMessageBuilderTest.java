@@ -39,7 +39,7 @@ public class PolicyViolationMessageBuilderTest {
         ComponentBuilderUtil componentBuilderUtil = new ComponentBuilderUtil();
         VulnerabilityUtil vulnerabilityUtil = new VulnerabilityUtil();
         PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(vulnerabilityUtil, componentBuilderUtil, policyPriorityUtil);
-        PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(policyPriorityUtil, componentBuilderUtil, policyCommonBuilder);
+        PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(componentBuilderUtil, policyCommonBuilder);
         runSingleTest(policyViolationClearedMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
     }
 
@@ -49,7 +49,7 @@ public class PolicyViolationMessageBuilderTest {
         ComponentBuilderUtil componentBuilderUtil = new ComponentBuilderUtil();
         VulnerabilityUtil vulnUtil = Mockito.mock(VulnerabilityUtil.class);
         PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(vulnUtil, componentBuilderUtil, policyPriorityUtil);
-        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyPriorityUtil, vulnUtil, componentBuilderUtil, policyCommonBuilder);
+        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(vulnUtil, componentBuilderUtil, policyCommonBuilder);
         runSingleTest(policyViolationMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }
 
