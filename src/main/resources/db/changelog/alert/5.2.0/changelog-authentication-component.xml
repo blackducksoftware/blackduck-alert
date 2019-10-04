@@ -12,63 +12,30 @@
             <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_authentication')"/>
             <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
-        <update schemaName="ALERT"
-                tableName="FIELD_VALUES">
-            <column name="CONFIG_ID" valueComputed="GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG()" />
-            <where>
-                FIELD_VALUE = 'settings.ldap.enabled' OR
-                FIELD_VALUE = 'settings.ldap.server' OR
-                FIELD_VALUE = 'settings.ldap.manager.dn' OR
-                FIELD_VALUE = 'settings.ldap.manager.password' OR
-                FIELD_VALUE = 'settings.ldap.authentication.type' OR
-                FIELD_VALUE = 'settings.ldap.referral' OR
-                FIELD_VALUE = 'settings.ldap.user.search.base' OR
-                FIELD_VALUE = 'settings.ldap.user.search.filter' OR
-                FIELD_VALUE = 'settings.ldap.user.dn.patterns' OR
-                FIELD_VALUE = 'settings.ldap.user.attributes' OR
-                FIELD_VALUE = 'settings.ldap.group.search.base' OR
-                FIELD_VALUE = 'settings.ldap.group.search.filter' OR
-                FIELD_VALUE = 'settings.ldap.group.role.attribute' OR
-                FIELD_VALUE = 'settings.saml.enabled' OR
-                FIELD_VALUE = 'settings.saml.force.auth' OR
-                FIELD_VALUE = 'settings.saml.metadata.url' OR
-                FIELD_VALUE = 'settings.saml.entity.id' OR
-                FIELD_VALUE = 'settings.saml.entity.base.url' OR
-                FIELD_VALUE = 'settings.saml.metadata.file' OR
-                FIELD_VALUE = 'settings.role.mapping.name.admin' OR
-                FIELD_VALUE = 'settings.role.mapping.name.job.manager' OR
-                FIELD_VALUE = 'settings.role.mapping.name.user' OR
-                FIELD_VALUE = 'settings.saml.role.attribute.mapping.name'
-            </where>
-        </update>
-        <update schemaName="ALERT"
-                tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_authentication')"/>
-            <where>
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.enabled' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.server' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.manager.dn' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.manager.password' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.authentication.type' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.referral' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.search.base' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.search.filter' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.dn.patterns' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.attributes' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.group.search.base' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.group.search.filter' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.group.role.attribute' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.enabled' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.force.auth' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.metadata.url' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.entity.id' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.entity.base.url' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.metadata.file' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.role.mapping.name.admin' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.role.mapping.name.job.manager' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.role.mapping.name.user' LIMIT 1) OR
-                FIELD_ID = (SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.role.attribute.mapping.name' LIMIT 1)
-            </where>
-        </update>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.enabled');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.server');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.manager.dn');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.manager.password');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.authentication.type');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.search.base');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.search.filter');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.referral');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.dn.patterns');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.attributes');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.group.search.base');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.group.search.filter');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.group.role.attribute');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.enabled');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.force.auth');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.metadata.url');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.entity.id');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.entity.base.url');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.metadata.file');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.role.mapping.name.admin');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.role.mapping.name.job.manager');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.role.mapping.name.user');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.role.attribute.mapping.name');
+        </sql>
     </changeSet>
 </databaseChangeLog>
