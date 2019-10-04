@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.provider;
 
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
-import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 
 public abstract class Provider {
     private final ProviderKey key;

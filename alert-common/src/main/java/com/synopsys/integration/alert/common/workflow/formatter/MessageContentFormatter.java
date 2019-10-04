@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.processor;
+package com.synopsys.integration.alert.common.workflow.formatter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -32,10 +32,10 @@ import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
-public abstract class MessageContentProcessor {
+public abstract class MessageContentFormatter {
     private final FormatType formatType;
 
-    public MessageContentProcessor(final FormatType formatType) {
+    public MessageContentFormatter(FormatType formatType) {
         this.formatType = formatType;
     }
 
@@ -43,10 +43,10 @@ public abstract class MessageContentProcessor {
         return formatType;
     }
 
-    public abstract List<MessageContentGroup> process(final List<ProviderMessageContent> messages);
+    public abstract List<MessageContentGroup> format(List<ProviderMessageContent> messages);
 
     public List<MessageContentGroup> createMessageContentGroups(List<ProviderMessageContent> messages) {
-        final Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();
+        Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();
         messages.stream()
             .filter(this::filterEmptyContent)
             .forEach(message -> {

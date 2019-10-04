@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
-import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;

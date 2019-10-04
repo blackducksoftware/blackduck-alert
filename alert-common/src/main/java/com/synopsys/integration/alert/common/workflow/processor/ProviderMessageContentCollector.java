@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow;
+package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.List;
 import java.util.Map;
@@ -34,26 +34,26 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 
 public abstract class ProviderMessageContentCollector {
-    private Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
+    private Map<FormatType, MessageContentFormatter> messageContentFormatterMap;
 
-    public ProviderMessageContentCollector(List<MessageContentProcessor> messageContentProcessors) {
-        this.messageContentProcessorMap = initializeProcessorMap(messageContentProcessors);
+    public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentFormatters) {
+        this.messageContentFormatterMap = initializeProcessorMap(messageContentFormatters);
     }
 
     public final List<MessageContentGroup> createMessageContentGroups(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
         List<ProviderMessageContent> messages = createProviderMessageContents(job, cache, notifications);
-        return messageContentProcessorMap.get(job.getFormatType()).process(messages);
+        return messageContentFormatterMap.get(job.getFormatType()).format(messages);
     }
 
     protected abstract List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException;
 
-    private Map<FormatType, MessageContentProcessor> initializeProcessorMap(List<MessageContentProcessor> messageContentProcessors) {
+    private Map<FormatType, MessageContentFormatter> initializeProcessorMap(List<MessageContentFormatter> messageContentProcessors) {
         return messageContentProcessors
                    .stream()
-                   .collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
+                   .collect(Collectors.toMap(MessageContentFormatter::getFormat, Function.identity()));
     }
 
 }

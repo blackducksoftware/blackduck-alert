@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.processor;
+package com.synopsys.integration.alert.common.workflow.formatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,23 +46,24 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
 
 @Component
-public class SummaryMessageContentProcessor extends MessageContentProcessor {
+public class SummaryMessageContentFormatter extends MessageContentFormatter {
     public static final String COMPONENT_ITEM_NAME_SUMMARY_VALUE = "Summary";
     public static final String COMPONENT_ITEM_NAME_SUMMARY_LABEL = "Format";
 
-    private final Logger logger = LoggerFactory.getLogger(SummaryMessageContentProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(SummaryMessageContentFormatter.class);
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public SummaryMessageContentProcessor(MessageOperationCombiner messageOperationCombiner) {
+    public SummaryMessageContentFormatter(MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.SUMMARY);
         this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
+    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
         List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
 
         List<MessageContentGroup> newGroups = new ArrayList<>();

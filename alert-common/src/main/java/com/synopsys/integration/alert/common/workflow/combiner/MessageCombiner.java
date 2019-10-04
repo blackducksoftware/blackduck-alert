@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.processor;
+package com.synopsys.integration.alert.common.workflow.combiner;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +57,26 @@ public class MessageCombiner {
         return combinedMessages;
     }
 
+    public ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
+        LinkableItem provider = oldMessage.getProvider();
+        LinkableItem topic = oldMessage.getTopic();
+        Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();
+        String subTopicName = optionalSubTopic.map(LinkableItem::getName).orElse(null);
+        String subTopicValue = optionalSubTopic.map(LinkableItem::getValue).orElse(null);
+        String subTopicUrl = optionalSubTopic.flatMap(LinkableItem::getUrl).orElse(null);
+        ItemOperation action = oldMessage.getAction().orElse(null);
+        Long notificationId = oldMessage.getNotificationId().orElse(null);
+
+        return new ProviderMessageContent.Builder()
+                   .applyProvider(provider.getValue(), provider.getUrl().orElse(null))
+                   .applyTopic(topic.getName(), topic.getValue(), topic.getUrl().orElse(null))
+                   .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
+                   .applyAction(action)
+                   .applyNotificationId(notificationId)
+                   .applyAllComponentItems(componentItems)
+                   .build();
+    }
+
     protected LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages) {
         final List<ComponentItem> allComponentItems = groupedMessages
                                                           .stream()
@@ -91,26 +111,6 @@ public class MessageCombiner {
             }
         }
         return sortComponentItems(keyToItems.values());
-    }
-
-    protected ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
-        LinkableItem provider = oldMessage.getProvider();
-        LinkableItem topic = oldMessage.getTopic();
-        Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();
-        String subTopicName = optionalSubTopic.map(LinkableItem::getName).orElse(null);
-        String subTopicValue = optionalSubTopic.map(LinkableItem::getValue).orElse(null);
-        String subTopicUrl = optionalSubTopic.flatMap(LinkableItem::getUrl).orElse(null);
-        ItemOperation action = oldMessage.getAction().orElse(null);
-        Long notificationId = oldMessage.getNotificationId().orElse(null);
-
-        return new ProviderMessageContent.Builder()
-                   .applyProvider(provider.getValue(), provider.getUrl().orElse(null))
-                   .applyTopic(topic.getName(), topic.getValue(), topic.getUrl().orElse(null))
-                   .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
-                   .applyAction(action)
-                   .applyNotificationId(notificationId)
-                   .applyAllComponentItems(componentItems)
-                   .build();
     }
 
     private Optional<ProviderMessageContent> combineGroupedMessages(Collection<ProviderMessageContent> groupedMessages) {

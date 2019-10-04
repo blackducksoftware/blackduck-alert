@@ -38,9 +38,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -55,7 +55,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
 
     @Autowired
-    public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
+    public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
         this.messageBuilderMap = initializeBuilderMap(messageBuilders);

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.processor;
+package com.synopsys.integration.alert.common.workflow.formatter;
 
 import java.util.List;
 
@@ -30,19 +30,20 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.workflow.combiner.MessageCombiner;
 
 @Component
-public class DefaultMessageContentProcessor extends MessageContentProcessor {
+public class DefaultMessageContentFormatter extends MessageContentFormatter {
     private final MessageCombiner messageCombiner;
 
     @Autowired
-    public DefaultMessageContentProcessor(MessageCombiner messageCombiner) {
+    public DefaultMessageContentFormatter(MessageCombiner messageCombiner) {
         super(FormatType.DEFAULT);
         this.messageCombiner = messageCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
+    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
         List<ProviderMessageContent> combinedMessages = messageCombiner.combine(messages);
         return createMessageContentGroups(combinedMessages);
     }
