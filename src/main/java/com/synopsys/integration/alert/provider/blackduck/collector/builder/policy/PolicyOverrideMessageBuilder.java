@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -99,8 +100,8 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
 
         String componentName = overrideContent.getComponentName();
         String componentVersionName = overrideContent.getComponentVersionName();
-        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentName, componentVersionName, policies, notificationId, operation, projectVersionUrl,
-            null, List.of(policyOverride));
+        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation, null, List.of(policyOverride));
     }
 
 }

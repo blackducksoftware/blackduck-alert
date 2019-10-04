@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
@@ -128,9 +129,8 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         String bomComponentUrl = componentVersionStatus.getBomComponent();
 
         Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
-
-        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentName, componentVersionName, policies, notificationId, operation, projectVersionUrl,
-            componentVersionStatus.getBomComponent(), List.of()));
+        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation, componentVersionStatus.getBomComponent(), List.of()));
         for (PolicyInfo policyInfo : policies) {
             LinkableItem policyNameItem = componentBuilderUtil.createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = componentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
@@ -154,17 +154,16 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             try {
                 ProjectVersionWrapper projectVersionWrapper = optionalProjectVersionWrapper.get();
                 String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
+                ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
                 List<VulnerableComponentView> vulnerableComponentViews = vulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, bomComponent);
                 List<ComponentItem> vulnerabilityComponentItems = policyCommonBuilder
-                                                                      .createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentName, componentVersionName, projectVersionUrl, notificationId,
+                                                                      .createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, notificationId,
                                                                           blackDuckService, blackDuckResponseCache);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
-
-                // TODO: remove the orElse null.
                 ComponentVersionView componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, bomComponent.getComponentVersion()).orElse(null);
 
-                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(blackDuckResponseCache, MessageBuilderConstants.CATEGORY_TYPE_POLICY, componentService, componentVersionView, projectVersionUrl,
-                    componentName, componentVersionName, policyNameItem,
+                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(blackDuckResponseCache, MessageBuilderConstants.CATEGORY_TYPE_POLICY, componentService, componentVersionView,
+                    componentData, policyNameItem,
                     policySeverity, true,
                     notificationId);
                 remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
@@ -175,8 +174,8 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         return vulnerabilityPolicyItems;
     }
 
-    protected Optional<ComponentItem> createRemediationComponentItem(BlackDuckResponseCache blackDuckResponseCache, String categoryType, ComponentService componentService, ComponentVersionView componentVersionView, String componentName,
-        String componentVersionName, String projectVersionURL, LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory, Long notificationId) {
+    protected Optional<ComponentItem> createRemediationComponentItem(BlackDuckResponseCache blackDuckResponseCache, String categoryType, ComponentService componentService, ComponentVersionView componentVersionView,
+        ComponentData componentData, LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory, Long notificationId) {
         try {
             List<LinkableItem> remediationItems = vulnerabilityUtil.getRemediationItems(componentService, componentVersionView);
             if (!remediationItems.isEmpty()) {
@@ -189,7 +188,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
                                                                  .applyCollapseOnCategory(collapseOnCategory)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
-                componentBuilderUtil.applyComponentInformation(remediationComponent, blackDuckResponseCache, componentName, componentVersionName, projectVersionURL);
+                componentBuilderUtil.applyComponentInformation(remediationComponent, blackDuckResponseCache, componentData);
 
                 return Optional.of(remediationComponent.build());
             }

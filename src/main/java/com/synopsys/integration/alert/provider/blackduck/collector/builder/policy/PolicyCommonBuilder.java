@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
@@ -74,8 +75,8 @@ public class PolicyCommonBuilder {
         this.policyPriorityUtil = policyPriorityUtil;
     }
 
-    public List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, String componentName, String componentVersionName,
-        Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl, String bomComponentUrl, List<LinkableItem> customAttributes) {
+    public List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
+        Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
             ComponentItemPriority priority = policyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
@@ -100,10 +101,10 @@ public class PolicyCommonBuilder {
                                                     .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                     .applyAllComponentAttributes(policyAttributes)
                                                     .applyNotificationId(notificationId);
-                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentName, componentVersionName, projectVersionUrl);
+                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
                 componentItems.add(builder.build());
             } catch (Exception ex) {
-                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentName, componentVersionName);
+                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentData.getComponentName(), componentData.getComponentVersionName());
                 logger.error("Error building policy component cause ", ex);
             }
         }
@@ -148,7 +149,7 @@ public class PolicyCommonBuilder {
     }
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        String componentName, String componentVersionName, String projectVersionUrl, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
+        ComponentData componentData, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
         Map<String, VulnerabilityView> vulnerabilityViews = vulnerabilityUtil.createVulnerabilityViewMap(blackDuckService, vulnerableComponentViews);
         List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                  .map(VulnerableComponentView::getVulnerabilityWithRemediation)
@@ -188,11 +189,12 @@ public class PolicyCommonBuilder {
                                                 .applyCollapseOnCategory(false)
                                                 .applyAllComponentAttributes(vulnAttributes)
                                                 .applyNotificationId(notificationId);
-            componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentName, componentVersionName, projectVersionUrl);
+            componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
             try {
                 vulnerabilityItems.add(builder.build());
             } catch (AlertException ex) {
-                logger.info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentName, componentVersionName);
+                logger.info("Error building policy bom edit component for notification {}, operation {}, component {}, component version {}", notificationId, ItemOperation.UPDATE, componentData.getComponentName(),
+                    componentData.getComponentVersionName());
                 logger.error("Error building policy bom edit component cause ", ex);
             }
         }

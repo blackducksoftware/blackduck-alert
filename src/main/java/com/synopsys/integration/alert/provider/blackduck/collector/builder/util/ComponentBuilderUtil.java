@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -70,15 +71,15 @@ public class ComponentBuilderUtil {
         return Optional.empty();
     }
 
-    public void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, String componentName, String componentVersionName, String projectVersionUrl) {
-        String projectQueryLink = responseCache.getProjectComponentQueryLink(projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentName).orElse(null);
+    public void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, ComponentData componentData) {
+        String projectQueryLink = responseCache.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentData.getComponentName()).orElse(null);
         LinkableItem componentItem;
         LinkableItem componentVersionItem = null;
-        if (StringUtils.isNotBlank(componentVersionName)) {
-            componentVersionItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersionName, projectQueryLink);
-            componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName);
+        if (StringUtils.isNotBlank(componentData.getComponentVersionName())) {
+            componentVersionItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentData.getComponentVersionName(), projectQueryLink);
+            componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName());
         } else {
-            componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentName, projectQueryLink);
+            componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName(), projectQueryLink);
         }
 
         componentBuilder.applyComponentData(componentItem);
