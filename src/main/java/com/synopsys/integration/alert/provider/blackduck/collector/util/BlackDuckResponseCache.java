@@ -86,7 +86,7 @@ public class BlackDuckResponseCache {
     }
 
     public Optional<VersionBomComponentView> getBomComponentView(String bomComponentUrl) {
-        if (org.apache.commons.lang.StringUtils.isNotBlank(bomComponentUrl)) {
+        if (StringUtils.isNotBlank(bomComponentUrl)) {
             return getItem(VersionBomComponentView.class, bomComponentUrl);
         }
         return Optional.empty();

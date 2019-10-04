@@ -126,43 +126,19 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
     private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckService blackDuckService, ComponentService componentService, ComponentVersionStatus componentVersionStatus,
         Set<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl) {
         List<ComponentItem> componentItems = new LinkedList<>();
+        String componentName = componentVersionStatus.getComponentName();
+        String componentVersionName = componentVersionStatus.getComponentVersionName();
+        String bomComponentUrl = null;
+        if (null != componentVersionStatus) {
+            bomComponentUrl = componentVersionStatus.getBomComponent();
+        }
+        Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
+
+        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentName, componentVersionName, policies, notificationId, operation, projectVersionUrl,
+            componentVersionStatus.getBomComponent(), List.of()));
         for (PolicyInfo policyInfo : policies) {
-            ComponentItemPriority priority = policyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
-
-            String bomComponentUrl = null;
-            if (null != componentVersionStatus) {
-                bomComponentUrl = componentVersionStatus.getBomComponent();
-            }
-
-            Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
-
-            List<LinkableItem> policyAttributes = new ArrayList<>();
             LinkableItem policyNameItem = componentBuilderUtil.createPolicyNameItem(policyInfo);
             LinkableItem nullablePolicySeverityItem = componentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
-            optionalBomComponent.ifPresent(bomComponent -> {
-                policyAttributes.addAll(componentBuilderUtil.getLicenseLinkableItems(bomComponent));
-                policyAttributes.addAll(componentBuilderUtil.getUsageLinkableItems(bomComponent));
-            });
-            String componentName = componentVersionStatus.getComponentName();
-            String componentVersionName = componentVersionStatus.getComponentVersionName();
-
-            try {
-                ComponentItem.Builder builder = new ComponentItem.Builder()
-                                                    .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
-                                                    .applyOperation(operation)
-                                                    .applyPriority(priority)
-                                                    .applyCategoryItem(policyNameItem)
-                                                    .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
-                                                    .applyAllComponentAttributes(policyAttributes)
-                                                    .applyNotificationId(notificationId);
-                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentName, componentVersionName, projectVersionUrl);
-                componentItems.add(builder.build());
-            } catch (Exception ex) {
-                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentName, componentVersionName);
-                logger.error("Error building policy component cause ", ex);
-            }
-            //        policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName(), policies, notificationId, operation, projectVersionUrl,
-            //            componentVersionStatus.getBomComponent(), List.of());
             Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
             if (optionalPolicyRule.isPresent() && policyCommonBuilder.hasVulnerabilityRule(optionalPolicyRule.get())) {
                 if (optionalBomComponent.isPresent()) {

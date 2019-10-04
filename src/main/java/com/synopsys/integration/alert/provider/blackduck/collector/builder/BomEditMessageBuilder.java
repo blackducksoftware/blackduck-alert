@@ -106,11 +106,10 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                                                                                       projectVersionData.getProjectVersionView().getHref().orElse(null))
                                                                                   .applyProviderCreationTime(providerCreationDate);
 
-                List<ComponentItem> componentItems = new LinkedList<>();
                 List<LinkableItem> commonAttributes = Stream.concat(componentBuilderUtil.getLicenseLinkableItems(bomComponent.get()).stream(), componentBuilderUtil.getUsageLinkableItems(bomComponent.get()).stream())
                                                           .collect(Collectors.toList());
 
-                componentItems.addAll(addVulnerabilityData(responseCache, componentService, notificationId, versionBomComponentView, projectVersionData, commonAttributes));
+                List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(responseCache, componentService, notificationId, versionBomComponentView, projectVersionData, commonAttributes));
                 projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(responseCache, blackDuckService, notificationId, versionWrapper, versionBomComponentView, commonAttributes)));
 
                 projectVersionMessageBuilder.applyAllComponentItems(componentItems);
