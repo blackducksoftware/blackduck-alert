@@ -86,7 +86,7 @@ public class BlackDuckValidator extends ProviderValidator {
                 final IntLogger intLogger = new Slf4jIntLogger(logger);
                 final Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
                 if (blackDuckServerConfig.isPresent()) {
-                    final Boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
+                    final boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
                     if (canConnect) {
                         logger.info("  -> Black Duck Provider Valid!");
                     } else {

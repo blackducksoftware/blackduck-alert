@@ -3,14 +3,11 @@ package com.synopsys.integration.alert.workflow.filter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.util.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -18,6 +15,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -29,18 +27,15 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     @Test
     public void convertToEventsTest() throws Exception {
         final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor);
-        final Map<ConfigurationJobModel, List<MessageContentGroup>> messageContentMap = new HashMap<>();
         final List<MessageContentGroup> messageContentGroups = new ArrayList<>();
         final MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
         final MessageContentGroup contentGroup2 = MessageContentGroup.singleton(createMessageContent("example"));
         messageContentGroups.add(contentGroup1);
         messageContentGroups.add(contentGroup2);
 
-        messageContentMap.put(createEmailConfig(), messageContentGroups);
-        messageContentMap.put(createSlackConfig(), messageContentGroups);
-
-        final List<DistributionEvent> events = converter.convertToEvents(messageContentMap);
-        assertEquals(4, events.size());
+        final List<DistributionEvent> emailEvents = converter.convertToEvents(createEmailConfig(), messageContentGroups);
+        final List<DistributionEvent> slackEvents = converter.convertToEvents(createSlackConfig(), messageContentGroups);
+        assertEquals(4, emailEvents.size() + slackEvents.size());
     }
 
     private ConfigurationJobModel createEmailConfig() {

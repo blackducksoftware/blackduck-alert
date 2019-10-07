@@ -37,20 +37,19 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final NotificationManager notificationManager;
-    private final NotificationProcessor notificationProcessor;
-    private final ChannelEventManager eventManager;
+    private NotificationManager notificationManager;
+    private NotificationProcessor notificationProcessor;
+    private ChannelEventManager eventManager;
     private ZonedDateTime lastRunTime;
 
-    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor,
-        final ChannelEventManager eventManager, final TaskManager taskManager) {
+    public ProcessingTask(TaskScheduler taskScheduler, String taskName, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
         super(taskScheduler, taskName, taskManager);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
@@ -65,28 +64,28 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     }
 
     public DateRange getDateRange() {
-        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        final Date startDate = Date.from(lastRunTime.toInstant());
-        final Date endDate = Date.from(currentTime.toInstant());
+        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        Date startDate = Date.from(lastRunTime.toInstant());
+        Date endDate = Date.from(currentTime.toInstant());
         return DateRange.of(startDate, endDate);
     }
 
     @Override
     public void runTask() {
-        final DateRange dateRange = getDateRange();
-        final List<AlertNotificationWrapper> notificationList = read(dateRange);
-        final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
+        DateRange dateRange = getDateRange();
+        List<AlertNotificationWrapper> notificationList = read(dateRange);
+        List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
         eventManager.sendEvents(distributionEvents);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
     }
 
-    public List<AlertNotificationWrapper> read(final DateRange dateRange) {
+    public List<AlertNotificationWrapper> read(DateRange dateRange) {
         try {
-            final String taskName = getTaskName();
-            final Date startDate = dateRange.getStart();
-            final Date endDate = dateRange.getEnd();
+            String taskName = getTaskName();
+            Date startDate = dateRange.getStart();
+            Date endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
-            final List<AlertNotificationWrapper> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+            List<AlertNotificationWrapper> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);
                 return List.of();
@@ -94,9 +93,10 @@ public abstract class ProcessingTask extends StartupScheduledTask {
                 logger.info("{} Notifications Found: {}", taskName, entityList.size());
                 return entityList;
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             logger.error("Error reading Digest Notification Data", ex);
         }
         return List.of();
     }
+
 }

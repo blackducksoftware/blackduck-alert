@@ -29,7 +29,7 @@ public class PolarisProviderTest {
         Mockito.doNothing().when(polarisProjectSyncTask).run();
         Mockito.when(polarisProperties.createPolarisHttpClientSafely((Logger) Mockito.any())).thenReturn(Optional.empty());
 
-        final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, taskManager, polarisProjectSyncTask, polarisProperties, null, null);
+        final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, taskManager, polarisProjectSyncTask, polarisProperties, null);
         polarisProvider.initialize();
     }
 
@@ -38,7 +38,7 @@ public class PolarisProviderTest {
         final TaskManager taskManager = Mockito.mock(TaskManager.class);
         Mockito.when(taskManager.unregisterTask(Mockito.anyString())).thenReturn(Optional.empty());
         final PolarisProjectSyncTask polarisProjectSyncTask = new PolarisProjectSyncTask(POLARIS_PROVIDER_KEY, null, null, null, null, null, null);
-        final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, taskManager, polarisProjectSyncTask, null, null, null);
+        final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, taskManager, polarisProjectSyncTask, null, null);
         polarisProvider.destroy();
     }
 
@@ -50,8 +50,8 @@ public class PolarisProviderTest {
 
     @Test
     public void getSupportedFormatTypes() {
-        final PolarisContent polarisContent = new PolarisContent(POLARIS_PROVIDER_KEY);
-        final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, null, null, null, polarisContent, null);
+        final PolarisContent polarisContent = new PolarisContent();
+        final PolarisProvider polarisProvider = new PolarisProvider(POLARIS_PROVIDER_KEY, null, null, null, polarisContent);
         final Set<FormatType> formatTypes = polarisProvider.getProviderContent().getSupportedContentFormats();
 
         assertTrue(formatTypes.contains(FormatType.DEFAULT));

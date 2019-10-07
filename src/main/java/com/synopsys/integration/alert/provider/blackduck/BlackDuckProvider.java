@@ -22,22 +22,37 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
+import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
+import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckTopicCollectorFactory;
+import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.VersionBomCodeLocationBomComputedNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
@@ -50,17 +65,20 @@ public class BlackDuckProvider extends Provider {
     private final TaskManager taskManager;
     private final BlackDuckProperties blackDuckProperties;
 
-    private final BlackDuckTopicCollectorFactory topicCollectorFactory;
+    private final ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory;
+    private final BlackDuckMessageContentCollector blackDuckMessageContentCollector;
 
     @Autowired
-    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckProjectSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager,
-        BlackDuckProperties blackDuckProperties, BlackDuckTopicCollectorFactory topicCollectorFactory) {
+    public BlackDuckProvider(
+        BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckProjectSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager, BlackDuckProperties blackDuckProperties,
+        ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, BlackDuckMessageContentCollector blackDuckMessageContentCollector) {
         super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.taskManager = taskManager;
         this.blackDuckProperties = blackDuckProperties;
-        this.topicCollectorFactory = topicCollectorFactory;
+        this.distributionFilterFactory = distributionFilterFactory;
+        this.blackDuckMessageContentCollector = blackDuckMessageContentCollector;
     }
 
     @Override
@@ -84,8 +102,28 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public Set<MessageContentCollector> createTopicCollectors() {
-        return topicCollectorFactory.createTopicCollectors();
+    public ProviderDistributionFilter createDistributionFilter() {
+        return distributionFilterFactory.getObject();
+    }
+
+    @Override
+    public ProviderMessageContentCollector createMessageContentCollector() {
+        return blackDuckMessageContentCollector;
+    }
+
+    @Override
+    public ProviderNotificationClassMap getNotificationClassMap() {
+        Map<String, Class<?>> notificationTypeToContentClass = new HashMap<>();
+        notificationTypeToContentClass.put(NotificationType.BOM_EDIT.name(), BomEditNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.LICENSE_LIMIT.name(), LicenseLimitNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.POLICY_OVERRIDE.name(), PolicyOverrideNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.PROJECT.name(), ProjectNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.PROJECT_VERSION.name(), ProjectVersionNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.RULE_VIOLATION.name(), RuleViolationNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.RULE_VIOLATION_CLEARED.name(), RuleViolationClearedNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED.name(), VersionBomCodeLocationBomComputedNotificationView.class);
+        notificationTypeToContentClass.put(NotificationType.VULNERABILITY.name(), VulnerabilityNotificationView.class);
+        return new ProviderNotificationClassMap(notificationTypeToContentClass);
     }
 
 }

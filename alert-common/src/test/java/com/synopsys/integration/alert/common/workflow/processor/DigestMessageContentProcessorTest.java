@@ -10,14 +10,16 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
+import com.synopsys.integration.alert.common.workflow.formatter.DigestMessageContentFormatter;
 
 public class DigestMessageContentProcessorTest extends ProcessorTest {
     @Test
     public void processTest() throws AlertException {
-        DigestMessageContentProcessor digestMessageContentProcessor = new DigestMessageContentProcessor(new MessageOperationCombiner());
+        DigestMessageContentFormatter digestMessageContentProcessor = new DigestMessageContentFormatter(new MessageOperationCombiner());
         List<ProviderMessageContent> messages = createDefaultMessages();
 
-        List<MessageContentGroup> messageGroups = digestMessageContentProcessor.process(messages);
+        List<MessageContentGroup> messageGroups = digestMessageContentProcessor.format(messages);
         assertFalse(messageGroups.isEmpty());
         assertEquals(2, messageGroups.size());
         messageGroups.forEach(group -> assertEquals(1, group.getSubContent().size()));

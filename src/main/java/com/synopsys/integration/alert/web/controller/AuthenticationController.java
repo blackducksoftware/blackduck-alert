@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
@@ -59,16 +58,13 @@ public class AuthenticationController extends BaseController {
     private final PasswordResetService passwordResetService;
     private final ResponseFactory responseFactory;
     private final CsrfTokenRepository csrfTokenRepository;
-    private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AuthenticationController(final LoginActions loginActions, final PasswordResetService passwordResetService, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository,
-        final AuthorizationManager authorizationManager) {
+    public AuthenticationController(final LoginActions loginActions, final PasswordResetService passwordResetService, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository) {
         this.loginActions = loginActions;
         this.passwordResetService = passwordResetService;
         this.responseFactory = responseFactory;
         this.csrfTokenRepository = csrfTokenRepository;
-        this.authorizationManager = authorizationManager;
     }
 
     @PostMapping(value = "/logout")

@@ -45,8 +45,8 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -54,15 +54,14 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
-    private final AuditUtility auditUtility;
-    private final DefaultNotificationManager notificationManager;
-    private final ConfigurationAccessor jobConfigReader;
-    private final ChannelEventManager eventManager;
-    private final NotificationProcessor notificationProcessor;
+    private AuditUtility auditUtility;
+    private DefaultNotificationManager notificationManager;
+    private ConfigurationAccessor jobConfigReader;
+    private ChannelEventManager eventManager;
+    private NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(final AuditUtility auditUtility, final DefaultNotificationManager notificationManager, final ConfigurationAccessor jobConfigReader, final ChannelEventManager eventManager,
-        final NotificationProcessor notificationProcessor) {
+    public AuditEntryActions(AuditUtility auditUtility, DefaultNotificationManager notificationManager, ConfigurationAccessor jobConfigReader, ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;
         this.jobConfigReader = jobConfigReader;
@@ -74,34 +73,34 @@ public class AuditEntryActions {
         return get(null, null, null, null, null, false);
     }
 
-    public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder, final boolean onlyShowSentNotifications) {
-        final AlertPagedModel<AuditEntryModel> pagedRestModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditUtility::convertToAuditEntryModelFromNotification);
+    public AlertPagedModel<AuditEntryModel> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
+        AlertPagedModel<AuditEntryModel> pagedRestModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditUtility::convertToAuditEntryModelFromNotification);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return pagedRestModel;
     }
 
-    public Optional<AuditEntryModel> get(final Long id) {
+    public Optional<AuditEntryModel> get(Long id) {
         if (id != null) {
-            final Optional<AlertNotificationWrapper> notificationContent = notificationManager.findById(id);
+            Optional<AlertNotificationWrapper> notificationContent = notificationManager.findById(id);
             return notificationContent.map(auditUtility::convertToAuditEntryModelFromNotification);
         }
         return Optional.empty();
     }
 
-    public Optional<AuditJobStatusModel> getAuditInfoForJob(final UUID jobId) {
+    public Optional<AuditJobStatusModel> getAuditInfoForJob(UUID jobId) {
         if (jobId != null) {
             return auditUtility.findFirstByJobId(jobId);
         }
         return Optional.empty();
     }
 
-    public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationId, final UUID commonConfigId) throws IntegrationException {
-        final AlertNotificationWrapper notificationContent = notificationManager
-                                                                 .findById(notificationId)
-                                                                 .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
-        final List<DistributionEvent> distributionEvents;
+    public AlertPagedModel<AuditEntryModel> resendNotification(Long notificationId, UUID commonConfigId) throws IntegrationException {
+        AlertNotificationWrapper notificationContent = notificationManager
+                                                           .findById(notificationId)
+                                                           .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
+        List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
-            final ConfigurationJobModel commonDistributionConfig = jobConfigReader.getJobById(commonConfigId).orElseThrow(() -> {
+            ConfigurationJobModel commonDistributionConfig = jobConfigReader.getJobById(commonConfigId).orElseThrow(() -> {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 return new AlertJobMissingException("The Distribution Job with this id could not be found.", commonConfigId);
             });
@@ -113,9 +112,9 @@ public class AuditEntryActions {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
         }
         distributionEvents.forEach(event -> {
-            final UUID commonDistributionId = UUID.fromString(event.getConfigId());
-            final Long auditId = auditUtility.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
-            final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
+            UUID commonDistributionId = UUID.fromString(event.getConfigId());
+            Long auditId = auditUtility.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
+            Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             notificationIdToAuditId.put(notificationContent.getId(), auditId);
             event.setNotificationIdToAuditId(notificationIdToAuditId);
             eventManager.sendEvent(event);
