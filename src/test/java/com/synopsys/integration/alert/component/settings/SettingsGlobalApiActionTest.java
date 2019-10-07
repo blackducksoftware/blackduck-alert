@@ -189,24 +189,6 @@ public class SettingsGlobalApiActionTest {
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
     }
 
-    // TODO move this to the AuthenticationAction test class
-//    @Test
-//    public void testLdapEnabled() {
-//        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-//        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
-//        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
-//        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
-//        fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
-//        fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
-//        final HashMap<String, String> fieldErrors = new HashMap<>();
-//        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
-//                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-//        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
-//        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
-//        assertFalse(fieldErrors.isEmpty());
-//        assertEquals(AuthenticationDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(AuthenticationDescriptor.KEY_LDAP_SERVER));
-//    }
-
     private void assertFieldsMissing(final FieldModel fieldModel) {
         assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
         assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
