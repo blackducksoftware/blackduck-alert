@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -240,7 +242,8 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     public ConfigurationModel createConfiguration(final String descriptorName, final ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         final Long configContextId = getConfigContextIdOrThrowException(context);
-        final DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId);
+        Date currentTime = DateRange.createCurrentDateTimestamp();
+        final DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId, currentTime, currentTime);
         final DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
 
         final ConfigurationModel createdConfig = new ConfigurationModel(descriptorId, savedDescriptorConfig.getId(), context);
@@ -289,6 +292,9 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                 updatedConfig.put(configFieldModel);
             }
         }
+        descriptorConfigEntity.setLastUpdated(DateRange.createCurrentDateTimestamp());
+        descriptorConfigsRepository.save(descriptorConfigEntity);
+
         return updatedConfig;
     }
 

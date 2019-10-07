@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.database.configuration;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -40,6 +41,10 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     private Long descriptorId;
     @Column(name = "CONTEXT_ID")
     private Long contextId;
+    @Column(name = "CREATED_AT")
+    private Date createdAt;
+    @Column(name = "LAST_UPDATED")
+    private Date lastUpdated;
 
     @OneToMany
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
@@ -53,9 +58,11 @@ public class DescriptorConfigEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId, final Long contextId) {
+    public DescriptorConfigEntity(final Long descriptorId, final Long contextId, final Date createdAt, final Date lastUpdated) {
         this.descriptorId = descriptorId;
         this.contextId = contextId;
+        this.createdAt = createdAt;
+        this.lastUpdated = lastUpdated;
     }
 
     public Long getDescriptorId() {
@@ -64,6 +71,18 @@ public class DescriptorConfigEntity extends DatabaseEntity {
 
     public Long getContextId() {
         return contextId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(final Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public List<FieldValueEntity> getFieldValueEntities() {

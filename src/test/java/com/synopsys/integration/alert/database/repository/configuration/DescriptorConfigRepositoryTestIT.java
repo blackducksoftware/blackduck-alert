@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.database.repository.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
@@ -56,9 +58,10 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
         final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId());
-        final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId());
-        final DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId());
+        Date currentTime = DateRange.createCurrentDateTimestamp();
+        final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        final DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity1);
         descriptorConfigRepository.save(descriptorConfigEntity2);
         descriptorConfigRepository.save(descriptorConfigEntity3);
@@ -80,8 +83,9 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
         final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        final DescriptorConfigEntity descriptorFieldEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId());
-        final DescriptorConfigEntity descriptorFieldEntity2 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId());
+        Date currentTime = DateRange.createCurrentDateTimestamp();
+        final DescriptorConfigEntity descriptorFieldEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        final DescriptorConfigEntity descriptorFieldEntity2 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorFieldEntity1);
         descriptorConfigRepository.save(descriptorFieldEntity2);
         assertEquals(2, descriptorConfigRepository.findAll().size());
