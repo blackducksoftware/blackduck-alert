@@ -29,7 +29,7 @@ import org.springframework.security.saml.metadata.MetadataGenerator;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 public class AlertSAMLMetadataGenerator extends MetadataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(AlertSAMLMetadataGenerator.class);
@@ -41,12 +41,12 @@ public class AlertSAMLMetadataGenerator extends MetadataGenerator {
 
     @Override
     public String getEntityId() {
-        return getEntityString(SettingsDescriptor.KEY_SAML_ENTITY_ID);
+        return getEntityString(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
     }
 
     @Override
     public String getEntityBaseURL() {
-        return getEntityString(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+        return getEntityString(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
     }
 
     private String getEntityString(final String entityKey) {

@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 public class SAMLManager {
     public static final Logger logger = LoggerFactory.getLogger(SAMLManager.class);
@@ -71,9 +71,9 @@ public class SAMLManager {
         try {
             final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
             final boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
-            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
-            final String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_ID);
-            final String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
+            final String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
+            final String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
             if (samlEnabled) {
                 setupMetadataManager(metadataURL, entityId, entityBaseUrl);
             }
@@ -128,10 +128,10 @@ public class SAMLManager {
 
     private Optional<MetadataProvider> createFileProvider() throws MetadataProviderException {
         final Timer backgroundTaskTimer = new Timer(true);
-        if (!filePersistenceUtil.uploadFileExists(SettingsDescriptor.SAML_METADATA_FILE)) {
+        if (!filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
             return Optional.empty();
         }
-        File metadataFile = filePersistenceUtil.createUploadsFile(SettingsDescriptor.SAML_METADATA_FILE);
+        File metadataFile = filePersistenceUtil.createUploadsFile(AuthenticationDescriptor.SAML_METADATA_FILE);
         FilesystemMetadataProvider provider = new FilesystemMetadataProvider(backgroundTaskTimer, metadataFile);
         provider.setParserPool(parserPool);
         return Optional.of(createDelegate(provider));

@@ -45,16 +45,16 @@ import org.xml.sax.SAXParseException;
 import com.synopsys.integration.alert.common.action.UploadEndpointManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
 public class SamlMetaDataFileUpload {
     private final static Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
 
     @Autowired
-    public SamlMetaDataFileUpload(UploadEndpointManager uploadEndpointManager, SettingsDescriptorKey descriptorKey) throws AlertException {
-        uploadEndpointManager.registerTarget(SettingsDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, SettingsDescriptor.SAML_METADATA_FILE, this::validateXMLFile);
+    public SamlMetaDataFileUpload(UploadEndpointManager uploadEndpointManager, AuthenticationDescriptorKey descriptorKey) throws AlertException {
+        uploadEndpointManager.registerTarget(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, AuthenticationDescriptor.SAML_METADATA_FILE, this::validateXMLFile);
     }
 
     private Collection<String> validateXMLFile(File file) {
