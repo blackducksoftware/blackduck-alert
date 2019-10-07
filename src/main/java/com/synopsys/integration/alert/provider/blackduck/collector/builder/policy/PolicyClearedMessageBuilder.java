@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Messa
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -120,9 +121,10 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         for (PolicyInfo policyInfo : policies) {
             LinkableItem policyNameItem = componentBuilderUtil.createPolicyNameItem(policyInfo);
             Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
-            if (optionalPolicyRule.isPresent() && policyCommonBuilder.hasVulnerabilityRule(optionalPolicyRule.get())) {
-                Optional<ComponentItem> vulnerabilityComponent = createEmptyVulnerabilityItem(blackDuckResponseCache, policyNameItem, componentData, notificationId, operation);
-                vulnerabilityComponent.ifPresent(componentItems::add);
+            List<PolicyRuleExpressionView> expressions = optionalPolicyRule.map(rule -> rule.getExpression().getExpressions()).orElse(List.of());
+            if (policyCommonBuilder.hasVulnerabilityRule(expressions)) {
+                createEmptyVulnerabilityItem(blackDuckResponseCache, policyNameItem, componentData, notificationId, operation)
+                    .ifPresent(componentItems::add);
             }
         }
         return componentItems;
@@ -130,7 +132,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
 
     private Optional<ComponentItem> createEmptyVulnerabilityItem(BlackDuckResponseCache blackDuckResponseCache, LinkableItem policyNameItem, ComponentData componentData, Long notificationId,
         ItemOperation operation) {
-        LinkableItem vulnerabilityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, "ALL", null);
+        LinkableItem vulnerabilityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, "ALL");
         LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, ComponentItemPriority.NONE.name());
         ComponentItemPriority priority = ComponentItemPriority.findPriority(severityItem.getValue());
 
@@ -138,9 +140,10 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
                                             .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                             .applyOperation(operation)
                                             .applyPriority(priority)
+                                            .applyPriority(priority)
                                             .applyCategoryItem(policyNameItem)
                                             .applyCategoryGroupingAttribute(severityItem)
-                                            .applyAllComponentAttributes(Set.of(vulnerabilityItem))
+                                            .applyComponentAttribute(vulnerabilityItem)
                                             .applyNotificationId(notificationId);
         componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
         try {

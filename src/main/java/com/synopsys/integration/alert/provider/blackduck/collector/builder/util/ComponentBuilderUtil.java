@@ -73,16 +73,12 @@ public class ComponentBuilderUtil {
 
     public void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, ComponentData componentData) {
         String projectQueryLink = responseCache.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentData.getComponentName()).orElse(null);
-        LinkableItem componentItem;
-        LinkableItem componentVersionItem = null;
-        if (StringUtils.isNotBlank(componentData.getComponentVersionName())) {
-            componentVersionItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentData.getComponentVersionName(), projectQueryLink);
-            componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName());
-        } else {
-            componentItem = new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName(), projectQueryLink);
-        }
-
-        componentBuilder.applyComponentData(componentItem);
-        componentBuilder.applySubComponent(componentVersionItem);
+        componentData.getComponentVersionName()
+            .filter(StringUtils::isNotBlank)
+            .ifPresentOrElse(componentVersion -> {
+                    componentBuilder.applyComponentData(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName()));
+                    componentBuilder.applySubComponent(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersion, projectQueryLink));
+                },
+                () -> componentBuilder.applyComponentData(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName(), projectQueryLink)));
     }
 }

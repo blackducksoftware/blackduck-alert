@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector.builder.model;
 
+import java.util.Optional;
+
 public class ComponentData {
     private String componentName;
     private String componentVersionName;
@@ -37,8 +39,8 @@ public class ComponentData {
         return componentName;
     }
 
-    public String getComponentVersionName() {
-        return componentVersionName;
+    public Optional<String> getComponentVersionName() {
+        return Optional.ofNullable(componentVersionName);
     }
 
     public String getProjectVersionUrl() {

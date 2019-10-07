@@ -71,7 +71,6 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
-        ItemOperation operation = ItemOperation.DELETE;
         try {
             ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
                                                                               .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
@@ -80,7 +79,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
                                                                               .applyProviderCreationTime(providerCreationDate);
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();
-            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, notificationId, operation, overrideContent.getProjectVersion());
+            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, notificationId, overrideContent.getProjectVersion());
             projectVersionMessageBuilder.applyAllComponentItems(items);
             return List.of(projectVersionMessageBuilder.build());
         } catch (AlertException ex) {
@@ -91,7 +90,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
     }
 
     private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, PolicyOverrideNotificationContent overrideContent,
-        Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl) {
+        Collection<PolicyInfo> policies, Long notificationId, String projectVersionUrl) {
         String firstName = overrideContent.getFirstName();
         String lastName = overrideContent.getLastName();
 
@@ -101,7 +100,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
         String componentName = overrideContent.getComponentName();
         String componentVersionName = overrideContent.getComponentVersionName();
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
-        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation, null, List.of(policyOverride));
+        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.DELETE, null, List.of(policyOverride));
     }
 
 }

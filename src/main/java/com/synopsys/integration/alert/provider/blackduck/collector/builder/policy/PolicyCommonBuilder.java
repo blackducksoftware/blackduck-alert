@@ -49,11 +49,8 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionSetView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
-import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
@@ -128,18 +125,7 @@ public class PolicyCommonBuilder {
                    .collect(Collectors.toSet());
     }
 
-    public boolean hasVulnerabilityRule(VersionBomPolicyRuleView policyRule) {
-        PolicyRuleExpressionSetView expression = policyRule.getExpression();
-        return hasVulnerabilityRule(expression);
-    }
-
-    public boolean hasVulnerabilityRule(PolicyRuleView policyRule) {
-        PolicyRuleExpressionSetView expression = policyRule.getExpression();
-        return hasVulnerabilityRule(expression);
-    }
-
-    private boolean hasVulnerabilityRule(PolicyRuleExpressionSetView expressionSet) {
-        List<PolicyRuleExpressionView> expressions = expressionSet.getExpressions();
+    public boolean hasVulnerabilityRule(List<PolicyRuleExpressionView> expressions) {
         for (PolicyRuleExpressionView expressionView : expressions) {
             if (expressionView.getName().toLowerCase().contains(MessageBuilderConstants.VULNERABILITY_CHECK_TEXT)) {
                 return true;
