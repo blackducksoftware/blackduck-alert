@@ -43,18 +43,18 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
 public class UserManagementAuthoritiesPopulator {
     private static final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
-    private SettingsDescriptorKey settingsDescriptorKey;
+    private AuthenticationDescriptorKey AuthenticationDescriptorKey;
     private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public UserManagementAuthoritiesPopulator(final SettingsDescriptorKey settingsDescriptorKey, final ConfigurationAccessor configurationAccessor) {
-        this.settingsDescriptorKey = settingsDescriptorKey;
+    public UserManagementAuthoritiesPopulator(final AuthenticationDescriptorKey AuthenticationDescriptorKey, final ConfigurationAccessor configurationAccessor) {
+        this.AuthenticationDescriptorKey = AuthenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -83,7 +83,7 @@ public class UserManagementAuthoritiesPopulator {
     public String getSAMLRoleAttributeName(String defaultName) {
         try {
             ConfigurationModel configurationModel = getCurrentConfiguration();
-            return getFieldValue(configurationModel, SettingsDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING).orElse(defaultName);
+            return getFieldValue(configurationModel, AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING).orElse(defaultName);
         } catch (AlertException ex) {
             logger.debug("Error getting SAML attribute name");
         }
@@ -95,9 +95,9 @@ public class UserManagementAuthoritiesPopulator {
         try {
             ConfigurationModel configuration = getCurrentConfiguration();
             final Function<UserRole, String> function = appendRolePrefix ? this::createRoleWithPrefix : UserRole::name;
-            final Optional<String> adminRoleMappingName = getFieldValue(configuration, SettingsDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN);
-            final Optional<String> jobManagerMappingName = getFieldValue(configuration, SettingsDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER);
-            final Optional<String> userMappingName = getFieldValue(configuration, SettingsDescriptor.KEY_ROLE_MAPPING_NAME_USER);
+            final Optional<String> adminRoleMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN);
+            final Optional<String> jobManagerMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER);
+            final Optional<String> userMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_USER);
             adminRoleMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(UserRole.ALERT_ADMIN)));
             jobManagerMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(UserRole.ALERT_JOB_MANAGER)));
             userMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(UserRole.ALERT_USER)));
@@ -112,7 +112,7 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorName(settingsDescriptorKey.getUniversalKey())
+        return configurationAccessor.getConfigurationsByDescriptorName(AuthenticationDescriptorKey.getUniversalKey())
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));

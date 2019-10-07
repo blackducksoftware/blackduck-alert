@@ -29,4 +29,5 @@
     <include file="changelog/alert/4.2.0/changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/alert/5.0.0/changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/alert/5.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/5.2.0/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

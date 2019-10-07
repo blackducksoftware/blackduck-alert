@@ -18,7 +18,7 @@ import org.springframework.security.saml.SAMLCredential;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.web.security.authentication.database.UserPrincipal;
 
@@ -31,7 +31,7 @@ public class UserDetailsServiceTest {
 
     @BeforeEach
     public void initializeAuthoritiesPopulator() throws Exception {
-        SettingsDescriptorKey key = new SettingsDescriptorKey();
+        AuthenticationDescriptorKey key = new AuthenticationDescriptorKey();
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         ConfigurationModel configuration = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configuration.getField(Mockito.anyString())).thenReturn(Optional.empty());
