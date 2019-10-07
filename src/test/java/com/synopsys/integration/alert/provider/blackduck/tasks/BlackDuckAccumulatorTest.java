@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.util.DateRange;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;

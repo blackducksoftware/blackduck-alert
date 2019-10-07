@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.util.DateRange;
 
 public class DateRangeTest {
 

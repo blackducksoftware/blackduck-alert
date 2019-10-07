@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -39,6 +38,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.util.AlertUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
@@ -164,7 +164,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         }
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-        final String createdAt = RestConstants.formatDate(DateRange.createCurrentDateTimestamp());
+        final String createdAt = RestConstants.formatDate(AlertUtils.createCurrentDateTimestamp());
         final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(),
             MessageContentGroup.singleton(content), fieldAccessor);
         return event;

@@ -32,7 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DateRange;
 
 @Component
 public class SystemMessageUtility {
@@ -45,7 +46,7 @@ public class SystemMessageUtility {
 
     @Transactional
     public void addSystemMessage(final String message, final SystemMessageSeverity severity, final SystemMessageType messageType) {
-        final Date currentTime = DateRange.createCurrentDateTimestamp();
+        final Date currentTime = AlertUtils.createCurrentDateTimestamp();
         final SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
     }
@@ -63,7 +64,7 @@ public class SystemMessageUtility {
 
     @Transactional
     public List<SystemMessage> getSystemMessagesAfter(final Date date) {
-        final Date currentTime = DateRange.createCurrentDateTimestamp();
+        final Date currentTime = AlertUtils.createCurrentDateTimestamp();
         return systemMessageRepository.findByCreatedBetween(date, currentTime);
     }
 
