@@ -26,8 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +36,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.util.AlertUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
@@ -58,7 +57,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
-        this.messageBuilderMap = initializeBuilderMap(messageBuilders);
+        this.messageBuilderMap = AlertUtils.convertToMapWithCopiedValue(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
     }
 
     @Override
@@ -89,12 +88,6 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
         }
         throw new AlertException("Cannot create message content with no connection to Black Duck");
-    }
-
-    private Map<String, BlackDuckMessageBuilder> initializeBuilderMap(List<BlackDuckMessageBuilder> messageBuilders) {
-        return messageBuilders
-                   .stream()
-                   .collect(Collectors.toMap(BlackDuckMessageBuilder::getNotificationType, Function.identity()));
     }
 
 }

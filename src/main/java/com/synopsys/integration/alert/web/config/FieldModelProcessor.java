@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.util.AlertUtils;
 
 @Component
 public class FieldModelProcessor {
@@ -119,9 +119,7 @@ public class FieldModelProcessor {
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
-                                                          .stream()
-                                                          .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        Map<String, ConfigField> configFields = AlertUtils.convertToMapWithCopiedValue(descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName()), ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }
