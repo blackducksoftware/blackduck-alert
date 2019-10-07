@@ -26,16 +26,19 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
@@ -83,8 +86,21 @@ public class BlackDuckResponseCache {
     }
 
     public Optional<VersionBomComponentView> getBomComponentView(String bomComponentUrl) {
-        if (org.apache.commons.lang.StringUtils.isNotBlank(bomComponentUrl)) {
+        if (StringUtils.isNotBlank(bomComponentUrl)) {
             return getItem(VersionBomComponentView.class, bomComponentUrl);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<PolicyRuleView> getPolicyRule(BlackDuckResponseCache blackDuckResponseCache, PolicyInfo policyInfo) {
+        try {
+            String policyUrl = policyInfo.getPolicy();
+            if (StringUtils.isNotBlank(policyUrl)) {
+                return blackDuckResponseCache.getItem(PolicyRuleView.class, policyUrl);
+            }
+        } catch (Exception e) {
+            logger.debug("Unable to get policy rule: {}", policyInfo.getPolicyName());
+            logger.debug("Cause:", e);
         }
         return Optional.empty();
     }

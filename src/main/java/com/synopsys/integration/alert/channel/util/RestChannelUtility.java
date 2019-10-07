@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.util;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,19 +94,16 @@ public class RestChannelUtility {
             } else {
                 throw new AlertException(String.format("Could not send message: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
             }
-        } catch (final IOException e) {
+        } catch (final Exception e) {
+            logger.error("Error sending request", e);
             throw new AlertException(e.getMessage(), e);
         }
     }
 
     public Response sendGenericRequest(final IntHttpClient intHttpClient, final Request request) throws IntegrationException {
-        try (final Response response = intHttpClient.execute(request)) {
-            logger.trace("Response: {}", response);
-            return response;
-        } catch (final Exception e) {
-            logger.error("Error sending request", e);
-            throw new AlertException(e.getMessage(), e);
-        }
+        final Response response = intHttpClient.execute(request);
+        logger.trace("Response: {}", response);
+        return response;
     }
 
     public IntHttpClient getIntHttpClient() {

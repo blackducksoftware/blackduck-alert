@@ -22,8 +22,11 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.PolicyOverrideMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyOverrideMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -33,8 +36,11 @@ public class PolicyOverrideMessageBuilderTest {
 
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
+        VulnerabilityUtil vulnerabilityUtil = new VulnerabilityUtil();
         PolicyPriorityUtil policyPriorityUtil = new PolicyPriorityUtil();
-        PolicyOverrideMessageBuilder policyOverrideMessageBuilder = new PolicyOverrideMessageBuilder(policyPriorityUtil);
+        ComponentBuilderUtil componentBuilderUtil = new ComponentBuilderUtil();
+        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(vulnerabilityUtil, componentBuilderUtil, policyPriorityUtil);
+        PolicyOverrideMessageBuilder policyOverrideMessageBuilder = new PolicyOverrideMessageBuilder(policyCommonBuilder);
         runSingleTest(policyOverrideMessageBuilder, TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
     }
 
