@@ -50,7 +50,7 @@ public class MockConfigurationModelFactory {
     }
 
     public static ConfigurationJobModel createDistributionJob(final Collection<ConfigurationFieldModel> configurationFieldModels) {
-        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.DISTRIBUTION);
+        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
         configurationFieldModels.forEach(configurationModel::put);
         return new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
     }

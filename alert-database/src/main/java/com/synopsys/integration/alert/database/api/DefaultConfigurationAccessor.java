@@ -69,7 +69,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 @Component
 @Transactional
 public class DefaultConfigurationAccessor implements ConfigurationAccessor {
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm (UTC)";
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm '(UTC)'";
 
     private static final String NULL_JOB_ID = "The job id cannot be null";
     private static final String NULL_CONFIG_ID = "The config id cannot be null";

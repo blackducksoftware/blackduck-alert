@@ -88,7 +88,7 @@ public class ConfigActions {
 
             // TODO investigate why this is here instead of in an else if
             if (fieldModelList.isEmpty()) {
-                fieldModelList.add(new FieldModel(descriptorName, contextName, "N/A", "N/A", new HashMap<>()));
+                fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
             }
 
             for (final FieldModel fieldModel : fieldModelList) {

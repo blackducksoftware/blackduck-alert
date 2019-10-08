@@ -39,6 +39,14 @@ public class FieldModel extends Config {
         this(null, null, null, null, null);
     }
 
+    public FieldModel(String descriptorName, String context, Map<String, FieldValueModel> keyToValues) {
+        this(null, descriptorName, context, null, null, keyToValues);
+    }
+
+    public FieldModel(String configId, String descriptorName, String context, Map<String, FieldValueModel> keyToValues) {
+        this(configId, descriptorName, context, null, null, keyToValues);
+    }
+
     public FieldModel(String descriptorName, String context, String createdAt, String lastUpdated, Map<String, FieldValueModel> keyToValues) {
         this(null, descriptorName, context, createdAt, lastUpdated, keyToValues);
     }
