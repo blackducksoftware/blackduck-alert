@@ -56,7 +56,7 @@ public class NotificationProcessor {
     @Autowired
     public NotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
         this.configurationAccessor = configurationAccessor;
-        this.providerKeyToProvider = DataStructureUtils.convertToMapWithCopiedValue(providers, provider -> provider.getKey().getUniversalKey());
+        this.providerKeyToProvider = DataStructureUtils.mapToValues(providers, provider -> provider.getKey().getUniversalKey());
         this.notificationToEventConverter = notificationToEventConverter;
     }
 

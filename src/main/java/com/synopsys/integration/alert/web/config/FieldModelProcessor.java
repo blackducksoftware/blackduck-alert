@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.config;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,7 +120,8 @@ public class FieldModelProcessor {
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        Map<String, ConfigField> configFields = DataStructureUtils.convertToMapWithCopiedValue(descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName()), ConfigField::getKey);
+        final List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
+        Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }

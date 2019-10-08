@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.util;
+package com.synopsys.integration.alert.common.message.model;
 
 import java.text.ParseException;
 import java.util.Date;

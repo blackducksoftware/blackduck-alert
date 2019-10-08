@@ -57,7 +57,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
-        this.messageBuilderMap = DataStructureUtils.convertToMapWithCopiedValue(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
+        this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
     }
 
     @Override

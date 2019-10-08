@@ -59,7 +59,7 @@ public class DescriptorProcessor {
     public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> configurationActions, final List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
-        this.allConfigurationActions = DataStructureUtils.convertToMapWithCopiedValue(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
+        this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();

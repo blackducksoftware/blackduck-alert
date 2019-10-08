@@ -19,7 +19,7 @@ public class DataStructureUtilsTest {
         String key2 = "key2";
         TestObject testObject1 = new TestObject(key1, "something");
         TestObject testObject2 = new TestObject(key2, "something");
-        final Map<String, TestObject> mapWithNameKey = DataStructureUtils.convertToMapWithCopiedValue(List.of(testObject1, testObject2), TestObject::getName);
+        final Map<String, TestObject> mapWithNameKey = DataStructureUtils.mapToValues(List.of(testObject1, testObject2), TestObject::getName);
 
         assertTrue(mapWithNameKey.containsKey(key1));
         assertTrue(mapWithNameKey.containsKey(key2));
@@ -35,7 +35,7 @@ public class DataStructureUtilsTest {
         String key2 = "key2";
         TestObject testObject1 = new TestObject(key1, "something");
         TestObject testObject2 = new TestObject(key2, "something");
-        final Map<TestObject, String> mapWithObjectKey = DataStructureUtils.convertToMapWithCopiedKey(List.of(testObject1, testObject2), TestObject::getName);
+        final Map<TestObject, String> mapWithObjectKey = DataStructureUtils.mapToKeys(List.of(testObject1, testObject2), TestObject::getName);
 
         assertTrue(mapWithObjectKey.containsKey(testObject1));
         assertTrue(mapWithObjectKey.containsKey(testObject2));

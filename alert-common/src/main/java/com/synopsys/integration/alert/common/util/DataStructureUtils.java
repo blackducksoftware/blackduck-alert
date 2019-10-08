@@ -28,12 +28,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DataStructureUtils {
-    public static <K, V> Map<K, V> convertToMapWithCopiedValue(Collection<V> valueCollection, Function<V, K> keyConverter) {
-        return valueCollection.stream().collect(Collectors.toMap(keyConverter::apply, Function.identity()));
+    public static <K, V> Map<K, V> mapToValues(Collection<V> valueCollection, Function<V, K> keyExtractor) {
+        return valueCollection.stream().collect(Collectors.toMap(keyExtractor::apply, Function.identity()));
     }
 
-    public static <K, V> Map<K, V> convertToMapWithCopiedKey(Collection<K> valueCollection, Function<K, V> valueConverter) {
-        return valueCollection.stream().collect(Collectors.toMap(Function.identity(), valueConverter::apply));
+    public static <K, V> Map<K, V> mapToKeys(Collection<K> valueCollection, Function<K, V> valueExtractor) {
+        return valueCollection.stream().collect(Collectors.toMap(Function.identity(), valueExtractor::apply));
     }
 
 }

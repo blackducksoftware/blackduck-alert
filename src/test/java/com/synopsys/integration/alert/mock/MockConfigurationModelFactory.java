@@ -173,7 +173,7 @@ public class MockConfigurationModelFactory {
     }
 
     public static Map<String, ConfigurationFieldModel> mapFieldKeyToFields(final Collection<ConfigurationFieldModel> fields) {
-        return DataStructureUtils.convertToMapWithCopiedValue(fields, ConfigurationFieldModel::getFieldKey);
+        return DataStructureUtils.mapToValues(fields, ConfigurationFieldModel::getFieldKey);
     }
 
     public static Map<String, ConfigurationFieldModel> mapStringsToFields(final Map<String, String> fields) {

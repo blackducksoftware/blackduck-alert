@@ -118,7 +118,7 @@ public class SettingsGlobalApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(settingsUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
@@ -133,7 +133,7 @@ public class SettingsGlobalApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(settingsUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
@@ -147,7 +147,7 @@ public class SettingsGlobalApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(settingsUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
@@ -173,7 +173,7 @@ public class SettingsGlobalApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("      "), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(settingsUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 

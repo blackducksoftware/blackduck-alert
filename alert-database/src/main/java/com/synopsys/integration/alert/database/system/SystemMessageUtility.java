@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.util.DateRange;
+import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component

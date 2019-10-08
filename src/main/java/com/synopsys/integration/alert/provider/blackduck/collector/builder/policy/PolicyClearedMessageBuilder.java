@@ -90,7 +90,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
                                                                               .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName())
                                                                               .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion())
                                                                               .applyProviderCreationTime(providerCreationDate);
-            Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.convertToMapWithCopiedValue(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
+            Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
             List<ComponentItem> items = new LinkedList<>();
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {

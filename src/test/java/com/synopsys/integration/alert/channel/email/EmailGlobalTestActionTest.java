@@ -49,7 +49,7 @@ public class EmailGlobalTestActionTest {
         final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
 
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(uiConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()));
@@ -67,7 +67,7 @@ public class EmailGlobalTestActionTest {
 
         final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         final Map<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(uiConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
@@ -87,7 +87,7 @@ public class EmailGlobalTestActionTest {
         final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         final Map<String, String> fieldErrors = new HashMap<>();
 
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(uiConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()));

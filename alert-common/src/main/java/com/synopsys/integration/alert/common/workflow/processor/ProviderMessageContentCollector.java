@@ -39,7 +39,7 @@ public abstract class ProviderMessageContentCollector {
     private Map<FormatType, MessageContentFormatter> messageContentFormatterMap;
 
     public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentFormatters) {
-        this.messageContentFormatterMap = DataStructureUtils.convertToMapWithCopiedValue(messageContentFormatters, MessageContentFormatter::getFormat);
+        this.messageContentFormatterMap = DataStructureUtils.mapToValues(messageContentFormatters, MessageContentFormatter::getFormat);
     }
 
     public final List<MessageContentGroup> createMessageContentGroups(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {

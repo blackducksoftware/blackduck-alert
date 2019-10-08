@@ -50,7 +50,7 @@ public class SchedulingGlobalApiActionTest {
 
         FIELD_HOUR_OF_DAY.setValue("1");
         FIELD_PURGE_FREQUENCY.setValue("1");
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(schedulingUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
@@ -64,7 +64,7 @@ public class SchedulingGlobalApiActionTest {
 
         FIELD_HOUR_OF_DAY.setValue("");
         FIELD_PURGE_FREQUENCY.setValue("");
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(schedulingUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
@@ -78,7 +78,7 @@ public class SchedulingGlobalApiActionTest {
 
         FIELD_HOUR_OF_DAY.setValue("not a number");
         FIELD_PURGE_FREQUENCY.setValue("not a number");
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(schedulingUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
@@ -96,7 +96,7 @@ public class SchedulingGlobalApiActionTest {
         final SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
 
         FIELD_HOUR_OF_DAY.setValue("-1");
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(schedulingUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
@@ -117,7 +117,7 @@ public class SchedulingGlobalApiActionTest {
         final SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
 
         FIELD_PURGE_FREQUENCY.setValue("0");
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(schedulingUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         String actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);

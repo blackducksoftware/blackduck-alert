@@ -61,7 +61,7 @@ public class PolarisGlobalTestActionTest {
         Mockito.when(fieldModel.getFieldValueModel(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("100"));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Api token should be populated with valid token");
@@ -85,7 +85,7 @@ public class PolarisGlobalTestActionTest {
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of(textTimeout));
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(textTimeout));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.convertToMapWithCopiedValue(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
+        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
         final FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
