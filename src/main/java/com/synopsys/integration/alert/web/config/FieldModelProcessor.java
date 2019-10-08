@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Component
 public class FieldModelProcessor {
@@ -119,7 +119,7 @@ public class FieldModelProcessor {
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        Map<String, ConfigField> configFields = AlertUtils.convertToMapWithCopiedValue(descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName()), ConfigField::getKey);
+        Map<String, ConfigField> configFields = DataStructureUtils.convertToMapWithCopiedValue(descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName()), ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }

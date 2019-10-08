@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
@@ -57,7 +57,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
-        this.messageBuilderMap = AlertUtils.convertToMapWithCopiedValue(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
+        this.messageBuilderMap = DataStructureUtils.convertToMapWithCopiedValue(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
     }
 
     @Override

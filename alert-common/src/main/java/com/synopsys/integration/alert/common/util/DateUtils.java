@@ -24,25 +24,11 @@ package com.synopsys.integration.alert.common.util;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class AlertUtils {
-
-    public static <K, V> Map<K, V> convertToMapWithCopiedValue(Collection<V> valueCollection, Function<V, K> keyConverter) {
-        return valueCollection.stream().collect(Collectors.toMap(keyConverter::apply, Function.identity()));
-    }
-
-    public static <K, V> Map<K, V> convertToMapWithCopiedKey(Collection<K> valueCollection, Function<K, V> valueConverter) {
-        return valueCollection.stream().collect(Collectors.toMap(Function.identity(), valueConverter::apply));
-    }
-
+public class DateUtils {
     public static Date createCurrentDateTimestamp() {
         final ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         return Date.from(zonedDateTime.toInstant());
     }
-
 }

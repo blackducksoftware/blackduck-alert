@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 
@@ -39,7 +39,7 @@ public abstract class ProviderMessageContentCollector {
     private Map<FormatType, MessageContentFormatter> messageContentFormatterMap;
 
     public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentFormatters) {
-        this.messageContentFormatterMap = AlertUtils.convertToMapWithCopiedValue(messageContentFormatters, MessageContentFormatter::getFormat);
+        this.messageContentFormatterMap = DataStructureUtils.convertToMapWithCopiedValue(messageContentFormatters, MessageContentFormatter::getFormat);
     }
 
     public final List<MessageContentGroup> createMessageContentGroups(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {

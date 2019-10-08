@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
@@ -192,7 +192,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     private Map<String, ConfigField> createFieldMap(final ConfigContextEnum context) {
         return getDescriptor().getUIConfig(context)
-                   .map(uiConfig -> AlertUtils.convertToMapWithCopiedValue(uiConfig.createFields(), ConfigField::getKey))
+                   .map(uiConfig -> DataStructureUtils.convertToMapWithCopiedValue(uiConfig.createFields(), ConfigField::getKey))
                    .orElse(Map.of());
     }
 

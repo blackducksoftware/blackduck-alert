@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Component
 public class DescriptorProcessor {
@@ -59,7 +59,7 @@ public class DescriptorProcessor {
     public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> configurationActions, final List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
-        this.allConfigurationActions = AlertUtils.convertToMapWithCopiedValue(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
+        this.allConfigurationActions = DataStructureUtils.convertToMapWithCopiedValue(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();

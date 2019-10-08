@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -100,7 +100,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         }
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-        final String createdAt = RestConstants.formatDate(AlertUtils.createCurrentDateTimestamp());
+        final String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
         final DistributionEvent event = new DistributionEvent(
             String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(content),
             fieldAccessor);

@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
 @Component
@@ -56,7 +56,7 @@ public class NotificationProcessor {
     @Autowired
     public NotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
         this.configurationAccessor = configurationAccessor;
-        this.providerKeyToProvider = AlertUtils.convertToMapWithCopiedValue(providers, provider -> provider.getKey().getUniversalKey());
+        this.providerKeyToProvider = DataStructureUtils.convertToMapWithCopiedValue(providers, provider -> provider.getKey().getUniversalKey());
         this.notificationToEventConverter = notificationToEventConverter;
     }
 

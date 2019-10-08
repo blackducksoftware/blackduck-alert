@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.util.AlertUtils;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -173,7 +173,7 @@ public class MockConfigurationModelFactory {
     }
 
     public static Map<String, ConfigurationFieldModel> mapFieldKeyToFields(final Collection<ConfigurationFieldModel> fields) {
-        return AlertUtils.convertToMapWithCopiedValue(fields, ConfigurationFieldModel::getFieldKey);
+        return DataStructureUtils.convertToMapWithCopiedValue(fields, ConfigurationFieldModel::getFieldKey);
     }
 
     public static Map<String, ConfigurationFieldModel> mapStringsToFields(final Map<String, String> fields) {
