@@ -39,8 +39,10 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -48,8 +50,6 @@ import com.synopsys.integration.alert.component.scheduling.SchedulingConfigurati
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.database.system.SystemMessage;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 
 @Component
 public class PurgeTask extends StartupScheduledTask {
@@ -65,8 +65,7 @@ public class PurgeTask extends StartupScheduledTask {
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, DefaultNotificationManager notificationManager,
-        SystemMessageUtility systemMessageUtility, TaskManager taskManager,
+    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, DefaultNotificationManager notificationManager, SystemMessageUtility systemMessageUtility, TaskManager taskManager,
         ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
@@ -133,7 +132,7 @@ public class PurgeTask extends StartupScheduledTask {
     private void purgeSystemMessages() {
         try {
             final Date date = createDate();
-            final List<SystemMessage> messages = systemMessageUtility.getSystemMessagesBefore(date);
+            final List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
             systemMessageUtility.deleteSystemMessages(messages);
         } catch (final Exception ex) {
             logger.error("Error purging system messages", ex);

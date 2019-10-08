@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -59,7 +59,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
-    private SystemStatusUtility systemStatusUtility;
+    private DefaultSystemStatusUtility defaultSystemStatusUtility;
     private MockMvc mockMvc;
     private SystemActions systemActions;
 
@@ -89,7 +89,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     public void testGetInitialSystemSetup() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemInitialSetupBaseUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
-        if (systemStatusUtility.isSystemInitialized()) {
+        if (defaultSystemStatusUtility.isSystemInitialized()) {
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isFound());
         } else {
@@ -120,7 +120,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
-        if (systemStatusUtility.isSystemInitialized()) {
+        if (defaultSystemStatusUtility.isSystemInitialized()) {
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
         } else {
