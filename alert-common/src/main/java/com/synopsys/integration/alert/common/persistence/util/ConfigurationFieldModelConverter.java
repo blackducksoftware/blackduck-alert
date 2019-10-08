@@ -117,7 +117,8 @@ public class ConfigurationFieldModelConverter {
             populateAndSecureFields(fieldModel, fields);
         }
 
-        return new FieldModel(configId.toString(), descriptorName, configurationModel.getDescriptorContext().name(), fields);
+        return new FieldModel(configId.toString(), descriptorName, configurationModel.getDescriptorContext().name(),
+            configurationModel.getCreatedAt(), configurationModel.getLastUpdated(), fields);
     }
 
     private Optional<ConfigurationFieldModel> createEmptyModel(final DefinedFieldModel definedFieldModel) {

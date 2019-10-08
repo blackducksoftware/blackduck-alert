@@ -93,7 +93,8 @@ public class SystemActions {
 
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        FieldModel model = new FieldModel(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), valueMap);
+        // TODO should the createdAt and lastUpdated times be N/A?
+        FieldModel model = new FieldModel(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), "N/A", "N/A", valueMap);
 
         try {
             final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsDescriptorKey.getUniversalKey());

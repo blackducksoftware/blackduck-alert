@@ -198,7 +198,7 @@ public class AlertStartupInitializer extends StartupComponent {
         if (optionalFoundModel.isPresent()) {
             final ConfigurationModel foundModel = optionalFoundModel.get();
             logger.info("    Overwriting values with environment.");
-            final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
+            final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, foundModel.getCreatedAt(), foundModel.getLastUpdated(), configurationModels);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
         } else if (foundConfigurationModels.isEmpty()) {
             logger.info("    Writing initial values from environment.");
@@ -207,17 +207,17 @@ public class AlertStartupInitializer extends StartupComponent {
         }
     }
 
-    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels)
+    private Collection<ConfigurationFieldModel> updateAction(String descriptorName, String createdAt, String lastUpdated, Collection<ConfigurationFieldModel> configurationFieldModels)
         throws AlertException {
         final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
-        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
+        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), createdAt, lastUpdated, fieldValueModelMap);
         final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(updatedFieldModel).values();
     }
 
-    private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
+    private Collection<ConfigurationFieldModel> saveAction(String descriptorName, Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
         final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
-        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
+        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), null, null, fieldValueModelMap);
         final FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();
     }
