@@ -15,14 +15,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.web.config.ConfigActions;
+import com.synopsys.integration.rest.RestConstants;
 
 public class SystemActionsTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
@@ -36,7 +37,7 @@ public class SystemActionsTest {
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         configActions = Mockito.mock(ConfigActions.class);
-        final List<SystemMessage> messages = createSystemMessageList();
+        final List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
     }
@@ -145,9 +146,9 @@ public class SystemActionsTest {
         assertTrue(fieldErrors.isEmpty());
     }
 
-    private List<SystemMessage> createSystemMessageList() {
+    private List<SystemMessageModel> createSystemMessageList() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.minusMinutes(1);
-        return Collections.singletonList(new SystemMessage(Date.from(zonedDateTime.toInstant()), "type", "content", "type"));
+        return Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(Date.from(zonedDateTime.toInstant())), "type", "content", "type"));
     }
 }

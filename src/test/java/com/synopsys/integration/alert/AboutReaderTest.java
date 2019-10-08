@@ -14,10 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {
     private DefaultSystemStatusUtility defaultSystemStatusUtility;
@@ -29,7 +30,7 @@ public class AboutReaderTest {
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(new Date());
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
-        Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessage(new Date(), "ERROR", "startup errors", "type")));
+        Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
     }
 
     @Test
