@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class DataStructureUtils {
+public final class DataStructureUtils {
     public static <K, V> Map<K, V> mapToValues(Collection<V> valueCollection, Function<V, K> keyExtractor) {
         return valueCollection.stream().collect(Collectors.toMap(keyExtractor::apply, Function.identity()));
     }
