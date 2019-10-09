@@ -14,48 +14,49 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
-import com.synopsys.integration.alert.database.system.SystemMessage;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
+import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
 import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {
-    private SystemStatusUtility systemStatusUtility;
-    private SystemMessageUtility systemMessageUtility;
+    private DefaultSystemStatusUtility defaultSystemStatusUtility;
+    private DefaultSystemMessageUtility defaultSystemMessageUtility;
 
     @BeforeEach
     public void initialize() {
-        systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        Mockito.when(systemStatusUtility.getStartupTime()).thenReturn(new Date());
-        systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        Mockito.when(systemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessage(new Date(), "ERROR", "startup errors", "type")));
+        defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
+        Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
+        Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(new Date());
+        defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+        Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
     }
 
     @Test
     public void testAboutReadNull() {
-        final AboutReader reader = new AboutReader(null, systemStatusUtility);
+        final AboutReader reader = new AboutReader(null, defaultSystemStatusUtility);
         final AboutModel aboutModel = reader.getAboutModel();
         assertNull(aboutModel);
     }
 
     @Test
     public void testAboutRead() {
-        final AboutReader reader = new AboutReader(new Gson(), systemStatusUtility);
+        final AboutReader reader = new AboutReader(new Gson(), defaultSystemStatusUtility);
         final AboutModel aboutModel = reader.getAboutModel();
         assertNotNull(aboutModel);
     }
 
     @Test
     public void testAboutReadVersionUnknown() {
-        final AboutReader reader = new AboutReader(null, systemStatusUtility);
+        final AboutReader reader = new AboutReader(null, defaultSystemStatusUtility);
         final String version = reader.getProductVersion();
         assertEquals(AboutReader.PRODUCT_VERSION_UNKNOWN, version);
     }
 
     @Test
     public void testAboutReadVersion() {
-        final AboutReader reader = new AboutReader(new Gson(), systemStatusUtility);
+        final AboutReader reader = new AboutReader(new Gson(), defaultSystemStatusUtility);
         final String version = reader.getProductVersion();
         assertTrue(StringUtils.isNotBlank(version));
     }
