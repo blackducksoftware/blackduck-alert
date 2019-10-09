@@ -9,8 +9,13 @@ class ConfigurationLabel extends Component {
     }
 
     render() {
-        const { fontAwesomeIcon, configurationName, description } = this.props;
-
+        const {
+            fontAwesomeIcon,
+            configurationName,
+            description,
+            createdAt,
+            lastUpdated
+        } = this.props;
         return (
             <div>
                 <div className="d-inline-flex col-sm-4">
@@ -18,6 +23,20 @@ class ConfigurationLabel extends Component {
                         <FontAwesomeIcon icon={IconUtility.createIconPath(fontAwesomeIcon)} className="alert-icon" size="lg" fixedWidth />
                         {configurationName}
                     </h1>
+                </div>
+                <div className="timeStampContainer">
+                    {createdAt &&
+                    <div>
+                        <label className="text-right">Created:</label>
+                        <div className="d-inline-flex p-2">{createdAt}</div>
+                    </div>
+                    }
+                    {lastUpdated &&
+                    <div>
+                        <label className="text-right">Last Updated:</label>
+                        <div className="d-inline-flex p-2">{lastUpdated}</div>
+                    </div>
+                    }
                 </div>
                 <div className="descriptorDescription">
                     {description}
@@ -31,12 +50,16 @@ class ConfigurationLabel extends Component {
 ConfigurationLabel.propTypes = {
     fontAwesomeIcon: PropTypes.string,
     configurationName: PropTypes.string.isRequired,
-    description: PropTypes.string
+    description: PropTypes.string,
+    createdAt: PropTypes.string,
+    lastUpdated: PropTypes.string
 };
 
 ConfigurationLabel.defaultProps = {
     fontAwesomeIcon: null,
-    description: ''
+    description: '',
+    createdAt: null,
+    lastUpdated: null
 };
 
 export default ConfigurationLabel;
