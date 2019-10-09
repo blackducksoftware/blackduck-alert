@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.component.settings.DefaultSettingsUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -33,7 +34,7 @@ public class ProxyManagerTest {
 
         SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
-        proxyManager = new ProxyManager(settingsDescriptorKey, configurationAccessor);
+        proxyManager = new ProxyManager(new DefaultSettingsUtility(new SettingsDescriptorKey(), configurationAccessor, null));
     }
 
     @Test

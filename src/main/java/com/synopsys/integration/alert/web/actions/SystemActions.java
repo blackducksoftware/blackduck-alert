@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
@@ -51,12 +52,14 @@ public class SystemActions {
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
     private final ConfigActions configActions;
+    private SettingsUtility settingsUtility;
 
     @Autowired
-    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, ConfigActions configActions) {
+    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, ConfigActions configActions, final SettingsUtility settingsUtility) {
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
         this.configActions = configActions;
+        this.settingsUtility = settingsUtility;
     }
 
     public boolean isSystemInitialized() {
@@ -88,10 +91,10 @@ public class SystemActions {
 
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        FieldModel model = new FieldModel(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), valueMap);
+        FieldModel model = new FieldModel(settingsUtility.getSettingsName(), ConfigContextEnum.GLOBAL.name(), valueMap);
 
         try {
-            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsDescriptorKey.getUniversalKey());
+            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsUtility.getSettingsName());
             if (fieldModels.size() == 1) {
                 model = fieldModels.get(0);
             }

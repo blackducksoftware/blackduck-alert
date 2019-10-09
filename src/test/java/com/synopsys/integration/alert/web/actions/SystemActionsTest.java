@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -31,20 +32,23 @@ public class SystemActionsTest {
     private DefaultSystemStatusUtility defaultSystemStatusUtility;
     private DefaultSystemMessageUtility defaultSystemMessageUtility;
     private ConfigActions configActions;
+    private SettingsUtility settingsUtility;
 
     @BeforeEach
     public void initiailize() {
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+        settingsUtility = Mockito.mock(SettingsUtility.class);
         configActions = Mockito.mock(ConfigActions.class);
         final List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
+        Mockito.when(settingsUtility.getSettingsName()).thenReturn(SETTINGS_DESCRIPTOR_KEY.getUniversalKey());
     }
 
     @Test
     public void getSystemMessagesSinceStartup() {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         systemActions.getSystemMessagesSinceStartup();
         Mockito.verify(defaultSystemStatusUtility).getStartupTime();
         Mockito.verify(defaultSystemMessageUtility).getSystemMessagesAfter(Mockito.any());
@@ -52,35 +56,35 @@ public class SystemActionsTest {
 
     @Test
     public void testGetSystemMessagesAfter() throws Exception {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         systemActions.getSystemMessagesAfter("2018-11-13T00:00:00.000Z");
         Mockito.verify(defaultSystemMessageUtility).getSystemMessagesAfter(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBefore() throws Exception {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         systemActions.getSystemMessagesBefore("2018-11-13T00:00:00.000Z");
         Mockito.verify(defaultSystemMessageUtility).getSystemMessagesBefore(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBetween() throws Exception {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         systemActions.getSystemMessagesBetween("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(defaultSystemMessageUtility).findBetween(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessages() {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         systemActions.getSystemMessages();
         Mockito.verify(defaultSystemMessageUtility).getSystemMessages();
     }
 
     @Test
     public void testIsInitiailzed() {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
 
         assertFalse(systemActions.isSystemInitialized());
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
@@ -89,7 +93,7 @@ public class SystemActionsTest {
 
     @Test
     public void testGetCurrentSystemSetup() throws Exception {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         final String defaultAdminPassword = "defaultPassword";
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
@@ -122,7 +126,7 @@ public class SystemActionsTest {
 
     @Test
     public void testSaveRequiredInformation() throws Exception {
-        final SystemActions systemActions = new SystemActions(SETTINGS_DESCRIPTOR_KEY, defaultSystemStatusUtility, defaultSystemMessageUtility, configActions);
+        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, configActions, settingsUtility);
         final String defaultAdminPassword = "defaultPassword";
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
