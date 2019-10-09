@@ -6,7 +6,6 @@ import audit from 'store/reducers/audit';
 import descriptors from 'store/reducers/descriptors';
 import distributions from 'store/reducers/distributions';
 import distributionConfigs from 'store/reducers/distributionConfigs';
-import projects from 'store/reducers/projects';
 import session from 'store/reducers/session';
 import system from 'store/reducers/system';
 import refresh from 'store/reducers/refresh';
@@ -20,7 +19,6 @@ const rootReducer = combineReducers({
     descriptors,
     distributions,
     distributionConfigs,
-    projects,
     session,
     system,
     refresh,
