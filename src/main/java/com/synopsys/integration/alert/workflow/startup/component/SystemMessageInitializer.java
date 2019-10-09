@@ -37,12 +37,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 
 @Component
 @Order(3)

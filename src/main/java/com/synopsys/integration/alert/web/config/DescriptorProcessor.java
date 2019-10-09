@@ -26,8 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +47,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Component
 public class DescriptorProcessor {
@@ -60,7 +59,7 @@ public class DescriptorProcessor {
     public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> configurationActions, final List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
-        this.allConfigurationActions = configurationActions.stream().collect(Collectors.toMap(action -> action.getDescriptorKey().getUniversalKey(), Function.identity()));
+        this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();

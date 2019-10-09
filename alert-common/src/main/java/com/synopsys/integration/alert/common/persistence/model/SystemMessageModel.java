@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.persistence.model;
 
 public class SystemMessageModel {
     private final String severity;
