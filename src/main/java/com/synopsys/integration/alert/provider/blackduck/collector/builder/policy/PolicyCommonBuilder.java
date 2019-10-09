@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.SetMap;
@@ -61,31 +60,21 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 @Component
 public class PolicyCommonBuilder {
     private final Logger logger = LoggerFactory.getLogger(PolicyCommonBuilder.class);
-    private VulnerabilityUtil vulnerabilityUtil;
-    private ComponentBuilderUtil componentBuilderUtil;
-    private PolicyPriorityUtil policyPriorityUtil;
-
-    @Autowired
-    public PolicyCommonBuilder(VulnerabilityUtil vulnerabilityUtil, ComponentBuilderUtil componentBuilderUtil, PolicyPriorityUtil policyPriorityUtil) {
-        this.vulnerabilityUtil = vulnerabilityUtil;
-        this.componentBuilderUtil = componentBuilderUtil;
-        this.policyPriorityUtil = policyPriorityUtil;
-    }
 
     public List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
         Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
-            ComponentItemPriority priority = policyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
+            ComponentItemPriority priority = PolicyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
             Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
 
             List<LinkableItem> policyAttributes = new ArrayList<>();
-            LinkableItem policyNameItem = componentBuilderUtil.createPolicyNameItem(policyInfo);
-            LinkableItem nullablePolicySeverityItem = componentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
+            LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
+            LinkableItem nullablePolicySeverityItem = ComponentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
             optionalBomComponent.ifPresent(bomComponent -> {
-                policyAttributes.addAll(componentBuilderUtil.getLicenseLinkableItems(bomComponent));
-                policyAttributes.addAll(componentBuilderUtil.getUsageLinkableItems(bomComponent));
+                policyAttributes.addAll(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent));
+                policyAttributes.addAll(ComponentBuilderUtil.getUsageLinkableItems(bomComponent));
             });
             policyAttributes.addAll(customAttributes);
 
@@ -98,7 +87,7 @@ public class PolicyCommonBuilder {
                                                     .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                     .applyAllComponentAttributes(policyAttributes)
                                                     .applyNotificationId(notificationId);
-                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
                 componentItems.add(builder.build());
             } catch (Exception ex) {
                 logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentData.getComponentName(), componentData.getComponentVersionName());
@@ -136,7 +125,7 @@ public class PolicyCommonBuilder {
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
         ComponentData componentData, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
-        Map<String, VulnerabilityView> vulnerabilityViews = vulnerabilityUtil.createVulnerabilityViewMap(blackDuckService, vulnerableComponentViews);
+        Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckService, vulnerableComponentViews);
         List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                  .map(VulnerableComponentView::getVulnerabilityWithRemediation)
                                                                                  .sorted(Comparator.comparing(VulnerabilityWithRemediationView::getSeverity))
@@ -164,7 +153,7 @@ public class PolicyCommonBuilder {
 
             List<LinkableItem> vulnAttributes = groupedVulnEntries.getValue()
                                                     .stream()
-                                                    .map(vulnItem -> vulnerabilityUtil.createVulnerabilityAttributeItem(severityValue, vulnItem))
+                                                    .map(vulnItem -> VulnerabilityUtil.createVulnerabilityAttributeItem(severityValue, vulnItem))
                                                     .collect(Collectors.toList());
             ComponentItem.Builder builder = new ComponentItem.Builder()
                                                 .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
@@ -175,7 +164,7 @@ public class PolicyCommonBuilder {
                                                 .applyCollapseOnCategory(false)
                                                 .applyAllComponentAttributes(vulnAttributes)
                                                 .applyNotificationId(notificationId);
-            componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+            ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
             try {
                 vulnerabilityItems.add(builder.build());
             } catch (AlertException ex) {

@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -39,17 +38,15 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
-@Component
-public class ComponentBuilderUtil {
-
-    public List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
+public final class ComponentBuilderUtil {
+    public static List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
         return bomComponentView.getLicenses()
                    .stream()
                    .map(licenseView -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
                    .collect(Collectors.toList());
     }
 
-    public List<LinkableItem> getUsageLinkableItems(VersionBomComponentView bomComponentView) {
+    public static List<LinkableItem> getUsageLinkableItems(VersionBomComponentView bomComponentView) {
         return bomComponentView.getUsages()
                    .stream()
                    .map(MatchedFileUsagesType::prettyPrint)
@@ -57,12 +54,12 @@ public class ComponentBuilderUtil {
                    .collect(Collectors.toList());
     }
 
-    public LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
+    public static LinkableItem createPolicyNameItem(PolicyInfo policyInfo) {
         String policyName = policyInfo.getPolicyName();
         return new LinkableItem(MessageBuilderConstants.LABEL_POLICY_NAME, policyName);
     }
 
-    public Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
+    public static Optional<LinkableItem> createPolicySeverityItem(PolicyInfo policyInfo) {
         String severity = policyInfo.getSeverity();
         if (StringUtils.isNotBlank(severity)) {
             LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_POLICY_SEVERITY_NAME, severity);
@@ -71,7 +68,8 @@ public class ComponentBuilderUtil {
         return Optional.empty();
     }
 
-    public void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, ComponentData componentData) {
+    public static void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, ComponentData componentData) {
+        // TODO look into policy rules if the link works.
         String projectQueryLink = responseCache.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentData.getComponentName()).orElse(null);
         componentData.getComponentVersionName()
             .filter(StringUtils::isNotBlank)

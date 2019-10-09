@@ -62,6 +62,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
 
     @Override
     protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
+        // TODO scope prototype create a factory and move the bucket into the constructor.
         BlackDuckBucket blackDuckBucket = new BlackDuckBucket();
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory();
 
@@ -72,6 +73,8 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             if (null == blackDuckMessageBuilder) {
                 logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
+                //TODO create the response cache here? where is the response cache
+
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
                         .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
