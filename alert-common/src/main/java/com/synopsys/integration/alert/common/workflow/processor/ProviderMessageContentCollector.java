@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -33,6 +31,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 
@@ -40,7 +39,7 @@ public abstract class ProviderMessageContentCollector {
     private Map<FormatType, MessageContentFormatter> messageContentFormatterMap;
 
     public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentFormatters) {
-        this.messageContentFormatterMap = initializeProcessorMap(messageContentFormatters);
+        this.messageContentFormatterMap = DataStructureUtils.mapToValues(messageContentFormatters, MessageContentFormatter::getFormat);
     }
 
     public final List<MessageContentGroup> createMessageContentGroups(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
@@ -49,11 +48,5 @@ public abstract class ProviderMessageContentCollector {
     }
 
     protected abstract List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException;
-
-    private Map<FormatType, MessageContentFormatter> initializeProcessorMap(List<MessageContentFormatter> messageContentProcessors) {
-        return messageContentProcessors
-                   .stream()
-                   .collect(Collectors.toMap(MessageContentFormatter::getFormat, Function.identity()));
-    }
 
 }
