@@ -26,37 +26,31 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
 public class SAMLContext {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
 
-    private final SettingsDescriptorKey settingsDescriptorKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private SettingsUtility settingsUtility;
 
-    public SAMLContext(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor) {
-        this.settingsDescriptorKey = settingsDescriptorKey;
-        this.configurationAccessor = configurationAccessor;
+    public SAMLContext(final SettingsUtility settingsUtility) {
+        this.settingsUtility = settingsUtility;
     }
 
-    public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        return configurationAccessor.getConfigurationsByDescriptorName(settingsDescriptorKey.getUniversalKey())
-                   .stream()
-                   .findFirst()
-                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
+    public ConfigurationModel getCurrentConfiguration() throws AlertException {
+        return settingsUtility.getSettings().orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {
         final boolean enabled = false;
         try {
             return isSAMLEnabled(getCurrentConfiguration());
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
+        } catch (final AlertException ex) {
             logger.warn(ex.getMessage());
             logger.debug("cause: ", ex);
         }

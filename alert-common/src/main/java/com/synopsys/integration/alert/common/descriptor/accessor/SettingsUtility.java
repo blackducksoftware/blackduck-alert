@@ -1,0 +1,17 @@
+package com.synopsys.integration.alert.common.descriptor.accessor;
+
+import java.util.Collection;
+import java.util.Optional;
+
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+
+public interface SettingsUtility {
+
+    Optional<ConfigurationModel> getSettings() throws AlertException;
+
+    ConfigurationModel saveSettings(Collection<ConfigurationFieldModel> fieldModels) throws AlertException;
+
+    ConfigurationModel updateSettings(Long id, Collection<ConfigurationFieldModel> fieldModels) throws AlertException;
+}

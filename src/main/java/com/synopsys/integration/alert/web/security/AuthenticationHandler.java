@@ -94,10 +94,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.UserRole;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
@@ -115,9 +114,8 @@ import com.synopsys.integration.alert.web.security.authentication.saml.UserDetai
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
 
-    private final SettingsDescriptorKey settingsDescriptorKey;
+    private SettingsUtility settingsUtility;
     private final HttpPathManager httpPathManager;
-    private final ConfigurationAccessor configurationAccessor;
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
@@ -125,11 +123,10 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
 
     @Autowired
-    AuthenticationHandler(SettingsDescriptorKey settingsDescriptorKey, HttpPathManager httpPathManager, ConfigurationAccessor configurationAccessor, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
+    AuthenticationHandler(SettingsUtility settingsUtility, HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator) {
-        this.settingsDescriptorKey = settingsDescriptorKey;
+        this.settingsUtility = settingsUtility;
         this.httpPathManager = httpPathManager;
-        this.configurationAccessor = configurationAccessor;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.filePersistenceUtil = filePersistenceUtil;
@@ -218,7 +215,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLContext samlContext() {
-        return new SAMLContext(settingsDescriptorKey, configurationAccessor);
+        return new SAMLContext(settingsUtility);
     }
 
     @Bean

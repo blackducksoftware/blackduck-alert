@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.common.descriptor.accessor;
 
 import java.util.Collection;
 import java.util.Set;
@@ -28,7 +28,7 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
-public interface AuthorizationUtil {
+public interface AuthorizationUtility {
     Set<UserRoleModel> createRoleModels();
 
     Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds);

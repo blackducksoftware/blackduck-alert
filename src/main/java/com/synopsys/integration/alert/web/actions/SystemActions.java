@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
@@ -51,14 +50,12 @@ import com.synopsys.integration.rest.RestConstants;
 public class SystemActions {
     private final Logger logger = LoggerFactory.getLogger(SystemActions.class);
 
-    private final SettingsDescriptorKey settingsDescriptorKey;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
     private final ConfigActions configActions;
 
     @Autowired
-    public SystemActions(SettingsDescriptorKey settingsDescriptorKey, SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, ConfigActions configActions) {
-        this.settingsDescriptorKey = settingsDescriptorKey;
+    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, ConfigActions configActions) {
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
         this.configActions = configActions;
