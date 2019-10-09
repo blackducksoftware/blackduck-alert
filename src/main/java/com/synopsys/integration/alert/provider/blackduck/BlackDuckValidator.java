@@ -36,8 +36,8 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.provider.ProviderValidator;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -91,11 +91,11 @@ public class BlackDuckValidator extends ProviderValidator {
                         logger.info("  -> Black Duck Provider Valid!");
                     } else {
                         final String message = "Can not connect to the Black Duck server with the current configuration.";
-                        connectivityWarning(systemMessageUtility, message);
+                        connectivityWarning(message);
                     }
                 } else {
                     final String message = "The Black Duck configuration is not valid.";
-                    connectivityWarning(systemMessageUtility, message);
+                    connectivityWarning(message);
                 }
             }
         } catch (final MalformedURLException | IntegrationException | AlertRuntimeException ex) {
@@ -105,7 +105,7 @@ public class BlackDuckValidator extends ProviderValidator {
         return true;
     }
 
-    private void connectivityWarning(final SystemMessageUtility systemMessageUtility, final String message) {
+    private void connectivityWarning(final String message) {
         logger.warn(message);
         systemMessageUtility.addSystemMessage(message, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
     }

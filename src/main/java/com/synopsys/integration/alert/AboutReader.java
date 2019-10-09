@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+
 public class SystemMessageModelTest {
 
     @Test

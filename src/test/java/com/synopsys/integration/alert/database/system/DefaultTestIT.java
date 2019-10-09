@@ -16,16 +16,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class SystemStatusUtilityTestIT extends AlertIntegrationTest {
+public class DefaultTestIT extends AlertIntegrationTest {
     @Autowired
     private SystemStatusRepository systemStatusRepository;
 
     @Autowired
-    private SystemStatusUtility systemStatusUtility;
+    private DefaultSystemStatusUtility defaultSystemStatusUtility;
 
     @BeforeEach
     public void init() {
@@ -40,23 +40,23 @@ public class SystemStatusUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSetSystemInitialized() {
-        systemStatusUtility.setSystemInitialized(false);
+        defaultSystemStatusUtility.setSystemInitialized(false);
         final List<SystemStatus> statusList = systemStatusRepository.findAll();
-        SystemStatus systemStatus = systemStatusRepository.getOne(SystemStatusUtility.SYSTEM_STATUS_ID);
+        SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
         assertFalse(systemStatus.isInitialConfigurationPerformed());
-        assertFalse(systemStatusUtility.isSystemInitialized());
+        assertFalse(defaultSystemStatusUtility.isSystemInitialized());
 
-        systemStatusUtility.setSystemInitialized(true);
-        systemStatus = systemStatusRepository.getOne(SystemStatusUtility.SYSTEM_STATUS_ID);
+        defaultSystemStatusUtility.setSystemInitialized(true);
+        systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
         assertTrue(systemStatus.isInitialConfigurationPerformed());
-        assertTrue(systemStatusUtility.isSystemInitialized());
+        assertTrue(defaultSystemStatusUtility.isSystemInitialized());
     }
 
     @Test
     public void testSaveStartupTime() {
         final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        systemStatusUtility.startupOccurred();
-        final SystemStatus systemStatus = systemStatusRepository.getOne(SystemStatusUtility.SYSTEM_STATUS_ID);
+        defaultSystemStatusUtility.startupOccurred();
+        final SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
         final Date date = systemStatus.getStartupTime();
         final ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
         assertNotNull(date);
@@ -69,10 +69,10 @@ public class SystemStatusUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetStartupTime() {
-        systemStatusUtility.startupOccurred();
-        final SystemStatus systemStatus = systemStatusRepository.getOne(SystemStatusUtility.SYSTEM_STATUS_ID);
+        defaultSystemStatusUtility.startupOccurred();
+        final SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
         final Date expectedDate = systemStatus.getStartupTime();
 
-        assertEquals(expectedDate, systemStatusUtility.getStartupTime());
+        assertEquals(expectedDate, defaultSystemStatusUtility.getStartupTime());
     }
 }

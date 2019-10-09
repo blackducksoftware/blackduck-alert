@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +36,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
-import com.synopsys.integration.alert.database.system.SystemMessage;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.web.config.ConfigActions;
-import com.synopsys.integration.alert.web.model.SystemMessageModel;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
@@ -69,26 +67,26 @@ public class SystemActions {
     }
 
     public List<SystemMessageModel> getSystemMessagesSinceStartup() {
-        return systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime()).stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime());
     }
 
     public List<SystemMessageModel> getSystemMessagesAfter(final String startDate) throws ParseException {
         final Date date = RestConstants.parseDateString(startDate);
-        return systemMessageUtility.getSystemMessagesAfter(date).stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.getSystemMessagesAfter(date);
     }
 
     public List<SystemMessageModel> getSystemMessagesBefore(final String endDate) throws ParseException {
         final Date date = RestConstants.parseDateString(endDate);
-        return systemMessageUtility.getSystemMessagesBefore(date).stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.getSystemMessagesBefore(date);
     }
 
     public List<SystemMessageModel> getSystemMessagesBetween(final String startDate, final String endDate) throws ParseException {
         final DateRange dateRange = DateRange.of(startDate, endDate);
-        return systemMessageUtility.findBetween(dateRange).stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.findBetween(dateRange);
     }
 
     public List<SystemMessageModel> getSystemMessages() {
-        return systemMessageUtility.getSystemMessages().stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.getSystemMessages();
     }
 
     public FieldModel getCurrentSystemSetup() {
@@ -120,11 +118,6 @@ public class SystemActions {
         }
 
         return systemSettings;
-    }
-
-    private SystemMessageModel convert(final SystemMessage systemMessage) {
-        final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
-        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 
 }

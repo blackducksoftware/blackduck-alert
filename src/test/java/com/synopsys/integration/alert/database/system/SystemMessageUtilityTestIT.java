@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
 public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
@@ -29,7 +32,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
     public static final String TYPE = "type";
     private static final int MESSAGE_COUNT = 5;
     @Autowired
-    private SystemMessageUtility systemMessageUtility;
+    private DefaultSystemMessageUtility defaultSystemMessageUtility;
     @Autowired
     private SystemMessageRepository systemMessageRepository;
 
@@ -48,15 +51,15 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
     public void testGetSystemMessages() {
         final List<SystemMessage> expectedMessageList = createSystemMessageList();
         systemMessageRepository.saveAll(expectedMessageList);
-        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessages();
-        assertEquals(expectedMessageList, actualMessageList);
+        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessages();
+        assertEquals(expectedMessageList.size(), actualMessageList.size());
     }
 
     @Test
     public void testAddSystemMessage() {
         final String content = "add message test content";
         final SystemMessageSeverity systemMessageSeverity = SystemMessageSeverity.WARNING;
-        systemMessageUtility.addSystemMessage(content, systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+        defaultSystemMessageUtility.addSystemMessage(content, systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
         assertEquals(1, actualMessageList.size());
         final SystemMessage actualMessage = actualMessageList.get(0);
@@ -69,11 +72,11 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         final List<SystemMessage> expectedMessages = createSystemMessageList();
         systemMessageRepository.saveAll(expectedMessages);
         final SystemMessageSeverity systemMessageSeverity = SystemMessageSeverity.WARNING;
-        systemMessageUtility.addSystemMessage("message 1", systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-        systemMessageUtility.addSystemMessage("message 2", systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+        defaultSystemMessageUtility.addSystemMessage("message 1", systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+        defaultSystemMessageUtility.addSystemMessage("message 2", systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         final List<SystemMessage> savedMessages = systemMessageRepository.findAll();
         assertEquals(MESSAGE_COUNT + 2, savedMessages.size());
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+        defaultSystemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
@@ -89,7 +92,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesAfter(currentDate);
+        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesAfter(currentDate);
         assertNotNull(actualMessageList);
         assertEquals(2, actualMessageList.size());
     }
@@ -105,17 +108,17 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         currentTime = currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesBefore(currentDate);
+        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
-        assertEquals(expectedMessages, actualMessageList);
+        assertEquals(expectedMessages.size(), actualMessageList.size());
     }
 
     @Test
     public void testFindCreatedBeforeEmptyList() {
         final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         final Date currentDate = Date.from(currentTime.toInstant());
-        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesBefore(currentDate);
+        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
         assertTrue(actualMessageList.isEmpty());
     }
 
@@ -133,22 +136,22 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
         final DateRange dateRange = DateRange.of(Date.from(startTime.toInstant()), currentDate);
-        final List<SystemMessage> actualMessageList = systemMessageUtility.findBetween(dateRange);
+        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.findBetween(dateRange);
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
-        assertEquals(expectedMessages, actualMessageList);
+        assertEquals(expectedMessages.size(), actualMessageList.size());
     }
 
     @Test
     public void testDeleteList() {
         final List<SystemMessage> savedMessages = createSystemMessageList();
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessage> messagesToDelete = savedMessages.subList(1, 3);
+        final List<SystemMessageModel> messagesToDelete = savedMessages.subList(1, 3).stream().map(this::convertToSystemMessage).collect(Collectors.toList());
 
-        systemMessageUtility.deleteSystemMessages(messagesToDelete);
+        defaultSystemMessageUtility.deleteSystemMessages(messagesToDelete);
 
         final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
-        assertNotEquals(savedMessages, actualMessageList);
+        assertNotEquals(savedMessages.stream().map(this::convertToSystemMessage).collect(Collectors.toList()), actualMessageList);
         assertNotEquals(messagesToDelete.size(), actualMessageList.size());
     }
 
@@ -160,5 +163,10 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
             messages.add(new SystemMessage(Date.from(zonedDateTime.toInstant()), "severity_" + index, "content_" + index, TYPE + "_" + index));
         }
         return messages;
+    }
+
+    private SystemMessageModel convertToSystemMessage(SystemMessage systemMessage) {
+        String date = RestConstants.formatDate(systemMessage.getCreated());
+        return new SystemMessageModel(date, systemMessage.getSeverity(), systemMessage.getContent(), systemMessage.getType());
     }
 }

@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.database.api.SystemStatusUtility;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -221,14 +221,14 @@ public class UpdateCheckerTest {
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        Mockito.when(systemStatusUtility.getStartupTime()).thenReturn(new Date());
+        final DefaultSystemStatusUtility defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
+        Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
+        Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(new Date());
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
 
-        final AboutReader reader = new AboutReader(gson, systemStatusUtility);
+        final AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility);
         final UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
         final UpdateModel updateModel = updateChecker.getUpdateModel();

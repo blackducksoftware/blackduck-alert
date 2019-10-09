@@ -28,25 +28,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.system.SystemStatus;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
 @Component
-public class SystemStatusUtility {
+public class DefaultSystemStatusUtility implements SystemStatusUtility {
     public static final Long SYSTEM_STATUS_ID = 1L;
     private final SystemStatusRepository systemStatusRepository;
 
     @Autowired
-    public SystemStatusUtility(final SystemStatusRepository systemStatusRepository) {
+    public DefaultSystemStatusUtility(final SystemStatusRepository systemStatusRepository) {
         this.systemStatusRepository = systemStatusRepository;
     }
 
+    @Override
     @Transactional
     public boolean isSystemInitialized() {
         return getSystemStatus().isInitialConfigurationPerformed();
     }
 
+    @Override
     @Transactional
     public void setSystemInitialized(final boolean systemInitialized) {
         final SystemStatus systemStatus = getSystemStatus();
@@ -54,6 +57,7 @@ public class SystemStatusUtility {
         updateSystemStatus(newSystemStatus);
     }
 
+    @Override
     @Transactional
     public void startupOccurred() {
         final SystemStatus systemStatus = getSystemStatus();
@@ -61,6 +65,7 @@ public class SystemStatusUtility {
         updateSystemStatus(newSystemStatus);
     }
 
+    @Override
     @Transactional
     public Date getStartupTime() {
         return getSystemStatus().getStartupTime();
