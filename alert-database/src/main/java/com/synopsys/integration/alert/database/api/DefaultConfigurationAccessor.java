@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,12 +44,12 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
@@ -69,8 +68,6 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 @Component
 @Transactional
 public class DefaultConfigurationAccessor implements ConfigurationAccessor {
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm '(UTC)'";
-
     private static final String NULL_JOB_ID = "The job id cannot be null";
     private static final String NULL_CONFIG_ID = "The config id cannot be null";
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
@@ -246,7 +243,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     public ConfigurationModel createConfiguration(final String descriptorName, final ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         final Long configContextId = getConfigContextIdOrThrowException(context);
-        Date currentTime = DateRange.createCurrentDateTimestamp();
+        Date currentTime = DateUtils.createCurrentDateTimestamp();
         final DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId, currentTime, currentTime);
         final DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
 
@@ -296,7 +293,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                 updatedConfig.put(configFieldModel);
             }
         }
-        descriptorConfigEntity.setLastUpdated(DateRange.createCurrentDateTimestamp());
+        descriptorConfigEntity.setLastUpdated(DateUtils.createCurrentDateTimestamp());
         descriptorConfigsRepository.save(descriptorConfigEntity);
 
         return updatedConfig;
@@ -382,9 +379,8 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     private ConfigurationModel createConfigModel(Long descriptorId, Long configId, Date createdAt, Date lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
         final String configContext = getContextById(contextId);
 
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        String createdAtFormatted = formatter.format(createdAt);
-        String lastUpdatedFormatted = formatter.format(lastUpdated);
+        String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
         final ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
         final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
@@ -405,17 +401,15 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, Date createdAt, Date lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
         final String configContext = getContextById(contextId);
 
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        String createdAtFormatted = formatter.format(createdAt);
-        String lastUpdatedFormatted = formatter.format(lastUpdated);
+        String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
         return new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
     }
 
     private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, Date createdAt, Date lastUpdated, ConfigContextEnum context) {
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        String createdAtFormatted = formatter.format(createdAt);
-        String lastUpdatedFormatted = formatter.format(lastUpdated);
+        String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
         return new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, context);
     }

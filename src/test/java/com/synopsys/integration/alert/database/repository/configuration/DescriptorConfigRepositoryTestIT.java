@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
@@ -58,7 +58,7 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
         final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateRange.createCurrentDateTimestamp();
+        Date currentTime = DateUtils.createCurrentDateTimestamp();
         final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
         final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
         final DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
@@ -83,7 +83,7 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
         final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateRange.createCurrentDateTimestamp();
+        Date currentTime = DateUtils.createCurrentDateTimestamp();
         final DescriptorConfigEntity descriptorFieldEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
         final DescriptorConfigEntity descriptorFieldEntity2 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorFieldEntity1);
