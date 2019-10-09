@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
@@ -54,7 +55,7 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Override
     @Transactional
     public void addSystemMessage(final String message, final SystemMessageSeverity severity, final SystemMessageType messageType) {
-        final Date currentTime = DateRange.createCurrentDateTimestamp();
+        final Date currentTime = DateUtils.createCurrentDateTimestamp();
         final SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
     }
@@ -75,7 +76,7 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Override
     @Transactional
     public List<SystemMessageModel> getSystemMessagesAfter(final Date date) {
-        final Date currentTime = DateRange.createCurrentDateTimestamp();
+        final Date currentTime = DateUtils.createCurrentDateTimestamp();
         return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(date, currentTime));
     }
 

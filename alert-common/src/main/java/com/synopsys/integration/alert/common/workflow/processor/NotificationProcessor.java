@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -43,6 +42,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
 @Component
@@ -56,7 +56,7 @@ public class NotificationProcessor {
     @Autowired
     public NotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
         this.configurationAccessor = configurationAccessor;
-        this.providerKeyToProvider = initializeProviderMap(providers);
+        this.providerKeyToProvider = DataStructureUtils.mapToValues(providers, provider -> provider.getKey().getUniversalKey());
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
@@ -131,12 +131,6 @@ public class NotificationProcessor {
             logger.error("Could not create distribution events", e);
         }
         return List.of();
-    }
-
-    private Map<String, Provider> initializeProviderMap(List<Provider> providers) {
-        return providers
-                   .stream()
-                   .collect(Collectors.toMap(provider -> provider.getKey().getUniversalKey(), Function.identity()));
     }
 
 }
