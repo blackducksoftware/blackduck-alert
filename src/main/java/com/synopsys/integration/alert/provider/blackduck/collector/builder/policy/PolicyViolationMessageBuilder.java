@@ -54,6 +54,7 @@ import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpr
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -125,7 +126,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         String bomComponentUrl = componentVersionStatus.getBomComponent();
 
         Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
-        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
         componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation, componentVersionStatus.getBomComponent(), List.of()));
         for (PolicyInfo policyInfo : policies) {
             LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
@@ -151,7 +152,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             try {
                 ProjectVersionWrapper projectVersionWrapper = optionalProjectVersionWrapper.get();
                 String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
-                ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+                ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK);
                 List<VulnerableComponentView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, bomComponent);
                 List<ComponentItem> vulnerabilityComponentItems = policyCommonBuilder
                                                                       .createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, notificationId,

@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Messa
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
@@ -69,8 +68,7 @@ public final class ComponentBuilderUtil {
     }
 
     public static void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, ComponentData componentData) {
-        // TODO look into policy rules if the link works.
-        String projectQueryLink = responseCache.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), ProjectVersionView.VULNERABLE_COMPONENTS_LINK, componentData.getComponentName()).orElse(null);
+        String projectQueryLink = responseCache.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), componentData.getProjectComponentLink(), componentData.getComponentName()).orElse(null);
         componentData.getComponentVersionName()
             .filter(StringUtils::isNotBlank)
             .ifPresentOrElse(componentVersion -> {

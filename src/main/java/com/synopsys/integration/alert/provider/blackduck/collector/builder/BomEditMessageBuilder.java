@@ -51,6 +51,7 @@ import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpr
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
@@ -125,7 +126,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
         String componentVersionName = versionBomComponent.getComponentVersionName();
         String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
         try {
-            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK);
             if (VulnerabilityUtil.doesSecurityRiskProfileHaveVulnerabilities(logger, securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(commonAttributes);
@@ -163,7 +164,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
             String componentName = versionBomComponent.getComponentName();
             String componentVersionName = versionBomComponent.getComponentVersionName();
             String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
-            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
             List<VersionBomPolicyRuleView> policyRules = blackDuckService.getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (VersionBomPolicyRuleView rule : policyRules) {
                 if (!PolicySummaryStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
