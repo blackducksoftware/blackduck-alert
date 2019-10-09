@@ -217,7 +217,7 @@ public class AlertStartupInitializer extends StartupComponent {
 
     private Collection<ConfigurationFieldModel> saveAction(String descriptorName, Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
         final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
-        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), null, null, fieldValueModelMap);
+        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         final FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();
     }
