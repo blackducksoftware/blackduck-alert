@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.mockito.Mockito;
 
@@ -26,6 +24,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -174,9 +173,7 @@ public class MockConfigurationModelFactory {
     }
 
     public static Map<String, ConfigurationFieldModel> mapFieldKeyToFields(final Collection<ConfigurationFieldModel> fields) {
-        return fields
-                   .stream()
-                   .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
+        return DataStructureUtils.mapToValues(fields, ConfigurationFieldModel::getFieldKey);
     }
 
     public static Map<String, ConfigurationFieldModel> mapStringsToFields(final Map<String, String> fields) {

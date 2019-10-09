@@ -23,8 +23,6 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.text.ParseException;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -40,11 +38,6 @@ public class DateRange extends AlertSerializableModel {
 
     public static final DateRange of(final String start, final String end) throws ParseException {
         return new DateRange(RestConstants.parseDateString(start), RestConstants.parseDateString(end));
-    }
-
-    public static final Date createCurrentDateTimestamp() {
-        final ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        return Date.from(zonedDateTime.toInstant());
     }
 
     private DateRange(final Date start, final Date end) {

@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.system.SystemStatus;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
@@ -67,7 +67,7 @@ public class SystemStatusUtility {
     }
 
     private Date createCurrentDateTimestamp() {
-        return DateRange.createCurrentDateTimestamp();
+        return DateUtils.createCurrentDateTimestamp();
     }
 
     private SystemStatus getSystemStatus() {
