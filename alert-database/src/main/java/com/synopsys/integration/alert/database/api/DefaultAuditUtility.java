@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -65,6 +63,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -72,8 +71,6 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 
 @Component
 public class DefaultAuditUtility implements AuditUtility {
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
@@ -344,11 +341,9 @@ public class DefaultAuditUtility implements AuditUtility {
     }
 
     private Date parseDateString(String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = null;
         try {
-            date = sdf.parse(dateString);
+            date = DateUtils.parseDate(dateString, DateUtils.AUDIT_DATE_FORMAT);
         } catch (ParseException e) {
             logger.error(e.toString());
         }

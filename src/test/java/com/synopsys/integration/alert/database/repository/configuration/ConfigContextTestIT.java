@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
@@ -71,7 +71,7 @@ public class ConfigContextTestIT extends AlertIntegrationTest {
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 
-        Date currentTime = DateRange.createCurrentDateTimestamp();
+        Date currentTime = DateUtils.createCurrentDateTimestamp();
         final DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity);
         assertEquals(1, descriptorConfigRepository.findAll().size());
