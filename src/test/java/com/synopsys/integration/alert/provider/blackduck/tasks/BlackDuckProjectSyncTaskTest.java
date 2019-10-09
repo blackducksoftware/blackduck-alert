@@ -44,7 +44,7 @@ public class BlackDuckProjectSyncTaskTest {
 
         final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
         configurationFieldModel.setFieldValues(List.of("project", "project2"));
-        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.DISTRIBUTION);
+        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
         configurationModel.put(configurationFieldModel);
         final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
         Mockito.when(configurationAccessor.getAllJobs()).thenReturn(List.of(configurationJobModel));

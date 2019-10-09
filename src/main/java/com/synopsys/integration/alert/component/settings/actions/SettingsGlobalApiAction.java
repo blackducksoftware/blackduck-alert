@@ -87,7 +87,8 @@ public class SettingsGlobalApiAction extends ApiAction {
         final HashMap<String, FieldValueModel> fields = new HashMap<>();
         fields.putAll(fieldModel.getKeyToValues());
 
-        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(),
+            fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fields);
         modelToSave.setId(fieldModel.getId());
         return modelToSave;
     }
@@ -106,7 +107,7 @@ public class SettingsGlobalApiAction extends ApiAction {
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_PWD);
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
-        return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), keyToValues);
+        return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), keyToValues);
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {

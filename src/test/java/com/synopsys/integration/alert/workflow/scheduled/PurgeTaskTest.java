@@ -21,7 +21,7 @@ public class PurgeTaskTest {
     public void cronExpressionNotDefault() throws AlertDatabaseConstraintException {
         final String notDefaultValue = "44";
         final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, ConfigContextEnum.GLOBAL);
+        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
         final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);

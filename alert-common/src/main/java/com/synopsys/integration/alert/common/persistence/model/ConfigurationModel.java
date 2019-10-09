@@ -37,16 +37,20 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public final class ConfigurationModel extends AlertSerializableModel {
     private final Long descriptorId;
     private final Long configurationId;
+    private final String createdAt;
+    private final String lastUpdated;
     private final ConfigContextEnum context;
     private final Map<String, ConfigurationFieldModel> configuredFields;
 
-    public ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final String context) {
-        this(registeredDescriptorId, descriptorConfigId, ConfigContextEnum.valueOf(context));
+    public ConfigurationModel(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, String context) {
+        this(registeredDescriptorId, descriptorConfigId, createdAt, lastUpdated, ConfigContextEnum.valueOf(context));
     }
 
-    public ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final ConfigContextEnum context) {
+    public ConfigurationModel(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, ConfigContextEnum context) {
         descriptorId = registeredDescriptorId;
         configurationId = descriptorConfigId;
+        this.createdAt = createdAt;
+        this.lastUpdated = lastUpdated;
         this.context = context;
         configuredFields = new HashMap<>();
     }
@@ -57,6 +61,14 @@ public final class ConfigurationModel extends AlertSerializableModel {
 
     public Long getConfigurationId() {
         return configurationId;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
     }
 
     public ConfigContextEnum getDescriptorContext() {

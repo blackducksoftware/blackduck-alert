@@ -32,21 +32,31 @@ public class FieldModel extends Config {
     private Map<String, FieldValueModel> keyToValues;
     private final String descriptorName;
     private final String context;
+    private final String createdAt;
+    private final String lastUpdated;
 
     private FieldModel() {
-        this(null, null, null);
+        this(null, null, null, null, null);
     }
 
-    public FieldModel(final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
-        this.descriptorName = descriptorName;
-        this.context = context;
-        this.keyToValues = keyToValues;
+    public FieldModel(String descriptorName, String context, Map<String, FieldValueModel> keyToValues) {
+        this(null, descriptorName, context, null, null, keyToValues);
     }
 
-    public FieldModel(final String configId, final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
+    public FieldModel(String configId, String descriptorName, String context, Map<String, FieldValueModel> keyToValues) {
+        this(configId, descriptorName, context, null, null, keyToValues);
+    }
+
+    public FieldModel(String descriptorName, String context, String createdAt, String lastUpdated, Map<String, FieldValueModel> keyToValues) {
+        this(null, descriptorName, context, createdAt, lastUpdated, keyToValues);
+    }
+
+    public FieldModel(String configId, String descriptorName, String context, String createdAt, String lastUpdated, Map<String, FieldValueModel> keyToValues) {
         super(configId);
         this.descriptorName = descriptorName;
         this.context = context;
+        this.createdAt = createdAt;
+        this.lastUpdated = lastUpdated;
         this.keyToValues = keyToValues;
     }
 
@@ -56,6 +66,14 @@ public class FieldModel extends Config {
 
     public String getContext() {
         return context;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
     }
 
     public Map<String, FieldValueModel> getKeyToValues() {
@@ -94,7 +112,9 @@ public class FieldModel extends Config {
         }
         final String modelDescriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
         final String modelContext = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
-        final FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, fieldValueModelMap);
+        final String createdAt = StringUtils.isNotBlank(getCreatedAt()) ? getCreatedAt() : fieldModel.getCreatedAt();
+        final String lastUpdated = StringUtils.isNotBlank(getLastUpdated()) ? getLastUpdated() : fieldModel.getLastUpdated();
+        final FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, createdAt, lastUpdated, fieldValueModelMap);
         final String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
         newFieldModel.setId(id);
         return newFieldModel;

@@ -22,8 +22,10 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled.update;
 
+import static com.synopsys.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
+import static com.synopsys.integration.alert.common.util.DateUtils.parseDate;
+
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
@@ -54,7 +56,6 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class UpdateChecker {
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
     private static final String SNAPSHOT = "-SNAPSHOT";
     private static final char VERSION_SEPARATOR = '.';
 
@@ -213,9 +214,8 @@ public class UpdateChecker {
      */
     private int compareDateStrings(String first, String second) {
         try {
-            SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-            Date firstDate = formatter.parse(first);
-            Date secondDate = formatter.parse(second);
+            Date firstDate = parseDate(first, DOCKER_DATE_FORMAT);
+            Date secondDate = parseDate(second, DOCKER_DATE_FORMAT);
 
             Date hourEarlier = DateUtils.addHours(firstDate, -1);
             Date hourLater = DateUtils.addHours(firstDate, 1);
@@ -231,7 +231,7 @@ public class UpdateChecker {
                 return 1;
             }
         } catch (ParseException e) {
-            logger.debug("Could not parse the date strings with the format {}.", DATE_FORMAT);
+            logger.debug("Could not parse the date strings with the format {}.", DOCKER_DATE_FORMAT);
             logger.debug(e.getMessage(), e);
         }
         return 0;

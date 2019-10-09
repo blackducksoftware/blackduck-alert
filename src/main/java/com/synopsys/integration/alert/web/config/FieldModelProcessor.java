@@ -154,7 +154,7 @@ public class FieldModelProcessor {
             final FieldValueModel fieldValueModel = new FieldValueModel(configurationFieldModel.getFieldValues(), configurationFieldModel.isSet());
             fields.put(configurationFieldModel.getFieldKey(), fieldValueModel);
         }
-        final FieldModel newFieldModel = new FieldModel("", "", fields);
+        final FieldModel newFieldModel = new FieldModel("", "", fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fields);
         return fieldModel.fill(newFieldModel);
     }
 

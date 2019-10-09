@@ -85,11 +85,9 @@ public class ConfigActions {
                     fieldModelList.add(fieldModel);
                 }
             }
-
             if (fieldModelList.isEmpty()) {
                 fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
             }
-
             for (final FieldModel fieldModel : fieldModelList) {
                 fields.add(fieldModelProcessor.performAfterReadAction(fieldModel));
             }
