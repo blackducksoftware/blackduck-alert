@@ -85,12 +85,9 @@ public class ConfigActions {
                     fieldModelList.add(fieldModel);
                 }
             }
-
-            // TODO investigate why this is here instead of in an else if
             if (fieldModelList.isEmpty()) {
                 fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
             }
-
             for (final FieldModel fieldModel : fieldModelList) {
                 fields.add(fieldModelProcessor.performAfterReadAction(fieldModel));
             }
