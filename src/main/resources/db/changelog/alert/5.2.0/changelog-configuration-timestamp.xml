@@ -10,4 +10,22 @@
             <column name="LAST_UPDATED" type="TIMESTAMP" valueComputed="SYSDATE"/>
         </addColumn>
     </changeSet>
+    <!-- Clean up Empty configs -->
+    <changeSet author="jrichard" id="2019-10-07-15-15-58-375-2">
+        <sql dbms="h2" stripComments="true">
+            DELETE FROM Alert.Descriptor_Configs
+            WHERE Descriptor_Configs.id
+            IN (
+                SELECT ID FROM Alert.Descriptor_Configs
+                WHERE Descriptor_Configs.id
+                NOT IN (
+                    SELECT DISTINCT config_id FROM Alert.Field_Values
+                )
+            )
+            AND Descriptor_Configs.id
+            NOT IN (
+                SELECT config_id FROM Alert.Config_Groups
+            );
+        </sql>
+    </changeSet>
 </databaseChangeLog>
