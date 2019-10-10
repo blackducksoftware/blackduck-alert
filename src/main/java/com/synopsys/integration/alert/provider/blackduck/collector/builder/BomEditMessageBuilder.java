@@ -51,6 +51,7 @@ import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpr
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicySummaryStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomPolicyRuleView;
@@ -67,16 +68,10 @@ import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 @Component
 public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(BomEditMessageBuilder.class);
-    private VulnerabilityUtil vulnerabilityUtil;
-    private PolicyPriorityUtil policyPriorityUtil;
-    private ComponentBuilderUtil componentBuilderUtil;
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
-    public BomEditMessageBuilder(VulnerabilityUtil vulnerabilityUtil, PolicyPriorityUtil policyPriorityUtil, ComponentBuilderUtil componentBuilderUtil, PolicyCommonBuilder policyCommonBuilder) {
-        this.vulnerabilityUtil = vulnerabilityUtil;
-        this.policyPriorityUtil = policyPriorityUtil;
-        this.componentBuilderUtil = componentBuilderUtil;
+    public BomEditMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
         this.policyCommonBuilder = policyCommonBuilder;
     }
 
@@ -108,7 +103,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                                                                                       projectVersionData.getProjectVersionView().getHref().orElse(null))
                                                                                   .applyProviderCreationTime(providerCreationDate);
 
-                List<LinkableItem> commonAttributes = Stream.concat(componentBuilderUtil.getLicenseLinkableItems(bomComponent.get()).stream(), componentBuilderUtil.getUsageLinkableItems(bomComponent.get()).stream())
+                List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent.get()).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent.get()).stream())
                                                           .collect(Collectors.toList());
 
                 List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(responseCache, componentService, notificationId, versionBomComponentView, projectVersionData, commonAttributes));
@@ -131,14 +126,14 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
         String componentVersionName = versionBomComponent.getComponentVersionName();
         String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
         try {
-            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
-            if (vulnerabilityUtil.doesSecurityRiskProfileHaveVulnerabilities(securityRiskProfile)) {
+            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK);
+            if (VulnerabilityUtil.doesSecurityRiskProfileHaveVulnerabilities(logger, securityRiskProfile)) {
                 List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(commonAttributes);
 
                 Optional<ComponentVersionView> componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, versionBomComponent.getComponentVersion());
                 if (componentVersionView.isPresent()) {
-                    List<LinkableItem> remediationItems = vulnerabilityUtil.getRemediationItems(componentService, componentVersionView.get());
+                    List<LinkableItem> remediationItems = VulnerabilityUtil.getRemediationItems(componentService, componentVersionView.get());
                     componentAttributes.addAll(remediationItems);
                 }
                 ComponentItem.Builder builder = new ComponentItem.Builder()
@@ -149,7 +144,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                                                     .applyCollapseOnCategory(true)
                                                     .applyAllComponentAttributes(componentAttributes)
                                                     .applyNotificationId(notificationId);
-                componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
                 items.add(builder.build());
             }
         } catch (Exception genericException) {
@@ -169,7 +164,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
             String componentName = versionBomComponent.getComponentName();
             String componentVersionName = versionBomComponent.getComponentVersionName();
             String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
-            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl);
+            ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
             List<VersionBomPolicyRuleView> policyRules = blackDuckService.getAllResponses(versionBomComponent, VersionBomComponentView.POLICY_RULES_LINK_RESPONSE);
             for (VersionBomPolicyRuleView rule : policyRules) {
                 if (!PolicySummaryStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
@@ -180,7 +175,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                 LinkableItem policySeverityItem = new LinkableItem(MessageBuilderConstants.LABEL_POLICY_SEVERITY_NAME, rule.getSeverity());
                 List<PolicyRuleExpressionView> expressions = rule.getExpression().getExpressions();
                 if (policyCommonBuilder.hasVulnerabilityRule(expressions)) {
-                    List<VulnerableComponentView> vulnerableComponentViews = vulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, versionBomComponent);
+                    List<VulnerableComponentView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, versionBomComponent);
                     List<ComponentItem> vulnerabilityComponentItems =
                         policyCommonBuilder.createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverityItem, componentData, notificationId, blackDuckService,
                             blackDuckResponseCache);
@@ -189,11 +184,11 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                     ComponentItem.Builder builder = new ComponentItem.Builder()
                                                         .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
                                                         .applyOperation(ItemOperation.UPDATE)
-                                                        .applyPriority(policyPriorityUtil.getPriorityFromSeverity(rule.getSeverity()))
+                                                        .applyPriority(PolicyPriorityUtil.getPriorityFromSeverity(rule.getSeverity()))
                                                         .applyCategoryItem(policyNameItem)
                                                         .applyAllComponentAttributes(commonAttributes)
                                                         .applyNotificationId(notificationId);
-                    componentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                    ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
                     items.add(builder.build());
                 }
             }
