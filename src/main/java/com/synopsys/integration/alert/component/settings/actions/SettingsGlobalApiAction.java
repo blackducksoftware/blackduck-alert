@@ -32,7 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
@@ -42,6 +41,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 
 @Component
@@ -50,12 +50,14 @@ public class SettingsGlobalApiAction extends ApiAction {
     private final EncryptionUtility encryptionUtility;
     private final DefaultUserAccessor userAccessor;
     private final SystemMessageInitializer systemValidator;
+    private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, @Lazy final SystemMessageInitializer systemValidator) {
+    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemMessageInitializer systemValidator, final SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
+        this.samlManager = samlManager;
     }
 
     @Override
@@ -95,7 +97,6 @@ public class SettingsGlobalApiAction extends ApiAction {
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
-        // FIXME This validation needs to be removed from here and done another way. This class will be moved into a separate descriptors project
         systemValidator.validate();
         return scrubModel(fieldModel);
     }

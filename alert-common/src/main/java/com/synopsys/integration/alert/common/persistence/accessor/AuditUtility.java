@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.accessor;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.util.Collection;
 import java.util.Map;

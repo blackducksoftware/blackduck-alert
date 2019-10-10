@@ -20,27 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.accessor;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Set;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
-public interface SettingsUtility {
+public interface AuthorizationUtil {
+    Set<UserRoleModel> createRoleModels();
 
-    DescriptorKey getSettingsKey();
+    Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds);
 
-    boolean doSettingsExist() throws AlertException;
+    PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames);
 
-    Optional<FieldModel> getSettingsFieldModel() throws AlertException;
+    PermissionMatrixModel readPermissionsForRole(final Long roleId);
 
-    Optional<ConfigurationModel> getSettings() throws AlertException;
-
-    FieldModel saveSettings(FieldModel fieldModel) throws AlertException;
-
-    FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException;
+    void updateUserRoles(final Long userId, final Collection<UserRoleModel> roles);
 
 }

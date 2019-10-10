@@ -65,6 +65,7 @@ public class BlackDuckValidator extends ProviderValidator {
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         try {
+
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (blackDuckUrlOptional.isEmpty()) {
                 logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");

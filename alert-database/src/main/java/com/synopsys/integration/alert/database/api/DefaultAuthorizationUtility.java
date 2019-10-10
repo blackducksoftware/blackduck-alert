@@ -37,8 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -56,7 +56,7 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
 @Transactional
-public class DefaultAuthorizationUtility implements AuthorizationUtility {
+public class DefaultAuthorizationUtility implements AuthorizationUtil {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final PermissionMatrixRepository permissionMatrixRepository;
