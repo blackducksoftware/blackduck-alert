@@ -30,7 +30,7 @@ public class ComponentData {
     private String projectVersionUrl;
     private String projectComponentLink;
 
-    public ComponentData(final String componentName, final String componentVersionName, final String projectVersionUrl, final String projectComponentLink) {
+    public ComponentData(String componentName, String componentVersionName, String projectVersionUrl, String projectComponentLink) {
         this.componentName = componentName;
         this.componentVersionName = componentVersionName;
         this.projectVersionUrl = projectVersionUrl;
