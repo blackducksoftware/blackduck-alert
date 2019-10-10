@@ -124,7 +124,7 @@ public class ConfigurationFieldModelConverter {
     public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
         long descriptorId = descriptorAccessor.getRegisteredDescriptorByName(fieldModel.getDescriptorName()).map(RegisteredDescriptorModel::getId).orElse(0L);
         long configId = Long.parseLong(fieldModel.getId());
-        ConfigurationModel configurationModel = new ConfigurationModel(configId, descriptorId, fieldModel.getContext());
+        ConfigurationModel configurationModel = new ConfigurationModel(configId, descriptorId, fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fieldModel.getContext());
         convertToConfigurationFieldModelMap(fieldModel).values().forEach(configurationModel::put);
         return configurationModel;
     }

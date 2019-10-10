@@ -43,7 +43,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -105,7 +104,7 @@ public class AlertStartupInitializer extends StartupComponent {
         boolean environmentOverride = false;
         try {
             // determine if the environment variables should overwrite based on the settings configuration.
-            Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
+            Optional<ConfigurationModel> settingsConfiguration = settingsUtility.getSettings();
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
 
             final String environmentFieldKey = convertKeyToProperty(settingsUtility.getSettingsKey().getUniversalKey(), fieldKey);
@@ -122,15 +121,10 @@ public class AlertStartupInitializer extends StartupComponent {
                                       .flatMap(configurationModel -> configurationModel.getField(fieldKey))
                                       .flatMap(ConfigurationFieldModel::getFieldValue)
                                       .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
-        } catch (final AlertDatabaseConstraintException ex) {
+        } catch (final AlertException ex) {
             logger.error("Error checking environment override", ex);
         }
         return environmentOverride;
-    }
-
-    private Optional<ConfigurationModel> findSettingsConfiguration() throws AlertDatabaseConstraintException {
-        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(settingsUtility.getSettingsKey().getUniversalKey(), ConfigContextEnum.GLOBAL);
-        return settingsConfigurationModels.stream().findFirst();
     }
 
     // TODO consider using a Collection of DescriptorKeys instead
