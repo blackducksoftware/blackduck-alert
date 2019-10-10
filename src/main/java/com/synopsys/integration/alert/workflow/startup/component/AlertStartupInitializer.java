@@ -95,8 +95,9 @@ public class AlertStartupInitializer extends StartupComponent {
         logger.info("Initializing descriptors with environment variables...");
         final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
-        initializeConfiguration(List.of(settingsUtility.getSettingsName()), overwriteCurrentConfig);
-        final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsUtility.getSettingsName())).sorted().collect(Collectors.toList());
+        String settingsKey = settingsUtility.getSettingsKey().getUniversalKey();
+        initializeConfiguration(List.of(settingsKey), overwriteCurrentConfig);
+        final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsKey)).sorted().collect(Collectors.toList());
         initializeConfiguration(descriptorNames, overwriteCurrentConfig);
     }
 
@@ -107,7 +108,7 @@ public class AlertStartupInitializer extends StartupComponent {
             Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
 
-            final String environmentFieldKey = convertKeyToProperty(settingsUtility.getSettingsName(), fieldKey);
+            final String environmentFieldKey = convertKeyToProperty(settingsUtility.getSettingsKey().getUniversalKey(), fieldKey);
             final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
             if (environmentValue.isPresent() && settingsConfiguration.isPresent()) {
@@ -128,7 +129,7 @@ public class AlertStartupInitializer extends StartupComponent {
     }
 
     private Optional<ConfigurationModel> findSettingsConfiguration() throws AlertDatabaseConstraintException {
-        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(settingsUtility.getSettingsName(), ConfigContextEnum.GLOBAL);
+        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(settingsUtility.getSettingsKey().getUniversalKey(), ConfigContextEnum.GLOBAL);
         return settingsConfigurationModels.stream().findFirst();
     }
 

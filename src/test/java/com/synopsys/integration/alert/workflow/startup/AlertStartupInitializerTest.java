@@ -52,7 +52,7 @@ public class AlertStartupInitializerTest {
         final DescriptorMap descriptorMap = new DescriptorMap(channelDescriptors, providerDescriptors, componentDescriptors);
         final FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getSettingsName()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
+        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
         Mockito.verify(baseDescriptorAccessor, Mockito.times(4)).getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
@@ -72,7 +72,7 @@ public class AlertStartupInitializerTest {
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
         final FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getSettingsName()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
+        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
         // called to get the settings component configuration and fields.
@@ -101,7 +101,7 @@ public class AlertStartupInitializerTest {
 
         final FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getSettingsName()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
+        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
         Mockito.verify(baseDescriptorAccessor, Mockito.times(4)).getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
@@ -125,7 +125,7 @@ public class AlertStartupInitializerTest {
         final DescriptorMap descriptorMap = new DescriptorMap(channelDescriptors, providerDescriptors, componentDescriptors);
         final FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getSettingsName()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
+        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
         Mockito.verify(baseDescriptorAccessor, Mockito.times(2)).getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
@@ -161,7 +161,7 @@ public class AlertStartupInitializerTest {
 
         final FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getSettingsName()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
+        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(new SettingsDescriptorKey().getUniversalKey());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
 

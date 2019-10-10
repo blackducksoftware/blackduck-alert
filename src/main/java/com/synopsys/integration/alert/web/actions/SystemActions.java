@@ -91,10 +91,11 @@ public class SystemActions {
 
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        FieldModel model = new FieldModel(settingsUtility.getSettingsName(), ConfigContextEnum.GLOBAL.name(), valueMap);
+        String settingsKey = settingsUtility.getSettingsKey().getUniversalKey();
+        FieldModel model = new FieldModel(settingsKey, ConfigContextEnum.GLOBAL.name(), valueMap);
 
         try {
-            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsUtility.getSettingsName());
+            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsKey);
             if (fieldModels.size() == 1) {
                 model = fieldModels.get(0);
             }

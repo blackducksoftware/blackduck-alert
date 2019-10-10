@@ -43,7 +43,7 @@ public class SystemActionsTest {
         final List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
-        Mockito.when(settingsUtility.getSettingsName()).thenReturn(SETTINGS_DESCRIPTOR_KEY.getUniversalKey());
+        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(SETTINGS_DESCRIPTOR_KEY.getUniversalKey());
     }
 
     @Test

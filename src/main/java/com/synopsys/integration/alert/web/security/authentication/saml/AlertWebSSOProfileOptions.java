@@ -44,7 +44,7 @@ public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
             final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
             return samlContext.getFieldValueBoolean(currentConfiguration, AuthenticationDescriptor.KEY_SAML_FORCE_AUTH);
         } catch (final AlertException e) {
-            logger.error("Could not get the SAML force AuthN.", e);
+            logger.error("Could not get the SAML force Auth.", e);
         }
         return false;
     }

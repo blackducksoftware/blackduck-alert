@@ -29,6 +29,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -53,8 +54,8 @@ public class DefaultSettingsUtility implements SettingsUtility {
     }
 
     @Override
-    public String getSettingsName() {
-        return settingsDescriptorKey.getUniversalKey();
+    public DescriptorKey getSettingsKey() {
+        return settingsDescriptorKey;
     }
 
     @Override
