@@ -152,7 +152,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
             try {
                 ProjectVersionWrapper projectVersionWrapper = optionalProjectVersionWrapper.get();
                 String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
-                ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK);
+                ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
                 List<VulnerableComponentView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, bomComponent);
                 List<ComponentItem> vulnerabilityComponentItems = policyCommonBuilder
                                                                       .createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, notificationId,

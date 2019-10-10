@@ -30,6 +30,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -47,23 +49,24 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BlackDuckMessageContentCollector extends ProviderMessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
     private BlackDuckProperties blackDuckProperties;
     private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
+    private BlackDuckBucket blackDuckBucket;
 
     @Autowired
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
         this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
+        this.blackDuckBucket = new BlackDuckBucket();
     }
 
     @Override
     protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
-        // TODO scope prototype create a factory and move the bucket into the constructor.
-        BlackDuckBucket blackDuckBucket = new BlackDuckBucket();
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory();
 
         List<ProviderMessageContent> providerMessageContents = new LinkedList<>();
@@ -73,8 +76,6 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             if (null == blackDuckMessageBuilder) {
                 logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
-                //TODO create the response cache here? where is the response cache
-
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
                         .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
