@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
@@ -52,15 +51,13 @@ public class SystemMessageInitializer extends StartupComponent {
     private final EncryptionUtility encryptionUtility;
     private final SystemMessageUtility systemMessageUtility;
     private final DefaultUserAccessor userAccessor;
-    private final ProxyManager proxyManager;
 
     @Autowired
-    public SystemMessageInitializer(List<ProviderValidator> providerValidators, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility, DefaultUserAccessor userAccessor, ProxyManager proxyManager) {
+    public SystemMessageInitializer(List<ProviderValidator> providerValidators, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility, DefaultUserAccessor userAccessor) {
         this.providerValidators = providerValidators;
         this.encryptionUtility = encryptionUtility;
         this.systemMessageUtility = systemMessageUtility;
         this.userAccessor = userAccessor;
-        this.proxyManager = proxyManager;
     }
 
     @Override
@@ -78,9 +75,8 @@ public class SystemMessageInitializer extends StartupComponent {
 
         final boolean defaultUserSettingsValid = validateDefaultUser(fieldErrors);
         final boolean encryptionValid = validateEncryptionProperties(fieldErrors);
-        final boolean proxyValid = validateProxyProperties();
         final boolean providersValid = validateProviders();
-        final boolean valid = defaultUserSettingsValid && encryptionValid && proxyValid && providersValid;
+        final boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         return valid;
@@ -142,20 +138,6 @@ public class SystemMessageInitializer extends StartupComponent {
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
             }
             valid = false;
-        }
-        return valid;
-    }
-
-    public boolean validateProxyProperties() {
-        boolean valid = true;
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.PROXY_CONFIGURATION_ERROR);
-        try {
-            proxyManager.createProxyInfo();
-        } catch (final IllegalArgumentException e) {
-            valid = false;
-            logger.error("  -> Proxy Invalid; cause: {}", e.getMessage());
-            logger.debug("  -> Proxy Stack Trace: ", e);
-            systemMessageUtility.addSystemMessage("Proxy invalid: " + e.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.PROXY_CONFIGURATION_ERROR);
         }
         return valid;
     }

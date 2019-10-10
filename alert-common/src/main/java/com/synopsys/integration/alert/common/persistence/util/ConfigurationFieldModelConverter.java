@@ -121,6 +121,14 @@ public class ConfigurationFieldModelConverter {
             configurationModel.getCreatedAt(), configurationModel.getLastUpdated(), fields);
     }
 
+    public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+        long descriptorId = descriptorAccessor.getRegisteredDescriptorByName(fieldModel.getDescriptorName()).map(RegisteredDescriptorModel::getId).orElse(0L);
+        long configId = Long.parseLong(fieldModel.getId());
+        ConfigurationModel configurationModel = new ConfigurationModel(configId, descriptorId, fieldModel.getContext());
+        convertToConfigurationFieldModelMap(fieldModel).values().forEach(configurationModel::put);
+        return configurationModel;
+    }
+
     private Optional<ConfigurationFieldModel> createEmptyModel(final DefinedFieldModel definedFieldModel) {
         ConfigurationFieldModel configurationModel = ConfigurationFieldModel.create(definedFieldModel.getKey());
         if (definedFieldModel.getSensitive()) {
