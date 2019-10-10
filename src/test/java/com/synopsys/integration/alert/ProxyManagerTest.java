@@ -2,20 +2,17 @@ package com.synopsys.integration.alert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.DefaultSettingsUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class ProxyManagerTest {
@@ -23,22 +20,20 @@ public class ProxyManagerTest {
     public static final String PORT = "9999";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    private ConfigurationAccessor configurationAccessor;
     private ConfigurationModel configurationModel;
     private ProxyManager proxyManager;
+    private SettingsUtility settingsUtility;
 
     @BeforeEach
-    public void initTest() throws Exception {
-        configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+    public void initTest() {
         configurationModel = Mockito.mock(ConfigurationModel.class);
 
-        SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
-        proxyManager = new ProxyManager(new DefaultSettingsUtility(new SettingsDescriptorKey(), configurationAccessor, null));
+        settingsUtility = Mockito.mock(SettingsUtility.class);
+        proxyManager = new ProxyManager(settingsUtility);
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() throws AlertException {
         final ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
         final ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
         final ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
@@ -53,6 +48,8 @@ public class ProxyManagerTest {
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).thenReturn(Optional.of(portModel));
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PWD)).thenReturn(Optional.of(passwordModel));
+
+        Mockito.when(settingsUtility.getSettings()).thenReturn(Optional.of(configurationModel));
 
         final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         assertEquals(HOST, proxyInfo.getHost().orElse(null));

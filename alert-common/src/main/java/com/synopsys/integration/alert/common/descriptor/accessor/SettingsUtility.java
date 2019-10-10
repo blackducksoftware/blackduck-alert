@@ -22,25 +22,25 @@
  */
 package com.synopsys.integration.alert.common.descriptor.accessor;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public interface SettingsUtility {
 
     DescriptorKey getSettingsKey();
 
+    boolean doSettingsExist() throws AlertException;
+
+    Optional<FieldModel> getSettingsFieldModel() throws AlertException;
+
     Optional<ConfigurationModel> getSettings() throws AlertException;
 
-    ConfigurationModel saveSettings(Collection<ConfigurationFieldModel> fieldModels) throws AlertException;
+    FieldModel saveSettings(FieldModel fieldModel) throws AlertException;
 
-    ConfigurationModel updateSettings(Long id, Collection<ConfigurationFieldModel> fieldModels) throws AlertException;
+    FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException;
 
-    List<DefinedFieldModel> getSettingsFields() throws AlertException;
 }
