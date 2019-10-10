@@ -200,7 +200,7 @@ public class AlertStartupInitializer extends StartupComponent {
             logger.info("    Overwriting values with environment.");
             final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, foundModel.getCreatedAt(), foundModel.getLastUpdated(), configurationModels);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
-        } else if (foundConfigurationModels.isEmpty()) {
+        } else if (foundConfigurationModels.isEmpty() && !configurationModels.isEmpty()) {
             logger.info("    Writing initial values from environment.");
             final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
