@@ -13,7 +13,6 @@ class ConfigurationLabel extends Component {
             fontAwesomeIcon,
             configurationName,
             description,
-            createdAt,
             lastUpdated
         } = this.props;
         return (
@@ -25,12 +24,6 @@ class ConfigurationLabel extends Component {
                     </h1>
                 </div>
                 <div className="timeStampContainer">
-                    {createdAt &&
-                    <div>
-                        <label className="text-right">Created:</label>
-                        <div className="d-inline-flex p-2">{createdAt}</div>
-                    </div>
-                    }
                     {lastUpdated &&
                     <div>
                         <label className="text-right">Last Updated:</label>
@@ -51,14 +44,12 @@ ConfigurationLabel.propTypes = {
     fontAwesomeIcon: PropTypes.string,
     configurationName: PropTypes.string.isRequired,
     description: PropTypes.string,
-    createdAt: PropTypes.string,
     lastUpdated: PropTypes.string
 };
 
 ConfigurationLabel.defaultProps = {
     fontAwesomeIcon: null,
     description: '',
-    createdAt: null,
     lastUpdated: null
 };
 

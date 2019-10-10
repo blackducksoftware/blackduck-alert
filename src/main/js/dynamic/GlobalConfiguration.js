@@ -100,7 +100,7 @@ class GlobalConfiguration extends React.Component {
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
-        const { createdAt, lastUpdated } = currentConfig;
+        const { lastUpdated } = currentConfig;
         const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE);
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const body = (!Array.isArray(fields) || !fields.length) ?
@@ -140,7 +140,6 @@ class GlobalConfiguration extends React.Component {
                     fontAwesomeIcon={fontAwesomeIcon}
                     configurationName={label}
                     description={description}
-                    createdAt={createdAt}
                     lastUpdated={lastUpdated}
                 />
                 <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
