@@ -28,11 +28,13 @@ public class ComponentData {
     private String componentName;
     private String componentVersionName;
     private String projectVersionUrl;
+    private String projectComponentLink;
 
-    public ComponentData(String componentName, String componentVersionName, String projectVersionUrl) {
+    public ComponentData(String componentName, String componentVersionName, String projectVersionUrl, String projectComponentLink) {
         this.componentName = componentName;
         this.componentVersionName = componentVersionName;
         this.projectVersionUrl = projectVersionUrl;
+        this.projectComponentLink = projectComponentLink;
     }
 
     public String getComponentName() {
@@ -45,5 +47,9 @@ public class ComponentData {
 
     public String getProjectVersionUrl() {
         return projectVersionUrl;
+    }
+
+    public String getProjectComponentLink() {
+        return projectComponentLink;
     }
 }

@@ -66,19 +66,19 @@ public class BlackDuckProvider extends Provider {
     private final BlackDuckProperties blackDuckProperties;
 
     private final ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory;
-    private final BlackDuckMessageContentCollector blackDuckMessageContentCollector;
+    private final ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory;
 
     @Autowired
     public BlackDuckProvider(
         BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckProjectSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager, BlackDuckProperties blackDuckProperties,
-        ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, BlackDuckMessageContentCollector blackDuckMessageContentCollector) {
+        ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory) {
         super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.taskManager = taskManager;
         this.blackDuckProperties = blackDuckProperties;
         this.distributionFilterFactory = distributionFilterFactory;
-        this.blackDuckMessageContentCollector = blackDuckMessageContentCollector;
+        this.messageContentCollectorFactory = messageContentCollectorFactory;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class BlackDuckProvider extends Provider {
 
     @Override
     public ProviderMessageContentCollector createMessageContentCollector() {
-        return blackDuckMessageContentCollector;
+        return messageContentCollectorFactory.getObject();
     }
 
     @Override

@@ -22,28 +22,22 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector.builder.util;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 
-@Component
 public final class PolicyPriorityUtil {
-    private final Map<String, ComponentItemPriority> policyPriorityMap = new HashMap<>();
+    private static Map<String, ComponentItemPriority> policyPriorityMap = Map.of(
+        "blocker", ComponentItemPriority.HIGHEST,
+        "critical", ComponentItemPriority.HIGH,
+        "major", ComponentItemPriority.MEDIUM,
+        "minor", ComponentItemPriority.LOW,
+        "trivial", ComponentItemPriority.LOWEST,
+        "unspecified", ComponentItemPriority.NONE);
 
-    public PolicyPriorityUtil() {
-        policyPriorityMap.put("blocker", ComponentItemPriority.HIGHEST);
-        policyPriorityMap.put("critical", ComponentItemPriority.HIGH);
-        policyPriorityMap.put("major", ComponentItemPriority.MEDIUM);
-        policyPriorityMap.put("minor", ComponentItemPriority.LOW);
-        policyPriorityMap.put("trivial", ComponentItemPriority.LOWEST);
-        policyPriorityMap.put("unspecified", ComponentItemPriority.NONE);
-    }
-
-    public final ComponentItemPriority getPriorityFromSeverity(String severity) {
+    public static ComponentItemPriority getPriorityFromSeverity(String severity) {
         if (StringUtils.isNotBlank(severity)) {
             String severityKey = severity.trim().toLowerCase();
             return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);

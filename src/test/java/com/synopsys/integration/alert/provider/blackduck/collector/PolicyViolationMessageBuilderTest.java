@@ -20,9 +20,6 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Black
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyClearedMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyViolationMessageBuilder;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
@@ -35,21 +32,15 @@ public class PolicyViolationMessageBuilderTest {
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
-        PolicyPriorityUtil policyPriorityUtil = new PolicyPriorityUtil();
-        ComponentBuilderUtil componentBuilderUtil = new ComponentBuilderUtil();
-        VulnerabilityUtil vulnerabilityUtil = new VulnerabilityUtil();
-        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(vulnerabilityUtil, componentBuilderUtil, policyPriorityUtil);
-        PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(componentBuilderUtil, policyCommonBuilder);
+        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder();
+        PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(policyCommonBuilder);
         runSingleTest(policyViolationClearedMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
-        PolicyPriorityUtil policyPriorityUtil = new PolicyPriorityUtil();
-        ComponentBuilderUtil componentBuilderUtil = new ComponentBuilderUtil();
-        VulnerabilityUtil vulnUtil = Mockito.mock(VulnerabilityUtil.class);
-        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(vulnUtil, componentBuilderUtil, policyPriorityUtil);
-        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(vulnUtil, componentBuilderUtil, policyCommonBuilder);
+        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder();
+        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyCommonBuilder);
         runSingleTest(policyViolationMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }
 
