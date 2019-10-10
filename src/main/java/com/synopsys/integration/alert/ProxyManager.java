@@ -30,11 +30,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
@@ -43,17 +45,21 @@ import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 public class ProxyManager {
     private static final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
 
-    private SettingsUtility settingsUtility;
+    private final SettingsDescriptorKey settingsDescriptorKey;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public ProxyManager(SettingsUtility settingsUtility) {
-        this.settingsUtility = settingsUtility;
+    public ProxyManager(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor) {
+        this.settingsDescriptorKey = settingsDescriptorKey;
+        this.configurationAccessor = configurationAccessor;
     }
 
     private Optional<ConfigurationModel> getSettingsConfiguration() {
         try {
-            return settingsUtility.getSettings();
-        } catch (final AlertException ex) {
+            return configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
+                       .stream()
+                       .findFirst();
+        } catch (final AlertDatabaseConstraintException ex) {
             logger.error("Could not find the settings configuration for proxy data", ex);
         }
         return Optional.empty();

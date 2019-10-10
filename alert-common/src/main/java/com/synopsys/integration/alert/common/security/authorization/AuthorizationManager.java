@@ -38,9 +38,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.UserRole;
+import com.synopsys.integration.alert.common.persistence.accessor.AuthorizationUtil;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -48,12 +48,12 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
 public class AuthorizationManager {
-    private final AuthorizationUtility authorizationUtility;
+    private final AuthorizationUtil authorizationUtil;
     private final Map<String, PermissionMatrixModel> permissionCache;
 
     @Autowired
-    public AuthorizationManager(AuthorizationUtility authorizationUtility) {
-        this.authorizationUtility = authorizationUtility;
+    public AuthorizationManager(AuthorizationUtil authorizationUtil) {
+        this.authorizationUtil = authorizationUtil;
         permissionCache = new HashMap<>();
     }
 
@@ -175,7 +175,7 @@ public class AuthorizationManager {
     }
 
     public final void loadPermissionsIntoCache() {
-        Collection<UserRoleModel> roles = authorizationUtility.createRoleModels();
+        Collection<UserRoleModel> roles = authorizationUtil.createRoleModels();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }
 

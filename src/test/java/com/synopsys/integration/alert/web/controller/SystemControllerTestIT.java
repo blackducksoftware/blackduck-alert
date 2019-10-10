@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -37,8 +36,6 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -63,9 +60,6 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private DefaultSystemStatusUtility defaultSystemStatusUtility;
-    @Autowired
-    private ConfigurationAccessor configurationAccessor;
-
     private MockMvc mockMvc;
     private SystemActions systemActions;
 
@@ -106,11 +100,6 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testPostInitialSystemSetup() throws Exception {
         logger.info("Starting Post inital system setup test");
-
-        List<Long> settingsConfigIds = configurationAccessor.getConfigurationsByDescriptorName(new SettingsDescriptorKey().getUniversalKey()).stream().map(ConfigurationModel::getConfigurationId).collect(Collectors.toList());
-        for (long id : settingsConfigIds) {
-            configurationAccessor.deleteConfiguration(id);
-        }
 
         final TestProperties testProperties = new TestProperties();
         final String defaultAdminEmail = "noreply@abcdomain.blackducksoftware.com";

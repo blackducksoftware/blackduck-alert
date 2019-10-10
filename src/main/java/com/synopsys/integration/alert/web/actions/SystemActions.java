@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.actions;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,31 +33,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.web.config.FieldModelProcessor;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.web.config.ConfigActions;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class SystemActions {
     private final Logger logger = LoggerFactory.getLogger(SystemActions.class);
 
+    private final SettingsDescriptorKey settingsDescriptorKey;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
-    private FieldModelProcessor fieldModelProcessor;
-    private SettingsUtility settingsUtility;
+    private final ConfigActions configActions;
 
     @Autowired
-    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
+    public SystemActions(SettingsDescriptorKey settingsDescriptorKey, SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, ConfigActions configActions) {
+        this.settingsDescriptorKey = settingsDescriptorKey;
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
-        this.fieldModelProcessor = fieldModelProcessor;
-        this.settingsUtility = settingsUtility;
+        this.configActions = configActions;
     }
 
     public boolean isSystemInitialized() {
@@ -87,23 +90,29 @@ public class SystemActions {
     }
 
     public FieldModel getCurrentSystemSetup() {
+        final Map<String, FieldValueModel> valueMap = new HashMap<>();
+        FieldModel model = new FieldModel(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), valueMap);
+
         try {
-            return settingsUtility.getSettingsFieldModel().orElse(null);
+            final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, settingsDescriptorKey.getUniversalKey());
+            if (fieldModels.size() == 1) {
+                model = fieldModels.get(0);
+            }
         } catch (final AlertException ex) {
             logger.error("Error getting initial settings", ex);
         }
 
-        return null;
+        return model;
     }
 
     public FieldModel saveRequiredInformation(final FieldModel settingsToSave, final Map<String, String> fieldErrors) throws AlertException {
         FieldModel systemSettings = settingsToSave;
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(systemSettings));
+        configActions.validateConfig(systemSettings, fieldErrors);
         if (fieldErrors.isEmpty()) {
-            if (settingsUtility.doSettingsExist()) {
-                systemSettings = settingsUtility.updateSettings(Long.valueOf(settingsToSave.getId()), settingsToSave);
+            if (configActions.doesConfigExist(settingsToSave.getId())) {
+                systemSettings = configActions.updateConfig(Long.valueOf(settingsToSave.getId()), settingsToSave);
             } else {
-                systemSettings = settingsUtility.saveSettings(settingsToSave);
+                systemSettings = configActions.saveConfig(settingsToSave);
             }
             systemStatusUtility.setSystemInitialized(true);
         }
