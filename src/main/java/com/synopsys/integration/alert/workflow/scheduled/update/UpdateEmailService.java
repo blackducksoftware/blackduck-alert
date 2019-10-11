@@ -36,18 +36,18 @@ import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.email.EmailMessagingService;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 
 @Component
@@ -60,13 +60,13 @@ public class UpdateEmailService {
     private final Logger logger = LoggerFactory.getLogger(UpdateEmailService.class);
     private final AlertProperties alertProperties;
     private final SettingsKeyAccessor settingsKeyAccessor;
-    private final DefaultUserAccessor userAccessor;
+    private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final EmailChannelKey emailChannelKey;
 
     @Autowired
-    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, DefaultUserAccessor userAccessor, ConfigurationAccessor configurationAccessor,
+    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor,
         FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;

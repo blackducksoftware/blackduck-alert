@@ -30,15 +30,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Service
 public class UserDatabaseService implements UserDetailsService {
-    private final DefaultUserAccessor userAccessor;
+    private final UserAccessor userAccessor;
 
     @Autowired
-    public UserDatabaseService(final DefaultUserAccessor userAccessor) {
+    public UserDatabaseService(final UserAccessor userAccessor) {
         this.userAccessor = userAccessor;
     }
 

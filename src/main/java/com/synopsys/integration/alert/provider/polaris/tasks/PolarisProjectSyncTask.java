@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.polaris.PolarisApiHelper;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
@@ -79,7 +78,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
     private final Gson gson;
 
     public PolarisProjectSyncTask(PolarisProviderKey polarisProviderKey, TaskScheduler taskScheduler, PolarisProperties polarisProperties, ProviderDataAccessor providerDataAccessor, PolarisIssueAccessor polarisIssueAccessor,
-        DefaultNotificationManager notificationManager, Gson gson) {
+        NotificationManager notificationManager, Gson gson) {
         super(taskScheduler, TASK_NAME);
         this.polarisProviderKey = polarisProviderKey;
         this.polarisProperties = polarisProperties;

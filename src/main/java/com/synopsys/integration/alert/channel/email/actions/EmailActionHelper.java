@@ -38,17 +38,17 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailActionHelper {
     private EmailAddressHandler emailAddressHandler;
-    private DefaultProviderDataAccessor providerDataAccessor;
+    private ProviderDataAccessor providerDataAccessor;
 
-    public EmailActionHelper(EmailAddressHandler emailAddressHandler, DefaultProviderDataAccessor providerDataAccessor) {
+    public EmailActionHelper(EmailAddressHandler emailAddressHandler, ProviderDataAccessor providerDataAccessor) {
         this.emailAddressHandler = emailAddressHandler;
         this.providerDataAccessor = providerDataAccessor;
     }

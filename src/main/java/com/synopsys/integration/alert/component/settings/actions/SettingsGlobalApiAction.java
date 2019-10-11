@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -48,11 +49,11 @@ import com.synopsys.integration.alert.workflow.startup.component.SystemMessageIn
 public class SettingsGlobalApiAction extends ApiAction {
     private static final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
-    private final DefaultUserAccessor userAccessor;
+    private final UserAccessor userAccessor;
     private final SystemMessageInitializer systemValidator;
 
     @Autowired
-    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, @Lazy final SystemMessageInitializer systemValidator) {
+    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final UserAccessor userAccessor, @Lazy final SystemMessageInitializer systemValidator) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;

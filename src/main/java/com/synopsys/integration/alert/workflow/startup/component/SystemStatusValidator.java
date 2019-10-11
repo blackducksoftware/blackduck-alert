@@ -28,6 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -37,10 +38,10 @@ import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 public class SystemStatusValidator extends StartupComponent {
     private final SystemStatusUtility systemStatusUtility;
     private final EncryptionUtility encryptionUtility;
-    private final DefaultUserAccessor userAccessor;
+    private final UserAccessor userAccessor;
 
     @Autowired
-    public SystemStatusValidator(SystemStatusUtility systemStatusUtility, EncryptionUtility encryptionUtility, DefaultUserAccessor userAccessor) {
+    public SystemStatusValidator(SystemStatusUtility systemStatusUtility, EncryptionUtility encryptionUtility, UserAccessor userAccessor) {
         this.systemStatusUtility = systemStatusUtility;
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
