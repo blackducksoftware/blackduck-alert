@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class ReadOnlyConfigField extends ConfigField {

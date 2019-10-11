@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.action.UploadEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class UploadFileButtonField extends ConfigField {

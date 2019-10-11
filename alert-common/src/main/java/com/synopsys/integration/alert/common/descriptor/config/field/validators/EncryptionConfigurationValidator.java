@@ -20,13 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.validators;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
-public interface ConfigValidationFunction extends BiFunction<FieldValueModel, FieldModel, Collection<String>> {
+@Component
+public final class EncryptionConfigurationValidator implements EncryptionValidationFunction {
+    public static final String ENCRYPTION_MISSING = "Encryption configuration missing.";
+    private EncryptionUtility encryptionUtility;
+
+    @Autowired
+    public EncryptionConfigurationValidator(EncryptionUtility encryptionUtility) {
+        this.encryptionUtility = encryptionUtility;
+    }
+
+    @Override
+    public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+        if (encryptionUtility.isInitialized()) {
+            return List.of();
+        }
+        return List.of(ENCRYPTION_MISSING);
+    }
 }
