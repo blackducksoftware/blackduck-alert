@@ -23,7 +23,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.channel.util.ChannelEventManager;
+import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;

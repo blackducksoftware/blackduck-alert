@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.email.template.MimeMultipartBuilder;
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
