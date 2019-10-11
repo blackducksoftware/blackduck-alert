@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -50,10 +51,10 @@ public class SystemMessageInitializer extends StartupComponent {
     private final List<ProviderValidator> providerValidators;
     private final EncryptionUtility encryptionUtility;
     private final SystemMessageUtility systemMessageUtility;
-    private final DefaultUserAccessor userAccessor;
+    private final UserAccessor userAccessor;
 
     @Autowired
-    public SystemMessageInitializer(List<ProviderValidator> providerValidators, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility, DefaultUserAccessor userAccessor) {
+    public SystemMessageInitializer(List<ProviderValidator> providerValidators, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility, UserAccessor userAccessor) {
         this.providerValidators = providerValidators;
         this.encryptionUtility = encryptionUtility;
         this.systemMessageUtility = systemMessageUtility;
