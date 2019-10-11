@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
@@ -110,10 +111,10 @@ public class SystemActionsTest {
         expected.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
-        expected.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
-        expected.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
-        expected.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
-        expected.putField(SettingsDescriptor.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
+        expected.putField(ProxyManager.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
+        expected.putField(ProxyManager.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
+        expected.putField(ProxyManager.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
+        expected.putField(ProxyManager.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
 
         Mockito.when(settingsUtility.getSettingsFieldModel()).thenReturn(Optional.of(expected));
 
@@ -121,10 +122,10 @@ public class SystemActionsTest {
 
         assertEquals(globalEncryptionPassword, actual.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(globalEncryptionSalt, actual.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyHost, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_HOST).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyPort, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_PORT).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyUsername, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_USERNAME).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyPassword, actual.getFieldValueModel(SettingsDescriptor.KEY_PROXY_PWD).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyHost, actual.getFieldValueModel(ProxyManager.KEY_PROXY_HOST).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyPort, actual.getFieldValueModel(ProxyManager.KEY_PROXY_PORT).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyUsername, actual.getFieldValueModel(ProxyManager.KEY_PROXY_USERNAME).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyPassword, actual.getFieldValueModel(ProxyManager.KEY_PROXY_PWD).flatMap(field -> field.getValue()).orElse(null));
     }
 
     @Test
@@ -143,10 +144,10 @@ public class SystemActionsTest {
         model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
-        model.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
-        model.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
-        model.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
-        model.putField(SettingsDescriptor.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
+        model.putField(ProxyManager.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
+        model.putField(ProxyManager.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
+        model.putField(ProxyManager.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
+        model.putField(ProxyManager.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
 
         Mockito.when(settingsUtility.doSettingsExist()).thenReturn(false);
 

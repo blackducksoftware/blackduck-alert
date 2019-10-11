@@ -121,6 +121,14 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
+    public List<ConfigurationJobModel> getJobsByFrequency(final FrequencyType frequency) {
+        return getAllJobs()
+                   .stream()
+                   .filter(job -> frequency == job.getFrequencyType())
+                   .collect(Collectors.toList());
+    }
+
+    @Override
     public ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         return createJob(null, descriptorNames, configuredFields);
     }
