@@ -62,12 +62,12 @@ public class NotificationProcessor {
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationWrapper> notifications) {
         logger.info("Notifications to Process: {}", notifications.size());
-        List<ConfigurationJobModel> jobsForFrequency = getJobsForFrequency(frequency);
+        List<ConfigurationJobModel> jobsForFrequency = configurationAccessor.getJobsByFrequency(frequency);
         return processNotificationsForJobs(jobsForFrequency, notifications);
     }
 
     public List<DistributionEvent> processNotifications(List<AlertNotificationWrapper> notifications) {
-        // TODO should this only look for Real Time jobs?
+        // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
         List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
         return processNotificationsForJobs(allJobs, notifications);
     }
@@ -96,14 +96,6 @@ public class NotificationProcessor {
             distributionEvents.addAll(distributionEventsForJob);
         }
         return distributionEvents;
-    }
-
-    private List<ConfigurationJobModel> getJobsForFrequency(FrequencyType frequency) {
-        // TODO add a method on the ConfigurationAccessor to filter by FrequencyType
-        return configurationAccessor.getAllJobs()
-                   .stream()
-                   .filter(job -> frequency == job.getFrequencyType())
-                   .collect(Collectors.toList());
     }
 
     private List<AlertNotificationWrapper> filterNotificationsByType(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
