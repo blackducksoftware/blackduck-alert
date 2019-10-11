@@ -12,8 +12,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.jira.JiraIssueConfigValidator.JiraIssueConfig;
-import com.synopsys.integration.alert.channel.jira.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator.JiraIssueConfig;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
