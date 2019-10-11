@@ -34,8 +34,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
@@ -67,12 +67,12 @@ public class SettingsUIConfig extends UIConfig {
     private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
 
-    private final FilePersistenceUtil filePersistenceUtil;
+    private final EncryptionConfigurationValidator encryptionValidator;
 
     @Autowired
-    public SettingsUIConfig(FilePersistenceUtil filePersistenceUtil) {
+    public SettingsUIConfig(EncryptionConfigurationValidator encryptionValidator) {
         super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL);
-        this.filePersistenceUtil = filePersistenceUtil;
+        this.encryptionValidator = encryptionValidator;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class SettingsUIConfig extends UIConfig {
     private List<ConfigField> createDefaultSettingsPanel() {
         final ConfigField sysAdminEmail = TextInputConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
                                               .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION)
+        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionValidator)
                                                     .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
         final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, this::minimumEncryptionFieldLength)
                                                    .setHeader(SETTINGS_HEADER_ENCRYPTION);
@@ -102,7 +102,7 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, LABEL_PROXY_HOST, SETTINGS_PROXY_HOST_DESCRIPTION);
         final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, LABEL_PROXY_PORT, SETTINGS_PROXY_PORT_DESCRIPTION);
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
-        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION);
+        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION, encryptionValidator);
         proxyHost
             .setPanel(SETTINGS_PANEL_PROXY)
             .requireField(proxyPort.getKey());

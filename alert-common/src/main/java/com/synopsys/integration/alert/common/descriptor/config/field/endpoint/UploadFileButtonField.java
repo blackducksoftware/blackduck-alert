@@ -36,8 +36,18 @@ public class UploadFileButtonField extends ConfigField {
     private final String capture;
     private final Boolean multiple;
 
-    private UploadFileButtonField(String key, String label, String description, boolean required, String buttonLabel, List<String> accept, String capture, Boolean multiple, ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.UPLOAD_FILE_BUTTON, required, false, validationFunction);
+    private UploadFileButtonField(String key, String label, String description, boolean required, String buttonLabel, List<String> accept, String capture, Boolean multiple, ConfigValidationFunction... validationFunction) {
+        super(key, label, description, FieldType.UPLOAD_FILE_BUTTON, required, false);
+        this.buttonLabel = buttonLabel;
+        this.endpoint = UploadEndpointManager.UPLOAD_ENDPOINT_URL;
+        this.accept = accept;
+        this.capture = capture;
+        this.multiple = multiple;
+        this.setValidationFunctions(validationFunction);
+    }
+
+    private UploadFileButtonField(String key, String label, String description, boolean required, String buttonLabel, List<String> accept, String capture, Boolean multiple) {
+        super(key, label, description, FieldType.UPLOAD_FILE_BUTTON, required, false);
         this.buttonLabel = buttonLabel;
         this.endpoint = UploadEndpointManager.UPLOAD_ENDPOINT_URL;
         this.accept = accept;
@@ -46,18 +56,18 @@ public class UploadFileButtonField extends ConfigField {
     }
 
     public static UploadFileButtonField create(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple) {
-        return new UploadFileButtonField(key, label, description, false, buttonLabel, accept, capture, multiple, null);
+        return new UploadFileButtonField(key, label, description, false, buttonLabel, accept, capture, multiple);
     }
 
     public static UploadFileButtonField createRequired(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple) {
-        return new UploadFileButtonField(key, label, description, true, buttonLabel, accept, capture, multiple, null);
+        return new UploadFileButtonField(key, label, description, true, buttonLabel, accept, capture, multiple);
     }
 
-    public static UploadFileButtonField create(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple, ConfigValidationFunction validationFunction) {
+    public static UploadFileButtonField create(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple, ConfigValidationFunction... validationFunction) {
         return new UploadFileButtonField(key, label, description, false, buttonLabel, accept, capture, multiple, validationFunction);
     }
 
-    public static UploadFileButtonField createRequired(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple, ConfigValidationFunction validationFunction) {
+    public static UploadFileButtonField createRequired(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple, ConfigValidationFunction... validationFunction) {
         return new UploadFileButtonField(key, label, description, true, buttonLabel, accept, capture, multiple, validationFunction);
     }
 

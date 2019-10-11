@@ -47,12 +47,13 @@ public class EndpointTableSelectField extends ConfigField {
     }
 
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable,
-        ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, validationFunction);
+        ConfigValidationFunction... validationFunctions) {
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive);
         this.paged = paged;
         this.searchable = searchable;
         endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
         columns = new LinkedList<>();
+        this.setValidationFunctions(validationFunctions);
     }
 
     public static EndpointTableSelectField create(String key, String label, String description, boolean searchable) {
@@ -63,8 +64,8 @@ public class EndpointTableSelectField extends ConfigField {
         return new EndpointTableSelectField(key, label, description, false, false, true, true);
     }
 
-    public static EndpointTableSelectField createSearchable(String key, String label, String description, ConfigValidationFunction validationFunction) {
-        return new EndpointTableSelectField(key, label, description, false, false, true, true, validationFunction);
+    public static EndpointTableSelectField createSearchable(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
+        return new EndpointTableSelectField(key, label, description, false, false, true, true, validationFunctions);
     }
 
     public boolean isPaged() {

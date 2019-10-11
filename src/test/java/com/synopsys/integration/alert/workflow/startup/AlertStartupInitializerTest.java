@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -41,9 +42,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionConfigurationValidator), null);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
@@ -87,9 +89,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionConfigurationValidator), null);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
@@ -114,9 +117,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionConfigurationValidator), null);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenThrow(new AlertDatabaseConstraintException("Test Exception"));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
@@ -138,8 +142,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionConfigurationValidator), null);
         final ConfigurationModel settingsModel = Mockito.mock(ConfigurationModel.class);
         final ConfigurationFieldModel envOverrideField = Mockito.mock(ConfigurationFieldModel.class);
         final ConfigurationModel slackModel = Mockito.mock(ConfigurationModel.class);
@@ -148,7 +154,6 @@ public class AlertStartupInitializerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(settingsModel));
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(channelDescriptor.getDescriptorKey().getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(slackModel));
 
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
 

@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.UploadFileButtonField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -100,12 +101,14 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_HEADER_ROLE_MAPPING = "User Role Mapping";
     private static final String AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML = "SAML";
 
-    private FilePersistenceUtil filePersistenceUtil;
+    private final EncryptionConfigurationValidator encryptionValidator;
+    private final FilePersistenceUtil filePersistenceUtil;
 
     @Autowired
-    public AuthenticationUIConfig(final FilePersistenceUtil filePersistenceUtil) {
+    public AuthenticationUIConfig(FilePersistenceUtil filePersistenceUtil, EncryptionConfigurationValidator encryptionValidator) {
         super(AuthenticationDescriptor.AUTHENTICATION_LABEL, AuthenticationDescriptor.AUTHENTICATION_DESCRIPTION, AuthenticationDescriptor.AUTHENTICATION_URL);
         this.filePersistenceUtil = filePersistenceUtil;
+        this.encryptionValidator = encryptionValidator;
     }
 
     @Override
@@ -140,7 +143,8 @@ public class AuthenticationUIConfig extends UIConfig {
         final ConfigField ldapServer = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, AUTHENTICATION_LDAP_SERVER_DESCRIPTION)
                                            .setHeader(AUTHENTICATION_HEADER_LDAP);
         final ConfigField ldapManagerDn = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, AUTHENTICATION_LDAP_MANAGER_DN_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
-        final ConfigField ldapManagerPassword = PasswordConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, AUTHENTICATION_LDAP_MANAGER_PASSWORD_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
+        final ConfigField ldapManagerPassword = PasswordConfigField.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, AUTHENTICATION_LDAP_MANAGER_PASSWORD_DESCRIPTION, encryptionValidator)
+                                                    .setHeader(AUTHENTICATION_HEADER_LDAP);
         final ConfigField ldapAuthenticationType = SelectConfigField
                                                        .create(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, LABEL_LDAP_AUTHENTICATION_TYPE, AUTHENTICATION_LDAP_AUTHENTICATION_TYPE_DESCRIPTION, List.of(
                                                            new LabelValueSelectOption("Simple", "simple"),
@@ -152,11 +156,16 @@ public class AuthenticationUIConfig extends UIConfig {
             new LabelValueSelectOption("Follow", "follow"),
             new LabelValueSelectOption("Throw", "throw")))
                                              .setHeader(AUTHENTICATION_HEADER_LDAP);
-        final ConfigField ldapUserSearchBase = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE, LABEL_LDAP_USER_SEARCH_BASE, AUTHENTICATION_LDAP_USER_SEARCH_BASE_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
-        final ConfigField ldapUserSearchFilter = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER, LABEL_LDAP_USER_SEARCH_FILTER, AUTHENTICATION_LDAP_USER_SEARCH_FILTER_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
-        final ConfigField ldapUserDNPatterns = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS, LABEL_LDAP_USER_DN_PATTERNS, AUTHENTICATION_LDAP_USER_DN_PATTERNS_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
-        final ConfigField ldapUserAttributes = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES, LABEL_LDAP_USER_ATTRIBUTES, AUTHENTICATION_LDAP_USER_ATTRIBUTES_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
-        final ConfigField ldapGroupSearchBase = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, AUTHENTICATION_LDAP_GROUP_SEARCH_BASE_DESCRIPTION).setHeader(AUTHENTICATION_HEADER_LDAP);
+        final ConfigField ldapUserSearchBase = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE, LABEL_LDAP_USER_SEARCH_BASE, AUTHENTICATION_LDAP_USER_SEARCH_BASE_DESCRIPTION)
+                                                   .setHeader(AUTHENTICATION_HEADER_LDAP);
+        final ConfigField ldapUserSearchFilter = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER, LABEL_LDAP_USER_SEARCH_FILTER, AUTHENTICATION_LDAP_USER_SEARCH_FILTER_DESCRIPTION)
+                                                     .setHeader(AUTHENTICATION_HEADER_LDAP);
+        final ConfigField ldapUserDNPatterns = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS, LABEL_LDAP_USER_DN_PATTERNS, AUTHENTICATION_LDAP_USER_DN_PATTERNS_DESCRIPTION)
+                                                   .setHeader(AUTHENTICATION_HEADER_LDAP);
+        final ConfigField ldapUserAttributes = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES, LABEL_LDAP_USER_ATTRIBUTES, AUTHENTICATION_LDAP_USER_ATTRIBUTES_DESCRIPTION)
+                                                   .setHeader(AUTHENTICATION_HEADER_LDAP);
+        final ConfigField ldapGroupSearchBase = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, AUTHENTICATION_LDAP_GROUP_SEARCH_BASE_DESCRIPTION)
+                                                    .setHeader(AUTHENTICATION_HEADER_LDAP);
         final ConfigField ldapGroupSearchFilter = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, AUTHENTICATION_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION)
                                                       .setHeader(AUTHENTICATION_HEADER_LDAP);
         final ConfigField ldapGroupRoleAttribute = TextInputConfigField.create(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, AUTHENTICATION_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION)

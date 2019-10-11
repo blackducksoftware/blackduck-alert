@@ -22,8 +22,11 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
@@ -33,58 +36,60 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class NumberConfigField extends ConfigField {
     public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
 
-    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel) {
+    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel) {
         super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
+        createValidators(null);
     }
 
-    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel, validationFunction);
+    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel, ConfigValidationFunction... validationFunctions) {
+        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
+        createValidators(validationFunctions);
     }
 
-    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive) {
+    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive) {
         super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
+        createValidators(null);
     }
 
-    public NumberConfigField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, validationFunction);
+    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, ConfigValidationFunction... validationFunctions) {
+        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
+        createValidators(validationFunctions);
     }
 
-    public static NumberConfigField create(final String key, final String label, final String description) {
+    public static NumberConfigField create(String key, String label, String description) {
         return new NumberConfigField(key, label, description, false, false);
     }
 
-    public static NumberConfigField create(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, description, false, false, validationFunction);
+    public static NumberConfigField create(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
+        return new NumberConfigField(key, label, description, false, false, validationFunctions);
     }
 
-    public static NumberConfigField createRequired(final String key, final String label, final String description) {
+    public static NumberConfigField createRequired(String key, String label, String description) {
         return new NumberConfigField(key, label, description, true, false);
     }
 
-    public static NumberConfigField createRequired(final String key, final String label, final String description, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, description, true, false, validationFunction);
+    public static NumberConfigField createRequired(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
+        return new NumberConfigField(key, label, description, true, false, validationFunctions);
     }
 
-    public static NumberConfigField createPanel(final String key, final String label, final String description, final String panel) {
+    public static NumberConfigField createPanel(String key, String label, String description, String panel) {
         return new NumberConfigField(key, label, description, false, false, panel);
     }
 
-    public static NumberConfigField createPanel(final String key, final String label, final String description, final String panel, final ConfigValidationFunction validationFunction) {
-        return new NumberConfigField(key, label, description, false, false, panel, validationFunction);
+    public static NumberConfigField createPanel(String key, String label, String description, String panel, ConfigValidationFunction... validationFunctions) {
+        return new NumberConfigField(key, label, description, false, false, panel, validationFunctions);
     }
 
-    @Override
-    public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-        final List<ConfigValidationFunction> validationFunctions;
-        if (null != getValidationFunction()) {
-            validationFunctions = List.of(this::validateIsNumber, getValidationFunction());
-        } else {
-            validationFunctions = List.of(this::validateIsNumber);
+    private void createValidators(ConfigValidationFunction[] validationFunctions) {
+        List<ConfigValidationFunction> validators = new ArrayList<>();
+        validators.add(this::validateIsNumber);
+        if (null != validationFunctions) {
+            validators.addAll(Arrays.asList(validationFunctions));
         }
-        return validate(fieldValueModel, fieldModel, validationFunctions);
+        this.setValidationFunctions(validators.stream().collect(Collectors.toUnmodifiableList()));
     }
 
-    private Collection<String> validateIsNumber(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+    private Collection<String> validateIsNumber(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues()) {
             final String value = fieldToValidate.getValue().orElse("");
             try {
