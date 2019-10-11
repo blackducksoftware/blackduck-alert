@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.common.rest;
 
 import java.util.Optional;
 
@@ -34,13 +34,17 @@ import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class ProxyManager {
+    public static final String KEY_PROXY_HOST = "settings.proxy.host";
+    public static final String KEY_PROXY_PORT = "settings.proxy.port";
+    public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
+    public static final String KEY_PROXY_PWD = "settings.proxy.password";
+
     private static final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
 
     private SettingsUtility settingsUtility;
@@ -61,10 +65,10 @@ public class ProxyManager {
 
     public ProxyInfo createProxyInfo() throws IllegalArgumentException {
         final Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
-        final Optional<String> alertProxyHost = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_HOST);
-        final Optional<String> alertProxyPort = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_PORT);
-        final Optional<String> alertProxyUsername = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_USERNAME);
-        final Optional<String> alertProxyPassword = getProxySetting(settingsConfiguration, SettingsDescriptor.KEY_PROXY_PWD);
+        final Optional<String> alertProxyHost = getProxySetting(settingsConfiguration, KEY_PROXY_HOST);
+        final Optional<String> alertProxyPort = getProxySetting(settingsConfiguration, KEY_PROXY_PORT);
+        final Optional<String> alertProxyUsername = getProxySetting(settingsConfiguration, KEY_PROXY_USERNAME);
+        final Optional<String> alertProxyPassword = getProxySetting(settingsConfiguration, KEY_PROXY_PWD);
 
         final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         if (alertProxyHost.isPresent()) {
@@ -85,19 +89,19 @@ public class ProxyManager {
     }
 
     public Optional<String> getProxyHost() {
-        return getProxySetting(SettingsDescriptor.KEY_PROXY_HOST);
+        return getProxySetting(KEY_PROXY_HOST);
     }
 
     public Optional<String> getProxyPort() {
-        return getProxySetting(SettingsDescriptor.KEY_PROXY_PORT);
+        return getProxySetting(KEY_PROXY_PORT);
     }
 
     public Optional<String> getProxyUsername() {
-        return getProxySetting(SettingsDescriptor.KEY_PROXY_USERNAME);
+        return getProxySetting(KEY_PROXY_USERNAME);
     }
 
     public Optional<String> getProxyPassword() {
-        return getProxySetting(SettingsDescriptor.KEY_PROXY_PWD);
+        return getProxySetting(KEY_PROXY_PWD);
     }
 
     private Optional<String> getProxySetting(final String key) {

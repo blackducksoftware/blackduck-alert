@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class ProxyManagerTest {
@@ -44,10 +44,10 @@ public class ProxyManagerTest {
         Mockito.when(usernameModel.getFieldValue()).thenReturn(Optional.of(USERNAME));
         Mockito.when(passwordModel.getFieldValue()).thenReturn(Optional.of(PASSWORD));
 
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).thenReturn(Optional.of(hostModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).thenReturn(Optional.of(portModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PWD)).thenReturn(Optional.of(passwordModel));
+        Mockito.when(configurationModel.getField(ProxyManager.KEY_PROXY_HOST)).thenReturn(Optional.of(hostModel));
+        Mockito.when(configurationModel.getField(ProxyManager.KEY_PROXY_PORT)).thenReturn(Optional.of(portModel));
+        Mockito.when(configurationModel.getField(ProxyManager.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
+        Mockito.when(configurationModel.getField(ProxyManager.KEY_PROXY_PWD)).thenReturn(Optional.of(passwordModel));
 
         Mockito.when(settingsUtility.getSettings()).thenReturn(Optional.of(configurationModel));
 

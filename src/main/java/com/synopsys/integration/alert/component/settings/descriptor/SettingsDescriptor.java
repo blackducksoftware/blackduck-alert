@@ -39,12 +39,6 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_ENCRYPTION_PWD = "settings.encryption.password";
     public static final String KEY_ENCRYPTION_GLOBAL_SALT = "settings.encryption.global.salt";
 
-    // Proxy Keys
-    public static final String KEY_PROXY_HOST = "settings.proxy.host";
-    public static final String KEY_PROXY_PORT = "settings.proxy.port";
-    public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
-    public static final String KEY_PROXY_PWD = "settings.proxy.password";
-
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
