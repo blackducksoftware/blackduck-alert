@@ -18,6 +18,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.email.EmailTarget;
+
 public class EmailTargetTest {
     @Test
     public void targetTest() {
