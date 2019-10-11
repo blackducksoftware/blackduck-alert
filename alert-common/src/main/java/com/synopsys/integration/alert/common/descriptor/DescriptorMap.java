@@ -46,7 +46,7 @@ public class DescriptorMap {
 
     @Autowired
     public DescriptorMap(List<DescriptorKey> descriptorKeys, List<ChannelDescriptor> channelDescriptors, List<ProviderDescriptor> providerDescriptors, List<ComponentDescriptor> componentDescriptors) throws AlertException {
-        this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, descriptorKey -> descriptorKey.getUniversalKey());
+        this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
         descriptorMapping = new HashMap<>();
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
         providerDescriptorMapping = initDescriptorMap(providerDescriptors);
