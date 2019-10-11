@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -73,11 +74,11 @@ public class ConfigActions {
         return id != null && configurationAccessor.getConfigurationById(id).isPresent();
     }
 
-    public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
+    public List<FieldModel> getConfigs(final ConfigContextEnum context, DescriptorKey descriptorKey) throws AlertException {
         final List<FieldModel> fields = new LinkedList<>();
-        if (context != null && StringUtils.isNotBlank(descriptorName)) {
+        if (context != null && descriptorKey != null) {
             final String contextName = context.name();
-            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
             final List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
@@ -86,7 +87,7 @@ public class ConfigActions {
                 }
             }
             if (fieldModelList.isEmpty()) {
-                fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
+                fieldModelList.add(new FieldModel(descriptorKey.getUniversalKey(), contextName, new HashMap<>()));
             }
             for (final FieldModel fieldModel : fieldModelList) {
                 fields.add(fieldModelProcessor.performAfterReadAction(fieldModel));
@@ -121,13 +122,12 @@ public class ConfigActions {
         }
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
+    public FieldModel saveConfig(FieldModel fieldModel, DescriptorKey descriptorKey) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
         final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
-        final String descriptorName = modifiedFieldModel.getDescriptorName();
         final String context = modifiedFieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
-        final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+        final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey.getUniversalKey(), EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
         final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
         return dbSavedModel.fill(afterSaveAction);

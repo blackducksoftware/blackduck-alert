@@ -83,7 +83,7 @@ public class DescriptorProcessor {
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
-        return descriptorMap.getDescriptor(descriptorName);
+        return descriptorMap.getDescriptorKey(descriptorName).flatMap(descriptorKey -> descriptorMap.getDescriptor(descriptorKey));
     }
 
     public Optional<ConfigurationModel> getSavedEntity(final Long id) throws AlertException {

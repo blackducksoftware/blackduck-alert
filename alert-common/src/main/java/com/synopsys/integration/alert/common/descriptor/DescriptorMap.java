@@ -34,71 +34,78 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Component
 public class DescriptorMap {
-    private final Map<String, Descriptor> descriptorMapping;
-    private final Map<String, ChannelDescriptor> channelDescriptorMapping;
-    private final Map<String, ProviderDescriptor> providerDescriptorMapping;
-    private final Map<String, ComponentDescriptor> componentDescriptorMapping;
+    private final Map<String, DescriptorKey> descriptorKeys;
+    private final Map<DescriptorKey, Descriptor> descriptorMapping;
+    private final Map<DescriptorKey, ChannelDescriptor> channelDescriptorMapping;
+    private final Map<DescriptorKey, ProviderDescriptor> providerDescriptorMapping;
+    private final Map<DescriptorKey, ComponentDescriptor> componentDescriptorMapping;
 
     @Autowired
-    public DescriptorMap(List<ChannelDescriptor> channelDescriptors, List<ProviderDescriptor> providerDescriptors, List<ComponentDescriptor> componentDescriptors) throws AlertException {
+    public DescriptorMap(List<DescriptorKey> descriptorKeys, List<ChannelDescriptor> channelDescriptors, List<ProviderDescriptor> providerDescriptors, List<ComponentDescriptor> componentDescriptors) throws AlertException {
+        this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, descriptorKey -> descriptorKey.getUniversalKey());
         descriptorMapping = new HashMap<>();
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
         providerDescriptorMapping = initDescriptorMap(providerDescriptors);
         componentDescriptorMapping = initDescriptorMap(componentDescriptors);
     }
 
-    public Optional<Descriptor> getDescriptor(final String name) {
-        return Optional.ofNullable(descriptorMapping.get(name));
+    public Optional<DescriptorKey> getDescriptorKey(String key) {
+        return Optional.ofNullable(descriptorKeys.get(key));
     }
 
-    public Set<Descriptor> getDescriptorByType(final DescriptorType descriptorType) {
+    public Optional<Descriptor> getDescriptor(DescriptorKey key) {
+        return Optional.ofNullable(descriptorMapping.get(key));
+    }
+
+    public Set<Descriptor> getDescriptorByType(DescriptorType descriptorType) {
         return descriptorMapping.entrySet().stream()
                    .map(Map.Entry::getValue)
                    .filter(descriptor -> descriptor.getType() == descriptorType)
                    .collect(Collectors.toSet());
     }
 
-    public Optional<ChannelDescriptor> getChannelDescriptor(final String name) {
-        return Optional.ofNullable(channelDescriptorMapping.get(name));
+    public Optional<ChannelDescriptor> getChannelDescriptor(DescriptorKey key) {
+        return Optional.ofNullable(channelDescriptorMapping.get(key));
     }
 
-    public Optional<ProviderDescriptor> getProviderDescriptor(final String name) {
-        return Optional.ofNullable(providerDescriptorMapping.get(name));
+    public Optional<ProviderDescriptor> getProviderDescriptor(DescriptorKey key) {
+        return Optional.ofNullable(providerDescriptorMapping.get(key));
     }
 
-    public Optional<ComponentDescriptor> getComponentDescriptor(final String name) {
-        return Optional.ofNullable(componentDescriptorMapping.get(name));
+    public Optional<ComponentDescriptor> getComponentDescriptor(DescriptorKey key) {
+        return Optional.ofNullable(componentDescriptorMapping.get(key));
     }
 
-    public Map<String, Descriptor> getDescriptorMap() {
+    public Map<DescriptorKey, Descriptor> getDescriptorMap() {
         return descriptorMapping;
     }
 
-    public Map<String, ChannelDescriptor> getChannelDescriptorMap() {
+    public Map<DescriptorKey, ChannelDescriptor> getChannelDescriptorMap() {
         return channelDescriptorMapping;
     }
 
-    public Map<String, ProviderDescriptor> getProviderDescriptorMap() {
+    public Map<DescriptorKey, ProviderDescriptor> getProviderDescriptorMap() {
         return providerDescriptorMapping;
     }
 
-    public Map<String, ComponentDescriptor> getComponentDescriptorMap() {
+    public Map<DescriptorKey, ComponentDescriptor> getComponentDescriptorMap() {
         return componentDescriptorMapping;
     }
 
-    private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
-        Map<String, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
+    private <D extends Descriptor> Map<DescriptorKey, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
+        Map<DescriptorKey, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
         for (D descriptor : descriptorList) {
             // TODO fix this when descriptor map uses DescriptorKey as its key
-            String descriptorName = descriptor.getDescriptorKey().getUniversalKey();
-            if (descriptorMapping.containsKey(descriptorName)) {
-                throw new AlertException("Found duplicate descriptor name of: " + descriptorName);
+            DescriptorKey descriptorKey = descriptor.getDescriptorKey();
+            if (descriptorMapping.containsKey(descriptorKey)) {
+                throw new AlertException("Found duplicate descriptor name of: " + descriptorKey.getUniversalKey());
             }
-            descriptorMapping.put(descriptorName, descriptor);
-            specificDescriptorMapping.put(descriptorName, descriptor);
+            descriptorMapping.put(descriptorKey, descriptor);
+            specificDescriptorMapping.put(descriptorKey, descriptor);
         }
         return specificDescriptorMapping;
     }

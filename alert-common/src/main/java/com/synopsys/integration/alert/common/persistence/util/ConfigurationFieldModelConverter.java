@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -49,11 +51,13 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 public class ConfigurationFieldModelConverter {
     private final EncryptionUtility encryptionUtility;
     private final DescriptorAccessor descriptorAccessor;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ConfigurationFieldModelConverter(final EncryptionUtility encryptionUtility, final DescriptorAccessor descriptorAccessor) {
+    public ConfigurationFieldModelConverter(EncryptionUtility encryptionUtility, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
         this.encryptionUtility = encryptionUtility;
         this.descriptorAccessor = descriptorAccessor;
+        this.descriptorMap = descriptorMap;
     }
 
     public final FieldAccessor convertToFieldAccessor(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
@@ -85,9 +89,10 @@ public class ConfigurationFieldModelConverter {
 
     public final Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
         final ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
-        final String descriptorName = fieldModel.getDescriptorName();
+        String descriptorName = fieldModel.getDescriptorName();
+        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
 
-        final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
+        final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorKey.getUniversalKey(), context);
         final Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
         for (final DefinedFieldModel definedField : fieldsForContext) {
             fieldModel.getFieldValueModel(definedField.getKey())
@@ -122,7 +127,10 @@ public class ConfigurationFieldModelConverter {
     }
 
     public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
-        long descriptorId = descriptorAccessor.getRegisteredDescriptorByName(fieldModel.getDescriptorName()).map(RegisteredDescriptorModel::getId).orElse(0L);
+        String descriptorName = fieldModel.getDescriptorName();
+        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
+
+        long descriptorId = descriptorAccessor.getRegisteredDescriptorByName(descriptorKey.getUniversalKey()).map(RegisteredDescriptorModel::getId).orElse(0L);
         long configId = Long.parseLong(fieldModel.getId());
         ConfigurationModel configurationModel = new ConfigurationModel(configId, descriptorId, fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fieldModel.getContext());
         convertToConfigurationFieldModelMap(fieldModel).values().forEach(configurationModel::put);

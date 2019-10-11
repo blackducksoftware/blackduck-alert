@@ -12,6 +12,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -45,7 +46,10 @@ public class PhoneHomeTest {
 
         final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
         final Descriptor descriptor = Mockito.mock(Descriptor.class);
-        Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(TEST_DESCRIPTOR_NAME, descriptor));
+        DescriptorKey descriptorKey = Mockito.mock(DescriptorKey.class);
+        Mockito.when(descriptorKey.getUniversalKey()).thenReturn(TEST_DESCRIPTOR_NAME);
+
+        Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
 
         final PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility, blackDuckProperties);
 
