@@ -40,17 +40,17 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
-import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.response.CurrentVersionView;
@@ -79,14 +79,14 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
-    private final DefaultConfigurationAccessor configurationAccessor;
+    private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
     private final AuditUtility auditUtility;
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final AboutReader aboutReader, final DefaultConfigurationAccessor configurationAccessor,
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final AboutReader aboutReader, final ConfigurationAccessor configurationAccessor,
         final TaskManager taskManager, final ProxyManager proxyManager, final Gson gson, final AuditUtility auditUtility, final BlackDuckProperties blackDuckProperties) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.aboutReader = aboutReader;

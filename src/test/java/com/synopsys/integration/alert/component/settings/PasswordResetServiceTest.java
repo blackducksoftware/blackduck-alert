@@ -17,7 +17,7 @@ import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;

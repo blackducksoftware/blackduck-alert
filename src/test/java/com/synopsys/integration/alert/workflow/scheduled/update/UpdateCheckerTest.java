@@ -17,8 +17,8 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
-import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;

@@ -100,11 +100,6 @@ dependencies {
     runtimeOnly 'com.sun.mail:javax.mail:1.6.2'
     implementation 'javax.mail:javax.mail-api:1.6.2'
 
-    // Templates
-    implementation 'org.jsoup:jsoup:1.9.2'
-    implementation 'com.jayway.jsonpath:json-path:2.3.0'
-    implementation 'org.freemarker:freemarker:2.3.25-incubating'
-
     // Message Queue
     implementation 'org.apache.activemq:activemq-broker'
 

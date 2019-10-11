@@ -40,6 +40,8 @@ public interface ConfigurationAccessor {
 
     Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException;
 
+    List<ConfigurationJobModel> getJobsByFrequency(final FrequencyType frequency);
+
     ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
     ConfigurationJobModel updateJob(final UUID jobId, final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
