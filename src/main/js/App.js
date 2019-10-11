@@ -6,12 +6,9 @@ import { withRouter } from 'react-router-dom';
 import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
-import SetupPage from 'SetupPage';
 import { verifyLogin, verifySaml } from 'store/actions/session';
-import { getInitialSystemSetup } from 'store/actions/system';
 import * as IconUtility from 'util/iconUtility';
 import LogoutPage from 'LogoutPage';
-
 // These are needed for the react-bootstrap tables to show the ascending/descending icons
 import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
 import '@fortawesome/fontawesome-free/js/all.js';
@@ -29,16 +26,6 @@ class App extends Component {
         this.props.verifySaml();
     }
 
-    componentDidUpdate(prevProps) {
-        const { systemInitialized, logoutPerformed, loggedIn, samlEnabled } = this.props;
-        if (systemInitialized && !prevProps.systemInitialized
-            && !logoutPerformed && !loggedIn && samlEnabled) {
-            // Switching from un-initialized to initialized due to system setup.
-            // Reload the page to display the correct login screen
-            window.location.reload();
-        }
-    }
-
     render() {
         if (this.props.initializing) {
             return (<div />);
@@ -49,9 +36,6 @@ class App extends Component {
         }
 
         let contentPage = (this.props.loggedIn || this.props.samlEnabled) ? <MainPage /> : <LoginPage />;
-        if (!this.props.systemInitialized) {
-            contentPage = <SetupPage />;
-        }
 
         return (
             <div>
@@ -69,7 +53,6 @@ App.propTypes = {
     verifyLogin: PropTypes.func.isRequired,
     verifySaml: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
-    systemInitialized: PropTypes.bool.isRequired,
     samlEnabled: PropTypes.bool.isRequired
 };
 
@@ -78,14 +61,12 @@ const mapStateToProps = state => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
     initializing: state.session.initializing,
-    samlEnabled: state.session.samlEnabled,
-    systemInitialized: state.system.systemInitialized
+    samlEnabled: state.session.samlEnabled
 });
 
 const mapDispatchToProps = dispatch => ({
     verifyLogin: () => dispatch(verifyLogin()),
-    verifySaml: () => dispatch(verifySaml()),
-    getSettings: () => dispatch(getInitialSystemSetup())
+    verifySaml: () => dispatch(verifySaml())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

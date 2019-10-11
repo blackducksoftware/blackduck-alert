@@ -50,7 +50,6 @@ public class HttpPathManager {
     public static final String PATH_PASSWORD_RESET = BaseController.BASE_PATH + "/resetPassword";
     public static final String PATH_PASSWORD_RESET_ROOT = BaseController.BASE_PATH + "/resetPassword/**";
     public static final String PATH_SYSTEM_MESSAGES_LATEST = BaseController.BASE_PATH + "/system/messages/latest";
-    public static final String PATH_SYSTEM_SETUP_INITIAL = BaseController.BASE_PATH + "/system/setup/initial";
     public static final String PATH_SYSTEM_SETUP_DESCRIPTOR = BaseController.BASE_PATH + "/system/setup/descriptor";
     public static final String PATH_VERIFY = BaseController.BASE_PATH + "/verify";
     public static final String PATH_VERIFY_SAML = PATH_VERIFY + "/saml";
@@ -71,7 +70,6 @@ public class HttpPathManager {
         PATH_PASSWORD_RESET,
         PATH_PASSWORD_RESET_ROOT,
         PATH_SYSTEM_MESSAGES_LATEST,
-        PATH_SYSTEM_SETUP_INITIAL,
         PATH_SYSTEM_SETUP_DESCRIPTOR,
         PATH_VERIFY,
         PATH_VERIFY_SAML
@@ -87,7 +85,6 @@ public class HttpPathManager {
         PATH_SAML_ROOT,
         PATH_ABOUT,
         PATH_SYSTEM_MESSAGES_LATEST,
-        PATH_SYSTEM_SETUP_INITIAL,
         PATH_SYSTEM_SETUP_DESCRIPTOR,
         PATH_VERIFY,
         PATH_VERIFY_SAML,

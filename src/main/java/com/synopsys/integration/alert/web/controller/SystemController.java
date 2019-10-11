@@ -23,40 +23,29 @@
 package com.synopsys.integration.alert.web.controller;
 
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 
 @RestController
 public class SystemController extends BaseController {
+    public static final String NO_RESOURCE_FOUND = "No resource found";
     private static final Logger logger = LoggerFactory.getLogger(SystemController.class);
-
     private final SystemActions systemActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
@@ -100,55 +89,22 @@ public class SystemController extends BaseController {
     }
 
     @GetMapping(value = "/system/setup/initial")
-    public ResponseEntity<String> getInitialSystemSetup(final HttpServletRequest request) {
-        final Optional<ResponseEntity<String>> previousSetupResponse = checkForInitialSetup(request.getServletContext().getContextPath());
-        if (previousSetupResponse.isPresent()) {
-            return previousSetupResponse.get();
-        }
-
-        return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemActions.getCurrentSystemSetup()));
+    @Deprecated
+    public ResponseEntity<String> getInitialSystemSetup() {
+        // FIXME: 6.0.0 remove this method
+        return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
     }
 
     @PostMapping(value = "/system/setup/initial")
-    public ResponseEntity<String> initialSystemSetup(@RequestBody final FieldModel settingsToSave) {
-        if (systemActions.isSystemInitialized()) {
-            return responseFactory.createMessageResponse(HttpStatus.CONFLICT, "System Setup has already occurred");
-        }
-
-        return saveSystemSettings(settingsToSave);
+    @Deprecated
+    public ResponseEntity<String> initialSystemSetup() {
+        // FIXME: 6.0.0 remove this method
+        return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
     }
 
     @GetMapping(value = "/system/setup/descriptor")
-    public ResponseEntity<String> getInitialSystemSetupDescriptor(final HttpServletRequest request) {
-        final Optional<ResponseEntity<String>> previousSetupResponse = checkForInitialSetup(request.getServletContext().getContextPath());
-        if (previousSetupResponse.isPresent()) {
-            return previousSetupResponse.get();
-        }
-
-        final DescriptorMetadata settingsData = settingsDescriptor.createMetaData(ConfigContextEnum.GLOBAL).orElse(null);
-        return responseFactory.createOkContentResponse(contentConverter.getJsonString(settingsData));
+    @Deprecated
+    public ResponseEntity<String> getInitialSystemSetupDescriptor() {
+        return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
     }
-
-    private Optional<ResponseEntity<String>> checkForInitialSetup(final String contextPath) {
-        if (systemActions.isSystemInitialized()) {
-            final HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", contextPath);
-            return Optional.of(new ResponseEntity(headers, HttpStatus.FOUND));
-        }
-
-        return Optional.empty();
-    }
-
-    private ResponseEntity<String> saveSystemSettings(final FieldModel model) {
-        try {
-            final HashMap<String, String> fieldErrors = new HashMap<>();
-            final FieldModel savedConfig = systemActions.saveRequiredInformation(model, fieldErrors);
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(savedConfig));
-        } catch (final AlertFieldException ex) {
-            return responseFactory.createFieldErrorResponse(model.getId(), "Invalid System Setup", ex.getFieldErrors());
-        } catch (final AlertException ex) {
-            return responseFactory.createBadRequestResponse(model.getId(), ex.getMessage());
-        }
-    }
-
 }
