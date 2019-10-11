@@ -42,9 +42,9 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
 public class PasswordResetService {
@@ -53,13 +53,13 @@ public class PasswordResetService {
     private static final String SUBJECT_LINE = "Alert - Password Reset";
 
     private final AlertProperties alertProperties;
-    private final DefaultUserAccessor userAccessor;
+    private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final EmailChannelKey emailChannelKey;
 
     @Autowired
-    public PasswordResetService(AlertProperties alertProperties, DefaultUserAccessor userAccessor, ConfigurationAccessor configurationAccessor, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
+    public PasswordResetService(AlertProperties alertProperties, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
         this.alertProperties = alertProperties;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;

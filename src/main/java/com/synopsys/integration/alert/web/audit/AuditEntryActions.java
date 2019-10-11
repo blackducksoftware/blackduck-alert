@@ -40,13 +40,13 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -55,13 +55,13 @@ public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
     private AuditUtility auditUtility;
-    private DefaultNotificationManager notificationManager;
+    private NotificationManager notificationManager;
     private ConfigurationAccessor jobConfigReader;
     private ChannelEventManager eventManager;
     private NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(AuditUtility auditUtility, DefaultNotificationManager notificationManager, ConfigurationAccessor jobConfigReader, ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
+    public AuditEntryActions(AuditUtility auditUtility, NotificationManager notificationManager, ConfigurationAccessor jobConfigReader, ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;
         this.jobConfigReader = jobConfigReader;

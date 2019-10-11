@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -49,7 +50,6 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 
 @Component
 public class PurgeTask extends StartupScheduledTask {
@@ -59,13 +59,13 @@ public class PurgeTask extends StartupScheduledTask {
     private static final int DEFAULT_DAY_OFFSET = 1;
     private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
     private final SchedulingDescriptorKey schedulingDescriptorKey;
-    private final DefaultNotificationManager notificationManager;
+    private final NotificationManager notificationManager;
     private final SystemMessageUtility systemMessageUtility;
     private final ConfigurationAccessor configurationAccessor;
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, DefaultNotificationManager notificationManager, SystemMessageUtility systemMessageUtility, TaskManager taskManager,
+    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager, SystemMessageUtility systemMessageUtility, TaskManager taskManager,
         ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
