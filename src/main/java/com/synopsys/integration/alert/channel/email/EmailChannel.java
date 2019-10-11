@@ -39,13 +39,13 @@ import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -59,7 +59,7 @@ public class EmailChannel extends NamedDistributionChannel {
     private final EmailChannelMessageParser emailChannelMessageParser;
 
     @Autowired
-    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, DefaultAuditUtility auditUtility,
+    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditUtility auditUtility,
         EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser) {
         super(emailChannelKey, gson, auditUtility);
         this.emailAddressHandler = emailAddressHandler;

@@ -33,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.UserEntity;
@@ -42,7 +43,7 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
 @Transactional
-public class DefaultUserAccessor {
+public class DefaultUserAccessor implements UserAccessor {
     public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
