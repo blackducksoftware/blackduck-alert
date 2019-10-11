@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.channel.util.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 
