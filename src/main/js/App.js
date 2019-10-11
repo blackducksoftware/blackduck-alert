@@ -21,9 +21,17 @@ IconUtility.loadIconData();
 
 class App extends Component {
     componentDidMount() {
-        this.props.getSettings();
         this.props.verifyLogin();
         this.props.verifySaml();
+    }
+
+    componentDidUpdate() {
+        const { logoutPerformed, loggedIn, samlEnabled } = this.props;
+        if (!logoutPerformed && !loggedIn && samlEnabled) {
+            // Switching from un-initialized to initialized due to system setup.
+            // Reload the page to display the correct login screen
+            window.location.reload();
+        }
     }
 
     render() {
@@ -52,7 +60,6 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     verifySaml: PropTypes.func.isRequired,
-    getSettings: PropTypes.func.isRequired,
     samlEnabled: PropTypes.bool.isRequired
 };
 
