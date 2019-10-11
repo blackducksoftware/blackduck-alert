@@ -55,9 +55,8 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
 
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor);
         systemValidator.validate();
     }
 
@@ -66,8 +65,7 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Not Initialized"));
@@ -79,8 +77,7 @@ public class SystemValidatorTest {
         final DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor);
         systemValidator.validateEncryptionProperties(new HashMap<>());
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Initialized"));
@@ -95,14 +92,13 @@ public class SystemValidatorTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor, proxyManager);
+        final SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), encryptionUtility, defaultSystemMessageUtility, userAccessor);
         systemValidator.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }
 
     @Test
-    public void testvalidateBlackDuckProviderNullURL() throws IOException {
+    public void testvalidateBlackDuckProviderNullURL() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         final DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
@@ -113,7 +109,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testvalidateBlackDuckProviderLocalhostURL() throws IOException {
+    public void testvalidateBlackDuckProviderLocalhostURL() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -126,7 +122,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testValidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
+    public void testValidateBlackDuckProviderHubWebserverEnvironmentSet() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -144,7 +140,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testValidateHubInvalidProvider() throws IOException {
+    public void testValidateHubInvalidProvider() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -161,7 +157,7 @@ public class SystemValidatorTest {
 
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void testValidateHubValidProvider() throws IOException {
+    public void testValidateHubValidProvider() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -173,7 +169,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testValidateHubValidProviderWithProxy() throws Exception {
+    public void testValidateHubValidProviderWithProxy() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
 

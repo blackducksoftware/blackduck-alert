@@ -26,8 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
@@ -44,8 +43,8 @@ public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
         try {
             final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
             return samlContext.getFieldValueBoolean(currentConfiguration, AuthenticationDescriptor.KEY_SAML_FORCE_AUTH);
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException e) {
-            logger.error("Could not get the SAML force AuthN.", e);
+        } catch (final AlertException e) {
+            logger.error("Could not get the SAML force Auth.", e);
         }
         return false;
     }

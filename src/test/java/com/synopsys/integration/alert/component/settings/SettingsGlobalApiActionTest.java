@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsUIConfig;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 
 public class SettingsGlobalApiActionTest {
@@ -38,10 +37,9 @@ public class SettingsGlobalApiActionTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
 
         final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        final SettingsGlobalApiAction actionApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
         final FieldModel afterGetAction = actionApi.afterGetAction(fieldModel);
         assertFieldsMissing(afterGetAction);
         Mockito.when(encryptionUtility.isPasswordSet()).thenReturn(true);
@@ -58,8 +56,7 @@ public class SettingsGlobalApiActionTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
 
         final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -78,8 +75,7 @@ public class SettingsGlobalApiActionTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -98,8 +94,7 @@ public class SettingsGlobalApiActionTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SAMLManager samlManager = Mockito.mock(SAMLManager.class);
-        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator, samlManager);
+        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
