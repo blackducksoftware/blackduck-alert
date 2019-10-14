@@ -87,12 +87,12 @@ public class ConfigController extends BaseController {
             DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
             models = configActions.getConfigs(context, descriptorKey);
         } catch (final AlertException e) {
-            logger.error("Was not able to find configurations with the context {}, and descriptorName {}", context, descriptorName);
-            return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
+            logger.error("Was not able to find configurations with the context {}, and descriptorName {} to get.", context, descriptorName);
+            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
         }
 
         if (models.isEmpty()) {
-            return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
+            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
         }
 
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
@@ -124,16 +124,17 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
+        String context = restModel.getContext();
         String descriptorName = restModel.getDescriptorName();
-        if (!authorizationManager.hasCreatePermission(restModel.getContext(), restModel.getDescriptorName())) {
+        if (!authorizationManager.hasCreatePermission(context, descriptorName)) {
             return responseFactory.createForbiddenResponse();
         }
         DescriptorKey descriptorKey;
         try {
             descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
         } catch (final AlertException e) {
-            logger.error("Was not able to find a Descriptor with the name: {}", descriptorName);
-            return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
+            logger.error("Was not able to find configurations with the context {}, and descriptorName {} to update.", context, descriptorName);
+            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
         }
 
         try {
