@@ -72,8 +72,8 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
         taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
 
-        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderName(blackDuckProviderKey.getUniversalKey());
-        providerDataAccessor.deleteProjects(blackDuckProviderKey.getUniversalKey(), blackDuckProjects);
+        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderKey(blackDuckProviderKey);
+        providerDataAccessor.deleteProjects(blackDuckProviderKey, blackDuckProjects);
     }
 
     private void handleNewOrUpdatedConfig() {

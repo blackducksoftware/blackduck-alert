@@ -59,7 +59,7 @@ public class PolarisDistributionTestAction extends TestAction {
     }
 
     private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
-        final List<ProviderProject> polarisProjects = polarisDataAccessor.findByProviderName(polarisProviderKey.getUniversalKey());
+        final List<ProviderProject> polarisProjects = polarisDataAccessor.findByProviderKey(polarisProviderKey);
         final boolean noProjectsMatchPattern = polarisProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
