@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -35,13 +36,13 @@ public interface DescriptorAccessor {
 
     List<RegisteredDescriptorModel> getRegisteredDescriptors() throws AlertDatabaseConstraintException;
 
-    Optional<RegisteredDescriptorModel> getRegisteredDescriptorByName(final String descriptorName) throws AlertDatabaseConstraintException;
+    Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException;
 
     List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType) throws AlertDatabaseConstraintException;
 
     Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(final Long descriptorId) throws AlertDatabaseConstraintException;
 
-    List<DefinedFieldModel> getFieldsForDescriptor(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
+    List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
 
     List<DefinedFieldModel> getFieldsForDescriptorById(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
 }

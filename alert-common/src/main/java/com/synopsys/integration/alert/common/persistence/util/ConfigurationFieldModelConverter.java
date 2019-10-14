@@ -92,7 +92,7 @@ public class ConfigurationFieldModelConverter {
         String descriptorName = fieldModel.getDescriptorName();
         DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
 
-        final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorKey.getUniversalKey(), context);
+        final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorKey, context);
         final Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
         for (final DefinedFieldModel definedField : fieldsForContext) {
             fieldModel.getFieldValueModel(definedField.getKey())
@@ -130,7 +130,7 @@ public class ConfigurationFieldModelConverter {
         String descriptorName = fieldModel.getDescriptorName();
         DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
 
-        long descriptorId = descriptorAccessor.getRegisteredDescriptorByName(descriptorKey.getUniversalKey()).map(RegisteredDescriptorModel::getId).orElse(0L);
+        long descriptorId = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey).map(RegisteredDescriptorModel::getId).orElse(0L);
         long configId = Long.parseLong(fieldModel.getId());
         ConfigurationModel configurationModel = new ConfigurationModel(configId, descriptorId, fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fieldModel.getContext());
         convertToConfigurationFieldModelMap(fieldModel).values().forEach(configurationModel::put);
