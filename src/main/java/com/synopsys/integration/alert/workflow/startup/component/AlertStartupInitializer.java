@@ -139,7 +139,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL).stream()
                                                                         .sorted(Comparator.comparing(DefinedFieldModel::getKey))
                                                                         .collect(Collectors.toList());
-                final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL);
+                final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
 
                 Map<String, ConfigurationFieldModel> existingConfiguredFields = new HashMap<>();
                 foundConfigurationModels.forEach(config -> existingConfiguredFields.putAll(config.getCopyOfKeyToFieldMap()));
@@ -193,7 +193,7 @@ public class AlertStartupInitializer extends StartupComponent {
         } else if (foundConfigurationModels.isEmpty() && !configurationModels.isEmpty()) {
             logger.info("    Writing initial values from environment.");
             final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorKey, configurationModels);
-            fieldConfigurationAccessor.createConfiguration(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL, savedFields);
+            fieldConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, savedFields);
         }
     }
 

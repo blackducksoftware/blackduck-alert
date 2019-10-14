@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.web.security.authentication.UserManagement
 public class LdapManager {
     private static final Logger logger = LoggerFactory.getLogger(LdapManager.class);
 
-    private final AuthenticationDescriptorKey AuthenticationDescriptorKey;
+    private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private LdapContextSource contextSource;
@@ -59,7 +59,7 @@ public class LdapManager {
 
     @Autowired
     public LdapManager(AuthenticationDescriptorKey AuthenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserManagementAuthoritiesPopulator authoritiesPopulator) {
-        this.AuthenticationDescriptorKey = AuthenticationDescriptorKey;
+        this.authenticationDescriptorKey = AuthenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
         this.authoritiesPopulator = authoritiesPopulator;
     }
@@ -77,7 +77,7 @@ public class LdapManager {
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        return configurationAccessor.getConfigurationsByDescriptorName(AuthenticationDescriptorKey.getUniversalKey())
+        return configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));

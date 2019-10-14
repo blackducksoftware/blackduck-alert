@@ -84,7 +84,7 @@ public class PurgeTask extends StartupScheduledTask {
     @Override
     public String scheduleCronExpression() {
         try {
-            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(schedulingDescriptorKey.getUniversalKey());
+            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey);
             final String purgeSavedCronValue = schedulingConfigs.stream()
                                                    .findFirst()
                                                    .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
@@ -150,7 +150,7 @@ public class PurgeTask extends StartupScheduledTask {
     private Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
-            final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(schedulingDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL).stream().findFirst();
+            final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
                 final Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
                                                            .map(SchedulingConfiguration::getDataFrequencyDays)

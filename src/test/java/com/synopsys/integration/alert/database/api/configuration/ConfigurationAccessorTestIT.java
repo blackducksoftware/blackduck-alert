@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -86,12 +87,23 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         descriptorMocker.cleanUpDescriptors();
     }
 
+    private DescriptorKey createDescriptorKey(String key) {
+        DescriptorKey testDescriptorKey = new DescriptorKey() {
+            @Override
+            public String getUniversalKey() {
+                return key;
+            }
+        };
+        return testDescriptorKey;
+    }
+
     @Test
     public void getAllJobsTest() throws AlertDatabaseConstraintException {
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
-        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
+        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
 
         final UUID jobId = UUID.randomUUID();
         final ConfigGroupEntity entityToSave1 = new ConfigGroupEntity(configurationModel1.getConfigurationId(), jobId);
@@ -109,8 +121,16 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void getJobByIdTest() throws AlertDatabaseConstraintException {
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
-        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
+
+        DescriptorKey testDescriptorKey = new DescriptorKey() {
+            @Override
+            public String getUniversalKey() {
+                return DESCRIPTOR_NAME;
+            }
+        };
+
+        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(testDescriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
+        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(testDescriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
 
         final UUID jobId = UUID.randomUUID();
         final ConfigGroupEntity entityToSave1 = new ConfigGroupEntity(configurationModel1.getConfigurationId(), jobId);
@@ -218,19 +238,10 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void createConfigTest() throws AlertDatabaseConstraintException {
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-
-        final ConfigurationModel createdConfig = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField1, configField2));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel createdConfig = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1, configField2));
         assertTrue(createdConfig.getCopyOfFieldList().contains(configField1));
         assertTrue(createdConfig.getCopyOfFieldList().contains(configField2));
-
-        final Optional<DescriptorConfigEntity> configEntityOptional = descriptorConfigsRepository.findById(createdConfig.getConfigurationId());
-        assertTrue(configEntityOptional.isPresent());
-    }
-
-    @Test
-    public void createEmptyConfigTest() throws AlertDatabaseConstraintException {
-        final ConfigurationModel createdConfig = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
-        assertTrue(createdConfig.getCopyOfFieldList().isEmpty());
 
         final Optional<DescriptorConfigEntity> configEntityOptional = descriptorConfigsRepository.findById(createdConfig.getConfigurationId());
         assertTrue(configEntityOptional.isPresent());
@@ -243,23 +254,14 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void createConfigWithInvalidDescriptorNameTest() {
-        try {
-            configurationAccessor.createEmptyConfiguration("invalid descriptor name", ConfigContextEnum.DISTRIBUTION);
-            fail("Expected exception to be thrown");
-        } catch (final AlertDatabaseConstraintException e) {
-            assertEquals("No descriptor with the provided name was registered", e.getMessage());
-        }
-    }
-
-    @Test
     public void getConfigsByNameTest() throws AlertDatabaseConstraintException {
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
-        configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
 
-        final List<ConfigurationModel> configurationsForDescriptor = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        final List<ConfigurationModel> configurationsForDescriptor = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(2, configurationsForDescriptor.size());
     }
 
@@ -267,8 +269,9 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void getConfigurationByIdTest() throws AlertDatabaseConstraintException {
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
-        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
 
         final Optional<ConfigurationModel> optionalFoundConfig1 = configurationAccessor.getConfigurationById(configurationModel1.getConfigurationId());
         assertTrue(optionalFoundConfig1.isPresent());
@@ -315,8 +318,9 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         assertTrue(configurationModels.isEmpty());
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
-        configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
         configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
         assertFalse(configurationModels.isEmpty());
     }
@@ -341,6 +345,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         ///////////////////////////////////////////
 
         final String descriptorName = "Unique Descriptor";
+        final DescriptorKey descriptorKey = createDescriptorKey(descriptorName);
         try {
             // Register a custom descriptor of Channel type
             descriptorMocker.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
@@ -354,7 +359,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
             // Add a configuration for the custom descriptor with a Frequency field
             final ConfigurationFieldModel realTimeField = ConfigurationFieldModel.create(ChannelDistributionUIConfig.KEY_FREQUENCY);
             realTimeField.setFieldValue(FrequencyType.REAL_TIME.name());
-            configurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, Arrays.asList(realTimeField));
+            configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(realTimeField));
 
             configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
             assertTrue(configurationModels.isEmpty());
@@ -371,8 +376,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         final String initialValue = "initial value";
         final ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         originalField.setFieldValue(initialValue);
-
-        final ConfigurationModel createdModel = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel createdModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
         final List<ConfigurationFieldModel> copyOfFieldList = createdModel.getCopyOfFieldList();
         assertEquals(1, copyOfFieldList.size());
         final Optional<String> optionalValue = copyOfFieldList.get(0).getFieldValue();
@@ -402,7 +407,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         final ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         originalField.setFieldValue(initialValue);
 
-        final ConfigurationModel createdModel = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel createdModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
         final List<ConfigurationFieldModel> copyOfFieldList = createdModel.getCopyOfFieldList();
         assertEquals(1, copyOfFieldList.size());
         final Optional<String> optionalValue = copyOfFieldList.get(0).getFieldValue();
@@ -448,7 +454,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     @Test
     public void updateConfigurationWithInvalidFieldKeyTest() {
         try {
-            final ConfigurationModel configurationModel = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
+            final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+            final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
             final ConfigurationFieldModel field = ConfigurationFieldModel.create(null);
             configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), Arrays.asList(field));
             fail("Expected exception to be thrown");
@@ -459,17 +466,18 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void deleteConfigurationTest() throws AlertDatabaseConstraintException {
-        final ConfigurationModel createdModel1 = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
-        final ConfigurationModel createdModel2 = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
-        final List<ConfigurationModel> foundModels = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel createdModel1 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
+        final ConfigurationModel createdModel2 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
+        final List<ConfigurationModel> foundModels = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(2, foundModels.size());
 
         configurationAccessor.deleteConfiguration(createdModel1);
-        final List<ConfigurationModel> afterFirstDeletion = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        final List<ConfigurationModel> afterFirstDeletion = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(foundModels.size() - 1, afterFirstDeletion.size());
 
         configurationAccessor.deleteConfiguration(createdModel2);
-        final List<ConfigurationModel> afterSecondDeletion = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        final List<ConfigurationModel> afterSecondDeletion = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(foundModels.size() - 2, afterSecondDeletion.size());
     }
 
@@ -491,7 +499,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void configurationModelTest() throws AlertDatabaseConstraintException {
-        final ConfigurationModel configurationModel = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
+        final DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
         assertNotNull(configurationModel.getConfigurationId());
         assertNotNull(configurationModel.getDescriptorId());
         assertNotNull(configurationModel.getCopyOfFieldList());
@@ -509,19 +518,21 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     private void createConfigWithEmptyDescriptorNameTestHelper(final String descriptorName) {
         try {
-            configurationAccessor.createEmptyConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION);
+            final DescriptorKey descriptorKey = createDescriptorKey(descriptorName);
+            configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
-            assertEquals("Descriptor name cannot be empty", e.getMessage());
+            assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
 
     private void getConfigByNameWithEmptyDescriptorNameTestHelper(final String descriptorName) {
         try {
-            configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
+            final DescriptorKey descriptorKey = createDescriptorKey(descriptorName);
+            configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
-            assertEquals("Descriptor name cannot be empty", e.getMessage());
+            assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
 }

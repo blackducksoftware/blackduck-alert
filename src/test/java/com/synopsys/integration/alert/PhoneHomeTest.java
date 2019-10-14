@@ -2,8 +2,8 @@ package com.synopsys.integration.alert;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class PhoneHomeTest {
 
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         final ConfigurationModel config = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(TEST_DESCRIPTOR_NAME)).thenReturn(Arrays.asList(config));
+        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(config));
 
         final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
         final Descriptor descriptor = Mockito.mock(Descriptor.class);

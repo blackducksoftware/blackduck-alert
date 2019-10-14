@@ -60,7 +60,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         provider_global = configurationAccessor
-                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         fieldMap.get(SlackDescriptor.KEY_WEBHOOK).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
         fieldMap.get(SlackDescriptor.KEY_CHANNEL_NAME).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
         fieldMap.get(SlackDescriptor.KEY_CHANNEL_USERNAME).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
-        return configurationAccessor.createConfiguration(slackChannelKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, models);
+        return configurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, models);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
                                                    .build();
         List<ConfigurationModel> models = List.of();
         try {
-            models = configurationAccessor.getConfigurationsByDescriptorName(slackChannelKey.getUniversalKey());
+            models = configurationAccessor.getConfigurationsByDescriptorKey(slackChannelKey);
         } catch (final AlertDatabaseConstraintException e) {
             e.printStackTrace();
         }
