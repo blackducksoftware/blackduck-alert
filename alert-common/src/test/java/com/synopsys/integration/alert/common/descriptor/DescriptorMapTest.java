@@ -25,9 +25,9 @@ public class DescriptorMapTest {
         final String channelDescriptor2Name = "channelDescriptor2";
         final String providerDescriptorName = "providerDescriptor";
 
-        final DescriptorKey channelDescriptor1Key = mockKey(channelDescriptor1Name);
-        final DescriptorKey channelDescriptor2Key = mockKey(channelDescriptor2Name);
-        final DescriptorKey providerDescriptorKey = mockKey(providerDescriptorName);
+        final DescriptorKey channelDescriptor1Key = new MockDescriptorKey(channelDescriptor1Name);
+        final DescriptorKey channelDescriptor2Key = new MockDescriptorKey(channelDescriptor2Name);
+        final DescriptorKey providerDescriptorKey = new MockDescriptorKey(providerDescriptorName);
 
         Mockito.when(channelDescriptor1.getDescriptorKey()).thenReturn(channelDescriptor1Key);
         Mockito.when(channelDescriptor2.getDescriptorKey()).thenReturn(channelDescriptor2Key);
@@ -49,18 +49,22 @@ public class DescriptorMapTest {
 
         assertTrue(descriptorMap.getChannelDescriptor(providerDescriptorKey).isEmpty());
 
-        final DescriptorKey randomKey = mockKey("Random name");
+        final DescriptorKey randomKey = new MockDescriptorKey("Random name");
         assertTrue(descriptorMap.getDescriptor(randomKey).isEmpty());
 
         assertTrue(descriptorMap.getDescriptorKey("Random name").isEmpty());
     }
 
-    private DescriptorKey mockKey(String key) {
-        return new DescriptorKey() {
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-        };
+    private class MockDescriptorKey extends DescriptorKey {
+        private final String key;
+
+        public MockDescriptorKey(final String key) {
+            this.key = key;
+        }
+
+        @Override
+        public String getUniversalKey() {
+            return key;
+        }
     }
 }
