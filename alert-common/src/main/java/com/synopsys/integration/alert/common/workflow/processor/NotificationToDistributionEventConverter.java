@@ -32,9 +32,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -46,15 +49,23 @@ import com.synopsys.integration.rest.RestConstants;
 public class NotificationToDistributionEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToDistributionEventConverter.class);
     private final ConfigurationAccessor configurationAccessor;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public NotificationToDistributionEventConverter(final ConfigurationAccessor configurationAccessor) {
+    public NotificationToDistributionEventConverter(ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
         this.configurationAccessor = configurationAccessor;
+        this.descriptorMap = descriptorMap;
     }
 
     public List<DistributionEvent> convertToEvents(ConfigurationJobModel job, List<MessageContentGroup> messages) {
-        String descriptorName = job.getChannelName();
-        Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
+        Map<String, ConfigurationFieldModel> globalFields = Map.of();
+        try {
+            String descriptorName = job.getChannelName();
+            DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
+            globalFields = getGlobalFields(descriptorKey);
+        } catch (AlertException e) {
+            logger.error(e.getMessage());
+        }
         job.getFieldAccessor().addFields(globalFields);
         List<DistributionEvent> events = messages
                                              .stream()
@@ -64,9 +75,9 @@ public class NotificationToDistributionEventConverter {
         return events;
     }
 
-    private Map<String, ConfigurationFieldModel> getGlobalFields(String descriptorName) {
+    private Map<String, ConfigurationFieldModel> getGlobalFields(DescriptorKey descriptorKey) {
         try {
-            List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
             return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an error retrieving global config : {}", e.getMessage());

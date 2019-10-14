@@ -107,7 +107,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     public void testPostInitialSystemSetup() throws Exception {
         logger.info("Starting Post inital system setup test");
 
-        List<Long> settingsConfigIds = configurationAccessor.getConfigurationsByDescriptorName(new SettingsDescriptorKey().getUniversalKey()).stream().map(ConfigurationModel::getConfigurationId).collect(Collectors.toList());
+        List<Long> settingsConfigIds = configurationAccessor.getConfigurationsByDescriptorKey(new SettingsDescriptorKey()).stream().map(ConfigurationModel::getConfigurationId).collect(Collectors.toList());
         for (long id : settingsConfigIds) {
             configurationAccessor.deleteConfiguration(id);
         }

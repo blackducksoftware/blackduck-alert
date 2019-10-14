@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -26,7 +27,8 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     @Test
     public void convertToEventsTest() throws Exception {
-        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor);
+        final DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), List.of());
+        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor, descriptorMap);
         final List<MessageContentGroup> messageContentGroups = new ArrayList<>();
         final MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
         final MessageContentGroup contentGroup2 = MessageContentGroup.singleton(createMessageContent("example"));
