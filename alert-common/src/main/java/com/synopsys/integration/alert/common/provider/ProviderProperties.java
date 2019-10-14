@@ -49,7 +49,7 @@ public abstract class ProviderProperties {
     // This assumes that there will only ever be one global config for a provider. This may not be the case in the future.
     public Optional<ConfigurationModel> retrieveGlobalConfig() {
         try {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(providerKey.getUniversalKey(), ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(providerKey, ConfigContextEnum.GLOBAL);
             if (null != configurations && !configurations.isEmpty()) {
                 return Optional.of(configurations.get(0));
             }

@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -174,11 +175,11 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationsByDescriptorName(final String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
+    public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
+        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
+            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
         }
-        final Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
+        final Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey());
         if (registeredDescriptorEntity.isPresent()) {
             return createConfigModels(Collections.singleton(registeredDescriptorEntity.get()));
         }
@@ -212,44 +213,27 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return createConfigModels(registeredDescriptorEntities);
     }
 
-    // TODO change query to get Id originally
     @Override
-    public List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be null");
+    public List<ConfigurationModel> getConfigurationByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
+            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
         }
-        if (null == context) {
-            throw new AlertDatabaseConstraintException("Context cannot be null");
-        }
-
-        final Long contextId = getConfigContextIdOrThrowException(context);
-        final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
-
-        final List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId);
-
-        final List<ConfigurationModel> configurationModels = new ArrayList<>();
-
-        for (DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
-            configurationModels.add(createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), descriptorConfigEntity.getCreatedAt(),
-                descriptorConfigEntity.getLastUpdated(), contextId));
-        }
-        return configurationModels;
+        return getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
     }
 
-    /**
-     * @return the config that was created
-     */
     @Override
-    public ConfigurationModel createEmptyConfiguration(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        return createConfiguration(descriptorName, context, null);
+    public ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
+            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
+        }
+        return createConfiguration(descriptorKey.getUniversalKey(), context, configuredFields);
     }
 
-    /**
-     * @return the config that was created
-     */
-    @Override
-    public ConfigurationModel createConfiguration(final String descriptorName, final ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
+    private ConfigurationModel createConfiguration(String descriptorKey, ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(descriptorKey)) {
+            throw new AlertDatabaseConstraintException("DescriptorKey cannot be null");
+        }
+        final Long descriptorId = getDescriptorIdOrThrowException(descriptorKey);
         final Long configContextId = getConfigContextIdOrThrowException(context);
         Date currentTime = DateUtils.createCurrentDateTimestamp();
         final DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId, currentTime, currentTime);
@@ -272,6 +256,30 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
             }
         }
         return createdConfig;
+    }
+
+    // TODO change query to get Id originally
+    @Override
+    public List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(descriptorName)) {
+            throw new AlertDatabaseConstraintException("Descriptor name cannot be null");
+        }
+        if (null == context) {
+            throw new AlertDatabaseConstraintException("Context cannot be null");
+        }
+
+        final Long contextId = getConfigContextIdOrThrowException(context);
+        final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
+
+        final List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId);
+
+        final List<ConfigurationModel> configurationModels = new ArrayList<>();
+
+        for (DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
+            configurationModels.add(createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), descriptorConfigEntity.getCreatedAt(),
+                descriptorConfigEntity.getLastUpdated(), contextId));
+        }
+        return configurationModels;
     }
 
     /**

@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -25,7 +26,7 @@ public class PurgeTaskTest {
         final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
         final PurgeTask task = new PurgeTask(new SchedulingDescriptorKey(), null, null, null, null, configurationAccessor);
         final String cronWithNotDefault = task.scheduleCronExpression();
         final String expectedCron = String.format(PurgeTask.CRON_FORMAT, notDefaultValue);
