@@ -90,7 +90,7 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
                 final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
                 final Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(currentDataMap.keySet());
                 final Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectUsersService);
-                blackDuckDataAccessor.updateProjectAndUserData(providerKey.getUniversalKey(), projectToEmailAddresses);
+                blackDuckDataAccessor.updateProjectAndUserData(providerKey, projectToEmailAddresses);
 
                 blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
                 projectUsersService = blackDuckServicesFactory.createProjectUsersService();

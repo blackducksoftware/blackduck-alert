@@ -76,15 +76,15 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @BeforeEach
     public void testSetup() throws Exception {
         final List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
-        providerDataAccessor.deleteUsers(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), allUsers);
+        providerDataAccessor.deleteUsers(BLACK_DUCK_PROVIDER_KEY, allUsers);
         final List<ProviderProject> allProjects = providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
-        providerDataAccessor.deleteProjects(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), allProjects);
+        providerDataAccessor.deleteProjects(BLACK_DUCK_PROVIDER_KEY, allProjects);
 
-        final ProviderProject project1 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
-        final ProviderProject project2 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new ProviderProject("TestProject2", "", "", ""));
-        final ProviderProject project3 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new ProviderProject("Project three", "", "", ""));
-        final ProviderProject project4 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new ProviderProject("Project four", "", "", ""));
-        final ProviderProject project5 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
+        final ProviderProject project1 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
+        final ProviderProject project2 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("TestProject2", "", "", ""));
+        final ProviderProject project3 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project three", "", "", ""));
+        final ProviderProject project4 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project four", "", "", ""));
+        final ProviderProject project5 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
 
         final ProviderUserEntity user1 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
         final ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
