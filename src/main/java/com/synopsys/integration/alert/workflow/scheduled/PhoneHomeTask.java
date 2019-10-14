@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -109,7 +110,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             final PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
             phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
             phoneHomeBuilder.setArtifactVersion(productVersion);
-            phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
+            phoneHomeBuilder.setArtifactModules(getChannelMetaData().toArray(String[]::new));
             final PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
             final PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder));
             final Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
@@ -137,7 +138,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return PhoneHomeService.createAsynchronousPhoneHomeService(intLogger, phoneHomeClient, phoneHomeExecutor);
     }
 
-    private Map<String, String> getChannelMetaData() {
+    private Set<String> getChannelMetaData() {
         final Map<String, Integer> createdDistributions = new HashMap<>();
         final String successKeyPart = "::Successes";
         final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
@@ -161,7 +162,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             }
 
         }
-        return createdDistributions.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> String.valueOf(entry.getValue())));
+        return createdDistributions.entrySet().stream().map(entry -> entry.getKey() + "(" + entry.getValue() + ")").collect(Collectors.toSet());
     }
 
     private Boolean hasAuditSuccess(final UUID jobId) {
