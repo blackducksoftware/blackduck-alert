@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.component.settings.descriptor;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -68,13 +68,15 @@ public class SettingsUIConfig extends UIConfig {
 
     private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
-
-    private final EncryptionConfigurationValidator encryptionValidator;
+    
+    private final EncryptionValidator encryptionConfigValidator;
+    private final EncryptionValidator encryptionFieldValidator;
 
     @Autowired
-    public SettingsUIConfig(EncryptionConfigurationValidator encryptionValidator) {
+    public SettingsUIConfig() {
         super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL);
-        this.encryptionValidator = encryptionValidator;
+        this.encryptionConfigValidator = new EncryptionFieldsSetValidator();
+        this.encryptionFieldValidator = new EncryptionFieldValidator();
     }
 
     @Override
@@ -87,13 +89,19 @@ public class SettingsUIConfig extends UIConfig {
     }
 
     private List<ConfigField> createDefaultSettingsPanel() {
+
         final ConfigField sysAdminEmail = TextInputConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
                                               .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionValidator)
+        final ConfigField defaultUserPassword = PasswordConfigField
+                                                    .createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionConfigValidator)
                                                     .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, this::minimumEncryptionFieldLength)
+        final ConfigField encryptionPassword = PasswordConfigField
+                                                   .createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, encryptionFieldValidator,
+                                                       this::minimumEncryptionFieldLength)
                                                    .setHeader(SETTINGS_HEADER_ENCRYPTION);
-        final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, LABEL_ENCRYPTION_GLOBAL_SALT, SETTINGS_ENCRYPTION_SALT_DESCRIPTION, this::minimumEncryptionFieldLength)
+        final ConfigField encryptionSalt = PasswordConfigField
+                                               .createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, LABEL_ENCRYPTION_GLOBAL_SALT, SETTINGS_ENCRYPTION_SALT_DESCRIPTION, encryptionFieldValidator,
+                                                   this::minimumEncryptionFieldLength)
                                                .setHeader(SETTINGS_HEADER_ENCRYPTION);
         final ConfigField environmentVariableOverride = CheckboxConfigField
                                                             .create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
@@ -104,7 +112,7 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField proxyHost = TextInputConfigField.create(ProxyManager.KEY_PROXY_HOST, LABEL_PROXY_HOST, SETTINGS_PROXY_HOST_DESCRIPTION);
         final ConfigField proxyPort = NumberConfigField.create(ProxyManager.KEY_PROXY_PORT, LABEL_PROXY_PORT, SETTINGS_PROXY_PORT_DESCRIPTION);
         final ConfigField proxyUsername = TextInputConfigField.create(ProxyManager.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
-        final ConfigField proxyPassword = PasswordConfigField.create(ProxyManager.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION, encryptionValidator);
+        final ConfigField proxyPassword = PasswordConfigField.create(ProxyManager.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION, encryptionConfigValidator);
         proxyHost
             .setPanel(SETTINGS_PANEL_PROXY)
             .requireField(proxyPort.getKey());
@@ -127,5 +135,30 @@ public class SettingsUIConfig extends UIConfig {
             return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT);
         }
         return List.of();
+    }
+
+    private class EncryptionFieldsSetValidator extends EncryptionValidator {
+        @Override
+        public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+            Optional<FieldValueModel> pwdField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD);
+            Optional<FieldValueModel> saltField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+
+            boolean encryptionFieldsSet = pwdField.map(field -> field.hasValues() || field.isSet()).orElse(false)
+                                              && saltField.map(field -> field.hasValues() || field.isSet()).orElse(false);
+            if (encryptionFieldsSet) {
+                return List.of();
+            }
+            return List.of(ConfigField.REQUIRED_FIELD_MISSING);
+        }
+    }
+
+    private class EncryptionFieldValidator extends EncryptionValidator {
+        @Override
+        public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+            if (!fieldValueModel.hasValues() && !fieldValueModel.isSet()) {
+                return List.of(ConfigField.REQUIRED_FIELD_MISSING);
+            }
+            return List.of();
+        }
     }
 }

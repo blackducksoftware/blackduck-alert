@@ -28,53 +28,53 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class PasswordConfigField extends ConfigField {
-    private final EncryptionValidationFunction encryptionValidation;
+    private final EncryptionValidator encryptionValidation;
 
-    public PasswordConfigField(String key, String label, String description, boolean required, EncryptionValidationFunction encryptionValidation) {
+    public PasswordConfigField(String key, String label, String description, boolean required, EncryptionValidator encryptionValidation) {
         super(key, label, description, FieldType.PASSWORD_INPUT, required, true);
         this.encryptionValidation = encryptionValidation;
         this.createValidators(ConfigField.NO_VALIDATION);
     }
 
-    public PasswordConfigField(String key, String label, String description, boolean required, EncryptionValidationFunction encryptionValidation, ConfigValidationFunction... validationFunctions) {
+    public PasswordConfigField(String key, String label, String description, boolean required, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         super(key, label, description, FieldType.PASSWORD_INPUT, required, true);
         this.encryptionValidation = encryptionValidation;
         this.createValidators(validationFunctions);
     }
 
-    public static PasswordConfigField create(String key, String label, String description, EncryptionValidationFunction encryptionValidation) {
+    public static PasswordConfigField create(String key, String label, String description, EncryptionValidator encryptionValidation) {
         return new PasswordConfigField(key, label, description, false, encryptionValidation);
     }
 
-    public static PasswordConfigField create(String key, String label, String description, EncryptionValidationFunction encryptionValidation, ConfigValidationFunction... validationFunctions) {
+    public static PasswordConfigField create(String key, String label, String description, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         return new PasswordConfigField(key, label, description, false, encryptionValidation, validationFunctions);
     }
 
-    public static PasswordConfigField createRequired(String key, String label, String description, EncryptionValidationFunction encryptionValidation) {
+    public static PasswordConfigField createRequired(String key, String label, String description, EncryptionValidator encryptionValidation) {
         return new PasswordConfigField(key, label, description, true, encryptionValidation);
     }
 
-    public static PasswordConfigField createRequired(String key, String label, String description, EncryptionValidationFunction encryptionValidation, ConfigValidationFunction... validationFunctions) {
+    public static PasswordConfigField createRequired(String key, String label, String description, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         return new PasswordConfigField(key, label, description, true, encryptionValidation, validationFunctions);
     }
 
-    public static PasswordConfigField create(String key, String label, String description, String panel, EncryptionValidationFunction encryptionValidation) {
+    public static PasswordConfigField create(String key, String label, String description, String panel, EncryptionValidator encryptionValidation) {
         return new PasswordConfigField(key, label, description, false, encryptionValidation);
     }
 
-    public static PasswordConfigField create(String key, String label, String description, String panel, EncryptionValidationFunction encryptionValidation, ConfigValidationFunction... validationFunctions) {
+    public static PasswordConfigField create(String key, String label, String description, String panel, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         return new PasswordConfigField(key, label, description, false, encryptionValidation, validationFunctions);
     }
 
-    public static PasswordConfigField createRequired(String key, String label, String description, String panel, EncryptionValidationFunction encryptionValidation) {
+    public static PasswordConfigField createRequired(String key, String label, String description, String panel, EncryptionValidator encryptionValidation) {
         return new PasswordConfigField(key, label, description, true, encryptionValidation);
     }
 
-    public static PasswordConfigField createRequired(String key, String label, String description, String panel, EncryptionValidationFunction encryptionValidation, ConfigValidationFunction... validationFunctions) {
+    public static PasswordConfigField createRequired(String key, String label, String description, String panel, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         return new PasswordConfigField(key, label, description, true, encryptionValidation, validationFunctions);
     }
 

@@ -33,12 +33,12 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
 @Component
-public final class EncryptionConfigurationValidator implements EncryptionValidationFunction {
+public final class EncryptionSettingsValidator extends EncryptionValidator {
     public static final String ENCRYPTION_MISSING = "Encryption configuration missing.";
     private EncryptionUtility encryptionUtility;
 
     @Autowired
-    public EncryptionConfigurationValidator(EncryptionUtility encryptionUtility) {
+    public EncryptionSettingsValidator(EncryptionUtility encryptionUtility) {
         this.encryptionUtility = encryptionUtility;
     }
 

@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
@@ -48,10 +48,10 @@ public class JiraGlobalUIConfig extends UIConfig {
 
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
 
-    private final EncryptionConfigurationValidator encryptionValidator;
+    private final EncryptionSettingsValidator encryptionValidator;
 
     @Autowired
-    public JiraGlobalUIConfig(EncryptionConfigurationValidator encryptionValidator) {
+    public JiraGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
         super(JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_DESCRIPTION, JiraDescriptor.JIRA_URL);
         this.encryptionValidator = encryptionValidator;
     }

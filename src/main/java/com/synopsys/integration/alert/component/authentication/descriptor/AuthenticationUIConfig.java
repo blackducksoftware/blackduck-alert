@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.UploadFileButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -101,11 +101,11 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_HEADER_ROLE_MAPPING = "User Role Mapping";
     private static final String AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML = "SAML";
 
-    private final EncryptionConfigurationValidator encryptionValidator;
+    private final EncryptionSettingsValidator encryptionValidator;
     private final FilePersistenceUtil filePersistenceUtil;
 
     @Autowired
-    public AuthenticationUIConfig(FilePersistenceUtil filePersistenceUtil, EncryptionConfigurationValidator encryptionValidator) {
+    public AuthenticationUIConfig(FilePersistenceUtil filePersistenceUtil, EncryptionSettingsValidator encryptionValidator) {
         super(AuthenticationDescriptor.AUTHENTICATION_LABEL, AuthenticationDescriptor.AUTHENTICATION_DESCRIPTION, AuthenticationDescriptor.AUTHENTICATION_URL);
         this.filePersistenceUtil = filePersistenceUtil;
         this.encryptionValidator = encryptionValidator;

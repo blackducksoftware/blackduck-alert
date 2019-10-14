@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -35,10 +34,7 @@ public class SettingsGlobalApiActionTest {
 
     @BeforeEach
     public void initialize() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
-        settingsUIConfig = new SettingsUIConfig(encryptionConfigurationValidator);
+        settingsUIConfig = new SettingsUIConfig();
     }
 
     @Test

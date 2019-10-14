@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -31,8 +31,8 @@ public class AuthenticationApiActionTest {
         FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
-        AuthenticationUIConfig authenticationUIConfig = new AuthenticationUIConfig(filePersistenceUtil, encryptionConfigurationValidator);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        AuthenticationUIConfig authenticationUIConfig = new AuthenticationUIConfig(filePersistenceUtil, encryptionValidator);
         AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();
         final FieldModel fieldModel = new FieldModel(authenticationDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));

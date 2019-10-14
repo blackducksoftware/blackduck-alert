@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -46,14 +47,17 @@ public class PolarisGlobalUIConfig extends UIConfig {
     private static final String DESCRIPTION_POLARIS_ACCESS_TOKEN = "The Access token used to retrieve data from the Polaris server.";
     private static final String DESCRIPTION_POLARIS_TIMEOUT = "The timeout in seconds for all connections to the Polaris server.";
 
-    public PolarisGlobalUIConfig() {
+    private EncryptionSettingsValidator encryptionValidator;
+
+    public PolarisGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
         super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_DESCRIPTION, PolarisDescriptor.POLARIS_URL_NAME);
+        this.encryptionValidator = encryptionValidator;
     }
 
     @Override
     public List<ConfigField> createFields() {
         final ConfigField polarisUrl = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_URL, LABEL_POLARIS_URL, DESCRIPTION_POLARIS_URL);
-        final ConfigField polarisAccessToken = PasswordConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN, DESCRIPTION_POLARIS_ACCESS_TOKEN, this::validateAPIToken);
+        final ConfigField polarisAccessToken = PasswordConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN, DESCRIPTION_POLARIS_ACCESS_TOKEN, encryptionValidator, this::validateAPIToken);
         final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT, DESCRIPTION_POLARIS_TIMEOUT, this::validateTimeout);
 
         return List.of(polarisUrl, polarisAccessToken, polarisTimeout);

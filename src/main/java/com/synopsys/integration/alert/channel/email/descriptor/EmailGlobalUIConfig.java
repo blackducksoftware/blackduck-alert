@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 
@@ -138,10 +138,10 @@ public class EmailGlobalUIConfig extends UIConfig {
 
     private static final String TEST_LABEL_ADDRESS = "Email address";
 
-    private final EncryptionConfigurationValidator encryptionValidator;
+    private final EncryptionSettingsValidator encryptionValidator;
 
     @Autowired
-    public EmailGlobalUIConfig(EncryptionConfigurationValidator encryptionValidator) {
+    public EmailGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_DESCRIPTION, EmailDescriptor.EMAIL_URL);
         this.encryptionValidator = encryptionValidator;
     }

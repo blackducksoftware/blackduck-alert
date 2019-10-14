@@ -22,8 +22,8 @@ import com.synopsys.integration.alert.channel.email.template.EmailChannelMessage
 import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.email.EmailProperties;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -49,8 +49,8 @@ public class EmailGlobalTestActionTest {
     public void validateConfigEmptyTest() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionConfigurationValidator);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
 
         final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
@@ -66,8 +66,8 @@ public class EmailGlobalTestActionTest {
     public void validateConfigInvalidTest() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionConfigurationValidator);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fillMapBlanks(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "notInt");
@@ -88,8 +88,8 @@ public class EmailGlobalTestActionTest {
     public void validateConfigValidTest() {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionConfigurationValidator encryptionConfigurationValidator = new EncryptionConfigurationValidator(encryptionUtility);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionConfigurationValidator);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fillMap(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "10");
