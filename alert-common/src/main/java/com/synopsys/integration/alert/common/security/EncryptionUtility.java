@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.security;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.Optional;
 
 import org.apache.commons.codec.Charsets;
@@ -164,7 +165,7 @@ public class EncryptionUtility {
     private Optional<String> readGlobalSaltFromSecretsFile() {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException | NoSuchFileException ex) {
             // TODO in 6.x remove this catch block
             // ignore so we can attempt the old file.
         } catch (final IOException ex) {
@@ -174,7 +175,7 @@ public class EncryptionUtility {
         // TODO remove in 6.x
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT_OLD));
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException | NoSuchFileException ex) {
             // ignore if not found.
         } catch (final IOException ex) {
             logger.debug("Error getting old global salt file.", ex);
