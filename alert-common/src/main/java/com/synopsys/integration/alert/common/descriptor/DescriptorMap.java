@@ -99,7 +99,6 @@ public class DescriptorMap {
     private <D extends Descriptor> Map<DescriptorKey, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
         Map<DescriptorKey, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
         for (D descriptor : descriptorList) {
-            // TODO fix this when descriptor map uses DescriptorKey as its key
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
             if (descriptorMapping.containsKey(descriptorKey)) {
                 throw new AlertException("Found duplicate descriptor name of: " + descriptorKey.getUniversalKey());

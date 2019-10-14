@@ -78,7 +78,7 @@ public class ConfigActions {
         final List<FieldModel> fields = new LinkedList<>();
         if (context != null && descriptorKey != null) {
             final String contextName = context.name();
-            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, context);
             final List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
@@ -127,7 +127,7 @@ public class ConfigActions {
         final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         final String context = modifiedFieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
-        final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey.getUniversalKey(), EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+        final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
         final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
         return dbSavedModel.fill(afterSaveAction);

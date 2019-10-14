@@ -88,7 +88,7 @@ public class UpdateEmailService {
                                                           .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorNameAndContext(emailChannelKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
+                final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
                                                            .stream()
                                                            .findFirst()
                                                            .orElseThrow(() -> new AlertException("No global email configuration found"));

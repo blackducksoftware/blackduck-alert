@@ -19,9 +19,9 @@ import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
-import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -109,7 +109,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         provider_global = configurationAccessor
-                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
     }
 
     @Override
@@ -133,14 +133,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
-        return Optional.of(configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL, fieldModelMap.values()));
+        return Optional.of(configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
     public ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
-        return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, models);
+        return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.DISTRIBUTION, models);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
                                                    .build();
         List<ConfigurationModel> models = List.of();
         try {
-            models = configurationAccessor.getConfigurationsByDescriptorName(EMAIL_CHANNEL_KEY.getUniversalKey());
+            models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
         } catch (final AlertDatabaseConstraintException e) {
             e.printStackTrace();
         }

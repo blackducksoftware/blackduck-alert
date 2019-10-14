@@ -49,7 +49,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         proxyUsername.setFieldValue("username");
         final ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.createSensitive(ProxyManager.KEY_PROXY_PWD);
         proxyPassword.setFieldValue("somestuff");
-        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
+        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
 
         final FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         final FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);

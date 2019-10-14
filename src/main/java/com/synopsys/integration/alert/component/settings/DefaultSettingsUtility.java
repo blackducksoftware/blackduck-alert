@@ -63,12 +63,12 @@ public class DefaultSettingsUtility implements SettingsUtility {
 
     @Override
     public boolean doSettingsExist() throws AlertException {
-        return !configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL).isEmpty();
+        return !configurationAccessor.getConfigurationByDescriptorKeyAndContext(settingsDescriptorKey, ConfigContextEnum.GLOBAL).isEmpty();
     }
 
     @Override
     public Optional<FieldModel> getSettingsFieldModel() throws AlertException {
-        final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
+        final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationByDescriptorKeyAndContext(settingsDescriptorKey, ConfigContextEnum.GLOBAL)
                                                                             .stream()
                                                                             .findFirst();
 
@@ -97,7 +97,7 @@ public class DefaultSettingsUtility implements SettingsUtility {
     public FieldModel saveSettings(final FieldModel fieldModel) throws AlertException {
         FieldModel beforeAction = settingsGlobalApiAction.beforeSaveAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
-        ConfigurationModel configuration = configurationAccessor.createConfiguration(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL, values);
+        ConfigurationModel configuration = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, values);
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
         return settingsGlobalApiAction.afterSaveAction(convertedFieldModel);
     }

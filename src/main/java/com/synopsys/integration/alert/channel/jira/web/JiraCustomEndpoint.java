@@ -112,7 +112,7 @@ public class JiraCustomEndpoint {
         final boolean accessTokenSet = fieldAccessToken.isSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             try {
-                return configurationAccessor.getConfigurationByDescriptorNameAndContext(jiraChannelKey.getUniversalKey(), ConfigContextEnum.GLOBAL)
+                return configurationAccessor.getConfigurationByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
                            .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))

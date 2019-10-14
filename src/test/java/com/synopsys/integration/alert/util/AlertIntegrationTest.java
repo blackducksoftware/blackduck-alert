@@ -83,8 +83,7 @@ public abstract class AlertIntegrationTest {
         ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(blackDuckProviderKey.getUniversalKey(), ConfigContextEnum.GLOBAL).stream().findFirst()
                                                         .orElse(
 
-                                                            configurationAccessor
-                                                                .createConfiguration(blackDuckProviderKey.getUniversalKey(), ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))
+                                                            configurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))
 
                                                         );
         configurationAccessor.updateConfiguration(blackDuckConfiguration.getConfigurationId(), List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
