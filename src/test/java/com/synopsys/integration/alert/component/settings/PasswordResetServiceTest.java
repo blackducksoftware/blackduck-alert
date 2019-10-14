@@ -17,8 +17,8 @@ import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
-import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -117,7 +117,7 @@ public class PasswordResetServiceTest {
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
+        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
@@ -149,7 +149,7 @@ public class PasswordResetServiceTest {
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
+        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("invalid dir");
