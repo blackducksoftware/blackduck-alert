@@ -11,4 +11,12 @@ dependencies {
     api 'org.jsoup:jsoup:1.9.2'
     api 'com.jayway.jsonpath:json-path:2.3.0'
     api 'org.freemarker:freemarker:2.3.25-incubating'
+
+    // Email
+    runtimeOnly 'com.sun.mail:javax.mail:1.6.2'
+    api 'javax.mail:javax.mail-api:1.6.2'
+
+    // This needs to be declared as api in order to annotate
+    // the Application.java with the datasource
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
 }

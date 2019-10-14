@@ -96,10 +96,6 @@ dependencies {
 
     implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.9.RELEASE'
 
-    // Email
-    runtimeOnly 'com.sun.mail:javax.mail:1.6.2'
-    implementation 'javax.mail:javax.mail-api:1.6.2'
-
     // Message Queue
     implementation 'org.apache.activemq:activemq-broker'
 
