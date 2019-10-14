@@ -35,7 +35,7 @@ public class UserDetailsServiceTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         ConfigurationModel configuration = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configuration.getField(Mockito.anyString())).thenReturn(Optional.empty());
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.eq(key.getUniversalKey()))).thenReturn(List.of(configuration));
+        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(key))).thenReturn(List.of(configuration));
         authoritiesPopulator = new UserManagementAuthoritiesPopulator(key, configurationAccessor);
     }
 

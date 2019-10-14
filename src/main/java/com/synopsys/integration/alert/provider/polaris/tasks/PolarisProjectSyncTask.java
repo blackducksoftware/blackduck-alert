@@ -191,7 +191,7 @@ public class PolarisProjectSyncTask extends ScheduledTask {
 
     private void persistProjectData(final Map<ProviderProject, Set<String>> projectUserEmailMappings) {
         logger.info("Updating {} projects", projectUserEmailMappings.keySet().size());
-        providerDataAccessor.updateProjectAndUserData(polarisProviderKey.getUniversalKey(), projectUserEmailMappings);
+        providerDataAccessor.updateProjectAndUserData(polarisProviderKey, projectUserEmailMappings);
     }
 
     private void persistIssues(final Map<ProviderProject, Set<PolarisIssueModel>> projectIssueMappings) {

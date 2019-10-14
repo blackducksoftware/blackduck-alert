@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -32,29 +33,29 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public ProviderProject saveProject(final String providerName, final ProviderProject providerProject) {
-        providerProjectMap.get(providerName).add(providerProject);
+    public ProviderProject saveProject(DescriptorKey descriptorKey, ProviderProject providerProject) {
+        providerProjectMap.get(descriptorKey.getUniversalKey()).add(providerProject);
         return providerProject;
     }
 
     @Override
-    public void deleteProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
-        Set<ProviderProject> projects = providerProjectMap.get(providerName);
+    public void deleteProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects) {
+        Set<ProviderProject> projects = providerProjectMap.get(descriptorKey.getUniversalKey());
         if (null == projects) {
             projects = new HashSet<>();
         }
         projects.removeAll(providerProjects);
-        providerProjectMap.put(providerName, projects);
+        providerProjectMap.put(descriptorKey.getUniversalKey(), projects);
     }
 
     @Override
-    public List<ProviderProject> saveProjects(final String providerName, final Collection<ProviderProject> providerProjects) {
-        Set<ProviderProject> projects = providerProjectMap.get(providerName);
+    public List<ProviderProject> saveProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects) {
+        Set<ProviderProject> projects = providerProjectMap.get(descriptorKey.getUniversalKey());
         if (null == projects) {
             projects = new HashSet<>();
         }
         projects.addAll(providerProjects);
-        providerProjectMap.put(providerName, projects);
+        providerProjectMap.put(descriptorKey.getUniversalKey(), projects);
         return new ArrayList<>(providerProjects);
     }
 
@@ -91,6 +92,11 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         return new ArrayList<>(providerProjectMap.get(providerName));
     }
 
+    @Override
+    public List<ProviderProject> findByProviderKey(DescriptorKey descriptorKey) {
+        return new ArrayList<>(providerProjectMap.get(descriptorKey.getUniversalKey()));
+    }
+
     public void setExpectedEmailAddresses(final Set<String> expectedEmailAddresses) {
         this.expectedEmailAddresses = expectedEmailAddresses;
     }
@@ -101,14 +107,14 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public void deleteUsers(final String providerName, final Collection<ProviderUserModel> userEntities) {
+    public void deleteUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> userEntities) {
         for (final ProviderUserModel user : userEntities) {
             users.remove(user);
         }
     }
 
     @Override
-    public List<ProviderUserModel> saveUsers(final String providerName, final Collection<ProviderUserModel> userEntities) {
+    public List<ProviderUserModel> saveUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> userEntities) {
         for (final ProviderUserModel user : userEntities) {
             users.add(user);
         }

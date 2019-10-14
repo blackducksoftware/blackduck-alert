@@ -60,7 +60,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
     }
 
     private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
-        final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderName(blackDuckProviderKey.getUniversalKey());
+        final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderKey(blackDuckProviderKey);
         final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");

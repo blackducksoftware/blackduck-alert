@@ -96,12 +96,12 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields
+            fontAwesomeIcon, label, description, fields, type
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
-        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE);
+        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && (type != DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const body = (!Array.isArray(fields) || !fields.length) ?
             (

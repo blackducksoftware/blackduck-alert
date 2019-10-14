@@ -68,7 +68,7 @@ public class DailyTask extends ProcessingTask {
     @Override
     public String scheduleCronExpression() {
         try {
-            List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorName(schedulingDescriptorKey.getUniversalKey());
+            List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey);
             String dailySavedCronValue = schedulingConfigs.stream()
                                              .findFirst()
                                              .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))

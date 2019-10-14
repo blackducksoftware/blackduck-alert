@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -37,6 +38,16 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerProjectRepository.deleteAllInBatch();
         providerUserProjectRelationRepository.deleteAllInBatch();
         providerUserRepository.deleteAllInBatch();
+    }
+
+    private DescriptorKey createDescriptorKey(String key) {
+        DescriptorKey testDescriptorKey = new DescriptorKey() {
+            @Override
+            public String getUniversalKey() {
+                return key;
+            }
+        };
+        return testDescriptorKey;
     }
 
     @Test
@@ -71,8 +82,10 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         final String providerName = "provider name";
         final ProviderProject providerProject = new ProviderProject(name, description, href, projectOwnerEmail);
 
+        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+
         final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.saveProject(providerName, providerProject);
+        providerDataAccessor.saveProject(descriptorKey, providerProject);
 
         final List<ProviderProjectEntity> foundProjects = providerProjectRepository.findAll();
         assertEquals(1, foundProjects.size());
@@ -114,11 +127,13 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
                                                            .map(this::convertToProjectModel)
                                                            .collect(Collectors.toList());
 
-        providerDataAccessor.deleteProjects(providerName, projectsToDelete);
+        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+
+        providerDataAccessor.deleteProjects(descriptorKey, projectsToDelete);
         savedEntities = providerProjectRepository.findAll();
         assertEquals(0, savedEntities.size());
 
-        final List<ProviderProject> savedProjects = providerDataAccessor.saveProjects(providerName, newProjects);
+        final List<ProviderProject> savedProjects = providerDataAccessor.saveProjects(descriptorKey, newProjects);
         assertEquals(2, savedProjects.size());
         savedEntities = providerProjectRepository.findAll();
         assertEquals(2, savedEntities.size());
@@ -300,10 +315,12 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
         final DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
 
-        providerDataAccessor.deleteUsers(providerName, oldUsers);
+        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+
+        providerDataAccessor.deleteUsers(descriptorKey, oldUsers);
         assertEquals(0, providerUserRepository.findAll().size());
 
-        final List<ProviderUserModel> savedUsers = providerDataAccessor.saveUsers(providerName, newUsers);
+        final List<ProviderUserModel> savedUsers = providerDataAccessor.saveUsers(descriptorKey, newUsers);
         assertEquals(3, savedUsers.size());
         assertEquals(3, providerUserRepository.findAll().size());
     }

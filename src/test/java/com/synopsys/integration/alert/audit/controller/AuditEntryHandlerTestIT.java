@@ -169,7 +169,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Test
     public void getGetAuditInfoForJobIT() throws Exception {
         final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, slackFields);
+        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
         final UUID jobID = UUID.randomUUID();
         final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 

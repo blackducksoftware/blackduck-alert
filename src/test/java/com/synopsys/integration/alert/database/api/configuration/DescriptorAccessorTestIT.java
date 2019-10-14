@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -53,6 +54,16 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
         descriptorMocker.cleanUpDescriptors();
     }
 
+    private DescriptorKey createDescriptorKey(String key) {
+        DescriptorKey testDescriptorKey = new DescriptorKey() {
+            @Override
+            public String getUniversalKey() {
+                return key;
+            }
+        };
+        return testDescriptorKey;
+    }
+
     @Test
     public void registerAndGetAllDescriptorsTest() throws AlertDatabaseConstraintException {
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
@@ -67,7 +78,7 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     public void registerAndGetDescriptorTest() throws AlertDatabaseConstraintException {
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor
-                                                                        .getRegisteredDescriptorByName(DESCRIPTOR_NAME)
+                                                                        .getRegisteredDescriptorByKey(createDescriptorKey(DESCRIPTOR_NAME))
                                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         assertNotNull(registeredDescriptorModel.getId());
         assertEquals(DESCRIPTOR_NAME, registeredDescriptorModel.getName());
@@ -86,7 +97,7 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
         final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
         final DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL, Arrays.asList(field1, field2));
-        final List<DefinedFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
+        final List<DefinedFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptor(createDescriptorKey(DESCRIPTOR_NAME), ConfigContextEnum.DISTRIBUTION);
         assertEquals(2, descriptorFields.size());
         assertTrue(descriptorFields.contains(field1));
         assertTrue(descriptorFields.contains(field2));
@@ -99,7 +110,8 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
         final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
         final DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL, Arrays.asList(field1, field2));
-        final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
+        final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByKey(createDescriptorKey(DESCRIPTOR_NAME))
+                                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         final List<DefinedFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptorById(registeredDescriptorModel.getId(), ConfigContextEnum.DISTRIBUTION);
         assertEquals(2, descriptorFields.size());
         assertTrue(descriptorFields.contains(field1));
@@ -117,7 +129,7 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
         final String invalidDescriptorName = "-- INVALID DESCRIPTOR NAME --";
         final Long invalidDescriptorId = Long.MAX_VALUE;
         try {
-            descriptorAccessor.getFieldsForDescriptor(invalidDescriptorName, ConfigContextEnum.DISTRIBUTION);
+            descriptorAccessor.getFieldsForDescriptor(createDescriptorKey(invalidDescriptorName), ConfigContextEnum.DISTRIBUTION);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("A descriptor with that name did not exist", e.getMessage());
@@ -132,26 +144,26 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
 
     private void getRegisteredDescriptorByNameTestHelper(final String descriptorName) {
         try {
-            descriptorAccessor.getRegisteredDescriptorByName(descriptorName);
+            descriptorAccessor.getRegisteredDescriptorByKey(createDescriptorKey(descriptorName));
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
-            assertEquals("Descriptor name cannot be empty", e.getMessage());
+            assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
 
         try {
-            descriptorAccessor.getRegisteredDescriptorByName(descriptorName);
+            descriptorAccessor.getRegisteredDescriptorByKey(createDescriptorKey(descriptorName));
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
-            assertEquals("Descriptor name cannot be empty", e.getMessage());
+            assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
 
     private void getFieldsForDescriptorWithEmptyArgsTestHelper(final String descriptorName) {
         try {
-            descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.DISTRIBUTION);
+            descriptorAccessor.getFieldsForDescriptor(createDescriptorKey(descriptorName), ConfigContextEnum.DISTRIBUTION);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
-            assertEquals("Descriptor name cannot be empty", e.getMessage());
+            assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
 }

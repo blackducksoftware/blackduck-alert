@@ -2,8 +2,8 @@ package com.synopsys.integration.alert;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -42,11 +43,14 @@ public class PhoneHomeTest {
 
         final DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         final ConfigurationModel config = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(TEST_DESCRIPTOR_NAME)).thenReturn(Arrays.asList(config));
+        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(config));
 
         final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
         final Descriptor descriptor = Mockito.mock(Descriptor.class);
-        Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(TEST_DESCRIPTOR_NAME, descriptor));
+        DescriptorKey descriptorKey = Mockito.mock(DescriptorKey.class);
+        Mockito.when(descriptorKey.getUniversalKey()).thenReturn(TEST_DESCRIPTOR_NAME);
+
+        Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
 
         final PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility, blackDuckProperties);
 

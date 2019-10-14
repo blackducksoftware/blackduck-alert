@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -76,12 +77,12 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
     }
 
     @Override
-    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorByName(final String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
+    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
+        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
+            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
         }
 
-        final Optional<RegisteredDescriptorEntity> descriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
+        final Optional<RegisteredDescriptorEntity> descriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey());
         if (descriptorEntity.isPresent()) {
             return Optional.of(createRegisteredDescriptorModel(descriptorEntity.get()));
         }
@@ -114,8 +115,8 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
     }
 
     @Override
-    public List<DefinedFieldModel> getFieldsForDescriptor(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        final RegisteredDescriptorEntity descriptor = findDescriptorByName(descriptorName);
+    public List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
+        final RegisteredDescriptorEntity descriptor = findDescriptorByKey(descriptorKey);
         final Long contextId = saveContextAndReturnId(context);
         return getFieldsForDescriptorId(descriptor.getId(), contextId, context);
     }
@@ -176,12 +177,12 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
         return savedContextEntity.getId();
     }
 
-    private RegisteredDescriptorEntity findDescriptorByName(final String name) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(name)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
+    private RegisteredDescriptorEntity findDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
+        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
+            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
         }
         return registeredDescriptorRepository
-                   .findFirstByName(name)
+                   .findFirstByName(descriptorKey.getUniversalKey())
                    .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that name did not exist"));
     }
 

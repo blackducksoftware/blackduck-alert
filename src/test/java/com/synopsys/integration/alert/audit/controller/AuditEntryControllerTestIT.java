@@ -120,7 +120,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     public void testPostConfig() throws Exception {
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
         SlackChannelKey slackChannelKey = new SlackChannelKey();
-        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION, slackFields);
+        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
 
         final MockNotificationContent mockNotifications = new MockNotificationContent();
