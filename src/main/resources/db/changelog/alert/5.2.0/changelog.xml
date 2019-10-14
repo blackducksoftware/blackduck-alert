@@ -4,4 +4,5 @@
     <include file="changelog-migrate-field-stored-procedure.xml" relativeToChangelogFile="true"/>
     <include file="changelog-authentication-component.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-timestamp.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-jira-server.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
