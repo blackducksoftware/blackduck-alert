@@ -41,14 +41,19 @@ class EndpointButtonField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint
+            fieldKey, csrfToken, onChange, currentConfig, endpoint, dataFields
         } = this.props;
-        const mergedData = FieldModelUtilities.combineFieldModels(currentConfig, popupData);
+        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(dataFields, currentConfig.context, currentConfig.descriptorName);
+        dataFields.forEach((field) => {
+            const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
+            newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
+        });
+        const mergedData = FieldModelUtilities.combineFieldModels(newFieldModel, popupData);
 
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
             this.setState({
-               progress: false
+                progress: false
             });
             if (response.ok) {
                 const target = {
@@ -114,7 +119,7 @@ class EndpointButtonField extends Component {
                 </div>
                 }
                 {this.state.success &&
-                    <StatusMessage actionMessage={statusMessage} />
+                <StatusMessage actionMessage={statusMessage} />
                 }
 
             </div>
@@ -150,6 +155,7 @@ EndpointButtonField.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     fields: PropTypes.array,
+    dataFields: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
@@ -161,6 +167,7 @@ EndpointButtonField.propTypes = {
 EndpointButtonField.defaultProps = {
     value: false,
     fields: [],
+    dataFields: [],
     name: '',
     errorValue: null,
     readOnly: false,

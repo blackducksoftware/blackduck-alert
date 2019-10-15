@@ -67,7 +67,7 @@ function buildSelectInput(items, field) {
 
 function buildEndpointSelectInput(items, field) {
     const {
-        searchable, multiSelect, readOnly, endpoint, key, removeSelected, clearable
+        searchable, multiSelect, readOnly, endpoint, key, removeSelected, clearable, returnedDataFieldKeys
     } = field;
 
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -82,6 +82,7 @@ function buildEndpointSelectInput(items, field) {
         clearable: isClearable
     });
     return <EndpointSelectField
+        dataFields={returnedDataFieldKeys}
         endpoint={endpoint}
         fieldKey={key}
         {...items}
@@ -148,7 +149,7 @@ function buildCounterField(items, field) {
 function buildEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, endpoint, successBox, subFields, key
+        buttonLabel, endpoint, successBox, subFields, key, returnedDataFieldKeys
     } = field;
     const checkedValue = convertStringToBoolean(value);
     const { readOnly } = field;
@@ -160,6 +161,7 @@ function buildEndpointField(items, field) {
     });
     return (<EndpointButtonField
         fields={subFields}
+        dataFields={returnedDataFieldKeys}
         buttonLabel={buttonLabel}
         endpoint={endpoint}
         successBox={successBox}
@@ -170,7 +172,7 @@ function buildEndpointField(items, field) {
 
 function buildTableSelectInput(items, field) {
     const {
-        endpoint, key, columns, paged, searchable
+        endpoint, key, columns, paged, searchable, returnedDataFieldKeys
     } = field;
     const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -180,11 +182,10 @@ function buildTableSelectInput(items, field) {
         searchable
     });
 
-    return <TableSelectInput endpoint={endpoint} fieldKey={key} columns={columns} {...items} />
+    return <TableSelectInput endpoint={endpoint} fieldKey={key} columns={columns} dataFields={returnedDataFieldKeys} {...items} />
 }
 
 function buildUploadFileButtonField(items, field) {
-    const { value } = items;
     const {
         buttonLabel, endpoint, successBox, subFields, key
     } = field;

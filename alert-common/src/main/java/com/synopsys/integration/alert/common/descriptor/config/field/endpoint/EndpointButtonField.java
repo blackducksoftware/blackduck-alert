@@ -29,9 +29,7 @@ import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public class EndpointButtonField extends ConfigField {
-    private final String buttonLabel;
-    private final String endpoint;
+public class EndpointButtonField extends CustomButtonField {
     private final Boolean successBox;
     private final List<ConfigField> subFields;
 
@@ -53,9 +51,7 @@ public class EndpointButtonField extends ConfigField {
 
     private EndpointButtonField(final String key, final String label, final String description, final boolean required, final String buttonLabel, final Boolean successBox,
         final List<ConfigField> subFields) {
-        super(key, label, description, FieldType.ENDPOINT_BUTTON, required, false);
-        this.buttonLabel = buttonLabel;
-        this.endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        super(key, label, description, FieldType.ENDPOINT_BUTTON, required, false, buttonLabel, CustomEndpointManager.CUSTOM_ENDPOINT_URL);
         this.successBox = successBox;
         this.subFields = subFields;
     }
@@ -73,14 +69,6 @@ public class EndpointButtonField extends ConfigField {
             subFields.add(field);
         }
         return this;
-    }
-
-    public String getButtonLabel() {
-        return buttonLabel;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
     }
 
     public Boolean getSuccessBox() {

@@ -28,30 +28,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public class EndpointTableSelectField extends ConfigField {
+public class EndpointTableSelectField extends CustomButtonField {
     private boolean paged;
     private boolean searchable;
-    private String endpoint;
     private List<TableSelectColumn> columns;
 
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, "Select", CustomEndpointManager.CUSTOM_ENDPOINT_URL);
         this.paged = paged;
         this.searchable = searchable;
-        endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
         columns = new LinkedList<>();
     }
 
     public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable,
         ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, "Select", CustomEndpointManager.CUSTOM_ENDPOINT_URL);
         this.paged = paged;
         this.searchable = searchable;
-        endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
         columns = new LinkedList<>();
         this.setValidationFunctions(validationFunctions);
     }
@@ -74,10 +71,6 @@ public class EndpointTableSelectField extends ConfigField {
 
     public boolean isSearchable() {
         return searchable;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
     }
 
     public EndpointTableSelectField addColumn(TableSelectColumn tableSelectColumn) {
