@@ -22,23 +22,102 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
+import java.util.Collection;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AbstractConfigurationUtility;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalApiAction;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
 @Component
-public class DefaultSettingsUtility extends AbstractConfigurationUtility implements SettingsUtility {
+public class DefaultSettingsUtility implements SettingsUtility {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final ConfigurationAccessor configurationAccessor;
+    private final SettingsGlobalApiAction apiAction;
+    private final ConfigurationFieldModelConverter configurationFieldModelConverter;
+    private DescriptorKey key;
+    private ConfigContextEnum context;
 
     @Autowired
     public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        super(settingsDescriptorKey, ConfigContextEnum.GLOBAL, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
+        this.key = settingsDescriptorKey;
+        this.context = ConfigContextEnum.GLOBAL;
+        this.configurationAccessor = configurationAccessor;
+        this.apiAction = settingsGlobalApiAction;
+        this.configurationFieldModelConverter = configurationFieldModelConverter;
+    }
+
+    @Override
+    public DescriptorKey getKey() {
+        return key;
+    }
+
+    @Override
+    public boolean doesConfigurationExist() {
+        try {
+            return !configurationAccessor.getConfigurationByDescriptorKeyAndContext(key, context).isEmpty();
+        } catch (AlertException ex) {
+            logger.debug("Error reading configuration from database.", ex);
+            return false;
+        }
+    }
+
+    @Override
+    public Optional<ConfigurationModel> getConfiguration() throws AlertException {
+        Optional<FieldModel> fieldModel = getFieldModel();
+
+        if (fieldModel.isPresent()) {
+            ConfigurationModel configurationModel = configurationFieldModelConverter.convertToConfigurationModel(fieldModel.get());
+            return Optional.ofNullable(configurationModel);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<FieldModel> getFieldModel() throws AlertException {
+        final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationByDescriptorKeyAndContext(getKey(), ConfigContextEnum.GLOBAL)
+                                                                            .stream()
+                                                                            .findFirst();
+
+        if (configurationModelOptional.isPresent()) {
+            ConfigurationModel configurationModel = configurationModelOptional.get();
+            FieldModel fieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
+            return Optional.ofNullable(apiAction.afterGetAction(fieldModel));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public FieldModel saveSettings(final FieldModel fieldModel) throws AlertException {
+        FieldModel beforeAction = apiAction.beforeSaveAction(fieldModel);
+        Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
+        ConfigurationModel configuration = configurationAccessor.createConfiguration(getKey(), ConfigContextEnum.GLOBAL, values);
+        FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
+        return apiAction.afterSaveAction(convertedFieldModel);
+    }
+
+    @Override
+    public FieldModel updateSettings(final Long id, final FieldModel fieldModel) throws AlertException {
+        FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
+        Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction).values();
+        ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, values);
+        FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
+        return apiAction.afterUpdateAction(convertedFieldModel);
     }
 }

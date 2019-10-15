@@ -26,24 +26,29 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 public class SAMLContext {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
+    private AuthenticationDescriptorKey descriptorKey;
+    private ConfigurationAccessor configurationAccessor;
 
-    private SettingsUtility settingsUtility;
-
-    public SAMLContext(final SettingsUtility settingsUtility) {
-        this.settingsUtility = settingsUtility;
+    public SAMLContext(AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor) {
+        this.descriptorKey = descriptorKey;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return settingsUtility.getConfiguration().orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
+        return configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
+                   .findFirst()
+                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {

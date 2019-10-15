@@ -22,6 +22,24 @@
  */
 package com.synopsys.integration.alert.common.descriptor.accessor;
 
-public interface SettingsUtility extends ConfigurationUtility {
+import java.util.Optional;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+
+public interface SettingsUtility {
+
+    DescriptorKey getKey();
+
+    boolean doesConfigurationExist();
+
+    Optional<ConfigurationModel> getConfiguration() throws AlertException;
+
+    Optional<FieldModel> getFieldModel() throws AlertException;
+
+    FieldModel saveSettings(final FieldModel fieldModel) throws AlertException;
+
+    FieldModel updateSettings(final Long id, final FieldModel fieldModel) throws AlertException;
 }
