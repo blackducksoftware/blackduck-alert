@@ -20,25 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.settings;
+package com.synopsys.integration.alert.component.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AbstractConfigurationUtility;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalApiAction;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
-public class DefaultSettingsUtility extends AbstractConfigurationUtility implements SettingsUtility {
+public class DefaultAuthenticationUtility extends AbstractConfigurationUtility {
 
     @Autowired
-    public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
-        ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        super(settingsDescriptorKey, ConfigContextEnum.GLOBAL, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
+    public DefaultAuthenticationUtility(AuthenticationDescriptorKey key, ConfigurationAccessor configurationAccessor, AuthenticationApiAction apiAction, ConfigurationFieldModelConverter configurationFieldModelConverter) {
+        super(key, ConfigContextEnum.GLOBAL, configurationAccessor, apiAction, configurationFieldModelConverter);
     }
 }

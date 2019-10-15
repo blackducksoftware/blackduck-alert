@@ -56,7 +56,7 @@ public class ProxyManager {
 
     private Optional<ConfigurationModel> getSettingsConfiguration() {
         try {
-            return settingsUtility.getSettings();
+            return settingsUtility.getConfiguration();
         } catch (final AlertException ex) {
             logger.error("Could not find the settings configuration for proxy data", ex);
         }

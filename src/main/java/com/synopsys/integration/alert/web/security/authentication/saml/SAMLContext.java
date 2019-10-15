@@ -43,7 +43,7 @@ public class SAMLContext {
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return settingsUtility.getSettings().orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
+        return settingsUtility.getConfiguration().orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {

@@ -22,6 +22,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor.accessor;
 
-public interface SettingsUtility extends ConfigurationUtility {
+public interface AuthenticationUtility extends ConfigurationUtility {
 
 }

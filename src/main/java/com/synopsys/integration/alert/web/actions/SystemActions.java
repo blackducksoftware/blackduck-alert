@@ -88,7 +88,7 @@ public class SystemActions {
 
     public FieldModel getCurrentSystemSetup() {
         try {
-            return settingsUtility.getSettingsFieldModel().orElse(null);
+            return settingsUtility.getFieldModel().orElse(null);
         } catch (final AlertException ex) {
             logger.error("Error getting initial settings", ex);
         }
@@ -100,7 +100,7 @@ public class SystemActions {
         FieldModel systemSettings = settingsToSave;
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(systemSettings));
         if (fieldErrors.isEmpty()) {
-            if (settingsUtility.doSettingsExist()) {
+            if (settingsUtility.doesConfigurationExist()) {
                 systemSettings = settingsUtility.updateSettings(Long.valueOf(settingsToSave.getId()), settingsToSave);
             } else {
                 systemSettings = settingsUtility.saveSettings(settingsToSave);
