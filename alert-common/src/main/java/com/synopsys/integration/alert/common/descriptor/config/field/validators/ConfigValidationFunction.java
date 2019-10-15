@@ -20,11 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.validators;
 
-import java.io.File;
 import java.util.Collection;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
-public interface UploadValidationFunction extends Function<File, Collection<String>> {
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+
+public interface ConfigValidationFunction extends BiFunction<FieldValueModel, FieldModel, Collection<String>> {
 }

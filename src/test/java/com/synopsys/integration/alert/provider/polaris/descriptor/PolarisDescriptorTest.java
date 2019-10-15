@@ -3,12 +3,15 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
@@ -24,7 +27,9 @@ public class PolarisDescriptorTest {
 
     @Test
     public void getDefinedGlobalFieldsTest() {
-        final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
+        EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
+        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(List.of());
+        final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig(encryptionValidator);
         final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(POLARIS_PROVIDER_KEY, polarisGlobalUIConfig, null);
         final Set<String> fields = polarisDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
         assertNotNull(fields);

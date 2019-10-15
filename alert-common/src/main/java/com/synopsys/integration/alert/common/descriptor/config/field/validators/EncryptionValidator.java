@@ -20,13 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.validators;
 
-import java.util.Collection;
-import java.util.function.BiFunction;
-
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-
-public interface ConfigValidationFunction extends BiFunction<FieldValueModel, FieldModel, Collection<String>> {
+public abstract class EncryptionValidator implements ConfigValidationFunction {
 }

@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -40,58 +41,60 @@ public class SelectConfigField extends ConfigField {
     private boolean clearable;
 
     protected SelectConfigField(String key, String label, String description, FieldType fieldType, boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
-        super(key, label, description, fieldType, required, false, false, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
+        super(key, label, description, fieldType, required, false, false, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.removeSelected = removeSelected;
         this.clearable = clearable;
         options = List.of();
+        createValidators(List.of(this::validateIsValidOption), null);
     }
 
     public SelectConfigField(String key, String label, String description, boolean required, boolean sensitive, boolean readOnly, boolean searchable, boolean multiSelect,
         boolean removeSelected, boolean clearable, Collection<LabelValueSelectOption> options) {
-        super(key, label, description, FieldType.SELECT, required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, ConfigField.NO_VALIDATION);
+        super(key, label, description, FieldType.SELECT, required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
         this.removeSelected = removeSelected;
         this.clearable = clearable;
+        createValidators(List.of(this::validateIsValidOption), null);
     }
 
     public SelectConfigField(String key, String label, String description, boolean required, boolean sensitive, boolean readOnly, boolean searchable, boolean multiSelect,
-        boolean removeSelected, boolean clearable, Collection<LabelValueSelectOption> options,
-        ConfigValidationFunction validationFunction) {
-        super(key, label, description, FieldType.SELECT, required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY, validationFunction);
+        boolean removeSelected, boolean clearable, Collection<LabelValueSelectOption> options, ConfigValidationFunction... validationFunctions) {
+        super(key, label, description, FieldType.SELECT, required, sensitive, readOnly, ConfigField.FIELD_PANEL_DEFAULT, ConfigField.FIELD_HEADER_EMPTY);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
         this.options = options;
         this.removeSelected = removeSelected;
         this.clearable = clearable;
+        createValidators(List.of(this::validateIsValidOption), validationFunctions);
+
     }
 
     public static SelectConfigField createEmpty(String key, String label, String description) {
         return new SelectConfigField(key, label, description, false, false, false, true, false, true, true, List.of());
     }
 
-    public static SelectConfigField createEmpty(String key, String label, String description, ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, false, false, false, true, false, true, true, List.of(), validationFunction);
+    public static SelectConfigField createEmpty(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
+        return new SelectConfigField(key, label, description, false, false, false, true, false, true, true, List.of(), validationFunctions);
     }
 
     public static SelectConfigField createRequired(String key, String label, String description, Collection<LabelValueSelectOption> options) {
         return new SelectConfigField(key, label, description, true, false, false, true, false, true, true, options);
     }
 
-    public static SelectConfigField createRequired(String key, String label, String description, boolean searchable, boolean multiSelect, Collection<LabelValueSelectOption> options,
-        ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, true, true, options, validationFunction);
+    public static SelectConfigField createRequired(String key, String label, String description, boolean searchable, boolean multiSelect, Collection<LabelValueSelectOption> options, ConfigValidationFunction... validationFunctions) {
+        return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, true, true, options, validationFunctions);
     }
 
     public static SelectConfigField createRequired(String key, String label, String description, boolean searchable, boolean multiSelect, Collection<LabelValueSelectOption> options) {
         return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, true, true, options);
     }
 
-    public static SelectConfigField createRequired(String key, String label, String description, Collection<LabelValueSelectOption> options, ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, true, false, false, true, false, true, true, options, validationFunction);
+    public static SelectConfigField createRequired(String key, String label, String description, Collection<LabelValueSelectOption> options, ConfigValidationFunction... validationFunctions) {
+        return new SelectConfigField(key, label, description, true, false, false, true, false, true, true, options, validationFunctions);
     }
 
     public static SelectConfigField createRequired(String key, String label, String description, boolean searchable, boolean multiSelect, boolean removeSelected,
@@ -99,9 +102,8 @@ public class SelectConfigField extends ConfigField {
         return new SelectConfigField(key, label, description, true, false, false, searchable, multiSelect, removeSelected, true, options);
     }
 
-    public static SelectConfigField createRequired(String key, String label, String description, boolean removeSelected, Collection<LabelValueSelectOption> options,
-        ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, true, false, false, true, false, removeSelected, true, options, validationFunction);
+    public static SelectConfigField createRequired(String key, String label, String description, boolean removeSelected, Collection<LabelValueSelectOption> options, ConfigValidationFunction... validationFunctions) {
+        return new SelectConfigField(key, label, description, true, false, false, true, false, removeSelected, true, options, validationFunctions);
     }
 
     public static SelectConfigField create(String key, String label, String description, Collection<LabelValueSelectOption> options) {
@@ -112,17 +114,16 @@ public class SelectConfigField extends ConfigField {
         return new SelectConfigField(key, label, description, false, false, false, true, false, removeSelected, clearable, options);
     }
 
-    public static SelectConfigField create(String key, String label, String description, boolean removeSelected, boolean clearable, Collection<LabelValueSelectOption> options,
-        ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, false, false, false, true, false, removeSelected, clearable, options, validationFunction);
+    public static SelectConfigField create(String key, String label, String description, boolean removeSelected, boolean clearable, Collection<LabelValueSelectOption> options, ConfigValidationFunction... validationFunctions) {
+        return new SelectConfigField(key, label, description, false, false, false, true, false, removeSelected, clearable, options, validationFunctions);
     }
 
     public static SelectConfigField create(String key, String label, String description, Collection<LabelValueSelectOption> options, boolean isMultiSelect) {
         return new SelectConfigField(key, label, description, false, false, false, true, isMultiSelect, true, true, options);
     }
 
-    public static SelectConfigField create(final String key, final String label, final String description, final Collection<LabelValueSelectOption> options, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, description, false, false, false, true, false, true, true, options, validationFunction);
+    public static SelectConfigField create(String key, String label, String description, Collection<LabelValueSelectOption> options, ConfigValidationFunction... validationFunctions) {
+        return new SelectConfigField(key, label, description, false, false, false, true, false, true, true, options, validationFunctions);
     }
 
     public boolean isSearchable() {
@@ -163,17 +164,6 @@ public class SelectConfigField extends ConfigField {
 
     public void setClearable(final boolean clearable) {
         this.clearable = clearable;
-    }
-
-    @Override
-    public Collection<String> validate(FieldValueModel fieldValueModel, FieldModel fieldModel) {
-        final List<ConfigValidationFunction> validationFunctions;
-        if (null != getValidationFunction()) {
-            validationFunctions = List.of(this::validateIsValidOption, getValidationFunction());
-        } else {
-            validationFunctions = List.of(this::validateIsValidOption);
-        }
-        return validate(fieldValueModel, fieldModel, validationFunctions);
     }
 
     private Collection<String> validateIsValidOption(FieldValueModel fieldToValidate, FieldModel fieldModel) {

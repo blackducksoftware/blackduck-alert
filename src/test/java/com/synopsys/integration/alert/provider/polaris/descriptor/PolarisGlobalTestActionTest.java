@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -21,6 +22,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -47,7 +49,14 @@ public class PolarisGlobalTestActionTest {
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
     private static final String ERROR_POLARIS_TIMEOUT = "Must be an Integer greater than zero (0).";
 
-    private final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
+    private PolarisGlobalUIConfig polarisGlobalUIConfig;
+
+    @BeforeEach
+    public void init() {
+        EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
+        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(List.of());
+        polarisGlobalUIConfig = new PolarisGlobalUIConfig(encryptionValidator);
+    }
 
     @Test
     public void validateConfigWhenValidTest() {

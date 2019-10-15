@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -30,7 +30,12 @@ import com.synopsys.integration.alert.workflow.startup.component.SystemMessageIn
 
 public class SettingsGlobalApiActionTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
-    private final SettingsUIConfig settingsUIConfig = new SettingsUIConfig(Mockito.mock(FilePersistenceUtil.class));
+    private SettingsUIConfig settingsUIConfig;
+
+    @BeforeEach
+    public void initialize() {
+        settingsUIConfig = new SettingsUIConfig();
+    }
 
     @Test
     public void testReadConfig() {

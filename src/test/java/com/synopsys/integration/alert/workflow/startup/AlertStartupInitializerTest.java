@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -42,9 +43,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
@@ -90,9 +92,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
 
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
@@ -119,9 +122,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
 
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
@@ -145,8 +149,10 @@ public class AlertStartupInitializerTest {
         final Environment environment = Mockito.mock(Environment.class);
         final DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         final ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(), null);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        final ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
         final ConfigurationModel settingsModel = Mockito.mock(ConfigurationModel.class);
         final ConfigurationFieldModel envOverrideField = Mockito.mock(ConfigurationFieldModel.class);
         final ConfigurationModel slackModel = Mockito.mock(ConfigurationModel.class);
@@ -154,7 +160,6 @@ public class AlertStartupInitializerTest {
         Mockito.when(settingsModel.getField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)).thenReturn(Optional.of(envOverrideField));
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(SETTINGS_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL)).thenReturn(List.of(settingsModel));
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(channelDescriptor.getDescriptorKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(slackModel));
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
 
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);

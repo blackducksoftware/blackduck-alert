@@ -6,13 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 
 public class PolarisGlobalUIConfigTest {
     @Test
     public void createFieldsTest() {
-        final PolarisGlobalUIConfig uiConfig = new PolarisGlobalUIConfig();
+        EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
+        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(List.of());
+        final PolarisGlobalUIConfig uiConfig = new PolarisGlobalUIConfig(encryptionValidator);
         final List<ConfigField> fields = uiConfig.createFields();
         assertNotNull(fields);
         assertContainsFieldWithKey(fields, PolarisDescriptor.KEY_POLARIS_URL);

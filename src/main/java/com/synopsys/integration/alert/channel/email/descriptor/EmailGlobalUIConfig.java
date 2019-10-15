@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -31,6 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 
@@ -136,8 +138,12 @@ public class EmailGlobalUIConfig extends UIConfig {
 
     private static final String TEST_LABEL_ADDRESS = "Email address";
 
-    public EmailGlobalUIConfig() {
+    private final EncryptionSettingsValidator encryptionValidator;
+
+    @Autowired
+    public EmailGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_DESCRIPTION, EmailDescriptor.EMAIL_URL);
+        this.encryptionValidator = encryptionValidator;
     }
 
     @Override
@@ -146,7 +152,7 @@ public class EmailGlobalUIConfig extends UIConfig {
         final ConfigField mailSmtpHost = TextInputConfigField.createRequired(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), LABEL_SMTP_HOST, JAVAMAIL_HOST_DESCRIPTION);
         final ConfigField mailSmtpFrom = TextInputConfigField.createRequired(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), LABEL_SMTP_FROM, JAVAMAIL_FROM_DESCRIPTION);
         final ConfigField mailSmtpUser = TextInputConfigField.create(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), LABEL_SMTP_USER, JAVAMAIL_USER_DESCRIPTION);
-        final ConfigField mailSmtpPassword = PasswordConfigField.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), LABEL_SMTP_PASSWORD, JAVAMAIL_PASSWORD_DESCRIPTION);
+        final ConfigField mailSmtpPassword = PasswordConfigField.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), LABEL_SMTP_PASSWORD, JAVAMAIL_PASSWORD_DESCRIPTION, encryptionValidator);
         final ConfigField mailSmtpAuth = CheckboxConfigField.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), LABEL_SMTP_AUTH, JAVAMAIL_AUTH_DESCRIPTION)
                                              .requireField(mailSmtpUser.getKey())
                                              .requireField(mailSmtpPassword.getKey());

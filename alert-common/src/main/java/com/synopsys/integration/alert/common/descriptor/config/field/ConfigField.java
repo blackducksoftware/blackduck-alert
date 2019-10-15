@@ -22,14 +22,18 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -41,7 +45,7 @@ public class ConfigField extends AlertSerializableModel {
     public static final String FIELD_HEADER_EMPTY = "";
     public static final String FIELD_PANEL_DEFAULT = "";
     public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);
-    public static final ConfigValidationFunction NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
+    public static final ConfigValidationFunction[] NO_VALIDATION = null;
     private final String description;
     private String key;
     private String label;
@@ -54,10 +58,9 @@ public class ConfigField extends AlertSerializableModel {
     private Set<String> requiredRelatedFields;
     private Set<String> disallowedRelatedFields;
     private Set<String> defaultValues;
-    private transient ConfigValidationFunction validationFunction;
+    private transient List<ConfigValidationFunction> validationFunctions;
 
-    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final boolean readOnly, final String panel, final String header,
-        final ConfigValidationFunction validationFunction) {
+    public ConfigField(String key, String label, String description, FieldType type, boolean required, boolean sensitive, boolean readOnly, String panel, String header) {
         this.key = key;
         this.label = label;
         this.description = description;
@@ -69,31 +72,23 @@ public class ConfigField extends AlertSerializableModel {
         this.header = header;
         requiredRelatedFields = new HashSet<>();
         disallowedRelatedFields = new HashSet<>();
-        this.validationFunction = validationFunction;
         defaultValues = new HashSet<>();
+        this.setValidationFunctions(List.of());
     }
 
-    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String panel) {
-        this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, NO_VALIDATION);
+    public ConfigField(String key, String label, String description, FieldType type, boolean required, boolean sensitive, String panel) {
+        this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY);
     }
 
-    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String panel, final ConfigValidationFunction validationFunction) {
-        this(key, label, description, type, required, sensitive, false, panel, FIELD_HEADER_EMPTY, validationFunction);
+    public ConfigField(String key, String label, String description, FieldType type, boolean required, boolean sensitive) {
+        this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY);
     }
 
-    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive) {
-        this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, NO_VALIDATION);
+    public Collection<String> validate(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        return validate(fieldToValidate, fieldModel, getValidationFunctions());
     }
 
-    public ConfigField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        this(key, label, description, type, required, sensitive, false, FIELD_PANEL_DEFAULT, FIELD_HEADER_EMPTY, validationFunction);
-    }
-
-    public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        return validate(fieldToValidate, fieldModel, List.of(validationFunction));
-    }
-
-    final Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<ConfigValidationFunction> validationFunctions) {
+    private final Collection<String> validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
         validateRequiredField(fieldToValidate, errors);
         validateLength(fieldToValidate, errors);
@@ -108,11 +103,20 @@ public class ConfigField extends AlertSerializableModel {
         return errors;
     }
 
+    protected void createValidators(List<ConfigValidationFunction> fieldDefaultValidators, ConfigValidationFunction[] validationFunctions) {
+        if (null == validationFunctions) {
+            this.setValidationFunctions(fieldDefaultValidators);
+        } else {
+            List<ConfigValidationFunction> validators = Stream.concat(fieldDefaultValidators.stream(), Arrays.stream(validationFunctions)).collect(Collectors.toUnmodifiableList());
+            this.setValidationFunctions(validators);
+        }
+    }
+
     public String getKey() {
         return key;
     }
 
-    public void setKey(final String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
@@ -120,7 +124,7 @@ public class ConfigField extends AlertSerializableModel {
         return label;
     }
 
-    public void setLabel(final String label) {
+    public void setLabel(String label) {
         this.label = label;
     }
 
@@ -132,7 +136,7 @@ public class ConfigField extends AlertSerializableModel {
         return type;
     }
 
-    public void setType(final String type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -140,7 +144,7 @@ public class ConfigField extends AlertSerializableModel {
         return required;
     }
 
-    public void setRequired(final boolean required) {
+    public void setRequired(boolean required) {
         this.required = required;
     }
 
@@ -148,7 +152,7 @@ public class ConfigField extends AlertSerializableModel {
         return sensitive;
     }
 
-    public void setSensitive(final boolean sensitive) {
+    public void setSensitive(boolean sensitive) {
         this.sensitive = sensitive;
     }
 
@@ -156,7 +160,7 @@ public class ConfigField extends AlertSerializableModel {
         return readOnly;
     }
 
-    public void setReadOnly(final boolean readOnly) {
+    public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 
@@ -164,7 +168,7 @@ public class ConfigField extends AlertSerializableModel {
         return panel;
     }
 
-    public ConfigField setPanel(final String panel) {
+    public ConfigField setPanel(String panel) {
         this.panel = panel;
         return this;
     }
@@ -173,7 +177,7 @@ public class ConfigField extends AlertSerializableModel {
         return header;
     }
 
-    public ConfigField setHeader(final String header) {
+    public ConfigField setHeader(String header) {
         this.header = header;
         return this;
     }
@@ -182,11 +186,11 @@ public class ConfigField extends AlertSerializableModel {
         return requiredRelatedFields;
     }
 
-    public void setRequiredRelatedFields(final Set<String> requiredRelatedFields) {
+    public void setRequiredRelatedFields(Set<String> requiredRelatedFields) {
         this.requiredRelatedFields = requiredRelatedFields;
     }
 
-    public ConfigField requireField(final String configFieldKey) {
+    public ConfigField requireField(String configFieldKey) {
         requiredRelatedFields.add(configFieldKey);
         return this;
     }
@@ -195,29 +199,37 @@ public class ConfigField extends AlertSerializableModel {
         return disallowedRelatedFields;
     }
 
-    public void setDisallowedRelatedFields(final Set<String> disallowedRelatedFields) {
+    public void setDisallowedRelatedFields(Set<String> disallowedRelatedFields) {
         this.disallowedRelatedFields = disallowedRelatedFields;
     }
 
-    public ConfigField disallowField(final String configFieldKey) {
+    public ConfigField disallowField(String configFieldKey) {
         disallowedRelatedFields.add(configFieldKey);
         return this;
     }
 
-    public ConfigValidationFunction getValidationFunction() {
-        return validationFunction;
+    public List<ConfigValidationFunction> getValidationFunctions() {
+        return validationFunctions;
     }
 
-    public void setValidationFunction(final ConfigValidationFunction validationFunction) {
-        this.validationFunction = validationFunction;
+    protected void setValidationFunctions(List<ConfigValidationFunction> validationFunctions) {
+        this.validationFunctions = validationFunctions;
     }
 
-    public ConfigField addDefaultValue(final String value) {
+    protected void setValidationFunctions(ConfigValidationFunction... validationFunctions) {
+        if (null == validationFunctions) {
+            setValidationFunctions(List.of());
+        }
+
+        setValidationFunctions(Arrays.stream(validationFunctions).collect(Collectors.toList()));
+    }
+
+    public ConfigField addDefaultValue(String value) {
         defaultValues.add(value);
         return this;
     }
 
-    public ConfigField addDefaultValues(final Set<String> values) {
+    public ConfigField addDefaultValues(Set<String> values) {
         defaultValues.addAll(values);
         return this;
     }
@@ -226,17 +238,17 @@ public class ConfigField extends AlertSerializableModel {
         return defaultValues;
     }
 
-    public void setDefaultValues(final Set<String> defaultValues) {
+    public void setDefaultValues(Set<String> defaultValues) {
         this.defaultValues = defaultValues;
     }
 
-    private void validateRequiredField(final FieldValueModel fieldToValidate, final Collection<String> errors) {
+    private void validateRequiredField(FieldValueModel fieldToValidate, Collection<String> errors) {
         if (isRequired() && fieldToValidate.containsNoData()) {
             errors.add(REQUIRED_FIELD_MISSING);
         }
     }
 
-    private void validateLength(final FieldValueModel fieldValueModel, final Collection<String> errors) {
+    private void validateLength(FieldValueModel fieldValueModel, Collection<String> errors) {
         final Collection<String> values = fieldValueModel.getValues();
         if (null == values) {
             return;
