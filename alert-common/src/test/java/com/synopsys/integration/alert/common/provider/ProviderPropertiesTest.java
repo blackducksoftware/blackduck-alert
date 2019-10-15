@@ -33,7 +33,7 @@ public class ProviderPropertiesTest {
     public void getGlobalConfigTest() throws AlertDatabaseConstraintException {
         final ProviderProperties properties = new ProviderProperties(PROVIDER_KEY, configurationAccessor) {};
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorKeyAndContext(PROVIDER_KEY, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
         assertTrue(properties.retrieveGlobalConfig().isPresent());
     }
 
@@ -41,10 +41,10 @@ public class ProviderPropertiesTest {
     public void getGlobalConfigNotPresentTest() throws AlertDatabaseConstraintException {
         final ProviderProperties properties = new ProviderProperties(PROVIDER_KEY, configurationAccessor) {};
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(null);
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorKeyAndContext(PROVIDER_KEY, ConfigContextEnum.GLOBAL)).thenReturn(null);
         assertTrue(properties.retrieveGlobalConfig().isEmpty());
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of());
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorKeyAndContext(PROVIDER_KEY, ConfigContextEnum.GLOBAL)).thenReturn(List.of());
         assertTrue(properties.retrieveGlobalConfig().isEmpty());
     }
 
@@ -52,7 +52,7 @@ public class ProviderPropertiesTest {
     public void getGlobalConfigThrowsExceptionTest() throws AlertDatabaseConstraintException {
         final ProviderProperties properties = new ProviderProperties(PROVIDER_KEY, configurationAccessor) {};
 
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PROVIDER_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL)).thenThrow(new AlertDatabaseConstraintException("Fake constraint violated"));
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorKeyAndContext(PROVIDER_KEY, ConfigContextEnum.GLOBAL)).thenThrow(new AlertDatabaseConstraintException("Fake constraint violated"));
         assertTrue(properties.retrieveGlobalConfig().isEmpty());
     }
 

@@ -112,7 +112,7 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorName(AuthenticationDescriptorKey.getUniversalKey())
+        return configurationAccessor.getConfigurationsByDescriptorKey(AuthenticationDescriptorKey)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));

@@ -43,6 +43,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -63,13 +65,16 @@ public class ConfigController extends BaseController {
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ConfigController(final ConfigActions configActions, final ContentConverter contentConverter, final ResponseFactory responseFactory, final AuthorizationManager authorizationManager) {
+    public ConfigController(ConfigActions configActions, ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager,
+        DescriptorMap descriptorMap) {
         this.configActions = configActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
         this.authorizationManager = authorizationManager;
+        this.descriptorMap = descriptorMap;
     }
 
     @GetMapping
@@ -79,14 +84,15 @@ public class ConfigController extends BaseController {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            models = configActions.getConfigs(context, descriptorName);
+            DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
+            models = configActions.getConfigs(context, descriptorKey);
         } catch (final AlertException e) {
-            logger.error("Was not able to find configurations with the context {}, and descriptorName {}", context, descriptorName);
-            return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
+            logger.error("Was not able to find configurations with the context {}, and descriptorName {} to get.", context, descriptorName);
+            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
         }
 
         if (models.isEmpty()) {
-            return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
+            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
         }
 
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
@@ -118,24 +124,34 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        if (!authorizationManager.hasCreatePermission(restModel.getContext(), restModel.getDescriptorName())) {
+        String context = restModel.getContext();
+        String descriptorName = restModel.getDescriptorName();
+        if (!authorizationManager.hasCreatePermission(context, descriptorName)) {
             return responseFactory.createForbiddenResponse();
         }
+        DescriptorKey descriptorKey;
         try {
-            return runPostConfig(restModel);
+            descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
+        } catch (final AlertException e) {
+            logger.error("Was not able to find configurations with the context {}, and descriptorName {} to update.", context, descriptorName);
+            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
+        }
+
+        try {
+            return runPostConfig(restModel, descriptorKey);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getId(), e.getMessage());
         }
     }
 
-    private ResponseEntity<String> runPostConfig(final FieldModel fieldModel) throws AlertException {
+    private ResponseEntity<String> runPostConfig(FieldModel fieldModel, DescriptorKey descriptorKey) throws AlertException {
         final String id = fieldModel.getId();
         if (configActions.doesConfigExist(id)) {
             return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
         }
         try {
-            final FieldModel updatedEntity = configActions.saveConfig(fieldModel);
+            final FieldModel updatedEntity = configActions.saveConfig(fieldModel, descriptorKey);
             return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
