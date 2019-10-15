@@ -69,6 +69,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 @Component
 @Transactional
 public class DefaultConfigurationAccessor implements ConfigurationAccessor {
+    public static final String EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID = "DescriptorKey is not valid. %s";
     private static final String NULL_JOB_ID = "The job id cannot be null";
     private static final String NULL_CONFIG_ID = "The config id cannot be null";
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
@@ -177,7 +178,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
         if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
+            throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
         }
         final Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey());
         if (registeredDescriptorEntity.isPresent()) {
@@ -216,7 +217,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public List<ConfigurationModel> getConfigurationByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
         if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
+            throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
         }
         return getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
     }
@@ -224,7 +225,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
+            throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
         }
         return createConfiguration(descriptorKey.getUniversalKey(), context, configuredFields);
     }

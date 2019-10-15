@@ -59,8 +59,8 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
 public class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
+    public static final String EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR = "Configurations not found for the context '%s' and descriptor '%s'.";
     private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
-
     private final ConfigActions configActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
@@ -88,11 +88,11 @@ public class ConfigController extends BaseController {
             models = configActions.getConfigs(context, descriptorKey);
         } catch (final AlertException e) {
             logger.error("Was not able to find configurations with the context {}, and descriptorName {} to get.", context, descriptorName);
-            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
+            return responseFactory.createNotFoundResponse(String.format(EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR, context, descriptorName));
         }
 
         if (models.isEmpty()) {
-            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
+            return responseFactory.createNotFoundResponse(String.format(EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR, context, descriptorName));
         }
 
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
@@ -134,7 +134,7 @@ public class ConfigController extends BaseController {
             descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
         } catch (final AlertException e) {
             logger.error("Was not able to find configurations with the context {}, and descriptorName {} to update.", context, descriptorName);
-            return responseFactory.createNotFoundResponse(String.format("Configurations not found for the context '%s' and descriptor '%s'.", context, descriptorName));
+            return responseFactory.createNotFoundResponse(String.format(EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR, context, descriptorName));
         }
 
         try {
