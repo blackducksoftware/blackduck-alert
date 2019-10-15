@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -100,6 +101,15 @@ public class ConfigField extends AlertSerializableModel {
         }
 
         return errors;
+    }
+
+    protected void createValidators(List<ConfigValidationFunction> fieldDefaultValidators, ConfigValidationFunction[] validationFunctions) {
+        if (null == validationFunctions) {
+            this.setValidationFunctions(fieldDefaultValidators);
+        } else {
+            List<ConfigValidationFunction> validators = Stream.concat(fieldDefaultValidators.stream(), Arrays.stream(validationFunctions)).collect(Collectors.toUnmodifiableList());
+            this.setValidationFunctions(validators);
+        }
     }
 
     public String getKey() {

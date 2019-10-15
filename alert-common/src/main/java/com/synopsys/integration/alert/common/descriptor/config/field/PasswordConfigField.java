@@ -22,28 +22,22 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class PasswordConfigField extends ConfigField {
-    private final EncryptionValidator encryptionValidation;
 
     public PasswordConfigField(String key, String label, String description, boolean required, EncryptionValidator encryptionValidation) {
         super(key, label, description, FieldType.PASSWORD_INPUT, required, true);
-        this.encryptionValidation = encryptionValidation;
-        this.createValidators(ConfigField.NO_VALIDATION);
+        createValidators(List.of(encryptionValidation), ConfigField.NO_VALIDATION);
     }
 
     public PasswordConfigField(String key, String label, String description, boolean required, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         super(key, label, description, FieldType.PASSWORD_INPUT, required, true);
-        this.encryptionValidation = encryptionValidation;
-        this.createValidators(validationFunctions);
+        createValidators(List.of(encryptionValidation), validationFunctions);
     }
 
     public static PasswordConfigField create(String key, String label, String description, EncryptionValidator encryptionValidation) {
@@ -76,14 +70,5 @@ public class PasswordConfigField extends ConfigField {
 
     public static PasswordConfigField createRequired(String key, String label, String description, String panel, EncryptionValidator encryptionValidation, ConfigValidationFunction... validationFunctions) {
         return new PasswordConfigField(key, label, description, true, encryptionValidation, validationFunctions);
-    }
-
-    private void createValidators(ConfigValidationFunction[] validationFunctions) {
-        List<ConfigValidationFunction> validators = new ArrayList<>();
-        validators.add(encryptionValidation);
-        if (null != validationFunctions) {
-            validators.addAll(Arrays.asList(validationFunctions));
-        }
-        this.setValidationFunctions(validators.stream().collect(Collectors.toUnmodifiableList()));
     }
 }

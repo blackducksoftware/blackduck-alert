@@ -22,11 +22,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
@@ -38,22 +35,22 @@ public class NumberConfigField extends ConfigField {
 
     public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel) {
         super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
-        createValidators(null);
+        createValidators(List.of(this::validateIsNumber), null);
     }
 
     public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel, ConfigValidationFunction... validationFunctions) {
         super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
-        createValidators(validationFunctions);
+        createValidators(List.of(this::validateIsNumber), validationFunctions);
     }
 
     public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive) {
         super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
-        createValidators(null);
+        createValidators(List.of(this::validateIsNumber), null);
     }
 
     public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, ConfigValidationFunction... validationFunctions) {
         super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
-        createValidators(validationFunctions);
+        createValidators(List.of(this::validateIsNumber), validationFunctions);
     }
 
     public static NumberConfigField create(String key, String label, String description) {
@@ -78,15 +75,6 @@ public class NumberConfigField extends ConfigField {
 
     public static NumberConfigField createPanel(String key, String label, String description, String panel, ConfigValidationFunction... validationFunctions) {
         return new NumberConfigField(key, label, description, false, false, panel, validationFunctions);
-    }
-
-    private void createValidators(ConfigValidationFunction[] validationFunctions) {
-        List<ConfigValidationFunction> validators = new ArrayList<>();
-        validators.add(this::validateIsNumber);
-        if (null != validationFunctions) {
-            validators.addAll(Arrays.asList(validationFunctions));
-        }
-        this.setValidationFunctions(validators.stream().collect(Collectors.toUnmodifiableList()));
     }
 
     private Collection<String> validateIsNumber(FieldValueModel fieldToValidate, FieldModel fieldModel) {

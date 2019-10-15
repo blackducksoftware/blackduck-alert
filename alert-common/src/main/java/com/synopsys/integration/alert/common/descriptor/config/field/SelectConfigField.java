@@ -22,11 +22,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,6 +47,7 @@ public class SelectConfigField extends ConfigField {
         this.removeSelected = removeSelected;
         this.clearable = clearable;
         options = List.of();
+        createValidators(List.of(this::validateIsValidOption), null);
     }
 
     public SelectConfigField(String key, String label, String description, boolean required, boolean sensitive, boolean readOnly, boolean searchable, boolean multiSelect,
@@ -60,7 +58,7 @@ public class SelectConfigField extends ConfigField {
         this.options = options;
         this.removeSelected = removeSelected;
         this.clearable = clearable;
-        createValidators(null);
+        createValidators(List.of(this::validateIsValidOption), null);
     }
 
     public SelectConfigField(String key, String label, String description, boolean required, boolean sensitive, boolean readOnly, boolean searchable, boolean multiSelect,
@@ -71,7 +69,7 @@ public class SelectConfigField extends ConfigField {
         this.options = options;
         this.removeSelected = removeSelected;
         this.clearable = clearable;
-        this.createValidators(validationFunctions);
+        createValidators(List.of(this::validateIsValidOption), validationFunctions);
 
     }
 
@@ -166,16 +164,6 @@ public class SelectConfigField extends ConfigField {
 
     public void setClearable(final boolean clearable) {
         this.clearable = clearable;
-    }
-
-    private void createValidators(ConfigValidationFunction[] validationFunctions) {
-        List<ConfigValidationFunction> validators = new ArrayList<>();
-        validators.add(this::validateIsValidOption);
-        if (null != validationFunctions) {
-            validators.addAll(Arrays.asList(validationFunctions));
-        }
-        this.setValidationFunctions(validators.stream().collect(Collectors.toUnmodifiableList()));
-        ;
     }
 
     private Collection<String> validateIsValidOption(FieldValueModel fieldToValidate, FieldModel fieldModel) {

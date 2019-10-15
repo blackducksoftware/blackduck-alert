@@ -22,11 +22,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
@@ -40,17 +37,17 @@ public class CheckboxConfigField extends ConfigField {
 
     public CheckboxConfigField(String key, String label, String description, boolean required, String panel, ConfigValidationFunction... validationFunctions) {
         super(key, label, description, FieldType.CHECKBOX_INPUT, required, false, panel);
-        createValidators(validationFunctions);
+        createValidators(List.of(this::validateValueIsBoolean), validationFunctions);
     }
 
     public CheckboxConfigField(String key, String label, String description, boolean required) {
         super(key, label, description, FieldType.CHECKBOX_INPUT, required, false);
-        createValidators(null);
+        createValidators(List.of(this::validateValueIsBoolean), null);
     }
 
     public CheckboxConfigField(String key, String label, String description, boolean required, ConfigValidationFunction... validationFunctions) {
         super(key, label, description, FieldType.CHECKBOX_INPUT, required, false);
-        createValidators(validationFunctions);
+        createValidators(List.of(this::validateValueIsBoolean), validationFunctions);
     }
 
     protected CheckboxConfigField(String key, String label, String description, FieldType fieldType, boolean required) {
@@ -79,15 +76,6 @@ public class CheckboxConfigField extends ConfigField {
 
     public static CheckboxConfigField createPanel(String key, String label, String description, String panel, ConfigValidationFunction... validationFunctions) {
         return new CheckboxConfigField(key, label, description, false, panel, validationFunctions);
-    }
-
-    private void createValidators(ConfigValidationFunction[] validationFunctions) {
-        List<ConfigValidationFunction> validators = new ArrayList<>();
-        validators.add(this::validateValueIsBoolean);
-        if (null != validationFunctions) {
-            validators.addAll(Arrays.asList(validationFunctions));
-        }
-        this.setValidationFunctions(validators.stream().collect(Collectors.toUnmodifiableList()));
     }
 
     private Collection<String> validateValueIsBoolean(FieldValueModel fieldToValidate, FieldModel fieldModel) {

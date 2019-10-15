@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.component.settings.descriptor;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class SettingsUIConfig extends UIConfig {
 
     private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
-    
+
     private final EncryptionValidator encryptionConfigValidator;
     private final EncryptionValidator encryptionFieldValidator;
 
@@ -140,12 +140,10 @@ public class SettingsUIConfig extends UIConfig {
     private class EncryptionFieldsSetValidator extends EncryptionValidator {
         @Override
         public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-            Optional<FieldValueModel> pwdField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD);
-            Optional<FieldValueModel> saltField = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
-
-            boolean encryptionFieldsSet = pwdField.map(field -> field.hasValues() || field.isSet()).orElse(false)
-                                              && saltField.map(field -> field.hasValues() || field.isSet()).orElse(false);
-            if (encryptionFieldsSet) {
+            Function<FieldValueModel, Boolean> fieldSetCheck = field -> field.hasValues() || field.isSet();
+            boolean pwdFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).map(fieldSetCheck).orElse(false);
+            boolean saltFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(fieldSetCheck).orElse(false);
+            if (pwdFieldSet && saltFieldSet) {
                 return List.of();
             }
             return List.of(ConfigField.REQUIRED_FIELD_MISSING);
@@ -155,7 +153,7 @@ public class SettingsUIConfig extends UIConfig {
     private class EncryptionFieldValidator extends EncryptionValidator {
         @Override
         public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-            if (!fieldValueModel.hasValues() && !fieldValueModel.isSet()) {
+            if (fieldValueModel.containsNoData() && !fieldValueModel.isSet()) {
                 return List.of(ConfigField.REQUIRED_FIELD_MISSING);
             }
             return List.of();
