@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 
 @RestController
@@ -49,15 +48,12 @@ public class SystemController extends BaseController {
     private final SystemActions systemActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
-    private final SettingsDescriptor settingsDescriptor;
 
     @Autowired
-    public SystemController(final SystemActions systemActions, final ContentConverter contentConverter, final ResponseFactory responseFactory,
-        final SettingsDescriptor settingsDescriptor) {
+    public SystemController(final SystemActions systemActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
         this.systemActions = systemActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
-        this.settingsDescriptor = settingsDescriptor;
     }
 
     @GetMapping(value = "/system/messages/latest")

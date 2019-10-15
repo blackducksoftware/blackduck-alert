@@ -77,4 +77,7 @@ public final class ComponentBuilderUtil {
                 },
                 () -> componentBuilder.applyComponentData(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName(), projectQueryLink)));
     }
+
+    private ComponentBuilderUtil() {
+    }
 }

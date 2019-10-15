@@ -52,7 +52,7 @@ public class UserDetailsServiceTest {
         assertNotNull(result);
         assertTrue(UserPrincipal.class.isInstance(result));
         final UserPrincipal principal = (UserPrincipal) result;
-        assertEquals(principal.getUsername(), USER_NAME);
+        assertEquals(USER_NAME, principal.getUsername());
         assertTrue(StringUtils.isBlank(principal.getPassword()));
         assertEquals(VALID_ROLES.length, principal.getAuthorities().size());
         final List<String> expectedRoles = List.of(VALID_ROLES);
@@ -74,7 +74,7 @@ public class UserDetailsServiceTest {
         assertNotNull(result);
         assertTrue(UserPrincipal.class.isInstance(result));
         final UserPrincipal principal = (UserPrincipal) result;
-        assertEquals(principal.getUsername(), USER_NAME);
+        assertEquals(USER_NAME, principal.getUsername());
         assertTrue(StringUtils.isBlank(principal.getPassword()));
         assertTrue(principal.getAuthorities().isEmpty());
     }
@@ -93,7 +93,7 @@ public class UserDetailsServiceTest {
         assertNotNull(result);
         assertTrue(UserPrincipal.class.isInstance(result));
         final UserPrincipal principal = (UserPrincipal) result;
-        assertEquals(principal.getUsername(), USER_NAME);
+        assertEquals(USER_NAME, principal.getUsername());
         assertTrue(StringUtils.isBlank(principal.getPassword()));
         assertTrue(principal.getAuthorities().isEmpty());
     }

@@ -112,9 +112,9 @@ public class FieldModel extends Config {
         }
         final String modelDescriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
         final String modelContext = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
-        final String createdAt = StringUtils.isNotBlank(getCreatedAt()) ? getCreatedAt() : fieldModel.getCreatedAt();
-        final String lastUpdated = StringUtils.isNotBlank(getLastUpdated()) ? getLastUpdated() : fieldModel.getLastUpdated();
-        final FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, createdAt, lastUpdated, fieldValueModelMap);
+        final String modelCreatedAt = StringUtils.isNotBlank(getCreatedAt()) ? getCreatedAt() : fieldModel.getCreatedAt();
+        final String modelLastUpdated = StringUtils.isNotBlank(getLastUpdated()) ? getLastUpdated() : fieldModel.getLastUpdated();
+        final FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, modelCreatedAt, modelLastUpdated, fieldValueModelMap);
         final String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
         newFieldModel.setId(id);
         return newFieldModel;

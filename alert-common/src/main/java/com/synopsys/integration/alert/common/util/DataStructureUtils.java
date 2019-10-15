@@ -36,4 +36,6 @@ public final class DataStructureUtils {
         return valueCollection.stream().collect(Collectors.toMap(Function.identity(), valueExtractor::apply));
     }
 
+    private DataStructureUtils() {
+    }
 }

@@ -170,7 +170,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         }
 
         appendLinkableItem(keyBuilder, getComponent());
-        getSubComponent().ifPresent(subComponent -> appendLinkableItem(keyBuilder, subComponent));
+        getSubComponent().ifPresent(currentSubComponent -> appendLinkableItem(keyBuilder, currentSubComponent));
 
         if (!collapseOnCategory() || forceIncludeCategoryItem) {
             appendLinkableItem(keyBuilder, getCategoryItem());
