@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-public class JiraConstants {
+public final class JiraConstants {
     // This String must always match the String found in the atlassian-connect.json file under key.
     public static final String JIRA_APP_KEY = "com.synopsys.integration.alert";
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.key.
@@ -43,4 +43,6 @@ public class JiraConstants {
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE = "subComponentValue";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY = "additionalKey";
 
+    private JiraConstants() {
+    }
 }

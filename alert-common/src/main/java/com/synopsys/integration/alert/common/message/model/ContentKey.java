@@ -37,7 +37,6 @@ public class ContentKey extends AlertSerializableModel {
     private String topicValue;
     private String subTopicName;
     private String subTopicValue;
-    private ItemOperation action;
 
     private String value;
 
@@ -47,7 +46,6 @@ public class ContentKey extends AlertSerializableModel {
         this.topicValue = topicValue;
         this.subTopicName = subTopicName;
         this.subTopicValue = subTopicValue;
-        this.action = action;
         this.value = generateContentKey(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
     }
 

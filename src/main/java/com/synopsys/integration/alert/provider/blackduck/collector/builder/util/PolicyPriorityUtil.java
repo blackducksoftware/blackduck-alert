@@ -45,4 +45,6 @@ public final class PolicyPriorityUtil {
         return ComponentItemPriority.NONE;
     }
 
+    private PolicyPriorityUtil() {
+    }
 }

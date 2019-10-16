@@ -102,7 +102,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetLatestMessagesHandling() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getLatestSystemMessages();
         Mockito.verify(systemActions).getSystemMessagesSinceStartup();
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -112,7 +112,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesgetAll() {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("", "");
         Mockito.verify(systemActions).getSystemMessages();
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -122,7 +122,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesGetAfter() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
         Mockito.verify(systemActions).getSystemMessagesAfter(Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -132,7 +132,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesGetBefore() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBefore(Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -142,7 +142,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesGetBetween() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
@@ -152,7 +152,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesBadDateRange() throws Exception {
         final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory, null);
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("error parsing date ", 0));
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());

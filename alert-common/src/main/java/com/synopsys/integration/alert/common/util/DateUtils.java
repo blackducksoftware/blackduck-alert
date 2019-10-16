@@ -55,4 +55,7 @@ public final class DateUtils {
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return simpleDateFormat.parse(date);
     }
+
+    private DateUtils() {
+    }
 }
