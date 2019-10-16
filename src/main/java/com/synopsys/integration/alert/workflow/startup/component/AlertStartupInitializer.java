@@ -95,7 +95,7 @@ public class AlertStartupInitializer extends StartupComponent {
         logger.info("Initializing descriptors with environment variables...");
         final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
-        DescriptorKey settingsKey = settingsUtility.getSettingsKey();
+        DescriptorKey settingsKey = settingsUtility.getKey();
         initializeConfiguration(List.of(settingsKey), overwriteCurrentConfig);
         final List<DescriptorKey> descriptorKeys = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsKey)).collect(Collectors.toList());
         initializeConfiguration(descriptorKeys, overwriteCurrentConfig);
@@ -105,10 +105,10 @@ public class AlertStartupInitializer extends StartupComponent {
         boolean environmentOverride = false;
         try {
             // determine if the environment variables should overwrite based on the settings configuration.
-            Optional<ConfigurationModel> settingsConfiguration = settingsUtility.getSettings();
+            Optional<ConfigurationModel> settingsConfiguration = settingsUtility.getConfiguration();
             final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
 
-            final String environmentFieldKey = convertKeyToProperty(settingsUtility.getSettingsKey(), fieldKey);
+            final String environmentFieldKey = convertKeyToProperty(settingsUtility.getKey(), fieldKey);
             final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
             if (environmentValue.isPresent() && settingsConfiguration.isPresent()) {

@@ -42,43 +42,24 @@ import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 public class SAMLManager {
     public static final Logger logger = LoggerFactory.getLogger(SAMLManager.class);
-    private final SAMLContext samlContext;
     private final ParserPool parserPool;
     private final ExtendedMetadata extendedMetadata;
     private final MetadataManager metadataManager;
     private final MetadataGenerator metadataGenerator;
     private final FilePersistenceUtil filePersistenceUtil;
 
-    public SAMLManager(final SAMLContext samlContext, final ParserPool parserPool, final ExtendedMetadata extendedMetadata, final MetadataManager metadataManager, final MetadataGenerator metadataGenerator,
+    public SAMLManager(ParserPool parserPool, ExtendedMetadata extendedMetadata, MetadataManager metadataManager, MetadataGenerator metadataGenerator,
         FilePersistenceUtil filePersistenceUtil) {
-        this.samlContext = samlContext;
         this.parserPool = parserPool;
         this.extendedMetadata = extendedMetadata;
         this.metadataManager = metadataManager;
         this.metadataGenerator = metadataGenerator;
         this.filePersistenceUtil = filePersistenceUtil;
-    }
-
-    public void initializeSAML() {
-        try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            final boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
-            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
-            final String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
-            final String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
-            if (samlEnabled) {
-                setupMetadataManager(metadataURL, entityId, entityBaseUrl);
-            }
-        } catch (final AlertException | MetadataProviderException e) {
-            logger.error("Error adding the SAML identity provider.", e);
-        }
     }
 
     public void updateSAMLConfiguration(final boolean samlEnabled, final String metadataURL, final String entityId, final String entityBaseUrl) {
@@ -100,7 +81,7 @@ public class SAMLManager {
         }
     }
 
-    private void setupMetadataManager(final String metadataURL, final String entityId, final String entityBaseUrl) throws MetadataProviderException {
+    public void setupMetadataManager(final String metadataURL, final String entityId, final String entityBaseUrl) throws MetadataProviderException {
         metadataGenerator.setEntityId(entityId);
         metadataGenerator.setEntityBaseURL(entityBaseUrl);
 

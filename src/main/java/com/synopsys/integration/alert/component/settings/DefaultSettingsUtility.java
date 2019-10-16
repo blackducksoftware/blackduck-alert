@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.component.settings;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,48 +44,41 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 
 @Component
 public class DefaultSettingsUtility implements SettingsUtility {
-    private SettingsDescriptorKey settingsDescriptorKey;
-    private ConfigurationAccessor configurationAccessor;
-    private SettingsGlobalApiAction settingsGlobalApiAction;
-    private ConfigurationFieldModelConverter configurationFieldModelConverter;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final ConfigurationAccessor configurationAccessor;
+    private final SettingsGlobalApiAction apiAction;
+    private final ConfigurationFieldModelConverter configurationFieldModelConverter;
+    private DescriptorKey key;
+    private ConfigContextEnum context;
 
     @Autowired
     public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        this.settingsDescriptorKey = settingsDescriptorKey;
+        this.key = settingsDescriptorKey;
+        this.context = ConfigContextEnum.GLOBAL;
         this.configurationAccessor = configurationAccessor;
-        this.settingsGlobalApiAction = settingsGlobalApiAction;
+        this.apiAction = settingsGlobalApiAction;
         this.configurationFieldModelConverter = configurationFieldModelConverter;
     }
 
     @Override
-    public DescriptorKey getSettingsKey() {
-        return settingsDescriptorKey;
+    public DescriptorKey getKey() {
+        return key;
     }
 
     @Override
-    public boolean doSettingsExist() throws AlertException {
-        return !configurationAccessor.getConfigurationByDescriptorKeyAndContext(settingsDescriptorKey, ConfigContextEnum.GLOBAL).isEmpty();
-    }
-
-    @Override
-    public Optional<FieldModel> getSettingsFieldModel() throws AlertException {
-        final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationByDescriptorKeyAndContext(settingsDescriptorKey, ConfigContextEnum.GLOBAL)
-                                                                            .stream()
-                                                                            .findFirst();
-
-        if (configurationModelOptional.isPresent()) {
-            ConfigurationModel configurationModel = configurationModelOptional.get();
-            FieldModel fieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-            return Optional.ofNullable(settingsGlobalApiAction.afterGetAction(fieldModel));
+    public boolean doesConfigurationExist() {
+        try {
+            return !configurationAccessor.getConfigurationByDescriptorKeyAndContext(key, context).isEmpty();
+        } catch (AlertException ex) {
+            logger.debug("Error reading configuration from database.", ex);
+            return false;
         }
-
-        return Optional.empty();
     }
 
     @Override
-    public Optional<ConfigurationModel> getSettings() throws AlertException {
-        Optional<FieldModel> fieldModel = getSettingsFieldModel();
+    public Optional<ConfigurationModel> getConfiguration() throws AlertException {
+        Optional<FieldModel> fieldModel = getFieldModel();
 
         if (fieldModel.isPresent()) {
             ConfigurationModel configurationModel = configurationFieldModelConverter.convertToConfigurationModel(fieldModel.get());
@@ -94,21 +89,35 @@ public class DefaultSettingsUtility implements SettingsUtility {
     }
 
     @Override
+    public Optional<FieldModel> getFieldModel() throws AlertException {
+        final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationByDescriptorKeyAndContext(getKey(), ConfigContextEnum.GLOBAL)
+                                                                            .stream()
+                                                                            .findFirst();
+
+        if (configurationModelOptional.isPresent()) {
+            ConfigurationModel configurationModel = configurationModelOptional.get();
+            FieldModel fieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
+            return Optional.ofNullable(apiAction.afterGetAction(fieldModel));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
     public FieldModel saveSettings(final FieldModel fieldModel) throws AlertException {
-        FieldModel beforeAction = settingsGlobalApiAction.beforeSaveAction(fieldModel);
+        FieldModel beforeAction = apiAction.beforeSaveAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
-        ConfigurationModel configuration = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, values);
+        ConfigurationModel configuration = configurationAccessor.createConfiguration(getKey(), ConfigContextEnum.GLOBAL, values);
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
-        return settingsGlobalApiAction.afterSaveAction(convertedFieldModel);
+        return apiAction.afterSaveAction(convertedFieldModel);
     }
 
     @Override
     public FieldModel updateSettings(final Long id, final FieldModel fieldModel) throws AlertException {
-        FieldModel beforeUpdateAction = settingsGlobalApiAction.beforeUpdateAction(fieldModel);
+        FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction).values();
         ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, values);
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-        return settingsGlobalApiAction.afterUpdateAction(convertedFieldModel);
+        return apiAction.afterUpdateAction(convertedFieldModel);
     }
-
 }

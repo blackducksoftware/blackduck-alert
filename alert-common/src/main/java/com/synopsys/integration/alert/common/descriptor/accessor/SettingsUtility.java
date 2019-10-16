@@ -31,16 +31,15 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public interface SettingsUtility {
 
-    DescriptorKey getSettingsKey();
+    DescriptorKey getKey();
 
-    boolean doSettingsExist() throws AlertException;
+    boolean doesConfigurationExist();
 
-    Optional<FieldModel> getSettingsFieldModel() throws AlertException;
+    Optional<ConfigurationModel> getConfiguration() throws AlertException;
 
-    Optional<ConfigurationModel> getSettings() throws AlertException;
+    Optional<FieldModel> getFieldModel() throws AlertException;
 
-    FieldModel saveSettings(FieldModel fieldModel) throws AlertException;
+    FieldModel saveSettings(final FieldModel fieldModel) throws AlertException;
 
-    FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException;
-
+    FieldModel updateSettings(final Long id, final FieldModel fieldModel) throws AlertException;
 }

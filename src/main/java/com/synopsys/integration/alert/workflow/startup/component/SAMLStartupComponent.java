@@ -22,24 +22,45 @@
  */
 package com.synopsys.integration.alert.workflow.startup.component;
 
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 
 @Component
 @Order(7)
 public class SAMLStartupComponent extends StartupComponent {
+    private final Logger logger = LoggerFactory.getLogger(SAMLStartupComponent.class);
+    private final SAMLContext samlContext;
     private final SAMLManager samlManager;
 
     @Autowired
-    public SAMLStartupComponent(final SAMLManager samlManager) {
+    public SAMLStartupComponent(SAMLContext samlContext, SAMLManager samlManager) {
+        this.samlContext = samlContext;
         this.samlManager = samlManager;
     }
 
     @Override
     protected void initialize() {
-        samlManager.initializeSAML();
+        try {
+            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+            final boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
+            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
+            final String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
+            final String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            if (samlEnabled) {
+                samlManager.setupMetadataManager(metadataURL, entityId, entityBaseUrl);
+            }
+        } catch (final AlertException | MetadataProviderException e) {
+            logger.error("Error adding the SAML identity provider.", e);
+        }
     }
 }

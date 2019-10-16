@@ -46,8 +46,8 @@ public class SystemActionsTest {
         final List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
-        Mockito.when(settingsUtility.getSettingsKey()).thenReturn(SETTINGS_DESCRIPTOR_KEY);
-        Mockito.when(settingsUtility.doSettingsExist()).thenReturn(true);
+        Mockito.when(settingsUtility.getKey()).thenReturn(SETTINGS_DESCRIPTOR_KEY);
+        Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(true);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class SystemActionsTest {
         expected.putField(ProxyManager.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
         expected.putField(ProxyManager.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
 
-        Mockito.when(settingsUtility.getSettingsFieldModel()).thenReturn(Optional.of(expected));
+        Mockito.when(settingsUtility.getFieldModel()).thenReturn(Optional.of(expected));
 
         final FieldModel actual = systemActions.getCurrentSystemSetup();
 
@@ -149,7 +149,7 @@ public class SystemActionsTest {
         model.putField(ProxyManager.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
         model.putField(ProxyManager.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
 
-        Mockito.when(settingsUtility.doSettingsExist()).thenReturn(false);
+        Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(false);
 
         final Map<String, String> fieldErrors = new HashMap<>();
         systemActions.saveRequiredInformation(model, fieldErrors);
