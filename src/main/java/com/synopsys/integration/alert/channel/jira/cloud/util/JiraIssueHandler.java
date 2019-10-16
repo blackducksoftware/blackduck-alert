@@ -43,9 +43,9 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidato
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.exception.JiraMissingTransitionException;
-import com.synopsys.integration.alert.channel.jira.cloud.model.IssueContentModel;
 import com.synopsys.integration.alert.channel.jira.cloud.model.JiraMessageResult;
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.common.channel.model.IssueContentModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;

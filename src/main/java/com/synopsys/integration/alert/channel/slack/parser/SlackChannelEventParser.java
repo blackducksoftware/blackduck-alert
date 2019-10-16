@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
-import com.synopsys.integration.alert.common.channel.MessageSplitter;
+import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
