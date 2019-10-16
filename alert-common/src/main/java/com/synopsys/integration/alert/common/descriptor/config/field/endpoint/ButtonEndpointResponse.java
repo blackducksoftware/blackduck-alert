@@ -22,34 +22,27 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
-public abstract class SelectEndpointResponse extends EndpointResponse<List<LabelValueSelectOption>> {
+public abstract class ButtonEndpointResponse extends EndpointResponse<String> {
     private ResponseFactory responseFactory;
-    private Gson gson;
 
-    public SelectEndpointResponse(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+    public ButtonEndpointResponse(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory) throws AlertException {
         super(fieldKey, customEndpointManager);
         this.responseFactory = responseFactory;
-        this.gson = gson;
+    }
+
+    @Override
+    protected ResponseEntity<String> createSuccessResponse(final String response) {
+        return responseFactory.createOkResponse("", response);
     }
 
     @Override
     protected ResponseEntity<String> createErrorResponse(final Exception e) {
-        return responseFactory.createInternalServerErrorResponse("", String.format("An internal issue occurred while trying to retrieve your select data: %s", e.getMessage()));
-    }
-
-    @Override
-    protected ResponseEntity<String> createSuccessResponse(final List<LabelValueSelectOption> response) {
-        String providerOptionsConverted = gson.toJson(response);
-        return responseFactory.createOkContentResponse(providerOptionsConverted);
+        return responseFactory.createInternalServerErrorResponse("", "An unexpected error occurred when performing the action: " + e.getMessage());
     }
 }

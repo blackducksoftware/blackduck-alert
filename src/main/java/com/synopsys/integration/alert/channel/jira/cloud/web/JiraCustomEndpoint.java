@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud.web;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonEndpointResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -51,7 +53,7 @@ import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceF
 import com.synopsys.integration.rest.request.Response;
 
 @Component
-public class JiraCustomEndpoint {
+public class JiraCustomEndpoint extends ButtonEndpointResponse {
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
 
     private final JiraChannelKey jiraChannelKey;
@@ -61,15 +63,15 @@ public class JiraCustomEndpoint {
 
     @Autowired
     public JiraCustomEndpoint(JiraChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+        super(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
-
-        customEndpointManager.registerFunction(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, this::installJiraPlugin);
     }
 
-    public ResponseEntity<String> installJiraPlugin(final Map<String, FieldValueModel> fieldValueModels) {
+    @Override
+    public Optional<ResponseEntity<String>> preprocessRequest(final Map<String, FieldValueModel> fieldValueModels) {
         final JiraProperties jiraProperties = createJiraProperties(fieldValueModels);
         try {
             final JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -78,21 +80,27 @@ public class JiraCustomEndpoint {
             final String accessToken = jiraProperties.getAccessToken();
             final Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
             if (response.isStatusCodeError()) {
-                return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
+                return Optional.of(responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode()));
             }
             final boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return responseFactory.createNotFoundResponse("Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
+                return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server."));
             }
-            return responseFactory.createOkResponse("", "Successfully created Alert plugin on Jira Cloud server.");
         } catch (final IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
-            return responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
+            return Optional.of(responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage()));
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
-            return responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
+            return Optional.of(responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage()));
         }
+
+        return Optional.empty();
+    }
+
+    @Override
+    protected String createData(final Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+        return "Successfully created Alert plugin on Jira Cloud server.";
     }
 
     private JiraProperties createJiraProperties(final Map<String, FieldValueModel> fieldValueModels) {

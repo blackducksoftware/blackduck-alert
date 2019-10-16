@@ -33,26 +33,28 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class EndpointResponse<R> {
 
-    protected EndpointResponse(final String fieldKey, final CustomEndpointManager customEndpointManager) throws AlertException {
-        customEndpointManager.registerFunction(fieldKey, this::createAndConvertResponse);
+    public EndpointResponse(final String fieldKey, final CustomEndpointManager customEndpointManager) throws AlertException {
+        customEndpointManager.registerFunction(fieldKey, this::createResponse);
     }
 
-    protected abstract Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels);
+    protected Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
+        return Optional.empty();
+    }
 
-    protected abstract R createResponse(Map<String, FieldValueModel> fieldValueModels) throws AlertException;
+    protected abstract R createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException;
 
     protected abstract ResponseEntity<String> createErrorResponse(Exception e);
 
     protected abstract ResponseEntity<String> createSuccessResponse(R response);
 
-    public ResponseEntity<String> createAndConvertResponse(Map<String, FieldValueModel> fieldValueModels) {
+    public final ResponseEntity<String> createResponse(Map<String, FieldValueModel> fieldValueModels) {
         Optional<ResponseEntity<String>> processedFieldValueModels = preprocessRequest(fieldValueModels);
         if (processedFieldValueModels.isPresent()) {
             return processedFieldValueModels.get();
         }
 
         try {
-            R response = createResponse(fieldValueModels);
+            R response = createData(fieldValueModels);
             return createSuccessResponse(response);
         } catch (Exception e) {
             return createErrorResponse(e);
