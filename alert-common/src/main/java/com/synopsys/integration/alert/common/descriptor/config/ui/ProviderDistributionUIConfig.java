@@ -94,7 +94,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         final ConfigField configuredProject = EndpointTableSelectField.createSearchable(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS, this::validateConfiguredProject)
                                                   .addColumn(new TableSelectColumn("name", "Project Name", true, true))
                                                   .addColumn(new TableSelectColumn("description", "Project Description", false, false))
-                                                  .addDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+                                                  .addRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
 
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();

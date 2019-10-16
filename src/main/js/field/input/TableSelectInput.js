@@ -170,11 +170,11 @@ class TableSelectInput extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, currentConfig, endpoint, dataFields
+            fieldKey, csrfToken, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
 
-        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(dataFields, currentConfig.context, currentConfig.descriptorName);
-        dataFields.forEach((field) => {
+        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(requestedDataFieldKeys, currentConfig.context, currentConfig.descriptorName);
+        requestedDataFieldKeys.forEach((field) => {
             const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
             newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
         });
@@ -371,11 +371,11 @@ TableSelectInput.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
     columns: PropTypes.array.isRequired,
-    dataFields: PropTypes.array
+    requestedDataFieldKeys: PropTypes.array
 };
 
 TableSelectInput.defaultProps = {
-    dataFields: []
+    requestedDataFieldKeys: []
 };
 
 const mapStateToProps = state => ({

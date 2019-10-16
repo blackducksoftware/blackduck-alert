@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.action.UploadEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public class UploadFileButtonField extends CustomButtonField {
+public class UploadFileButtonField extends EndpointField {
     private final List<String> accept;
     private final String capture;
     private final Boolean multiple;

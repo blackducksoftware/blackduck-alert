@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public class EndpointButtonField extends CustomButtonField {
+public class EndpointButtonField extends EndpointField {
     private final Boolean successBox;
     private final List<ConfigField> subFields;
 

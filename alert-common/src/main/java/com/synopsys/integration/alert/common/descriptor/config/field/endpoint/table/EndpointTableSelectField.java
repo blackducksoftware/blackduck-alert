@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomButtonField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public class EndpointTableSelectField extends CustomButtonField {
+public class EndpointTableSelectField extends EndpointField {
     private boolean paged;
     private boolean searchable;
     private List<TableSelectColumn> columns;

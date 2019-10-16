@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointSelectField extends SelectConfigField {
-    private String endpoint;
+    private String url;
     private Set<String> returnedDataFieldKeys;
 
     public static EndpointSelectField create(final String key, final String label, final String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
@@ -48,12 +48,12 @@ public class EndpointSelectField extends SelectConfigField {
 
     public EndpointSelectField(final String key, final String label, final String description, final boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         super(key, label, description, FieldType.ENDPOINT_SELECT, required, searchable, multiSelect, removeSelected, clearable);
-        this.endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        this.url = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
         this.returnedDataFieldKeys = new HashSet<>();
     }
 
-    public String getEndpoint() {
-        return endpoint;
+    public String getUrl() {
+        return url;
     }
 
     public Set<String> getReturnedDataFieldKeys() {

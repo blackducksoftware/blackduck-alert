@@ -41,10 +41,10 @@ class EndpointButtonField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint, dataFields
+            fieldKey, csrfToken, onChange, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
-        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(dataFields, currentConfig.context, currentConfig.descriptorName);
-        dataFields.forEach((field) => {
+        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(requestedDataFieldKeys, currentConfig.context, currentConfig.descriptorName);
+        requestedDataFieldKeys.forEach((field) => {
             const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
             newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
         });
@@ -155,19 +155,19 @@ EndpointButtonField.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     fields: PropTypes.array,
-    dataFields: PropTypes.array,
+    requestedDataFieldKeys: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
-    statusMessage: PropTypes.string
+    statusMessage: PropTypes.string,
 };
 
 EndpointButtonField.defaultProps = {
     value: false,
     fields: [],
-    dataFields: [],
+    requestedDataFieldKeys: [],
     name: '',
     errorValue: null,
     readOnly: false,

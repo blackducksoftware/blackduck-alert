@@ -28,32 +28,32 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public abstract class CustomButtonField extends ConfigField {
+public abstract class EndpointField extends ConfigField {
     private String buttonLabel;
-    private String endpoint;
-    private Set<String> returnedDataFieldKeys;
+    private String url;
+    private Set<String> requestedDataFieldKeys;
 
-    public CustomButtonField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String buttonLabel, final String endpoint) {
+    public EndpointField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String buttonLabel, final String url) {
         super(key, label, description, type, required, sensitive);
         this.buttonLabel = buttonLabel;
-        this.endpoint = endpoint;
-        this.returnedDataFieldKeys = new HashSet<>();
+        this.url = url;
+        this.requestedDataFieldKeys = new HashSet<>();
     }
 
     public String getButtonLabel() {
         return buttonLabel;
     }
 
-    public String getEndpoint() {
-        return endpoint;
+    public String getUrl() {
+        return url;
     }
 
-    public Set<String> getReturnedDataFieldKeys() {
-        return returnedDataFieldKeys;
+    public Set<String> getRequestedDataFieldKeys() {
+        return requestedDataFieldKeys;
     }
 
-    public CustomButtonField addDataFieldKey(String key) {
-        returnedDataFieldKeys.add(key);
+    public EndpointField addRequestedDataFieldKey(String key) {
+        requestedDataFieldKeys.add(key);
         return this;
     }
 
