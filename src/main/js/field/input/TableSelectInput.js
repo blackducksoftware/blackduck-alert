@@ -9,6 +9,7 @@ import GeneralButton from 'field/input/GeneralButton';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
+import * as FieldModelUtilities from "../../util/fieldModelUtilities";
 
 const { MultiValue, ValueContainer } = components;
 
@@ -169,10 +170,15 @@ class TableSelectInput extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, currentConfig, endpoint
+            fieldKey, csrfToken, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
 
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
+        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(requestedDataFieldKeys, currentConfig.context, currentConfig.descriptorName);
+        requestedDataFieldKeys.forEach((field) => {
+            const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
+            newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
+        });
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         return request.then((response) => {
             this.setState({
                 progress: false
@@ -364,10 +370,13 @@ TableSelectInput.propTypes = {
     endpoint: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
-    columns: PropTypes.array.isRequired
+    columns: PropTypes.array.isRequired,
+    requestedDataFieldKeys: PropTypes.array
 };
 
-TableSelectInput.defaultProps = {};
+TableSelectInput.defaultProps = {
+    requestedDataFieldKeys: []
+};
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken

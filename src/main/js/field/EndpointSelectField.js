@@ -35,10 +35,15 @@ class EndpointSelectField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, currentConfig, endpoint
+            fieldKey, csrfToken, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
 
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, currentConfig);
+        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(requestedDataFieldKeys, currentConfig.context, currentConfig.descriptorName);
+        requestedDataFieldKeys.forEach((field) => {
+            const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
+            newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
+        });
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
@@ -76,11 +81,13 @@ EndpointSelectField.propTypes = {
     currentConfig: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     endpoint: PropTypes.string.isRequired,
-    fieldKey: PropTypes.string.isRequired
+    fieldKey: PropTypes.string.isRequired,
+    requestedDataFieldKeys: PropTypes.array
 };
 
 EndpointSelectField.defaultProps = {
     currentConfig: {},
+    requestedDataFieldKeys: []
 };
 
 const mapStateToProps = state => ({
