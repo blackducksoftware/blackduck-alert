@@ -28,10 +28,10 @@ import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
-public abstract class ButtonEndpointResponse extends EndpointResponse<String> {
+public abstract class ButtonCustomEndpoint extends CustomEndpoint<String> {
     private ResponseFactory responseFactory;
 
-    public ButtonEndpointResponse(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory) throws AlertException {
+    public ButtonCustomEndpoint(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory) throws AlertException {
         super(fieldKey, customEndpointManager);
         this.responseFactory = responseFactory;
     }

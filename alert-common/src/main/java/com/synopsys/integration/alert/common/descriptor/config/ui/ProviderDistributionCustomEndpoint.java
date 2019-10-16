@@ -33,14 +33,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectEndpointResponse;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectCustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
-public class ProviderDistributionCustomEndpoint extends TableSelectEndpointResponse {
+public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoint {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
     private ProviderDataAccessor providerDataAccessor;

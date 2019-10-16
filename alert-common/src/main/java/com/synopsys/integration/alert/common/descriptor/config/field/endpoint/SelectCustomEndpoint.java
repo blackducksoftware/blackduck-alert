@@ -32,11 +32,11 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
-public abstract class SelectEndpointResponse extends EndpointResponse<List<LabelValueSelectOption>> {
+public abstract class SelectCustomEndpoint extends CustomEndpoint<List<LabelValueSelectOption>> {
     private ResponseFactory responseFactory;
     private Gson gson;
 
-    public SelectEndpointResponse(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+    public SelectCustomEndpoint(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
         super(fieldKey, customEndpointManager);
         this.responseFactory = responseFactory;
         this.gson = gson;

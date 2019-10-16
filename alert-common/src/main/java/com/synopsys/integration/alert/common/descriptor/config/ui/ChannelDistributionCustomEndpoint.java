@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectEndpointResponse;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -53,7 +53,7 @@ public class ChannelDistributionCustomEndpoint {
         new ChannelFunction(customEndpointManager, responseFactory, gson);
     }
 
-    class ProvidersFunction extends SelectEndpointResponse {
+    class ProvidersFunction extends SelectCustomEndpoint {
         protected ProvidersFunction(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
             super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, customEndpointManager, responseFactory, gson);
         }
@@ -69,7 +69,7 @@ public class ChannelDistributionCustomEndpoint {
         }
     }
 
-    class ChannelFunction extends SelectEndpointResponse {
+    class ChannelFunction extends SelectCustomEndpoint {
         protected ChannelFunction(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
             super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager, responseFactory, gson);
         }
