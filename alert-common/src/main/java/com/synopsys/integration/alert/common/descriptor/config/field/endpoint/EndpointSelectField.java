@@ -22,12 +22,17 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointSelectField extends SelectConfigField {
-    private String endpoint;
+    private String url;
+    private Set<String> returnedDataFieldKeys;
 
     public static EndpointSelectField create(final String key, final String label, final String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         return new EndpointSelectField(key, label, description, false, searchable, multiSelect, removeSelected, clearable);
@@ -43,10 +48,20 @@ public class EndpointSelectField extends SelectConfigField {
 
     public EndpointSelectField(final String key, final String label, final String description, final boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         super(key, label, description, FieldType.ENDPOINT_SELECT, required, searchable, multiSelect, removeSelected, clearable);
-        this.endpoint = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        this.url = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        this.returnedDataFieldKeys = new HashSet<>();
     }
 
-    public String getEndpoint() {
-        return endpoint;
+    public String getUrl() {
+        return url;
+    }
+
+    public Set<String> getReturnedDataFieldKeys() {
+        return returnedDataFieldKeys;
+    }
+
+    public ConfigField addDataKey(String key) {
+        returnedDataFieldKeys.add(key);
+        return this;
     }
 }

@@ -67,7 +67,7 @@ function buildSelectInput(items, field) {
 
 function buildEndpointSelectInput(items, field) {
     const {
-        searchable, multiSelect, readOnly, endpoint, key, removeSelected, clearable
+        searchable, multiSelect, readOnly, url, key, removeSelected, clearable, requestedDataFieldKeys
     } = field;
 
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -82,7 +82,8 @@ function buildEndpointSelectInput(items, field) {
         clearable: isClearable
     });
     return <EndpointSelectField
-        endpoint={endpoint}
+        requestedDataFieldKeys={requestedDataFieldKeys}
+        endpoint={url}
         fieldKey={key}
         {...items}
     />;
@@ -148,7 +149,7 @@ function buildCounterField(items, field) {
 function buildEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, endpoint, successBox, subFields, key
+        buttonLabel, url, successBox, subFields, key, requestedDataFieldKeys
     } = field;
     const checkedValue = convertStringToBoolean(value);
     const { readOnly } = field;
@@ -160,8 +161,9 @@ function buildEndpointField(items, field) {
     });
     return (<EndpointButtonField
         fields={subFields}
+        requestedDataFieldKeys={requestedDataFieldKeys}
         buttonLabel={buttonLabel}
-        endpoint={endpoint}
+        endpoint={url}
         successBox={successBox}
         fieldKey={key}
         {...items}
@@ -170,7 +172,7 @@ function buildEndpointField(items, field) {
 
 function buildTableSelectInput(items, field) {
     const {
-        endpoint, key, columns, paged, searchable
+        url, key, columns, paged, searchable, requestedDataFieldKeys
     } = field;
     const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -180,13 +182,12 @@ function buildTableSelectInput(items, field) {
         searchable
     });
 
-    return <TableSelectInput endpoint={endpoint} fieldKey={key} columns={columns} {...items} />
+    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requestedDataFieldKeys={requestedDataFieldKeys} {...items} />
 }
 
 function buildUploadFileButtonField(items, field) {
-    const { value } = items;
     const {
-        buttonLabel, endpoint, successBox, subFields, key
+        buttonLabel, url, successBox, subFields, key
     } = field;
     const { readOnly, accept, multiple } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -197,7 +198,7 @@ function buildUploadFileButtonField(items, field) {
     return (<UploadFileButtonField
         fields={subFields}
         buttonLabel={buttonLabel}
-        endpoint={endpoint}
+        endpoint={url}
         successBox={successBox}
         fieldKey={key}
         accept={accept}

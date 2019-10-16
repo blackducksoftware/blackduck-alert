@@ -51,7 +51,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
 
         List<String> additionalComments = new ArrayList<>();
         String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
-        description.append(String.join("", additionalDescriptionInfo));
+        description.append(additionalDescriptionInfo);
         return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
