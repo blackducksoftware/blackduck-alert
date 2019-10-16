@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.model;
+package com.synopsys.integration.alert.common.channel.model;
 
 import java.util.Collection;
 
@@ -50,4 +50,5 @@ public class IssueContentModel {
     public Collection<String> getAdditionalComments() {
         return additionalComments;
     }
+
 }
