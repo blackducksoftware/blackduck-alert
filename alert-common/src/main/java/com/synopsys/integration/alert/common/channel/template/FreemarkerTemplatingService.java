@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel;
+package com.synopsys.integration.alert.common.channel.template;
 
 import java.io.File;
 import java.io.IOException;

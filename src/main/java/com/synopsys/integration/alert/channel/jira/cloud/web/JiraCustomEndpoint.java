@@ -46,8 +46,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.JiraAppService;
+import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.rest.request.Response;
 
 @Component
@@ -69,23 +69,23 @@ public class JiraCustomEndpoint {
         customEndpointManager.registerFunction(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, this::installJiraPlugin);
     }
 
-    public ResponseEntity<String> installJiraPlugin(final Map<String, FieldValueModel> fieldValueModels) {
-        final JiraProperties jiraProperties = createJiraProperties(fieldValueModels);
+    public ResponseEntity<String> installJiraPlugin(Map<String, FieldValueModel> fieldValueModels) {
+        JiraProperties jiraProperties = createJiraProperties(fieldValueModels);
         try {
-            final JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            final JiraAppService jiraAppService = jiraServicesCloudFactory.createJiraAppService();
-            final String username = jiraProperties.getUsername();
-            final String accessToken = jiraProperties.getAccessToken();
-            final Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
+            JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+            JiraAppService jiraAppService = jiraServicesCloudFactory.createJiraAppService();
+            String username = jiraProperties.getUsername();
+            String accessToken = jiraProperties.getAccessToken();
+            Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
             if (response.isStatusCodeError()) {
                 return responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
-            final boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
+            boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
                 return responseFactory.createNotFoundResponse("Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
             }
             return responseFactory.createOkResponse("", "Successfully created Alert plugin on Jira Cloud server.");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
             return responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
         } catch (InterruptedException e) {
@@ -95,21 +95,21 @@ public class JiraCustomEndpoint {
         }
     }
 
-    private JiraProperties createJiraProperties(final Map<String, FieldValueModel> fieldValueModels) {
-        final FieldValueModel fieldUrl = fieldValueModels.get(JiraDescriptor.KEY_JIRA_URL);
-        final FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        final FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+    private JiraProperties createJiraProperties(Map<String, FieldValueModel> fieldValueModels) {
+        FieldValueModel fieldUrl = fieldValueModels.get(JiraDescriptor.KEY_JIRA_URL);
+        FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
 
-        final String url = fieldUrl.getValue().orElse("");
-        final String username = fieldUsername.getValue().orElse("");
-        final String accessToken = getAppropriateAccessToken(fieldAccessToken);
+        String url = fieldUrl.getValue().orElse("");
+        String username = fieldUsername.getValue().orElse("");
+        String accessToken = getAppropriateAccessToken(fieldAccessToken);
 
         return new JiraProperties(url, accessToken, username);
     }
 
-    private String getAppropriateAccessToken(final FieldValueModel fieldAccessToken) {
-        final String accessToken = fieldAccessToken.getValue().orElse("");
-        final boolean accessTokenSet = fieldAccessToken.isSet();
+    private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
+        String accessToken = fieldAccessToken.getValue().orElse("");
+        boolean accessTokenSet = fieldAccessToken.isSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             try {
                 return configurationAccessor.getConfigurationByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
@@ -119,7 +119,7 @@ public class JiraCustomEndpoint {
                            .flatMap(ConfigurationFieldModel::getFieldValue)
                            .orElse("");
 
-            } catch (final AlertDatabaseConstraintException e) {
+            } catch (AlertDatabaseConstraintException e) {
                 logger.error("Unable to retrieve existing Jira configuration.");
             }
         }

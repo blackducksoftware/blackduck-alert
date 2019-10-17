@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,27 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.exception;
+package com.synopsys.integration.alert.common.channel.issuetracker;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
+import java.util.Collection;
 
-public class JiraMissingTransitionException extends AlertException {
-    private static final long serialVersionUID = -3205009960464333872L;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 
-    private final String issueKey;
-    private final String transition;
+public class IssueTrackerMessageResult extends MessageResult {
+    private Collection<String> updatedIssueKeys;
 
-    public JiraMissingTransitionException(final String issueKey, final String transition) {
-        this.issueKey = issueKey;
-        this.transition = transition;
+    public IssueTrackerMessageResult(String statusMessage, Collection<String> updatedIssueKeys) {
+        super(statusMessage);
+        this.updatedIssueKeys = updatedIssueKeys;
     }
 
-    public String getIssueKey() {
-        return issueKey;
+    public Collection<String> getUpdatedIssueKeys() {
+        return updatedIssueKeys;
     }
 
-    public String getTransition() {
-        return transition;
+    public void setUpdatedIssueKeys(Collection<String> updatedIssueKeys) {
+        this.updatedIssueKeys = updatedIssueKeys;
     }
 
 }

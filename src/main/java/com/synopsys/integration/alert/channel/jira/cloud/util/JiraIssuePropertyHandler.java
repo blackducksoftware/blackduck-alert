@@ -33,9 +33,9 @@ import com.synopsys.integration.alert.channel.jira.cloud.model.AlertJiraIssuePro
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.response.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyService;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
+import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
+import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 
 public class JiraIssuePropertyHandler {
     private static final String SEARCH_CONJUNCTION = "AND";

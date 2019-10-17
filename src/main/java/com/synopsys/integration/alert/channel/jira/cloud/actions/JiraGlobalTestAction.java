@@ -35,10 +35,10 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
+import com.synopsys.integration.jira.common.cloud.service.JiraAppService;
+import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 
 @Component
 public class JiraGlobalTestAction extends TestAction {
@@ -52,21 +52,21 @@ public class JiraGlobalTestAction extends TestAction {
 
     @Override
     public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
-        final JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
-            final JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            final JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
-            final String username = jiraProperties.getUsername();
-            final boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
+            JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+            JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
+            String username = jiraProperties.getUsername();
+            boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
             if (missingApp) {
                 throw new AlertException("Please configure the Jira Cloud plugin for your server.");
             }
-            final UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
-            final boolean retrievedCurrentUser = userSearchService.findUser(username).stream().map(UserDetailsResponseModel::getEmailAddress).anyMatch(email -> email.equals(username));
+            UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
+            boolean retrievedCurrentUser = userSearchService.findUser(username).stream().map(UserDetailsResponseModel::getEmailAddress).anyMatch(email -> email.equals(username));
             if (!retrievedCurrentUser) {
                 throw new AlertException("User did not match any known users.");
             }
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             throw new AlertException("An error occurred during testing: " + e.getMessage());
         }
         return new MessageResult("Successfully connected to Jira Cloud instance.");

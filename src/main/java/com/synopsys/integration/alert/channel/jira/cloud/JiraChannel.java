@@ -28,25 +28,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator.JiraIssueConfig;
-import com.synopsys.integration.alert.channel.jira.cloud.model.JiraMessageResult;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraMessageParser;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssuePropertyService;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
-import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
+import com.synopsys.integration.jira.common.cloud.service.IssueService;
+import com.synopsys.integration.jira.common.cloud.service.JiraAppService;
+import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
+import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
 @Component
 public class JiraChannel extends DistributionChannel {
@@ -63,7 +63,7 @@ public class JiraChannel extends DistributionChannel {
     }
 
     @Override
-    public JiraMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
+    public IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         MessageContentGroup content = event.getContent();
         JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
@@ -80,7 +80,7 @@ public class JiraChannel extends DistributionChannel {
         IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
 
         JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService);
-        JiraIssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
+        IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
 
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();

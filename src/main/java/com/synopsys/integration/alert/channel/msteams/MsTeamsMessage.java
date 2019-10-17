@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.SetMap;
-import com.synopsys.integration.alert.common.channel.FreemarkerDataModel;
+import com.synopsys.integration.alert.common.channel.template.FreemarkerDataModel;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;

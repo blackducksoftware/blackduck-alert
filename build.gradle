@@ -6,6 +6,8 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
+        // FIXME remove before release
+        mavenLocal()
     }
 
     dependencies {
@@ -81,7 +83,8 @@ dependencies {
     implementation project(':alert-database')
 
     implementation 'com.synopsys.integration:polaris-common:0.12.0'
-    implementation 'com.synopsys.integration:int-jira-common:0.4.0'
+    // FIXME make sure this is updated before release
+    implementation 'com.synopsys.integration:int-jira-common:0.5.0-SNAPSHOT'
 
     // Spring
     implementation 'org.springframework:spring-webmvc'

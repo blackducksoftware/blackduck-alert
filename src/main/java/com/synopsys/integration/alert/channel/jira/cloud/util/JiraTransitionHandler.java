@@ -30,18 +30,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator;
-import com.synopsys.integration.alert.channel.jira.cloud.exception.JiraMissingTransitionException;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.cloud.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.cloud.model.response.TransitionsResponseModel;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
+import com.synopsys.integration.jira.common.cloud.service.IssueService;
+import com.synopsys.integration.jira.common.model.components.IdComponent;
+import com.synopsys.integration.jira.common.model.components.StatusCategory;
+import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
+import com.synopsys.integration.jira.common.model.components.TransitionComponent;
+import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
+import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraTransitionHandler {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
@@ -60,7 +60,7 @@ public class JiraTransitionHandler {
         return StringUtils.equals(expectedStatusCategoryKey, statusCategory.getKey());
     }
 
-    public boolean transitionIssueIfNecessary(String issueKey, JiraIssueConfigValidator.JiraIssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
+    public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
         if (ItemOperation.UPDATE.equals(operation)) {
             logger.debug("No transition required for this issue: {}.", issueKey);
             return false;
@@ -107,11 +107,11 @@ public class JiraTransitionHandler {
             IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
             issueService.transitionIssue(issueRequestModel);
         } else {
-            throw new JiraMissingTransitionException(issueKey, transitionName);
+            throw new IssueMissingTransitionException(issueKey, transitionName);
         }
     }
 
-    private Optional<String> determineTransitionName(ItemOperation operation, JiraIssueConfigValidator.JiraIssueConfig jiraIssueConfig) {
+    private Optional<String> determineTransitionName(ItemOperation operation, IssueConfig jiraIssueConfig) {
         if (!ItemOperation.UPDATE.equals(operation)) {
             if (ItemOperation.DELETE.equals(operation)) {
                 return jiraIssueConfig.getResolveTransition();

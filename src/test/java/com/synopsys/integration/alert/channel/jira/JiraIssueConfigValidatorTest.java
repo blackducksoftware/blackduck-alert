@@ -13,19 +13,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.cloud.model.response.IssueTypeResponseModel;
-import com.synopsys.integration.jira.common.cloud.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
-import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
+import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
+import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
 public class JiraIssueConfigValidatorTest {
 
@@ -36,7 +36,7 @@ public class JiraIssueConfigValidatorTest {
         IssueTypeService issueTypeService = Mockito.mock(IssueTypeService.class);
         JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService);
 
-        final ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
         resolveTransition.setFieldValue(resolveTransitionString);
 
@@ -75,9 +75,9 @@ public class JiraIssueConfigValidatorTest {
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectResponse);
 
         try {
-            final JiraIssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
+            IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
             assertEquals(resolveTransitionString, jiraIssueConfig.getResolveTransition().orElse(""));
-            assertEquals(projectName, jiraIssueConfig.getProjectComponent().getName());
+            assertEquals(projectName, jiraIssueConfig.getProjectName());
             assertEquals(issueCreatorString, jiraIssueConfig.getIssueCreator());
             assertEquals(issueTypeString, jiraIssueConfig.getIssueType());
         } catch (AlertFieldException e) {
@@ -92,7 +92,7 @@ public class JiraIssueConfigValidatorTest {
         IssueTypeService issueTypeService = Mockito.mock(IssueTypeService.class);
         JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService);
 
-        final ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
         resolveTransition.setFieldValue(resolveTransitionString);
 
