@@ -26,24 +26,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class JiraServerChannel extends DistributionChannel {
+public class JiraServerChannel extends IssueTrackerChannel {
     private JiraServerDescriptorKey descriptorKey;
 
     @Autowired
-    public JiraServerChannel(final Gson gson, final AuditUtility auditUtility, final JiraServerDescriptorKey descriptorKey) {
+    public JiraServerChannel(Gson gson, AuditUtility auditUtility, JiraServerDescriptorKey descriptorKey) {
         super(gson, auditUtility);
         this.descriptorKey = descriptorKey;
     }
 
     @Override
-    public MessageResult sendMessage(final DistributionEvent event) throws IntegrationException {
+    public IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         return null;
     }
 
@@ -51,4 +51,5 @@ public class JiraServerChannel extends DistributionChannel {
     public String getDestinationName() {
         return descriptorKey.getUniversalKey();
     }
+
 }

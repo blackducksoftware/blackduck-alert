@@ -55,15 +55,15 @@ public final class MessageSplitter {
         return lineSeparator;
     }
 
-    public final List<String> splitMessages(final Collection<String> messagePieces) {
+    public final List<String> splitMessages(Collection<String> messagePieces) {
         return splitMessages(messagePieces, false);
     }
 
-    public final List<String> splitMessages(final Collection<String> messagePieces, boolean separateChunksByLineSeparator) {
-        final List<String> messageChunks = new ArrayList<>();
+    public final List<String> splitMessages(Collection<String> messagePieces, boolean separateChunksByLineSeparator) {
+        List<String> messageChunks = new ArrayList<>();
 
         StringBuilder chunkBuilder = new StringBuilder();
-        for (final String messagePiece : messagePieces) {
+        for (String messagePiece : messagePieces) {
             if (messagePiece.length() <= getLimit()) {
                 if (messagePiece.length() + chunkBuilder.length() > getLimit()) {
                     chunkBuilder = flushChunks(messageChunks, chunkBuilder);
@@ -84,45 +84,45 @@ public final class MessageSplitter {
         return messageChunks;
     }
 
-    private StringBuilder flushChunks(final List<String> messageChunks, final StringBuilder chunkBuilder) {
+    private StringBuilder flushChunks(List<String> messageChunks, StringBuilder chunkBuilder) {
         messageChunks.add(chunkBuilder.toString());
         return new StringBuilder();
     }
 
-    private List<String> splitMessage(final String message) {
+    private List<String> splitMessage(String message) {
         if (message.length() <= getLimit()) {
             return List.of(message);
         }
 
-        final int splitIndex = getSplitIndex(message);
-        final String preSplit = message.substring(0, splitIndex);
-        final String postSplit = message.substring(splitIndex);
+        int splitIndex = getSplitIndex(message);
+        String preSplit = message.substring(0, splitIndex);
+        String postSplit = message.substring(splitIndex);
 
-        final List<String> messages = new ArrayList<>();
+        List<String> messages = new ArrayList<>();
         messages.add(preSplit);
         messages.addAll(splitMessage(postSplit));
 
         return messages;
     }
 
-    private int getSplitIndex(final String message) {
-        final int initialSplitIndex = getLimit() - 1;
+    private int getSplitIndex(String message) {
+        int initialSplitIndex = getLimit() - 1;
 
-        final String preSplit = message.substring(0, initialSplitIndex);
-        final String postSplit = message.substring(initialSplitIndex);
+        String preSplit = message.substring(0, initialSplitIndex);
+        String postSplit = message.substring(initialSplitIndex);
 
-        final int bracketIndexBefore = preSplit.lastIndexOf(itemDelimiter);
-        final int newLineIndexBefore = preSplit.lastIndexOf(lineSeparator);
-        final int closestBeforeSplitIndex = Math.max(bracketIndexBefore, newLineIndexBefore);
+        int bracketIndexBefore = preSplit.lastIndexOf(itemDelimiter);
+        int newLineIndexBefore = preSplit.lastIndexOf(lineSeparator);
+        int closestBeforeSplitIndex = Math.max(bracketIndexBefore, newLineIndexBefore);
 
-        final int bracketIndexAfter = postSplit.indexOf(itemDelimiter);
-        final int newLineIndexAfter = postSplit.indexOf(lineSeparator);
-        final int closestAfterSplitIndex = initialSplitIndex + Math.max(bracketIndexAfter, newLineIndexAfter);
+        int bracketIndexAfter = postSplit.indexOf(itemDelimiter);
+        int newLineIndexAfter = postSplit.indexOf(lineSeparator);
+        int closestAfterSplitIndex = initialSplitIndex + Math.max(bracketIndexAfter, newLineIndexAfter);
 
-        final int beforeDistance = initialSplitIndex - Math.abs(closestBeforeSplitIndex);
-        final int afterDistance = Math.abs(closestAfterSplitIndex) - initialSplitIndex;
+        int beforeDistance = initialSplitIndex - Math.abs(closestBeforeSplitIndex);
+        int afterDistance = Math.abs(closestAfterSplitIndex) - initialSplitIndex;
 
-        final int closestToSplitIndex;
+        int closestToSplitIndex;
         if (beforeDistance < afterDistance) {
             closestToSplitIndex = closestBeforeSplitIndex;
         } else {

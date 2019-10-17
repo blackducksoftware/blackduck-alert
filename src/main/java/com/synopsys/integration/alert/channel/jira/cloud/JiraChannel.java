@@ -30,9 +30,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraMessageParser;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -49,7 +49,7 @@ import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
 @Component
-public class JiraChannel extends DistributionChannel {
+public class JiraChannel extends IssueTrackerChannel {
     private final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
 
     private final JiraChannelKey jiraChannelKey;

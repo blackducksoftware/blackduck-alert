@@ -20,18 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.common.channel.issuetracker;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import java.util.Optional;
 
-public abstract class ChannelDescriptor extends Descriptor {
-    public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
-    }
+import com.synopsys.integration.exception.IntegrationException;
+
+/**
+ * @param <T> A class that represents a transition.
+ */
+public interface TransitionValidator<T> {
+    boolean doesTransitionToExpectedStatusCategory(T transition, String expectedStatusCategoryKey) throws IntegrationException;
+
+    Optional<T> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException;
 
 }

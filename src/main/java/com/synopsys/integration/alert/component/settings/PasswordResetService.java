@@ -68,20 +68,20 @@ public class PasswordResetService {
     }
 
     public void resetPassword(String username) throws AlertException {
-        final UserModel userModel = userAccessor.getUser(username)
-                                        .orElseThrow(() -> new AlertDatabaseConstraintException("No user exists for the username: " + username));
+        UserModel userModel = userAccessor.getUser(username)
+                                  .orElseThrow(() -> new AlertDatabaseConstraintException("No user exists for the username: " + username));
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertException("No email address configured for user: " + username);
         }
-        final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-                                                   .stream()
-                                                   .findFirst()
-                                                   .orElseThrow(() -> new AlertException("No global email configuration found"));
-        final FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
-        final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
-        final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
-        final String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);
-        final Map<String, Object> templateFields = new HashMap<>();
+        ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+                                             .stream()
+                                             .findFirst()
+                                             .orElseThrow(() -> new AlertException("No global email configuration found"));
+        FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
+        EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+        String alertServerUrl = alertProperties.getServerUrl().orElse(null);
+        String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);
+        Map<String, Object> templateFields = new HashMap<>();
         templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
         templateFields.put("tempPassword", tempPassword);
         templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
@@ -90,17 +90,17 @@ public class PasswordResetService {
 
     private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress, String username, String tempPassword) throws AlertException {
         try {
-            final String alertLogo = alertProperties.getAlertLogo();
+            String alertLogo = alertProperties.getAlertLogo();
 
-            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
+            Map<String, String> contentIdsToFilePaths = new HashMap<>();
+            EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
             emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);
 
-            final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
+            EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
             emailService.sendEmailMessage(passwordResetEmail);
             // Only change the password if there isn't an issue with sending the email
             userAccessor.changeUserPassword(username, tempPassword);
-        } catch (final Exception genericException) {
+        } catch (Exception genericException) {
             throw new AlertException("Problem sending password reset email. " + StringUtils.defaultIfBlank(genericException.getMessage(), ""), genericException);
         }
     }

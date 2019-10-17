@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueMissingTransitionException;
+import com.synopsys.integration.alert.common.channel.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
@@ -43,7 +44,7 @@ import com.synopsys.integration.jira.common.model.components.TransitionComponent
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
-public class JiraTransitionHandler {
+public class JiraTransitionHandler implements TransitionValidator<TransitionComponent> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
 
@@ -54,10 +55,17 @@ public class JiraTransitionHandler {
         this.issueService = issueService;
     }
 
+    @Override
     public boolean doesTransitionToExpectedStatusCategory(TransitionComponent transition, String expectedStatusCategoryKey) {
         StatusDetailsComponent statusDetails = transition.getTo();
         StatusCategory statusCategory = statusDetails.getStatusCategory();
         return StringUtils.equals(expectedStatusCategoryKey, statusCategory.getKey());
+    }
+
+    @Override
+    public Optional<TransitionComponent> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException {
+        TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
+        return transitions.findFirstTransitionByName(transitionName);
     }
 
     public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
@@ -66,7 +74,7 @@ public class JiraTransitionHandler {
             return false;
         }
 
-        final Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
+        Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
         if (transitionName.isPresent()) {
             boolean shouldAttemptTransition = isTransitionRequired(issueKey, operation);
             if (shouldAttemptTransition) {
@@ -79,11 +87,6 @@ public class JiraTransitionHandler {
             logger.debug("No transition name was provided so no transition will be performed for this operation: {}.", operation);
         }
         return false;
-    }
-
-    public Optional<TransitionComponent> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException {
-        TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-        return transitions.findFirstTransitionByName(transitionName);
     }
 
     private boolean isTransitionRequired(String issueKey, ItemOperation operation) throws IntegrationException {

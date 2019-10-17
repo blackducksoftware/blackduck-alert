@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker;
+package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;

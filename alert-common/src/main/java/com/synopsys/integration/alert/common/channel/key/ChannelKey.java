@@ -20,18 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.common.channel.key;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
-public abstract class ChannelDescriptor extends Descriptor {
-    public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
-    }
-
+public abstract class ChannelKey extends DescriptorKey {
 }

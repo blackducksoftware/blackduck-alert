@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageParser;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;

@@ -26,13 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 
 @Component
 public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
 
     @Autowired
-    public JiraServerDistributionTestAction(final JiraServerChannel distributionChannel) {
+    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel) {
         super(distributionChannel);
     }
 }

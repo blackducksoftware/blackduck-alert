@@ -32,22 +32,22 @@ public class MsTeamsChannelTest extends ChannelTest {
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(new TestAlertProperties());
-        final MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
-        final MsTeamsKey msTeamsKey = new MsTeamsKey();
-        final MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser);
-        final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(new TestAlertProperties());
+        MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
+        MsTeamsKey msTeamsKey = new MsTeamsKey();
+        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser);
+        ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, MsTeamsDescriptor.KEY_WEBHOOK, properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent(
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        DistributionEvent event = new DistributionEvent(
             "1L", msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), new BlackDuckProviderKey().getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         msTeamsChannel.sendAuditedMessage(event);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + msTeamsKey.getUniversalKey() + " message!");
+        boolean actual = outputLogger.isLineContainingText("Successfully sent a " + msTeamsKey.getUniversalKey() + " message!");
         assertTrue(actual, "No success message appeared in the logs");
     }
 

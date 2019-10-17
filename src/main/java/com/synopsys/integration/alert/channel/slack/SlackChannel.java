@@ -50,8 +50,8 @@ public class SlackChannel extends NamedDistributionChannel implements AutoAction
     }
 
     @Override
-    public void distributeMessage(final DistributionEvent event) throws IntegrationException {
-        final List<Request> requests = slackChannelEventParser.createRequests(event);
+    public void distributeMessage(DistributionEvent event) throws IntegrationException {
+        List<Request> requests = slackChannelEventParser.createRequests(event);
         restChannelUtility.sendMessage(requests, event.getDestination());
     }
 

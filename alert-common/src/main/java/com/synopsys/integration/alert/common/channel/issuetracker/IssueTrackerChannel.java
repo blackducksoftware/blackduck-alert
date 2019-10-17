@@ -20,9 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel;
+package com.synopsys.integration.alert.common.channel.issuetracker;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class ChannelKey extends DescriptorKey {
+public abstract class IssueTrackerChannel extends DistributionChannel {
+    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility) {
+        super(gson, auditUtility);
+    }
+
+    @Override
+    public abstract IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException;
+
 }
