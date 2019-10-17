@@ -28,13 +28,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -44,40 +44,46 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 @Component
 public class ChannelDistributionCustomEndpoint {
     private DescriptorMap descriptorMap;
-    private ResponseFactory responseFactory;
-    private Gson gson;
 
     @Autowired
     public ChannelDistributionCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap, ResponseFactory responseFactory, Gson gson) throws AlertException {
         this.descriptorMap = descriptorMap;
-        this.responseFactory = responseFactory;
-        this.gson = gson;
 
-        customEndpointManager.registerFunction(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, this::retrieveProviders);
-        customEndpointManager.registerFunction(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, this::retrieveChannels);
+        new ProvidersFunction(customEndpointManager, responseFactory, gson);
+        new ChannelFunction(customEndpointManager, responseFactory, gson);
     }
 
-    private ResponseEntity<String> retrieveProviders(Map<String, FieldValueModel> fieldValues) {
-        final List<LabelValueSelectOption> providerOptions = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
-                                                                 .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
-                                                                 .flatMap(Optional::stream)
-                                                                 .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
-                                                                 .sorted()
-                                                                 .collect(Collectors.toList());
-        String providerOptionsConverted = gson.toJson(providerOptions);
-        return responseFactory.createOkContentResponse(providerOptionsConverted);
+    class ProvidersFunction extends SelectCustomEndpoint {
+        protected ProvidersFunction(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
+            super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, customEndpointManager, responseFactory, gson);
+        }
+
+        @Override
+        protected List<LabelValueSelectOption> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+            return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
+                       .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
+                       .flatMap(Optional::stream)
+                       .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
+                       .sorted()
+                       .collect(Collectors.toList());
+        }
     }
 
-    private ResponseEntity<String> retrieveChannels(Map<String, FieldValueModel> fieldValues) {
-        List<LabelValueSelectOption> channelOptions = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                                                          .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                                                          .flatMap(Optional::stream)
-                                                          .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                                                          .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
-                                                          .sorted()
-                                                          .collect(Collectors.toList());
-        String channelOptionsConverted = gson.toJson(channelOptions);
-        return responseFactory.createOkContentResponse(channelOptionsConverted);
+    class ChannelFunction extends SelectCustomEndpoint {
+        protected ChannelFunction(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
+            super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager, responseFactory, gson);
+        }
+
+        @Override
+        protected List<LabelValueSelectOption> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+            return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
+                       .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
+                       .flatMap(Optional::stream)
+                       .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
+                       .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
+                       .sorted()
+                       .collect(Collectors.toList());
+        }
     }
 
 }
