@@ -23,10 +23,8 @@
 package com.synopsys.integration.alert.channel.jira.cloud.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -64,7 +62,6 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
 
     private final IssueService issueService;
     private final JiraProperties jiraProperties;
-    private final JiraMessageParser jiraMessageParser;
     private final Gson gson;
 
     private final JiraTransitionHandler jiraTransitionHelper;
@@ -74,31 +71,9 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
         super(jiraMessageParser);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
-        this.jiraMessageParser = jiraMessageParser;
         this.gson = gson;
         this.jiraTransitionHelper = new JiraTransitionHandler(issueService);
         this.jiraIssuePropertyHelper = new JiraIssuePropertyHandler(issueSearchService, issuePropertyService);
-    }
-
-    @Override
-    protected Set<IssueResponseModel> updateExistingIssues(List<IssueResponseModel> issuesToUpdate, IssueConfig jiraIssueConfig, String providerName, String category, ItemOperation operation, Set<ComponentItem> componentItems)
-        throws IntegrationException {
-        Set<IssueResponseModel> updatedIssues = new HashSet<>();
-        for (IssueResponseModel issue : issuesToUpdate) {
-            if (jiraIssueConfig.getCommentOnIssues()) {
-                List<String> operationComments = jiraMessageParser.createOperationComment(providerName, category, operation, componentItems);
-                for (String operationComment : operationComments) {
-                    addComment(issue.getKey(), operationComment);
-                }
-                updatedIssues.add(issue);
-            }
-
-            boolean didUpdateIssue = jiraTransitionHelper.transitionIssueIfNecessary(issue.getKey(), jiraIssueConfig, operation);
-            if (didUpdateIssue) {
-                updatedIssues.add(issue);
-            }
-        }
-        return updatedIssues;
     }
 
     @Override
@@ -126,11 +101,22 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     }
 
     @Override
+    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, ItemOperation operation) throws IntegrationException {
+        return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
+    }
+
+    @Override
     protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
         return jiraIssuePropertyHelper
                    .findIssues(projectKey, provider, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
                    .map(IssueSearchResponseModel::getIssues)
                    .orElse(List.of());
+    }
+
+    @Override
+    protected void addComment(String issueKey, String comment) throws IntegrationException {
+        IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
+        issueService.addComment(issueCommentRequestModel);
     }
 
     @Override
@@ -199,11 +185,6 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
         fieldsBuilder.setDescription(contentModel.getDescription());
 
         return fieldsBuilder;
-    }
-
-    private void addComment(String issueKey, String comment) throws IntegrationException {
-        IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
-        issueService.addComment(issueCommentRequestModel);
     }
 
 }

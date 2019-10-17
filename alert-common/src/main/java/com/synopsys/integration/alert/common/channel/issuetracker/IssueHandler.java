@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.exception.IntegrationException;
 
 /**
- * @param <T> A class that represents a single issue issue.
+ * @param <T> A class that represents a single issue.
  */
 public abstract class IssueHandler<T> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -54,10 +54,10 @@ public abstract class IssueHandler<T> {
         this.issueTrackerMessageParser = issueTrackerMessageParser;
     }
 
-    public IssueTrackerMessageResult createOrUpdateIssues(IssueConfig jiraIssueConfig, MessageContentGroup content) throws IntegrationException {
+    public final IssueTrackerMessageResult createOrUpdateIssues(IssueConfig issueConfig, MessageContentGroup content) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         for (ProviderMessageContent messageContent : content.getSubContent()) {
-            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(messageContent, jiraIssueConfig);
+            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(messageContent, issueConfig);
             issueKeys.addAll(issueKeysForMessage);
         }
 
@@ -68,7 +68,7 @@ public abstract class IssueHandler<T> {
     protected Set<String> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
         if (ItemOperation.DELETE == action) {
             List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), providerName, topic, nullableSubTopic, null, null);
-            logger.debug("Attempting to resolve issues in the Jira Cloud project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
+            logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, providerName, topic.getName(), action, Set.of());
             return updatedIssues
                        .stream()
@@ -83,7 +83,7 @@ public abstract class IssueHandler<T> {
     protected Set<String> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
         throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        String jiraProjectName = issueConfig.getProjectName();
+        String projectName = issueConfig.getProjectName();
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
@@ -96,7 +96,7 @@ public abstract class IssueHandler<T> {
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
                 List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
-                logIssueAction(operation, jiraProjectName, providerName, topic, nullableSubTopic, arbitraryItem);
+                logIssueAction(operation, projectName, providerName, topic, nullableSubTopic, arbitraryItem);
                 if (!existingIssues.isEmpty()) {
                     Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, providerName, arbitraryItem.getCategory(), arbitraryItem.getOperation(), componentItems);
                     updatedIssues
@@ -122,19 +122,21 @@ public abstract class IssueHandler<T> {
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s", entry.getKey(), issues));
             }
 
-            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, jiraProjectName, missingTransitions.toString());
+            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", providerName, projectName, missingTransitions.toString());
             throw new AlertException(errorMessage);
         }
         return issueKeys;
     }
 
-    protected abstract T createIssue(IssueConfig jiraIssueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem,
+    protected abstract T createIssue(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem,
         String trackingKey, IssueContentModel contentModel) throws IntegrationException;
 
     protected abstract List<T> retrieveExistingIssues(String projectSearchIdentifier, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
         throws IntegrationException;
 
-    protected abstract Set<T> updateExistingIssues(List<T> issuesToUpdate, IssueConfig jiraIssueConfig, String providerName, String category, ItemOperation operation, Set<ComponentItem> componentItems) throws IntegrationException;
+    protected abstract boolean transitionIssue(T issueModel, IssueConfig issueConfig, ItemOperation operation) throws IntegrationException;
+
+    protected abstract void addComment(String issueKey, String comment) throws IntegrationException;
 
     protected abstract String createAdditionalTrackingKey(ComponentItem componentItem);
 
@@ -142,16 +144,37 @@ public abstract class IssueHandler<T> {
 
     protected abstract String getIssueTrackerUrl();
 
-    private Set<String> createOrUpdateIssuesPerComponent(ProviderMessageContent messageContent, IssueConfig jiraIssueConfig) throws IntegrationException {
+    protected Set<T> updateExistingIssues(List<T> issuesToUpdate, IssueConfig issueConfig, String providerName, String category, ItemOperation operation, Set<ComponentItem> componentItems)
+        throws IntegrationException {
+        Set<T> updatedIssues = new HashSet<>();
+        for (T issue : issuesToUpdate) {
+            String issueKey = getIssueKey(issue);
+            if (issueConfig.getCommentOnIssues()) {
+                List<String> operationComments = issueTrackerMessageParser.createOperationComment(providerName, category, operation, componentItems);
+                for (String operationComment : operationComments) {
+                    addComment(issueKey, operationComment);
+                }
+                updatedIssues.add(issue);
+            }
+
+            boolean didUpdateIssue = transitionIssue(issue, issueConfig, operation);
+            if (didUpdateIssue) {
+                updatedIssues.add(issue);
+            }
+        }
+        return updatedIssues;
+    }
+
+    private Set<String> createOrUpdateIssuesPerComponent(ProviderMessageContent messageContent, IssueConfig issueConfig) throws IntegrationException {
         String providerName = messageContent.getProvider().getValue();
         LinkableItem topic = messageContent.getTopic();
         LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
         Set<String> issueKeys;
         if (messageContent.isTopLevelActionOnly()) {
-            issueKeys = updateIssueByTopLevelAction(jiraIssueConfig, providerName, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
+            issueKeys = updateIssueByTopLevelAction(issueConfig, providerName, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
         } else {
-            issueKeys = createOrUpdateIssuesByComponentGroup(jiraIssueConfig, providerName, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
+            issueKeys = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
         }
         return issueKeys;
     }
@@ -165,11 +188,11 @@ public abstract class IssueHandler<T> {
         return String.format("Successfully created issue at %s. Issue Keys: (%s)", getIssueTrackerUrl(), concatenatedKeys);
     }
 
-    private void logIssueAction(ItemOperation operation, String jiraProjectName, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem) {
-        String jiraProjectVersion = nullableSubTopic != null ? nullableSubTopic.getValue() : "unknown";
+    private void logIssueAction(ItemOperation operation, String issueTrackerProjectName, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem) {
+        String issueTrackerProjectVersion = nullableSubTopic != null ? nullableSubTopic.getValue() : "unknown";
         String arbitraryItemSubComponent = arbitraryItem.getSubComponent().map(LinkableItem::getValue).orElse("unknown");
         logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            operation.name(), jiraProjectName, providerName, topic.getValue(), jiraProjectVersion, arbitraryItem.getCategory(), arbitraryItem.getComponent().getName(), arbitraryItemSubComponent);
+            operation.name(), issueTrackerProjectName, providerName, topic.getValue(), issueTrackerProjectVersion, arbitraryItem.getCategory(), arbitraryItem.getComponent().getName(), arbitraryItemSubComponent);
     }
 
 }
