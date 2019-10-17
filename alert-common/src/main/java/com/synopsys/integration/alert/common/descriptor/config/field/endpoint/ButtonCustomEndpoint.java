@@ -31,18 +31,18 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 public abstract class ButtonCustomEndpoint extends CustomEndpoint<String> {
     private ResponseFactory responseFactory;
 
-    public ButtonCustomEndpoint(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory) throws AlertException {
+    public ButtonCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory) throws AlertException {
         super(fieldKey, customEndpointManager);
         this.responseFactory = responseFactory;
     }
 
     @Override
-    protected ResponseEntity<String> createSuccessResponse(final String response) {
+    protected ResponseEntity<String> createSuccessResponse(String response) {
         return responseFactory.createOkResponse("", response);
     }
 
     @Override
-    protected ResponseEntity<String> createErrorResponse(final Exception e) {
+    protected ResponseEntity<String> createErrorResponse(Exception e) {
         return responseFactory.createInternalServerErrorResponse("", "An unexpected error occurred when performing the action: " + e.getMessage());
     }
 }

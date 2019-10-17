@@ -54,12 +54,12 @@ public class ChannelDistributionCustomEndpoint {
     }
 
     class ProvidersFunction extends SelectCustomEndpoint {
-        protected ProvidersFunction(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+        protected ProvidersFunction(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
             super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, customEndpointManager, responseFactory, gson);
         }
 
         @Override
-        protected List<LabelValueSelectOption> createData(final Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+        protected List<LabelValueSelectOption> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
             return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                        .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                        .flatMap(Optional::stream)
@@ -70,12 +70,12 @@ public class ChannelDistributionCustomEndpoint {
     }
 
     class ChannelFunction extends SelectCustomEndpoint {
-        protected ChannelFunction(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+        protected ChannelFunction(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
             super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager, responseFactory, gson);
         }
 
         @Override
-        protected List<LabelValueSelectOption> createData(final Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+        protected List<LabelValueSelectOption> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
             return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
                        .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
                        .flatMap(Optional::stream)

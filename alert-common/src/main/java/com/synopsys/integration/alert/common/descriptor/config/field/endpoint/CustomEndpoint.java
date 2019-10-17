@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class CustomEndpoint<R> {
 
-    public CustomEndpoint(final String fieldKey, final CustomEndpointManager customEndpointManager) throws AlertException {
+    public CustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         customEndpointManager.registerFunction(fieldKey, this::createResponse);
     }
 

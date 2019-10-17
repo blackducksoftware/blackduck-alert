@@ -47,20 +47,20 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
     private ResponseFactory responseFactory;
 
     @Autowired
-    public ProviderDistributionCustomEndpoint(final CustomEndpointManager customEndpointManager, final ProviderDataAccessor providerDataAccessor, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+    public ProviderDistributionCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor, ResponseFactory responseFactory, Gson gson) throws AlertException {
         super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, customEndpointManager, responseFactory, gson);
         this.providerDataAccessor = providerDataAccessor;
         this.responseFactory = responseFactory;
     }
 
     @Override
-    protected Optional<ResponseEntity<String>> preprocessRequest(final Map<String, FieldValueModel> fieldValueModels) {
-        final FieldValueModel fieldValueModel = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+    protected Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
+        FieldValueModel fieldValueModel = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
         if (fieldValueModel == null) {
             return Optional.of(responseFactory.createBadRequestResponse("", MISSING_PROVIDER_ERROR));
         }
 
-        final String providerName = fieldValueModel.getValue().orElse("");
+        String providerName = fieldValueModel.getValue().orElse("");
         if (StringUtils.isBlank(providerName)) {
             return Optional.of(responseFactory.createBadRequestResponse("", MISSING_PROVIDER_ERROR));
         }
@@ -69,7 +69,7 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
     }
 
     @Override
-    protected List<?> createData(final Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+    protected List<?> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
         String providerName = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).getValue().orElse("");
         return providerDataAccessor.findByProviderName(providerName);
     }

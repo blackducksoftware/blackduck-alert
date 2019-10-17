@@ -36,19 +36,19 @@ public abstract class SelectCustomEndpoint extends CustomEndpoint<List<LabelValu
     private ResponseFactory responseFactory;
     private Gson gson;
 
-    public SelectCustomEndpoint(final String fieldKey, final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final Gson gson) throws AlertException {
+    public SelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
         super(fieldKey, customEndpointManager);
         this.responseFactory = responseFactory;
         this.gson = gson;
     }
 
     @Override
-    protected ResponseEntity<String> createErrorResponse(final Exception e) {
+    protected ResponseEntity<String> createErrorResponse(Exception e) {
         return responseFactory.createInternalServerErrorResponse("", String.format("An internal issue occurred while trying to retrieve your select data: %s", e.getMessage()));
     }
 
     @Override
-    protected ResponseEntity<String> createSuccessResponse(final List<LabelValueSelectOption> response) {
+    protected ResponseEntity<String> createSuccessResponse(List<LabelValueSelectOption> response) {
         String providerOptionsConverted = gson.toJson(response);
         return responseFactory.createOkContentResponse(providerOptionsConverted);
     }
