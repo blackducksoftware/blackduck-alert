@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+
 /**
  * This lets the DescriptorProcessor create the appropriate ChannelDistributionTestAction/ConfigurationAction combination when no customization is needed.
  */

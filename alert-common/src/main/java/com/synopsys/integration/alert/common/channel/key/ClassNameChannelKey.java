@@ -20,9 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel;
+package com.synopsys.integration.alert.common.channel.key;
 
 public class ClassNameChannelKey extends ChannelKey {
+    @Override
     public final String getUniversalKey() {
         return getClass().getSimpleName().toLowerCase();
     }

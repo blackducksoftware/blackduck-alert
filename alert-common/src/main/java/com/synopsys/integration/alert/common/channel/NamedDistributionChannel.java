@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.channel;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -37,7 +38,7 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
     }
 
     @Override
-    public MessageResult sendMessage(final DistributionEvent event) throws IntegrationException {
+    public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         distributeMessage(event);
         String statusMessage = String.format("Successfully sent %s message.", getDestinationName());
         return new MessageResult(statusMessage);
