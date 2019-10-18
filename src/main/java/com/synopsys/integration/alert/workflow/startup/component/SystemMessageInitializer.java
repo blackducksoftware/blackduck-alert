@@ -22,43 +22,28 @@
  */
 package com.synopsys.integration.alert.workflow.startup.component;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.provider.ProviderValidator;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.component.settings.SettingsValidator;
 
 @Component
 @Order(3)
 public class SystemMessageInitializer extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
     private final List<ProviderValidator> providerValidators;
-    private final EncryptionUtility encryptionUtility;
-    private final SystemMessageUtility systemMessageUtility;
-    private final UserAccessor userAccessor;
+    private SettingsValidator settingsValidator;
 
     @Autowired
-    public SystemMessageInitializer(List<ProviderValidator> providerValidators, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility, UserAccessor userAccessor) {
+    public SystemMessageInitializer(List<ProviderValidator> providerValidators, SettingsValidator settingsValidator) {
         this.providerValidators = providerValidators;
-        this.encryptionUtility = encryptionUtility;
-        this.systemMessageUtility = systemMessageUtility;
-        this.userAccessor = userAccessor;
+        this.settingsValidator = settingsValidator;
     }
 
     @Override
@@ -67,86 +52,22 @@ public class SystemMessageInitializer extends StartupComponent {
     }
 
     public boolean validate() {
-        return validate(new HashMap<>());
-    }
-
-    public boolean validate(final Map<String, String> fieldErrors) {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
 
-        final boolean defaultUserSettingsValid = validateDefaultUser(fieldErrors);
-        final boolean encryptionValid = validateEncryptionProperties(fieldErrors);
-        final boolean providersValid = validateProviders();
-        final boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
+        boolean defaultUserSettingsValid = settingsValidator.validateUser().isEmpty();
+        boolean encryptionValid = settingsValidator.validateEncryption().isEmpty();
+        boolean providersValid = validateProviders();
+        boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
-        return valid;
-    }
-
-    public boolean validateDefaultUser(final Map<String, String> fieldErrors) {
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-        final boolean adminUserEmailValid = validateDefaultAdminEmailSet(fieldErrors);
-        final boolean adminUserPasswordValid = validateDefaultAdminPasswordSet(fieldErrors);
-        return adminUserEmailValid && adminUserPasswordValid;
-    }
-
-    public boolean validateDefaultAdminEmailSet(final Map<String, String> fieldErrors) {
-        final Optional<String> emailAddress = userAccessor
-                                                  .getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)
-                                                  .map(UserModel::getEmailAddress)
-                                                  .filter(StringUtils::isNotBlank);
-        final boolean valid = emailAddress.isPresent();
-
-        if (!valid) {
-            final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL;
-            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, errorMessage);
-            systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-        }
-        return valid;
-    }
-
-    public boolean validateDefaultAdminPasswordSet(final Map<String, String> fieldErrors) {
-        final Optional<String> passwordSet = userAccessor
-                                                 .getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)
-                                                 .map(UserModel::getPassword)
-                                                 .filter(StringUtils::isNotBlank);
-        final boolean valid = passwordSet.isPresent();
-        if (!valid) {
-            final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PWD;
-            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, errorMessage);
-            systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-        }
-        return valid;
-    }
-
-    public boolean validateEncryptionProperties(final Map<String, String> fieldErrors) {
-        final boolean valid;
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-        if (encryptionUtility.isInitialized()) {
-            logger.info("Encryption utilities: Initialized");
-            valid = true;
-        } else {
-            logger.error("Encryption utilities: Not Initialized");
-            if (!encryptionUtility.isPasswordSet()) {
-                final String errorMessage = SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD;
-                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PWD, errorMessage);
-                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-            }
-
-            if (!encryptionUtility.isGlobalSaltSet()) {
-                final String errorMessage = SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT;
-                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, errorMessage);
-                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-            }
-            valid = false;
-        }
         return valid;
     }
 
     public boolean validateProviders() {
         boolean valid = true;
         logger.info("Validating configured providers: ");
-        for (final ProviderValidator providerValidator : providerValidators) {
+        for (ProviderValidator providerValidator : providerValidators) {
             valid = valid && providerValidator.validate();
         }
         return valid;
