@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsUIConfig;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
-import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 
 public class SettingsGlobalApiActionTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
@@ -39,36 +38,36 @@ public class SettingsGlobalApiActionTest {
 
     @Test
     public void testReadConfig() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
+        SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
 
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        final SettingsGlobalApiAction actionApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
-        final FieldModel afterGetAction = actionApi.afterGetAction(fieldModel);
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        SettingsGlobalApiAction actionApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
+        FieldModel afterGetAction = actionApi.afterGetAction(fieldModel);
         assertFieldsMissing(afterGetAction);
         Mockito.when(encryptionUtility.isPasswordSet()).thenReturn(true);
         Mockito.when(encryptionUtility.isGlobalSaltSet()).thenReturn(true);
-        final UserModel userModel = Mockito.mock(UserModel.class);
+        UserModel userModel = Mockito.mock(UserModel.class);
         Mockito.when(userModel.getPassword()).thenReturn("valid_test_value");
         Mockito.when(userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)).thenReturn(Optional.of(userModel));
-        final FieldModel withFields = actionApi.afterGetAction(fieldModel);
+        FieldModel withFields = actionApi.afterGetAction(fieldModel);
         assertFieldsPresent(withFields);
     }
 
     @Test
     public void testUpdateConfig() throws Exception {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
+        SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
+        SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
 
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel handleNewAndUpdatedConfig = actionaApi.beforeUpdateAction(fieldModel);
+        FieldModel handleNewAndUpdatedConfig = actionaApi.beforeUpdateAction(fieldModel);
         assertFieldsMissing(handleNewAndUpdatedConfig);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
@@ -77,49 +76,48 @@ public class SettingsGlobalApiActionTest {
 
     @Test
     public void testSaveConfig() throws Exception {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
+        SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
+        SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
 
-        final FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
+        FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
         assertFieldsMissing(handleNewAndUpdatedConfig);
         Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
         Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
-        Mockito.verify(systemValidator).validate();
     }
 
     @Test
     public void testSaveConfigEncryptionException() throws Exception {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        final SystemMessageInitializer systemValidator = Mockito.mock(SystemMessageInitializer.class);
-        final SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, systemValidator);
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
+        SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
+        SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
 
         Mockito.doThrow(new IllegalArgumentException()).when(encryptionUtility).updatePasswordField(Mockito.anyString());
-        final FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
+        FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
         assertFieldsMissing(handleNewAndUpdatedConfig);
     }
 
     @Test
     public void testValidateRequiredFieldsSet() {
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
@@ -127,14 +125,14 @@ public class SettingsGlobalApiActionTest {
 
     @Test
     public void testValidateFieldsIsSetNoValue() {
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
@@ -146,9 +144,9 @@ public class SettingsGlobalApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
@@ -168,13 +166,13 @@ public class SettingsGlobalApiActionTest {
 
     @Test
     public void testValidateFieldsIsSetFalseHasValue() {
-        final FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("      "), false));
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
@@ -183,7 +181,7 @@ public class SettingsGlobalApiActionTest {
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
     }
 
-    private void assertFieldsMissing(final FieldModel fieldModel) {
+    private void assertFieldsMissing(FieldModel fieldModel) {
         assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
         assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
         assertFalse(fieldModel.getFieldValue(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
@@ -193,7 +191,7 @@ public class SettingsGlobalApiActionTest {
         assertFalse(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(FieldValueModel::isSet).orElse(false));
     }
 
-    private void assertFieldsPresent(final FieldModel fieldModel) {
+    private void assertFieldsPresent(FieldModel fieldModel) {
         assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).isPresent());
         assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).isPresent());
         assertTrue(fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).isPresent());
