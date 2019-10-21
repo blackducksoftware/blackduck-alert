@@ -22,10 +22,19 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
 [ -z "$ALERT_HOSTNAME" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
+if [ -f $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD];
+then
+  truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD)
+fi
+
+if [ -f $dockerSecretDir/ALERT_KEY_STORE_PASSWORD];
+then
+  keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD)
+fi
+
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
-echo "TEST - ALERT_TRUST_STORE_PASSWORD: $ALERT_TRUST_STORE_PASSWORD"
 echo "TEST - Trust Store Password: $truststorePassword"
 echo "TEST - Trust Store Type: $truststoreType"
 
