@@ -22,13 +22,15 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
 [ -z "$ALERT_HOSTNAME" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
-if [ -f $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD];
+if [ -e $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD ];
 then
+  echo "Trust Store secret set using value from secret."
   truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD)
 fi
 
-if [ -f $dockerSecretDir/ALERT_KEY_STORE_PASSWORD];
+if [ -e $dockerSecretDir/ALERT_KEY_STORE_PASSWORD ];
 then
+  echo "Key Store secret set using value from secret."
   keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD)
 fi
 
