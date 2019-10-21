@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,27 +54,37 @@ public class SAMLContext {
     }
 
     public boolean isSAMLEnabled() {
-        final boolean enabled = false;
         try {
-            return isSAMLEnabled(getCurrentConfiguration());
-        } catch (final AlertException ex) {
+            Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
+                                                          .stream()
+                                                          .findFirst();
+            return isSAMLEnabled(samlConfig);
+        } catch (AlertException ex) {
             logger.warn(ex.getMessage());
             logger.debug("cause: ", ex);
         }
 
-        return enabled;
+        return false;
     }
 
-    public boolean isSAMLEnabled(final ConfigurationModel configurationModel) {
+    public boolean isSAMLEnabled(ConfigurationModel configurationModel) {
         return getFieldValueBoolean(configurationModel, AuthenticationDescriptor.KEY_SAML_ENABLED);
     }
 
-    public String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
+    public String getFieldValueOrEmpty(ConfigurationModel configurationModel, String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
     }
 
-    public Boolean getFieldValueBoolean(final ConfigurationModel configurationModel, final String fieldKey) {
+    public Boolean getFieldValueBoolean(ConfigurationModel configurationModel, String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).map(BooleanUtils::toBoolean).orElse(false);
+    }
+
+    private boolean isSAMLEnabled(Optional<ConfigurationModel> configurationModel) {
+        if (configurationModel.isPresent()) {
+            return isSAMLEnabled(configurationModel.get());
+        }
+
+        return false;
     }
 
 }
