@@ -32,36 +32,36 @@ import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointSelectField extends SelectConfigField {
     private String url;
-    private Set<String> returnedDataFieldKeys;
+    private Set<String> requestedDataFieldKeys;
 
-    public static EndpointSelectField create(final String key, final String label, final String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
+    public static EndpointSelectField create(String key, String label, String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         return new EndpointSelectField(key, label, description, false, searchable, multiSelect, removeSelected, clearable);
     }
 
-    public static EndpointSelectField createRequired(final String key, final String label, final String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
+    public static EndpointSelectField createRequired(String key, String label, String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         return new EndpointSelectField(key, label, description, true, searchable, multiSelect, removeSelected, clearable);
     }
 
-    public static EndpointSelectField createRequired(final String key, final String label, final String description) {
+    public static EndpointSelectField createRequired(String key, String label, String description) {
         return new EndpointSelectField(key, label, description, true, true, true, true, true);
     }
 
-    public EndpointSelectField(final String key, final String label, final String description, final boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
+    public EndpointSelectField(String key, String label, String description, boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
         super(key, label, description, FieldType.ENDPOINT_SELECT, required, searchable, multiSelect, removeSelected, clearable);
         this.url = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
-        this.returnedDataFieldKeys = new HashSet<>();
+        this.requestedDataFieldKeys = new HashSet<>();
     }
 
     public String getUrl() {
         return url;
     }
 
-    public Set<String> getReturnedDataFieldKeys() {
-        return returnedDataFieldKeys;
+    public Set<String> getRequestedDataFieldKeys() {
+        return requestedDataFieldKeys;
     }
 
-    public ConfigField addDataKey(String key) {
-        returnedDataFieldKeys.add(key);
+    public ConfigField addRequestedDataKey(String key) {
+        requestedDataFieldKeys.add(key);
         return this;
     }
 }

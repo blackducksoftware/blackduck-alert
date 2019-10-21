@@ -11,8 +11,8 @@ public class PasswordEncoderSample {
 
     @Test
     public void testEncodePassword() {
-        final PasswordEncoder encoder = new BCryptPasswordEncoder(16);
-        final String encodedString = encoder.encode("replace_me_with_a_password_to_get_encoded_value");
+        PasswordEncoder encoder = new BCryptPasswordEncoder(16);
+        String encodedString = encoder.encode("replace_me_with_a_password_to_get_encoded_value");
         logger.debug("Encoded String: {}", encodedString);
     }
 }
