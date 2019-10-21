@@ -37,8 +37,6 @@ fi
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
-echo "TEST - Trust Store Password: $truststorePassword"
-echo "TEST - Trust Store Type: $truststoreType"
 
 createCertificateStoreDirectory() {
   echo "Checking certificate store directory"
