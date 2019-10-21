@@ -24,13 +24,13 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
 if [ -e $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD ];
 then
-  echo "Trust Store secret set using value from secret."
+  echo "Trust Store secret set; using value from secret."
   truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD)
 fi
 
 if [ -e $dockerSecretDir/ALERT_KEY_STORE_PASSWORD ];
 then
-  echo "Key Store secret set using value from secret."
+  echo "Key Store secret set; using value from secret."
   keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD)
 fi
 
