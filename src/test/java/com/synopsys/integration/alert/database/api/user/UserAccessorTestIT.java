@@ -29,44 +29,44 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetUsers() {
-        final String userName_1 = "testUser_1";
-        final String password_1 = "testPassword_1";
-        final String email_1 = "testEmail_1";
+        String userName_1 = "testUser_1";
+        String password_1 = "testPassword_1";
+        String email_1 = "testEmail_1";
         userAccessor.addUser(userName_1, password_1, email_1);
 
-        final String userName_2 = "testUser_2";
-        final String password_2 = "testPassword_2";
-        final String email_2 = "testEmail_2";
+        String userName_2 = "testUser_2";
+        String password_2 = "testPassword_2";
+        String email_2 = "testEmail_2";
         userAccessor.addUser(userName_2, password_2, email_2);
 
         List<UserModel> modelList = userAccessor.getUsers();
 
-        // default admin user will be included
-        assertEquals(3, modelList.size());
+        // default admin, jobmanager, alertuser user will be included
+        assertEquals(5, modelList.size());
         userAccessor.deleteUser(userName_1);
         userAccessor.deleteUser(userName_2);
         modelList = userAccessor.getUsers();
-        assertEquals(1, modelList.size());
+        assertEquals(3, modelList.size());
     }
 
     @Test
     public void testGetUserByUserName() {
-        final Optional<UserModel> user = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
+        Optional<UserModel> user = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
         assertTrue(user.isPresent());
     }
 
     @Test
     public void testGetUserByUserNameNotFound() {
-        final Optional<UserModel> user = userAccessor.getUser("anUnknownUser");
+        Optional<UserModel> user = userAccessor.getUser("anUnknownUser");
         assertFalse(user.isPresent());
     }
 
     @Test
     public void testAddUser() {
-        final String userName = "testUser";
-        final String password = "testPassword";
-        final String email = "testEmail";
-        final UserModel userModel = userAccessor.addUser(userName, password, email);
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = userAccessor.addUser(userName, password, email);
 
         assertNotNull(userModel);
         assertEquals(userName, userModel.getName());
@@ -78,21 +78,21 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testUpdateUser() {
-        final String userName = "testUser";
-        final String password = "testPassword";
-        final String email = "testEmail";
-        final UserModel userModel = userAccessor.addUser(userName, password, email);
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = userAccessor.addUser(userName, password, email);
 
         assertNotNull(userModel);
         assertEquals(userName, userModel.getName());
         assertEquals(email, userModel.getEmailAddress());
         assertTrue(userModel.getRoles().isEmpty());
 
-        final String another_role = "ANOTHER_ROLE";
-        final String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
-        final Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
-        final Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        final UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
+        String another_role = "ANOTHER_ROLE";
+        String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
+        Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
+        Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
+        UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
@@ -105,10 +105,10 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testChangeUserPassword() {
-        final String userName = "testUser";
-        final String password = "testPassword";
-        final String email = "testEmail";
-        final UserModel userModel = userAccessor.addUser(userName, password, email);
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = userAccessor.addUser(userName, password, email);
 
         assertNotNull(userModel);
         assertEquals(userName, userModel.getName());
@@ -116,10 +116,10 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         assertTrue(userModel.getRoles().isEmpty());
 
         assertTrue(userAccessor.changeUserPassword(userModel.getName(), "new_test_password"));
-        final Optional<UserModel> foundModel = userAccessor.getUser(userName);
+        Optional<UserModel> foundModel = userAccessor.getUser(userName);
         assertTrue(foundModel.isPresent());
         if (foundModel.isPresent()) {
-            final UserModel updatedModel = foundModel.get();
+            UserModel updatedModel = foundModel.get();
             assertEquals(userModel.getName(), updatedModel.getName());
             assertNotEquals(userModel.getPassword(), updatedModel.getPassword());
         } else {
@@ -133,10 +133,10 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testChangeUserEmailAddress() {
-        final String userName = "testUser";
-        final String password = "testPassword";
-        final String email = "testEmail";
-        final UserModel userModel = userAccessor.addUser(userName, password, email);
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = userAccessor.addUser(userName, password, email);
 
         assertNotNull(userModel);
         assertEquals(userName, userModel.getName());
@@ -144,10 +144,10 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         assertTrue(userModel.getRoles().isEmpty());
 
         assertTrue(userAccessor.changeUserEmailAddress(userModel.getName(), "new_test_email"));
-        final Optional<UserModel> foundModel = userAccessor.getUser(userName);
+        Optional<UserModel> foundModel = userAccessor.getUser(userName);
         assertTrue(foundModel.isPresent());
         if (foundModel.isPresent()) {
-            final UserModel updatedModel = foundModel.get();
+            UserModel updatedModel = foundModel.get();
             assertEquals(userModel.getName(), updatedModel.getName());
             assertNotEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         } else {
