@@ -49,53 +49,69 @@ public abstract class ChannelMessageParser {
         LinkedList<String> messagePieces = new LinkedList<>();
         String header = getHeader(messageContentGroup);
         if (StringUtils.isNotBlank(header)) {
-            messagePieces.add(header + getLineSeparator());
+            messagePieces.add(header);
         }
         String commonTopicString = getCommonTopic(messageContentGroup);
         messagePieces.add(commonTopicString);
 
         for (ProviderMessageContent messageContent : messageContentGroup.getSubContent()) {
-            messageContent.getSubTopic()
-                .map(item -> createLinkableItemString(item, true) + getLineSeparator())
-                .ifPresent(messagePieces::add);
+            String componentSubTopic = getComponentSubTopic(messageContent);
+            if (StringUtils.isNotBlank(componentSubTopic)) {
+                messagePieces.add(componentSubTopic);
+            }
 
-            if (messageContent.isTopLevelActionOnly()) {
-                messageContent
-                    .getAction()
-                    .map(ItemOperation::name)
-                    .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
-                    .ifPresent(messagePieces::add);
-            } else {
-                SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
-                for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
-                    messagePieces.add(getSectionSeparator() + getLineSeparator());
-                    List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(similarItems);
-                    messagePieces.addAll(componentItemMessagePieces);
-                }
-                messagePieces.add(getLineSeparator());
+            String componentItems = getComponentItems(messageContent);
+            if (StringUtils.isNotBlank(componentItems)) {
+                messagePieces.add(componentItems);
             }
         }
 
         String footer = getFooter(messageContentGroup);
         if (StringUtils.isNotBlank(footer)) {
-            messagePieces.add(footer + getLineSeparator());
+            messagePieces.add(footer);
         }
         return messagePieces;
     }
 
-    protected String getHeader(MessageContentGroup messageContentGroup) {
+    public String getHeader(MessageContentGroup messageContentGroup) {
         String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
         String headerSeparator = createMessageSeparator(messageHeader);
-        return headerSeparator;
+        return headerSeparator + getLineSeparator();
     }
 
-    protected String getCommonTopic(MessageContentGroup messageContentGroup) {
+    public String getCommonTopic(MessageContentGroup messageContentGroup) {
         return createLinkableItemString(messageContentGroup.getCommonTopic(), true) + getLineSeparator();
     }
 
-    protected String getFooter(MessageContentGroup messageContentGroup) {
+    public String getComponentSubTopic(ProviderMessageContent messageContent) {
+        return messageContent.getSubTopic()
+                   .map(item -> createLinkableItemString(item, true) + getLineSeparator())
+                   .orElse("");
+    }
+
+    public String getComponentItems(ProviderMessageContent messageContent) {
+        if (messageContent.isTopLevelActionOnly()) {
+            return messageContent
+                       .getAction()
+                       .map(ItemOperation::name)
+                       .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
+                       .orElse("");
+        } else {
+            List<String> messagePieces = new LinkedList<>();
+            SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
+            for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
+                messagePieces.add(getSectionSeparator() + getLineSeparator());
+                List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(similarItems);
+                messagePieces.addAll(componentItemMessagePieces);
+            }
+            messagePieces.add(getLineSeparator());
+            return String.join("", messagePieces);
+        }
+    }
+
+    public String getFooter(MessageContentGroup messageContentGroup) {
         String footerSeparator = createMessageSeparator("End Content");
-        return footerSeparator;
+        return footerSeparator + getLineSeparator();
     }
 
     protected abstract String encodeString(String txt);
