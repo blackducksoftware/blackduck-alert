@@ -47,14 +47,12 @@ public abstract class ChannelMessageParser {
 
     public List<String> createMessagePieces(MessageContentGroup messageContentGroup) {
         LinkedList<String> messagePieces = new LinkedList<>();
-        String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
-        String headerSeparator = createMessageSeparator(messageHeader);
-        if (StringUtils.isNotBlank(headerSeparator)) {
-            messagePieces.add(headerSeparator + getLineSeparator());
+        String header = getHeader(messageContentGroup);
+        if (StringUtils.isNotBlank(header)) {
+            messagePieces.add(header + getLineSeparator());
         }
-
-        String commonTopicString = createLinkableItemString(messageContentGroup.getCommonTopic(), true);
-        messagePieces.add(commonTopicString + getLineSeparator());
+        String commonTopicString = getCommonTopic(messageContentGroup);
+        messagePieces.add(commonTopicString);
 
         for (ProviderMessageContent messageContent : messageContentGroup.getSubContent()) {
             messageContent.getSubTopic()
@@ -78,11 +76,26 @@ public abstract class ChannelMessageParser {
             }
         }
 
-        String footerSeparator = createMessageSeparator("End Content");
-        if (StringUtils.isNotBlank(footerSeparator)) {
-            messagePieces.add(footerSeparator + getLineSeparator());
+        String footer = getFooter(messageContentGroup);
+        if (StringUtils.isNotBlank(footer)) {
+            messagePieces.add(footer + getLineSeparator());
         }
         return messagePieces;
+    }
+
+    protected String getHeader(MessageContentGroup messageContentGroup) {
+        String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
+        String headerSeparator = createMessageSeparator(messageHeader);
+        return headerSeparator;
+    }
+
+    protected String getCommonTopic(MessageContentGroup messageContentGroup) {
+        return createLinkableItemString(messageContentGroup.getCommonTopic(), true) + getLineSeparator();
+    }
+
+    protected String getFooter(MessageContentGroup messageContentGroup) {
+        String footerSeparator = createMessageSeparator("End Content");
+        return footerSeparator;
     }
 
     protected abstract String encodeString(String txt);
