@@ -47,7 +47,7 @@ public abstract class ChannelMessageParser {
 
     public List<String> createMessagePieces(MessageContentGroup messageContentGroup) {
         LinkedList<String> messagePieces = new LinkedList<>();
-        String header = getHeader(messageContentGroup);
+        String header = createHeader(messageContentGroup);
         if (StringUtils.isNotBlank(header)) {
             messagePieces.add(header);
         }
@@ -60,20 +60,20 @@ public abstract class ChannelMessageParser {
                 messagePieces.add(componentSubTopic);
             }
 
-            String componentItems = getComponentItems(messageContent);
+            String componentItems = createComponentItemMessage(messageContent);
             if (StringUtils.isNotBlank(componentItems)) {
                 messagePieces.add(componentItems);
             }
         }
 
-        String footer = getFooter(messageContentGroup);
+        String footer = createFooter(messageContentGroup);
         if (StringUtils.isNotBlank(footer)) {
             messagePieces.add(footer);
         }
         return messagePieces;
     }
 
-    public String getHeader(MessageContentGroup messageContentGroup) {
+    public String createHeader(MessageContentGroup messageContentGroup) {
         String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
         String headerSeparator = createMessageSeparator(messageHeader);
         return headerSeparator + getLineSeparator();
@@ -89,7 +89,7 @@ public abstract class ChannelMessageParser {
                    .orElse("");
     }
 
-    public String getComponentItems(ProviderMessageContent messageContent) {
+    public String createComponentItemMessage(ProviderMessageContent messageContent) {
         if (messageContent.isTopLevelActionOnly()) {
             return messageContent
                        .getAction()
@@ -109,7 +109,7 @@ public abstract class ChannelMessageParser {
         }
     }
 
-    public String getFooter(MessageContentGroup messageContentGroup) {
+    public String createFooter(MessageContentGroup messageContentGroup) {
         String footerSeparator = createMessageSeparator("End Content");
         return footerSeparator + getLineSeparator();
     }
