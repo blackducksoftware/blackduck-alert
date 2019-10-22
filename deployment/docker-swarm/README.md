@@ -207,6 +207,7 @@ This is an optional step. Confirm if custom certificates or a certificate store 
 #### 4. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
+- Set the required environment variable PUBLIC_HUB_WEBSERVER_HOST. See [Black Duck Web Server Host](#black-duck-web-server-host)
 - Set any other optional environment variables as needed.
 
 ##### 5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
@@ -341,6 +342,30 @@ This section describes how to configure the optional certificates.  Please verif
     ```
     Note: The mode (file permissions) must be specified because the certificate file is copied to a location Alert uses internally. Read/Write permissions are required to copy the file and import certificates into the TrustStore.
     
+    - Create a docker secret containing the password for the trust store.
+        
+        ```docker secret create <STACK_NAME>_ALERT_TRUST_STORE_PASSWORD <FILE_CONTAINING_PASSWORD>```
+        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+        - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
+    
+    - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+    - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+        ```
+            alert:
+                secrets:
+                    - ALERT_TRUST_STORE_PASSWORD
+        ```
+    - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+        ```
+            secrets:
+                ALERT_TRUST_STORE_PASSWORD:
+                  external: true
+                  name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"
+                
+        ```
+        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+    
+    
 ### Insecure Trust of All Certificates
 WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
 Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
@@ -410,6 +435,37 @@ To change the logging level of Alert add the following environment variable to t
     - INFO
     - TRACE
     - WARN
+
+### Black Duck Web Server Host
+The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance. 
+If a PKIX error occurs when configuring the Black Duck provider in Alert, then specifying this environment variable may solve the problem.
+Alert will attempt to import the Black Duck server's certificate into the Trust Store Alert uses. 
+
+- Add PUBLIC_HUB_WEBSERVER_HOST environment variable. (The value must be the hostname only.)
+
+    - Editing overrides file:
+    ```
+    alert:
+        environment:
+            - PUBLIC_HUB_WEBSERVER_HOST=<BLACK_DUCK_HOST_NAME>
+    ```
+    - Replace <BLACK_DUCK_HOST_NAME> with the hostname of the machine where Black Duck is installed.
+- Do not add the protocol a.k.a scheme to the value of the variable.
+    - Good: ```PUBLIC_HUB_WEBSERVER_HOST=blackduck.example.com```
+    - Bad: ```PUBLIC_HUB_WEBSERVER_HOST=https://blackduck.example.com```   
+    
+### Black Duck Web Server Port
+The PUBLIC_HUB_WEBSERVER_PORT environment variable should be specified if Black Duck is running on another port other than the default https (443) port.
+
+- Add PUBLIC_HUB_WEBSERVER_HOST environment variable. (The value must be the hostname only.)
+
+    - Editing overrides file:
+    ```
+    alert:
+        environment:
+            - PUBLIC_HUB_WEBSERVER_PORT=<BLACK_DUCK_PORT>
+    ```
+    - Replace <BLACK_DUCK_PORT> with the hostname of the machine where Black Duck is installed. 
 
 ### Email Channel Environment Variables
 A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties. The JavaMail properties can be found here: 
