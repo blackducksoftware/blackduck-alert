@@ -31,15 +31,23 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 @Component
 public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String KEY_ADD_COMMENTS = "channel.jira.server.add.comments";
+    public static final String KEY_ISSUE_CREATOR = "channel.jira.server.issue.creator";
+    public static final String KEY_JIRA_PROJECT_NAME = "channel.jira.server.project.name";
+    public static final String KEY_ISSUE_TYPE = "channel.jira.server.issue.type";
+    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.server.resolve.workflow";
+    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.server.reopen.workflow";
 
     public static final String KEY_SERVER_URL = "channel.jira.server.url";
+    public static final String KEY_SERVER_USERNAME = "channel.jira.server.username";
+    public static final String KEY_SERVER_PASSWORD = "channel.jira.server.password";
+    public static final String KEY_JIRA_SERVER_CONFIGURE_PLUGIN = "jira.server.configure.plugin";
 
     public static final String JIRA_LABEL = "Jira Server";
     public static final String JIRA_URL = "jira_server";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
     @Autowired
-    public JiraServerDescriptor(final JiraServerDescriptorKey channelKey, final JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
+    public JiraServerDescriptor(JiraServerDescriptorKey channelKey, JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
         super(channelKey, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
     }
 }
