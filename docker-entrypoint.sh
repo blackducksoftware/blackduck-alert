@@ -10,7 +10,10 @@ serverCertName=$APPLICATION_NAME-server
 dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
 keyStoreFile=$APPLICATION_NAME.keystore
 keystoreFilePath=$securityDir/$keyStoreFile
+keystorePassword="${ALERT_KEY_STORE_PASSWORD:-changeit}"
 truststoreFile=$securityDir/$APPLICATION_NAME.truststore
+truststorePassword="${ALERT_TRUST_STORE_PASSWORD:-changeit}"
+truststoreType="${ALERT_TRUST_STORE_TYPE:-JKS}"
 
 publicWebserverHost="${ALERT_HOSTNAME:-localhost}"
 targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
@@ -18,6 +21,18 @@ targetCAPort="${HUB_CFSSL_PORT:-8888}"
 targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
 [ -z "$ALERT_HOSTNAME" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
+
+if [ -e $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD ];
+then
+  echo "Trust Store secret set; using value from secret."
+  truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD)
+fi
+
+if [ -e $dockerSecretDir/ALERT_KEY_STORE_PASSWORD ];
+then
+  echo "Key Store secret set; using value from secret."
+  keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD)
+fi
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
@@ -137,7 +152,7 @@ createTruststore() {
 trustRootCertificate() {
     $certificateManagerDir/certificate-manager.sh trust-java-cert \
                         --store $truststoreFile \
-                        --password changeit \
+                        --password $truststorePassword \
                         --cert $securityDir/root.crt \
                         --certAlias hub-root
 
@@ -154,7 +169,7 @@ trustRootCertificate() {
 trustBlackDuckSystemCertificate() {
   $certificateManagerDir/certificate-manager.sh trust-java-cert \
                         --store $truststoreFile \
-                        --password changeit \
+                        --password $truststorePassword \
                         --cert $securityDir/blackduck_system.crt \
                         --certAlias blackduck_system
 
@@ -177,7 +192,7 @@ trustProxyCertificate() {
     else
         $certificateManagerDir/certificate-manager.sh trust-java-cert \
                                 --store $truststoreFile \
-                                --password changeit \
+                                --password $truststorePassword \
                                 --cert $proxyCertificate \
                                 --certAlias proxycert
         exitCode=$?
@@ -206,7 +221,7 @@ createKeystore() {
     $certificateManagerDir/certificate-manager.sh keystore \
                                              --outputDirectory $securityDir \
                                              --outputFile $keyStoreFile \
-                                             --password changeit \
+                                             --password $keystorePassword \
                                              --keyAlias $APPLICATION_NAME \
                                              --key $certKey \
                                              --cert $certFile
@@ -223,7 +238,7 @@ createKeystore() {
 importBlackDuckSystemCertificateIntoKeystore() {
   $certificateManagerDir/certificate-manager.sh trust-java-cert \
                         --store $keystoreFilePath \
-                        --password changeit \
+                        --password $keystorePassword \
                         --cert $securityDir/blackduck_system.crt \
                         --certAlias blackduck_system
 
@@ -253,22 +268,22 @@ importBlackDuckWebServerCertificate(){
         echo $PUBLIC_HUB_WEBSERVER_PORT
 
         # In case of alert container restart
-        if keytool -list -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST"
+        if keytool -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "$PUBLIC_HUB_WEBSERVER_HOST"
         then
-            keytool -delete -alias "$PUBLIC_HUB_WEBSERVER_HOST" -keystore "$truststoreFile" -storepass changeit
+            keytool -delete -alias "$PUBLIC_HUB_WEBSERVER_HOST" -keystore "$truststoreFile" -storepass $truststorePassword
           echo "Removing the existing BlackDuck certificate after container restart"
         fi
 
         if [ -z "$PUBLIC_HUB_WEBSERVER_PORT"];
         then
-          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
+          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST" -v | keytool -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
           then
             echo "Completed importing BlackDuck Certificate"
           else
             echo "Unable to add the BlackDuck certificate. Please try to import the certificate manually."
           fi
         else
-          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
+          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
           then
             echo "Completed importing BlackDuck certificate"
           else
@@ -280,11 +295,11 @@ importBlackDuckWebServerCertificate(){
 }
 
 importDockerHubServerCertificate(){
-    if keytool -list -keystore "$truststoreFile" -storepass changeit -alias "hub.docker.com"
+    if keytool -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com"
     then
         echo "The Docker Hub certificate is already imported."
     else
-        if keytool -printcert -rfc -sslserver "hub.docker.com" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias "hub.docker.com" -noprompt
+        if keytool -printcert -rfc -sslserver "hub.docker.com" -v | keytool -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com" -noprompt
         then
             echo "Completed importing Docker Hub certificate."
         else

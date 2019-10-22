@@ -13,6 +13,8 @@ This installation method is deprecated and will not be supported after December 
     - [Standalone Upgrade](#standalone-upgrade)
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
 - [Certificates](#certificates)
+    - [Using Custom Certificates](#using-custom-certificates)
+    - [Using Custom Certificate Truststore](#using-custom-certificate-truststore)
 - [Environment Variables](#environment-variables)
     - [Editing the Overrides File](#editing-the-overrides-file)
     - [Environment Variable Overrides](#environment-variable-overrides)
@@ -185,6 +187,7 @@ This section will walk through each step of the installation procedure.
 ##### 4. Manage certificates.
 This is an optional step. Confirm if custom certificates or a certificate store need to be used.
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
+- Set the required environment variable PUBLIC_HUB_WEBSERVER_HOST. See [Black Duck Web Server Host](#black-duck-web-server-host)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
 #### 5. Modify environment variables.
@@ -279,7 +282,16 @@ This section describes how to configure the optional certificates.  Please verif
             ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts```
     - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
     - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed.
-
+    - Find and uncomment the ALERT_TRUST_STORE_PASSWORD environment variable from the docker-compose.local-overrides.yml file.
+    
+    Example:
+    ```
+    alert:
+      environment:
+        - ALERT_TRUST_STORE_PASSWORD=<PASSWORD>
+    ```
+    - Replace <PASSWORD> with the password for the jssecacerts or cacerts that was copied as a secret above.
+    
 ### Insecure Trust of All Certificates
 WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
 Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
@@ -351,7 +363,7 @@ To change the logging level of Alert add the following environment variable to t
     - WARN
 
 ### Black Duck Web Server Host
-The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance 
+The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance. 
 If a PKIX error occurs when configuring the Black Duck provider in Alert, then specifying this environment variable may solve the problem.
 Alert will attempt to import the Black Duck server's certificate into the Trust Store Alert uses. 
 
