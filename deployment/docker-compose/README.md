@@ -362,7 +362,7 @@ To change the logging level of Alert add the following environment variable to t
     - WARN
 
 ### Black Duck Web Server Host
-The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance 
+The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance. 
 If a PKIX error occurs when configuring the Black Duck provider in Alert, then specifying this environment variable may solve the problem.
 Alert will attempt to import the Black Duck server's certificate into the Trust Store Alert uses. 
 
