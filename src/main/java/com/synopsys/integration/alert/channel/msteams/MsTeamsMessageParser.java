@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.channel.msteams;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class MsTeamsMessageParser extends ChannelMessageParser {
@@ -47,5 +49,52 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
     @Override
     protected String getLineSeparator() {
         return "\r\n";
+    }
+
+    @Override
+    protected String getSectionSeparator() {
+        return "";
+    }
+
+    @Override
+    public String createHeader(MessageContentGroup messageContentGroup) {
+        return "{\n"
+                   + "\"@type\": \"MessageCard\",\n"
+                   + "\"@context\": \"https:\\/\\/schema.org\\/extensions\",\n"
+                   + "\"summary\": \"New Content from Alert\",\n"
+                   + "\"themeColor\": \"5A2A82\",\n"
+                   + "\"title\": \"Received message from provider: "
+                   + messageContentGroup.getCommonProvider().getValue()
+                   + ". Regarding "
+                   + messageContentGroup.getCommonTopic().getValue()
+                   + "\",\n"
+                   + "\"sections\": [";
+    }
+
+    @Override
+    public String getCommonTopic(MessageContentGroup messageContentGroup) {
+        return "";
+    }
+
+    @Override
+    public String getComponentSubTopic(ProviderMessageContent messageContent) {
+        return "{\n"
+                   + "    \"startGroup\": true,\n"
+                   + "    \"title\": \""
+                   + super.getComponentSubTopic(messageContent)
+                   + "\",";
+    }
+
+    @Override
+    public String createComponentItemMessage(ProviderMessageContent messageContent) {
+        return "    \"text\": \""
+                   + super.createComponentItemMessage(messageContent)
+                   + "\"    },";
+    }
+
+    @Override
+    public String createFooter(MessageContentGroup messageContentGroup) {
+        return "]\n"
+                   + "}";
     }
 }

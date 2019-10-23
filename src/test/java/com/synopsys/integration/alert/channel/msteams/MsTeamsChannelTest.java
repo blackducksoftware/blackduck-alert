@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
@@ -34,6 +35,7 @@ public class MsTeamsChannelTest extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(new TestAlertProperties());
         MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
+        MsTeamsMessageParser msTeamsMessageParser = Mockito.mock(MsTeamsMessageParser.class);
         MsTeamsKey msTeamsKey = new MsTeamsKey();
         MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
