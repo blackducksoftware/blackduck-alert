@@ -78,7 +78,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
             PluginManagerService jiraAppService = jiraServicesCloudFactory.createPluginManagerService();
             String username = jiraProperties.getUsername();
             String accessToken = jiraProperties.getAccessToken();
-            Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
+            Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
             if (response.isStatusCodeError()) {
                 return Optional.of(responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode()));
             }

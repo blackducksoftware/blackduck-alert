@@ -79,7 +79,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
             String username = jiraProperties.getUsername();
             String password = jiraProperties.getPassword();
-            Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, password);
+            Response response = jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
             if (response.isStatusCodeError()) {
                 return Optional.of(responseFactory.createBadRequestResponse("", "The Jira server responded with error code: " + response.getStatusCode()));
             }
@@ -109,6 +109,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
         FieldValueModel fieldPassword = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_PASSWORD);
         FieldValueModel fieldUsername = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_USERNAME);
 
+        // for jira server the url should be
         String url = fieldUrl.getValue().orElse("");
         String username = fieldUsername.getValue().orElse("");
         String password = getAppropriateAccessToken(fieldPassword);

@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -53,8 +54,12 @@ public class JiraServerProperties {
 
     public JiraServerRestConfig createJiraServerConfig() throws AlertException {
         JiraServerRestConfigBuilder jiraServerConfigBuilder = new JiraServerRestConfigBuilder();
+        String jiraUrl = url;
+        if (!StringUtils.endsWith(url, "/jira")) {
+            jiraUrl = jiraUrl + "/jira";
+        }
 
-        jiraServerConfigBuilder.setUrl(url);
+        jiraServerConfigBuilder.setUrl(jiraUrl);
         jiraServerConfigBuilder.setAuthPassword(password);
         jiraServerConfigBuilder.setAuthUsername(username);
         try {
