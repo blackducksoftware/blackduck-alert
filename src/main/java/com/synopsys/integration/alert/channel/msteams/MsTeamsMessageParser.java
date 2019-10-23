@@ -58,17 +58,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     @Override
     public String createHeader(MessageContentGroup messageContentGroup) {
-        return "{\n"
-                   + "\"@type\": \"MessageCard\",\n"
-                   + "\"@context\": \"https:\\/\\/schema.org\\/extensions\",\n"
-                   + "\"summary\": \"New Content from Alert\",\n"
-                   + "\"themeColor\": \"5A2A82\",\n"
-                   + "\"title\": \"Received message from provider: "
-                   + messageContentGroup.getCommonProvider().getValue()
-                   + ". Regarding "
-                   + messageContentGroup.getCommonTopic().getValue()
-                   + "\",\n"
-                   + "\"sections\": [";
+        return "";
     }
 
     @Override
@@ -94,7 +84,6 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     @Override
     public String createFooter(MessageContentGroup messageContentGroup) {
-        return "]\n"
-                   + "}";
+        return "";
     }
 }

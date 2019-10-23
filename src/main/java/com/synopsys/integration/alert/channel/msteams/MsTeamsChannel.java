@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
@@ -57,10 +58,28 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
         String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
-        String messagePieces = msTeamsMessageParser.createMessage(event.getContent());
+        String messagePieces = createMessageJson(event.getContent());
         Request request = restChannelUtility.createPostMessageRequest(webhook, new HashMap<>(), messagePieces);
 
         restChannelUtility.sendSingleMessage(request, event.getDestination());
+    }
+
+    private String createMessageJson(MessageContentGroup messageContentGroup) {
+        String header = "{\n"
+                            + "\"@type\": \"MessageCard\",\n"
+                            + "\"@context\": \"https:\\/\\/schema.org\\/extensions\",\n"
+                            + "\"summary\": \"New Content from Alert\",\n"
+                            + "\"themeColor\": \"5A2A82\",\n"
+                            + "\"title\": \"Received message from provider: "
+                            + messageContentGroup.getCommonProvider().getValue()
+                            + ". Regarding "
+                            + messageContentGroup.getCommonTopic().getValue()
+                            + "\",\n"
+                            + "\"sections\": [";
+        String messageBody = msTeamsMessageParser.createMessage(messageContentGroup);
+        String footer = "]\n"
+                            + "}";
+        return header + messageBody + footer;
     }
 
 }
