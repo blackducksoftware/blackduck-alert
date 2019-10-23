@@ -42,15 +42,12 @@ import com.synopsys.integration.rest.request.Request;
 @Component
 public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
     private RestChannelUtility restChannelUtility;
-    private MsTeamsEventParser msTeamsEventParser;
     private MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
-    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
-        MsTeamsMessageParser msTeamsMessageParser) {
+    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsMessageParser msTeamsMessageParser) {
         super(msTeamsKey, gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
-        this.msTeamsEventParser = msTeamsEventParser;
         this.msTeamsMessageParser = msTeamsMessageParser;
     }
 
@@ -61,9 +58,6 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
         String messagePieces = msTeamsMessageParser.createMessage(event.getContent());
-        //        MsTeamsMessage msTeamsMessage = msTeamsEventParser.createMessage(event);
-        //        String json = msTeamsEventParser.toJson(msTeamsMessage);
-
         Request request = restChannelUtility.createPostMessageRequest(webhook, new HashMap<>(), messagePieces);
 
         restChannelUtility.sendSingleMessage(request, event.getDestination());

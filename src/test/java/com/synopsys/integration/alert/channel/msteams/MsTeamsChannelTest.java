@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -22,7 +21,6 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
@@ -33,11 +31,9 @@ public class MsTeamsChannelTest extends ChannelTest {
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(new TestAlertProperties());
-        MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
         MsTeamsMessageParser msTeamsMessageParser = Mockito.mock(MsTeamsMessageParser.class);
         MsTeamsKey msTeamsKey = new MsTeamsKey();
-        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
+        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsMessageParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
