@@ -11,6 +11,8 @@ This document describes how to install and upgrade Alert in Docker Swarm.
     - [Standalone Upgrade](#standalone-upgrade)
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
 - [Certificates](#certificates)
+    - [Using Custom Certificates](#using-custom-certificates)
+    - [Using Custom Certificate Truststore](#using-custom-certificate-truststore)
 - [Environment Variables](#environment-variables) 
     - [Editing the Overrides File](#editing-the-overrides-file)
     - [Environment Variable Overrides](#environment-variable-overrides)
@@ -342,6 +344,30 @@ This section describes how to configure the optional certificates.  Please verif
     ```
     Note: The mode (file permissions) must be specified because the certificate file is copied to a location Alert uses internally. Read/Write permissions are required to copy the file and import certificates into the TrustStore.
     
+    - Create a docker secret containing the password for the trust store.
+        
+        ```docker secret create <STACK_NAME>_ALERT_TRUST_STORE_PASSWORD <FILE_CONTAINING_PASSWORD>```
+        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+        - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
+    
+    - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+    - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+        ```
+            alert:
+                secrets:
+                    - ALERT_TRUST_STORE_PASSWORD
+        ```
+    - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+        ```
+            secrets:
+                ALERT_TRUST_STORE_PASSWORD:
+                  external: true
+                  name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"
+                
+        ```
+        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+    
+    
 ### Insecure Trust of All Certificates
 WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
 Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
@@ -413,7 +439,7 @@ To change the logging level of Alert add the following environment variable to t
     - WARN
 
 ### Black Duck Web Server Host
-The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance 
+The PUBLIC_HUB_WEBSERVER_HOST environment variable should be specified when you are installing Alert with Black Duck and the Black Duck instance. 
 If a PKIX error occurs when configuring the Black Duck provider in Alert, then specifying this environment variable may solve the problem.
 Alert will attempt to import the Black Duck server's certificate into the Trust Store Alert uses. 
 
@@ -442,7 +468,7 @@ The PUBLIC_HUB_WEBSERVER_PORT environment variable should be specified if Black 
             - PUBLIC_HUB_WEBSERVER_PORT=<BLACK_DUCK_PORT>
     ```
     - Replace <BLACK_DUCK_PORT> with the hostname of the machine where Black Duck is installed. 
-   
+
 ### Email Channel Environment Variables
 A majority of the Email Channel environment variables that can be set are related to JavaMail configuration properties. The JavaMail properties can be found here: 
 
