@@ -51,39 +51,43 @@ public class DefaultUserAccessor implements UserAccessor {
     private final DefaultAuthorizationUtility authorizationUtility;
 
     @Autowired
-    public DefaultUserAccessor(final UserRepository userRepository, final UserRoleRepository userRoleRepository, final PasswordEncoder defaultPasswordEncoder,
-        final DefaultAuthorizationUtility authorizationUtility) {
+    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder,
+        DefaultAuthorizationUtility authorizationUtility) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
         this.authorizationUtility = authorizationUtility;
     }
 
+    @Override
     public List<UserModel> getUsers() {
-        final List<UserEntity> userList = userRepository.findAll();
+        List<UserEntity> userList = userRepository.findAll();
         return userList.stream().map(this::createModel).collect(Collectors.toList());
     }
 
-    public Optional<UserModel> getUser(final String username) {
+    @Override
+    public Optional<UserModel> getUser(String username) {
         return userRepository.findByUserName(username).map(this::createModel);
     }
 
-    private UserModel createModel(final UserEntity user) {
-        final List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
-        final List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        final Set<UserRoleModel> roles = authorizationUtility.createRoleModels(roleIdsForUser);
+    private UserModel createModel(UserEntity user) {
+        List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
+        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
+        Set<UserRoleModel> roles = authorizationUtility.createRoleModels(roleIdsForUser);
         return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
     }
 
-    public UserModel addOrUpdateUser(final UserModel user) {
+    @Override
+    public UserModel addOrUpdateUser(UserModel user) {
         return addOrUpdateUser(user, false);
     }
 
-    public UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded) {
-        final String password = (passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword()));
-        final UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
+    @Override
+    public UserModel addOrUpdateUser(UserModel user, boolean passwordEncoded) {
+        String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
+        UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
 
-        final Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
+        Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
         Long userId = null;
         if (existingUser.isPresent()) {
             userId = existingUser.get().getId();
@@ -95,44 +99,49 @@ public class DefaultUserAccessor implements UserAccessor {
         return createModel(userRepository.save(userEntity));
     }
 
-    public UserModel addUser(final String userName, final String password, final String emailAddress) {
+    @Override
+    public UserModel addUser(String userName, String password, String emailAddress) {
         return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet()));
     }
 
-    public boolean assignRoles(final String username, final Set<Long> roleIds) {
-        final Optional<UserEntity> entity = userRepository.findByUserName(username);
+    @Override
+    public boolean assignRoles(String username, Set<Long> roleIds) {
+        Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roleIds)));
+            UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roleIds)));
             assigned = model.getName().equals(username) && model.getRoles().size() == roleIds.size();
         }
         return assigned;
     }
 
-    public boolean changeUserPassword(final String username, final String newPassword) {
-        final Optional<UserEntity> entity = userRepository.findByUserName(username);
+    @Override
+    public boolean changeUserPassword(String username, String newPassword) {
+        Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
-            final UserEntity oldEntity = entity.get();
-            final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
+            UserEntity oldEntity = entity.get();
+            UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
             updatedEntity.setId(oldEntity.getId());
             return userRepository.save(updatedEntity) != null;
         }
         return false;
     }
 
-    public boolean changeUserEmailAddress(final String username, final String emailAddress) {
-        final Optional<UserEntity> entity = userRepository.findByUserName(username);
+    @Override
+    public boolean changeUserEmailAddress(String username, String emailAddress) {
+        Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
-            final UserEntity oldEntity = entity.get();
-            final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
+            UserEntity oldEntity = entity.get();
+            UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
             updatedEntity.setId(oldEntity.getId());
             return userRepository.save(updatedEntity) != null;
         }
         return false;
     }
 
-    public void deleteUser(final String userName) {
-        final Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
+    @Override
+    public void deleteUser(String userName) {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
         userEntity.ifPresent(entity -> {
             assignRoles(entity.getUserName(), Collections.emptySet());
             userRepository.delete(entity);

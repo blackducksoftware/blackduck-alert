@@ -36,17 +36,18 @@ public class LoginActions {
     private final AlertAuthenticationProvider authenticationProvider;
 
     @Autowired
-    public LoginActions(final AlertAuthenticationProvider authenticationProvider) {
+    public LoginActions(AlertAuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
 
-    public boolean authenticateUser(final LoginConfig loginConfig) throws BadCredentialsException {
-        final Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
-        final Authentication authentication = authenticationProvider.authenticate(pendingAuthentication);
+    public boolean authenticateUser(LoginConfig loginConfig) throws BadCredentialsException {
+        Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
+        Authentication authentication = authenticationProvider.authenticate(pendingAuthentication);
         return authentication.isAuthenticated() && !authentication.getAuthorities().isEmpty();
     }
 
-    private UsernamePasswordAuthenticationToken createUsernamePasswordAuthToken(final LoginConfig loginConfig) {
+    private UsernamePasswordAuthenticationToken createUsernamePasswordAuthToken(LoginConfig loginConfig) {
         return new UsernamePasswordAuthenticationToken(loginConfig.getBlackDuckUsername(), loginConfig.getBlackDuckPassword());
     }
+
 }
