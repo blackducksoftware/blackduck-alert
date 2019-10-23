@@ -36,12 +36,12 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class JiraServerGlobalUIConfig extends UIConfig {
-    public static final String LABEL_SERVER_ADMIN_USER_NAME = "Admin Email Address";
+    public static final String LABEL_SERVER_ADMIN_USER_NAME = "Admin User Name";
     public static final String LABEL_SERVER_ADMIN_PASSWORD = "Admin Password";
-    public static final String LABEL_SERVER_CONFIGURE_PLUGIN = "Configure Jira Server plugin";
-    public static final String DESCRIPTION_SERVER_ADMIN_USER_NAME = "The email address of the admin used to log into the Jira Cloud server that has generated the API token.";
-    public static final String DESCRIPTION_SERVER_ADMIN_PASSWORD = "The admin API token used to send API requests to the Jira Cloud server.";
-    public static final String DESCRIPTION_SERVER_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira Cloud server.";
+    public static final String LABEL_SERVER_CONFIGURE_PLUGIN = "Configure Jira server plugin";
+    public static final String DESCRIPTION_SERVER_ADMIN_USER_NAME = "The user name of the admin user to log into the Jira server.";
+    public static final String DESCRIPTION_SERVER_ADMIN_PASSWORD = "The admin user's password  used to authenticate to the Jira server.";
+    public static final String DESCRIPTION_SERVER_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira server.";
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
     private static final String LABEL_SERVER_URL = "Server URL";
     private static final String DESCRIPTION_SERVER_URL = "The URL of the Jira server";
