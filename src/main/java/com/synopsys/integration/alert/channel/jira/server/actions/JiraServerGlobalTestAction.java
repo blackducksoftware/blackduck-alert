@@ -22,17 +22,53 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.actions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 @Component
 public class JiraServerGlobalTestAction extends TestAction {
+    public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalTestAction.class);
+    private final Gson gson;
+
+    @Autowired
+    public JiraServerGlobalTestAction(Gson gson) {
+        this.gson = gson;
+    }
+
     @Override
-    public MessageResult testConfig(final String configId, final String destination, final FieldAccessor fieldAccessor) throws IntegrationException {
-        return null;
+    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+        try {
+            JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+            PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
+            String username = jiraProperties.getUsername();
+            boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
+            if (missingApp) {
+                throw new AlertException("Please configure the Jira Cloud plugin for your server.");
+            }
+            UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
+            boolean retrievedCurrentUser = userSearchService.findUserByUsername(username).stream().map(UserDetailsResponseModel::getEmailAddress).anyMatch(email -> email.equals(username));
+            if (!retrievedCurrentUser) {
+                throw new AlertException("User did not match any known users.");
+            }
+        } catch (IntegrationException e) {
+            throw new AlertException("An error occurred during testing: " + e.getMessage());
+        }
+        return new MessageResult("Successfully connected to Jira Cloud instance.");
     }
 }
