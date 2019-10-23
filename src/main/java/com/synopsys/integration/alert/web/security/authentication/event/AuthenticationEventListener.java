@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security.authentication.synchronization;
+package com.synopsys.integration.alert.web.security.authentication.event;
 
 import java.util.Optional;
 

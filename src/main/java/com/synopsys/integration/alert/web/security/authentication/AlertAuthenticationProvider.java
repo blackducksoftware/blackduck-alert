@@ -26,10 +26,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,25 +41,22 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.UserRole;
-import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventUtils;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
-import com.synopsys.integration.alert.web.security.authentication.synchronization.AlertAuthenticationEvent;
 
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final LdapManager ldapManager;
-    private final EventManager eventManager;
+    private final AuthenticationEventUtils authenticationEventUtils;
 
     @Autowired
-    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, EventManager eventManager) {
+    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventUtils authenticationEventUtils) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.ldapManager = ldapManager;
-        this.eventManager = eventManager;
+        this.authenticationEventUtils = authenticationEventUtils;
     }
 
     @Override
@@ -79,7 +73,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         if (authentication.isAuthenticated()) {
-            sendAuthenticationEvent(authentication);
+            authenticationEventUtils.sendAuthenticationEvent(authentication);
         }
         return authenticationToken;
     }
@@ -117,35 +111,9 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return authentication.getAuthorities()
                    .stream()
-                   .map(this::getRoleFromAuthority)
+                   .map(authenticationEventUtils::getRoleFromAuthority)
                    .flatMap(Optional::stream)
                    .anyMatch(allowedRoles::contains);
-    }
-
-    public void sendAuthenticationEvent(Authentication authentication) {
-        UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) authentication;
-        String username = userToken.getName();
-        String emailAddress = null; // FIXME determine how to get an email address
-        Set<UserRoleModel> alertRoles = authentication.getAuthorities()
-                                            .stream()
-                                            .map(this::getRoleFromAuthority)
-                                            .flatMap(Optional::stream)
-                                            .map(UserRole::name)
-                                            .map(UserRoleModel::of)
-                                            .collect(Collectors.toSet());
-
-        UserModel userModel = UserModel.of(username, null, emailAddress, alertRoles);
-        AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
-        eventManager.sendEvent(authEvent);
-    }
-
-    private Optional<UserRole> getRoleFromAuthority(GrantedAuthority grantedAuthority) {
-        String authority = grantedAuthority.getAuthority();
-        if (authority.startsWith(UserModel.ROLE_PREFIX)) {
-            String alertRoleCandidate = StringUtils.substringAfter(authority, UserModel.ROLE_PREFIX);
-            return UserRole.findUserRole(alertRoleCandidate);
-        }
-        return Optional.empty();
     }
 
 }
