@@ -35,10 +35,10 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.JiraAppService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
 public class JiraGlobalTestAction extends TestAction {
@@ -55,7 +55,7 @@ public class JiraGlobalTestAction extends TestAction {
         JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         try {
             JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            JiraAppService jiraAppService = jiraCloudServiceFactory.createJiraAppService();
+            PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
             String username = jiraProperties.getUsername();
             boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
             if (missingApp) {

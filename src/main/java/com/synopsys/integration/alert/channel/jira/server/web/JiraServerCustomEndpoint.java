@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.web;
+package com.synopsys.integration.alert.channel.jira.server.web;
 
 import java.util.Map;
 import java.util.Optional;
@@ -36,8 +36,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannelKey;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCustomEndpoint;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -48,12 +49,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.rest.request.Response;
 
 @Component
-public class JiraCustomEndpoint extends ButtonCustomEndpoint {
+public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
 
     private final JiraChannelKey jiraChannelKey;
@@ -62,8 +63,8 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
     private final Gson gson;
 
     @Autowired
-    public JiraCustomEndpoint(JiraChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
-        super(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
+    public JiraServerCustomEndpoint(JiraChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
@@ -72,23 +73,23 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
 
     @Override
     public Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
-        JiraProperties jiraProperties = createJiraProperties(fieldValueModels);
+        JiraServerProperties jiraProperties = createJiraProperties(fieldValueModels);
         try {
-            JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            PluginManagerService jiraAppService = jiraServicesCloudFactory.createPluginManagerService();
+            JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+            PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
             String username = jiraProperties.getUsername();
-            String accessToken = jiraProperties.getAccessToken();
-            Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
+            String password = jiraProperties.getPassword();
+            Response response = jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
             if (response.isStatusCodeError()) {
-                return Optional.of(responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode()));
+                return Optional.of(responseFactory.createBadRequestResponse("", "The Jira server responded with error code: " + response.getStatusCode()));
             }
-            boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
+            boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server."));
+                return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server."));
             }
         } catch (IntegrationException e) {
-            logger.error("There was an issue connecting to Jira Cloud", e);
-            return Optional.of(responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage()));
+            logger.error("There was an issue connecting to Jira server", e);
+            return Optional.of(responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira server: " + e.getMessage()));
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
@@ -100,19 +101,20 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
 
     @Override
     protected String createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
-        return "Successfully created Alert plugin on Jira Cloud server.";
+        return "Successfully created Alert plugin on Jira server.";
     }
 
-    private JiraProperties createJiraProperties(Map<String, FieldValueModel> fieldValueModels) {
-        FieldValueModel fieldUrl = fieldValueModels.get(JiraDescriptor.KEY_JIRA_URL);
-        FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+    private JiraServerProperties createJiraProperties(Map<String, FieldValueModel> fieldValueModels) {
+        FieldValueModel fieldUrl = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_URL);
+        FieldValueModel fieldPassword = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        FieldValueModel fieldUsername = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_USERNAME);
 
+        // for jira server the url should be
         String url = fieldUrl.getValue().orElse("");
         String username = fieldUsername.getValue().orElse("");
-        String accessToken = getAppropriateAccessToken(fieldAccessToken);
+        String password = getAppropriateAccessToken(fieldPassword);
 
-        return new JiraProperties(url, accessToken, username);
+        return new JiraServerProperties(url, password, username);
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
@@ -123,7 +125,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
                 return configurationAccessor.getConfigurationByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
+                           .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))
                            .flatMap(ConfigurationFieldModel::getFieldValue)
                            .orElse("");
 
@@ -150,5 +152,4 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
 
         return false;
     }
-
 }
