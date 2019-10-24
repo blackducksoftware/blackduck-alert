@@ -121,12 +121,12 @@ public class JiraServerIssueConfigValidator {
             try {
                 boolean isValidJiraEmail = userSearchService.findUserByUsername(issueCreator)
                                                .stream()
-                                               .map(UserDetailsResponseModel::getEmailAddress)
+                                               .map(UserDetailsResponseModel::getName)
                                                .anyMatch(emailAddress -> emailAddress.equals(issueCreator));
                 if (isValidJiraEmail) {
                     return issueCreator;
                 } else {
-                    fieldErrors.put(JiraServerDescriptor.KEY_ISSUE_CREATOR, String.format("The email address '%s' is not associated with any valid Jira users.", issueCreator));
+                    fieldErrors.put(JiraServerDescriptor.KEY_ISSUE_CREATOR, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator));
                 }
             } catch (IntegrationException e) {
                 fieldErrors.put(JiraServerDescriptor.KEY_ISSUE_CREATOR, String.format(CONNECTION_ERROR_FORMAT_STRING, "users"));
