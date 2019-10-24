@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.exception.IntegrationException;
 
 import freemarker.cache.TemplateLoader;
@@ -37,6 +36,8 @@ import freemarker.template.Template;
 
 @Component
 public class MsTeamsEventParser {
+    private static final int MAX_TEXT_LIMIT_REQUEST = 20000;
+
     private FreemarkerTemplatingService freemarkerTemplatingService;
     private Configuration freemarkerConfiguration;
     private Template msTeamsTemplate;
@@ -51,14 +52,6 @@ public class MsTeamsEventParser {
         } catch (IOException e) {
             throw new IntegrationException("Unable to load the MS Teams template - is it on the classpath? (" + e.getMessage() + ")", e);
         }
-    }
-
-    public MsTeamsMessage createMessage(DistributionEvent distributionEvent) {
-        return distributionEvent
-                   .getContent()
-                   .getSubContent()
-                   .stream()
-                   .collect(MsTeamsMessage::new, MsTeamsMessage::addContent, MsTeamsMessage::addAllContent);
     }
 
     public String toJson(MsTeamsMessage msTeamsMessage) throws IntegrationException {

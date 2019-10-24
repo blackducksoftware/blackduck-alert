@@ -49,7 +49,7 @@ public abstract class ChannelMessageParser {
         LinkedList<String> messagePieces = new LinkedList<>();
         String header = createHeader(messageContentGroup);
         if (StringUtils.isNotBlank(header)) {
-            messagePieces.add(header);
+            messagePieces.add(header + getLineSeparator());
         }
         String commonTopicString = getCommonTopic(messageContentGroup);
         messagePieces.add(commonTopicString);
@@ -60,15 +60,13 @@ public abstract class ChannelMessageParser {
                 messagePieces.add(componentSubTopic);
             }
 
-            String componentItems = createComponentItemMessage(messageContent);
-            if (StringUtils.isNotBlank(componentItems)) {
-                messagePieces.add(componentItems);
-            }
+            List<String> componentItems = createComponentItemMessage(messageContent);
+            messagePieces.addAll(componentItems);
         }
 
         String footer = createFooter(messageContentGroup);
         if (StringUtils.isNotBlank(footer)) {
-            messagePieces.add(footer);
+            messagePieces.add(footer + getLineSeparator());
         }
         return messagePieces;
     }
@@ -76,7 +74,7 @@ public abstract class ChannelMessageParser {
     public String createHeader(MessageContentGroup messageContentGroup) {
         String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
         String headerSeparator = createMessageSeparator(messageHeader);
-        return headerSeparator + getLineSeparator();
+        return headerSeparator;
     }
 
     public String getCommonTopic(MessageContentGroup messageContentGroup) {
@@ -89,15 +87,15 @@ public abstract class ChannelMessageParser {
                    .orElse("");
     }
 
-    public String createComponentItemMessage(ProviderMessageContent messageContent) {
+    public List<String> createComponentItemMessage(ProviderMessageContent messageContent) {
+        List<String> messagePieces = new LinkedList<>();
         if (messageContent.isTopLevelActionOnly()) {
-            return messageContent
-                       .getAction()
-                       .map(ItemOperation::name)
-                       .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
-                       .orElse("");
+            messageContent
+                .getAction()
+                .map(ItemOperation::name)
+                .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
+                .ifPresent(messagePieces::add);
         } else {
-            List<String> messagePieces = new LinkedList<>();
             SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
             for (Set<ComponentItem> similarItems : componentItemSetMap.values()) {
                 messagePieces.add(getSectionSeparator() + getLineSeparator());
@@ -105,13 +103,13 @@ public abstract class ChannelMessageParser {
                 messagePieces.addAll(componentItemMessagePieces);
             }
             messagePieces.add(getLineSeparator());
-            return String.join("", messagePieces);
         }
+        return messagePieces;
     }
 
     public String createFooter(MessageContentGroup messageContentGroup) {
         String footerSeparator = createMessageSeparator("End Content");
-        return footerSeparator + getLineSeparator();
+        return footerSeparator;
     }
 
     protected abstract String encodeString(String txt);
