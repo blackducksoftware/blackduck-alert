@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.jira.server.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.server.JiraServerDescriptorKey;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
@@ -37,9 +37,9 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.server.resolve.workflow";
     public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.server.reopen.workflow";
 
-    public static final String KEY_SERVER_URL = "channel.jira.server.url";
-    public static final String KEY_SERVER_USERNAME = "channel.jira.server.username";
-    public static final String KEY_SERVER_PASSWORD = "channel.jira.server.password";
+    public static final String KEY_SERVER_URL = "jira.server.url";
+    public static final String KEY_SERVER_USERNAME = "jira.server.username";
+    public static final String KEY_SERVER_PASSWORD = "jira.server.password";
     public static final String KEY_JIRA_SERVER_CONFIGURE_PLUGIN = "jira.server.configure.plugin";
 
     public static final String JIRA_LABEL = "Jira Server";
@@ -47,7 +47,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
     @Autowired
-    public JiraServerDescriptor(JiraServerDescriptorKey channelKey, JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
+    public JiraServerDescriptor(JiraServerChannelKey channelKey, JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
         super(channelKey, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
     }
 }

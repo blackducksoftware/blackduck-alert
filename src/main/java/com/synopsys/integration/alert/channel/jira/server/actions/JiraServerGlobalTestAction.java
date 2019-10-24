@@ -59,16 +59,16 @@ public class JiraServerGlobalTestAction extends TestAction {
             String username = jiraProperties.getUsername();
             boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
             if (missingApp) {
-                throw new AlertException("Please configure the Jira Cloud plugin for your server.");
+                throw new AlertException("Please configure the Jira server plugin for your server.");
             }
             UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
-            boolean retrievedCurrentUser = userSearchService.findUserByUsername(username).stream().map(UserDetailsResponseModel::getEmailAddress).anyMatch(email -> email.equals(username));
+            boolean retrievedCurrentUser = userSearchService.findUserByUsername(username).stream().map(UserDetailsResponseModel::getName).anyMatch(email -> email.equals(username));
             if (!retrievedCurrentUser) {
                 throw new AlertException("User did not match any known users.");
             }
         } catch (IntegrationException e) {
             throw new AlertException("An error occurred during testing: " + e.getMessage());
         }
-        return new MessageResult("Successfully connected to Jira Cloud instance.");
+        return new MessageResult("Successfully connected to Jira server instance.");
     }
 }

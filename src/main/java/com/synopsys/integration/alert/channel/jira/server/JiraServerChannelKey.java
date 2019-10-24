@@ -20,20 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server.actions;
+package com.synopsys.integration.alert.channel.jira.server;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 @Component
-public class JiraServerConfigurationAction extends ConfigurationAction {
-    @Autowired
-    protected JiraServerConfigurationAction(JiraServerChannelKey descriptorKey, JiraServerDistributionTestAction jiraServerDistributionTestAction, JiraServerGlobalTestAction jiraServerGlobalTestAction) {
-        super(descriptorKey);
-        addDistributionTestAction(jiraServerDistributionTestAction);
-        addGlobalTestAction(jiraServerGlobalTestAction);
+public class JiraServerChannelKey extends ChannelKey {
+    @Override
+    public String getUniversalKey() {
+        return "channel_jira_server";
     }
 }

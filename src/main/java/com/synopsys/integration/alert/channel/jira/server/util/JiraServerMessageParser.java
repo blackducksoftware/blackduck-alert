@@ -20,16 +20,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.channel.jira.server.util;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageParser;
 
 @Component
-public class JiraServerDescriptorKey extends ChannelKey {
+public class JiraServerMessageParser extends IssueTrackerMessageParser {
     @Override
-    public String getUniversalKey() {
-        return "channel_jira_server";
+    protected String encodeString(String txt) {
+        return txt;
     }
+
+    @Override
+    protected String emphasize(String txt) {
+        return String.format("*%s*", txt);
+    }
+
+    @Override
+    protected String createLink(String txt, String url) {
+        return String.format("[%s|%s]", txt, url);
+    }
+
+    @Override
+    protected String getLineSeparator() {
+        return "\n";
+    }
+
+    @Override
+    protected String getSectionSeparator() {
+        return "";
+    }
+
+    @Override
+    protected int getTitleSizeLimit() {
+        return 255;
+    }
+
+    @Override
+    protected int getMessageSizeLimit() {
+        return 30000;
+    }
+
 }

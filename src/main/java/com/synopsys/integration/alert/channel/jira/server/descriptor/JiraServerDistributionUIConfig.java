@@ -27,7 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.server.JiraServerDescriptorKey;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 
 @Component
 public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig {
+    public static final String DEFAULT_ISSUE_TYPE = "Task";
     private static final String LABEL_ADD_COMMENTS = "Add comments";
     private static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     private static final String LABEL_JIRA_PROJECT = "Jira Project";
@@ -49,10 +50,9 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
                                                                               + "Note: This must be in the 'Done' status category.";
     private static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
                                                                            + "Note: This must be in the 'To Do' status category.";
-    private static final String DEFAULT_ISSUE_TYPE = "Task";
 
     @Autowired
-    public JiraServerDistributionUIConfig(JiraServerDescriptorKey channelKey) {
+    public JiraServerDistributionUIConfig(JiraServerChannelKey channelKey) {
         super(channelKey, JiraServerDescriptor.JIRA_LABEL, JiraServerDescriptor.JIRA_URL);
     }
 
