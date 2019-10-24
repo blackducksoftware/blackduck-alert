@@ -36,7 +36,7 @@ public abstract class MessageReceiver<T> implements MessageListener {
     private final Gson gson;
     private final Class<T> eventClass;
 
-    public MessageReceiver(final Gson gson, final Class<T> eventClass) {
+    public MessageReceiver(Gson gson, Class<T> eventClass) {
         this.gson = gson;
         this.eventClass = eventClass;
     }
@@ -44,17 +44,17 @@ public abstract class MessageReceiver<T> implements MessageListener {
     public abstract void handleEvent(T event);
 
     @Override
-    public void onMessage(final Message message) {
+    public void onMessage(Message message) {
         try {
             if (TextMessage.class.isAssignableFrom(message.getClass())) {
-                final String receiverClassName = getClass().getName();
+                String receiverClassName = getClass().getName();
                 logger.info("Received {} event message: {}", receiverClassName, message);
-                final TextMessage textMessage = (TextMessage) message;
-                final T event = gson.fromJson(textMessage.getText(), eventClass);
+                TextMessage textMessage = (TextMessage) message;
+                T event = gson.fromJson(textMessage.getText(), eventClass);
                 logger.info("{} event {}", receiverClassName, event);
                 handleEvent(event);
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }

@@ -27,7 +27,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Component
@@ -51,15 +50,17 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final LdapManager ldapManager;
+    private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
-    public AlertAuthenticationProvider(final DaoAuthenticationProvider alertDatabaseAuthProvider, final LdapManager ldapManager) {
+    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventManager) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.ldapManager = ldapManager;
+        this.authenticationEventManager = authenticationEventManager;
     }
 
     @Override
-    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (!supports(authentication.getClass())) {
             throw new IllegalArgumentException("Only UsernamePasswordAuthenticationToken is supported, " + authentication.getClass() + " was attempted");
         }
@@ -67,33 +68,37 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         if (!authenticationResult.isAuthenticated()) {
             authenticationResult = performDatabaseAuthentication(authentication);
         }
-        final Collection<? extends GrantedAuthority> authorities = isAuthorized(authenticationResult) ? authenticationResult.getAuthorities() : List.of();
-        final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authenticationResult.getPrincipal(), authenticationResult.getCredentials(), authorities);
+        Collection<? extends GrantedAuthority> authorities = isAuthorized(authenticationResult) ? authenticationResult.getAuthorities() : List.of();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authenticationResult.getPrincipal(), authenticationResult.getCredentials(), authorities);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        if (authentication.isAuthenticated()) {
+            authenticationEventManager.sendAuthenticationEvent(authentication);
+        }
         return authenticationToken;
     }
 
     @Override
-    public boolean supports(final Class<?> authentication) {
+    public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    private Authentication performDatabaseAuthentication(final Authentication pendingAuthentication) {
+    private Authentication performDatabaseAuthentication(Authentication pendingAuthentication) {
         logger.info("Attempting database authentication...");
         return alertDatabaseAuthProvider.authenticate(pendingAuthentication);
     }
 
-    private Authentication performLdapAuthentication(final Authentication pendingAuthentication) {
+    private Authentication performLdapAuthentication(Authentication pendingAuthentication) {
         logger.info("Checking ldap based authentication...");
         Authentication result = pendingAuthentication;
         if (ldapManager.isLdapEnabled()) {
             logger.info("LDAP authentication enabled");
             try {
-                final LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
+                LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
                 result = authenticationProvider.authenticate(pendingAuthentication);
-            } catch (final AlertLDAPConfigurationException ex) {
+            } catch (AlertLDAPConfigurationException ex) {
                 logger.error("LDAP Configuration error", ex);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 logger.error("LDAP Authentication error", ex);
             }
         } else {
@@ -102,14 +107,13 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         return result;
     }
 
-    private boolean isAuthorized(final Authentication authentication) {
-        final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
-        return authentication.getAuthorities().stream()
-                   .map(GrantedAuthority::getAuthority)
-                   .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX))
-                   .map(UserRole::findUserRole)
+    private boolean isAuthorized(Authentication authentication) {
+        EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
+        return authentication.getAuthorities()
+                   .stream()
+                   .map(authenticationEventManager::getRoleFromAuthority)
                    .flatMap(Optional::stream)
                    .anyMatch(allowedRoles::contains);
     }
+
 }
