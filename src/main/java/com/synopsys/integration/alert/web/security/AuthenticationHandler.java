@@ -99,7 +99,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventUtils;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
@@ -123,12 +123,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private final ConfigurationAccessor configurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
-    private final AuthenticationEventUtils authenticationEventUtils;
+    private final AuthenticationEventManager authenticationEventUtils;
 
     @Autowired
     AuthenticationHandler(ConfigurationAccessor configurationAccessor, HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, AuthenticationDescriptorKey authenticationDescriptorKey,
-        AuthenticationEventUtils authenticationEventUtils) {
+        AuthenticationEventManager authenticationEventUtils) {
         this.configurationAccessor = configurationAccessor;
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;

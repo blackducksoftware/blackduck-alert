@@ -27,12 +27,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 
-import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventUtils;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
-    private AuthenticationEventUtils authenticationEventUtils;
+    private AuthenticationEventManager authenticationEventUtils;
 
-    public SAMLAuthProvider(AuthenticationEventUtils authenticationEventUtils) {
+    public SAMLAuthProvider(AuthenticationEventManager authenticationEventUtils) {
         this.authenticationEventUtils = authenticationEventUtils;
     }
 

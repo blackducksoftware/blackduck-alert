@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventUtils;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Component
@@ -50,10 +50,10 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final LdapManager ldapManager;
-    private final AuthenticationEventUtils authenticationEventUtils;
+    private final AuthenticationEventManager authenticationEventUtils;
 
     @Autowired
-    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventUtils authenticationEventUtils) {
+    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventUtils) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.ldapManager = ldapManager;
         this.authenticationEventUtils = authenticationEventUtils;

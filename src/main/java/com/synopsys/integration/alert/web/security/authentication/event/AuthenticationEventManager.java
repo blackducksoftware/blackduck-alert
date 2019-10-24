@@ -22,36 +22,72 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.event;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.saml2.core.impl.NameIDImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.saml.SAMLAuthenticationToken;
+import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
-public class AuthenticationEventUtils {
+public class AuthenticationEventManager {
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationEventManager.class);
     private EventManager eventManager;
 
     @Autowired
-    public AuthenticationEventUtils(EventManager eventManager) {
+    public AuthenticationEventManager(EventManager eventManager) {
         this.eventManager = eventManager;
     }
 
     public void sendAuthenticationEvent(Authentication authentication) {
-        UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) authentication;
-        String username = userToken.getName();
-        String emailAddress = null; // FIXME determine how to get an email address
-        Set<UserRoleModel> alertRoles = authentication.getAuthorities()
+        String username;
+        String emailAddress = null;
+        try {
+            if (authentication instanceof SAMLAuthenticationToken) {
+                SAMLAuthenticationToken samlAuthenticationToken = (SAMLAuthenticationToken) authentication;
+                SAMLMessageContext credentials = samlAuthenticationToken.getCredentials();
+                NameIDImpl subjectNameIdentifier = (NameIDImpl) credentials.getSubjectNameIdentifier();
+                username = subjectNameIdentifier.getValue();
+                emailAddress = username;
+            } else {
+                username = authentication.getName();
+            }
+            sendAuthenticationEvent(username, emailAddress, authentication.getAuthorities());
+        } catch (Exception e) {
+            logger.warn("Unable to send authentication event");
+            logger.debug("Authentication event failure", e);
+        }
+    }
+
+    public Optional<UserRole> getRoleFromAuthority(GrantedAuthority grantedAuthority) {
+        String authority = grantedAuthority.getAuthority();
+        if (authority.startsWith(UserModel.ROLE_PREFIX)) {
+            String alertRoleCandidate = StringUtils.substringAfter(authority, UserModel.ROLE_PREFIX);
+            return UserRole.findUserRole(alertRoleCandidate);
+        }
+        return Optional.empty();
+    }
+
+    private void sendAuthenticationEvent(String username, String emailAddress, Collection<? extends GrantedAuthority> authorities) throws AlertException {
+        if (username == null) {
+            throw new AlertException("Unable to send authentication event with null username");
+        }
+        Set<UserRoleModel> alertRoles = authorities
                                             .stream()
                                             .map(this::getRoleFromAuthority)
                                             .flatMap(Optional::stream)
@@ -62,15 +98,6 @@ public class AuthenticationEventUtils {
         UserModel userModel = UserModel.of(username, null, emailAddress, alertRoles);
         AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
         eventManager.sendEvent(authEvent);
-    }
-
-    public Optional<UserRole> getRoleFromAuthority(GrantedAuthority grantedAuthority) {
-        String authority = grantedAuthority.getAuthority();
-        if (authority.startsWith(UserModel.ROLE_PREFIX)) {
-            String alertRoleCandidate = StringUtils.substringAfter(authority, UserModel.ROLE_PREFIX);
-            return UserRole.findUserRole(alertRoleCandidate);
-        }
-        return Optional.empty();
     }
 
 }

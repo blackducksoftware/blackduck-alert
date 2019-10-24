@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
-import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventUtils;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
@@ -124,7 +124,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertLDAPConfigurationException("LDAP CONFIG EXCEPTION"));
         DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
-        AuthenticationEventUtils authenticationEventUtils = Mockito.mock(AuthenticationEventUtils.class);
+        AuthenticationEventManager authenticationEventUtils = Mockito.mock(AuthenticationEventManager.class);
         Mockito.doNothing().when(authenticationEventUtils).sendAuthenticationEvent(Mockito.any());
 
         AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager, authenticationEventUtils);
