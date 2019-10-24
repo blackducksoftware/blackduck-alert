@@ -50,13 +50,13 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final LdapManager ldapManager;
-    private final AuthenticationEventManager authenticationEventUtils;
+    private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
-    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventUtils) {
+    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventManager) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.ldapManager = ldapManager;
-        this.authenticationEventUtils = authenticationEventUtils;
+        this.authenticationEventManager = authenticationEventManager;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         if (authentication.isAuthenticated()) {
-            authenticationEventUtils.sendAuthenticationEvent(authentication);
+            authenticationEventManager.sendAuthenticationEvent(authentication);
         }
         return authenticationToken;
     }
@@ -111,7 +111,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
         return authentication.getAuthorities()
                    .stream()
-                   .map(authenticationEventUtils::getRoleFromAuthority)
+                   .map(authenticationEventManager::getRoleFromAuthority)
                    .flatMap(Optional::stream)
                    .anyMatch(allowedRoles::contains);
     }

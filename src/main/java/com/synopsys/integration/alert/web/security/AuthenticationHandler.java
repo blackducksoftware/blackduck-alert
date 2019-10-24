@@ -123,12 +123,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private final ConfigurationAccessor configurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
-    private final AuthenticationEventManager authenticationEventUtils;
+    private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
     AuthenticationHandler(ConfigurationAccessor configurationAccessor, HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, AuthenticationDescriptorKey authenticationDescriptorKey,
-        AuthenticationEventManager authenticationEventUtils) {
+        AuthenticationEventManager authenticationEventManager) {
         this.configurationAccessor = configurationAccessor;
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
@@ -136,7 +136,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.filePersistenceUtil = filePersistenceUtil;
         this.authoritiesPopulator = authoritiesPopulator;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
-        this.authenticationEventUtils = authenticationEventUtils;
+        this.authenticationEventManager = authenticationEventManager;
     }
 
     @Bean
@@ -300,7 +300,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider(authenticationEventUtils);
+        SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider(authenticationEventManager);
         samlAuthenticationProvider.setForcePrincipalAsString(false);
         return samlAuthenticationProvider;
     }
