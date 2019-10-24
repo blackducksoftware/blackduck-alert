@@ -30,9 +30,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraIssueHandler;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraIssuePropertyHandler;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
@@ -87,9 +87,9 @@ public class JiraServerChannel extends IssueTrackerChannel {
         IssueService issueService = jiraServerServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
         IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
-        JiraTransitionHandler jiraTransitionHandler = new JiraTransitionHandler(issueService);
-        JiraIssuePropertyHandler jiraIssuePropertyHandler = new JiraIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
+        JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
+        JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
+        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
         return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
     }
 

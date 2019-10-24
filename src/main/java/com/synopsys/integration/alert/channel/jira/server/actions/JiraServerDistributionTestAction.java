@@ -31,7 +31,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -63,12 +63,12 @@ public class JiraServerDistributionTestAction extends IssueTrackerDistributionTe
 
     @Override
     protected String getTodoStatusFieldKey() {
-        return JiraTransitionHandler.TODO_STATUS_CATEGORY_KEY;
+        return JiraServerTransitionHandler.TODO_STATUS_CATEGORY_KEY;
     }
 
     @Override
     protected String getDoneStatusFieldKey() {
-        return JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY;
+        return JiraServerTransitionHandler.DONE_STATUS_CATEGORY_KEY;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class JiraServerDistributionTestAction extends IssueTrackerDistributionTe
         JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         IssueService issueService = jiraServerServiceFactory.createIssueService();
-        return new JiraTransitionHandler(issueService);
+        return new JiraServerTransitionHandler(issueService);
     }
 
     @Override

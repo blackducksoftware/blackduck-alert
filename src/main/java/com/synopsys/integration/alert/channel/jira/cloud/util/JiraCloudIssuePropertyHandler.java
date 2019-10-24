@@ -20,23 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server.util;
+package com.synopsys.integration.alert.channel.jira.cloud.util;
 
 import java.util.Optional;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.model.AlertJiraIssueProperties;
-import com.synopsys.integration.alert.channel.jira.common.util.BaseJiraIssuePropertyHandler;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraIssuePropertyHandler;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
-import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 
-public class JiraIssuePropertyHandler extends BaseJiraIssuePropertyHandler<IssueSearchResponseModel> {
+public class JiraCloudIssuePropertyHandler extends JiraIssuePropertyHandler<IssueSearchResponseModel> {
+
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
 
-    public JiraIssuePropertyHandler(IssueSearchService issueSearchService, IssuePropertyService issuePropertyService) {
+    public JiraCloudIssuePropertyHandler(IssueSearchService issueSearchService, IssuePropertyService issuePropertyService) {
         this.issueSearchService = issueSearchService;
         this.issuePropertyService = issuePropertyService;
     }
@@ -50,4 +51,5 @@ public class JiraIssuePropertyHandler extends BaseJiraIssuePropertyHandler<Issue
     public void addPropertiesToIssue(String issueKey, AlertJiraIssueProperties properties) throws IntegrationException {
         issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, properties);
     }
+
 }

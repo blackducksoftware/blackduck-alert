@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.channel.jira.common.util.BaseJiraTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -36,10 +36,10 @@ import com.synopsys.integration.jira.common.model.components.TransitionComponent
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
-public class JiraTransitionHandler extends BaseJiraTransitionHandler {
+public class JiraCloudTransitionHandler extends JiraTransitionHandler {
     private IssueService issueService;
 
-    public JiraTransitionHandler(IssueService issueService) {
+    public JiraCloudTransitionHandler(IssueService issueService) {
         this.issueService = issueService;
     }
 

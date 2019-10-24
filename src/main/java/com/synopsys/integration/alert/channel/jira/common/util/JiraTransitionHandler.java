@@ -16,7 +16,7 @@ import com.synopsys.integration.jira.common.model.components.StatusCategory;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 
-public abstract class BaseJiraTransitionHandler implements TransitionValidator<TransitionComponent> {
+public abstract class JiraTransitionHandler implements TransitionValidator<TransitionComponent> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
     private final Logger logger = LoggerFactory.getLogger(getClass());

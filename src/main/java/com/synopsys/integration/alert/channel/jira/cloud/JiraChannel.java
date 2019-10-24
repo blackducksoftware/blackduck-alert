@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraIssueHandler;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraIssuePropertyHandler;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHandler;
+import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssuePropertyHandler;
+import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
@@ -88,9 +88,9 @@ public class JiraChannel extends IssueTrackerChannel {
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
         IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
-        JiraTransitionHandler jiraTransitionHandler = new JiraTransitionHandler(issueService);
-        JiraIssuePropertyHandler jiraIssuePropertyHandler = new JiraIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraIssueHandler jiraIssueHandler = new JiraIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
+        JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
+        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
+        JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
         return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
     }
 

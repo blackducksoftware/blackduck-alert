@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.common.util.BaseJiraIssueHandler;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -43,15 +43,16 @@ import com.synopsys.integration.jira.common.server.model.IssueSearchIssueCompone
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 
-public class JiraIssueHandler extends BaseJiraIssueHandler {
-    private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
+public class JiraServerIssueHandler extends JiraIssueHandler {
+    private static final Logger logger = LoggerFactory.getLogger(JiraServerIssueHandler.class);
 
     private final IssueService issueService;
     private final JiraServerProperties jiraProperties;
 
-    private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
+    private final JiraServerIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public JiraIssueHandler(IssueService issueService, JiraServerProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler jiraIssuePropertyHandler) {
+    public JiraServerIssueHandler(IssueService issueService, JiraServerProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson, JiraServerTransitionHandler jiraTransitionHandler,
+        JiraServerIssuePropertyHandler jiraIssuePropertyHandler) {
         super(jiraMessageParser, gson, jiraTransitionHandler, jiraIssuePropertyHandler);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;

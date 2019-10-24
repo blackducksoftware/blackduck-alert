@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class BaseJiraIssuePropertyHandler<T> {
+public abstract class JiraIssuePropertyHandler<T> {
     private static final String SEARCH_CONJUNCTION = "AND";
     private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'');
 

@@ -28,16 +28,16 @@ import com.synopsys.integration.jira.common.model.request.builder.IssueRequestMo
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class BaseJiraIssueHandler extends IssueHandler<IssueResponseModel> {
+public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
-    private final BaseJiraTransitionHandler jiraTransitionHelper;
-    private final BaseJiraIssuePropertyHandler jiraIssuePropertyHelper;
+    private final JiraTransitionHandler jiraTransitionHelper;
+    private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public BaseJiraIssueHandler(JiraMessageParser jiraMessageParser, Gson gson, BaseJiraTransitionHandler jiraTransitionHandler, BaseJiraIssuePropertyHandler<?> jiraIssuePropertyHandler) {
+    public JiraIssueHandler(JiraMessageParser jiraMessageParser, Gson gson, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler) {
         super(jiraMessageParser);
         this.gson = gson;
         this.jiraTransitionHelper = jiraTransitionHandler;
@@ -88,11 +88,11 @@ public abstract class BaseJiraIssueHandler extends IssueHandler<IssueResponseMod
         return gson;
     }
 
-    public BaseJiraTransitionHandler getJiraTransitionHelper() {
+    public JiraTransitionHandler getJiraTransitionHelper() {
         return jiraTransitionHelper;
     }
 
-    public BaseJiraIssuePropertyHandler getJiraIssuePropertyHelper() {
+    public JiraIssuePropertyHandler getJiraIssuePropertyHelper() {
         return jiraIssuePropertyHelper;
     }
 

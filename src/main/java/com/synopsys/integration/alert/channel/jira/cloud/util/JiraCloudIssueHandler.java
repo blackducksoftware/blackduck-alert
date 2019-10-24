@@ -27,7 +27,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.common.util.BaseJiraIssueHandler;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;
@@ -38,12 +38,13 @@ import com.synopsys.integration.jira.common.model.request.IssueCommentRequestMod
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
-public class JiraIssueHandler extends BaseJiraIssueHandler {
+public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final IssueService issueService;
     private final JiraProperties jiraProperties;
-    private final JiraIssuePropertyHandler jiraIssuePropertyHandler;
+    private final JiraCloudIssuePropertyHandler jiraIssuePropertyHandler;
 
-    public JiraIssueHandler(IssueService issueService, JiraProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler jiraIssuePropertyHandler) {
+    public JiraCloudIssueHandler(IssueService issueService, JiraProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
+        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler) {
         super(jiraMessageParser, gson, jiraTransitionHandler, jiraIssuePropertyHandler);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
