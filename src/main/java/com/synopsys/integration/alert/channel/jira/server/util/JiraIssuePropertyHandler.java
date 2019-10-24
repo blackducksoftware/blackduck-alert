@@ -28,8 +28,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.cloud.model.AlertJiraIssueProperties;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.model.AlertJiraIssueProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;

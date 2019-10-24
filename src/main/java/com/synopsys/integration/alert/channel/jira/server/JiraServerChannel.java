@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraIssueHandler;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerMessageParser;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
@@ -52,11 +52,11 @@ import com.synopsys.integration.jira.common.server.service.UserSearchService;
 @Component
 public class JiraServerChannel extends IssueTrackerChannel {
     private static final Logger logger = LoggerFactory.getLogger(JiraServerChannel.class);
-    private final JiraServerMessageParser jiraMessageParser;
+    private final JiraMessageParser jiraMessageParser;
     private final JiraServerChannelKey descriptorKey;
 
     @Autowired
-    public JiraServerChannel(Gson gson, AuditUtility auditUtility, JiraServerChannelKey descriptorKey, JiraServerMessageParser jiraMessageParser) {
+    public JiraServerChannel(Gson gson, AuditUtility auditUtility, JiraServerChannelKey descriptorKey, JiraMessageParser jiraMessageParser) {
         super(gson, auditUtility);
         this.descriptorKey = descriptorKey;
         this.jiraMessageParser = jiraMessageParser;

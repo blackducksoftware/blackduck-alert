@@ -28,8 +28,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.cloud.model.AlertJiraIssueProperties;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.model.AlertJiraIssueProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;
@@ -59,7 +59,7 @@ public class JiraIssuePropertyHandler {
 
         if (null != componentItem) {
             LinkableItem component = componentItem.getComponent();
-            final Optional<LinkableItem> optionalSubComponent = componentItem.getSubComponent();
+            Optional<LinkableItem> optionalSubComponent = componentItem.getSubComponent();
             String subComponentName = optionalSubComponent.map(LinkableItem::getName).orElse(null);
             String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
 
@@ -84,7 +84,7 @@ public class JiraIssuePropertyHandler {
         String subComponentValue,
         String additionalKey
     ) throws IntegrationException {
-        final StringBuilder jqlBuilder = new StringBuilder();
+        StringBuilder jqlBuilder = new StringBuilder();
         jqlBuilder.append(JiraConstants.JIRA_SEARCH_KEY_JIRA_PROJECT);
         jqlBuilder.append(" = '");
         jqlBuilder.append(escapeSearchString(jiraProjectKey));
@@ -104,9 +104,9 @@ public class JiraIssuePropertyHandler {
 
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey);
 
-        final String jql = jqlBuilder.toString();
+        String jql = jqlBuilder.toString();
         if (!jql.isBlank()) {
-            final IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssues(jql);
+            IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssues(jql);
             return Optional.of(issueSearchResponseModel);
         }
         return Optional.empty();
@@ -144,8 +144,8 @@ public class JiraIssuePropertyHandler {
     }
 
     private String createPropertySearchString(String key, String value) {
-        final String propertySearchFormat = "issue.property[%s].%s = '%s'";
-        final String escapedValue = escapeSearchString(value);
+        String propertySearchFormat = "issue.property[%s].%s = '%s'";
+        String escapedValue = escapeSearchString(value);
         return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
     }
 

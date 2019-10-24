@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
@@ -69,8 +70,8 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     private final JiraTransitionHandler jiraTransitionHelper;
     private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public JiraIssueHandler(IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, JiraServerProperties jiraProperties, JiraServerMessageParser jiraServerMessageParser, Gson gson) {
-        super(jiraServerMessageParser);
+    public JiraIssueHandler(IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, JiraServerProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson) {
+        super(jiraMessageParser);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.gson = gson;

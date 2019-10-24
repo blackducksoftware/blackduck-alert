@@ -29,7 +29,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraIssueHandler;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraMessageParser;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
