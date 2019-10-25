@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 @Component
 public final class JiraChannelKey extends ChannelKey {

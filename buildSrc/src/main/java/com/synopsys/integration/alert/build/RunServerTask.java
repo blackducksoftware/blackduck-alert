@@ -5,8 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.tasks.Exec;
+import org.gradle.api.tasks.options.Option;
 
 public class RunServerTask extends Exec {
+    private boolean suspend = false;
+
+    @Option(option = "suspend", description = "Suspends the server until a debug connection is made")
+    public void setSuspend(boolean suspend) {
+        this.suspend = suspend;
+    }
+
     @Override
     protected void exec() {
         String userHome = System.getProperties().getProperty("user.home");
@@ -19,6 +27,13 @@ public class RunServerTask extends Exec {
         envVars.put("ALERT_TRUST_CERT", "true");
         getEnvironment().putAll(envVars);
         super.exec();
+    }
+
+    public String[] getDebugVariables() {
+        return new String[] {
+            "-Xdebug",
+            "-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=" + (suspend ? "y" : "n")
+        };
     }
 
 }

@@ -81,7 +81,7 @@ dependencies {
     implementation project(':alert-database')
 
     implementation 'com.synopsys.integration:polaris-common:0.12.0'
-    implementation 'com.synopsys.integration:int-jira-common:0.4.0'
+    implementation 'com.synopsys.integration:int-jira-common:0.5.0'
 
     // Spring
     implementation 'org.springframework:spring-webmvc'
@@ -169,9 +169,6 @@ task createTruststore(type: Copy) {
 task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
     File jarFile = new File("${project.buildDir}/libs/blackduck-alert-${version}.jar")
 
-    def debugVariables = ['-Xdebug',
-                          '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=n']
-
     def jmxVariables = ['-Dcom.sun.management.jmxremote',
                         '-Dcom.sun.management.jmxremote.port=9045',
                         '-Dcom.sun.management.jmxremote.local.only=false',
@@ -186,7 +183,7 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 "--alert.templates.dir=${project.buildDir}/resources/main/templates"]
     def commandArray = []
     commandArray.add('java')
-    commandArray.addAll(debugVariables)
+    commandArray.addAll(getDebugVariables())
     commandArray.addAll(jmxVariables)
     commandArray.add('-jar')
     commandArray.add(jarFile.getAbsolutePath())

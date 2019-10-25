@@ -5,7 +5,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 
@@ -22,7 +22,7 @@ public class ChannelDescriptorTest {
         };
         ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, null) {
             @Override
-            public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
+            public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
                 return null;
             }
         };

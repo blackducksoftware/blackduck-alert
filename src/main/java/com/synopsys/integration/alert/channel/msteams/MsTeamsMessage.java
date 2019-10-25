@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.channel.msteams;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.channel.FreemarkerDataModel;
+import com.synopsys.integration.alert.common.channel.template.FreemarkerDataModel;
 
 public class MsTeamsMessage implements FreemarkerDataModel {
     private String title;

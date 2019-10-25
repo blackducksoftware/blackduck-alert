@@ -32,12 +32,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.action.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
-import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -56,7 +56,7 @@ public class DescriptorProcessor {
     private final Map<String, ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(final DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, final List<ConfigurationAction> configurationActions, final List<AutoActionable> autoActionables) {
+    public DescriptorProcessor(DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, List<ConfigurationAction> configurationActions, List<AutoActionable> autoActionables) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
         this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
@@ -73,50 +73,50 @@ public class DescriptorProcessor {
         }
     }
 
-    public Optional<TestAction> retrieveTestAction(final FieldModel fieldModel) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
+    public Optional<TestAction> retrieveTestAction(FieldModel fieldModel) {
+        ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         return retrieveTestAction(fieldModel.getDescriptorName(), descriptorContext);
     }
 
-    public Optional<TestAction> retrieveTestAction(final String descriptorName, final ConfigContextEnum context) {
+    public Optional<TestAction> retrieveTestAction(String descriptorName, ConfigContextEnum context) {
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
     }
 
-    public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
+    public Optional<Descriptor> retrieveDescriptor(String descriptorName) {
         return descriptorMap.getDescriptorKey(descriptorName).flatMap(descriptorMap::getDescriptor);
     }
 
-    public Optional<ConfigurationModel> getSavedEntity(final Long id) throws AlertException {
+    public Optional<ConfigurationModel> getSavedEntity(Long id) throws AlertException {
         if (null != id) {
             return configurationAccessor.getConfigurationById(id);
         }
         return Optional.empty();
     }
 
-    public Optional<ApiAction> retrieveApiAction(final FieldModel fieldModel) {
+    public Optional<ApiAction> retrieveApiAction(FieldModel fieldModel) {
         return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
     }
 
-    public Optional<ApiAction> retrieveApiAction(final String descriptorName, final String context) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+    public Optional<ApiAction> retrieveApiAction(String descriptorName, String context) {
+        ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
     }
 
-    public Optional<ConfigurationAction> retrieveConfigurationAction(final String descriptorName) {
+    public Optional<ConfigurationAction> retrieveConfigurationAction(String descriptorName) {
         return Optional.ofNullable(allConfigurationActions.get(descriptorName));
     }
 
-    public List<ConfigField> retrieveUIConfigFields(final String context, final String descriptorName) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+    public List<ConfigField> retrieveUIConfigFields(String context, String descriptorName) {
+        ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveUIConfigFields(descriptorContext, descriptorName);
     }
 
-    public List<ConfigField> retrieveUIConfigFields(final ConfigContextEnum context, final String descriptorName) {
-        final Optional<Descriptor> optionalDescriptor = retrieveDescriptor(descriptorName);
-        final List<ConfigField> fieldsToReturn = new LinkedList<>();
+    public List<ConfigField> retrieveUIConfigFields(ConfigContextEnum context, String descriptorName) {
+        Optional<Descriptor> optionalDescriptor = retrieveDescriptor(descriptorName);
+        List<ConfigField> fieldsToReturn = new LinkedList<>();
         if (optionalDescriptor.isPresent()) {
-            final Descriptor descriptor = optionalDescriptor.get();
-            final Optional<UIConfig> uiConfig = descriptor.getUIConfig(context);
+            Descriptor descriptor = optionalDescriptor.get();
+            Optional<UIConfig> uiConfig = descriptor.getUIConfig(context);
             fieldsToReturn.addAll(uiConfig.map(UIConfig::createFields).orElse(List.of()));
         }
         return fieldsToReturn;

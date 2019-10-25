@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -35,7 +35,8 @@ public class MsTeamsChannelTest extends ChannelTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(new TestAlertProperties());
         MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
         MsTeamsKey msTeamsKey = new MsTeamsKey();
-        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser, msTeamsEventParser1, msTeamsMessageParser);
+        MsTeamsMessageParser msTeamsMessageParser = new MsTeamsMessageParser();
+        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditUtility(), createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();

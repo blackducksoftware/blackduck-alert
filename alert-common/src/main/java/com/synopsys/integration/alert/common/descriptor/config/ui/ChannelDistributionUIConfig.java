@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.synopsys.integration.alert.common.channel.ChannelKey;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
@@ -55,23 +55,23 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     private final ChannelKey channelKey;
 
-    public ChannelDistributionUIConfig(final ChannelKey channelKey, final String label, final String urlName) {
+    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName) {
         super(label, "Channel distribution setup.", urlName);
         this.channelKey = channelKey;
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, true, false, true, false);
-        final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
-        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
+        ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, true, false, true, false);
+        ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
+        ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
                                                                                                                                   .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
                                                                                                                                   .sorted()
                                                                                                                                   .collect(Collectors.toList()));
-        final ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, true, false, true, false);
+        ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, true, false, true, false);
 
-        final List<ConfigField> configFields = List.of(channelName, name, frequency, providerName);
-        final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
+        List<ConfigField> configFields = List.of(channelName, name, frequency, providerName);
+        List<ConfigField> channelDistributionFields = createChannelDistributionFields();
         return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }
 

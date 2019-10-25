@@ -30,16 +30,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDistributionUIConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.cloud.model.response.IssueTypeResponseModel;
-import com.synopsys.integration.jira.common.cloud.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.jira.common.cloud.model.response.UserDetailsResponseModel;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.cloud.rest.service.ProjectService;
-import com.synopsys.integration.jira.common.cloud.rest.service.UserSearchService;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
+import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
+import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
 public class JiraIssueConfigValidator {
     private static final String CONNECTION_ERROR_FORMAT_STRING = "There was a problem getting the %s from Jira. Please ensure the server is configured correctly.";
@@ -54,12 +55,16 @@ public class JiraIssueConfigValidator {
         this.issueTypeService = issueTypeService;
     }
 
-    public JiraIssueConfig validate(FieldAccessor fieldAccessor) throws AlertFieldException {
-        JiraIssueConfig jiraIssueConfig = new JiraIssueConfig();
+    public IssueConfig validate(FieldAccessor fieldAccessor) throws AlertFieldException {
+        IssueConfig jiraIssueConfig = new IssueConfig();
         Map<String, String> fieldErrors = new HashMap<>();
 
         ProjectComponent projectComponent = validateProject(fieldAccessor, fieldErrors);
-        jiraIssueConfig.setProjectComponent(projectComponent);
+        if (projectComponent != null) {
+            jiraIssueConfig.setProjectId(projectComponent.getId());
+            jiraIssueConfig.setProjectKey(projectComponent.getKey());
+            jiraIssueConfig.setProjectName(projectComponent.getName());
+        }
 
         String issueCreator = validateIssueCreator(fieldAccessor, fieldErrors);
         jiraIssueConfig.setIssueCreator(issueCreator);
@@ -152,64 +157,6 @@ public class JiraIssueConfigValidator {
 
     private void requireField(Map<String, String> fieldErrors, String key) {
         fieldErrors.put(key, "This field is required");
-    }
-
-    public static class JiraIssueConfig {
-        private ProjectComponent projectComponent;
-        private String issueCreator;
-        private String issueType;
-        private Boolean commentOnIssues;
-        private String resolveTransition;
-        private String openTransition;
-
-        public ProjectComponent getProjectComponent() {
-            return projectComponent;
-        }
-
-        private void setProjectComponent(ProjectComponent projectComponent) {
-            this.projectComponent = projectComponent;
-        }
-
-        public String getIssueCreator() {
-            return issueCreator;
-        }
-
-        private void setIssueCreator(String issueCreator) {
-            this.issueCreator = issueCreator;
-        }
-
-        public String getIssueType() {
-            return issueType;
-        }
-
-        private void setIssueType(String issueType) {
-            this.issueType = issueType;
-        }
-
-        public boolean getCommentOnIssues() {
-            return commentOnIssues;
-        }
-
-        private void setCommentOnIssues(boolean commentOnIssues) {
-            this.commentOnIssues = commentOnIssues;
-        }
-
-        public Optional<String> getResolveTransition() {
-            return Optional.ofNullable(resolveTransition);
-        }
-
-        private void setResolveTransition(String resolveTransition) {
-            this.resolveTransition = resolveTransition;
-        }
-
-        public Optional<String> getOpenTransition() {
-            return Optional.ofNullable(openTransition);
-        }
-
-        private void setOpenTransition(String openTransition) {
-            this.openTransition = openTransition;
-        }
-
     }
 
 }

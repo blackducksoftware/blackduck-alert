@@ -37,7 +37,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.UserRole;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -53,7 +53,7 @@ public class UserManagementAuthoritiesPopulator {
     private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public UserManagementAuthoritiesPopulator(final AuthenticationDescriptorKey AuthenticationDescriptorKey, final ConfigurationAccessor configurationAccessor) {
+    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey AuthenticationDescriptorKey, ConfigurationAccessor configurationAccessor) {
         this.AuthenticationDescriptorKey = AuthenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }
@@ -91,23 +91,23 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     private Map<String, String> createRolesMapping(boolean appendRolePrefix) {
-        Map<String, String> roleMapping = new HashMap<>(UserRole.values().length);
+        Map<String, String> roleMapping = new HashMap<>(DefaultUserRole.values().length);
         try {
             ConfigurationModel configuration = getCurrentConfiguration();
-            final Function<UserRole, String> function = appendRolePrefix ? this::createRoleWithPrefix : UserRole::name;
-            final Optional<String> adminRoleMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN);
-            final Optional<String> jobManagerMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER);
-            final Optional<String> userMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_USER);
-            adminRoleMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(UserRole.ALERT_ADMIN)));
-            jobManagerMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(UserRole.ALERT_JOB_MANAGER)));
-            userMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(UserRole.ALERT_USER)));
+            Function<DefaultUserRole, String> function = appendRolePrefix ? this::createRoleWithPrefix : DefaultUserRole::name;
+            Optional<String> adminRoleMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN);
+            Optional<String> jobManagerMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER);
+            Optional<String> userMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_USER);
+            adminRoleMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(DefaultUserRole.ALERT_ADMIN)));
+            jobManagerMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(DefaultUserRole.ALERT_JOB_MANAGER)));
+            userMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(DefaultUserRole.ALERT_USER)));
         } catch (AlertException ex) {
             logger.debug("Error mapping roles to alert roles.", ex);
         }
         return roleMapping;
     }
 
-    private String createRoleWithPrefix(UserRole alertRole) {
+    private String createRoleWithPrefix(DefaultUserRole alertRole) {
         return UserModel.ROLE_PREFIX + alertRole.name();
     }
 
@@ -118,7 +118,8 @@ public class UserManagementAuthoritiesPopulator {
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));
     }
 
-    private Optional<String> getFieldValue(final ConfigurationModel configurationModel, final String fieldKey) {
+    private Optional<String> getFieldValue(ConfigurationModel configurationModel, String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue);
     }
+
 }
