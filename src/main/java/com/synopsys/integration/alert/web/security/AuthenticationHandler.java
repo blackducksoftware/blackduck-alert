@@ -99,6 +99,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.web.security.authentication.saml.AlertSAMLMetadataGenerator;
@@ -122,10 +123,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private final ConfigurationAccessor configurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
+    private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
     AuthenticationHandler(ConfigurationAccessor configurationAccessor, HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
-        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, AuthenticationDescriptorKey authenticationDescriptorKey) {
+        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, AuthenticationDescriptorKey authenticationDescriptorKey,
+        AuthenticationEventManager authenticationEventManager) {
         this.configurationAccessor = configurationAccessor;
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
@@ -133,6 +136,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.filePersistenceUtil = filePersistenceUtil;
         this.authoritiesPopulator = authoritiesPopulator;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
+        this.authenticationEventManager = authenticationEventManager;
     }
 
     @Bean
@@ -141,13 +145,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(samlAuthenticationProvider());
     }
 
     @Override
-    protected void configure(final HttpSecurity http) throws Exception {
-        final String[] allowedRoles = Arrays.stream(UserRole.values()).map(UserRole::name).collect(Collectors.toList()).toArray(new String[UserRole.values().length]);
+    protected void configure(HttpSecurity http) throws Exception {
+        String[] allowedRoles = Arrays.stream(UserRole.values()).map(UserRole::name).collect(Collectors.toList()).toArray(new String[UserRole.values().length]);
         configureActiveMQProvider();
         configureWithSSL(http);
         configureH2Console(http);
@@ -167,49 +171,49 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         // static initialization of the Bouncy Castle provider breaks SAML support over SSL
         // https://stackoverflow.com/questions/53906154/spring-boot-2-1-embedded-tomcat-keystore-password-was-incorrect
         try {
-            final ClassLoader loader = BrokerService.class.getClassLoader();
-            final Class<?> clazz = loader.loadClass("org.bouncycastle.jce.provider.BouncyCastleProvider");
-            final Provider bouncycastle = (Provider) clazz.getDeclaredConstructor().newInstance();
+            ClassLoader loader = BrokerService.class.getClassLoader();
+            Class<?> clazz = loader.loadClass("org.bouncycastle.jce.provider.BouncyCastleProvider");
+            Provider bouncycastle = (Provider) clazz.getDeclaredConstructor().newInstance();
             Security.removeProvider(bouncycastle.getName());
             logger.info("Alert Application Configuration: Removing Bouncy Castle provider");
             Security.addProvider(bouncycastle);
             logger.info("Alert Application Configuration: Adding Bouncy Castle provider to the end of the provider list");
 
-        } catch (final Throwable e) {
+        } catch (Throwable e) {
             // nothing needed here if that provider does not exist
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
         }
     }
 
-    private void configureH2Console(final HttpSecurity http) throws Exception {
+    private void configureH2Console(HttpSecurity http) throws Exception {
         if (alertProperties.getH2ConsoleEnabled()) {
             ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
             http.headers().frameOptions().disable();
         }
     }
 
-    private void configureWithSSL(final HttpSecurity http) throws Exception {
+    private void configureWithSSL(HttpSecurity http) throws Exception {
         if (alertProperties.getSslEnabled()) {
             http.requiresChannel().anyRequest().requiresSecure();
         }
     }
 
-    private void ignorePaths(final String... paths) {
-        for (final String path : paths) {
+    private void ignorePaths(String... paths) {
+        for (String path : paths) {
             httpPathManager.addAllowedPath(path);
             httpPathManager.addSamlAllowedPath(path);
         }
     }
 
     private RequestMatcher[] createCsrfIgnoreMatchers() {
-        final RequestMatcher[] matchers = {
+        RequestMatcher[] matchers = {
             new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
         return matchers;
     }
 
     private RequestMatcher[] createAllowedPathMatchers() {
-        final RequestMatcher[] matchers = {
+        RequestMatcher[] matchers = {
             new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
         return matchers;
@@ -227,7 +231,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
-        final SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
+        SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
         samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
         samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(successRedirectHandler());
 
@@ -237,14 +241,14 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLEntryPoint samlEntryPoint() {
-        final SAMLEntryPoint samlEntryPoint = new AlertSAMLEntryPoint(samlContext());
+        SAMLEntryPoint samlEntryPoint = new AlertSAMLEntryPoint(samlContext());
         samlEntryPoint.setDefaultProfileOptions(webSSOProfileOptions());
         return samlEntryPoint;
     }
 
     @Bean
     public WebSSOProfileOptions webSSOProfileOptions() {
-        final AlertWebSSOProfileOptions alertWebSSOProfileOptions = new AlertWebSSOProfileOptions(samlContext());
+        AlertWebSSOProfileOptions alertWebSSOProfileOptions = new AlertWebSSOProfileOptions(samlContext());
         alertWebSSOProfileOptions.setIncludeScoping(false);
         alertWebSSOProfileOptions.setProviderName(AuthenticationHandler.SSO_PROVIDER_NAME);
         alertWebSSOProfileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
@@ -253,7 +257,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterChainProxy samlFilter() throws Exception {
-        final List<SecurityFilterChain> chains = new ArrayList<>();
+        List<SecurityFilterChain> chains = new ArrayList<>();
 
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/login/**"), samlEntryPoint()));
         chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"), samlWebSSOProcessingFilter()));
@@ -269,7 +273,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
-        final SavedRequestAwareAuthenticationSuccessHandler redirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+        SavedRequestAwareAuthenticationSuccessHandler redirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         redirectHandler.setDefaultTargetUrl("/");
         return redirectHandler;
     }
@@ -281,7 +285,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public MetadataGenerator metadataGenerator() {
-        final AlertSAMLMetadataGenerator metadataGenerator = new AlertSAMLMetadataGenerator(samlContext());
+        AlertSAMLMetadataGenerator metadataGenerator = new AlertSAMLMetadataGenerator(samlContext());
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
@@ -296,7 +300,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        final SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider();
+        SAMLAuthProvider samlAuthenticationProvider = new SAMLAuthProvider(authenticationEventManager);
         samlAuthenticationProvider.setForcePrincipalAsString(false);
         return samlAuthenticationProvider;
     }
@@ -314,7 +318,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public ExtendedMetadata extendedMetadata() {
-        final ExtendedMetadata extendedMetadata = new ExtendedMetadata();
+        ExtendedMetadata extendedMetadata = new ExtendedMetadata();
         extendedMetadata.setIdpDiscoveryEnabled(false);
         extendedMetadata.setSignMetadata(false);
         extendedMetadata.setEcpEnabled(true);
@@ -329,7 +333,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SecurityContextLogoutHandler logoutHandler() {
-        final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.setInvalidateHttpSession(true);
         logoutHandler.setClearAuthentication(true);
         return logoutHandler;
@@ -344,7 +348,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SimpleUrlLogoutSuccessHandler successLogoutHandler() {
-        final SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler =
+        SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler =
             new SimpleUrlLogoutSuccessHandler();
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
         simpleUrlLogoutSuccessHandler.setAlwaysUseDefaultTargetUrl(true);
@@ -358,7 +362,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLProcessorImpl processor() {
-        final Collection<SAMLBinding> bindings = new ArrayList<>();
+        Collection<SAMLBinding> bindings = new ArrayList<>();
         bindings.add(httpRedirectDeflateBinding());
         bindings.add(httpPostBinding());
         return new SAMLProcessorImpl(bindings);

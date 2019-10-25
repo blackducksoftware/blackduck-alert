@@ -27,14 +27,23 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 
+import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
+
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
+    private AuthenticationEventManager authenticationEventManager;
+
+    public SAMLAuthProvider(AuthenticationEventManager authenticationEventManager) {
+        this.authenticationEventManager = authenticationEventManager;
+    }
 
     @Override
-    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-        final Authentication currentAuth = super.authenticate(authentication);
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        Authentication currentAuth = super.authenticate(authentication);
         if (currentAuth.isAuthenticated()) {
+            authenticationEventManager.sendAuthenticationEvent(authentication);
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
         }
         return currentAuth;
     }
+
 }

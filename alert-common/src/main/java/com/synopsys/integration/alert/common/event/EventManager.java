@@ -37,22 +37,22 @@ public class EventManager {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public EventManager(final ContentConverter contentConverter, final JmsTemplate jmsTemplate) {
+    public EventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
         this.jmsTemplate = jmsTemplate;
     }
 
     @Transactional
-    public void sendEvents(final List<? extends AlertEvent> eventList) {
+    public void sendEvents(List<? extends AlertEvent> eventList) {
         if (!eventList.isEmpty()) {
             eventList.forEach(this::sendEvent);
         }
     }
 
     @Transactional
-    public void sendEvent(final AlertEvent event) {
-        final String destination = event.getDestination();
-        final String jsonMessage = contentConverter.getJsonString(event);
+    public void sendEvent(AlertEvent event) {
+        String destination = event.getDestination();
+        String jsonMessage = contentConverter.getJsonString(event);
         jmsTemplate.convertAndSend(destination, jsonMessage);
     }
 
@@ -63,4 +63,5 @@ public class EventManager {
     public ContentConverter getContentConverter() {
         return contentConverter;
     }
+
 }
