@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -39,7 +40,7 @@ import com.synopsys.integration.jira.common.model.response.UserDetailsResponseMo
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
-public class JiraCloudGlobalTestAction extends com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction {
+public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     public static final Logger logger = LoggerFactory.getLogger(JiraCloudGlobalTestAction.class);
     private final Gson gson;
 
@@ -63,7 +64,9 @@ public class JiraCloudGlobalTestAction extends com.synopsys.integration.alert.ch
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         String username = jiraProperties.getUsername();
         UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
-        return userSearchService.findUser(username).stream().map(UserDetailsResponseModel::getEmailAddress).noneMatch(email -> email.equals(username));
+        return userSearchService.findUser(username).stream()
+                   .map(UserDetailsResponseModel::getEmailAddress)
+                   .noneMatch(email -> email.equals(username));
     }
 
     @Override

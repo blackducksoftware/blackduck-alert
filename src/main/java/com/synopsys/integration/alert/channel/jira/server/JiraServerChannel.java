@@ -71,10 +71,10 @@ public class JiraServerChannel extends IssueTrackerChannel {
         JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
-        logger.debug("Verifying the required application is installed on the Jira Cloud server...");
+        logger.debug("Verifying the required application is installed on the Jira server...");
         boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
         if (missingApp) {
-            throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
+            throw new AlertException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
         }
 
         ProjectService projectService = jiraServerServiceFactory.createProjectService();
