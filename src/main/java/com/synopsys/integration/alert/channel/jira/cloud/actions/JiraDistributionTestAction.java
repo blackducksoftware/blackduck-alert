@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -63,12 +64,12 @@ public class JiraDistributionTestAction extends IssueTrackerDistributionTestActi
 
     @Override
     protected String getTodoStatusFieldKey() {
-        return JiraCloudTransitionHandler.TODO_STATUS_CATEGORY_KEY;
+        return JiraTransitionHandler.TODO_STATUS_CATEGORY_KEY;
     }
 
     @Override
     protected String getDoneStatusFieldKey() {
-        return JiraCloudTransitionHandler.DONE_STATUS_CATEGORY_KEY;
+        return JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY;
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
@@ -63,12 +64,12 @@ public class JiraServerDistributionTestAction extends IssueTrackerDistributionTe
 
     @Override
     protected String getTodoStatusFieldKey() {
-        return JiraServerTransitionHandler.TODO_STATUS_CATEGORY_KEY;
+        return JiraTransitionHandler.TODO_STATUS_CATEGORY_KEY;
     }
 
     @Override
     protected String getDoneStatusFieldKey() {
-        return JiraServerTransitionHandler.DONE_STATUS_CATEGORY_KEY;
+        return JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY;
     }
 
     @Override
