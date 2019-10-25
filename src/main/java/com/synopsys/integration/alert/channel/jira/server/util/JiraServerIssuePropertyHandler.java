@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.util;
 
-import java.util.Optional;
-
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.model.AlertJiraIssueProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraIssuePropertyHandler;
@@ -42,8 +40,8 @@ public class JiraServerIssuePropertyHandler extends JiraIssuePropertyHandler<Iss
     }
 
     @Override
-    public Optional<IssueSearchResponseModel> queryForIssues(String query) throws IntegrationException {
-        return Optional.of(issueSearchService.queryForIssues(query));
+    public IssueSearchResponseModel queryForIssues(String query) throws IntegrationException {
+        return issueSearchService.queryForIssues(query);
     }
 
     @Override

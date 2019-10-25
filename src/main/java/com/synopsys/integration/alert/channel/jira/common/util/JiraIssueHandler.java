@@ -106,18 +106,6 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return StringUtils.EMPTY;
     }
 
-    public Gson getGson() {
-        return gson;
-    }
-
-    public JiraTransitionHandler getJiraTransitionHelper() {
-        return jiraTransitionHelper;
-    }
-
-    public JiraIssuePropertyHandler getJiraIssuePropertyHelper() {
-        return jiraIssuePropertyHelper;
-    }
-
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
         JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
         List<String> responseErrors = new ArrayList<>();

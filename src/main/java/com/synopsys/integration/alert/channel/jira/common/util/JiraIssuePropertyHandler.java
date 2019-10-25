@@ -38,7 +38,7 @@ public abstract class JiraIssuePropertyHandler<T> {
     private static final String SEARCH_CONJUNCTION = "AND";
     private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'');
 
-    public abstract Optional<T> queryForIssues(String query) throws IntegrationException;
+    public abstract T queryForIssues(String query) throws IntegrationException;
 
     public abstract void addPropertiesToIssue(String issueKey, AlertJiraIssueProperties properties) throws IntegrationException;
 
@@ -99,7 +99,7 @@ public abstract class JiraIssuePropertyHandler<T> {
 
         String jql = jqlBuilder.toString();
         if (!jql.isBlank()) {
-            return queryForIssues(jql);
+            return Optional.of(queryForIssues(jql));
         }
         return Optional.empty();
     }

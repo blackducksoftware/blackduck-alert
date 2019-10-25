@@ -88,7 +88,7 @@ public class JiraServerDistributionTestAction extends IssueTrackerDistributionTe
             IssueService issueService = jiraServerServiceFactory.createIssueService();
             issueService.deleteIssue(issueKey);
         } catch (IntegrationException e) {
-            logger.warn("There was a problem trying to delete a the Jira Cloud distribution test issue, {}: {}", issueKey, e);
+            logger.warn("There was a problem trying to delete a the Jira Server distribution test issue, {}: {}", issueKey, e);
         }
     }
 }
