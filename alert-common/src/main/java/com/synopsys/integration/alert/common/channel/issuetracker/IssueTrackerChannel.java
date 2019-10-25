@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,27 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.exception;
+package com.synopsys.integration.alert.common.channel.issuetracker;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.exception.IntegrationException;
 
-public class JiraMissingTransitionException extends AlertException {
-    private static final long serialVersionUID = -3205009960464333872L;
-
-    private final String issueKey;
-    private final String transition;
-
-    public JiraMissingTransitionException(final String issueKey, final String transition) {
-        this.issueKey = issueKey;
-        this.transition = transition;
+public abstract class IssueTrackerChannel extends DistributionChannel {
+    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility) {
+        super(gson, auditUtility);
     }
 
-    public String getIssueKey() {
-        return issueKey;
-    }
-
-    public String getTransition() {
-        return transition;
-    }
+    @Override
+    public abstract IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException;
 
 }

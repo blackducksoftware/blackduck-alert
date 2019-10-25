@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.channel.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
@@ -77,26 +77,26 @@ public class UpdateEmailService {
     }
 
     public void sendUpdateEmail(UpdateModel updateModel) {
-        final String updateVersion = updateModel.getDockerTagVersion();
+        String updateVersion = updateModel.getDockerTagVersion();
         if (wasEmailAlreadySentForVersion(updateVersion)) {
             return;
         }
 
-        final String username = "sysadmin";
-        final Optional<String> optionalEmailAddress = userAccessor.getUser(username)
-                                                          .map(UserModel::getEmailAddress)
-                                                          .filter(StringUtils::isNotBlank);
+        String username = "sysadmin";
+        Optional<String> optionalEmailAddress = userAccessor.getUser(username)
+                                                    .map(UserModel::getEmailAddress)
+                                                    .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                final ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-                                                           .stream()
-                                                           .findFirst()
-                                                           .orElseThrow(() -> new AlertException("No global email configuration found"));
-                final FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
-                final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+                ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+                                                     .stream()
+                                                     .findFirst()
+                                                     .orElseThrow(() -> new AlertException("No global email configuration found"));
+                FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
+                EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
-                final String alertServerUrl = alertProperties.getServerUrl().orElse(null);
-                final Map<String, Object> templateFields = new HashMap<>();
+                String alertServerUrl = alertProperties.getServerUrl().orElse(null);
+                Map<String, Object> templateFields = new HashMap<>();
                 templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
                 templateFields.put("newVersionName", updateVersion);
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
@@ -104,7 +104,7 @@ public class UpdateEmailService {
                 handleSendAndUpdateDatabase(emailProperties, templateFields, optionalEmailAddress.get());
 
                 settingsKeyAccessor.saveSettingsKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL, updateVersion);
-            } catch (final AlertException e) {
+            } catch (AlertException e) {
                 logger.debug("Problem sending version update email.", e);
             }
         } else {
@@ -122,15 +122,15 @@ public class UpdateEmailService {
 
     private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress) throws AlertException {
         try {
-            final String alertLogo = alertProperties.getAlertLogo();
+            String alertLogo = alertProperties.getAlertLogo();
 
-            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
+            Map<String, String> contentIdsToFilePaths = new HashMap<>();
+            EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
             emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);
 
-            final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
+            EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
             emailService.sendEmailMessage(passwordResetEmail);
-        } catch (final Exception genericException) {
+        } catch (Exception genericException) {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }
     }

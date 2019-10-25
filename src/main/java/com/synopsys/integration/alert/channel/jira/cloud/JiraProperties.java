@@ -28,10 +28,10 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.jira.common.cloud.configuration.JiraServerConfig;
-import com.synopsys.integration.jira.common.cloud.configuration.JiraServerConfigBuilder;
-import com.synopsys.integration.jira.common.cloud.rest.JiraCloudHttpClient;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
+import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
+import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class JiraProperties {
@@ -39,35 +39,35 @@ public class JiraProperties {
     private final String accessToken;
     private final String username;
 
-    public JiraProperties(final FieldAccessor fieldAccessor) {
+    public JiraProperties(FieldAccessor fieldAccessor) {
         url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
         accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
     }
 
-    public JiraProperties(final String url, final String accessToken, final String username) {
+    public JiraProperties(String url, String accessToken, String username) {
         this.url = url;
         this.accessToken = accessToken;
         this.username = username;
     }
 
-    public JiraServerConfig createJiraServerConfig() throws AlertException {
-        final JiraServerConfigBuilder jiraServerConfigBuilder = new JiraServerConfigBuilder();
+    public JiraCloudRestConfig createJiraServerConfig() throws AlertException {
+        final JiraCloudRestConfigBuilder jiraServerConfigBuilder = new JiraCloudRestConfigBuilder();
 
         jiraServerConfigBuilder.setUrl(url);
         jiraServerConfigBuilder.setApiToken(accessToken);
         jiraServerConfigBuilder.setAuthUserEmail(username);
         try {
             return jiraServerConfigBuilder.build();
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new AlertException("There was an issue building the configuration: " + e.getMessage());
         }
     }
 
-    public JiraCloudServiceFactory createJiraServicesCloudFactory(final Logger logger, final Gson gson) throws AlertException {
-        final JiraServerConfig jiraServerConfig = createJiraServerConfig();
-        final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-        final JiraCloudHttpClient jiraHttpClient = jiraServerConfig.createJiraHttpClient(intLogger);
+    public JiraCloudServiceFactory createJiraServicesCloudFactory(Logger logger, Gson gson) throws AlertException {
+        JiraCloudRestConfig jiraServerConfig = createJiraServerConfig();
+        Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+        JiraHttpClient jiraHttpClient = jiraServerConfig.createJiraHttpClient(intLogger);
         return new JiraCloudServiceFactory(intLogger, jiraHttpClient, gson);
     }
 
@@ -82,4 +82,5 @@ public class JiraProperties {
     public String getUsername() {
         return username;
     }
+
 }

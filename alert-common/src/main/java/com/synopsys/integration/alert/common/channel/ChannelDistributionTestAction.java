@@ -20,12 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action;
+package com.synopsys.integration.alert.common.channel;
 
 import java.util.Date;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -47,16 +47,16 @@ public abstract class ChannelDistributionTestAction extends TestAction {
 
     @Override
     public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
-        final DistributionEvent event = createChannelTestEvent(jobId, fieldAccessor);
+        DistributionEvent event = createChannelTestEvent(jobId, fieldAccessor);
         return distributionChannel.sendMessage(event);
     }
 
     public DistributionEvent createChannelTestEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
-        final ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, ItemOperation.ADD, UUID.randomUUID().toString());
+        ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, ItemOperation.ADD, UUID.randomUUID().toString());
 
-        final String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        final String providerName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-        final String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
+        String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        String providerName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
 
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }

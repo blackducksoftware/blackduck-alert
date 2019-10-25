@@ -8,8 +8,16 @@
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_CHANNEL_FIELD('channel.jira.server.add.comments', 'channel_jira_server');
+            CALL DEFINE_CHANNEL_FIELD('channel.jira.server.issue.creator', 'channel_jira_server');
+            CALL DEFINE_CHANNEL_FIELD('channel.jira.server.project.name', 'channel_jira_server');
+            CALL DEFINE_CHANNEL_FIELD('channel.jira.server.issue.type', 'channel_jira_server');
+            CALL DEFINE_CHANNEL_FIELD('channel.jira.server.resolve.workflow', 'channel_jira_server');
+            CALL DEFINE_CHANNEL_FIELD('channel.jira.server.reopen.workflow', 'channel_jira_server');
 
-            CALL DEFINE_FIELD('channel.jira.server.url', FALSE, 'channel_jira_server', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.server.url', FALSE, 'channel_jira_server', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.server.username', FALSE, 'channel_jira_server', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.server.password', TRUE, 'channel_jira_server', 'GLOBAL');
+            CALL DEFINE_FIELD('jira.server.configure.plugin', FALSE, 'channel_jira_cloud', 'GLOBAL');
         </sql>
     </changeSet>
 </databaseChangeLog>

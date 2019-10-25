@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,9 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel;
+package com.synopsys.integration.alert.channel.jira.server;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import org.springframework.stereotype.Component;
 
-public abstract class ChannelKey extends DescriptorKey {
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+
+@Component
+public class JiraServerChannelKey extends ChannelKey {
+    @Override
+    public String getUniversalKey() {
+        return "channel_jira_server";
+    }
 }

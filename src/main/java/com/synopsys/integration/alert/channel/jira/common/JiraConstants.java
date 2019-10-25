@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud;
+package com.synopsys.integration.alert.channel.jira.common;
 
 public final class JiraConstants {
     // This String must always match the String found in the atlassian-connect.json file under key.

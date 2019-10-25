@@ -20,11 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel;
+package com.synopsys.integration.alert.common.channel.issuetracker;
 
-public class ClassNameChannelKey extends ChannelKey {
-    public final String getUniversalKey() {
-        return getClass().getSimpleName().toLowerCase();
-    }
+import java.util.Optional;
+
+import com.synopsys.integration.exception.IntegrationException;
+
+/**
+ * @param <T> A class that represents a transition.
+ */
+public interface TransitionValidator<T> {
+    boolean doesTransitionToExpectedStatusCategory(T transition, String expectedStatusCategoryKey) throws IntegrationException;
+
+    Optional<T> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException;
 
 }

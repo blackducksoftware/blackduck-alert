@@ -45,7 +45,7 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
     private MsTeamsEventParser msTeamsEventParser;
 
     @Autowired
-    public MsTeamsChannel(MsTeamsKey msTeamsKey, final Gson gson, final AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser) {
+    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser) {
         super(msTeamsKey, gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
@@ -53,9 +53,9 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
-                                   .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
+        FieldAccessor fields = event.getFieldAccessor();
+        String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
+                             .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
         MsTeamsMessage msTeamsMessage = msTeamsEventParser.createMessage(event);
         String json = msTeamsEventParser.toJson(msTeamsMessage);

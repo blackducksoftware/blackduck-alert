@@ -20,55 +20,49 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.util;
+package com.synopsys.integration.alert.channel.jira.common.util;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator;
-import com.synopsys.integration.alert.channel.jira.cloud.exception.JiraMissingTransitionException;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueMissingTransitionException;
+import com.synopsys.integration.alert.common.channel.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.cloud.model.components.IdComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.cloud.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.cloud.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.cloud.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.cloud.model.response.TransitionsResponseModel;
-import com.synopsys.integration.jira.common.cloud.rest.service.IssueService;
+import com.synopsys.integration.jira.common.model.components.IdComponent;
+import com.synopsys.integration.jira.common.model.components.StatusCategory;
+import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
+import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 
-public class JiraTransitionHandler {
+public abstract class JiraTransitionHandler implements TransitionValidator<TransitionComponent> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Logger logger = LoggerFactory.getLogger(JiraTransitionHandler.class);
-    private IssueService issueService;
+    protected abstract void performTransition(String issueKey, IdComponent transitionId) throws IntegrationException;
 
-    public JiraTransitionHandler(IssueService issueService) {
-        this.issueService = issueService;
-    }
+    protected abstract StatusDetailsComponent getStatusDetails(String issueKey) throws IntegrationException;
 
+    @Override
     public boolean doesTransitionToExpectedStatusCategory(TransitionComponent transition, String expectedStatusCategoryKey) {
         StatusDetailsComponent statusDetails = transition.getTo();
         StatusCategory statusCategory = statusDetails.getStatusCategory();
         return StringUtils.equals(expectedStatusCategoryKey, statusCategory.getKey());
     }
 
-    public boolean transitionIssueIfNecessary(String issueKey, JiraIssueConfigValidator.JiraIssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
+    public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
         if (ItemOperation.UPDATE.equals(operation)) {
             logger.debug("No transition required for this issue: {}.", issueKey);
             return false;
         }
 
-        final Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
+        Optional<String> transitionName = determineTransitionName(operation, jiraIssueConfig);
         if (transitionName.isPresent()) {
-            boolean shouldAttemptTransition = isTransitionRequired(issueKey, operation);
+            boolean shouldAttemptTransition = isTransitionRequired(operation, getStatusDetails(issueKey));
             if (shouldAttemptTransition) {
                 performTransition(issueKey, transitionName.get());
                 return true;
@@ -81,13 +75,7 @@ public class JiraTransitionHandler {
         return false;
     }
 
-    public Optional<TransitionComponent> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException {
-        TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-        return transitions.findFirstTransitionByName(transitionName);
-    }
-
-    private boolean isTransitionRequired(String issueKey, ItemOperation operation) throws IntegrationException {
-        StatusDetailsComponent statusDetailsComponent = issueService.getStatus(issueKey);
+    private boolean isTransitionRequired(ItemOperation operation, StatusDetailsComponent statusDetailsComponent) throws IntegrationException {
         StatusCategory statusCategory = statusDetailsComponent.getStatusCategory();
         if (ItemOperation.ADD.equals(operation)) {
             // Should reopen?
@@ -104,14 +92,13 @@ public class JiraTransitionHandler {
         Optional<TransitionComponent> firstTransitionByName = retrieveIssueTransition(issueKey, transitionName);
         if (firstTransitionByName.isPresent()) {
             String transitionId = firstTransitionByName.map(TransitionComponent::getId).get();
-            IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, new IdComponent(transitionId), new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
-            issueService.transitionIssue(issueRequestModel);
+            performTransition(issueKey, new IdComponent(transitionId));
         } else {
-            throw new JiraMissingTransitionException(issueKey, transitionName);
+            throw new IssueMissingTransitionException(issueKey, transitionName);
         }
     }
 
-    private Optional<String> determineTransitionName(ItemOperation operation, JiraIssueConfigValidator.JiraIssueConfig jiraIssueConfig) {
+    private Optional<String> determineTransitionName(ItemOperation operation, IssueConfig jiraIssueConfig) {
         if (!ItemOperation.UPDATE.equals(operation)) {
             if (ItemOperation.DELETE.equals(operation)) {
                 return jiraIssueConfig.getResolveTransition();
@@ -121,5 +108,4 @@ public class JiraTransitionHandler {
         }
         return Optional.empty();
     }
-
 }

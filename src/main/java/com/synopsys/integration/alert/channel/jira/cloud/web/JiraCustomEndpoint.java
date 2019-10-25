@@ -35,9 +35,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannelKey;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -48,8 +48,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraAppService;
-import com.synopsys.integration.jira.common.cloud.rest.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.rest.request.Response;
 
 @Component
@@ -75,10 +75,10 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
         JiraProperties jiraProperties = createJiraProperties(fieldValueModels);
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            JiraAppService jiraAppService = jiraServicesCloudFactory.createJiraAppService();
+            PluginManagerService jiraAppService = jiraServicesCloudFactory.createPluginManagerService();
             String username = jiraProperties.getUsername();
             String accessToken = jiraProperties.getAccessToken();
-            Response response = jiraAppService.installMarketplaceApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
+            Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
             if (response.isStatusCodeError()) {
                 return Optional.of(responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode()));
             }
@@ -135,7 +135,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
         return accessToken;
     }
 
-    private boolean isJiraPluginInstalled(JiraAppService jiraAppService, String accessToken, String username, String appKey) throws IntegrationException, InterruptedException {
+    private boolean isJiraPluginInstalled(PluginManagerService jiraAppService, String accessToken, String username, String appKey) throws IntegrationException, InterruptedException {
         long maxTimeForChecks = 5L;
         long checkAgain = 1L;
         while (checkAgain <= maxTimeForChecks) {
