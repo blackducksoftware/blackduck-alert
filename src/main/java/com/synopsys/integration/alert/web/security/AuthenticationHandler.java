@@ -167,7 +167,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-            .authorizeRequests()//.withObjectPostProcessor(createRoleProcessor())
+            .authorizeRequests().withObjectPostProcessor(createRoleProcessor())
             .and().logout().logoutSuccessUrl("/");
     }
 
