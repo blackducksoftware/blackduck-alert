@@ -23,11 +23,9 @@
 package com.synopsys.integration.alert.common.security.authorization;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
-import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -54,7 +51,7 @@ public class AuthorizationManager {
     @Autowired
     public AuthorizationManager(AuthorizationUtility authorizationUtility) {
         this.authorizationUtility = authorizationUtility;
-        permissionCache = new HashMap<>();
+        this.permissionCache = new HashMap<>();
     }
 
     public final Set<AccessOperation> getOperations(String context, String descriptorName) {
@@ -85,7 +82,7 @@ public class AuthorizationManager {
     }
 
     public final boolean anyReadPermission(Collection<String> contexts, Collection<String> descriptorNames) {
-        final Set<PermissionKey> permissionKeys = new HashSet<>();
+        Set<PermissionKey> permissionKeys = new HashSet<>();
         for (String context : contexts) {
             for (String descriptorName : descriptorNames) {
                 permissionKeys.add(new PermissionKey(context, descriptorName));
@@ -138,16 +135,11 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
-    public final boolean hasAlertRole() {
-        final EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
-        return getCurrentUserRoleNames().stream()
-                   .map(UserRole::findUserRole)
-                   .flatMap(Optional::stream)
-                   .anyMatch(allowedRoles::contains);
-    }
-
     private boolean isAlertRole(String roleName) {
-        return UserRole.findUserRole(roleName).isPresent();
+        return authorizationUtility.getRoles()
+                   .stream()
+                   .map(UserRoleModel::getName)
+                   .anyMatch(dbRoleName -> dbRoleName.equals(roleName));
     }
 
     private boolean currentUserAnyPermission(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
@@ -164,7 +156,7 @@ public class AuthorizationManager {
     }
 
     private Set<String> getCurrentUserRoleNames() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication || !authentication.isAuthenticated()) {
             return Set.of();
         }
@@ -175,7 +167,7 @@ public class AuthorizationManager {
     }
 
     public final void loadPermissionsIntoCache() {
-        Collection<UserRoleModel> roles = authorizationUtility.createRoleModels();
+        Collection<UserRoleModel> roles = authorizationUtility.getRoles();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }
 

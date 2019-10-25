@@ -22,18 +22,9 @@
  */
 package com.synopsys.integration.alert.common.enumeration;
 
-import java.util.Optional;
-
-public enum UserRole {
+public enum DefaultUserRole {
     ALERT_ADMIN,
     ALERT_JOB_MANAGER,
-    ALERT_USER;
+    ALERT_USER
 
-    public static final Optional<UserRole> findUserRole(String userRole) {
-        try {
-            return Optional.of(valueOf(userRole.toUpperCase()));
-        } catch (IllegalArgumentException ex) {
-            return Optional.empty();
-        }
-    }
 }

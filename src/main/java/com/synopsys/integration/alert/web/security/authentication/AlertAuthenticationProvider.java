@@ -23,9 +23,10 @@
 package com.synopsys.integration.alert.web.security.authentication;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.UserRole;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -51,12 +53,15 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final LdapManager ldapManager;
     private final AuthenticationEventManager authenticationEventManager;
+    private final AuthorizationUtility authorizationUtility;
 
     @Autowired
-    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventManager) {
+    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventManager,
+        AuthorizationUtility authorizationUtility) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.ldapManager = ldapManager;
         this.authenticationEventManager = authenticationEventManager;
+        this.authorizationUtility = authorizationUtility;
     }
 
     @Override
@@ -108,7 +113,10 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
     }
 
     private boolean isAuthorized(Authentication authentication) {
-        EnumSet<UserRole> allowedRoles = EnumSet.allOf(UserRole.class);
+        Set<String> allowedRoles = authorizationUtility.getRoles()
+                                       .stream()
+                                       .map(UserRoleModel::getName)
+                                       .collect(Collectors.toSet());
         return authentication.getAuthorities()
                    .stream()
                    .map(authenticationEventManager::getRoleFromAuthority)

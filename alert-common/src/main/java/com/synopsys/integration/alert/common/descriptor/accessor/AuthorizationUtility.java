@@ -25,18 +25,27 @@ package com.synopsys.integration.alert.common.descriptor.accessor;
 import java.util.Collection;
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 public interface AuthorizationUtility {
-    Set<UserRoleModel> createRoleModels();
+    Set<UserRoleModel> getRoles();
 
-    Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds);
+    Set<UserRoleModel> getRoles(Collection<Long> roleIds);
 
-    PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames);
+    UserRoleModel createRole(String roleName) throws AlertDatabaseConstraintException;
 
-    PermissionMatrixModel readPermissionsForRole(final Long roleId);
+    UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
 
-    void updateUserRoles(final Long userId, final Collection<UserRoleModel> roles);
+    PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
+
+    void deleteRole(String roleName) throws AlertDatabaseConstraintException;
+
+    PermissionMatrixModel mergePermissionsForRoles(Collection<String> roleNames);
+
+    PermissionMatrixModel readPermissionsForRole(Long roleId);
+
+    void updateUserRoles(Long userId, Collection<UserRoleModel> roles);
 
 }

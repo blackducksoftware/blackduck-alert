@@ -33,16 +33,24 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 public class RoleEntity extends DatabaseEntity {
     @Column(name = "rolename")
     private String roleName;
+    @Column(name = "custom")
+    private Boolean custom;
 
     public RoleEntity() {
         // JPA requires default constructor definitions
     }
 
-    public RoleEntity(final String roleName) {
+    public RoleEntity(String roleName, Boolean custom) {
         this.roleName = roleName;
+        this.custom = custom;
     }
 
     public String getRoleName() {
         return roleName;
     }
+
+    public Boolean getCustom() {
+        return custom;
+    }
+
 }

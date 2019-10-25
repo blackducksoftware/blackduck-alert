@@ -94,7 +94,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.UserRole;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
@@ -151,7 +151,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        String[] allowedRoles = Arrays.stream(UserRole.values()).map(UserRole::name).collect(Collectors.toList()).toArray(new String[UserRole.values().length]);
+        // FIXME read this from the DB
+        String[] allowedRoles = Arrays.stream(DefaultUserRole.values()).map(DefaultUserRole::name).collect(Collectors.toList()).toArray(new String[DefaultUserRole.values().length]);
         configureActiveMQProvider();
         configureWithSSL(http);
         configureH2Console(http);

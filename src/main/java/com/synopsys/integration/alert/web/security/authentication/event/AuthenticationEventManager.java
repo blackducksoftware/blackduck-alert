@@ -38,7 +38,6 @@ import org.springframework.security.saml.SAMLAuthenticationToken;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.UserRole;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -74,11 +73,11 @@ public class AuthenticationEventManager {
         }
     }
 
-    public Optional<UserRole> getRoleFromAuthority(GrantedAuthority grantedAuthority) {
+    public Optional<String> getRoleFromAuthority(GrantedAuthority grantedAuthority) {
         String authority = grantedAuthority.getAuthority();
         if (authority.startsWith(UserModel.ROLE_PREFIX)) {
-            String alertRoleCandidate = StringUtils.substringAfter(authority, UserModel.ROLE_PREFIX);
-            return UserRole.findUserRole(alertRoleCandidate);
+            String roleName = StringUtils.substringAfter(authority, UserModel.ROLE_PREFIX);
+            return Optional.of(roleName);
         }
         return Optional.empty();
     }
@@ -91,7 +90,6 @@ public class AuthenticationEventManager {
                                             .stream()
                                             .map(this::getRoleFromAuthority)
                                             .flatMap(Optional::stream)
-                                            .map(UserRole::name)
                                             .map(UserRoleModel::of)
                                             .collect(Collectors.toSet());
 

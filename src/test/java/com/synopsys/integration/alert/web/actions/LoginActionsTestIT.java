@@ -27,6 +27,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -126,8 +127,9 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         AuthenticationEventManager authenticationEventUtils = Mockito.mock(AuthenticationEventManager.class);
         Mockito.doNothing().when(authenticationEventUtils).sendAuthenticationEvent(Mockito.any());
+        AuthorizationUtility authorizationUtility = Mockito.mock(AuthorizationUtility.class);
 
-        AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager, authenticationEventUtils);
+        AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager, authenticationEventUtils, authorizationUtility);
         LoginActions loginActions = new LoginActions(authenticationProvider);
         boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
         assertFalse(authenticated);

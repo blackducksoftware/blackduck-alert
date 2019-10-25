@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -33,15 +34,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.database.authorization.AccessOperationEntity;
 import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
@@ -65,7 +69,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     private final ConfigContextRepository configContextRepository;
 
     @Autowired
-    public DefaultAuthorizationUtility(final RoleRepository roleRepository, final UserRoleRepository userRoleRepository, final PermissionMatrixRepository permissionMatrixRepository, final AccessOperationRepository accessOperationRepository,
+    public DefaultAuthorizationUtility(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository, AccessOperationRepository accessOperationRepository,
         RegisteredDescriptorRepository registeredDescriptorRepository, ConfigContextRepository configContextRepository) {
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
@@ -76,9 +80,9 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     @Override
-    public Set<UserRoleModel> createRoleModels() {
+    public Set<UserRoleModel> getRoles() {
         List<RoleEntity> roleList = roleRepository.findAll();
-        final Set<UserRoleModel> userRoles = new LinkedHashSet<>();
+        Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (RoleEntity entity : roleList) {
             userRoles.add(UserRoleModel.of(entity.getRoleName(), readPermissionsForRole(entity.getId())));
         }
@@ -86,24 +90,58 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     @Override
-    public Set<UserRoleModel> createRoleModels(final Collection<Long> roleIds) {
-        final Set<UserRoleModel> userRoles = new LinkedHashSet<>();
-        for (final Long roleId : roleIds) {
+    public Set<UserRoleModel> getRoles(Collection<Long> roleIds) {
+        Set<UserRoleModel> userRoles = new LinkedHashSet<>();
+        for (Long roleId : roleIds) {
             getRoleName(roleId).ifPresent(role -> userRoles.add(UserRoleModel.of(role, readPermissionsForRole(roleId))));
         }
         return userRoles;
     }
 
     @Override
-    public void updateUserRoles(final Long userId, final Collection<UserRoleModel> roles) {
+    public UserRoleModel createRole(String roleName) throws AlertDatabaseConstraintException {
+        RoleEntity dbRole = createRole(roleName, true);
+        return UserRoleModel.of(dbRole.getRoleName(), dbRole.getCustom());
+    }
+
+    @Override
+    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        RoleEntity roleEntity = createRole(roleName, true);
+        List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
+        return new UserRoleModel(roleEntity.getRoleName(), roleEntity.getCustom(), createModelFromPermission(permissions));
+    }
+
+    @Override
+    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        RoleEntity roleEntity = roleRepository.findByRoleName(roleName)
+                                    .orElseThrow(() -> new AlertDatabaseConstraintException("No role exists with name: " + roleName));
+        List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
+        return createModelFromPermission(permissions);
+    }
+
+    @Override
+    public void deleteRole(String roleName) throws AlertDatabaseConstraintException {
+        Optional<RoleEntity> foundRole = roleRepository.findByRoleName(roleName);
+        if (foundRole.isPresent()) {
+            RoleEntity roleEntity = foundRole.get();
+            if (Boolean.FALSE.equals(roleEntity.getCustom())) {
+                throw new AlertDatabaseConstraintException("Cannot delete the role '" + roleName + "' because it is not a custom role");
+            }
+            // Deletion cascades to permissions
+            roleRepository.deleteById(roleEntity.getId());
+        }
+    }
+
+    @Override
+    public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
         if (null != userId) {
             userRoleRepository.deleteAllByUserId(userId);
 
             if (null != roles && !roles.isEmpty()) {
-                final Collection<String> roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
-                final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleNames(roleNames);
-                final List<UserRoleRelation> roleRelations = new LinkedList<>();
-                for (final RoleEntity role : roleEntities) {
+                Collection<String> roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
+                List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleNames(roleNames);
+                List<UserRoleRelation> roleRelations = new LinkedList<>();
+                for (RoleEntity role : roleEntities) {
                     roleRelations.add(new UserRoleRelation(userId, role.getId()));
                 }
                 userRoleRepository.saveAll(roleRelations);
@@ -112,34 +150,73 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     @Override
-    public PermissionMatrixModel mergePermissionsForRoles(final Collection<String> roleNames) {
-        final List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleNames(roleNames);
+    public PermissionMatrixModel mergePermissionsForRoles(Collection<String> roleNames) {
+        List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleNames(roleNames);
         return readPermissionsForRole(roles);
     }
 
     @Override
-    public PermissionMatrixModel readPermissionsForRole(final Long roleId) {
-        final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
-        return this.createPermissionMatrix(permissions);
+    public PermissionMatrixModel readPermissionsForRole(Long roleId) {
+        List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
+        return this.createModelFromPermission(permissions);
     }
 
-    private Optional<String> getRoleName(final Long roleId) {
+    private Optional<String> getRoleName(Long roleId) {
         return roleRepository.findById(roleId).map(RoleEntity::getRoleName);
     }
 
-    private PermissionMatrixModel readPermissionsForRole(final List<RoleEntity> roles) {
-        final List<Long> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
-        final List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleIdIn(roleIds);
-        return this.createPermissionMatrix(permissions);
+    private RoleEntity createRole(String roleName, Boolean custom) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(roleName)) {
+            throw new AlertDatabaseConstraintException("The field roleName must not be blank");
+        }
+        RoleEntity roleEntity = new RoleEntity(roleName, custom);
+        return roleRepository.save(roleEntity);
     }
 
-    private PermissionMatrixModel createPermissionMatrix(final List<PermissionMatrixRelation> permissions) {
-        final Map<PermissionKey, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
+    private List<PermissionMatrixRelation> updateRoleOperations(RoleEntity roleEntity, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        List<PermissionMatrixRelation> oldPermissionsForRole = permissionMatrixRepository.findAllByRoleId(roleEntity.getId());
+        if (!oldPermissionsForRole.isEmpty()) {
+            permissionMatrixRepository.deleteAll(oldPermissionsForRole);
+        }
+
+        List<PermissionMatrixRelation> matrixEntries = new ArrayList<>();
+        Map<PermissionKey, EnumSet<AccessOperation>> permissions = permissionMatrix.getPermissions();
+        for (Map.Entry<PermissionKey, EnumSet<AccessOperation>> permission : permissions.entrySet()) {
+            PermissionKey permissionKey = permission.getKey();
+            ConfigContextEntity dbContext = configContextRepository.findFirstByContext(permissionKey.getContext())
+                                                .orElseThrow(() -> new AlertDatabaseConstraintException("Illegal context specified for permission"));
+            RegisteredDescriptorEntity registeredDescriptor = registeredDescriptorRepository.findFirstByName(permissionKey.getDescriptorName())
+                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("Illegal descriptor name specified for permission"));
+
+            Set<String> accessOperations = permission.getValue()
+                                               .stream()
+                                               .map(AccessOperation::name)
+                                               .collect(Collectors.toSet());
+            List<AccessOperationEntity> dbAccessOperations = accessOperationRepository.findOperationEntitiesByOperationName(accessOperations);
+            for (AccessOperationEntity accessOperation : dbAccessOperations) {
+                PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), dbContext.getId(), registeredDescriptor.getId(), accessOperation.getId());
+                matrixEntries.add(permissionMatrixRelation);
+            }
+        }
+        if (!matrixEntries.isEmpty()) {
+            return permissionMatrixRepository.saveAll(matrixEntries);
+        }
+        return List.of();
+    }
+
+    private PermissionMatrixModel readPermissionsForRole(List<RoleEntity> roles) {
+        List<Long> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
+        List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleIdIn(roleIds);
+        return this.createModelFromPermission(permissions);
+    }
+
+    private PermissionMatrixModel createModelFromPermission(List<PermissionMatrixRelation> permissions) {
+        Map<PermissionKey, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
 
         if (null != permissions) {
-            for (final PermissionMatrixRelation relation : permissions) {
-                final Optional<String> optionalContext = configContextRepository.findById(relation.getContextId()).map(ConfigContextEntity::getContext);
-                final Optional<String> optionalDescriptorName = registeredDescriptorRepository.findById(relation.getDescriptorId()).map(RegisteredDescriptorEntity::getName);
+            for (PermissionMatrixRelation relation : permissions) {
+                Optional<String> optionalContext = configContextRepository.findById(relation.getContextId()).map(ConfigContextEntity::getContext);
+                Optional<String> optionalDescriptorName = registeredDescriptorRepository.findById(relation.getDescriptorId()).map(RegisteredDescriptorEntity::getName);
                 if (optionalDescriptorName.isPresent() && optionalContext.isPresent()) {
                     PermissionKey permissionKey = new PermissionKey(optionalContext.get(), optionalDescriptorName.get());
                     permissionOperations.computeIfAbsent(permissionKey, ignored -> EnumSet.noneOf(AccessOperation.class));

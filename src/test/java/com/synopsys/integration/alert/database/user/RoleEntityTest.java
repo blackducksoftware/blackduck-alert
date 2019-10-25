@@ -8,9 +8,9 @@ public class RoleEntityTest {
 
     @Test
     public void testRoleEntity() {
-        final String expectedRoleName = "expected_role_name";
-        final Long expectedId = 22L;
-        final RoleEntity entity = new RoleEntity(expectedRoleName);
+        String expectedRoleName = "expected_role_name";
+        Long expectedId = 22L;
+        RoleEntity entity = new RoleEntity(expectedRoleName, true);
         entity.setId(expectedId);
         assertEquals(expectedRoleName, entity.getRoleName());
         assertEquals(expectedId, entity.getId());

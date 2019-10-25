@@ -29,26 +29,37 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class UserRoleModel extends AlertSerializableModel {
     private final String name;
+    private final Boolean custom;
     private final PermissionMatrixModel permissions;
 
-    private UserRoleModel(String name, PermissionMatrixModel permissions) {
+    public UserRoleModel(String name, Boolean custom, PermissionMatrixModel permissions) {
         this.name = name;
+        this.custom = custom;
         this.permissions = permissions;
     }
 
     public static final UserRoleModel of(String name) {
         Objects.requireNonNull(name);
-        return new UserRoleModel(name, new PermissionMatrixModel(Map.of()));
+        return new UserRoleModel(name, false, new PermissionMatrixModel(Map.of()));
+    }
+
+    public static final UserRoleModel of(String name, Boolean custom) {
+        Objects.requireNonNull(name);
+        return new UserRoleModel(name, custom, new PermissionMatrixModel(Map.of()));
     }
 
     public static final UserRoleModel of(String name, PermissionMatrixModel permissions) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(permissions);
-        return new UserRoleModel(name, permissions);
+        return new UserRoleModel(name, false, permissions);
     }
 
     public String getName() {
         return name;
+    }
+
+    public boolean isCustom() {
+        return custom;
     }
 
     public PermissionMatrixModel getPermissions() {
