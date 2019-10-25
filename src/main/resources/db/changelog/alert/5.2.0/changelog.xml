@@ -6,4 +6,5 @@
     <include file="changelog-configuration-timestamp.xml" relativeToChangelogFile="true"/>
     <include file="changelog-jira-server.xml" relativeToChangelogFile="true"/>
     <include file="changelog-default-users.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-custom-roles.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

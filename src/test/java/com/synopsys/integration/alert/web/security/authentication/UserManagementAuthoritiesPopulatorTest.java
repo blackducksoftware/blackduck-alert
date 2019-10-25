@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.synopsys.integration.alert.common.enumeration.UserRole;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -37,7 +37,7 @@ public class UserManagementAuthoritiesPopulatorTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
 
         GrantedAuthority testAdminRole = new SimpleGrantedAuthority(roleNameMapping);
-        String expectedRoleName = UserModel.ROLE_PREFIX + UserRole.ALERT_ADMIN.name();
+        String expectedRoleName = UserModel.ROLE_PREFIX + DefaultUserRole.ALERT_ADMIN.name();
         GrantedAuthority expectedAdminRole = new SimpleGrantedAuthority(expectedRoleName);
         Set<GrantedAuthority> inputRoles = Set.of(testAdminRole);
         Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(inputRoles);
@@ -79,7 +79,7 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
-        String expectedRoleName = UserRole.ALERT_ADMIN.name();
+        String expectedRoleName = DefaultUserRole.ALERT_ADMIN.name();
         Set<String> inputRoles = Set.of(roleNameMapping);
         Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(inputRoles, false);
 
@@ -107,7 +107,7 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
-        String expectedRoleName = UserModel.ROLE_PREFIX + UserRole.ALERT_ADMIN.name();
+        String expectedRoleName = UserModel.ROLE_PREFIX + DefaultUserRole.ALERT_ADMIN.name();
         Set<String> inputRoles = Set.of(roleNameMapping);
         Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(inputRoles, true);
 

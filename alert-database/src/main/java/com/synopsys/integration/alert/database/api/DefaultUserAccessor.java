@@ -73,7 +73,7 @@ public class DefaultUserAccessor implements UserAccessor {
     private UserModel createModel(UserEntity user) {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        Set<UserRoleModel> roles = authorizationUtility.createRoleModels(roleIdsForUser);
+        Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
         return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
     }
 
@@ -109,7 +109,7 @@ public class DefaultUserAccessor implements UserAccessor {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.createRoleModels(roleIds)));
+            UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.getRoles(roleIds)));
             assigned = model.getName().equals(username) && model.getRoles().size() == roleIds.size();
         }
         return assigned;

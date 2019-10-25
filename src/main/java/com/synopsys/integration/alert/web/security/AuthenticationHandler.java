@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
@@ -46,10 +45,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
 import org.springframework.security.saml.SAMLEntryPoint;
@@ -83,6 +85,8 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -94,8 +98,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.UserRole;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
@@ -124,11 +129,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final ConfigurationAccessor configurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final AuthenticationEventManager authenticationEventManager;
+    private final AuthorizationUtility authorizationUtility;
 
     @Autowired
     AuthenticationHandler(ConfigurationAccessor configurationAccessor, HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, AuthenticationDescriptorKey authenticationDescriptorKey,
-        AuthenticationEventManager authenticationEventManager) {
+        AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility) {
         this.configurationAccessor = configurationAccessor;
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
@@ -137,6 +143,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.authoritiesPopulator = authoritiesPopulator;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.authenticationEventManager = authenticationEventManager;
+        this.authorizationUtility = authorizationUtility;
     }
 
     @Bean
@@ -151,18 +158,16 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        String[] allowedRoles = Arrays.stream(UserRole.values()).map(UserRole::name).collect(Collectors.toList()).toArray(new String[UserRole.values().length]);
         configureActiveMQProvider();
         configureWithSSL(http);
         configureH2Console(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
             .and().exceptionHandling().authenticationEntryPoint(samlEntryPoint())
-            .and().csrf().csrfTokenRepository(csrfTokenRepository)
-            .ignoringRequestMatchers(createCsrfIgnoreMatchers())
+            .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
             .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-            .authorizeRequests().anyRequest().hasAnyRole(allowedRoles)
+            .authorizeRequests().withObjectPostProcessor(createRoleProcessor())
             .and().logout().logoutSuccessUrl("/");
     }
 
@@ -217,6 +222,30 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
         return matchers;
+    }
+
+    private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
+        return new ObjectPostProcessor<>() {
+            @Override
+            public AffirmativeBased postProcess(AffirmativeBased affirmativeBased) {
+                WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
+                DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+                expressionHandler.setRoleHierarchy(authorities -> {
+                    String[] allAlertRoles = retrieveAllowedRoles();
+                    return AuthorityUtils.createAuthorityList(allAlertRoles);
+                });
+                webExpressionVoter.setExpressionHandler(expressionHandler);
+                affirmativeBased.getDecisionVoters().add(webExpressionVoter);
+                return affirmativeBased;
+            }
+        };
+    }
+
+    private String[] retrieveAllowedRoles() {
+        return authorizationUtility.getRoles()
+                   .stream()
+                   .map(UserRoleModel::getName)
+                   .toArray(String[]::new);
     }
 
     @Bean
