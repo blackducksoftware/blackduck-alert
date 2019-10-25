@@ -84,7 +84,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
         List<RoleEntity> roleList = roleRepository.findAll();
         Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (RoleEntity entity : roleList) {
-            userRoles.add(UserRoleModel.of(entity.getRoleName(), readPermissionsForRole(entity.getId())));
+            userRoles.add(new UserRoleModel(entity.getRoleName(), entity.getCustom(), readPermissionsForRole(entity.getId())));
         }
         return userRoles;
     }
@@ -93,7 +93,8 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     public Set<UserRoleModel> getRoles(Collection<Long> roleIds) {
         Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (Long roleId : roleIds) {
-            getRoleName(roleId).ifPresent(role -> userRoles.add(UserRoleModel.of(role, readPermissionsForRole(roleId))));
+            roleRepository.findById(roleId)
+                .ifPresent(role -> userRoles.add(new UserRoleModel(role.getRoleName(), role.getCustom(), readPermissionsForRole(roleId))));
         }
         return userRoles;
     }

@@ -39,19 +39,12 @@ public class UserRoleModel extends AlertSerializableModel {
     }
 
     public static final UserRoleModel of(String name) {
-        Objects.requireNonNull(name);
-        return new UserRoleModel(name, false, new PermissionMatrixModel(Map.of()));
+        return of(name, false);
     }
 
     public static final UserRoleModel of(String name, Boolean custom) {
         Objects.requireNonNull(name);
         return new UserRoleModel(name, custom, new PermissionMatrixModel(Map.of()));
-    }
-
-    public static final UserRoleModel of(String name, PermissionMatrixModel permissions) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(permissions);
-        return new UserRoleModel(name, false, permissions);
     }
 
     public String getName() {
