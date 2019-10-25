@@ -22,17 +22,22 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class MsTeamsMessageParser extends ChannelMessageParser {
+
     @Override
     protected String encodeString(String txt) {
         return txt;
@@ -40,7 +45,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     @Override
     protected String emphasize(String txt) {
-        return String.format("*%s*", txt);
+        return String.format("**%s**", txt);
     }
 
     @Override
@@ -50,7 +55,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     @Override
     protected String getLineSeparator() {
-        return "\r\n";
+        return "\r\n\r\n";
     }
 
     @Override
@@ -64,13 +69,20 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
     }
 
     @Override
-    protected String getListItemPrefix() {
-        return "* ";
+    public String createHeader(MessageContentGroup messageContentGroup) {
+        return String.format("Received a message from %s", messageContentGroup.getCommonProvider().getValue());
     }
 
     @Override
-    public String createHeader(MessageContentGroup messageContentGroup) {
-        return String.format("Received an Alert message for %s", messageContentGroup.getCommonProvider().getValue());
+    protected String createLinkableItemValueString(LinkableItem linkableItem) {
+        String itemUrl = linkableItem.getUrl().orElse("");
+        if (StringUtils.isNotBlank(itemUrl) && itemUrl.contains(" ")) {
+            String encodedUrl = URLEncoder.encode(itemUrl, Charsets.UTF_8);
+            LinkableItem newItem = new LinkableItem(linkableItem.getName(), linkableItem.getValue(), encodedUrl);
+            return super.createLinkableItemValueString(newItem);
+        }
+
+        return super.createLinkableItemValueString(linkableItem);
     }
 
     public MsTeamsMessage createMsTeamsMessage(MessageContentGroup messageContentGroup) {

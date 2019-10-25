@@ -53,6 +53,10 @@ public class MsTeamsEventParser {
             throw new IntegrationException("Unable to load the MS Teams template - is it on the classpath? (" + e.getMessage() + ")", e);
         }
     }
+    //
+    //    public List<MsTeamsMessage> splitMessages(MsTeamsMessage msTeamsMessage) {
+    //
+    //    }
 
     public String toJson(MsTeamsMessage msTeamsMessage) throws IntegrationException {
         return freemarkerTemplatingService.resolveTemplate(msTeamsMessage, msTeamsTemplate);

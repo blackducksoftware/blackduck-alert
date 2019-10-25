@@ -305,7 +305,7 @@ public abstract class ChannelMessageParser {
         return messagePieces;
     }
 
-    private String createLinkableItemValueString(LinkableItem linkableItem) {
+    protected String createLinkableItemValueString(LinkableItem linkableItem) {
         String value = encodeString(linkableItem.getValue());
         Optional<String> optionalUrl = linkableItem.getUrl();
 
