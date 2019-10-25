@@ -31,7 +31,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -76,7 +77,7 @@ public class JiraDistributionTestAction extends IssueTrackerDistributionTestActi
         JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
-        return new JiraTransitionHandler(issueService);
+        return new JiraCloudTransitionHandler(issueService);
     }
 
     @Override

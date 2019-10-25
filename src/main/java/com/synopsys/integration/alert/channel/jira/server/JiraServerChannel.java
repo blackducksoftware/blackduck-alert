@@ -22,29 +22,75 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
+import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
+import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.service.IssueSearchService;
+import com.synopsys.integration.jira.common.server.service.IssueService;
+import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.synopsys.integration.jira.common.server.service.ProjectService;
+import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 @Component
 public class JiraServerChannel extends IssueTrackerChannel {
-    private JiraServerDescriptorKey descriptorKey;
+    private static final Logger logger = LoggerFactory.getLogger(JiraServerChannel.class);
+    private final JiraMessageParser jiraMessageParser;
+    private final JiraServerChannelKey descriptorKey;
 
     @Autowired
-    public JiraServerChannel(Gson gson, AuditUtility auditUtility, JiraServerDescriptorKey descriptorKey) {
+    public JiraServerChannel(Gson gson, AuditUtility auditUtility, JiraServerChannelKey descriptorKey, JiraMessageParser jiraMessageParser) {
         super(gson, auditUtility);
         this.descriptorKey = descriptorKey;
+        this.jiraMessageParser = jiraMessageParser;
     }
 
     @Override
     public IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
-        return null;
+        FieldAccessor fieldAccessor = event.getFieldAccessor();
+        MessageContentGroup content = event.getContent();
+        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
+        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
+        logger.debug("Verifying the required application is installed on the Jira server...");
+        boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
+        if (missingApp) {
+            throw new AlertException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
+        }
+
+        ProjectService projectService = jiraServerServiceFactory.createProjectService();
+        UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
+        IssueTypeService issueTypeService = jiraServerServiceFactory.createIssueTypeService();
+
+        JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService);
+        IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
+
+        IssueService issueService = jiraServerServiceFactory.createIssueService();
+        IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
+        IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
+        JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
+        JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
+        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
+        return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
     }
 
     @Override

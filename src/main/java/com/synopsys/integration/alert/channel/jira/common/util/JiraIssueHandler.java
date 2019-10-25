@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.util;
+package com.synopsys.integration.alert.channel.jira.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +34,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueHandler;
@@ -46,35 +46,27 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
+public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
-    private static final Logger logger = LoggerFactory.getLogger(JiraIssueHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final IssueService issueService;
-    private final JiraProperties jiraProperties;
     private final Gson gson;
-
     private final JiraTransitionHandler jiraTransitionHelper;
     private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public JiraIssueHandler(IssueService issueService, IssueSearchService issueSearchService, IssuePropertyService issuePropertyService, JiraProperties jiraProperties, JiraMessageParser jiraMessageParser, Gson gson) {
+    public JiraIssueHandler(JiraMessageParser jiraMessageParser, Gson gson, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler) {
         super(jiraMessageParser);
-        this.issueService = issueService;
-        this.jiraProperties = jiraProperties;
         this.gson = gson;
-        this.jiraTransitionHelper = new JiraTransitionHandler(issueService);
-        this.jiraIssuePropertyHelper = new JiraIssuePropertyHandler(issueSearchService, issuePropertyService);
+        this.jiraTransitionHelper = jiraTransitionHandler;
+        this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
     }
+
+    public abstract IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;
 
     @Override
     protected IssueResponseModel createIssue(IssueConfig jiraIssueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem, String trackingKey, IssueContentModel contentModel)
@@ -85,7 +77,7 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
         String issueCreator = jiraIssueConfig.getIssueCreator();
 
         try {
-            IssueResponseModel issue = issueService.createIssue(new IssueCreationRequestModel(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectName(), fieldsBuilder, List.of()));
+            IssueResponseModel issue = createIssue(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectName(), fieldsBuilder);
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
             String issueKey = issue.getKey();
             addIssueProperties(issueKey, providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
@@ -106,36 +98,12 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
-        return jiraIssuePropertyHelper
-                   .findIssues(projectKey, provider, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
-                   .map(IssueSearchResponseModel::getIssues)
-                   .orElse(List.of());
-    }
-
-    @Override
-    protected void addComment(String issueKey, String comment) throws IntegrationException {
-        IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
-        issueService.addComment(issueCommentRequestModel);
-    }
-
-    @Override
     protected String createAdditionalTrackingKey(ComponentItem componentItem) {
         if (!componentItem.collapseOnCategory()) {
             LinkableItem categoryItem = componentItem.getCategoryItem();
             return categoryItem.getName() + categoryItem.getValue();
         }
         return StringUtils.EMPTY;
-    }
-
-    @Override
-    protected String getIssueKey(IssueResponseModel issueModel) {
-        return issueModel.getKey();
-    }
-
-    @Override
-    protected String getIssueTrackerUrl() {
-        return jiraProperties.getUrl();
     }
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
@@ -186,5 +154,4 @@ public class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
 
         return fieldsBuilder;
     }
-
 }

@@ -25,13 +25,13 @@ package com.synopsys.integration.alert.channel.jira.server.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.server.JiraServerDescriptorKey;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
 public class JiraServerConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected JiraServerConfigurationAction(final JiraServerDescriptorKey descriptorKey, JiraServerDistributionTestAction jiraServerDistributionTestAction, JiraServerGlobalTestAction jiraServerGlobalTestAction) {
+    protected JiraServerConfigurationAction(JiraServerChannelKey descriptorKey, JiraServerDistributionTestAction jiraServerDistributionTestAction, JiraServerGlobalTestAction jiraServerGlobalTestAction) {
         super(descriptorKey);
         addDistributionTestAction(jiraServerDistributionTestAction);
         addGlobalTestAction(jiraServerGlobalTestAction);

@@ -28,11 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
-import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -41,35 +40,37 @@ import com.synopsys.integration.jira.common.model.response.UserDetailsResponseMo
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
-public class JiraGlobalTestAction extends TestAction {
-    public static final Logger logger = LoggerFactory.getLogger(JiraGlobalTestAction.class);
+public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
+    public static final Logger logger = LoggerFactory.getLogger(JiraCloudGlobalTestAction.class);
     private final Gson gson;
 
     @Autowired
-    public JiraGlobalTestAction(Gson gson) {
+    public JiraCloudGlobalTestAction(Gson gson) {
         this.gson = gson;
     }
 
     @Override
-    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
         JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
-        try {
-            JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
-            String username = jiraProperties.getUsername();
-            boolean missingApp = jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
-            if (missingApp) {
-                throw new AlertException("Please configure the Jira Cloud plugin for your server.");
-            }
-            UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
-            boolean retrievedCurrentUser = userSearchService.findUser(username).stream().map(UserDetailsResponseModel::getEmailAddress).anyMatch(email -> email.equals(username));
-            if (!retrievedCurrentUser) {
-                throw new AlertException("User did not match any known users.");
-            }
-        } catch (IntegrationException e) {
-            throw new AlertException("An error occurred during testing: " + e.getMessage());
-        }
-        return new MessageResult("Successfully connected to Jira Cloud instance.");
+        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+        PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
+        String username = jiraProperties.getUsername();
+        return jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
     }
 
+    @Override
+    protected boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+        String username = jiraProperties.getUsername();
+        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
+        return userSearchService.findUser(username).stream()
+                   .map(UserDetailsResponseModel::getEmailAddress)
+                   .noneMatch(email -> email.equals(username));
+    }
+
+    @Override
+    protected String getChannelDisplayName() {
+        return JiraDescriptor.JIRA_LABEL;
+    }
 }

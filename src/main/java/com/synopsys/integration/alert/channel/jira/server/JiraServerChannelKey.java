@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 @Component
-public class JiraServerDescriptorKey extends ChannelKey {
+public class JiraServerChannelKey extends ChannelKey {
     @Override
     public String getUniversalKey() {
         return "channel_jira_server";

@@ -34,9 +34,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraChannelKey;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCustomEndpoint;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
@@ -57,13 +57,13 @@ import com.synopsys.integration.rest.request.Response;
 public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
 
-    private final JiraChannelKey jiraChannelKey;
+    private final JiraServerChannelKey jiraChannelKey;
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomEndpoint(JiraChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+    public JiraServerCustomEndpoint(JiraServerChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
         super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;

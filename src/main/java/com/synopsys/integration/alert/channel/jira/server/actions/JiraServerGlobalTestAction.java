@@ -22,17 +22,53 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.actions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 @Component
-public class JiraServerGlobalTestAction extends TestAction {
+public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
+    public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalTestAction.class);
+    private final Gson gson;
+
+    @Autowired
+    public JiraServerGlobalTestAction(Gson gson) {
+        this.gson = gson;
+    }
+
     @Override
-    public MessageResult testConfig(final String configId, final String destination, final FieldAccessor fieldAccessor) throws IntegrationException {
-        return null;
+    protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
+        String username = jiraProperties.getUsername();
+        return jiraAppService.getInstalledApp(username, jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
+    }
+
+    @Override
+    protected boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+        String username = jiraProperties.getUsername();
+        UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
+        return userSearchService.findUserByUsername(username).stream().map(UserDetailsResponseModel::getName).noneMatch(email -> email.equals(username));
+    }
+
+    @Override
+    protected String getChannelDisplayName() {
+        return JiraServerDescriptor.JIRA_LABEL;
     }
 }
