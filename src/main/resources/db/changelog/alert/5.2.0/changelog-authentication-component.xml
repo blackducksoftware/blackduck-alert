@@ -6,6 +6,10 @@
         <sql dbms="h2" stripComments="true">
             CALL REGISTER_COMPONENT('component_authentication');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL REMOVE_ALL_PERMISSIONS('ALERT_JOB_MANAGER','component_authentication', 'GLOBAL');
+            CALL REMOVE_ALL_PERMISSIONS('ALERT_USER','component_authentication', 'GLOBAL');
+        </sql>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_CONFIGS">
