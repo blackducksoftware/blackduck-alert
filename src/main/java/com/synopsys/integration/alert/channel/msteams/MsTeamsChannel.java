@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.channel.msteams;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,11 +63,14 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
         MsTeamsMessage msTeamsMessage = msTeamsMessageParser.createMsTeamsMessage(event.getContent());
-        String json = msTeamsEventParser.toJson(msTeamsMessage);
+        List<Request> teamsRequests = new LinkedList<>();
+        for (MsTeamsMessage message : msTeamsEventParser.splitMessages(msTeamsMessage)) {
+            String json = msTeamsEventParser.toJson(message);
+            Request request = restChannelUtility.createPostMessageRequest(webhook, new HashMap<>(), json);
+            teamsRequests.add(request);
+        }
 
-        Request request = restChannelUtility.createPostMessageRequest(webhook, new HashMap<>(), json);
-
-        restChannelUtility.sendSingleMessage(request, event.getDestination());
+        restChannelUtility.sendMessage(teamsRequests, event.getDestination());
     }
 
 }

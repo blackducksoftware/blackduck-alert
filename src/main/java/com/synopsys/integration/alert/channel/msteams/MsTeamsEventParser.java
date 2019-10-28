@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.channel.msteams;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,7 +38,8 @@ import freemarker.template.Template;
 
 @Component
 public class MsTeamsEventParser {
-    private static final int MAX_TEXT_LIMIT_REQUEST = 20000;
+    // There is a size limit in the request size that is allowed (20KB). This text limit is meant to hopefully keep the message under that size limit
+    private static final int MAX_TEXT_LIMIT_REQUEST = 10000;
 
     private FreemarkerTemplatingService freemarkerTemplatingService;
     private Configuration freemarkerConfiguration;
@@ -53,10 +56,39 @@ public class MsTeamsEventParser {
             throw new IntegrationException("Unable to load the MS Teams template - is it on the classpath? (" + e.getMessage() + ")", e);
         }
     }
-    //
-    //    public List<MsTeamsMessage> splitMessages(MsTeamsMessage msTeamsMessage) {
-    //
-    //    }
+
+    public List<MsTeamsMessage> splitMessages(MsTeamsMessage msTeamsMessage) {
+        List<MsTeamsMessage> splitMessages = new LinkedList<>();
+        int totalMessageSize = 0;
+        List<MsTeamsSection> msTeamsSections = new LinkedList<>();
+        for (MsTeamsSection section : msTeamsMessage.getSections()) {
+            MsTeamsSection msTeamsSection = new MsTeamsSection();
+            msTeamsSection.setSubTopic(section.getSubTopic());
+            List<String> componentsMessage = new LinkedList<>();
+            for (String message : section.getComponentsMessage()) {
+                int messageLength = message.length();
+                if (totalMessageSize + messageLength >= MAX_TEXT_LIMIT_REQUEST) {
+                    msTeamsSection.setComponentsMessage(componentsMessage);
+                    msTeamsSections.add(msTeamsSection);
+                    MsTeamsMessage newMessage = new MsTeamsMessage(msTeamsMessage.getTitle(), msTeamsMessage.getTopic(), msTeamsSections);
+                    splitMessages.add(newMessage);
+                    componentsMessage = new LinkedList<>();
+                    msTeamsSections = new LinkedList<>();
+                    msTeamsSection = new MsTeamsSection();
+                    msTeamsSection.setSubTopic(section.getSubTopic());
+                    totalMessageSize = 0;
+                }
+                componentsMessage.add(message);
+                totalMessageSize += messageLength;
+            }
+            msTeamsSection.setComponentsMessage(componentsMessage);
+            msTeamsSections.add(msTeamsSection);
+        }
+
+        MsTeamsMessage newMessage = new MsTeamsMessage(msTeamsMessage.getTitle(), msTeamsMessage.getTopic(), msTeamsSections);
+        splitMessages.add(newMessage);
+        return splitMessages;
+    }
 
     public String toJson(MsTeamsMessage msTeamsMessage) throws IntegrationException {
         return freemarkerTemplatingService.resolveTemplate(msTeamsMessage, msTeamsTemplate);
