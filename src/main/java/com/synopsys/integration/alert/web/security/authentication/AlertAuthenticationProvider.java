@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.web.security.authentication;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -35,11 +34,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
-    private List<AuthenticationPerformer> sortedAuthenticationPerformers;
+    private List<AuthenticationPerformer> authenticationPerformers;
 
     @Autowired
     public AlertAuthenticationProvider(List<AuthenticationPerformer> authenticationPerformers) {
-        this.sortedAuthenticationPerformers = sortAuthenticationPerformers(authenticationPerformers);
+        this.authenticationPerformers = authenticationPerformers;
     }
 
     @Override
@@ -48,25 +47,17 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
             throw new IllegalArgumentException("Only UsernamePasswordAuthenticationToken is supported, " + authentication.getClass() + " was attempted");
         }
 
-        for (AuthenticationPerformer authenticationPerformer : sortedAuthenticationPerformers) {
-            Optional<UsernamePasswordAuthenticationToken> optionalAuthToken = authenticationPerformer.performAuthentication(authentication);
-            if (optionalAuthToken.isPresent()) {
-                return optionalAuthToken.get();
-            }
-        }
-        return authentication;
+        return authenticationPerformers
+                   .parallelStream()
+                   .map(authPerformer -> authPerformer.performAuthentication(authentication))
+                   .flatMap(Optional::stream)
+                   .findAny()
+                   .orElse(authentication);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
-
-    private List<AuthenticationPerformer> sortAuthenticationPerformers(List<AuthenticationPerformer> authenticationPerformers) {
-        return authenticationPerformers
-                   .stream()
-                   .sorted()
-                   .collect(Collectors.toList());
     }
 
 }

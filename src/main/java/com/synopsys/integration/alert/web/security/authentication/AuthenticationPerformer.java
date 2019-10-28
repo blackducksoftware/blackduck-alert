@@ -34,22 +34,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationPriority;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
-public abstract class AuthenticationPerformer implements Comparable<AuthenticationPerformer> {
-    private AuthenticationPriority priority;
+public abstract class AuthenticationPerformer {
     private AuthenticationEventManager authenticationEventManager;
     private AuthorizationUtility authorizationUtility;
 
-    protected AuthenticationPerformer(AuthenticationPriority priority, AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility) {
-        this.priority = priority;
+    protected AuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility) {
         this.authenticationEventManager = authenticationEventManager;
         this.authorizationUtility = authorizationUtility;
     }
 
-    public final Optional<UsernamePasswordAuthenticationToken> performAuthentication(Authentication authentication) {
+    public final Optional<Authentication> performAuthentication(Authentication authentication) {
         Authentication authenticationResult = authenticateWithProvider(authentication);
         if (authenticationResult.isAuthenticated()) {
             Collection<? extends GrantedAuthority> authorities = isAuthorized(authenticationResult) ? authenticationResult.getAuthorities() : List.of();
@@ -61,15 +58,6 @@ public abstract class AuthenticationPerformer implements Comparable<Authenticati
     }
 
     public abstract Authentication authenticateWithProvider(Authentication pendingAuthentication);
-
-    @Override
-    public int compareTo(AuthenticationPerformer other) {
-        return this.getPriority().compareTo(other.getPriority());
-    }
-
-    protected AuthenticationPriority getPriority() {
-        return priority;
-    }
 
     private boolean isAuthorized(Authentication authentication) {
         Set<String> allowedRoles = authorizationUtility.getRoles()
