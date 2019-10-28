@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="jrichard" id="2019-10-25-15-06-08-677-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-1" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="AUDIT_ENTRIES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_5"/>
+            </column>
+            <column name="COMMON_CONFIG_ID" type="BIGINT(19)"/>
+            <column name="ERROR_MESSAGE" type="VARCHAR(255)"/>
+            <column name="ERROR_STACK_TRACE" type="VARCHAR(2147483647)"/>
+            <column name="STATUS" type="INT(10)"/>
+            <column name="TIME_CREATED" type="TIMESTAMP"/>
+            <column name="TIME_LAST_SENT" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-06-08-677-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-2" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="AUDIT_NOTIFICATION_RELATION" schemaName="ALERT">
+            <column name="AUDIT_ENTRY_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTIFICATION_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jrichard" id="2019-10-25-15-06-08-677-3">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-18" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="AUDIT_ENTRY_ID, NOTIFICATION_ID" constraintName="CONSTRAINT_6" tableName="AUDIT_NOTIFICATION_RELATION" schemaName="ALERT"/>
+    </changeSet>
+</databaseChangeLog>
