@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.msteams;
 
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.Charsets;
@@ -37,10 +38,27 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class MsTeamsMessageParser extends ChannelMessageParser {
+    private Set<Character> reservedChars = Set.of('*', '~', '#', '-', '_');
 
     @Override
     protected String encodeString(String txt) {
-        return txt;
+        StringBuilder newTxt = new StringBuilder(txt);
+        int drift = 0;
+        char characterMemory = Character.MIN_VALUE;
+        for (int i = 0; i < txt.length(); i++) {
+            char c = txt.charAt(i);
+            if (characterMemory == c) {
+                continue;
+            }
+
+            characterMemory = c;
+            if (reservedChars.contains(c)) {
+                newTxt.insert(i + drift, "\\");
+                drift++;
+            }
+        }
+
+        return newTxt.toString();
     }
 
     @Override

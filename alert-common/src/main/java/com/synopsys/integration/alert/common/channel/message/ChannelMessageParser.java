@@ -57,7 +57,7 @@ public abstract class ChannelMessageParser {
         for (ProviderMessageContent messageContent : messageContentGroup.getSubContent()) {
             String componentSubTopic = getComponentSubTopic(messageContent);
             if (StringUtils.isNotBlank(componentSubTopic)) {
-                messagePieces.add(componentSubTopic);
+                messagePieces.add(componentSubTopic + getLineSeparator());
             }
 
             List<String> componentItems = createComponentItemMessage(messageContent);
@@ -83,7 +83,7 @@ public abstract class ChannelMessageParser {
 
     public String getComponentSubTopic(ProviderMessageContent messageContent) {
         return messageContent.getSubTopic()
-                   .map(item -> createLinkableItemString(item, true) + getLineSeparator())
+                   .map(item -> createLinkableItemString(item, true))
                    .orElse("");
     }
 
