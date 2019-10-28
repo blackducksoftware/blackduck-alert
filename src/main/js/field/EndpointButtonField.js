@@ -43,13 +43,8 @@ class EndpointButtonField extends Component {
         const {
             fieldKey, csrfToken, onChange, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
-        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(requestedDataFieldKeys, currentConfig.context, currentConfig.descriptorName);
-        requestedDataFieldKeys.forEach((field) => {
-            const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
-            newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
-        });
+        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requestedDataFieldKeys);
         const mergedData = FieldModelUtilities.combineFieldModels(newFieldModel, popupData);
-
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
             this.setState({
