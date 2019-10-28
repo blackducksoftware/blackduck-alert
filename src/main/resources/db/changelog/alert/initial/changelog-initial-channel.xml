@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="jrichard" id="2019-10-25-15-04-57-090-1">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-8" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="GLOBAL_EMAIL_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E"/>
+            </column>
+            <column name="MAIL_SMTP_USER" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PASSWORD" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_CONNECTION_TIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_TIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_WRITETIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_FROM" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALHOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALADDRESS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALPORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_EHLO" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_MECHANISMS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_AUTH_LOGIN_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_PLAIN_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_NTLM_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_NTLM_DOMAIN" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_AUTH_NTLM_FLAGS" type="INT(10)"/>
+            <column name="MAIL_SMTP_AUTH_XOAUTH2_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SUBMITTER" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_DSN_NOTIFY" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_DNS_RET" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_ALLOW_8_BITMIME" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SEND_PARTIAL" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SASL_ENABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SASL_MECHANISMS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_AUTHORIZATIONID" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_REALM" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_USECANONICALHOSTNAME" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_QUITWAIT" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_REPORTSUCCESS" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SSL_ENABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SSL_CHECKSERVERIDENTITY" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SSL_TRUST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SSL_PROTOCOLS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SSL_CIPHERSUITES" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_STARTTLS_ENABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_STARTTLS_REQUIRED" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_PROXY_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PROXY_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_SOCKS_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SOCKS_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_MAILEXTENSION" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_USERSET" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_NOOP_STRICT" type="BOOLEAN(1)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-57-090-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-9" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="GLOBAL_HIPCHAT_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_A3C"/>
+            </column>
+            <column name="API_KEY" type="VARCHAR(255)"/>
+            <column name="HOST_SERVER" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jrichard" id="2019-10-25-15-04-57-090-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-12" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="GLOBAL_SLACK_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E1"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jrichard" id="2019-10-25-15-04-57-090-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-7" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_A3"/>
+            </column>
+            <column name="EMAIL_SUBJECT_LINE" type="VARCHAR(255)"/>
+            <column name="EMAIL_TEMPLATE_LOGO_IMAGE" type="VARCHAR(255)"/>
+            <column name="PROJECT_OWNER_ONLY" type="BOOLEAN(1)" value="FALSE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-57-090-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-13" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="HIP_CHAT_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E0"/>
+            </column>
+            <column name="COLOR" type="VARCHAR(255)"/>
+            <column name="NOTIFY" type="BOOLEAN(1)"/>
+            <column name="ROOM_ID" type="INT(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-57-090-6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-16" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="SLACK_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_77"/>
+            </column>
+            <column name="CHANNEL_NAME" type="VARCHAR(255)"/>
+            <column name="CHANNEL_USERNAME" type="VARCHAR(255)"/>
+            <column name="WEBHOOK" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
