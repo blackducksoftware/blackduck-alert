@@ -22,46 +22,23 @@
  */
 package com.synopsys.integration.alert.web.security.authentication;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
-    private final DaoAuthenticationProvider alertDatabaseAuthProvider;
-    private final LdapManager ldapManager;
-    private final AuthenticationEventManager authenticationEventManager;
-    private final AuthorizationUtility authorizationUtility;
+    private List<AuthenticationPerformer> authenticationPerformers;
 
     @Autowired
-    public AlertAuthenticationProvider(DaoAuthenticationProvider alertDatabaseAuthProvider, LdapManager ldapManager, AuthenticationEventManager authenticationEventManager,
-        AuthorizationUtility authorizationUtility) {
-        this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
-        this.ldapManager = ldapManager;
-        this.authenticationEventManager = authenticationEventManager;
-        this.authorizationUtility = authorizationUtility;
+    public AlertAuthenticationProvider(List<AuthenticationPerformer> authenticationPerformers) {
+        this.authenticationPerformers = authenticationPerformers;
     }
 
     @Override
@@ -69,59 +46,18 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         if (!supports(authentication.getClass())) {
             throw new IllegalArgumentException("Only UsernamePasswordAuthenticationToken is supported, " + authentication.getClass() + " was attempted");
         }
-        Authentication authenticationResult = performLdapAuthentication(authentication);
-        if (!authenticationResult.isAuthenticated()) {
-            authenticationResult = performDatabaseAuthentication(authentication);
-        }
-        Collection<? extends GrantedAuthority> authorities = isAuthorized(authenticationResult) ? authenticationResult.getAuthorities() : List.of();
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authenticationResult.getPrincipal(), authenticationResult.getCredentials(), authorities);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        if (authentication.isAuthenticated()) {
-            authenticationEventManager.sendAuthenticationEvent(authentication);
-        }
-        return authenticationToken;
+        return authenticationPerformers
+                   .parallelStream()
+                   .map(authPerformer -> authPerformer.performAuthentication(authentication))
+                   .flatMap(Optional::stream)
+                   .findAny()
+                   .orElse(authentication);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
-
-    private Authentication performDatabaseAuthentication(Authentication pendingAuthentication) {
-        logger.info("Attempting database authentication...");
-        return alertDatabaseAuthProvider.authenticate(pendingAuthentication);
-    }
-
-    private Authentication performLdapAuthentication(Authentication pendingAuthentication) {
-        logger.info("Checking ldap based authentication...");
-        Authentication result = pendingAuthentication;
-        if (ldapManager.isLdapEnabled()) {
-            logger.info("LDAP authentication enabled");
-            try {
-                LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
-                result = authenticationProvider.authenticate(pendingAuthentication);
-            } catch (AlertLDAPConfigurationException ex) {
-                logger.error("LDAP Configuration error", ex);
-            } catch (Exception ex) {
-                logger.error("LDAP Authentication error", ex);
-            }
-        } else {
-            logger.info("LDAP authentication disabled");
-        }
-        return result;
-    }
-
-    private boolean isAuthorized(Authentication authentication) {
-        Set<String> allowedRoles = authorizationUtility.getRoles()
-                                       .stream()
-                                       .map(UserRoleModel::getName)
-                                       .collect(Collectors.toSet());
-        return authentication.getAuthorities()
-                   .stream()
-                   .map(authenticationEventManager::getRoleFromAuthority)
-                   .flatMap(Optional::stream)
-                   .anyMatch(allowedRoles::contains);
     }
 
 }

@@ -15,6 +15,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
+import com.synopsys.integration.alert.web.security.authentication.database.AlertDatabaseAuthenticationPerformer;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -125,11 +127,13 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertLDAPConfigurationException("LDAP CONFIG EXCEPTION"));
         DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
-        AuthenticationEventManager authenticationEventUtils = Mockito.mock(AuthenticationEventManager.class);
-        Mockito.doNothing().when(authenticationEventUtils).sendAuthenticationEvent(Mockito.any());
+        AuthenticationEventManager authenticationEventManager = Mockito.mock(AuthenticationEventManager.class);
+        Mockito.doNothing().when(authenticationEventManager).sendAuthenticationEvent(Mockito.any());
         AuthorizationUtility authorizationUtility = Mockito.mock(AuthorizationUtility.class);
 
-        AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(databaseProvider, mockLdapManager, authenticationEventUtils, authorizationUtility);
+        AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(authenticationEventManager, authorizationUtility, databaseProvider);
+
+        AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(alertDatabaseAuthenticationPerformer));
         LoginActions loginActions = new LoginActions(authenticationProvider);
         boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
         assertFalse(authenticated);

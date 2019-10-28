@@ -240,3 +240,31 @@ export function hasKey(fieldModel, key) {
         return Object.keys(keyToValues).includes(key);
     }
 }
+
+export function createFieldModelFromRequestedFields(fieldModel, requestedFields) {
+    const newModel = {
+        context: null,
+        descriptorName: null,
+        keyToValues: {}
+    };
+
+    if (fieldModel) {
+        if (fieldModel.context) {
+            newModel.context = fieldModel.context;
+        }
+
+        if (fieldModel.descriptorName) {
+            newModel.descriptorName = fieldModel.descriptorName;
+        }
+
+        Object.keys(fieldModel.keyToValues).filter(key => requestedFields.includes(key)).forEach((key) => {
+            const specificField = fieldModel.keyToValues[key];
+            const fieldValues = (Array.isArray(specificField.values) && specificField.values.length > 0) ? specificField.values : [];
+            newModel.keyToValues[key] = {
+                values: fieldValues,
+                isSet: specificField.isSet
+            };
+        });
+    }
+    return newModel;
+}

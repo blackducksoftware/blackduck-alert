@@ -38,11 +38,7 @@ class EndpointSelectField extends Component {
             fieldKey, csrfToken, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
 
-        let newFieldModel = FieldModelUtilities.createEmptyFieldModel(requestedDataFieldKeys, currentConfig.context, currentConfig.descriptorName);
-        requestedDataFieldKeys.forEach((field) => {
-            const values = FieldModelUtilities.getFieldModelValues(currentConfig, field);
-            newFieldModel = FieldModelUtilities.updateFieldModelValues(newFieldModel, field, values);
-        });
+        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requestedDataFieldKeys);
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         request.then((response) => {
             if (response.ok) {
