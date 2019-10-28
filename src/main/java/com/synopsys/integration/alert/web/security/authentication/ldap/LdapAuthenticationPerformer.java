@@ -43,7 +43,7 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
 
     @Autowired
     public LdapAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility, LdapManager ldapManager) {
-        super(authenticationEventManager, authorizationUtility);
+        super(AuthenticationPriority.SOONER, authenticationEventManager, authorizationUtility);
         this.ldapManager = ldapManager;
     }
 
@@ -65,11 +65,6 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
             logger.info("LDAP authentication disabled");
         }
         return result;
-    }
-
-    @Override
-    protected AuthenticationPriority priority() {
-        return AuthenticationPriority.SOONER;
     }
 
 }

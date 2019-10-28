@@ -39,10 +39,12 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public abstract class AuthenticationPerformer implements Comparable<AuthenticationPerformer> {
+    private AuthenticationPriority priority;
     private AuthenticationEventManager authenticationEventManager;
     private AuthorizationUtility authorizationUtility;
 
-    protected AuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility) {
+    protected AuthenticationPerformer(AuthenticationPriority priority, AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility) {
+        this.priority = priority;
         this.authenticationEventManager = authenticationEventManager;
         this.authorizationUtility = authorizationUtility;
     }
@@ -62,10 +64,12 @@ public abstract class AuthenticationPerformer implements Comparable<Authenticati
 
     @Override
     public int compareTo(AuthenticationPerformer other) {
-        return this.priority().compareTo(other.priority());
+        return this.getPriority().compareTo(other.getPriority());
     }
 
-    protected abstract AuthenticationPriority priority();
+    protected AuthenticationPriority getPriority() {
+        return priority;
+    }
 
     private boolean isAuthorized(Authentication authentication) {
         Set<String> allowedRoles = authorizationUtility.getRoles()

@@ -41,9 +41,8 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
     private DaoAuthenticationProvider alertDatabaseAuthProvider;
 
     @Autowired
-    public AlertDatabaseAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility,
-        DaoAuthenticationProvider alertDatabaseAuthProvider) {
-        super(authenticationEventManager, authorizationUtility);
+    public AlertDatabaseAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility, DaoAuthenticationProvider alertDatabaseAuthProvider) {
+        super(AuthenticationPriority.LAST, authenticationEventManager, authorizationUtility);
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
     }
 
@@ -51,11 +50,6 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
     public Authentication authenticateWithProvider(Authentication pendingAuthentication) {
         logger.info("Attempting database authentication...");
         return alertDatabaseAuthProvider.authenticate(pendingAuthentication);
-    }
-
-    @Override
-    protected AuthenticationPriority priority() {
-        return AuthenticationPriority.LAST;
     }
 
 }
