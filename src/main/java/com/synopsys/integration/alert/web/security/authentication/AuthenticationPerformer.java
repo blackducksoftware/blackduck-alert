@@ -52,6 +52,8 @@ public abstract class AuthenticationPerformer {
             Collection<? extends GrantedAuthority> authorities = isAuthorized(authenticationResult) ? authenticationResult.getAuthorities() : List.of();
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authenticationResult.getPrincipal(), authenticationResult.getCredentials(), authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            authenticationEventManager.sendAuthenticationEvent(authenticationToken);
             return Optional.of(authenticationToken);
         }
         return Optional.empty();
