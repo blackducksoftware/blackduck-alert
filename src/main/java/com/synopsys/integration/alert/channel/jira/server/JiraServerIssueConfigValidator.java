@@ -38,6 +38,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
@@ -48,11 +49,13 @@ public class JiraServerIssueConfigValidator {
     private final ProjectService projectService;
     private final UserSearchService userSearchService;
     private final IssueTypeService issueTypeService;
+    private final IssueMetaDataService issueMetaDataService;
 
-    public JiraServerIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService) {
+    public JiraServerIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService, IssueMetaDataService issueMetaDataService) {
         this.projectService = projectService;
         this.userSearchService = userSearchService;
         this.issueTypeService = issueTypeService;
+        this.issueMetaDataService = issueMetaDataService;
     }
 
     public IssueConfig validate(FieldAccessor fieldAccessor) throws AlertFieldException {
@@ -122,7 +125,7 @@ public class JiraServerIssueConfigValidator {
                 boolean isValidJiraEmail = userSearchService.findUserByUsername(issueCreator)
                                                .stream()
                                                .map(UserDetailsResponseModel::getName)
-                                               .anyMatch(emailAddress -> emailAddress.equals(issueCreator));
+                                               .anyMatch(name -> name.equals(issueCreator));
                 if (isValidJiraEmail) {
                     return issueCreator;
                 } else {
@@ -138,6 +141,7 @@ public class JiraServerIssueConfigValidator {
     }
 
     private String validateIssueType(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
+        Optional<String> optionalProjectName = fieldAccessor.getString(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME);
         String issueType = fieldAccessor.getString(JiraServerDescriptor.KEY_ISSUE_TYPE).orElse(JiraServerDistributionUIConfig.DEFAULT_ISSUE_TYPE);
         try {
             boolean isValidIssueType = issueTypeService.getAllIssueTypes()
@@ -145,7 +149,15 @@ public class JiraServerIssueConfigValidator {
                                            .map(IssueTypeResponseModel::getName)
                                            .anyMatch(issueType::equals);
             if (isValidIssueType) {
-                return issueType;
+                if (optionalProjectName.isPresent()) {
+                    String projectName = optionalProjectName.get();
+                    boolean isValidForProject = issueMetaDataService.doesProjectContainIssueType(projectName, issueType);
+                    if (isValidForProject) {
+                        return issueType;
+                    } else {
+                        fieldErrors.put(JiraServerDescriptor.KEY_ISSUE_TYPE, String.format("The issue type '%s' not assigned to project '%s'", issueType, projectName));
+                    }
+                }
             } else {
                 fieldErrors.put(JiraServerDescriptor.KEY_ISSUE_TYPE, String.format("The issue type '%s' could not be found", issueType));
             }

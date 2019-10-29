@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDistributionUIConfig;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -40,6 +41,7 @@ import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
 public class JiraIssueConfigValidator {
@@ -48,11 +50,13 @@ public class JiraIssueConfigValidator {
     private final ProjectService projectService;
     private final UserSearchService userSearchService;
     private final IssueTypeService issueTypeService;
+    private final IssueMetaDataService issueMetaDataService;
 
-    public JiraIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService) {
+    public JiraIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService, IssueMetaDataService issueMetaDataService) {
         this.projectService = projectService;
         this.userSearchService = userSearchService;
         this.issueTypeService = issueTypeService;
+        this.issueMetaDataService = issueMetaDataService;
     }
 
     public IssueConfig validate(FieldAccessor fieldAccessor) throws AlertFieldException {
@@ -138,14 +142,23 @@ public class JiraIssueConfigValidator {
     }
 
     private String validateIssueType(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
-        final String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
+        Optional<String> optionalProjectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME);
+        String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
         try {
             boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                            .stream()
                                            .map(IssueTypeResponseModel::getName)
                                            .anyMatch(issueType::equals);
             if (isValidIssueType) {
-                return issueType;
+                if (optionalProjectName.isPresent()) {
+                    String projectName = optionalProjectName.get();
+                    boolean isValidForProject = issueMetaDataService.doesProjectContainIssueType(projectName, issueType);
+                    if (isValidForProject) {
+                        return issueType;
+                    } else {
+                        fieldErrors.put(JiraServerDescriptor.KEY_ISSUE_TYPE, String.format("The issue type '%s' not assigned to project '%s'", issueType, projectName));
+                    }
+                }
             } else {
                 fieldErrors.put(JiraDescriptor.KEY_ISSUE_TYPE, String.format("The issue type '%s' could not be found", issueType));
             }
