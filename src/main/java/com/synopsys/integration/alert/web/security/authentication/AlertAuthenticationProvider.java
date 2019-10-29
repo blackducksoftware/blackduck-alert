@@ -47,8 +47,9 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
             throw new IllegalArgumentException("Only UsernamePasswordAuthenticationToken is supported, " + authentication.getClass() + " was attempted");
         }
 
+        // TODO investigate why parallelStream() does not work here
         return authenticationPerformers
-                   .parallelStream()
+                   .stream()
                    .map(authPerformer -> authPerformer.performAuthentication(authentication))
                    .flatMap(Optional::stream)
                    .findAny()
