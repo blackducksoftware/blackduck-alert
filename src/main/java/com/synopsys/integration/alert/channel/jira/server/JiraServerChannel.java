@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
@@ -80,8 +81,9 @@ public class JiraServerChannel extends IssueTrackerChannel {
         ProjectService projectService = jiraServerServiceFactory.createProjectService();
         UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
         IssueTypeService issueTypeService = jiraServerServiceFactory.createIssueTypeService();
+        IssueMetaDataService issueMetaDataService = jiraServerServiceFactory.createIssueMetadataService();
 
-        JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService);
+        JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
         IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
 
         IssueService issueService = jiraServerServiceFactory.createIssueService();
