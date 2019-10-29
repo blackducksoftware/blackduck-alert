@@ -87,6 +87,17 @@ public class MsTeamsEventParser {
 
         MsTeamsMessage newMessage = new MsTeamsMessage(msTeamsMessage.getTitle(), msTeamsMessage.getTopic(), msTeamsSections);
         splitMessages.add(newMessage);
+
+        int messagesSize = splitMessages.size();
+        if (messagesSize > 1) {
+            for (int i = 0; i < messagesSize; i++) {
+                MsTeamsMessage message = splitMessages.get(i);
+                String title = message.getTitle();
+                String newTitle = String.format("%s (%s/%s)", title, i + 1, messagesSize);
+                message.setTitle(newTitle);
+            }
+        }
+
         return splitMessages;
     }
 

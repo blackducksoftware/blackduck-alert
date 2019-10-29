@@ -82,11 +82,6 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
     }
 
     @Override
-    protected String getSectionSeparator() {
-        return "";
-    }
-
-    @Override
     public String createHeader(MessageContentGroup messageContentGroup) {
         return String.format("Received a message from %s", messageContentGroup.getCommonProvider().getValue());
     }
