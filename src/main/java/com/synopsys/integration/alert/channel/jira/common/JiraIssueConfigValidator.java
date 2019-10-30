@@ -20,43 +20,52 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud;
+package com.synopsys.integration.alert.channel.jira.common;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDistributionUIConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
-import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
-public class JiraIssueConfigValidator {
+public abstract class JiraIssueConfigValidator {
     private static final String CONNECTION_ERROR_FORMAT_STRING = "There was a problem getting the %s from Jira. Please ensure the server is configured correctly.";
 
-    private final ProjectService projectService;
-    private final UserSearchService userSearchService;
     private final IssueTypeService issueTypeService;
     private final IssueMetaDataService issueMetaDataService;
 
-    public JiraIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService, IssueMetaDataService issueMetaDataService) {
-        this.projectService = projectService;
-        this.userSearchService = userSearchService;
+    public JiraIssueConfigValidator(IssueTypeService issueTypeService, IssueMetaDataService issueMetaDataService) {
         this.issueTypeService = issueTypeService;
         this.issueMetaDataService = issueMetaDataService;
     }
+
+    public abstract String getProjectFieldKey();
+
+    public abstract String getIssueTypeFieldKey();
+
+    public abstract String getIssueCreatorFieldKey();
+
+    public abstract String getAddCommentsFieldKey();
+
+    public abstract String getResolveTransitionFieldKey();
+
+    public abstract String getOpenTransitionFieldKey();
+
+    public abstract String getDefaultIssueCreatorFieldKey();
+
+    public abstract Collection<ProjectComponent> getProjectsByName(String jiraProjectName) throws IntegrationException;
+
+    public abstract boolean isUserValid(String issueCreator) throws IntegrationException;
 
     public IssueConfig validate(FieldAccessor fieldAccessor) throws AlertFieldException {
         IssueConfig jiraIssueConfig = new IssueConfig();
@@ -75,13 +84,13 @@ public class JiraIssueConfigValidator {
         String issueType = validateIssueType(fieldAccessor, fieldErrors);
         jiraIssueConfig.setIssueType(issueType);
 
-        Boolean commentOnIssue = fieldAccessor.getBooleanOrFalse(JiraDescriptor.KEY_ADD_COMMENTS);
+        Boolean commentOnIssue = fieldAccessor.getBooleanOrFalse(getAddCommentsFieldKey());
         jiraIssueConfig.setCommentOnIssues(commentOnIssue);
 
-        String resolveTransition = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        String resolveTransition = fieldAccessor.getStringOrNull(getResolveTransitionFieldKey());
         jiraIssueConfig.setResolveTransition(resolveTransition);
 
-        String openTransition = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION);
+        String openTransition = fieldAccessor.getStringOrNull(getOpenTransitionFieldKey());
         jiraIssueConfig.setOpenTransition(openTransition);
 
         if (fieldErrors.isEmpty()) {
@@ -92,57 +101,57 @@ public class JiraIssueConfigValidator {
     }
 
     private ProjectComponent validateProject(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
-        Optional<String> optionalProjectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME);
+        String projectNameFieldKey = getProjectFieldKey();
+        Optional<String> optionalProjectName = fieldAccessor.getString(projectNameFieldKey);
         if (optionalProjectName.isPresent()) {
             String jiraProjectName = optionalProjectName.get();
             try {
-                PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(jiraProjectName);
-                Optional<ProjectComponent> optionalProject = projectsResponseModel.getProjects()
+                Collection<ProjectComponent> projectsResponseModel = getProjectsByName(jiraProjectName);
+                Optional<ProjectComponent> optionalProject = projectsResponseModel
                                                                  .stream()
                                                                  .filter(project -> jiraProjectName.equals(project.getName()) || jiraProjectName.equals(project.getKey()))
                                                                  .findAny();
                 if (optionalProject.isPresent()) {
                     return optionalProject.get();
                 } else {
-                    fieldErrors.put(JiraDescriptor.KEY_JIRA_PROJECT_NAME, String.format("No project named '%s' was found", jiraProjectName));
+                    fieldErrors.put(projectNameFieldKey, String.format("No project named '%s' was found", jiraProjectName));
                 }
             } catch (IntegrationException e) {
-                fieldErrors.put(JiraDescriptor.KEY_JIRA_PROJECT_NAME, String.format(CONNECTION_ERROR_FORMAT_STRING, "projects"));
+                fieldErrors.put(projectNameFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "projects"));
             }
         } else {
-            requireField(fieldErrors, JiraDescriptor.KEY_JIRA_PROJECT_NAME);
+            requireField(fieldErrors, projectNameFieldKey);
         }
         return null;
     }
 
     private String validateIssueCreator(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
-        Optional<String> optionalIssueCreator = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_CREATOR)
+        String issueCreatorFieldKey = getIssueCreatorFieldKey();
+        Optional<String> optionalIssueCreator = fieldAccessor.getString(issueCreatorFieldKey)
                                                     .filter(StringUtils::isNotBlank)
-                                                    .or(() -> fieldAccessor.getString(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS));
+                                                    .or(() -> fieldAccessor.getString(getDefaultIssueCreatorFieldKey()));
         if (optionalIssueCreator.isPresent()) {
             String issueCreator = optionalIssueCreator.get();
             try {
-                boolean isValidJiraEmail = userSearchService.findUser(issueCreator)
-                                               .stream()
-                                               .map(UserDetailsResponseModel::getEmailAddress)
-                                               .anyMatch(emailAddress -> emailAddress.equals(issueCreator));
-                if (isValidJiraEmail) {
+                if (isUserValid(issueCreator)) {
                     return issueCreator;
                 } else {
-                    fieldErrors.put(JiraDescriptor.KEY_ISSUE_CREATOR, String.format("The email address '%s' is not associated with any valid Jira users.", issueCreator));
+                    fieldErrors.put(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator));
                 }
             } catch (IntegrationException e) {
-                fieldErrors.put(JiraDescriptor.KEY_ISSUE_CREATOR, String.format(CONNECTION_ERROR_FORMAT_STRING, "users"));
+                fieldErrors.put(issueCreatorFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "users"));
             }
         } else {
-            requireField(fieldErrors, JiraDescriptor.KEY_ISSUE_CREATOR);
+            requireField(fieldErrors, issueCreatorFieldKey);
         }
         return null;
     }
 
     private String validateIssueType(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
-        Optional<String> optionalProjectName = fieldAccessor.getString(JiraDescriptor.KEY_JIRA_PROJECT_NAME);
-        String issueType = fieldAccessor.getString(JiraDescriptor.KEY_ISSUE_TYPE).orElse(JiraDistributionUIConfig.DEFAULT_ISSUE_TYPE);
+        String projectNameFieldKey = getProjectFieldKey();
+        String issueTypeFieldKey = getIssueTypeFieldKey();
+        Optional<String> optionalProjectName = fieldAccessor.getString(projectNameFieldKey);
+        String issueType = fieldAccessor.getString(issueTypeFieldKey).orElse(JiraConstants.DEFAULT_ISSUE_TYPE);
         try {
             boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                            .stream()
@@ -155,14 +164,14 @@ public class JiraIssueConfigValidator {
                     if (isValidForProject) {
                         return issueType;
                     } else {
-                        fieldErrors.put(JiraDescriptor.KEY_ISSUE_TYPE, String.format("The issue type '%s' not assigned to project '%s'", issueType, projectName));
+                        fieldErrors.put(issueTypeFieldKey, String.format("The issue type '%s' not assigned to project '%s'", issueType, projectName));
                     }
                 }
             } else {
-                fieldErrors.put(JiraDescriptor.KEY_ISSUE_TYPE, String.format("The issue type '%s' could not be found", issueType));
+                fieldErrors.put(issueTypeFieldKey, String.format("The issue type '%s' could not be found", issueType));
             }
         } catch (IntegrationException e) {
-            fieldErrors.put(JiraDescriptor.KEY_ISSUE_TYPE, String.format(CONNECTION_ERROR_FORMAT_STRING, "issue types"));
+            fieldErrors.put(issueTypeFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "issue types"));
         }
         return null;
     }
@@ -170,5 +179,4 @@ public class JiraIssueConfigValidator {
     private void requireField(Map<String, String> fieldErrors, String key) {
         fieldErrors.put(key, "This field is required");
     }
-
 }

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.common;
 
 public final class JiraConstants {
+    public static final String DEFAULT_ISSUE_TYPE = "Task";
     // This String must always match the String found in the atlassian-connect.json file under key.
     public static final String JIRA_APP_KEY = "com.synopsys.integration.alert";
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.key.

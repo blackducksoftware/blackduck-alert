@@ -20,25 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.channel.jira.cloud;
 
 import java.util.Collection;
 
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueConfigValidator;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
+import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
-import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
-public class JiraServerIssueConfigValidator extends JiraIssueConfigValidator {
+public class JiraCloudIssueConfigValidator extends JiraIssueConfigValidator {
     private final ProjectService projectService;
     private final UserSearchService userSearchService;
 
-    public JiraServerIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService, IssueMetaDataService issueMetaDataService) {
+    public JiraCloudIssueConfigValidator(ProjectService projectService, UserSearchService userSearchService, IssueTypeService issueTypeService, IssueMetaDataService issueMetaDataService) {
         super(issueTypeService, issueMetaDataService);
         this.projectService = projectService;
         this.userSearchService = userSearchService;
@@ -46,48 +47,49 @@ public class JiraServerIssueConfigValidator extends JiraIssueConfigValidator {
 
     @Override
     public String getProjectFieldKey() {
-        return JiraServerDescriptor.KEY_JIRA_PROJECT_NAME;
+        return JiraDescriptor.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
     public String getIssueTypeFieldKey() {
-        return JiraServerDescriptor.KEY_ISSUE_TYPE;
+        return JiraDescriptor.KEY_ISSUE_TYPE;
     }
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraServerDescriptor.KEY_ISSUE_CREATOR;
+        return JiraDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override
     public String getAddCommentsFieldKey() {
-        return JiraServerDescriptor.KEY_ADD_COMMENTS;
+        return JiraDescriptor.KEY_ADD_COMMENTS;
     }
 
     @Override
     public String getResolveTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getOpenTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getDefaultIssueCreatorFieldKey() {
-        return JiraServerDescriptor.KEY_SERVER_USERNAME;
+        return JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
     }
 
     @Override
     public Collection<ProjectComponent> getProjectsByName(String jiraProjectName) throws IntegrationException {
-        return projectService.getProjectsByName(jiraProjectName);
+        PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(jiraProjectName);
+        return projectsResponseModel.getProjects();
     }
 
     @Override
     public boolean isUserValid(String issueCreator) throws IntegrationException {
-        return userSearchService.findUserByUsername(issueCreator).stream()
-                   .map(UserDetailsResponseModel::getName)
+        return userSearchService.findUser(issueCreator).stream()
+                   .map(UserDetailsResponseModel::getEmailAddress)
                    .anyMatch(name -> name.equals(issueCreator));
     }
 }

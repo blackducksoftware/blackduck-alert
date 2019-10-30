@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -35,7 +36,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 
 @Component
 public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig {
-    public static final String DEFAULT_ISSUE_TYPE = "Task";
     private static final String LABEL_ADD_COMMENTS = "Add comments";
     private static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     private static final String LABEL_JIRA_PROJECT = "Jira Project";
@@ -62,7 +62,7 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
         ConfigField issueCreator = TextInputConfigField.create(JiraServerDescriptor.KEY_ISSUE_CREATOR, LABEL_ISSUE_CREATOR, DESCRIPTION_ISSUE_CREATOR);
         ConfigField jiraProjectName = TextInputConfigField.createRequired(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT);
 
-        ConfigField issueType = TextInputConfigField.createRequired(JiraServerDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).addDefaultValue(DEFAULT_ISSUE_TYPE);
+        ConfigField issueType = TextInputConfigField.createRequired(JiraServerDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).addDefaultValue(JiraConstants.DEFAULT_ISSUE_TYPE);
         ConfigField resolveWorkflow = TextInputConfigField.create(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
         ConfigField openWorkflow = TextInputConfigField.create(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
                                        .requireField(resolveWorkflow.getKey());
