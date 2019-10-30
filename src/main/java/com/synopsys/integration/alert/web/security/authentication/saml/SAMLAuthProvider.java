@@ -40,7 +40,7 @@ public class SAMLAuthProvider extends SAMLAuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication currentAuth = super.authenticate(authentication);
         if (currentAuth.isAuthenticated()) {
-            // TODO uncomment in 5.3.0: authenticationEventManager.sendAuthenticationEvent(authentication);
+            authenticationEventManager.sendAuthenticationEvent(authentication);
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
         }
         return currentAuth;
