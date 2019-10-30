@@ -12,7 +12,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraIssueConfigValidator;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudIssueConfigValidator;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -28,7 +28,7 @@ import com.synopsys.integration.jira.common.model.response.UserDetailsResponseMo
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 
-public class JiraIssueConfigValidatorTest {
+public class JiraCloudIssueConfigValidatorTest {
 
     @Test
     public void validateSuccessTest() throws IntegrationException {
@@ -37,7 +37,7 @@ public class JiraIssueConfigValidatorTest {
         IssueTypeService issueTypeService = Mockito.mock(IssueTypeService.class);
         IssueMetaDataService issueMetaDataService = Mockito.mock(IssueMetaDataService.class);
         Mockito.when(issueMetaDataService.doesProjectContainIssueType(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
+        JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
         ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
@@ -94,7 +94,7 @@ public class JiraIssueConfigValidatorTest {
         UserSearchService userSearchService = Mockito.mock(UserSearchService.class);
         IssueTypeService issueTypeService = Mockito.mock(IssueTypeService.class);
         IssueMetaDataService issueMetaDataService = Mockito.mock(IssueMetaDataService.class);
-        JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
+        JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
         ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";

@@ -84,7 +84,7 @@ public class JiraChannel extends IssueTrackerChannel {
         IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
         IssueMetaDataService issueMetaDataService = jiraCloudServiceFactory.createIssueMetadataService();
 
-        JiraIssueConfigValidator jiraIssueConfigValidator = new JiraIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
+        JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
         IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
 
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
