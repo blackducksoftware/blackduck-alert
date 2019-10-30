@@ -76,15 +76,17 @@ public class JobConfigController extends BaseController {
     private final ContentConverter contentConverter;
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
+    private PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public JobConfigController(JobConfigActions jobConfigActions, ResponseFactory responseFactory, ContentConverter contentConverter, AuthorizationManager authorizationManager,
-        DescriptorAccessor descriptorAccessor) {
+        DescriptorAccessor descriptorAccessor, PKIXErrorResponseFactory pkixErrorResponseFactory) {
         this.jobConfigActions = jobConfigActions;
         this.responseFactory = responseFactory;
         this.contentConverter = contentConverter;
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
+        this.pkixErrorResponseFactory = pkixErrorResponseFactory;
     }
 
     @GetMapping
@@ -277,10 +279,10 @@ public class JobConfigController extends BaseController {
         } catch (AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (IntegrationException e) {
-            return createSSLExceptionResponse(e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return createSSLExceptionResponse(e).orElse(responseFactory.createInternalServerErrorResponse(id, e.getMessage()));
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createInternalServerErrorResponse(id, e.getMessage()));
         }
     }
 
@@ -288,14 +290,6 @@ public class JobConfigController extends BaseController {
         return fieldModels
                    .stream()
                    .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
-    }
-
-    private Optional<ResponseEntity<String>> createSSLExceptionResponse(Exception e) {
-        if (e.getMessage().toUpperCase().contains("PKIX")) {
-            logger.info("LOOK HERE. CAUGHT EXCEPTION.");
-        }
-
-        return Optional.empty();
     }
 
 }

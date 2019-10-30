@@ -67,15 +67,17 @@ public class ConfigController extends BaseController {
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
+    private PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public ConfigController(ConfigActions configActions, ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager,
-        DescriptorMap descriptorMap) {
+        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory) {
         this.configActions = configActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
         this.authorizationManager = authorizationManager;
         this.descriptorMap = descriptorMap;
+        this.pkixErrorResponseFactory = pkixErrorResponseFactory;
     }
 
     @GetMapping
@@ -256,19 +258,11 @@ public class ConfigController extends BaseController {
         } catch (AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (IntegrationException e) {
-            return createSSLExceptionResponse(e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return createSSLExceptionResponse(e).orElse(responseFactory.createInternalServerErrorResponse(id, e.getMessage()));
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createInternalServerErrorResponse(id, e.getMessage()));
         }
-    }
-
-    private Optional<ResponseEntity<String>> createSSLExceptionResponse(Exception e) {
-        if (e.getMessage().toUpperCase().contains("PKIX")) {
-            logger.info("LOOK HERE. CAUGHT EXCEPTION.");
-        }
-
-        return Optional.empty();
     }
 
 }
