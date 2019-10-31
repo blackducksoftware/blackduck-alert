@@ -39,7 +39,7 @@ public class ConfigurationJobModel extends AlertSerializableModel {
     private final Set<ConfigurationModel> configurations;
     private final FieldAccessor fieldAccessor;
 
-    public ConfigurationJobModel(final UUID jobId, final Set<ConfigurationModel> configurations) {
+    public ConfigurationJobModel(UUID jobId, Set<ConfigurationModel> configurations) {
         this.jobId = jobId;
         this.configurations = configurations;
         this.fieldAccessor = new FieldAccessor(createKeyToFieldMap());
@@ -60,6 +60,10 @@ public class ConfigurationJobModel extends AlertSerializableModel {
 
     public String getName() {
         return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_NAME);
+    }
+
+    public boolean isEnabled() {
+        return getFieldAccessor().getBoolean(ChannelDistributionUIConfig.KEY_ENABLED).orElse(Boolean.TRUE);
     }
 
     public String getChannelName() {
@@ -83,8 +87,8 @@ public class ConfigurationJobModel extends AlertSerializableModel {
     }
 
     private Map<String, ConfigurationFieldModel> createKeyToFieldMap() {
-        final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        for (final ConfigurationModel config : configurations) {
+        Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+        for (ConfigurationModel config : configurations) {
             fieldMap.putAll(config.getCopyOfKeyToFieldMap());
         }
         return fieldMap;

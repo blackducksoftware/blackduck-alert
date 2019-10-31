@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
@@ -38,16 +39,19 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";
 
+    public static final String KEY_ENABLED = KEY_COMMON_CHANNEL_PREFIX + "enabled";
     public static final String KEY_NAME = KEY_COMMON_CHANNEL_PREFIX + "name";
     public static final String KEY_CHANNEL_NAME = KEY_COMMON_CHANNEL_PREFIX + "channel.name";
     public static final String KEY_PROVIDER_NAME = KEY_COMMON_CHANNEL_PREFIX + "provider.name";
     public static final String KEY_FREQUENCY = KEY_COMMON_CHANNEL_PREFIX + "frequency";
 
+    private static final String LABEL_ENABLED = "Enabled";
     private static final String LABEL_NAME = "Name";
     private static final String LABEL_FREQUENCY = "Frequency";
     private static final String LABEL_CHANNEL_NAME = "Type";
     private static final String LABEL_PROVIDER_NAME = "Provider Type";
 
+    private static final String DESCRIPTION_ENABLED = "If selected, this job will be used for processing provider notifications, otherwise, this job will not be used.";
     private static final String DESCRIPTION_NAME = "The name of the distribution job. Must be unique.";
     private static final String DESCRIPTION_FREQUENCY = "Select how frequently this job should check for notifications to send.";
     private static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
@@ -62,15 +66,16 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
+        ConfigField enabled = CheckboxConfigField.create(KEY_ENABLED, LABEL_ENABLED, DESCRIPTION_ENABLED).addDefaultValue(Boolean.TRUE.toString());
         ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, true, false, true, false);
         ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
         ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
-                                                                                                                                  .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
-                                                                                                                                  .sorted()
-                                                                                                                                  .collect(Collectors.toList()));
+                                                                                                                            .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
+                                                                                                                            .sorted()
+                                                                                                                            .collect(Collectors.toList()));
         ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, true, false, true, false);
 
-        List<ConfigField> configFields = List.of(channelName, name, frequency, providerName);
+        List<ConfigField> configFields = List.of(enabled, channelName, name, frequency, providerName);
         List<ConfigField> channelDistributionFields = createChannelDistributionFields();
         return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }

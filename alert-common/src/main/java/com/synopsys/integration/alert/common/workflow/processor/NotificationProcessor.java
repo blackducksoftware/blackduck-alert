@@ -73,6 +73,10 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
+        if (!job.isEnabled()) {
+            logger.debug("Skipping disabled distribution job: " + job.getName());
+            return List.of();
+        }
         if (notifications.isEmpty()) {
             return List.of();
         }
