@@ -86,7 +86,7 @@ public class PKIXErrorResponseFactory {
     }
 
     private String createTitle() {
-        return "To resolve this issue, redeploy Alert and use the appropriate link below to properly install your certificates:";
+        return "To resolve this issue, use the appropriate link below to properly install your certificates and restart Alert.";
     }
 
     private List<String> createInfo() {
