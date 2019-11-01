@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +56,7 @@ public class PKIXErrorResponseFactory {
     }
 
     public Optional<ResponseEntity<String>> createSSLExceptionResponse(String id, Exception e) {
-        if (e.getMessage().toUpperCase().contains("PKIX")) {
+        if (isPKIXError(e)) {
             logger.debug("Found an error regarding PKIX, creating a unique response...");
             Map<String, Object> pkixErrorBody = Map.of("header", createHeader(), "title", createTitle(), "info", createInfo());
             String pkixError = gson.toJson(pkixErrorBody);
@@ -65,6 +67,18 @@ public class PKIXErrorResponseFactory {
         }
 
         return Optional.empty();
+    }
+
+    private boolean isPKIXError(Throwable throwable) {
+        Throwable cause = throwable.getCause();
+        while (cause != null) {
+            if (cause instanceof SSLHandshakeException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+
+        return false;
     }
 
     private String createHeader() {
@@ -84,7 +98,6 @@ public class PKIXErrorResponseFactory {
     }
 
     private String createLinkToReadme(String deploymentType) {
-        String fullUrl = String.format("%s/%s/README.md#certificates", BLACKDUCK_GITHUB_DEPLOYMENT_URL, deploymentType);
-        return String.format("[%s](%s Deployment)", fullUrl, deploymentType);
+        return String.format("%s/%s/README.md#certificates", BLACKDUCK_GITHUB_DEPLOYMENT_URL, deploymentType);
     }
 }
