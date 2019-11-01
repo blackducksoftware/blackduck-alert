@@ -33,7 +33,6 @@ class StatusMessage extends Component {
         };
         return (
             <div>
-
                 {errorMessage && this.state.showError && <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose} variant="danger"><MessageFormatter message={errorMessage} /></Alert>}
 
                 {actionMessage && this.state.showMessage && <FadeField><Alert bsPrefix="statusAlert alert" dismissible onClose={onMessageClose} variant="success">{actionMessage}</Alert></FadeField>}
@@ -48,7 +47,7 @@ StatusMessage.propTypes = {
 };
 
 StatusMessage.defaultProps = {
-    errorMessage: {},
+    errorMessage: null,
     actionMessage: null
 };
 
