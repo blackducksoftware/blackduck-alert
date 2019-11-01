@@ -4,7 +4,22 @@ import PropTypes from 'prop-types';
 class MessageFormatter extends Component {
     constructor(props) {
         super(props);
+    }
 
+    createLinks(info) {
+        const tokens = info.split(/\s/);
+        return tokens.map((token, i) => {
+            let hasSpace = i !== (tokens.length - 1);
+            let maybeSpace = hasSpace ? ' ' : '';
+
+            if (token.match(/^https\:\//)) {
+                return (
+                    <a href={token} target="_blank">{token}{maybeSpace}</a>
+                );
+            } else {
+                return token + maybeSpace;
+            }
+        });
     }
 
     createDetailedMessage(messageBody) {
@@ -12,7 +27,7 @@ class MessageFormatter extends Component {
 
         const bulletList = info.map(infoItem =>
             (<li>
-                {infoItem}
+                {this.createLinks(infoItem)}
             </li>)
         );
 
@@ -56,7 +71,7 @@ MessageFormatter.propTypes = {
 };
 
 MessageFormatter.defaultProps = {
-    message: {}
+    message: null
 };
 
 export default MessageFormatter;

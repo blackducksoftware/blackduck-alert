@@ -90,9 +90,9 @@ public class PKIXErrorResponseFactory {
     }
 
     private List<String> createInfo() {
-        String swarm = String.format("Docker Swarm %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_SWARM));
-        String compose = String.format("Docker Compose %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_COMPOSE));
-        String kubes = String.format("Kubernetes %s", createLinkToReadme(ALERT_DEPLOYMENT_KUBERNETES));
+        String swarm = String.format("Docker Swarm - %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_SWARM));
+        String compose = String.format("Docker Compose - %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_COMPOSE));
+        String kubes = String.format("Kubernetes - %s", createLinkToReadme(ALERT_DEPLOYMENT_KUBERNETES));
 
         return List.of(swarm, compose, kubes);
     }
