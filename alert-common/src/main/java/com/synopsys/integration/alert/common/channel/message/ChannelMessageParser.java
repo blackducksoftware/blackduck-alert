@@ -153,10 +153,6 @@ public abstract class ChannelMessageParser {
         return categoryItemMessagePieces;
     }
 
-    protected String createLinkableItemString(LinkableItem linkableItem) {
-        return createLinkableItemString(linkableItem, false);
-    }
-
     protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
         String name = encodeString(linkableItem.getName());
         String value = encodeString(linkableItem.getValue());
@@ -240,12 +236,17 @@ public abstract class ChannelMessageParser {
             Optional<ComponentItem> optionalGroupedItem = getArbitraryElement(itemGroup);
             if (optionalGroupedItem.isPresent()) {
                 ComponentItem groupedItem = optionalGroupedItem.get();
-                createCategoryGroupingString(groupedItem)
-                    .map(str -> str + getLineSeparator())
-                    .ifPresent(componentItemPieces::add);
+                LinkableItem categoryItem = groupedItem.getCategoryItem();
+                Optional<LinkableItem> optionalGroupingAttribute = groupedItem.getCategoryGroupingAttribute();
 
-                String categoryItemNameString = encodeString(groupedItem.getCategoryItem().getName() + ": ");
-                componentItemPieces.add(categoryItemNameString);
+                String categoryItemNameString;
+                if (optionalGroupingAttribute.isPresent()) {
+                    LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
+                    categoryItemNameString = groupedCategoryItem.getName();
+                } else {
+                    categoryItemNameString = categoryItem.getName();
+                }
+                componentItemPieces.add(encodeString(categoryItemNameString + ": "));
 
                 Set<LinkableItem> categoryItems = itemGroup
                                                       .stream()
@@ -261,11 +262,15 @@ public abstract class ChannelMessageParser {
     private List<String> createNonCollapsibleCategoryItemPieces(Collection<ComponentItem> componentItems) {
         List<String> componentItemPieces = new LinkedList<>();
         for (ComponentItem componentItem : componentItems) {
-            createCategoryGroupingString(componentItem)
-                .map(str -> str + getLineSeparator())
-                .ifPresent(componentItemPieces::add);
-
-            String categoryString = createLinkableItemString(componentItem.getCategoryItem());
+            LinkableItem categoryItem = componentItem.getCategoryItem();
+            Optional<LinkableItem> optionalGroupingAttribute = componentItem.getCategoryGroupingAttribute();
+            String categoryString;
+            if (optionalGroupingAttribute.isPresent()) {
+                LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
+                categoryString = createLinkableItemString(groupedCategoryItem);
+            } else {
+                categoryString = createLinkableItemString(categoryItem);
+            }
             componentItemPieces.add(categoryString + getLineSeparator());
         }
         return componentItemPieces;
@@ -284,10 +289,13 @@ public abstract class ChannelMessageParser {
         return groupedAndPrioritizedItems;
     }
 
-    private Optional<String> createCategoryGroupingString(ComponentItem componentItem) {
-        return componentItem
-                   .getCategoryGroupingAttribute()
-                   .map(this::createLinkableItemString);
+    private LinkableItem createGroupedCategoryItem(LinkableItem categoryItem, LinkableItem categoryGroupingAttribute) {
+        String groupedCategoryName = String.format("%s (%s)", categoryItem.getName(), categoryGroupingAttribute.getValue());
+        return new LinkableItem(groupedCategoryName, categoryItem.getValue(), categoryItem.getUrl().orElse(null));
+    }
+
+    private String createLinkableItemString(LinkableItem linkableItem) {
+        return createLinkableItemString(linkableItem, false);
     }
 
     private List<String> createLinkableItemValuesPieces(Collection<LinkableItem> linkableItems) {
