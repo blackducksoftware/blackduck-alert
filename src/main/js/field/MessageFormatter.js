@@ -28,13 +28,17 @@ class MessageFormatter extends Component {
     }
 
     createMessage() {
-        const parsedMessaged = JSON.parse(this.props.message);
-        const { isDetailed, message } = parsedMessaged;
+        try {
+            const parsedMessaged = JSON.parse(this.props.message);
+            const { isDetailed, message } = parsedMessaged;
 
-        if (isDetailed) {
-            return this.createDetailedMessage(message);
+            if (isDetailed) {
+                return this.createDetailedMessage(message);
+            }
+            return message;
+        } catch (e) {
+            return this.props.message;
         }
-        return this.props.message;
     }
 
     render() {
