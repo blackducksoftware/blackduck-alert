@@ -104,7 +104,12 @@ public class AuditEntryActions {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 return new AlertJobMissingException("The Distribution Job with this id could not be found.", commonConfigId);
             });
-            distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig, List.of(notificationContent));
+            if (commonDistributionConfig.isEnabled()) {
+                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig, List.of(notificationContent));
+            } else {
+                logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", commonConfigId);
+                throw new AlertJobMissingException("The Distribution Job is currently disabled.", commonConfigId);
+            }
         } else {
             distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
         }
