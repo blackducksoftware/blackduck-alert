@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -30,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.rest.ResponseBodyBuilder;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
 @Component
@@ -40,45 +44,47 @@ public class PKIXErrorResponseFactory {
     private final String ALERT_DEPLOYMENT_DOCKER_COMPOSE = "docker-compose";
     private final String ALERT_DEPLOYMENT_KUBERNETES = "kubernetes";
 
+    private Gson gson;
     private ResponseFactory responseFactory;
 
     @Autowired
-    public PKIXErrorResponseFactory(ResponseFactory responseFactory) {
+    public PKIXErrorResponseFactory(Gson gson, ResponseFactory responseFactory) {
+        this.gson = gson;
         this.responseFactory = responseFactory;
     }
 
     public Optional<ResponseEntity<String>> createSSLExceptionResponse(String id, Exception e) {
         if (e.getMessage().toUpperCase().contains("PKIX")) {
             logger.debug("Found an error regarding PKIX, creating a unique response...");
-            String pkixErrorMessage = createMessage();
-            return Optional.of(responseFactory.createBadRequestResponse(id, pkixErrorMessage));
+            Map<String, Object> pkixErrorBody = Map.of("header", createHeader(), "title", createTitle(), "info", createInfo());
+            String pkixError = gson.toJson(pkixErrorBody);
+            ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(id, pkixError);
+            responseBodyBuilder.put("isDetailed", true);
+            ResponseEntity<String> badRequestResponse = responseFactory.createBadRequestResponse(id, responseBodyBuilder.build());
+            return Optional.of(badRequestResponse);
         }
 
         return Optional.empty();
     }
 
-    private String createMessage() {
-        StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("<div>");
-        messageBuilder.append("We detected an issue with your certificates, please properly import your certificate before deploying Alert.");
-        messageBuilder.append("<br>");
-        messageBuilder.append("To resolve this issue, redeploy Alert and use the appropriate link below to properly install your certificates:");
-        messageBuilder.append("<br>");
-        messageBuilder.append("- Docker Swarm ");
-        messageBuilder.append(createLinkToGithub(ALERT_DEPLOYMENT_DOCKER_SWARM));
-        messageBuilder.append("<br>");
-        messageBuilder.append("- Docker Compose ");
-        messageBuilder.append(createLinkToGithub(ALERT_DEPLOYMENT_DOCKER_COMPOSE));
-        messageBuilder.append("<br>");
-        messageBuilder.append("- Kubernetes ");
-        messageBuilder.append(createLinkToGithub(ALERT_DEPLOYMENT_KUBERNETES));
-        messageBuilder.append("</div>");
-
-        return messageBuilder.toString();
+    private String createHeader() {
+        return "There were issues with your Certificates.";
     }
 
-    private String createLinkToGithub(String deploymentType) {
+    private String createTitle() {
+        return "To resolve this issue, redeploy Alert and use the appropriate link below to properly install your certificates:";
+    }
+
+    private List<String> createInfo() {
+        String swarm = String.format("Docker Swarm %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_SWARM));
+        String compose = String.format("Docker Compose %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_COMPOSE));
+        String kubes = String.format("Kubernetes %s", createLinkToReadme(ALERT_DEPLOYMENT_KUBERNETES));
+
+        return List.of(swarm, compose, kubes);
+    }
+
+    private String createLinkToReadme(String deploymentType) {
         String fullUrl = String.format("%s/%s/README.md#certificates", BLACKDUCK_GITHUB_DEPLOYMENT_URL, deploymentType);
-        return String.format("<a href=\"%s\">%s Deployment</a>", fullUrl, deploymentType);
+        return String.format("[%s](%s Deployment)", fullUrl, deploymentType);
     }
 }

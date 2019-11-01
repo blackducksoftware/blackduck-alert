@@ -155,7 +155,7 @@ GlobalConfiguration.propTypes = {
     descriptor: PropTypes.object.isRequired,
     currentConfig: PropTypes.object,
     fieldErrors: PropTypes.object,
-    errorMessage: PropTypes.string,
+    errorMessage: PropTypes.object,
     actionMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
@@ -167,7 +167,7 @@ GlobalConfiguration.propTypes = {
 // Default values
 GlobalConfiguration.defaultProps = {
     currentConfig: {},
-    errorMessage: null,
+    errorMessage: {},
     actionMessage: null,
     updateStatus: null,
     fieldErrors: {}
