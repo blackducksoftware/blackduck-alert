@@ -1,8 +1,8 @@
 /**
  * alert-database
- *
+ * <p>
  * Copyright (c) 2019 Synopsys, Inc.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -10,9 +10,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,15 +22,11 @@
  */
 package com.synopsys.integration.alert.database.provider.project;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProviderUserProjectRelationRepository extends JpaRepository<ProviderUserProjectRelation, ProviderUserProjectRelationPK> {
-    List<ProviderUserProjectRelation> findByProviderUserId(final Long providerUserId);
-
-    List<ProviderUserProjectRelation> findByProviderProjectId(final Long providerProjectId);
-
-    void deleteAllByProviderProjectId(final Long providerProjectId);
+    List<ProviderUserProjectRelation> findByProviderProjectId(Long providerProjectId);
 
 }
