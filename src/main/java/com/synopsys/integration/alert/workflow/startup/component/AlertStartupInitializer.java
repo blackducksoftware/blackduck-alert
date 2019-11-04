@@ -85,7 +85,7 @@ public class AlertStartupInitializer extends StartupComponent {
     protected void initialize() {
         try {
             initializeConfigs();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error inserting startup values", e);
         }
     }
@@ -93,10 +93,10 @@ public class AlertStartupInitializer extends StartupComponent {
     private void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info(String.format("** %s **", LINE_DIVIDER));
         logger.info("Initializing descriptors with environment variables...");
-        final boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
+        boolean overwriteCurrentConfig = manageEnvironmentOverrideEnabled();
         logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
         initializeConfiguration(List.of(settingsDescriptorKey.getUniversalKey()), overwriteCurrentConfig);
-        final List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsDescriptorKey.getUniversalKey())).sorted().collect(Collectors.toList());
+        List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsDescriptorKey.getUniversalKey())).sorted().collect(Collectors.toList());
         initializeConfiguration(descriptorNames, overwriteCurrentConfig);
     }
 
@@ -105,14 +105,14 @@ public class AlertStartupInitializer extends StartupComponent {
         try {
             // determine if the environment variables should overwrite based on the settings configuration.
             Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
-            final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
+            String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
 
-            final String environmentFieldKey = convertKeyToProperty(settingsDescriptorKey.getUniversalKey(), fieldKey);
-            final Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
+            String environmentFieldKey = convertKeyToProperty(settingsDescriptorKey.getUniversalKey(), fieldKey);
+            Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
 
             if (environmentValue.isPresent() && settingsConfiguration.isPresent()) {
-                final ConfigurationModel foundModel = settingsConfiguration.get();
-                final Map<String, ConfigurationFieldModel> fieldModelMap = foundModel.getCopyOfKeyToFieldMap();
+                ConfigurationModel foundModel = settingsConfiguration.get();
+                Map<String, ConfigurationFieldModel> fieldModelMap = foundModel.getCopyOfKeyToFieldMap();
                 fieldModelMap.get(fieldKey).setFieldValue(String.valueOf(Boolean.valueOf(environmentValue.get())));
                 settingsConfiguration = Optional.ofNullable(fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), fieldModelMap.values()));
             }
@@ -121,29 +121,29 @@ public class AlertStartupInitializer extends StartupComponent {
                                       .flatMap(configurationModel -> configurationModel.getField(fieldKey))
                                       .flatMap(ConfigurationFieldModel::getFieldValue)
                                       .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
-        } catch (final AlertDatabaseConstraintException ex) {
+        } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error checking environment override", ex);
         }
         return environmentOverride;
     }
 
     private Optional<ConfigurationModel> findSettingsConfiguration() throws AlertDatabaseConstraintException {
-        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL);
+        List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL);
         return settingsConfigurationModels.stream().findFirst();
     }
 
     // TODO consider using a Collection of DescriptorKeys instead
-    private void initializeConfiguration(final Collection<String> descriptorNames, final boolean overwriteCurrentConfig) {
-        for (final String descriptorName : descriptorNames) {
+    private void initializeConfiguration(Collection<String> descriptorNames, boolean overwriteCurrentConfig) {
+        for (String descriptorName : descriptorNames) {
             logger.info(LINE_DIVIDER);
             logger.info("Descriptor: {}", descriptorName);
             logger.info(LINE_DIVIDER);
             logger.info("  Starting Descriptor Initialization...");
             try {
-                final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
-                                                                        .sorted(Comparator.comparing(DefinedFieldModel::getKey))
-                                                                        .collect(Collectors.toList());
-                final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+                List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
+                                                                  .sorted(Comparator.comparing(DefinedFieldModel::getKey))
+                                                                  .collect(Collectors.toList());
+                List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
 
                 Map<String, ConfigurationFieldModel> existingConfiguredFields = new HashMap<>();
                 foundConfigurationModels.stream()
@@ -154,11 +154,11 @@ public class AlertStartupInitializer extends StartupComponent {
                                  )
                     );
 
-                final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor, existingConfiguredFields);
+                Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor, existingConfiguredFields);
                 logConfiguration(configurationModels);
                 updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
 
-            } catch (final IllegalArgumentException | SecurityException | AlertException ex) {
+            } catch (IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("error initializing descriptor", ex);
             } finally {
                 logger.info("  Finished Descriptor Initialization...");
@@ -167,20 +167,22 @@ public class AlertStartupInitializer extends StartupComponent {
         }
     }
 
-    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, final List<DefinedFieldModel> fieldsForDescriptor, Map<String, ConfigurationFieldModel> existingConfiguredFields) {
-        final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
+    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(String descriptorName, List<DefinedFieldModel> fieldsForDescriptor, Map<String, ConfigurationFieldModel> existingConfiguredFields) {
+        Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         logger.info("  ### Environment Variables ### ");
-        for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
-            final String key = fieldModel.getKey();
-            final String convertedKey = convertKeyToProperty(descriptorName, key);
-            final boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
+        for (DefinedFieldModel fieldModel : fieldsForDescriptor) {
+            String key = fieldModel.getKey();
+            String convertedKey = convertKeyToProperty(descriptorName, key);
+            boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
             logger.info("    {}", convertedKey);
             logger.debug("         Environment Variable Found - {}", hasEnvironmentValue);
             String defaultValue = null;
             if (existingConfiguredFields.containsKey(key)) {
-                defaultValue = existingConfiguredFields.get(key).getFieldValue().get();
+                Optional<String> fieldValue = existingConfiguredFields.get(key).getFieldValue();
+                if (fieldValue.isPresent()) {
+                    defaultValue = fieldValue.get();
+                }
             }
-
             getEnvironmentValue(convertedKey, defaultValue)
                 .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                 .ifPresent(configurationModels::add);
@@ -188,7 +190,7 @@ public class AlertStartupInitializer extends StartupComponent {
         return configurationModels;
     }
 
-    private void updateConfigurationFields(final String descriptorName, final boolean overwriteCurrentConfig, final List<ConfigurationModel> foundConfigurationModels, final Set<ConfigurationFieldModel> configurationModels)
+    private void updateConfigurationFields(String descriptorName, boolean overwriteCurrentConfig, List<ConfigurationModel> foundConfigurationModels, Set<ConfigurationFieldModel> configurationModels)
         throws AlertException {
         Optional<ConfigurationModel> optionalFoundModel = foundConfigurationModels
                                                               .stream()
@@ -196,47 +198,47 @@ public class AlertStartupInitializer extends StartupComponent {
                                                               .filter(model -> overwriteCurrentConfig);
         logger.info("  ### Processing Configuration ###");
         if (optionalFoundModel.isPresent()) {
-            final ConfigurationModel foundModel = optionalFoundModel.get();
+            ConfigurationModel foundModel = optionalFoundModel.get();
             logger.info("    Overwriting values with environment.");
-            final Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
+            Collection<ConfigurationFieldModel> updatedFields = updateAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.updateConfiguration(foundModel.getConfigurationId(), updatedFields);
         } else if (foundConfigurationModels.isEmpty()) {
             logger.info("    Writing initial values from environment.");
-            final Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
+            Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorName, configurationModels);
             fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, savedFields);
         }
     }
 
-    private Collection<ConfigurationFieldModel> updateAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels)
+    private Collection<ConfigurationFieldModel> updateAction(String descriptorName, Collection<ConfigurationFieldModel> configurationFieldModels)
         throws AlertException {
-        final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
-        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
-        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+        Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
+        FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
+        FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(updatedFieldModel).values();
     }
 
-    private Collection<ConfigurationFieldModel> saveAction(final String descriptorName, final Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
-        final Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
-        final FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
-        final FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
+    private Collection<ConfigurationFieldModel> saveAction(String descriptorName, Collection<ConfigurationFieldModel> configurationFieldModels) throws AlertException {
+        Map<String, FieldValueModel> fieldValueModelMap = modelConverter.convertToFieldValuesMap(configurationFieldModels);
+        FieldModel fieldModel = new FieldModel(descriptorName, ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
+        FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();
     }
 
-    private String convertKeyToProperty(final String descriptorName, final String key) {
-        final String keyUnderscores = key.replace(".", "_");
+    private String convertKeyToProperty(String descriptorName, String key) {
+        String keyUnderscores = key.replace(".", "_");
         return String.join("_", "alert", descriptorName, keyUnderscores).toUpperCase();
     }
 
-    private boolean hasEnvironmentValue(final String propertyKey) {
-        final String value = System.getProperty(propertyKey);
+    private boolean hasEnvironmentValue(String propertyKey) {
+        String value = System.getProperty(propertyKey);
         return StringUtils.isNotBlank(value) || environment.containsProperty(propertyKey);
     }
 
-    private Optional<String> getEnvironmentValue(final String propertyKey) {
+    private Optional<String> getEnvironmentValue(String propertyKey) {
         return getEnvironmentValue(propertyKey, null);
     }
 
-    private Optional<String> getEnvironmentValue(final String propertyKey, String defaultValue) {
+    private Optional<String> getEnvironmentValue(String propertyKey, String defaultValue) {
         String value = System.getProperty(propertyKey);
         if (StringUtils.isBlank(value)) {
             value = environment.getProperty(propertyKey);
