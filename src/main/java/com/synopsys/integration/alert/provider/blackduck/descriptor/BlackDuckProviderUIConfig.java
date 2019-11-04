@@ -58,16 +58,16 @@ public class BlackDuckProviderUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField blackDuckUrl = TextInputConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION);
-        final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, encryptionValidator, this::validateAPIToken);
-        final String defaultTimeout = String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT);
-        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION).addDefaultValue(defaultTimeout);
+        ConfigField blackDuckUrl = TextInputConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION);
+        ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, encryptionValidator, this::validateAPIToken);
+        String defaultTimeout = String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT);
+        ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION).addDefaultValue(defaultTimeout);
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
     }
 
-    private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String apiKey = fieldToValidate.getValue().orElse("");
+    private Collection<String> validateAPIToken(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        String apiKey = fieldToValidate.getValue().orElse("");
         if (StringUtils.isNotBlank(apiKey) && (apiKey.length() < 64 || apiKey.length() > 256)) {
             return List.of("Invalid Black Duck API Token.");
         }
