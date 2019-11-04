@@ -11,6 +11,7 @@ import com.synopsys.integration.alert.database.provider.project.ProviderUserProj
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,9 +110,9 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
 
         List<ProviderProject> projectsToDelete = savedEntities
-                .stream()
-                .map(this::convertToProjectModel)
-                .collect(Collectors.toList());
+                                                     .stream()
+                                                     .map(this::convertToProjectModel)
+                                                     .collect(Collectors.toList());
 
         providerDataAccessor.deleteProjects(providerName, projectsToDelete);
         savedEntities = providerProjectRepository.findAll();
@@ -125,7 +126,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
     private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
         return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
-                providerProjectEntity.getProjectOwnerEmail());
+            providerProjectEntity.getProjectOwnerEmail());
     }
 
     @Test
@@ -203,6 +204,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
         providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedExistingUser.getId(), savedProject.getId()));
         assertEquals(1, providerUserProjectRelationRepository.findAll().size());
+        providerUserProjectRelationRepository.deleteAllInBatch();
 
         String newUserEmail1 = "newEmail1@gmail.com";
         String newUserEmail2 = "newEmail2@gmail.com";
@@ -284,9 +286,9 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         assertEquals(3, providerUserRepository.findAll().size());
 
         List<ProviderUserModel> oldUsers = List.of(
-                new ProviderUserModel(newUser1.getEmailAddress(), newUser1.getOptOut()),
-                new ProviderUserModel(newUser2.getEmailAddress(), newUser2.getOptOut()),
-                new ProviderUserModel(newUser3.getEmailAddress(), newUser3.getOptOut())
+            new ProviderUserModel(newUser1.getEmailAddress(), newUser1.getOptOut()),
+            new ProviderUserModel(newUser2.getEmailAddress(), newUser2.getOptOut()),
+            new ProviderUserModel(newUser3.getEmailAddress(), newUser3.getOptOut())
         );
 
         String newUserEmail4 = "newEmail4@gmail.com";
