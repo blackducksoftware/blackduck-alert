@@ -22,15 +22,11 @@
  */
 package com.synopsys.integration.alert.database.provider.project;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProviderUserProjectRelationRepository extends JpaRepository<ProviderUserProjectRelation, ProviderUserProjectRelationPK> {
-    List<ProviderUserProjectRelation> findByProviderUserId(final Long providerUserId);
-
-    List<ProviderUserProjectRelation> findByProviderProjectId(final Long providerProjectId);
-
-    void deleteAllByProviderProjectId(final Long providerProjectId);
+    List<ProviderUserProjectRelation> findByProviderProjectId(Long providerProjectId);
 
 }
