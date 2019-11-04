@@ -56,4 +56,9 @@
             CALL ENABLE_EXISTING_CONFIGS();
         </sql>
     </changeSet>
+    <changeSet author="gavink" id="2019-11-04-14-45-51-333">
+        <sql dbms="h2">
+            DROP ALIAS IF EXISTS ENABLE_EXISTING_CONFIGS;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
