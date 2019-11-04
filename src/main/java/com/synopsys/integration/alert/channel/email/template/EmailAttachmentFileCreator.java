@@ -26,11 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
-import java.util.function.Function;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -38,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -63,6 +61,7 @@ public class EmailAttachmentFileCreator {
             return Optional.ofNullable(formattedFile);
         } catch (SecurityException | IOException | JAXBException e) {
             logger.warn("Unable to create {} email attachment file", attachmentFormat.name());
+            logger.debug("Attachment failure", e);
         }
         return Optional.empty();
     }
@@ -81,26 +80,22 @@ public class EmailAttachmentFileCreator {
     }
 
     private File createJsonFile(MessageContentGroup messageContentGroup, File writeDir) throws IOException {
-        return createFile(messageContentGroup, writeDir, gson::toJson, "json");
+        String jsonMessage = gson.toJson(messageContentGroup);
+        return createFile(jsonMessage, writeDir, "json");
     }
 
     private File createCsvFile(MessageContentGroup messageContentGroup, File writeDir) throws IOException {
         // FIXME implement
-        return createFile(messageContentGroup, writeDir, x -> "", "csv");
+        return createFile("", writeDir, "csv");
     }
 
-    private File createXmlFile(MessageContentGroup messageContentGroup, File writeDir) throws JAXBException {
-        JAXBContext messageContext = JAXBContext.newInstance(MessageContentGroup.class);
-        Marshaller messageContextMarshaller = messageContext.createMarshaller();
-        messageContextMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-        File xmlFile = new File(writeDir, "message.xml");
-        messageContextMarshaller.marshal(messageContentGroup, xmlFile);
-        return xmlFile;
+    private File createXmlFile(MessageContentGroup messageContentGroup, File writeDir) throws IOException {
+        XmlMapper xmlMapper = new XmlMapper();
+        String xmlMessage = xmlMapper.writeValueAsString(messageContentGroup);
+        return createFile(xmlMessage, writeDir, "xml");
     }
 
-    private File createFile(MessageContentGroup messageContentGroup, File writeDir, Function<MessageContentGroup, String> fileContentCreator, String fileExtension) throws IOException {
-        String messageString = fileContentCreator.apply(messageContentGroup);
+    private File createFile(String messageString, File writeDir, String fileExtension) throws IOException {
         File messageFile = new File(writeDir, "message." + fileExtension);
         FileUtils.writeStringToFile(messageFile, messageString, Charset.defaultCharset());
         return messageFile;

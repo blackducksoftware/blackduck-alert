@@ -15,6 +15,7 @@ out/
 # build tool
 .gradle/
 build/
+email
 
 classes/
 /log/
