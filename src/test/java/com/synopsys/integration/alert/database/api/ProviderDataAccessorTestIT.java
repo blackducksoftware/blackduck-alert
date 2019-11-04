@@ -128,7 +128,6 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
                                                      .stream()
                                                      .map(this::convertToProjectModel)
                                                      .collect(Collectors.toList());
-
         DescriptorKey descriptorKey = createDescriptorKey(providerName);
 
         providerDataAccessor.deleteProjects(descriptorKey, projectsToDelete);
