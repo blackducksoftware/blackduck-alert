@@ -91,11 +91,11 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
         ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
 
-        providerDataAccessor.remapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
-        providerDataAccessor.remapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
-        providerDataAccessor.remapUsersToProjectByEmail(project3.getHref(), Set.of(user2.getEmailAddress()));
-        providerDataAccessor.remapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
-        providerDataAccessor.remapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
+        providerDataAccessor.mapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
+        providerDataAccessor.mapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
+        providerDataAccessor.mapUsersToProjectByEmail(project3.getHref(), Set.of(user2.getEmailAddress()));
+        providerDataAccessor.mapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
+        providerDataAccessor.mapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
 
         String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
@@ -111,6 +111,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         provider_global = configurationAccessor
                               .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+
     }
 
     @Override

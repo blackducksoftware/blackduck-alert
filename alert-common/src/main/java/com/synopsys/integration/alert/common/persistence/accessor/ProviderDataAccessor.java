@@ -29,17 +29,19 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
+
 public interface ProviderDataAccessor {
-    Optional<ProviderProject> findFirstByHref(final String href);
+    Optional<ProviderProject> findFirstByHref(String href);
 
-    Optional<ProviderProject> findFirstByName(final String name);
+    Optional<ProviderProject> findFirstByName(String name);
 
-    List<ProviderProject> findByProviderName(final String providerName);
+    List<ProviderProject> findByProviderName(String providerName);
 
     List<ProviderProject> findByProviderKey(DescriptorKey descriptorKey);
 
@@ -49,13 +51,13 @@ public interface ProviderDataAccessor {
 
     void deleteProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects);
 
-    void deleteByHref(final String projectHref);
+    void deleteByHref(String projectHref);
 
-    Set<String> getEmailAddressesForProjectHref(final String projectHref);
+    Set<String> getEmailAddressesForProjectHref(String projectHref);
 
-    void remapUsersToProjectByEmail(final String projectHref, final Collection<String> emailAddresses) throws AlertDatabaseConstraintException;
+    void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException;
 
-    List<ProviderUserModel> getAllUsers(final String providerName);
+    List<ProviderUserModel> getAllUsers(String providerName);
 
     AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer offset, Integer limit, String q) throws AlertDatabaseConstraintException;
 
@@ -64,4 +66,5 @@ public interface ProviderDataAccessor {
     void deleteUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> users);
 
     void updateProjectAndUserData(DescriptorKey descriptorKey, Map<ProviderProject, Set<String>> projectToUserData);
+
 }

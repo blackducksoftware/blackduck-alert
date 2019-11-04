@@ -76,57 +76,59 @@ public class JobConfigController extends BaseController {
     private final ContentConverter contentConverter;
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
+    private PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
-    public JobConfigController(final JobConfigActions jobConfigActions, final ResponseFactory responseFactory, final ContentConverter contentConverter, final AuthorizationManager authorizationManager,
-        DescriptorAccessor descriptorAccessor) {
+    public JobConfigController(JobConfigActions jobConfigActions, ResponseFactory responseFactory, ContentConverter contentConverter, AuthorizationManager authorizationManager,
+        DescriptorAccessor descriptorAccessor, PKIXErrorResponseFactory pkixErrorResponseFactory) {
         this.jobConfigActions = jobConfigActions;
         this.responseFactory = responseFactory;
         this.contentConverter = contentConverter;
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
+        this.pkixErrorResponseFactory = pkixErrorResponseFactory;
     }
 
     @GetMapping
     public ResponseEntity<String> getJobs() {
         try {
-            final Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
-                                                    .stream()
-                                                    .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
-                                                    .map(RegisteredDescriptorModel::getName)
-                                                    .collect(Collectors.toSet());
+            Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
+                                              .stream()
+                                              .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
+                                              .map(RegisteredDescriptorModel::getName)
+                                              .collect(Collectors.toSet());
             if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
                 return responseFactory.createForbiddenResponse();
             }
-            final List<JobFieldModel> models = new LinkedList<>();
-            final List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
+            List<JobFieldModel> models = new LinkedList<>();
+            List<JobFieldModel> allModels = jobConfigActions.getAllJobs();
 
-            for (final JobFieldModel jobModel : allModels) {
-                final boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
+            for (JobFieldModel jobModel : allModels) {
+                boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
                 if (includeJob) {
                     models.add(jobModel);
                 }
             }
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database.");
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getJob(@PathVariable final UUID id) {
-        final Optional<JobFieldModel> optionalModel;
+    public ResponseEntity<String> getJob(@PathVariable UUID id) {
+        Optional<JobFieldModel> optionalModel;
         try {
             optionalModel = jobConfigActions.getJobById(id);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database for ID: " + id);
         }
 
         if (optionalModel.isPresent()) {
-            final JobFieldModel fieldModel = optionalModel.get();
-            final boolean hasPermissions = hasRequiredPermissions(fieldModel.getFieldModels(), authorizationManager::hasReadPermission);
+            JobFieldModel fieldModel = optionalModel.get();
+            boolean hasPermissions = hasRequiredPermissions(fieldModel.getFieldModels(), authorizationManager::hasReadPermission);
             if (!hasPermissions) {
                 return responseFactory.createForbiddenResponse();
             }
@@ -137,75 +139,75 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
-        final boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasCreatePermission);
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) JobFieldModel restModel) {
+        boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasCreatePermission);
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
 
         try {
             return runPostConfig(restModel);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getJobId(), e.getMessage());
         }
     }
 
-    private ResponseEntity<String> runPostConfig(final JobFieldModel restModel) throws AlertException {
-        final String id = restModel.getJobId();
+    private ResponseEntity<String> runPostConfig(JobFieldModel restModel) throws AlertException {
+        String id = restModel.getJobId();
         if (StringUtils.isNotBlank(id) && jobConfigActions.doesJobExist(id)) {
             return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
         }
 
         try {
-            final JobFieldModel updatedEntity = jobConfigActions.saveJob(restModel);
+            JobFieldModel updatedEntity = jobConfigActions.saveJob(restModel);
             return responseFactory.createCreatedResponse(updatedEntity.getJobId(), "Created");
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
-        final boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasWritePermission);
+    public ResponseEntity<String> putConfig(@PathVariable UUID id, @RequestBody(required = true) JobFieldModel restModel) {
+        boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasWritePermission);
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
 
         try {
             return runPutConfig(id, restModel);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getJobId(), e.getMessage());
         }
     }
 
-    private ResponseEntity<String> runPutConfig(final UUID id, final JobFieldModel restModel) throws AlertException {
+    private ResponseEntity<String> runPutConfig(UUID id, JobFieldModel restModel) throws AlertException {
         if (!jobConfigActions.doesJobExist(id)) {
             return responseFactory.createBadRequestResponse(id.toString(), "No configuration with the specified id.");
         }
 
         try {
-            final JobFieldModel updatedEntity = jobConfigActions.updateJob(id, restModel);
+            JobFieldModel updatedEntity = jobConfigActions.updateJob(id, restModel);
             return responseFactory.createAcceptedResponse(updatedEntity.getJobId(), "Updated");
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id.toString(), "There were errors with the configuration.", e.getFieldErrors());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteConfig(@PathVariable final UUID id) {
+    public ResponseEntity<String> deleteConfig(@PathVariable UUID id) {
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
-        final String stringId = contentConverter.getStringValue(id);
+        String stringId = contentConverter.getStringValue(id);
         try {
             if (jobConfigActions.doesJobExist(id)) {
-                final Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
+                Optional<JobFieldModel> optionalModel = jobConfigActions.getJobById(id);
 
                 if (optionalModel.isPresent()) {
-                    final JobFieldModel jobFieldModel = optionalModel.get();
-                    final boolean hasPermissions = hasRequiredPermissions(jobFieldModel.getFieldModels(), authorizationManager::hasDeletePermission);
+                    JobFieldModel jobFieldModel = optionalModel.get();
+                    boolean hasPermissions = hasRequiredPermissions(jobFieldModel.getFieldModels(), authorizationManager::hasDeletePermission);
                     if (!hasPermissions) {
                         return responseFactory.createForbiddenResponse();
                     }
@@ -216,39 +218,39 @@ public class JobConfigController extends BaseController {
             } else {
                 return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
             }
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
         }
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> validateConfig(@RequestBody final JobFieldModel restModel) {
+    public ResponseEntity<String> validateConfig(@RequestBody JobFieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        final boolean hasPermissions = restModel.getFieldModels()
-                                           .stream()
-                                           .allMatch(model ->
-                                                         authorizationManager.hasCreatePermission(model.getContext(), model.getDescriptorName())
-                                                             || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
-                                                             || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
+        boolean hasPermissions = restModel.getFieldModels()
+                                     .stream()
+                                     .allMatch(model ->
+                                                   authorizationManager.hasCreatePermission(model.getContext(), model.getDescriptorName())
+                                                       || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
+                                                       || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
 
-        final String id = restModel.getJobId();
+        String id = restModel.getJobId();
         try {
-            final String responseMessage = jobConfigActions.validateJob(restModel);
+            String responseMessage = jobConfigActions.validateJob(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         }
     }
 
     @PostMapping("/test")
-    public ResponseEntity<String> testConfig(@RequestBody final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
+    public ResponseEntity<String> testConfig(@RequestBody JobFieldModel restModel, @RequestParam(required = false) String destination) {
         return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel, destination));
     }
 
@@ -256,31 +258,31 @@ public class JobConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasExecutePermission);
+        boolean hasPermissions = hasRequiredPermissions(restModel.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
             return responseFactory.createForbiddenResponse();
         }
-        final String id = restModel.getJobId();
+        String id = restModel.getJobId();
         try {
-            final String responseMessage = messageFunction.apply(restModel);
+            String responseMessage = messageFunction.apply(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
-        } catch (final IntegrationRestException e) {
-            final String exceptionMessage = e.getMessage();
+        } catch (IntegrationRestException e) {
+            String exceptionMessage = e.getMessage();
             logger.error(exceptionMessage, e);
             String message = exceptionMessage;
             if (StringUtils.isNotBlank(e.getHttpStatusMessage())) {
                 message += " : " + e.getHttpStatusMessage();
             }
             return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
-        } catch (final AlertMethodNotAllowedException e) {
+        } catch (AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
-        } catch (final AlertException e) {
-            return responseFactory.createBadRequestResponse(id, e.getMessage());
-        } catch (final Exception e) {
+        } catch (IntegrationException e) {
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createInternalServerErrorResponse(id, e.getMessage()));
         }
     }
 
