@@ -53,6 +53,7 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
@@ -66,27 +67,29 @@ public class ConfigController extends BaseController {
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
+    private PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public ConfigController(ConfigActions configActions, ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager,
-        DescriptorMap descriptorMap) {
+        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory) {
         this.configActions = configActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
         this.authorizationManager = authorizationManager;
         this.descriptorMap = descriptorMap;
+        this.pkixErrorResponseFactory = pkixErrorResponseFactory;
     }
 
     @GetMapping
-    public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
-        final List<FieldModel> models;
+    public ResponseEntity<String> getConfigs(@RequestParam ConfigContextEnum context, @RequestParam(required = false) String descriptorName) {
+        List<FieldModel> models;
         if (!authorizationManager.hasReadPermission(context.name(), descriptorName)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
             DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
             models = configActions.getConfigs(context, descriptorKey);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error("Was not able to find configurations with the context {}, and descriptorName {} to get.", context, descriptorName);
             return responseFactory.createNotFoundResponse(String.format(EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR, context, descriptorName));
         }
@@ -99,17 +102,17 @@ public class ConfigController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getConfig(@PathVariable final Long id) {
-        final Optional<FieldModel> optionalModel;
+    public ResponseEntity<String> getConfig(@PathVariable Long id) {
+        Optional<FieldModel> optionalModel;
         try {
             optionalModel = configActions.getConfigById(id);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
         }
 
         if (optionalModel.isPresent()) {
-            final FieldModel fieldModel = optionalModel.get();
+            FieldModel fieldModel = optionalModel.get();
             if (!authorizationManager.hasReadPermission(fieldModel.getContext(), fieldModel.getDescriptorName())) {
                 return responseFactory.createForbiddenResponse();
             }
@@ -120,7 +123,7 @@ public class ConfigController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final FieldModel restModel) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) FieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -132,34 +135,34 @@ public class ConfigController extends BaseController {
         DescriptorKey descriptorKey;
         try {
             descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error("Was not able to find configurations with the context {}, and descriptorName {} to update.", context, descriptorName);
             return responseFactory.createNotFoundResponse(String.format(EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR, context, descriptorName));
         }
 
         try {
             return runPostConfig(restModel, descriptorKey);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getId(), e.getMessage());
         }
     }
 
     private ResponseEntity<String> runPostConfig(FieldModel fieldModel, DescriptorKey descriptorKey) throws AlertException {
-        final String id = fieldModel.getId();
+        String id = fieldModel.getId();
         if (configActions.doesConfigExist(id)) {
             return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
         }
         try {
-            final FieldModel updatedEntity = configActions.saveConfig(fieldModel, descriptorKey);
+            FieldModel updatedEntity = configActions.saveConfig(fieldModel, descriptorKey);
             return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> putConfig(@PathVariable final Long id, @RequestBody(required = true) final FieldModel restModel) {
+    public ResponseEntity<String> putConfig(@PathVariable Long id, @RequestBody(required = true) FieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -168,53 +171,53 @@ public class ConfigController extends BaseController {
         }
         try {
             return runPutConfig(id, restModel);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getId(), e.getMessage());
         }
     }
 
-    private ResponseEntity<String> runPutConfig(final Long id, final FieldModel restModel) throws AlertException {
+    private ResponseEntity<String> runPutConfig(Long id, FieldModel restModel) throws AlertException {
         if (!configActions.doesConfigExist(id)) {
             return responseFactory.createBadRequestResponse(contentConverter.getStringValue(id), "No configuration with the specified id.");
         }
 
         try {
-            final FieldModel updatedEntity = configActions.updateConfig(id, restModel);
+            FieldModel updatedEntity = configActions.updateConfig(id, restModel);
             return responseFactory.createAcceptedResponse(updatedEntity.getId(), "Updated");
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id.toString(), "There were errors with the configuration.", e.getFieldErrors());
         }
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final FieldModel restModel) {
+    public ResponseEntity<String> validateConfig(@RequestBody(required = true) FieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
         if (!authorizationManager.hasCreatePermission(restModel.getContext(), restModel.getDescriptorName()) && !authorizationManager.hasWritePermission(restModel.getContext(), restModel.getDescriptorName())) {
             return responseFactory.createForbiddenResponse();
         }
-        final String id = restModel.getId();
+        String id = restModel.getId();
         try {
-            final String responseMessage = configActions.validateConfig(restModel, new HashMap<>());
+            String responseMessage = configActions.validateConfig(restModel, new HashMap<>());
             return responseFactory.createOkResponse(id, responseMessage);
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteConfig(@PathVariable final Long id) {
+    public ResponseEntity<String> deleteConfig(@PathVariable Long id) {
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
-        final String stringId = contentConverter.getStringValue(id);
+        String stringId = contentConverter.getStringValue(id);
         try {
             if (configActions.doesConfigExist(id)) {
-                final Optional<FieldModel> fieldModel = configActions.getConfigById(id);
+                Optional<FieldModel> fieldModel = configActions.getConfigById(id);
                 if (fieldModel.isPresent()) {
-                    final FieldModel model = fieldModel.get();
+                    FieldModel model = fieldModel.get();
                     if (!authorizationManager.hasDeletePermission(model.getContext(), model.getDescriptorName())) {
                         return responseFactory.createForbiddenResponse();
                     }
@@ -224,41 +227,41 @@ public class ConfigController extends BaseController {
             } else {
                 return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
             }
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
         }
     }
 
     @PostMapping("/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = true) FieldModel restModel, @RequestParam(required = false) String destination) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
         if (!authorizationManager.hasExecutePermission(restModel.getContext(), restModel.getDescriptorName())) {
             return responseFactory.createForbiddenResponse();
         }
-        final String id = restModel.getId();
+        String id = restModel.getId();
         try {
-            final String responseMessage = configActions.testConfig(restModel, destination);
+            String responseMessage = configActions.testConfig(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
-        } catch (final IntegrationRestException e) {
-            final String exceptionMessage = e.getMessage();
+        } catch (IntegrationRestException e) {
+            String exceptionMessage = e.getMessage();
             logger.error(exceptionMessage, e);
             String message = exceptionMessage;
             if (StringUtils.isNotBlank(e.getHttpStatusMessage())) {
                 message += " : " + e.getHttpStatusMessage();
             }
             return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
-        } catch (final AlertFieldException e) {
+        } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
-        } catch (final AlertMethodNotAllowedException e) {
+        } catch (AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
-        } catch (final AlertException e) {
-            return responseFactory.createBadRequestResponse(id, e.getMessage());
-        } catch (final Exception e) {
+        } catch (IntegrationException e) {
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
+            return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createInternalServerErrorResponse(id, e.getMessage()));
         }
     }
 

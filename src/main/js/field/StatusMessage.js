@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'react-bootstrap/Alert';
 import FadeField from 'field/FadeField';
+import MessageFormatter from "field/MessageFormatter";
 
 class StatusMessage extends Component {
     constructor(props) {
@@ -32,7 +33,7 @@ class StatusMessage extends Component {
         };
         return (
             <div>
-                {errorMessage && this.state.showError && <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose} variant="danger">{errorMessage}</Alert>}
+                {errorMessage && this.state.showError && <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose} variant="danger"><MessageFormatter message={errorMessage} /></Alert>}
 
                 {actionMessage && this.state.showMessage && <FadeField><Alert bsPrefix="statusAlert alert" dismissible onClose={onMessageClose} variant="success">{actionMessage}</Alert></FadeField>}
             </div>

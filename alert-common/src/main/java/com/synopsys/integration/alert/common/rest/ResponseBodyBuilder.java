@@ -30,36 +30,40 @@ import com.google.gson.JsonObject;
 public class ResponseBodyBuilder {
     private final JsonObject map;
 
-    public ResponseBodyBuilder(final String id, final String message) {
+    public ResponseBodyBuilder() {
         map = new JsonObject();
+    }
+
+    public ResponseBodyBuilder(String id, String message) {
+        this();
         if (!ResponseFactory.EMPTY_ID.equals(id)) {
             map.addProperty("id", id);
         }
         map.addProperty("message", message);
     }
 
-    public ResponseBodyBuilder(final String message) {
+    public ResponseBodyBuilder(String message) {
         this(ResponseFactory.EMPTY_ID, message);
     }
 
-    public ResponseBodyBuilder put(final String key, final Boolean value) {
+    public ResponseBodyBuilder put(String key, Boolean value) {
         map.addProperty(key, value);
         return this;
     }
 
-    public ResponseBodyBuilder put(final String key, final Number value) {
+    public ResponseBodyBuilder put(String key, Number value) {
         map.addProperty(key, value);
         return this;
     }
 
-    public ResponseBodyBuilder put(final String key, final String value) {
+    public ResponseBodyBuilder put(String key, String value) {
         map.addProperty(key, value);
         return this;
     }
 
-    public ResponseBodyBuilder putErrors(final Map<String, String> errors) {
-        final JsonObject element = new JsonObject();
-        for (final Entry<String, String> entry : errors.entrySet()) {
+    public ResponseBodyBuilder putErrors(Map<String, String> errors) {
+        JsonObject element = new JsonObject();
+        for (Entry<String, String> entry : errors.entrySet()) {
             element.addProperty(entry.getKey(), entry.getValue());
         }
         map.add("errors", element);
