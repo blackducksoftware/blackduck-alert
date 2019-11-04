@@ -45,6 +45,9 @@ public class AlertProperties {
     @Value("${alert.secrets.dir:/run/secrets}")
     private String alertSecretsDir;
 
+    @Value("${alert.email.attachments.dir:/email/attachments}")
+    private String alertEmailAttachmentsDir;
+
     @Value("${alert.trust.cert:}")
     private Boolean alertTrustCertificate;
 
@@ -116,7 +119,7 @@ public class AlertProperties {
     }
 
     public String getAlertLogo() throws AlertException {
-        final String imagesDirectory = getAlertImagesDir();
+        String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/synopsys.png";
         }
@@ -125,6 +128,10 @@ public class AlertProperties {
 
     public String getAlertSecretsDir() {
         return StringUtils.trimToNull(alertSecretsDir);
+    }
+
+    public String getAlertEmailAttachmentsDir() {
+        return alertEmailAttachmentsDir;
     }
 
     public Boolean getH2ConsoleEnabled() {
@@ -189,7 +196,7 @@ public class AlertProperties {
         return getOptionalString(alertHostName);
     }
 
-    private Optional<String> getOptionalString(final String value) {
+    private Optional<String> getOptionalString(String value) {
         if (StringUtils.isNotBlank(value)) {
             return Optional.of(value);
         }
@@ -198,9 +205,9 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
-            final String hostName = getAlertHostName().orElse(getPublicWebserverHost().orElse("localhost"));
-            final String port = getServerPort().orElse(getPublicWebserverPort().orElse(getServerPort().orElse("")));
-            final String path = getContextPath().orElse("");
+            String hostName = getAlertHostName().orElse(getPublicWebserverHost().orElse("localhost"));
+            String port = getServerPort().orElse(getPublicWebserverPort().orElse(getServerPort().orElse("")));
+            String path = getContextPath().orElse("");
             String protocol = "http";
             if (getSslEnabled()) {
                 protocol = "https";

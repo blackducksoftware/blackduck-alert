@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
@@ -75,20 +76,20 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @BeforeEach
     public void testSetup() throws Exception {
-        final List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
+        List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
         providerDataAccessor.deleteUsers(BLACK_DUCK_PROVIDER_KEY, allUsers);
-        final List<ProviderProject> allProjects = providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
+        List<ProviderProject> allProjects = providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
         providerDataAccessor.deleteProjects(BLACK_DUCK_PROVIDER_KEY, allProjects);
 
-        final ProviderProject project1 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
-        final ProviderProject project2 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("TestProject2", "", "", ""));
-        final ProviderProject project3 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project three", "", "", ""));
-        final ProviderProject project4 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project four", "", "", ""));
-        final ProviderProject project5 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
+        ProviderProject project1 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
+        ProviderProject project2 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("TestProject2", "", "", ""));
+        ProviderProject project3 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project three", "", "", ""));
+        ProviderProject project4 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project four", "", "", ""));
+        ProviderProject project5 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
 
-        final ProviderUserEntity user1 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
-        final ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
-        final ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
+        ProviderUserEntity user1 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
+        ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
+        ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
 
         providerDataAccessor.remapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
         providerDataAccessor.remapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
@@ -96,16 +97,16 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         providerDataAccessor.remapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
         providerDataAccessor.remapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
 
-        final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
-        final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
+        String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
+        ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
         blackDuckTimeoutField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
-        final String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
-        final ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
+        String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
+        ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
         blackDuckApiField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
 
-        final String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
-        final ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
+        String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
+        ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         provider_global = configurationAccessor
@@ -114,14 +115,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
-        final Map<String, String> valueMap = new HashMap<>();
-        final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
-        final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
-        final String smtpUser = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER);
-        final String smtpPassword = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD);
-        final Boolean smtpEhlo = Boolean.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
-        final Boolean smtpAuth = Boolean.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
-        final Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
+        Map<String, String> valueMap = new HashMap<>();
+        String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
+        String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
+        String smtpUser = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER);
+        String smtpPassword = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD);
+        Boolean smtpEhlo = Boolean.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
+        Boolean smtpAuth = Boolean.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
+        Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         valueMap.put(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), smtpHost);
         valueMap.put(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), smtpFrom);
@@ -131,41 +132,41 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         valueMap.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), String.valueOf(smtpAuth));
         valueMap.put(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), String.valueOf(smtpPort));
 
-        final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
+        Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
         return Optional.of(configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
     public ConfigurationModel saveDistributionConfiguration() throws Exception {
-        final List<ConfigurationFieldModel> models = new LinkedList<>();
+        List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
         return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.DISTRIBUTION, models);
     }
 
     @Override
     public DistributionEvent createChannelEvent() throws AlertException {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
-                                                   .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                   .build();
+        LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider")
+                                             .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
+                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .build();
         List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
-        } catch (final AlertDatabaseConstraintException e) {
+        } catch (AlertDatabaseConstraintException e) {
             e.printStackTrace();
         }
 
-        final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        for (final ConfigurationModel model : models) {
+        Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+        for (ConfigurationModel model : models) {
             fieldMap.putAll(model.getCopyOfKeyToFieldMap());
         }
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-        final String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
-        final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(),
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
+        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(),
             MessageContentGroup.singleton(content), fieldAccessor);
         return event;
     }
@@ -176,18 +177,18 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Set<DefinedFieldModel> globalFields) {
+    public boolean assertGlobalFields(Set<DefinedFieldModel> globalFields) {
         boolean result = true;
-        final Set<String> fieldNames = Arrays.stream(EmailPropertyKeys.values()).map(EmailPropertyKeys::getPropertyKey).collect(Collectors.toSet());
+        Set<String> fieldNames = Arrays.stream(EmailPropertyKeys.values()).map(EmailPropertyKeys::getPropertyKey).collect(Collectors.toSet());
         result = result && globalFields
                                .stream()
                                .map(DefinedFieldModel::getKey)
                                .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> emailPassword = globalFields
-                                                              .stream()
-                                                              .filter(field -> EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey().equals(field.getKey()))
-                                                              .findFirst();
+        Optional<DefinedFieldModel> emailPassword = globalFields
+                                                        .stream()
+                                                        .filter(field -> EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey().equals(field.getKey()))
+                                                        .findFirst();
         if (emailPassword.isPresent()) {
             result = result && emailPassword.get().getSensitive();
         }
@@ -195,9 +196,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
-        final Set<String> fieldNames = Set.of(EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
-        final Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
+    public boolean assertDistributionFields(Set<DefinedFieldModel> distributionFields) {
+        Set<String> fieldNames = Set.of(EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
+        Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
         return passedFieldNames.containsAll(fieldNames);
     }
 
@@ -234,9 +235,10 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public TestAction getTestAction() {
         AlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
-        EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser);
+        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, gson);
+        EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
-        final EmailActionHelper emailActionHelper = new EmailActionHelper(new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
+        EmailActionHelper emailActionHelper = new EmailActionHelper(new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
         return new EmailDistributionTestAction(emailChannel, emailActionHelper);
     }
 
@@ -244,10 +246,10 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public void testProjectOwner() throws Exception {
         // update the distribution jobs configuration and run the send test again
         // set the project owner field to false
-        final List<ConfigurationModel> model = configurationAccessor.getConfigurationByDescriptorKeyAndContext(getDescriptor().getDescriptorKey(), ConfigContextEnum.DISTRIBUTION);
-        for (final ConfigurationModel configurationModel : model) {
-            final Long configId = configurationModel.getConfigurationId();
-            final List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
+        List<ConfigurationModel> model = configurationAccessor.getConfigurationByDescriptorKeyAndContext(getDescriptor().getDescriptorKey(), ConfigContextEnum.DISTRIBUTION);
+        for (ConfigurationModel configurationModel : model) {
+            Long configId = configurationModel.getConfigurationId();
+            List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
             configurationAccessor.updateConfiguration(configId, fieldModels);
         }
         testDistributionConfig();

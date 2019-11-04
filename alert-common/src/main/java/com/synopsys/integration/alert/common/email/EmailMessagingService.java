@@ -93,6 +93,11 @@ public class EmailMessagingService {
             mimeMultipartBuilder.addHtmlContent(html);
             mimeMultipartBuilder.addTextContent(Jsoup.parse(html).text());
             mimeMultipartBuilder.addEmbeddedImages(emailTarget.getContentIdsToFilePaths());
+
+            List<String> attachmentFilePaths = emailTarget.getAttachmentFilePaths();
+            if (!attachmentFilePaths.isEmpty()) {
+                mimeMultipartBuilder.addAttachments(attachmentFilePaths);
+            }
             MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
 
             String subjectLine = (String) model.get(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey());

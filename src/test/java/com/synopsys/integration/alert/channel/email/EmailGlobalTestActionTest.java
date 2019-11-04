@@ -18,6 +18,8 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -47,16 +49,16 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void validateConfigEmptyTest() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
+        EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
 
-        final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
-        final Map<String, String> fieldErrors = new HashMap<>();
+        FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
+        Map<String, String> fieldErrors = new HashMap<>();
 
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()));
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
@@ -64,20 +66,20 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void validateConfigInvalidTest() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
-        final Map<String, FieldValueModel> fields = new HashMap<>();
+        EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
+        Map<String, FieldValueModel> fields = new HashMap<>();
         fillMapBlanks(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "notInt");
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "notInt");
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "notInt");
 
-        final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
-        final Map<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
+        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()));
@@ -86,21 +88,21 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void validateConfigValidTest() {
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
-        final Map<String, FieldValueModel> fields = new HashMap<>();
+        EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
+        Map<String, FieldValueModel> fields = new HashMap<>();
         fillMap(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "10");
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "25");
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "30");
 
-        final FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
-        final Map<String, String> fieldErrors = new HashMap<>();
+        FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
+        Map<String, String> fieldErrors = new HashMap<>();
 
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()));
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()));
@@ -111,20 +113,21 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void testConfigEmptyTest() throws Exception {
-        final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
         emailGlobalTestAction.testConfig(null, null, fieldAccessor);
 
-        final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
-        final ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
-        final ArgumentCaptor<String> subjectLine = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<MessageContentGroup> content = ArgumentCaptor.forClass(MessageContentGroup.class);
+        ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
+        ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
+        ArgumentCaptor<String> subjectLine = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<EmailAttachmentFormat> attachmentFormat = ArgumentCaptor.forClass(EmailAttachmentFormat.class);
+        ArgumentCaptor<MessageContentGroup> content = ArgumentCaptor.forClass(MessageContentGroup.class);
 
-        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), format.capture(), content.capture());
+        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), format.capture(), attachmentFormat.capture(), content.capture());
         assertTrue(emailAddresses.getValue().isEmpty());
         assertEquals("Test from Alert", subjectLine.getValue());
         assertEquals("", format.getValue());
@@ -132,35 +135,36 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void testConfigWithInvalidDestinationTest() throws Exception {
-        final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
         try {
             emailGlobalTestAction.testConfig(null, "fake", fieldAccessor);
             fail("Should have thrown exception");
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             assertTrue(e.getMessage().contains("fake is not a valid email address."));
         }
     }
 
     @Test
     public void testConfigWithValidDestinationTest() throws Exception {
-        final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
+        EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
         emailGlobalTestAction.testConfig(null, "fake@synopsys.com", fieldAccessor);
 
-        final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
-        final ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
-        final ArgumentCaptor<String> subjectLine = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<MessageContentGroup> content = ArgumentCaptor.forClass(MessageContentGroup.class);
+        ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
+        ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
+        ArgumentCaptor<String> subjectLine = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> format = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<EmailAttachmentFormat> attachmentFormat = ArgumentCaptor.forClass(EmailAttachmentFormat.class);
+        ArgumentCaptor<MessageContentGroup> content = ArgumentCaptor.forClass(MessageContentGroup.class);
 
-        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), format.capture(), content.capture());
+        Mockito.verify(emailChannel).sendMessage(props.capture(), emailAddresses.capture(), subjectLine.capture(), format.capture(), attachmentFormat.capture(), content.capture());
         assertEquals("fake@synopsys.com", emailAddresses.getValue().iterator().next());
         assertEquals("Test from Alert", subjectLine.getValue());
         assertEquals("", format.getValue());
@@ -177,11 +181,14 @@ public class EmailGlobalTestActionTest {
         EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
-        EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), new Gson(), testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser);
-        //////////////////////////////////////
-        final EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        Gson gson = new Gson();
+        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, gson);
+        EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+        //////////////////////////////////////
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
+
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
@@ -190,19 +197,19 @@ public class EmailGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
         emailGlobalTestAction.testConfig(null, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT), fieldAccessor);
 
     }
 
-    private void fillMapBlanks(final Map<String, FieldValueModel> fields) {
-        for (final EmailPropertyKeys value : EmailPropertyKeys.values()) {
+    private void fillMapBlanks(Map<String, FieldValueModel> fields) {
+        for (EmailPropertyKeys value : EmailPropertyKeys.values()) {
             addFieldValueToMap(fields, value.getPropertyKey(), "");
         }
     }
 
-    private void fillMap(final Map<String, FieldValueModel> fields) {
-        for (final EmailPropertyKeys value : EmailPropertyKeys.values()) {
+    private void fillMap(Map<String, FieldValueModel> fields) {
+        for (EmailPropertyKeys value : EmailPropertyKeys.values()) {
             addFieldValueToMap(fields, value.getPropertyKey(), "notempty");
         }
     }
