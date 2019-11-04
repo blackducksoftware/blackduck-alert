@@ -69,7 +69,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     }
 
     private Collection<String> validateAdditionalEmailAddressesOnly(FieldValueModel fieldToValidate, FieldModel fieldModel) {
-        final Boolean useOnlyAdditionalEmailAddresses = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
+        Boolean useOnlyAdditionalEmailAddresses = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
         if (useOnlyAdditionalEmailAddresses) {
             boolean hasAdditionalAddresses = fieldModel
                                                  .getFieldValueModel(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES)

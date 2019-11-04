@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
-import * as FieldMapping from 'util/fieldMapping';
 import FieldsPanel from 'field/FieldsPanel';
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
@@ -29,8 +28,7 @@ class DistributionConfiguration extends Component {
 
         const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const { fields, context, name } = defaultDescriptor;
-        const fieldKeys = FieldMapping.retrieveKeys(fields);
-        const emptyFieldModel = FieldModelUtilities.createEmptyFieldModel(fieldKeys, context, name);
+        const emptyFieldModel = FieldModelUtilities.createFieldModelWithDefaults(fields, context, name);
         const channelFieldModel = FieldModelUtilities.updateFieldModelSingleValue(emptyFieldModel, KEY_CHANNEL_NAME, name);
         this.state = {
             show: true,

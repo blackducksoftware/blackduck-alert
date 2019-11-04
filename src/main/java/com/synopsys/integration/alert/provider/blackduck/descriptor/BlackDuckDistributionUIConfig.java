@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
 
     @Autowired
-    public BlackDuckDistributionUIConfig(final BlackDuckContent blackDuckContent) {
+    public BlackDuckDistributionUIConfig(BlackDuckContent blackDuckContent) {
         super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, blackDuckContent);
     }
 
