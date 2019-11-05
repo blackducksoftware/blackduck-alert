@@ -22,12 +22,10 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -90,7 +88,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
     protected String createLinkableItemValueString(LinkableItem linkableItem) {
         String itemUrl = linkableItem.getUrl().orElse("");
         if (StringUtils.isNotBlank(itemUrl) && itemUrl.contains(" ")) {
-            String encodedUrl = URLEncoder.encode(itemUrl, Charsets.UTF_8);
+            String encodedUrl = itemUrl.replace(" ", "%20");
             LinkableItem newItem = new LinkableItem(linkableItem.getName(), linkableItem.getValue(), encodedUrl);
             return super.createLinkableItemValueString(newItem);
         }
