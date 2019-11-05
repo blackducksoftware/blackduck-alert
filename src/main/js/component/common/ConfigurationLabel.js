@@ -10,7 +10,6 @@ class ConfigurationLabel extends Component {
 
     render() {
         const {
-            fontAwesomeIcon,
             configurationName,
             description,
             lastUpdated
@@ -19,7 +18,6 @@ class ConfigurationLabel extends Component {
             <div>
                 <div className="d-inline-flex col-sm-4">
                     <h1 className="descriptorHeader">
-                        <FontAwesomeIcon icon={IconUtility.createIconPath(fontAwesomeIcon)} className="alert-icon" size="lg" fixedWidth />
                         {configurationName}
                     </h1>
                 </div>
@@ -41,14 +39,12 @@ class ConfigurationLabel extends Component {
 }
 
 ConfigurationLabel.propTypes = {
-    fontAwesomeIcon: PropTypes.string,
     configurationName: PropTypes.string.isRequired,
     description: PropTypes.string,
     lastUpdated: PropTypes.string
 };
 
 ConfigurationLabel.defaultProps = {
-    fontAwesomeIcon: null,
     description: '',
     lastUpdated: null
 };

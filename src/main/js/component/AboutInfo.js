@@ -6,19 +6,12 @@ import ReadOnlyField from 'field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as IconUtility from 'util/iconUtility';
-import { NavLink } from "react-router-dom";
-import LabeledField from "../field/LabeledField";
+import { NavLink } from 'react-router-dom';
+import LabeledField from 'field/LabeledField';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
         this.props.getAboutInfo();
-    }
-
-    iconColumnRenderer(cell) {
-        const keyText = `aboutIconKey-${cell}`;
-        return (<FontAwesomeIcon key={keyText} icon={IconUtility.createIconPath(cell)} className="alert-icon" size="lg" />);
     }
 
     createNameColumnRenderer(uriPrefix) {
@@ -45,7 +38,6 @@ class AboutInfo extends React.Component {
                     headerContainerClass="scrollable"
                     bodyContainerClass="scrollable"
                 >
-                    <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer} />
                     <TableHeaderColumn dataField="label" isKey dataFormat={nameRenderer}>
                         Name
                     </TableHeaderColumn>

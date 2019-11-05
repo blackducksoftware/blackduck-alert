@@ -45,7 +45,7 @@ class EndpointSelectField extends Component {
                 response.json().then((data) => {
                     const options = data.map(item => {
                         const dataValue = item.value;
-                        return { icon: item.icon, key: dataValue, label: item.label, value: dataValue };
+                        return { key: dataValue, label: item.label, value: dataValue };
                     });
 
                     this.setState({
