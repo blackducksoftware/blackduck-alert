@@ -9,12 +9,15 @@ import FieldsPanel from 'field/FieldsPanel';
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
-import JobCustomMessageModal from "dynamic/JobCustomMessageModal";
+import JobCustomMessageModal from 'dynamic/JobCustomMessageModal';
 
 export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 export const KEY_FREQUENCY = 'channel.common.frequency';
+
+export const COMMON_KEYS = [KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
+
 
 class DistributionConfiguration extends Component {
     constructor(props) {
@@ -209,6 +212,10 @@ class DistributionConfiguration extends Component {
         }
         const modalTitle = `${jobAction} Distribution Job`;
 
+
+        const commonFields = currentChannel.fields.filter(field => COMMON_KEYS.includes(field.key));
+        const channelFields = currentChannel.fields.filter(field => !COMMON_KEYS.includes(field.key));
+
         return (
             <div
                 onKeyDown={e => e.stopPropagation()}
@@ -223,14 +230,23 @@ class DistributionConfiguration extends Component {
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                             <FieldsPanel
-                                descriptorFields={currentChannel.fields}
+                                descriptorFields={commonFields}
+                                currentConfig={channelConfig}
+                                fieldErrors={this.props.fieldErrors}
+                                self={this}
+                                stateName="channelConfig"
+                            />
+                            {currentChannel && selectedProvider &&
+                            <FieldsPanel
+                                descriptorFields={channelFields}
                                 metadata={{ additionalFields: providerConfig.keyToValues }}
                                 currentConfig={channelConfig}
                                 fieldErrors={this.props.fieldErrors}
                                 self={this}
                                 stateName="channelConfig"
                             />
-                            {selectedProvider && this.renderProviderForm()}
+                            }
+                            {currentChannel && selectedProvider && this.renderProviderForm()}
                         </form>
                     </Modal.Body>
                 </Modal>
