@@ -33,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -58,14 +60,14 @@ public class EmailGlobalTestAction extends TestAction {
         Set<String> emailAddresses = Set.of();
         if (StringUtils.isNotBlank(destination)) {
             try {
-                final InternetAddress emailAddr = new InternetAddress(destination);
+                InternetAddress emailAddr = new InternetAddress(destination);
                 emailAddr.validate();
-            } catch (final AddressException ex) {
+            } catch (AddressException ex) {
                 throw new AlertException(String.format("%s is not a valid email address. %s", destination, ex.getMessage()));
             }
             emailAddresses = Set.of(destination);
         }
-        final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+        EmailProperties emailProperties = new EmailProperties(fieldAccessor);
         ComponentItem.Builder componentBuilder = new ComponentItem.Builder()
                                                      .applyCategory("Test")
                                                      .applyOperation(ItemOperation.ADD)
@@ -79,7 +81,11 @@ public class EmailGlobalTestAction extends TestAction {
                                                      .applyAllComponentItems(List.of(componentBuilder.build()));
 
         ProviderMessageContent messageContent = builder.build();
-        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", MessageContentGroup.singleton(messageContent));
+
+        EmailAttachmentFormat attachmentFormat = fieldAccessor.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
+                                                     .map(EmailAttachmentFormat::getValueSafely)
+                                                     .orElse(EmailAttachmentFormat.NONE);
+        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", attachmentFormat, MessageContentGroup.singleton(messageContent));
         return new MessageResult("Message sent");
     }
 
