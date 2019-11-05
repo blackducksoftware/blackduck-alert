@@ -96,7 +96,7 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            fontAwesomeIcon, label, description, fields
+            label, description, fields
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
@@ -136,7 +136,6 @@ class GlobalConfiguration extends React.Component {
         return (
             <div>
                 <ConfigurationLabel
-                    fontAwesomeIcon={fontAwesomeIcon}
                     configurationName={label}
                     description={description}
                 />
