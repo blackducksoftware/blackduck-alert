@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -48,7 +49,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
-        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, gson);
+        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
         EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
         ProviderMessageContent content = createMessageContent(getClass().getSimpleName());
         Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
@@ -76,7 +77,7 @@ public class EmailChannelTestIT extends ChannelTest {
     public void sendEmailNullGlobalTest() {
         try {
             EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
-            EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(null, gson);
+            EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(null, new MessageContentGroupCsvCreator(), gson);
             EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
             LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             ProviderMessageContent content = new ProviderMessageContent.Builder()

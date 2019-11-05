@@ -34,19 +34,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 @Component
 public class EmailAttachmentFileCreator {
     private final Logger logger = LoggerFactory.getLogger(EmailAttachmentFileCreator.class);
     private final AlertProperties alertProperties;
+    private final MessageContentGroupCsvCreator messageContentGroupCsvCreator;
     private final Gson gson;
 
     @Autowired
-    public EmailAttachmentFileCreator(AlertProperties alertProperties, Gson gson) {
+    public EmailAttachmentFileCreator(AlertProperties alertProperties, MessageContentGroupCsvCreator messageContentGroupCsvCreator, Gson gson) {
         this.alertProperties = alertProperties;
+        this.messageContentGroupCsvCreator = messageContentGroupCsvCreator;
         this.gson = gson;
     }
 
@@ -95,12 +99,14 @@ public class EmailAttachmentFileCreator {
     }
 
     private File createCsvFile(MessageContentGroup messageContentGroup, File writeDir) throws IOException {
-        // FIXME implement
-        return createFile("", writeDir, "csv");
+        String csvMessage = messageContentGroupCsvCreator.createCsvString(messageContentGroup);
+        return createFile(csvMessage, writeDir, "csv");
     }
 
     private File createXmlFile(MessageContentGroup messageContentGroup, File writeDir) throws IOException {
         XmlMapper xmlMapper = new XmlMapper();
+        xmlMapper.registerModule(new Jdk8Module());
+
         String xmlMessage = xmlMapper.writeValueAsString(messageContentGroup);
         return createFile(xmlMessage, writeDir, "xml");
     }
