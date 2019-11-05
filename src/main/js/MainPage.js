@@ -25,11 +25,11 @@ class MainPage extends Component {
     }
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
-        const { descriptors } = this.props;
-        if (!descriptors) {
+        const { items } = this.props.descriptors;
+        if (!items) {
             return null;
         }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, descriptorType, context);
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(items, descriptorType, context);
 
         if (!descriptorList || descriptorList.length === 0) {
             return null;
@@ -61,7 +61,12 @@ class MainPage extends Component {
         const channels = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
         const providers = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
         const components = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
-        return (
+        const spinner = (
+            <div>
+                Spinner
+            </div>
+        );
+        const page = (
             <div>
                 <Navigation />
                 <div className="contentArea">
@@ -82,16 +87,24 @@ class MainPage extends Component {
                     <LogoutConfirmation />
                 </div>
             </div>);
+
+        console.log(this.props.descriptors);
+        const content = (this.props.descriptors.fetching) ? spinner : page;
+        return (
+            <div>
+                {content}
+            </div>
+        );
     }
 }
 
 MainPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    descriptors: PropTypes.object.isRequired,
     getDescriptors: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors.items
+    descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({
