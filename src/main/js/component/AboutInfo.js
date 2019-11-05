@@ -7,7 +7,7 @@ import { getAboutInfo } from 'store/actions/about';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
-import LabeledField from '../field/LabeledField';
+import LabeledField from 'field/LabeledField';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
