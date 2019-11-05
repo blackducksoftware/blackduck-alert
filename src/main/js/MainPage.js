@@ -26,11 +26,11 @@ class MainPage extends Component {
     }
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
-        const { items } = this.props.descriptors;
-        if (!items) {
+        const { descriptors } = this.props;
+        if (!descriptors) {
             return null;
         }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(items, descriptorType, context);
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, descriptorType, context);
 
         if (!descriptorList || descriptorList.length === 0) {
             return null;
@@ -90,7 +90,7 @@ class MainPage extends Component {
             </div>
         );
 
-        const content = (this.props.descriptors.fetching) ? spinner : page;
+        const content = (this.props.fetching) ? spinner : page;
 
         return (
             <div>
@@ -104,12 +104,14 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    descriptors: PropTypes.object.isRequired,
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    fetching: PropTypes.bool.isRequired,
     getDescriptors: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items,
+    fetching: state.descriptors.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
