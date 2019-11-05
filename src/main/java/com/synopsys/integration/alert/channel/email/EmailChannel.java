@@ -132,18 +132,20 @@ public class EmailChannel extends NamedDistributionChannel {
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
         if (!model.isEmpty()) {
             EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
-            addAttachment(emailTarget, attachmentFormat, messageContent);
+            Optional<File> optionalAttachment = addAttachment(emailTarget, attachmentFormat, messageContent);
             emailService.sendEmailMessage(emailTarget);
+            optionalAttachment.ifPresent(emailAttachmentFileCreator::cleanUpAttachmentFile);
         }
     }
 
-    private void addAttachment(EmailTarget emailTarget, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContentGroup) {
+    private Optional<File> addAttachment(EmailTarget emailTarget, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContentGroup) {
         Optional<File> optionalAttachmentFile = emailAttachmentFileCreator.createAttachmentFile(attachmentFormat, messageContentGroup);
         if (optionalAttachmentFile.isPresent()) {
             File attachmentFile = optionalAttachmentFile.get();
             // We trust that the file was created correctly, so the path should be correct.
             emailTarget.setAttachmentFilePath(attachmentFile.getPath());
         }
+        return optionalAttachmentFile;
     }
 
     private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName) {

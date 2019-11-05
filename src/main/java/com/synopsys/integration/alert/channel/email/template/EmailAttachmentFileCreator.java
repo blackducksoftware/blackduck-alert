@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,14 +57,26 @@ public class EmailAttachmentFileCreator {
             File emailAttachmentsDir = new File(alertEmailAttachmentsDirName);
             File formattedFile = createFormattedFile(attachmentFormat, message, emailAttachmentsDir);
             return Optional.ofNullable(formattedFile);
-        } catch (SecurityException | IOException | JAXBException e) {
+        } catch (SecurityException | IOException e) {
             logger.warn("Unable to create {} email attachment file", attachmentFormat.name());
             logger.debug("Attachment failure", e);
         }
         return Optional.empty();
     }
 
-    private File createFormattedFile(EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContentGroup, File writeDir) throws IOException, JAXBException {
+    public boolean cleanUpAttachmentFile(File attachmentFile) {
+        if (null != attachmentFile && attachmentFile.exists()) {
+            try {
+                return attachmentFile.delete();
+            } catch (SecurityException e) {
+                logger.warn("Could not clean up file: " + attachmentFile.getName());
+                logger.debug("Attachment clean up failure", e);
+            }
+        }
+        return false;
+    }
+
+    private File createFormattedFile(EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContentGroup, File writeDir) throws IOException {
         switch (attachmentFormat) {
             case CSV:
                 return createCsvFile(messageContentGroup, writeDir);
