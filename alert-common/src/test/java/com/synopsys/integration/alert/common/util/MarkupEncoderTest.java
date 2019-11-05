@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.common.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,9 +7,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-
-public class MsTeamsMessageParserTest {
+public class MarkupEncoderTest {
 
     @Test
     public void testEncoder() {

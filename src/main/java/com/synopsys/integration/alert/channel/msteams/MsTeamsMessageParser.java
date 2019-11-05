@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
@@ -49,6 +50,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     private MarkupEncoderUtil markupEncoderUtil;
 
+    @Autowired
     public MsTeamsMessageParser(MarkupEncoderUtil markupEncoderUtil) {
         this.markupEncoderUtil = markupEncoderUtil;
     }

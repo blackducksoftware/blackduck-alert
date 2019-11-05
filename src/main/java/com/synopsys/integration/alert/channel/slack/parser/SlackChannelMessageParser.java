@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.slack.parser;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
@@ -44,6 +45,7 @@ public class SlackChannelMessageParser extends ChannelMessageParser {
         SLACK_CHARACTER_ENCODING_MAP.put('>', "&gt;");
     }
 
+    @Autowired
     public SlackChannelMessageParser(MarkupEncoderUtil markupEncoderUtil) {
         this.markupEncoderUtil = markupEncoderUtil;
     }
