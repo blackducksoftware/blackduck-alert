@@ -59,7 +59,7 @@ public class MessageContentGroupCsvCreator {
         return csvBuilder.toString();
     }
 
-    // Provider | Topic Name | Sub Topic Name | Operation | Component Name | Sub Component Name | Component URL | Category Name | Category Grouping Attribute Name | Item URL
+    // Provider | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Item URL
     private List<String> createColumnNames(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<String> columnNames = new ArrayList<>();
         columnNames.add(commonProvider.getName());
@@ -73,7 +73,6 @@ public class MessageContentGroupCsvCreator {
                                                     .map(ProviderMessageContent::getComponentItems)
                                                     .flatMap(Set::stream)
                                                     .collect(Collectors.toList());
-        columnNames.add("Operation");
 
         String componentNamesCombined = createColumnNameString(allComponentItems, ComponentItem::getComponent);
         columnNames.add(componentNamesCombined);
@@ -82,6 +81,8 @@ public class MessageContentGroupCsvCreator {
         columnNames.add(subComponentNamesCombined);
 
         columnNames.add("Component URL");
+        columnNames.add("Operation");
+        columnNames.add("Category");
 
         Set<String> categoryNames = allComponentItems
                                         .stream()
@@ -101,38 +102,39 @@ public class MessageContentGroupCsvCreator {
     private List<List<String>> createRowValues(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<List<String>> rows = new ArrayList<>();
         for (ProviderMessageContent message : contents) {
-            List<String> columnValues = createColumnValues(commonProvider.getValue(), commonTopic.getValue(), message);
-            rows.add(columnValues);
+            String subTopicValue = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
+            for (ComponentItem componentItem : message.getComponentItems()) {
+                List<String> columnValues = createColumnValues(commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
+                rows.add(columnValues);
+            }
         }
         return rows;
     }
 
-    private List<String> createColumnValues(String providerValue, String topicValue, ProviderMessageContent message) {
+    private List<String> createColumnValues(String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
         List<String> columnValues = new ArrayList<>();
-        for (ComponentItem componentItem : message.getComponentItems()) {
-            columnValues.add(providerValue);
-            columnValues.add(topicValue);
-            String subTopic = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
-            columnValues.add(subTopic);
-            columnValues.add(componentItem.getOperation().name());
+        columnValues.add(providerValue);
+        columnValues.add(topicValue);
+        columnValues.add(subTopicValue);
 
-            columnValues.add(componentItem.getComponent().getValue());
-            String subComponentString = createOptionalValueString(componentItem.getSubComponent(), LinkableItem::getValue);
-            columnValues.add(subComponentString);
-            String componentUrl;
-            if (UNDEFINED_VALUE.equals(subComponentString)) {
-                componentUrl = componentItem.getComponent().getUrl().orElse(null);
-            } else {
-                componentUrl = createOptionalValueString(componentItem.getSubComponent(), item -> item.getUrl().orElse(null));
-            }
-            columnValues.add(componentUrl);
-
-            columnValues.add(componentItem.getCategoryItem().getValue());
-            String categoryGroupingAttribute = createOptionalValueString(componentItem.getCategoryGroupingAttribute(), LinkableItem::getValue);
-            columnValues.add(categoryGroupingAttribute);
-            String categoryItemUrl = componentItem.getCategoryItem().getUrl().orElse(UNDEFINED_VALUE);
-            columnValues.add(categoryItemUrl);
+        columnValues.add(componentItem.getComponent().getValue());
+        String subComponentString = createOptionalValueString(componentItem.getSubComponent(), LinkableItem::getValue);
+        columnValues.add(subComponentString);
+        String componentUrl;
+        if (UNDEFINED_VALUE.equals(subComponentString)) {
+            componentUrl = componentItem.getComponent().getUrl().orElse(null);
+        } else {
+            componentUrl = createOptionalValueString(componentItem.getSubComponent(), item -> item.getUrl().orElse(null));
         }
+        columnValues.add(componentUrl);
+        columnValues.add(componentItem.getOperation().name());
+        columnValues.add(componentItem.getCategory());
+
+        columnValues.add(componentItem.getCategoryItem().getValue());
+        String categoryGroupingAttribute = createOptionalValueString(componentItem.getCategoryGroupingAttribute(), LinkableItem::getValue);
+        columnValues.add(categoryGroupingAttribute);
+        String categoryItemUrl = componentItem.getCategoryItem().getUrl().orElse(UNDEFINED_VALUE);
+        columnValues.add(categoryItemUrl);
         return columnValues;
     }
 
@@ -172,7 +174,7 @@ public class MessageContentGroupCsvCreator {
     private void appendLine(StringBuilder csvBuilder, List<String> values) {
         String csvString = String.join(",", values);
         csvBuilder.append(csvString);
-        csvBuilder.append("\\n");
+        csvBuilder.append("\r\n");
     }
 
 }
