@@ -27,19 +27,19 @@ function DynamicSelectInput(props) {
 
     const typeOptionLabel = props => (
         <Option {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+            <DescriptorOption label={props.data.label} value={props.data.value} />
         </Option>
     );
 
     const typeLabel = props => (
         <SingleValue {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+            <DescriptorOption label={props.data.label} value={props.data.value} />
         </SingleValue>
     );
 
     const multiTypeLabel = props => (
         <MultiValue {...props}>
-            <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
+            <DescriptorOption label={props.data.label} value={props.data.value} />
         </MultiValue>
     );
 
