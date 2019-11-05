@@ -1,10 +1,24 @@
 package com.synopsys.integration.alert.channel.email;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
@@ -20,14 +34,12 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
@@ -38,19 +50,6 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
@@ -77,7 +76,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @BeforeEach
     public void testSetup() throws Exception {
-
         List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
         providerDataAccessor.deleteUsers(BLACK_DUCK_PROVIDER_KEY, allUsers);
         List<ProviderProject> allProjects = providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
@@ -159,7 +157,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         try {
             models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
         } catch (AlertDatabaseConstraintException e) {
-
             e.printStackTrace();
         }
 
@@ -239,7 +236,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public TestAction getTestAction() {
         AlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
-        EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser);
+        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, gson);
+        EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
         EmailActionHelper emailActionHelper = new EmailActionHelper(new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
         return new EmailDistributionTestAction(emailChannel, emailActionHelper);
@@ -253,7 +251,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         for (ConfigurationModel configurationModel : model) {
             Long configId = configurationModel.getConfigurationId();
             List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
-
             configurationAccessor.updateConfiguration(configId, fieldModels);
         }
         testDistributionConfig();

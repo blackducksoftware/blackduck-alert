@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.email;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,15 +31,17 @@ public class EmailTarget {
     private final String templateName;
     private final Map<String, Object> model;
     private final Map<String, String> contentIdsToFilePaths;
+    private List<String> attachmentFilePaths;
 
-    public EmailTarget(final Set<String> emailAddresses, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
+    public EmailTarget(Set<String> emailAddresses, String templateName, Map<String, Object> model, Map<String, String> contentIdsToFilePaths) {
         this.emailAddresses = emailAddresses;
         this.templateName = templateName;
         this.model = model;
         this.contentIdsToFilePaths = contentIdsToFilePaths;
+        this.attachmentFilePaths = List.of();
     }
 
-    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
+    public EmailTarget(String emailAddress, String templateName, Map<String, Object> model, Map<String, String> contentIdsToFilePaths) {
         this(Set.of(emailAddress), templateName, model, contentIdsToFilePaths);
     }
 
@@ -57,4 +60,21 @@ public class EmailTarget {
     public Map<String, String> getContentIdsToFilePaths() {
         return contentIdsToFilePaths;
     }
+
+    public List<String> getAttachmentFilePaths() {
+        return attachmentFilePaths;
+    }
+
+    public void setAttachmentFilePath(String attachmentFilePath) {
+        if (null != attachmentFilePath) {
+            setAttachmentFilePaths(List.of(attachmentFilePath));
+        }
+    }
+
+    public void setAttachmentFilePaths(List<String> attachmentFilePaths) {
+        if (null != attachmentFilePaths) {
+            this.attachmentFilePaths = attachmentFilePaths;
+        }
+    }
+
 }

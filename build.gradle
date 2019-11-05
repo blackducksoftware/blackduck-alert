@@ -102,6 +102,7 @@ dependencies {
     // XML
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 }
 
 bootJar {
@@ -114,6 +115,7 @@ distributions {
             from('src/main/resources/images/') { into 'images/' }
             from('src/main/resources/templates/email') { into 'templates/email' }
             from('src/main/resources/templates/msteams') { into 'templates/msteams' }
+            mkdir 'email/attachments'
         }
     }
 }
@@ -180,7 +182,8 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--server.port=8443',
                                 '--spring.h2.console.enabled=true',
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
-                                "--alert.templates.dir=${project.buildDir}/resources/main/templates"]
+                                "--alert.templates.dir=${project.buildDir}/resources/main/templates",
+                                "--alert.email.attachments.dir=${project.buildDir}/email/attachments"]
     def commandArray = []
     commandArray.add('java')
     commandArray.addAll(getDebugVariables())
@@ -208,6 +211,12 @@ task cleanBundles(type: Delete) {
     if (staticResourcesDirectory.exists()) {
         println "Deleting ${staticResourcesDirectory.canonicalPath}"
         staticResourcesDirectory.deleteDir()
+    }
+
+    File emailFileDirectory = new File('email')
+    if (emailFileDirectory.exists()) {
+        println "Deleting ${emailFileDirectory.canonicalPath}"
+        emailFileDirectory.deleteDir()
     }
 }
 

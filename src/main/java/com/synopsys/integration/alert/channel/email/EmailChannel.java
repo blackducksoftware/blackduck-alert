@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.email;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,6 +35,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
+import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
@@ -59,15 +62,17 @@ public class EmailChannel extends NamedDistributionChannel {
     private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final AlertProperties alertProperties;
     private final EmailChannelMessageParser emailChannelMessageParser;
+    private final EmailAttachmentFileCreator emailAttachmentFileCreator;
 
     @Autowired
     public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditUtility auditUtility,
-        EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser) {
+        EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser, EmailAttachmentFileCreator emailAttachmentFileCreator) {
         super(emailChannelKey, gson, auditUtility);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;
         this.emailChannelMessageParser = emailChannelMessageParser;
+        this.emailAttachmentFileCreator = emailAttachmentFileCreator;
     }
 
     @Override
@@ -87,10 +92,13 @@ public class EmailChannel extends NamedDistributionChannel {
         Set<String> emailAddresses = new HashSet<>(updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES));
         EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
         String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
-        sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), event.getContent());
+        EmailAttachmentFormat attachmentFormat = fieldAccessor.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
+                                                     .map(EmailAttachmentFormat::getValueSafely)
+                                                     .orElse(EmailAttachmentFormat.NONE);
+        sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), attachmentFormat, event.getContent());
     }
 
-    public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, MessageContentGroup messageContent) throws IntegrationException {
+    public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContent) throws IntegrationException {
         String topicValue = null;
         if (!messageContent.isEmpty()) {
             topicValue = messageContent.getCommonTopic().getValue();
@@ -124,8 +132,20 @@ public class EmailChannel extends NamedDistributionChannel {
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
         if (!model.isEmpty()) {
             EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
+            Optional<File> optionalAttachment = addAttachment(emailTarget, attachmentFormat, messageContent);
             emailService.sendEmailMessage(emailTarget);
+            optionalAttachment.ifPresent(emailAttachmentFileCreator::cleanUpAttachmentFile);
         }
+    }
+
+    private Optional<File> addAttachment(EmailTarget emailTarget, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContentGroup) {
+        Optional<File> optionalAttachmentFile = emailAttachmentFileCreator.createAttachmentFile(attachmentFormat, messageContentGroup);
+        if (optionalAttachmentFile.isPresent()) {
+            File attachmentFile = optionalAttachmentFile.get();
+            // We trust that the file was created correctly, so the path should be correct.
+            emailTarget.setAttachmentFilePath(attachmentFile.getPath());
+        }
+        return optionalAttachmentFile;
     }
 
     private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName) {

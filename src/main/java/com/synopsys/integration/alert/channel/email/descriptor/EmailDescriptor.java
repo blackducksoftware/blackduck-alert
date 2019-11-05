@@ -35,6 +35,7 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String KEY_EMAIL_ADDRESSES = "email.addresses";
     public static final String KEY_EMAIL_ADDITIONAL_ADDRESSES = "email.additional.addresses";
     public static final String KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY = "email.additional.addresses.only";
+    public static final String KEY_EMAIL_ATTACHMENT_FORMAT = "email.attachment.format";
 
     public static final String EMAIL_LABEL = "Email";
     public static final String EMAIL_URL = "email";
