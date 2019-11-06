@@ -35,6 +35,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +50,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
@@ -111,7 +114,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             phoneHomeBuilder.setArtifactVersion(productVersion);
             phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
             PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder));
+            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder), System.getenv());
             Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
             if (!taskSucceeded) {
                 logger.debug("Phone home task timed out and did not send any results.");
