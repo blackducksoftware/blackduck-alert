@@ -87,8 +87,8 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final AboutReader aboutReader, final ConfigurationAccessor configurationAccessor,
-        final TaskManager taskManager, final ProxyManager proxyManager, final Gson gson, final AuditUtility auditUtility, final BlackDuckProperties blackDuckProperties) {
+    public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, ConfigurationAccessor configurationAccessor,
+        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, BlackDuckProperties blackDuckProperties) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
@@ -100,24 +100,24 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     @Override
     public void runTask() {
-        final String productVersion = aboutReader.getProductVersion();
+        String productVersion = aboutReader.getProductVersion();
         if (AboutReader.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
             return;
         }
 
-        final ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
+        ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
         try {
-            final PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
+            PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
             phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
             phoneHomeBuilder.setArtifactVersion(productVersion);
             phoneHomeBuilder.setArtifactModules(getChannelMetaData().toArray(String[]::new));
-            final PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-            final PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder));
-            final Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
+            PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
+            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder), System.getenv());
+            Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
             if (!taskSucceeded) {
                 logger.debug("Phone home task timed out and did not send any results.");
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         } finally {
             phoneHomeExecutor.shutdownNow();
@@ -129,23 +129,23 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return CRON_EXPRESSION;
     }
 
-    private PhoneHomeService createPhoneHomeService(final ExecutorService phoneHomeExecutor) {
-        final IntLogger intLogger = new Slf4jIntLogger(logger);
-        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        final IntHttpClient intHttpClient = new IntHttpClient(intLogger, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
+    private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
+        IntLogger intLogger = new Slf4jIntLogger(logger);
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        IntHttpClient intHttpClient = new IntHttpClient(intLogger, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
 
-        final PhoneHomeClient phoneHomeClient = BlackDuckPhoneHomeHelper.createPhoneHomeClient(intLogger, intHttpClient, gson);
+        PhoneHomeClient phoneHomeClient = BlackDuckPhoneHomeHelper.createPhoneHomeClient(intLogger, intHttpClient, gson);
         return PhoneHomeService.createAsynchronousPhoneHomeService(intLogger, phoneHomeClient, phoneHomeExecutor);
     }
 
     private Set<String> getChannelMetaData() {
-        final Map<String, Integer> createdDistributions = new HashMap<>();
-        final String successKeyPart = "::Successes";
-        final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
-        for (final ConfigurationJobModel job : allJobs) {
-            for (final ConfigurationModel configuration : job.getCopyOfConfigurations()) {
-                final String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-                final String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+        Map<String, Integer> createdDistributions = new HashMap<>();
+        String successKeyPart = "::Successes";
+        List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        for (ConfigurationJobModel job : allJobs) {
+            for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
+                String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+                String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
 
                 if (StringUtils.isBlank(channelName) || StringUtils.isBlank(providerName)) {
                     // We want to specifically get the channel configuration here and the only way to determine that is if it has these fields.
@@ -165,38 +165,38 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return createdDistributions.entrySet().stream().map(entry -> entry.getKey() + "(" + entry.getValue() + ")").collect(Collectors.toSet());
     }
 
-    private Boolean hasAuditSuccess(final UUID jobId) {
+    private Boolean hasAuditSuccess(UUID jobId) {
         return auditUtility.findFirstByJobId(jobId)
                    .map(AuditJobStatusModel::getStatus)
                    .stream()
                    .anyMatch(status -> AuditEntryStatus.SUCCESS.getDisplayName().equals(status));
     }
 
-    private void updateMetaDataCount(final Map<String, Integer> createdDistributions, final String name) {
-        final Integer channelCount = createdDistributions.getOrDefault(name, 0) + 1;
+    private void updateMetaDataCount(Map<String, Integer> createdDistributions, String name) {
+        Integer channelCount = createdDistributions.getOrDefault(name, 0) + 1;
         createdDistributions.put(name, channelCount);
     }
 
     // TODO Provider specific data is being sent here. Either change what data we display in Google or abstract how this data is retrieved.
-    private PhoneHomeRequestBody addBDDataAndBuild(final PhoneHomeRequestBody.Builder phoneHomeBuilder) {
+    private PhoneHomeRequestBody addBDDataAndBuild(PhoneHomeRequestBody.Builder phoneHomeBuilder) {
         String registrationId = null;
         String blackDuckUrl = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         String blackDuckVersion = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         try {
-            final Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
+            Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
             if (blackDuckHttpClientOptional.isPresent()) {
-                final BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
-                final BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
-                final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
-                final CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
+                BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
+                BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
+                BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
+                BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+                CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
                 blackDuckVersion = currentVersionView.getVersion();
                 registrationId = blackDuckRegistrationService.getRegistrationId();
                 blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.Builder.UNKNOWN_ID);
             }
             // We need to wrap this because this will most likely fail unless they are running as an admin
 
-        } catch (final IntegrationException ignored) {
+        } catch (IntegrationException ignored) {
         }
         // We must check if the reg id is blank because of an edge case in which Black Duck can authenticate (while the webserver is coming up) without registration
         if (StringUtils.isBlank(registrationId)) {
