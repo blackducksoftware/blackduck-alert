@@ -112,7 +112,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             phoneHomeBuilder.setArtifactVersion(productVersion);
             phoneHomeBuilder.setArtifactModules(getChannelMetaData().toArray(String[]::new));
             PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder));
+            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder), System.getenv());
             Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
             if (!taskSucceeded) {
                 logger.debug("Phone home task timed out and did not send any results.");
