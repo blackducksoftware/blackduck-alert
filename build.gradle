@@ -197,6 +197,7 @@ tasks.runServer.mustRunAfter(createKeystore)
 tasks.runServer.mustRunAfter(createTruststore)
 
 // Build tasks
+
 task cleanBundles(type: Delete) {
     File testDatabaseDirectory = new File('testDB')
     if (testDatabaseDirectory.exists()) {
