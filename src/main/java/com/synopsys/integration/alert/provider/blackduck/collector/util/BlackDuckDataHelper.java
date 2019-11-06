@@ -101,7 +101,7 @@ public class BlackDuckDataHelper {
     public Optional<ProjectVersionWrapper> getProjectVersionWrapper(VersionBomComponentView versionBomComponent) {
         try {
             // TODO Stop using this when Black Duck supports going back to the project-version
-            final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
+            Optional<String> versionBomComponentHref = versionBomComponent.getHref();
             if (versionBomComponentHref.isPresent()) {
                 String versionHref = versionBomComponentHref.get();
                 int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
@@ -160,9 +160,9 @@ public class BlackDuckDataHelper {
         return List.of();
     }
 
-    public List<VulnerabilityView> getVulnerabilitiesForComponent(VulnerableComponentView vulnerableComponentView) {
+    public List<VulnerabilityView> getVulnerabilitiesForComponent(String vulnerableComponentVulnerabilitiesURL) {
         try {
-            return blackDuckService.getAllResponses(vulnerableComponentView, VulnerableComponentView.VULNERABILITIES_LINK_RESPONSE);
+            return blackDuckService.getAllResponses(vulnerableComponentVulnerabilitiesURL, VulnerableComponentView.VULNERABILITIES_LINK_RESPONSE.getResponseClass());
         } catch (IntegrationException ex) {
             logger.error("Error getting vulnerabilities ", ex);
         }

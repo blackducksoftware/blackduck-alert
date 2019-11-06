@@ -116,7 +116,7 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
 
     @Override
     protected LinkableItem getProviderItem() {
-        final String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
+        String blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(null);
         return new LinkableItem(ProviderMessageContent.LABEL_PROVIDER, "Black Duck", blackDuckUrl);
     }
 
@@ -230,11 +230,29 @@ public abstract class BlackDuckCollector extends MessageContentCollector {
         Set<String> vulnerabilityUrls = new HashSet<>();
         Map<String, VulnerabilityView> vulnerabilityViewMap = new HashMap<>(vulnerableComponentViews.size());
         for (VulnerableComponentView vulnerableComponent : vulnerableComponentViews) {
-            Optional<String> vulnerabilitiesLink = vulnerableComponent.getFirstLink(VulnerableComponentView.VULNERABILITIES_LINK);
-            if (vulnerabilitiesLink.isPresent() && !vulnerabilityUrls.contains(vulnerabilitiesLink.get())) {
-                vulnerabilityViewMap.putAll(getBlackDuckDataHelper().getVulnerabilitiesForComponent(vulnerableComponent).stream()
-                                                .collect(Collectors.toMap(VulnerabilityView::getName, Function.identity())));
-                vulnerabilityUrls.add(vulnerabilitiesLink.get());
+            // in Black Duck 2019.10.0 the vulnerabilities link was changed to be the href
+            Optional<String> href = vulnerableComponent.getHref();
+
+            Optional<String> vulnerabilitiesLink = Optional.empty();
+            if (vulnerableComponent.hasLink(VulnerableComponentView.VULNERABILITIES_LINK)) {
+                vulnerabilitiesLink = vulnerableComponent.getFirstLink(VulnerableComponentView.VULNERABILITIES_LINK);
+            } else if (href.isPresent()) {
+                String hrefLink = href.get();
+                // check that the href is the vulnerabilities link that we expect
+                if (hrefLink.endsWith(VulnerableComponentView.VULNERABILITIES_LINK)) {
+                    vulnerabilitiesLink = href;
+                }
+            }
+            if (vulnerabilitiesLink.isPresent()) {
+                String vulnerableComponentVulnerabilitiesURL = vulnerabilitiesLink.get();
+                if (!vulnerabilityUrls.contains(vulnerableComponentVulnerabilitiesURL)) {
+                    vulnerabilityViewMap.putAll(getBlackDuckDataHelper().getVulnerabilitiesForComponent(vulnerableComponentVulnerabilitiesURL).stream()
+                                                    .collect(Collectors.toMap(VulnerabilityView::getName, Function.identity())));
+                    vulnerabilityUrls.add(vulnerabilitiesLink.get());
+                }
+            } else {
+                logger.debug("The {} link could not be found for the vulnerable component '{}' version '{}'.", VulnerableComponentView.VULNERABILITIES_LINK, vulnerableComponent.getComponentName(),
+                    vulnerableComponent.getComponentVersionName());
             }
         }
         return vulnerabilityViewMap;
