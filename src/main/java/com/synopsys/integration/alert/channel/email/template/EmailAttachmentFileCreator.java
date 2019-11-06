@@ -55,15 +55,16 @@ public class EmailAttachmentFileCreator {
     }
 
     public Optional<File> createAttachmentFile(EmailAttachmentFormat attachmentFormat, MessageContentGroup message) {
-        String alertEmailAttachmentsDirName = alertProperties.getAlertEmailAttachmentsDir();
-
-        try {
-            File emailAttachmentsDir = new File(alertEmailAttachmentsDirName);
-            File formattedFile = createFormattedFile(attachmentFormat, message, emailAttachmentsDir);
-            return Optional.ofNullable(formattedFile);
-        } catch (SecurityException | IOException e) {
-            logger.warn("Unable to create {} email attachment file", attachmentFormat.name());
-            logger.debug("Attachment failure", e);
+        if (!EmailAttachmentFormat.NONE.equals(attachmentFormat)) {
+            String alertEmailAttachmentsDirName = alertProperties.getAlertEmailAttachmentsDir();
+            try {
+                File emailAttachmentsDir = new File(alertEmailAttachmentsDirName);
+                File formattedFile = createFormattedFile(attachmentFormat, message, emailAttachmentsDir);
+                return Optional.ofNullable(formattedFile);
+            } catch (SecurityException | IOException e) {
+                logger.warn("Unable to create {} email attachment file", attachmentFormat.name());
+                logger.debug("Attachment failure", e);
+            }
         }
         return Optional.empty();
     }

@@ -45,7 +45,7 @@ public class AlertProperties {
     @Value("${alert.secrets.dir:/run/secrets}")
     private String alertSecretsDir;
 
-    @Value("${alert.email.attachments.dir:/email/attachments}")
+    @Value("${alert.email.attachments.dir:./email/attachments}")
     private String alertEmailAttachmentsDir;
 
     @Value("${alert.trust.cert:}")
