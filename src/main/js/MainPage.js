@@ -10,6 +10,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 class MainPage extends Component {
@@ -61,23 +62,40 @@ class MainPage extends Component {
         const channels = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
         const providers = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
         const components = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
+
+        const spinner = (
+            <div>
+                <div className="loginContainer">
+                    <div className="progressIcon">
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="5x" spin />
+                    </div>
+                </div>
+            </div>
+        );
+
+        const page = (
+            <div className="contentArea">
+                <Route
+                    exact
+                    path="/alert/"
+                    render={() => (
+                        <Redirect to="/alert/general/about" />
+                    )}
+                />
+                {providers}
+                {channels}
+                <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
+                {components}
+                <Route path="/alert/general/about" component={AboutInfo} />
+            </div>
+        );
+
+        const content = (this.props.fetching) ? spinner : page;
+
         return (
             <div>
                 <Navigation />
-                <div className="contentArea">
-                    <Route
-                        exact
-                        path="/alert/"
-                        render={() => (
-                            <Redirect to="/alert/general/about" />
-                        )}
-                    />
-                    {providers}
-                    {channels}
-                    <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
-                    {components}
-                    <Route path="/alert/general/about" component={AboutInfo} />
-                </div>
+                {content}
                 <div className="modalsArea">
                     <LogoutConfirmation />
                 </div>
@@ -87,11 +105,13 @@ class MainPage extends Component {
 
 MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    fetching: PropTypes.bool.isRequired,
     getDescriptors: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors.items
+    descriptors: state.descriptors.items,
+    fetching: state.descriptors.fetching
 });
 
 const mapDispatchToProps = dispatch => ({

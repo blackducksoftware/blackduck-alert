@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
@@ -43,6 +43,25 @@ class Navigation extends Component {
         const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/', 'Providers');
         const components = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
+        const nav = (
+            <Fragment>
+                {providers}
+                {channelGlobals}
+                <li className="navHeader">
+                    Jobs
+                </li>
+                <li>
+                    <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
+                        Distribution
+                    </NavLink>
+                </li>
+                <li className="divider" />
+                {components}
+            </Fragment>
+        );
+
+        const rows = (this.props.fetching) ? null : nav;
+
         return (
             <div className="navigation">
                 <div className="navigationContent">
@@ -53,19 +72,7 @@ class Navigation extends Component {
                             </NavLink>
                         </li>
                         <li className="divider" />
-                        {providers}
-                        {channelGlobals}
-                        <li className="navHeader">
-                            Jobs
-                        </li>
-                        <li>
-                            <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                                Distribution
-                            </NavLink>
-                        </li>
-                        <li className="divider" />
-                        {components}
-
+                        {rows}
                         <li className="logoutLink">
                             <a
                                 role="button"
@@ -86,12 +93,14 @@ class Navigation extends Component {
 
 Navigation.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    confirmLogout: PropTypes.func.isRequired
+    confirmLogout: PropTypes.func.isRequired,
+    fetching: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
-    descriptors: state.descriptors.items
+    descriptors: state.descriptors.items,
+    fetching: state.descriptors.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
