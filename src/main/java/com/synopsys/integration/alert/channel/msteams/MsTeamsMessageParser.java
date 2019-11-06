@@ -22,43 +22,40 @@
  */
 package com.synopsys.integration.alert.channel.msteams;
 
-import java.net.URLEncoder;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 
 @Component
 public class MsTeamsMessageParser extends ChannelMessageParser {
-    private Set<Character> reservedChars = Set.of('*', '~', '#', '-', '_');
+    private static final Map<Character, String> reservedChars = Map.of(
+        '*', "\\*",
+        '~', "\\~",
+        '#', "\\#",
+        '-', "\\-",
+        '_', "\\_"
+    );
+
+    private MarkupEncoderUtil markupEncoderUtil;
+
+    @Autowired
+    public MsTeamsMessageParser(MarkupEncoderUtil markupEncoderUtil) {
+        this.markupEncoderUtil = markupEncoderUtil;
+    }
 
     @Override
     protected String encodeString(String txt) {
-        StringBuilder newTxt = new StringBuilder(txt);
-        int drift = 0;
-        char characterMemory = Character.MIN_VALUE;
-        for (int i = 0; i < txt.length(); i++) {
-            char c = txt.charAt(i);
-            if (characterMemory == c) {
-                continue;
-            }
-
-            characterMemory = c;
-            if (reservedChars.contains(c)) {
-                newTxt.insert(i + drift, "\\");
-                drift++;
-            }
-        }
-
-        return newTxt.toString();
+        return markupEncoderUtil.encodeMarkup(reservedChars, txt);
     }
 
     @Override
@@ -90,7 +87,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
     protected String createLinkableItemValueString(LinkableItem linkableItem) {
         String itemUrl = linkableItem.getUrl().orElse("");
         if (StringUtils.isNotBlank(itemUrl) && itemUrl.contains(" ")) {
-            String encodedUrl = URLEncoder.encode(itemUrl, Charsets.UTF_8);
+            String encodedUrl = itemUrl.replace(" ", "%20");
             LinkableItem newItem = new LinkableItem(linkableItem.getName(), linkableItem.getValue(), encodedUrl);
             return super.createLinkableItemValueString(newItem);
         }

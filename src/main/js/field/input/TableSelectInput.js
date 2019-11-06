@@ -19,7 +19,7 @@ const typeLabel = (props) => {
 
     return (
         <MultiValue {...props}>
-            <DescriptorOption style={missingItem} icon={data.icon} label={data.label} value={data.value} />
+            <DescriptorOption style={missingItem} label={data.label} value={data.value} />
         </MultiValue>
     );
 }

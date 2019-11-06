@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -59,7 +60,7 @@ public class SlackChannelTest extends ChannelTest {
 
     private SlackChannel createSlackChannel() {
         RestChannelUtility restChannelUtility = createRestChannelUtility();
-        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser(new MarkupEncoderUtil());
         SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtility);
         return new SlackChannel(CHANNEL_KEY, gson, createAuditUtility(), restChannelUtility, slackChannelEventParser);
     }
@@ -70,20 +71,20 @@ public class SlackChannelTest extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         SlackChannel slackChannel = createSlackChannel();
 
-        final ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
+        ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
-        final DistributionEvent event = new DistributionEvent(
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        DistributionEvent event = new DistributionEvent(
             "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendAuditedMessage(event);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + CHANNEL_KEY.getUniversalKey() + " message!");
+        boolean actual = outputLogger.isLineContainingText("Successfully sent a " + CHANNEL_KEY.getUniversalKey() + " message!");
         assertTrue(actual, "No success message appeared in the logs");
     }
 
@@ -91,37 +92,37 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingWebhook() {
         SlackChannel slackChannel = createSlackChannel();
 
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
 
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
-        final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
-        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
-        final LinkableItem topicItem = Mockito.mock(LinkableItem.class);
+        ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
+        MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
+        LinkableItem topicItem = Mockito.mock(LinkableItem.class);
         Mockito.when(topicItem.getValue()).thenReturn("Value");
         Mockito.when(content.getTopic()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
         try {
             slackChannel.createRequests(event);
             fail("Expected an exception for missing webhook");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
         }
     }
 
     @Test
     public void testCreateRequestMissingChannelName() {
-        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
 
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
-        final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
-        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
-        final LinkableItem topicItem = Mockito.mock(LinkableItem.class);
+        ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
+        MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
+        LinkableItem topicItem = Mockito.mock(LinkableItem.class);
         Mockito.when(topicItem.getValue()).thenReturn("Value");
         Mockito.when(content.getTopic()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
@@ -131,200 +132,200 @@ public class SlackChannelTest extends ChannelTest {
         try {
             slackChannel.createRequests(event);
             fail("Expected an exception for missing channel name");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
         }
     }
 
     @Test
     public void testCreateRequestMissingContent() {
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
+        FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
-        final ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
+        ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
         Mockito.when(content.getTopic()).thenReturn(Mockito.mock(LinkableItem.class));
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
-        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
+        MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
 
         SlackChannel slackChannel = createSlackChannel();
 
         try {
             assertTrue(slackChannel.createRequests(event).isEmpty(), "Expected no requests to be created");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
         }
     }
 
     @Test
     public void testCreateRequestSingleCategory() throws Exception {
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
+        FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
-        final SortedSet<LinkableItem> items = new TreeSet<>();
+        SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue"));
-        final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .applyCategory("category")
-                                                .applyOperation(ItemOperation.ADD)
-                                                .applyComponentData("", "")
-                                                .applyCategoryItem("", "")
-                                                .applyNotificationId(1L)
-                                                .applyAllComponentAttributes(items)
-                                                .build();
+        ComponentItem componentItem = new ComponentItem.Builder()
+                                          .applyCategory("category")
+                                          .applyOperation(ItemOperation.ADD)
+                                          .applyComponentData("", "")
+                                          .applyCategoryItem("", "")
+                                          .applyNotificationId(1L)
+                                          .applyAllComponentAttributes(items)
+                                          .build();
 
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("Message Content", "Slack Unit Test from Alert")
-                                                   .applyComponentItem(componentItem)
-                                                   .build();
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider")
+                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyComponentItem(componentItem)
+                                             .build();
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = slackChannel.createRequests(event);
+        List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
-        final Request actualRequest = requests.get(0);
+        Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestSingleCategoryWithItemUrl() throws Exception {
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
+        FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
-        final SortedSet<LinkableItem> items = new TreeSet<>();
+        SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue", "url"));
 
-        final ComponentItem componentItem = new ComponentItem.Builder()
-                                                .applyCategory("category")
-                                                .applyOperation(ItemOperation.ADD)
-                                                .applyComponentData("", "")
-                                                .applyCategoryItem("", "")
-                                                .applyNotificationId(1L)
-                                                .applyAllComponentAttributes(items)
-                                                .build();
+        ComponentItem componentItem = new ComponentItem.Builder()
+                                          .applyCategory("category")
+                                          .applyOperation(ItemOperation.ADD)
+                                          .applyComponentData("", "")
+                                          .applyCategoryItem("", "")
+                                          .applyNotificationId(1L)
+                                          .applyAllComponentAttributes(items)
+                                          .build();
 
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("Message Content", "Slack Unit Test from Alert")
-                                                   .applyComponentItem(componentItem)
-                                                   .build();
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider")
+                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyComponentItem(componentItem)
+                                             .build();
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = slackChannel.createRequests(event);
+        List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
-        final Request actualRequest = requests.get(0);
+        Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestMultipleCategory() throws Exception {
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
+        FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
-        final SortedSet<LinkableItem> items = new TreeSet<>();
+        SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue_1"));
         items.add(new LinkableItem("itemName", "itemvalue_2"));
 
-        final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyCategory("category")
-                                                  .applyOperation(ItemOperation.ADD)
-                                                  .applyComponentData("", "")
-                                                  .applyCategoryItem("", "")
-                                                  .applyNotificationId(1L)
-                                                  .applyAllComponentAttributes(items)
-                                                  .build();
+        ComponentItem componentItem_1 = new ComponentItem.Builder()
+                                            .applyCategory("category")
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyComponentData("", "")
+                                            .applyCategoryItem("", "")
+                                            .applyNotificationId(1L)
+                                            .applyAllComponentAttributes(items)
+                                            .build();
 
-        final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyCategory("category")
-                                                  .applyOperation(ItemOperation.ADD)
-                                                  .applyComponentData("", "")
-                                                  .applyCategoryItem("", "")
-                                                  .applyNotificationId(2L)
-                                                  .applyAllComponentAttributes(items)
-                                                  .build();
+        ComponentItem componentItem_2 = new ComponentItem.Builder()
+                                            .applyCategory("category")
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyComponentData("", "")
+                                            .applyCategoryItem("", "")
+                                            .applyNotificationId(2L)
+                                            .applyAllComponentAttributes(items)
+                                            .build();
 
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("Message Content", "Slack Unit Test from Alert")
-                                                   .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
-                                                   .build();
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider")
+                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
+                                             .build();
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = slackChannel.createRequests(event);
+        List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
-        final Request actualRequest = requests.get(0);
+        Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestMultipleCategoryWithItemUrls() throws Exception {
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
+        FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
-        final SortedSet<LinkableItem> items = new TreeSet<>();
+        SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue_1", "itemUrl"));
         items.add(new LinkableItem("itemName", "itemvalue_2", "itemUrl"));
-        final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyCategory("category")
-                                                  .applyOperation(ItemOperation.ADD)
-                                                  .applyComponentData("", "")
-                                                  .applyCategoryItem("", "")
-                                                  .applyNotificationId(1L)
-                                                  .applyAllComponentAttributes(items)
-                                                  .build();
+        ComponentItem componentItem_1 = new ComponentItem.Builder()
+                                            .applyCategory("category")
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyComponentData("", "")
+                                            .applyCategoryItem("", "")
+                                            .applyNotificationId(1L)
+                                            .applyAllComponentAttributes(items)
+                                            .build();
 
-        final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyCategory("category")
-                                                  .applyOperation(ItemOperation.ADD)
-                                                  .applyComponentData("", "")
-                                                  .applyCategoryItem("", "")
-                                                  .applyNotificationId(2L)
-                                                  .applyAllComponentAttributes(items)
-                                                  .build();
+        ComponentItem componentItem_2 = new ComponentItem.Builder()
+                                            .applyCategory("category")
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyComponentData("", "")
+                                            .applyCategoryItem("", "")
+                                            .applyNotificationId(2L)
+                                            .applyAllComponentAttributes(items)
+                                            .build();
 
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("Message Content", "Slack Unit Test from Alert")
-                                                   .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
-                                                   .build();
-        final DistributionEvent event = Mockito.mock(DistributionEvent.class);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider")
+                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
+                                             .build();
+        DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(MessageContentGroup.singleton(content));
 
         SlackChannel slackChannel = createSlackChannel();
 
-        final List<Request> requests = slackChannel.createRequests(event);
+        List<Request> requests = slackChannel.createRequests(event);
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
-        final Request actualRequest = requests.get(0);
+        Request actualRequest = requests.get(0);
         assertEquals("webhook", actualRequest.getUri());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestExceptions() throws Exception {
-        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser(new MarkupEncoderUtil());
         SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, null);
         SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
         List<Request> request = null;
@@ -348,7 +349,7 @@ public class SlackChannelTest extends ChannelTest {
         try {
             request = slackChannel.createRequests(event);
             fail();
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             assertNull(request, "Expected the request to be null");
         }
 
@@ -374,7 +375,7 @@ public class SlackChannelTest extends ChannelTest {
         RestChannelUtility restChannelUtility = new RestChannelUtility(null);
         RestChannelUtility restChannelUtilitySpy = Mockito.spy(restChannelUtility);
         Mockito.doNothing().when(restChannelUtilitySpy).sendMessage(Mockito.any(), Mockito.anyString());
-        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser(new MarkupEncoderUtil());
         SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtilitySpy);
         SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, restChannelUtilitySpy, slackChannelEventParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
@@ -396,7 +397,7 @@ public class SlackChannelTest extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser();
+        SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser(new MarkupEncoderUtil());
         SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, null);
         SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
 

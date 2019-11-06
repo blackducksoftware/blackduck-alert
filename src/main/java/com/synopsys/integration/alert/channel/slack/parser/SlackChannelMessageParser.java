@@ -25,29 +25,34 @@ package com.synopsys.integration.alert.channel.slack.parser;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
+import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 
 @Component
 public class SlackChannelMessageParser extends ChannelMessageParser {
-    private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
+    private static final Map<Character, String> SLACK_CHARACTER_ENCODING_MAP;
+
+    private MarkupEncoderUtil markupEncoderUtil;
 
     static {
         // Insertion order matters, so '&' must always be inserted first.
         SLACK_CHARACTER_ENCODING_MAP = new LinkedHashMap<>();
-        SLACK_CHARACTER_ENCODING_MAP.put("&", "&amp;");
-        SLACK_CHARACTER_ENCODING_MAP.put("<", "&lt;");
-        SLACK_CHARACTER_ENCODING_MAP.put(">", "&gt;");
+        SLACK_CHARACTER_ENCODING_MAP.put('&', "&amp;");
+        SLACK_CHARACTER_ENCODING_MAP.put('<', "&lt;");
+        SLACK_CHARACTER_ENCODING_MAP.put('>', "&gt;");
+    }
+
+    @Autowired
+    public SlackChannelMessageParser(MarkupEncoderUtil markupEncoderUtil) {
+        this.markupEncoderUtil = markupEncoderUtil;
     }
 
     @Override
     protected String encodeString(String txt) {
-        String newString = txt;
-        for (Map.Entry<String, String> mapping : SLACK_CHARACTER_ENCODING_MAP.entrySet()) {
-            newString = newString.replace(mapping.getKey(), mapping.getValue());
-        }
-        return newString;
+        return markupEncoderUtil.encodeMarkup(SLACK_CHARACTER_ENCODING_MAP, txt);
     }
 
     @Override
