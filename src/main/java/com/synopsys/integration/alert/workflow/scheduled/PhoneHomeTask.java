@@ -114,7 +114,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             phoneHomeBuilder.setArtifactVersion(productVersion);
             phoneHomeBuilder.addAllToMetaData(getChannelMetaData());
             PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder), getPhoneHomeVariables());
+            PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(addBDDataAndBuild(phoneHomeBuilder), System.getenv());
             Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
             if (!taskSucceeded) {
                 logger.debug("Phone home task timed out and did not send any results.");
@@ -129,20 +129,6 @@ public class PhoneHomeTask extends StartupScheduledTask {
     @Override
     public String scheduleCronExpression() {
         return CRON_EXPRESSION;
-    }
-
-    public Map<String, String> getPhoneHomeVariables() {
-        Map<String, String> environment = System.getenv();
-        String skipPhoneHome = environment.get(PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
-        String phoneHomeURLOverride = environment.get(PhoneHomeClient.PHONE_HOME_URL_OVERRIDE_VARIABLE);
-        Map<String, String> phoneHomeVariables = new HashMap<>();
-        if (StringUtils.isNotBlank(skipPhoneHome)) {
-            phoneHomeVariables.put(PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE, skipPhoneHome);
-        }
-        if (StringUtils.isNotBlank(phoneHomeURLOverride)) {
-            phoneHomeVariables.put(PhoneHomeClient.PHONE_HOME_URL_OVERRIDE_VARIABLE, phoneHomeURLOverride);
-        }
-        return phoneHomeVariables;
     }
 
     private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
