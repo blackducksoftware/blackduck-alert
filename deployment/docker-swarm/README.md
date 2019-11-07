@@ -145,6 +145,11 @@ Overview:
 #### Details 
 This section will walk through each step of the installation procedure.
 
+**Please Note:** 
+If you are upgrading Alert from a 4.x version to 5.x, please use the docker-compose.local-overrides.yml bundled with Alert.
+Please remove any Alert configuration from the docker-compose.local-overrides.yml file bundled with Black Duck.
+
+
 ##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
   
 - Create a docker secret containing the encryption password for Alert.
@@ -223,7 +228,7 @@ Note: The NGinX container will not start correctly when it is waiting for the al
 Deploy alert onto the stack and NGinX will eventually become healthy when the alert service is up and running. 
 
 ##### 7. Deploy the stack.
-- Execute the command: 
+- Execute the command to add Alert to the stack: 
     ```
     docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```

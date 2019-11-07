@@ -57,7 +57,7 @@ public class AlertProperties {
     @Value("${alert.encryption.global.salt:}")
     private String alertEncryptionGlobalSalt;
 
-    @Value("${logging.level.com.blackducksoftware.integration:}")
+    @Value("${alert.logging.level:INFO}")
     private String loggingLevel;
 
     // SSL properties
