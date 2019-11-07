@@ -30,25 +30,28 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(StartupScheduledTask.class);
 
     private final TaskManager taskManager;
+    private Boolean enabled;
 
     public StartupScheduledTask(TaskScheduler taskScheduler, String taskName, TaskManager taskManager) {
         super(taskScheduler, taskName);
         this.taskManager = taskManager;
+        this.enabled = true;
     }
 
     public abstract String scheduleCronExpression();
 
-    public boolean shouldScheduleTask() {
-        return true;
+    public void checkTaskEnabled() {
+        enabled = true;
     }
 
     public void startTask() {
-        boolean shouldScheduleTask = shouldScheduleTask();
-        if (!shouldScheduleTask) {
+        checkTaskEnabled();
+        String taskName = getTaskName();
+        if (!getEnabled()) {
+            logger.info("{} is disabled and will not be scheduled to run.", taskName);
             return;
         }
         taskManager.registerTask(this);
-        String taskName = getTaskName();
         taskManager.scheduleCronTask(scheduleCronExpression(), getTaskName());
         String nextRun = taskManager.getNextRunTime(taskName).orElse("");
         logger.info("{} next run:     {}", taskName, nextRun);
@@ -57,5 +60,13 @@ public abstract class StartupScheduledTask extends ScheduledTask {
 
     protected void postTaskStartup() {
 
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

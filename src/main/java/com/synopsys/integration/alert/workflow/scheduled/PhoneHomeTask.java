@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
@@ -89,6 +90,9 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final AuditUtility auditUtility;
     private final BlackDuckProperties blackDuckProperties;
 
+    @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
+    private Boolean skipPhoneHome;
+
     @Autowired
     public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, DefaultConfigurationAccessor configurationAccessor,
         TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, BlackDuckProperties blackDuckProperties) {
@@ -102,16 +106,14 @@ public class PhoneHomeTask extends StartupScheduledTask {
     }
 
     @Override
-    public boolean shouldScheduleTask() {
+    public void checkTaskEnabled() {
         Map<String, String> environmentVariables = System.getenv();
-        Boolean skipPhoneHome = BooleanUtils.toBoolean(environmentVariables.get(PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE));
         if (skipPhoneHome) {
             logger.info("Will not schedule the task {}. {} is TRUE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
-            return false;
+            setEnabled(false);
         } else {
             logger.debug("Will schedule the task {}. {} is FALSE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
         }
-        return true;
     }
 
     @Override
