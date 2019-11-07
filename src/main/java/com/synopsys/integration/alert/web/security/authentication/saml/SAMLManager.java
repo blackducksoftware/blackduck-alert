@@ -57,7 +57,7 @@ public class SAMLManager {
     private final MetadataGenerator metadataGenerator;
     private final FilePersistenceUtil filePersistenceUtil;
 
-    public SAMLManager(final SAMLContext samlContext, final ParserPool parserPool, final ExtendedMetadata extendedMetadata, final MetadataManager metadataManager, final MetadataGenerator metadataGenerator,
+    public SAMLManager(SAMLContext samlContext, ParserPool parserPool, ExtendedMetadata extendedMetadata, MetadataManager metadataManager, MetadataGenerator metadataGenerator,
         FilePersistenceUtil filePersistenceUtil) {
         this.samlContext = samlContext;
         this.parserPool = parserPool;
@@ -68,23 +68,26 @@ public class SAMLManager {
     }
 
     public void initializeSAML() {
+        logger.debug("Initializing SAML.");
         try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            final boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
-            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
-            final String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_ID);
-            final String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+            boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
+            String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_METADATA_URL);
+            String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_ID);
+            String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            logger.debug("SAML - Enabled: {}", samlEnabled);
             if (samlEnabled) {
                 setupMetadataManager(metadataURL, entityId, entityBaseUrl);
             }
-        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException | MetadataProviderException e) {
+        } catch (AlertDatabaseConstraintException | AlertLDAPConfigurationException | MetadataProviderException e) {
             logger.error("Error adding the SAML identity provider.", e);
         }
     }
 
-    public void updateSAMLConfiguration(final boolean samlEnabled, final String metadataURL, final String entityId, final String entityBaseUrl) {
+    public void updateSAMLConfiguration(boolean samlEnabled, String metadataURL, String entityId, String entityBaseUrl) {
         try {
-            final List<ExtendedMetadataDelegate> currentProviders = metadataManager.getAvailableProviders();
+            logger.debug("SAML Config Update.");
+            List<ExtendedMetadataDelegate> currentProviders = metadataManager.getAvailableProviders();
             currentProviders.forEach(ExtendedMetadataDelegate::destroy);
             metadataManager.setProviders(List.of());
             metadataManager.setDefaultIDP(null);
@@ -92,16 +95,18 @@ public class SAMLManager {
             metadataManager.afterPropertiesSet();
             metadataGenerator.setEntityId(null);
             metadataGenerator.setEntityBaseURL(null);
-
+            logger.debug("SAML cleared configuration.");
             if (samlEnabled) {
                 setupMetadataManager(metadataURL, entityId, entityBaseUrl);
             }
-        } catch (final MetadataProviderException e) {
+        } catch (MetadataProviderException e) {
             logger.error("Error updating the SAML identity provider.", e);
         }
     }
 
-    private void setupMetadataManager(final String metadataURL, final String entityId, final String entityBaseUrl) throws MetadataProviderException {
+    private void setupMetadataManager(String metadataURL, String entityId, String entityBaseUrl) throws MetadataProviderException {
+        logger.debug("SAML Setup MetaData Manager");
+        logger.debug("SAML - MetadataUrl: {}, EntityID: {}, EntityBaseUrl: {}", metadataURL, entityId, entityBaseUrl);
         metadataGenerator.setEntityId(entityId);
         metadataGenerator.setEntityBaseURL(entityBaseUrl);
 
@@ -118,19 +123,21 @@ public class SAMLManager {
         if (StringUtils.isBlank(metadataUrl)) {
             return Optional.empty();
         }
+        logger.debug("SAML - Create Http Metadata provider.");
         // The URL can not end in a '/' because it messes with the paths for saml
-        final String correctedMetadataURL = StringUtils.removeEnd(metadataUrl, "/");
-        final Timer backgroundTaskTimer = new Timer(true);
+        String correctedMetadataURL = StringUtils.removeEnd(metadataUrl, "/");
+        Timer backgroundTaskTimer = new Timer(true);
         HTTPMetadataProvider provider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
         provider.setParserPool(parserPool);
         return Optional.of(createDelegate(provider));
     }
 
     private Optional<MetadataProvider> createFileProvider() throws MetadataProviderException {
-        final Timer backgroundTaskTimer = new Timer(true);
+        Timer backgroundTaskTimer = new Timer(true);
         if (!filePersistenceUtil.uploadFileExists(SettingsDescriptor.SAML_METADATA_FILE)) {
             return Optional.empty();
         }
+        logger.debug("SAML - Create File Metadata provider.");
         File metadataFile = filePersistenceUtil.createUploadsFile(SettingsDescriptor.SAML_METADATA_FILE);
         FilesystemMetadataProvider provider = new FilesystemMetadataProvider(backgroundTaskTimer, metadataFile);
         provider.setParserPool(parserPool);

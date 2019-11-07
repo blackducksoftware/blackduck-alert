@@ -28,30 +28,34 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
 
 public class AlertSAMLEntryPoint extends SAMLEntryPoint {
+    private static final Logger logger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
     private final SAMLContext samlContext;
 
-    public AlertSAMLEntryPoint(final SAMLContext samlContext) {
+    public AlertSAMLEntryPoint(SAMLContext samlContext) {
         super();
         this.samlContext = samlContext;
     }
 
     @Override
-    protected boolean processFilter(final HttpServletRequest request) {
+    protected boolean processFilter(HttpServletRequest request) {
         return samlContext.isSAMLEnabled() && super.processFilter(request);
     }
 
     @Override
-    public void commence(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException e) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         if (samlContext.isSAMLEnabled()) {
+            logger.debug("SAML Enabled commencing SAML entry point.");
             super.commence(request, response, e);
             return;
         }
-
+        logger.debug("AuthenticationException: {}", e);
         if (e instanceof InsufficientAuthenticationException) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
