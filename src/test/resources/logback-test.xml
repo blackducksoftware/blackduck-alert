@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <logger name="*.com.synopsys.*" level="info"/>
+    <logger name="*.com.synopsys.*" level="trace"/>
     <logger name="org.springframework.core " level="error"/>
     <logger name="org.springframework.beans" level="error"/>
     <logger name="org.springframework.context" level="error"/>
