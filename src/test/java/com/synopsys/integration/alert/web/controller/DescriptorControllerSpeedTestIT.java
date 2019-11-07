@@ -63,7 +63,7 @@ public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
         Set<DescriptorMetadata> descriptorMetadata = gson.fromJson(responseContent, new TypeToken<Set<DescriptorMetadata>>() {}.getType());
 
         assertTrue(descriptorMetadata.size() >= descriptors.size());
-        long expectedMaxTime = 1000;
+        long expectedMaxTime = 500;
         assertTrue(timeInMillis < expectedMaxTime, "Total runtime was: " + timeInMillis + "ms and should be below: " + expectedMaxTime + "ms.");
     }
 

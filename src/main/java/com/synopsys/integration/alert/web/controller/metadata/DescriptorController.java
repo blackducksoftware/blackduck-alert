@@ -125,8 +125,8 @@ public class DescriptorController extends MetadataController {
         descriptorMetadata.setOperations(operationSet);
         descriptorMetadata.setReadOnly(isReadOnly);
 
-        if (authorizationManager.isReadOnly(context, descriptorName)) {
-            descriptorMetadata.getFields().forEach(field -> field.setReadOnly(isReadOnly));
+        if (isReadOnly) {
+            descriptorMetadata.getFields().forEach(field -> field.setReadOnly(true));
         }
 
         return Optional.of(descriptorMetadata);
