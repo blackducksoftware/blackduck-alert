@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,19 @@ public class PhoneHomeTask extends StartupScheduledTask {
         this.gson = gson;
         this.auditUtility = auditUtility;
         this.blackDuckProperties = blackDuckProperties;
+    }
+
+    @Override
+    public boolean shouldScheduleTask() {
+        Map<String, String> environmentVariables = System.getenv();
+        Boolean skipPhoneHome = BooleanUtils.toBoolean(environmentVariables.get(PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE));
+        if (skipPhoneHome) {
+            logger.info("Will not schedule the task {}. {} is TRUE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
+            return false;
+        } else {
+            logger.debug("Will schedule the task {}. {} is FALSE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
+        }
+        return true;
     }
 
     @Override

@@ -31,18 +31,26 @@ public abstract class StartupScheduledTask extends ScheduledTask {
 
     private final TaskManager taskManager;
 
-    public StartupScheduledTask(final TaskScheduler taskScheduler, final String taskName, final TaskManager taskManager) {
+    public StartupScheduledTask(TaskScheduler taskScheduler, String taskName, TaskManager taskManager) {
         super(taskScheduler, taskName);
         this.taskManager = taskManager;
     }
 
     public abstract String scheduleCronExpression();
 
+    public boolean shouldScheduleTask() {
+        return true;
+    }
+
     public void startTask() {
+        boolean shouldScheduleTask = shouldScheduleTask();
+        if (!shouldScheduleTask) {
+            return;
+        }
         taskManager.registerTask(this);
-        final String taskName = getTaskName();
+        String taskName = getTaskName();
         taskManager.scheduleCronTask(scheduleCronExpression(), getTaskName());
-        final String nextRun = taskManager.getNextRunTime(taskName).orElse("");
+        String nextRun = taskManager.getNextRunTime(taskName).orElse("");
         logger.info("{} next run:     {}", taskName, nextRun);
         postTaskStartup();
     }
