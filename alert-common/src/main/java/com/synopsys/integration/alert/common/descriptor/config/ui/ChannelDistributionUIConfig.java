@@ -66,14 +66,19 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField enabled = CheckboxConfigField.create(KEY_ENABLED, LABEL_ENABLED, DESCRIPTION_ENABLED).addDefaultValue(Boolean.TRUE.toString());
-        ConfigField channelName = EndpointSelectField.createRequired(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME, true, false, true, false);
-        ConfigField name = TextInputConfigField.createRequired(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME);
-        ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, Arrays.stream(FrequencyType.values())
-                                                                                                                            .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
-                                                                                                                            .sorted()
-                                                                                                                            .collect(Collectors.toList()));
-        ConfigField providerName = EndpointSelectField.createRequired(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME, true, false, true, false);
+        ConfigField enabled = new CheckboxConfigField(KEY_ENABLED, LABEL_ENABLED, DESCRIPTION_ENABLED).applyDefaultValue(Boolean.TRUE.toString());
+        ConfigField channelName = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
+                                      .applyRequired(true);
+        ConfigField name = new TextInputConfigField(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME).applyRequired(true);
+
+        List<LabelValueSelectOption> frequencyOptions = Arrays.stream(FrequencyType.values())
+                                                            .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
+                                                            .sorted()
+                                                            .collect(Collectors.toList());
+        ConfigField frequency = new SelectConfigField(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, frequencyOptions)
+                                    .applyRequired(true);
+        ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME)
+                                       .applyRequired(true);
 
         List<ConfigField> configFields = List.of(enabled, channelName, name, frequency, providerName);
         List<ConfigField> channelDistributionFields = createChannelDistributionFields();

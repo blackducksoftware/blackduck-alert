@@ -27,20 +27,13 @@ import com.synopsys.integration.alert.common.enumeration.FieldType;
 public class CountdownConfigField extends ConfigField {
     private Long countdown;
 
-    public CountdownConfigField(final String key, final String label, final String description, final String panel, final Long countdown) {
-        super(key, label, description, FieldType.COUNTDOWN, false, false, panel);
+    public CountdownConfigField(String key, String label, String description, Long countdown) {
+        super(key, label, description, FieldType.COUNTDOWN);
         this.countdown = countdown;
-    }
-
-    public static CountdownConfigField create(final String key, final String label, final String description, final Long countdown) {
-        return new CountdownConfigField(key, label, description, "", countdown);
     }
 
     public Long getCountdown() {
         return countdown;
     }
 
-    public void setCountdown(final Long countdown) {
-        this.countdown = countdown;
-    }
 }

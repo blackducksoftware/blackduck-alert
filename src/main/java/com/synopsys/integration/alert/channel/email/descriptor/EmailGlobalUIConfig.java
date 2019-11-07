@@ -149,72 +149,65 @@ public class EmailGlobalUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         // Default fields
-        final ConfigField mailSmtpHost = TextInputConfigField.createRequired(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), LABEL_SMTP_HOST, JAVAMAIL_HOST_DESCRIPTION);
-        final ConfigField mailSmtpFrom = TextInputConfigField.createRequired(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), LABEL_SMTP_FROM, JAVAMAIL_FROM_DESCRIPTION);
-        final ConfigField mailSmtpUser = TextInputConfigField.create(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), LABEL_SMTP_USER, JAVAMAIL_USER_DESCRIPTION);
-        final ConfigField mailSmtpPassword = PasswordConfigField.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), LABEL_SMTP_PASSWORD, JAVAMAIL_PASSWORD_DESCRIPTION, encryptionValidator);
-        final ConfigField mailSmtpAuth = CheckboxConfigField.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), LABEL_SMTP_AUTH, JAVAMAIL_AUTH_DESCRIPTION)
-                                             .requireField(mailSmtpUser.getKey())
-                                             .requireField(mailSmtpPassword.getKey());
+        ConfigField mailSmtpHost = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), LABEL_SMTP_HOST, JAVAMAIL_HOST_DESCRIPTION).applyRequired(true);
+        ConfigField mailSmtpFrom = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), LABEL_SMTP_FROM, JAVAMAIL_FROM_DESCRIPTION).applyRequired(true);
+        ConfigField mailSmtpUser = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), LABEL_SMTP_USER, JAVAMAIL_USER_DESCRIPTION);
+        ConfigField mailSmtpPassword = new PasswordConfigField(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), LABEL_SMTP_PASSWORD, JAVAMAIL_PASSWORD_DESCRIPTION, encryptionValidator);
+        ConfigField mailSmtpAuth = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), LABEL_SMTP_AUTH, JAVAMAIL_AUTH_DESCRIPTION)
+                                       .applyRequiredRelatedField(mailSmtpUser.getKey())
+                                       .applyRequiredRelatedField(mailSmtpPassword.getKey());
 
         // Advanced fields
-        final ConfigField mailSmtpPort = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), LABEL_SMTP_PORT, JAVAMAIL_PORT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpConnectionTimeout = NumberConfigField
-                                                          .createPanel(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), LABEL_SMTP_CONNECTION_TIMEOUT, JAVAMAIL_CONNECTION_TIMEOUT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpTimeout = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), LABEL_SMTP_TIMEOUT, JAVAMAIL_TIMEOUT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpWriteTimeout = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey(), LABEL_SMTP_WRITE_TIMEOUT, JAVAMAIL_WRITETIMEOUT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpLocalhost = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_LOCALHOST_KEY.getPropertyKey(), LABEL_SMTP_LOCALHOST, JAVAMAIL_LOCALHOST_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpLocalAddress = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_LOCALHOST_ADDRESS_KEY.getPropertyKey(), LABEL_SMTP_LOCAL_ADDRESS, JAVAMAIL_LOCALHOST_ADDRESS_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpLocalPort = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey(), LABEL_SMTP_LOCAL_PORT, JAVAMAIL_LOCALHOST_PORT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpEhlo = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), LABEL_SMTP_EHLO, JAVAMAIL_EHLO_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthMechanisms = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_MECHANISMS_KEY.getPropertyKey(), LABEL_SMTP_AUTH_MECHANISMS, JAVAMAIL_AUTH_MECHANISMS_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthLoginDisable = CheckboxConfigField
-                                                         .createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_LOGIN_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_LOGIN_DISABLE, JAVAMAIL_AUTH_LOGIN_DISABLE_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthPlainDisable = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_PLAIN_DISABLE, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_DESCRIPTION,
-            ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthDigestMd5Disable = CheckboxConfigField
-                                                             .createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_DIGEST_MD5_DISABLE, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_DESCRIPTION,
-                                                                 ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthNtlmDisable = CheckboxConfigField
-                                                        .createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_NTLM_DISABLE, JAVAMAIL_AUTH_NTLM_DISABLE_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthNtlmDomain = TextInputConfigField
-                                                       .createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_DOMAIN_KEY.getPropertyKey(), LABEL_SMTP_AUTH_NTLM_DOMAIN, JAVAMAIL_AUTH_NTLM_DOMAIN_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthNtlmFlags = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey(), LABEL_SMTP_AUTH_NTLM_FLAGS, JAVAMAIL_AUTH_NTLM_FLAGS_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAuthXoauth2Disable = CheckboxConfigField
-                                                           .createPanel(EmailPropertyKeys.JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_XOAUTH2_DISABLE, JAVAMAIL_AUTH_XOAUTH2_DISABLE_DESCRIPTION,
-                                                               ADVANCED_PANEL);
-        final ConfigField mailSmtpSubmitter = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SUBMITTER_KEY.getPropertyKey(), LABEL_SMTP_SUBMITTER, JAVAMAIL_SUBMITTER_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpDnsNotify = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_DSN_NOTIFY_KEY.getPropertyKey(), LABEL_SMTP_DSN_NOTIFY, JAVAMAIL_DSN_NOTIFY_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpDnsRet = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_DSN_RET_KEY.getPropertyKey(), LABEL_SMTP_DSN_RET, JAVAMAIL_DSN_RET_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpAllow8bitmime = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_ALLOW_8_BITMIME_KEY.getPropertyKey(), LABEL_SMTP_ALLOW_8_BIT_MIME, JAVAMAIL_ALLOW_8_BITMIME_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSendPartial = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SEND_PARTIAL_KEY.getPropertyKey(), LABEL_SMTP_SEND_PARTIAL, JAVAMAIL_SEND_PARTIAL_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSaslEnable = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SASL_ENABLE_KEY.getPropertyKey(), LABEL_SMTP_SASL_ENABLE, JAVAMAIL_SASL_ENABLE_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSaslMechanisms = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SASL_MECHANISMS_KEY.getPropertyKey(), LABEL_SMTP_SASL_MECHANISMS, JAVAMAIL_SASL_MECHANISMS_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSaslAuthorizationId = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SASL_AUTHORIZATION_ID_KEY.getPropertyKey(), LABEL_SMTP_SASL_AUTHORIZATION_ID, JAVAMAIL_SASL_AUTHORIZATION_ID_DESCRIPTION,
-            ADVANCED_PANEL);
-        final ConfigField mailSmtpSaslRealm = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SASL_REALM_KEY.getPropertyKey(), LABEL_SMTP_SASL_REALM, JAVAMAIL_SASL_REALM_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSaslUseCanonicalHostname = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY.getPropertyKey(), LABEL_SMTP_SASL_USE_CANONICAL_HOSTNAME,
-            JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpQuitwait = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_QUITWAIT_KEY.getPropertyKey(), LABEL_SMTP_QUIT_WAIT, JAVAMAIL_QUITWAIT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpReportSuccess = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_REPORT_SUCCESS_KEY.getPropertyKey(), LABEL_SMTP_REPORT_SUCCESS, JAVAMAIL_REPORT_SUCCESS_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSslEnable = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SSL_ENABLE_KEY.getPropertyKey(), LABEL_SMTP_SSL_ENABLE, JAVAMAIL_SSL_ENABLE_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSslCheckServerIdentity = CheckboxConfigField
-                                                               .createPanel(EmailPropertyKeys.JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY.getPropertyKey(), LABEL_SMTP_SSL_CHECK_SERVER_IDENTITY, JAVAMAIL_SSL_CHECKSERVERIDENTITY_DESCRIPTION,
-                                                                   ADVANCED_PANEL);
-        final ConfigField mailSmtpSslTrust = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SSL_TRUST_KEY.getPropertyKey(), LABEL_SMTP_SSL_TRUST, JAVAMAIL_SSL_TRUST_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSslProtocols = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SSL_PROTOCOLS_KEY.getPropertyKey(), LABEL_SMTP_SSL_PROTOCOLS, JAVAMAIL_SSL_PROTOCOLS_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSslCipherSuites = TextInputConfigField
-                                                        .createPanel(EmailPropertyKeys.JAVAMAIL_SSL_CIPHERSUITES_KEY.getPropertyKey(), LABEL_SMTP_SSL_CIPHER_SUITES, JAVAMAIL_SSL_CIPHERSUITES_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpStartTlsEnable = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_STARTTLS_ENABLE_KEY.getPropertyKey(), LABEL_SMTP_START_TLS_ENABLED, JAVAMAIL_STARTTLS_ENABLE_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpStartTlsRequired = CheckboxConfigField
-                                                         .createPanel(EmailPropertyKeys.JAVAMAIL_STARTTLS_REQUIRED_KEY.getPropertyKey(), LABEL_SMTP_START_TLS_REQUIRED, JAVAMAIL_STARTTLS_REQUIRED_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpProxyHost = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_PROXY_HOST_KEY.getPropertyKey(), LABEL_SMTP_PROXY_HOST, JAVAMAIL_PROXY_HOST_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpProxyPort = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey(), LABEL_SMTP_PROXY_PORT, JAVAMAIL_PROXY_PORT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSocksHost = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SOCKS_HOST_KEY.getPropertyKey(), LABEL_SMTP_SOCKS_HOST, JAVAMAIL_SOCKS_HOST_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpSocksPort = NumberConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey(), LABEL_SMTP_SOCKS_PORT, JAVAMAIL_SOCKS_PORT_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpMailExtension = TextInputConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_MAILEXTENSION_KEY.getPropertyKey(), LABEL_SMTP_MAIL_EXTENSION, JAVAMAIL_MAILEXTENSION_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpUserSet = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_USERSET_KEY.getPropertyKey(), LABEL_SMTP_USE_RSET, JAVAMAIL_USERSET_DESCRIPTION, ADVANCED_PANEL);
-        final ConfigField mailSmtpNoopStrict = CheckboxConfigField.createPanel(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY.getPropertyKey(), LABEL_SMTP_NOOP_STRICT, JAVAMAIL_NOOP_STRICT_DESCRIPTION, ADVANCED_PANEL);
+        ConfigField mailSmtpPort = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), LABEL_SMTP_PORT, JAVAMAIL_PORT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpConnectionTimeout = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), LABEL_SMTP_CONNECTION_TIMEOUT, JAVAMAIL_CONNECTION_TIMEOUT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpTimeout = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), LABEL_SMTP_TIMEOUT, JAVAMAIL_TIMEOUT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpWriteTimeout = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey(), LABEL_SMTP_WRITE_TIMEOUT, JAVAMAIL_WRITETIMEOUT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpLocalhost = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_LOCALHOST_KEY.getPropertyKey(), LABEL_SMTP_LOCALHOST, JAVAMAIL_LOCALHOST_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpLocalAddress = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_LOCALHOST_ADDRESS_KEY.getPropertyKey(), LABEL_SMTP_LOCAL_ADDRESS, JAVAMAIL_LOCALHOST_ADDRESS_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpLocalPort = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey(), LABEL_SMTP_LOCAL_PORT, JAVAMAIL_LOCALHOST_PORT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpEhlo = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), LABEL_SMTP_EHLO, JAVAMAIL_EHLO_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthMechanisms = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_MECHANISMS_KEY.getPropertyKey(), LABEL_SMTP_AUTH_MECHANISMS, JAVAMAIL_AUTH_MECHANISMS_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthLoginDisable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_LOGIN_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_LOGIN_DISABLE, JAVAMAIL_AUTH_LOGIN_DISABLE_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthPlainDisable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_PLAIN_DISABLE, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_DESCRIPTION)
+                                                   .applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthDigestMd5Disable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_DIGEST_MD5_DISABLE, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_DESCRIPTION)
+                                                       .applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthNtlmDisable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_NTLM_DISABLE, JAVAMAIL_AUTH_NTLM_DISABLE_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthNtlmDomain = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_DOMAIN_KEY.getPropertyKey(), LABEL_SMTP_AUTH_NTLM_DOMAIN, JAVAMAIL_AUTH_NTLM_DOMAIN_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthNtlmFlags = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey(), LABEL_SMTP_AUTH_NTLM_FLAGS, JAVAMAIL_AUTH_NTLM_FLAGS_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAuthXoauth2Disable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY.getPropertyKey(), LABEL_SMTP_AUTH_XOAUTH2_DISABLE, JAVAMAIL_AUTH_XOAUTH2_DISABLE_DESCRIPTION)
+                                                     .applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSubmitter = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SUBMITTER_KEY.getPropertyKey(), LABEL_SMTP_SUBMITTER, JAVAMAIL_SUBMITTER_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpDnsNotify = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_DSN_NOTIFY_KEY.getPropertyKey(), LABEL_SMTP_DSN_NOTIFY, JAVAMAIL_DSN_NOTIFY_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpDnsRet = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_DSN_RET_KEY.getPropertyKey(), LABEL_SMTP_DSN_RET, JAVAMAIL_DSN_RET_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpAllow8bitmime = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_ALLOW_8_BITMIME_KEY.getPropertyKey(), LABEL_SMTP_ALLOW_8_BIT_MIME, JAVAMAIL_ALLOW_8_BITMIME_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSendPartial = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_SEND_PARTIAL_KEY.getPropertyKey(), LABEL_SMTP_SEND_PARTIAL, JAVAMAIL_SEND_PARTIAL_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSaslEnable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_SASL_ENABLE_KEY.getPropertyKey(), LABEL_SMTP_SASL_ENABLE, JAVAMAIL_SASL_ENABLE_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSaslMechanisms = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SASL_MECHANISMS_KEY.getPropertyKey(), LABEL_SMTP_SASL_MECHANISMS, JAVAMAIL_SASL_MECHANISMS_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSaslAuthorizationId = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SASL_AUTHORIZATION_ID_KEY.getPropertyKey(), LABEL_SMTP_SASL_AUTHORIZATION_ID, JAVAMAIL_SASL_AUTHORIZATION_ID_DESCRIPTION)
+                                                      .applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSaslRealm = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SASL_REALM_KEY.getPropertyKey(), LABEL_SMTP_SASL_REALM, JAVAMAIL_SASL_REALM_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSaslUseCanonicalHostname = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY.getPropertyKey(), LABEL_SMTP_SASL_USE_CANONICAL_HOSTNAME,
+            JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpQuitwait = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_QUITWAIT_KEY.getPropertyKey(), LABEL_SMTP_QUIT_WAIT, JAVAMAIL_QUITWAIT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpReportSuccess = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_REPORT_SUCCESS_KEY.getPropertyKey(), LABEL_SMTP_REPORT_SUCCESS, JAVAMAIL_REPORT_SUCCESS_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSslEnable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_SSL_ENABLE_KEY.getPropertyKey(), LABEL_SMTP_SSL_ENABLE, JAVAMAIL_SSL_ENABLE_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSslCheckServerIdentity = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY.getPropertyKey(), LABEL_SMTP_SSL_CHECK_SERVER_IDENTITY, JAVAMAIL_SSL_CHECKSERVERIDENTITY_DESCRIPTION)
+                                                         .applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSslTrust = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SSL_TRUST_KEY.getPropertyKey(), LABEL_SMTP_SSL_TRUST, JAVAMAIL_SSL_TRUST_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSslProtocols = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SSL_PROTOCOLS_KEY.getPropertyKey(), LABEL_SMTP_SSL_PROTOCOLS, JAVAMAIL_SSL_PROTOCOLS_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSslCipherSuites = new TextInputConfigField
+                                                  (EmailPropertyKeys.JAVAMAIL_SSL_CIPHERSUITES_KEY.getPropertyKey(), LABEL_SMTP_SSL_CIPHER_SUITES, JAVAMAIL_SSL_CIPHERSUITES_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpStartTlsEnable = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_STARTTLS_ENABLE_KEY.getPropertyKey(), LABEL_SMTP_START_TLS_ENABLED, JAVAMAIL_STARTTLS_ENABLE_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpStartTlsRequired = new CheckboxConfigField
+                                                   (EmailPropertyKeys.JAVAMAIL_STARTTLS_REQUIRED_KEY.getPropertyKey(), LABEL_SMTP_START_TLS_REQUIRED, JAVAMAIL_STARTTLS_REQUIRED_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpProxyHost = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_PROXY_HOST_KEY.getPropertyKey(), LABEL_SMTP_PROXY_HOST, JAVAMAIL_PROXY_HOST_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpProxyPort = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey(), LABEL_SMTP_PROXY_PORT, JAVAMAIL_PROXY_PORT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSocksHost = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_SOCKS_HOST_KEY.getPropertyKey(), LABEL_SMTP_SOCKS_HOST, JAVAMAIL_SOCKS_HOST_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpSocksPort = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey(), LABEL_SMTP_SOCKS_PORT, JAVAMAIL_SOCKS_PORT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpMailExtension = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_MAILEXTENSION_KEY.getPropertyKey(), LABEL_SMTP_MAIL_EXTENSION, JAVAMAIL_MAILEXTENSION_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpUserSet = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_USERSET_KEY.getPropertyKey(), LABEL_SMTP_USE_RSET, JAVAMAIL_USERSET_DESCRIPTION).applyPanel(ADVANCED_PANEL);
+        ConfigField mailSmtpNoopStrict = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY.getPropertyKey(), LABEL_SMTP_NOOP_STRICT, JAVAMAIL_NOOP_STRICT_DESCRIPTION).applyPanel(ADVANCED_PANEL);
 
         return List.of(mailSmtpHost, mailSmtpFrom, mailSmtpAuth, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpLocalhost, mailSmtpLocalAddress,
             mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable, mailSmtpAuthNtlmDomain, mailSmtpAuthNtlmFlags,
@@ -228,4 +221,5 @@ public class EmailGlobalUIConfig extends UIConfig {
     public String createTestLabel() {
         return TEST_LABEL_ADDRESS;
     }
+
 }

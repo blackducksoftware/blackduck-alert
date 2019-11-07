@@ -58,52 +58,52 @@ public class DescriptorController extends MetadataController {
     }
 
     @GetMapping(DESCRIPTORS_PATH)
-    public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
+    public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = false) String context) {
         Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
             filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getDescriptorKey().getUniversalKey()));
         }
 
-        final DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
+        DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
         if (typeEnum != null) {
             filter = filter.and(descriptor -> typeEnum.equals(descriptor.getType()));
         } else if (type != null) {
             return Set.of();
         }
 
-        final ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
+        ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
         if (contextEnum != null) {
             filter = filter.and(descriptor -> descriptor.hasUIConfigForType(contextEnum));
         } else if (context != null) {
             return Set.of();
         }
 
-        final Set<Descriptor> filteredDescriptors = filter(descriptors, filter);
+        Set<Descriptor> filteredDescriptors = filter(descriptors, filter);
         return generateUIComponents(filteredDescriptors, contextEnum);
     }
 
-    private Set<Descriptor> filter(final Collection<Descriptor> descriptors, final Predicate<Descriptor> predicate) {
+    private Set<Descriptor> filter(Collection<Descriptor> descriptors, Predicate<Descriptor> predicate) {
         return descriptors
                    .stream()
                    .filter(predicate)
                    .collect(Collectors.toSet());
     }
 
-    private Set<DescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
-        final ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
-        final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
-        for (final ConfigContextEnum applicableContext : applicableContexts) {
-            for (final Descriptor descriptor : filteredDescriptors) {
-                final Optional<DescriptorMetadata> optionalMetaData = descriptor.createMetaData(applicableContext);
+    private Set<DescriptorMetadata> generateUIComponents(Set<Descriptor> filteredDescriptors, ConfigContextEnum context) {
+        ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
+        Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
+        for (ConfigContextEnum applicableContext : applicableContexts) {
+            for (Descriptor descriptor : filteredDescriptors) {
+                Optional<DescriptorMetadata> optionalMetaData = descriptor.createMetaData(applicableContext);
                 optionalMetaData.flatMap(this::filterFieldsByPermissions).ifPresent(descriptorMetadata::add);
             }
         }
         return descriptorMetadata;
     }
 
-    private Optional<DescriptorMetadata> filterFieldsByPermissions(final DescriptorMetadata descriptorMetadata) {
-        final String descriptorName = descriptorMetadata.getName();
-        final ConfigContextEnum context = descriptorMetadata.getContext();
+    private Optional<DescriptorMetadata> filterFieldsByPermissions(DescriptorMetadata descriptorMetadata) {
+        String descriptorName = descriptorMetadata.getName();
+        ConfigContextEnum context = descriptorMetadata.getContext();
 
         List<ConfigField> filteredFields = descriptorMetadata.getFields();
         if (!authorizationManager.hasPermissions(context.name(), descriptorName)) {
@@ -114,19 +114,19 @@ public class DescriptorController extends MetadataController {
         return restrictMetaData(descriptorMetadata, context.name(), descriptorName);
     }
 
-    private Optional<DescriptorMetadata> restrictMetaData(final DescriptorMetadata descriptorMetadata, String context, String descriptorName) {
-        final boolean hasReadPermission = authorizationManager.hasReadPermission(context, descriptorName);
+    private Optional<DescriptorMetadata> restrictMetaData(DescriptorMetadata descriptorMetadata, String context, String descriptorName) {
+        boolean hasReadPermission = authorizationManager.hasReadPermission(context, descriptorName);
         if (!hasReadPermission) {
             return Optional.empty();
         }
 
         Set<AccessOperation> operationSet = authorizationManager.getOperations(context, descriptorName);
-        final boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorName);
+        boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorName);
         descriptorMetadata.setOperations(operationSet);
         descriptorMetadata.setReadOnly(isReadOnly);
 
         if (authorizationManager.isReadOnly(context, descriptorName)) {
-            descriptorMetadata.getFields().forEach(field -> field.setReadOnly(isReadOnly));
+            descriptorMetadata.getFields().forEach(field -> field.applyReadOnly(isReadOnly));
         }
 
         return Optional.of(descriptorMetadata);

@@ -56,23 +56,27 @@ public class PolarisGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField polarisUrl = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_URL, LABEL_POLARIS_URL, DESCRIPTION_POLARIS_URL);
-        final ConfigField polarisAccessToken = PasswordConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN, DESCRIPTION_POLARIS_ACCESS_TOKEN, encryptionValidator, this::validateAPIToken);
-        final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT, DESCRIPTION_POLARIS_TIMEOUT, this::validateTimeout);
+        ConfigField polarisUrl = new TextInputConfigField(PolarisDescriptor.KEY_POLARIS_URL, LABEL_POLARIS_URL, DESCRIPTION_POLARIS_URL).applyRequired(true);
+        ConfigField polarisAccessToken = new PasswordConfigField(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN, DESCRIPTION_POLARIS_ACCESS_TOKEN, encryptionValidator)
+                                             .applyRequired(true)
+                                             .applyValidationFunctions(this::validateAPIToken);
+        ConfigField polarisTimeout = new NumberConfigField(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT, DESCRIPTION_POLARIS_TIMEOUT)
+                                         .applyRequired(true)
+                                         .applyValidationFunctions(this::validateTimeout);
 
         return List.of(polarisUrl, polarisAccessToken, polarisTimeout);
     }
 
-    private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String accessToken = fieldToValidate.getValue().orElse("");
+    private Collection<String> validateAPIToken(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        String accessToken = fieldToValidate.getValue().orElse("");
         if (StringUtils.isNotBlank(accessToken) && (accessToken.length() < 32 || accessToken.length() > 64)) {
             return List.of("Invalid Polaris Access Token.");
         }
         return List.of();
     }
 
-    private Collection<String> validateTimeout(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String polarisTimeout = fieldToValidate.getValue().orElse("");
+    private Collection<String> validateTimeout(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        String polarisTimeout = fieldToValidate.getValue().orElse("");
         if (!StringUtils.isNumeric(polarisTimeout) || NumberUtils.toInt(polarisTimeout.trim()) < 0) {
             return List.of("Must be an Integer greater than zero (0).");
         }
