@@ -125,6 +125,7 @@ distributions {
                 include 'liquibase-core*.jar'
                 into 'lib'
             }
+            from('src/main/resources/db/release-locks-changelog.xml') { into 'changelogs' }
             from('src/main/resources/email/images/') { into 'images/' }
             from('src/main/resources/email/templates/') { into 'templates/email' }
         }
