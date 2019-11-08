@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class LabelValueSelectOption extends AlertSerializableModel implements Comparable<LabelValueSelectOption> {
     private String label;
     private String value;
-    private String icon;
 
     public LabelValueSelectOption(String labelAndValue) {
         this(labelAndValue, labelAndValue);
@@ -38,22 +37,12 @@ public class LabelValueSelectOption extends AlertSerializableModel implements Co
         this.value = value;
     }
 
-    public LabelValueSelectOption(String label, String value, String icon) {
-        this.label = label;
-        this.value = value;
-        this.icon = icon;
-    }
-
     public String getLabel() {
         return label;
     }
 
     public String getValue() {
         return value;
-    }
-
-    public String getIcon() {
-        return icon;
     }
 
     @Override

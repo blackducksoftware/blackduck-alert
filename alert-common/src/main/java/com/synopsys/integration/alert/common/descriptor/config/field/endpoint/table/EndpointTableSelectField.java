@@ -53,7 +53,7 @@ public class EndpointTableSelectField extends EndpointField {
 
     public EndpointTableSelectField applyColumns(List<TableSelectColumn> columns) {
         if (columns != null) {
-            this.columns = new LinkedList<>(columns);
+            this.columns.addAll(columns);
         }
         return this;
     }

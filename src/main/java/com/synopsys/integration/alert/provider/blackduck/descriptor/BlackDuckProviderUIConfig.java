@@ -77,4 +77,5 @@ public class BlackDuckProviderUIConfig extends UIConfig {
         }
         return List.of();
     }
+
 }
