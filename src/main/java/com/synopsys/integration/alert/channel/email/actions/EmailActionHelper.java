@@ -99,8 +99,7 @@ public class EmailActionHelper {
     }
 
     private Set<String> addEmailAddresses(Set<ProviderProject> providerProjects, FieldAccessor fieldAccessor) throws AlertFieldException {
-        Optional<String> projectOwnerOnlyOptional = fieldAccessor.getString(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
-        Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
+        boolean projectOwnerOnly = fieldAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
 
         Set<String> emailAddresses = new HashSet<>();
         Set<String> projectsWithoutEmails = new HashSet<>();
@@ -119,7 +118,12 @@ public class EmailActionHelper {
             } else {
                 errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
             }
-            throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, errorMessage);
+            String errorField = ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
+            boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            if (!filterByProject && !projectOwnerOnly) {
+                errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
+            }
+            throw AlertFieldException.singleFieldError(errorField, errorMessage);
         }
         return emailAddresses;
     }

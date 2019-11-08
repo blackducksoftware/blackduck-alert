@@ -32,6 +32,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     Optional<RoleEntity> findByRoleName(String roleName);
 
+    boolean existsRoleEntityByRoleName(String roleName);
+
     @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
     List<String> getRoleNames(List<Long> roleIds);
 

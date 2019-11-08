@@ -34,6 +34,8 @@ public interface AuthorizationUtility {
 
     Set<UserRoleModel> getRoles(Collection<Long> roleIds);
 
+    boolean doesRoleNameExist(String name);
+
     UserRoleModel createRole(String roleName) throws AlertDatabaseConstraintException;
 
     UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
