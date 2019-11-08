@@ -121,11 +121,25 @@ bootJar {
 distributions {
     boot {
         contents {
+            from("$project.buildDir/libs/liquibase-core-3.6.3.jar") { into 'lib' }
             from('src/main/resources/email/images/') { into 'images/' }
             from('src/main/resources/email/templates/') { into 'templates/email' }
         }
     }
 }
+
+task copyToLib(type: Copy, dependsOn: [compileJava]) {
+    from findJar('liquibase')
+    into "${project.buildDir}/libs"
+}
+
+def findJar(prefix) {
+    configurations.runtimeClasspath.filter {
+        it.name.startsWith(prefix)
+    }
+}
+
+tasks.compileJava.finalizedBy(tasks.copyToLib)
 
 // run alert locally
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
@@ -139,7 +153,6 @@ gradle.taskGraph.whenReady { graph ->
         test.enabled = false
     }
 }
-
 
 task createKeystore(type: Exec) {
     doFirst {
