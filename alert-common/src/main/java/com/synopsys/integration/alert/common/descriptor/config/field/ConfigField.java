@@ -39,6 +39,24 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
+/**
+ * <strong>Constructor Parameters:</strong><br/>
+ * key         A string to uniquely identify this field throughout the application.<br/>
+ * label       A human-readable name for this field.<br/>
+ * description An explanation of what this field does.<br/>
+ * type        An enum representation of the UI element that should be rendered for this field.<br/>
+ * <br/>
+ * <strong>Default values:</strong><br/>
+ * - required = false<br/>
+ * - sensitive = false<br/>
+ * - readOnly = false<br/>
+ * - panel = ConfigField.FIELD_PANEL_DEFAULT<br/>
+ * - header = ConfigField.FIELD_HEADER_EMPTY<br/>
+ * - requiredRelatedFields = new HashSet<>()<br/>
+ * - disallowedRelatedFields = new HashSet<>()<br/>
+ * - defaultValues = new HashSet<>()<br/>
+ * - validationFunctions = new LinkedList<>()<br/>
+ */
 public abstract class ConfigField extends AlertSerializableModel {
     public static final String REQUIRED_FIELD_MISSING = "Required field missing";
     public static final int MAX_FIELD_LENGTH = 511;
@@ -62,6 +80,23 @@ public abstract class ConfigField extends AlertSerializableModel {
     private Set<String> defaultValues;
     private transient List<ConfigValidationFunction> validationFunctions;
 
+    /**
+     * @param key         A string to uniquely identify this field throughout the application.
+     * @param label       A human-readable name for this field.
+     * @param description An explanation of what this field does.
+     * @param type        An enum representation of the UI element that should be rendered for this field.
+     *                    <p/>
+     *                    <strong>Default values:</strong><br/>
+     *                    - required = false<br/>
+     *                    - sensitive = false<br/>
+     *                    - readOnly = false<br/>
+     *                    - panel = ConfigField.FIELD_PANEL_DEFAULT<br/>
+     *                    - header = ConfigField.FIELD_HEADER_EMPTY<br/>
+     *                    - requiredRelatedFields = new HashSet<>()<br/>
+     *                    - disallowedRelatedFields = new HashSet<>()<br/>
+     *                    - defaultValues = new HashSet<>()<br/>
+     *                    - validationFunctions = new LinkedList<>()<br/>
+     */
     public ConfigField(String key, String label, String description, FieldType type) {
         this.key = key;
         this.label = label;

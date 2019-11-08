@@ -29,6 +29,7 @@ public class PasswordConfigField extends ConfigField {
     public PasswordConfigField(String key, String label, String description, EncryptionValidator encryptionValidation) {
         super(key, label, description, FieldType.PASSWORD_INPUT);
         applyValidationFunctions(encryptionValidation);
+        applySensitive(true);
     }
 
 }

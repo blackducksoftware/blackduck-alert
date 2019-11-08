@@ -55,15 +55,16 @@ public class JiraServerGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField serverUrlField = TextInputConfigField.create(JiraServerDescriptor.KEY_SERVER_URL, LABEL_SERVER_URL, DESCRIPTION_SERVER_URL);
-        ConfigField jiraUserName = TextInputConfigField.createRequired(JiraServerDescriptor.KEY_SERVER_USERNAME, LABEL_SERVER_ADMIN_USER_NAME, DESCRIPTION_SERVER_ADMIN_USER_NAME);
-        ConfigField jiraPassword = PasswordConfigField.createRequired(JiraServerDescriptor.KEY_SERVER_PASSWORD, LABEL_SERVER_ADMIN_PASSWORD, DESCRIPTION_SERVER_ADMIN_PASSWORD, encryptionValidator);
+        ConfigField serverUrlField = new TextInputConfigField(JiraServerDescriptor.KEY_SERVER_URL, LABEL_SERVER_URL, DESCRIPTION_SERVER_URL).applyRequired(true);
+        ConfigField jiraUserName = new TextInputConfigField(JiraServerDescriptor.KEY_SERVER_USERNAME, LABEL_SERVER_ADMIN_USER_NAME, DESCRIPTION_SERVER_ADMIN_USER_NAME).applyRequired(true);
+        ConfigField jiraPassword = new PasswordConfigField(JiraServerDescriptor.KEY_SERVER_PASSWORD, LABEL_SERVER_ADMIN_PASSWORD, DESCRIPTION_SERVER_ADMIN_PASSWORD, encryptionValidator).applyRequired(true);
 
-        ConfigField jiraConfigurePlugin = EndpointButtonField.create(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, LABEL_SERVER_CONFIGURE_PLUGIN, DESCRIPTION_SERVER_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
-                                              .addRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_URL)
-                                              .addRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_USERNAME)
-                                              .addRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, LABEL_SERVER_CONFIGURE_PLUGIN, DESCRIPTION_SERVER_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
+                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_URL)
+                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_USERNAME)
+                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_PASSWORD);
 
         return List.of(serverUrlField, jiraUserName, jiraPassword, jiraConfigurePlugin);
     }
+
 }

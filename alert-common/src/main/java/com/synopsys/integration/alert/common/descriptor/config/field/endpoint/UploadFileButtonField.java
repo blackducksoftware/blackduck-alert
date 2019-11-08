@@ -32,7 +32,7 @@ public class UploadFileButtonField extends EndpointField {
     private final String capture;
     private final Boolean multiple;
 
-    private UploadFileButtonField(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple) {
+    public UploadFileButtonField(String key, String label, String description, String buttonLabel, List<String> accept, String capture, Boolean multiple) {
         super(key, label, description, FieldType.UPLOAD_FILE_BUTTON, buttonLabel, UploadEndpointManager.UPLOAD_ENDPOINT_URL);
         this.accept = accept;
         this.capture = capture;
