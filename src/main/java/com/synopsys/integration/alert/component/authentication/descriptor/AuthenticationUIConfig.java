@@ -203,8 +203,8 @@ public class AuthenticationUIConfig extends UIConfig {
 
     private Collection<String> validateMetaDataUrl(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Optional<FieldValueModel> samlEnabledField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED);
-        boolean samlEnabled = samlEnabledField.flatMap(field -> field.getValue())
-                                  .map(value -> Boolean.valueOf(value))
+        boolean samlEnabled = samlEnabledField.flatMap(FieldValueModel::getValue)
+                                  .map(Boolean::valueOf)
                                   .orElse(false);
         if (samlEnabled) {
             if (!fieldToValidate.hasValues() && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
@@ -216,8 +216,8 @@ public class AuthenticationUIConfig extends UIConfig {
 
     private Collection<String> validateMetaDataFile(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Optional<FieldValueModel> samlEnabledField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED);
-        boolean samlEnabled = samlEnabledField.flatMap(field -> field.getValue())
-                                  .map(value -> Boolean.valueOf(value))
+        boolean samlEnabled = samlEnabledField.flatMap(FieldValueModel::getValue)
+                                  .map(Boolean::valueOf)
                                   .orElse(false);
         if (samlEnabled) {
             Optional<FieldValueModel> metadataUrlField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);

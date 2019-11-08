@@ -41,7 +41,9 @@ public abstract class EndpointField extends ConfigField {
     }
 
     public EndpointField applyRequestedDataFieldKey(String key) {
-        requestedDataFieldKeys.add(key);
+        if (key != null) {
+            requestedDataFieldKeys.add(key);
+        }
         return this;
     }
 

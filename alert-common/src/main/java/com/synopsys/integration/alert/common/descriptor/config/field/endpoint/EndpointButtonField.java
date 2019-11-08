@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointButtonField extends EndpointField {
-    private Boolean successBox;
+    private boolean successBox;
     private List<ConfigField> subFields;
 
     public EndpointButtonField(String key, String label, String description, String buttonLabel) {
@@ -39,10 +39,8 @@ public class EndpointButtonField extends EndpointField {
         this.subFields = new LinkedList<>();
     }
 
-    public EndpointButtonField applySuccessBox(Boolean successBox) {
-        if (null != successBox) {
-            this.successBox = successBox;
-        }
+    public EndpointButtonField applySuccessBox(boolean successBox) {
+        this.successBox = successBox;
         return this;
     }
 
