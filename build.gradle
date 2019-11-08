@@ -121,9 +121,13 @@ bootJar {
 distributions {
     boot {
         contents {
-            from("$project.buildDir/libs") {
+            from("$project.buildDir/libs/liquibase") {
+                include 'h2*.jar'
                 include 'liquibase-core*.jar'
-                into 'lib'
+                include 'logback-*.jar'
+                include 'slf4j-api*.jar'
+                include 'snakeyaml*.jar'
+                into 'lib/liquibase'
             }
             from('src/main/resources/db/release-locks-changelog.xml') { into 'changelogs' }
             from('src/main/resources/email/images/') { into 'images/' }
@@ -133,8 +137,13 @@ distributions {
 }
 
 task copyToLib(type: Copy, dependsOn: [compileJava]) {
+    from findJar('h2')
     from findJar('liquibase')
-    into "${project.buildDir}/libs"
+    from findJar('logback-classic')
+    from findJar('logback-core')
+    from findJar('slf4j-api')
+    from findJar('snakeyaml')
+    into "${project.buildDir}/libs/liquibase"
 }
 
 def findJar(prefix) {

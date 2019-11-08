@@ -350,12 +350,13 @@ checkVolumeDirectories() {
 
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
-  $JAVA_HOME/bin/java -jar $alertHome/alert-tar/lib/liquibase-core-3.6.3.jar \
-  --url=$alertDatabaseDir \
-  --username=sa \
-  --password= \
-  --driver=org.h2.Driver \
-  --changeLogFile= $alertHome/alert-tar/changelogs/release-locks-changelog.xml \
+  $JAVA_HOME/bin/java -cp "/opt/blackduck/alert/alert-tar/lib/liquibase/*" \
+  liquibase.integration.commandline.Main \
+  --url="jdbc:h2:file:$alertDatabaseDir" \
+  --username="sa" \
+  --password="" \
+  --driver="org.h2.Driver" \
+  --changeLogFile="$alertHome/alert-tar/changelogs/release-locks-changelog.xml" \
   releaseLocks
   echo "End releasing liquibase changeloglock."
 }
