@@ -10,7 +10,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
+import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
@@ -184,6 +184,18 @@ class Index extends Component {
         return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
     }
 
+    enabledState(cell, row) {
+        const icon = (cell == 'true') ? 'check' : 'times';
+        const color = (cell == 'true') ? 'green' : 'red';
+
+        return (
+            <div className="btn btn-link jobIconButton">
+                <FontAwesomeIcon color={color} icon={icon} className="alert-icon" size="lg" />
+            </div>
+        );
+
+    }
+
     createCustomButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
@@ -238,9 +250,10 @@ class Index extends Component {
                     const channelModel = job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
                     const id = job.jobId;
-                    const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
+                    const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_NAME);
                     const distributionType = channelModel.descriptorName;
-                    const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
+                    const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_FREQUENCY);
+                    const enabled = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_ENABLED);
                     const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
                     const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
                     const entry = Object.assign({}, {
@@ -250,7 +263,8 @@ class Index extends Component {
                         providerName,
                         frequency,
                         lastRan,
-                        status
+                        status,
+                        enabled
                     });
                     tableData.push(entry);
                 }
@@ -323,6 +337,7 @@ class Index extends Component {
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
+                    <TableHeaderColumn dataField="enabled" width="96" dataSort columnTitle columnClassName="tableCell" dataFormat={this.enabledState}>Enabled</TableHeaderColumn>
                     <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ "text-align": "center" }}>Edit</TableHeaderColumn>
                     <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ "text-align": "center" }}>Copy</TableHeaderColumn>
                 </BootstrapTable>
