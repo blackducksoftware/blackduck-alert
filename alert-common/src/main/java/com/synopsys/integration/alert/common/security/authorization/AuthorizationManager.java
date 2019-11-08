@@ -136,10 +136,7 @@ public class AuthorizationManager {
     }
 
     private boolean isAlertRole(String roleName) {
-        return authorizationUtility.getRoles()
-                   .stream()
-                   .map(UserRoleModel::getName)
-                   .anyMatch(dbRoleName -> dbRoleName.equals(roleName));
+        return authorizationUtility.doesRoleNameExist(roleName);
     }
 
     private boolean currentUserAnyPermission(AccessOperation operation, Collection<PermissionKey> permissionKeys) {

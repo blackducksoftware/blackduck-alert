@@ -100,6 +100,11 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     @Override
+    public boolean doesRoleNameExist(String name) {
+        return roleRepository.existsRoleEntityByRoleName(name);
+    }
+
+    @Override
     public UserRoleModel createRole(String roleName) throws AlertDatabaseConstraintException {
         RoleEntity dbRole = createRole(roleName, true);
         return UserRoleModel.of(dbRole.getRoleName(), dbRole.getCustom());
