@@ -10,12 +10,13 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
 import JobCustomMessageModal from 'dynamic/JobCustomMessageModal';
 
+export const KEY_ENABLED = 'channel.common.enabled';
 export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 export const KEY_FREQUENCY = 'channel.common.frequency';
 
-export const COMMON_KEYS = [KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
+export const COMMON_KEYS = [KEY_ENABLED, KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
 
 
 class DistributionConfiguration extends Component {
