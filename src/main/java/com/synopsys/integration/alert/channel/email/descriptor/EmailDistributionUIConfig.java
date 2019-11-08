@@ -64,12 +64,13 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField additionalEmailAddressesOnly = CheckboxConfigField
                                                        .create(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY, this::validateAdditionalEmailAddressesOnly);
         ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, EMAIL_PROJECT_OWNER_ONLY_DESCRIPTION);
+        additionalEmailAddressesOnly.disallowField(projectOwnerOnly.getKey());
 
         return List.of(subjectLine, additionalEmailAddresses, additionalEmailAddressesOnly, projectOwnerOnly);
     }
 
     private Collection<String> validateAdditionalEmailAddressesOnly(FieldValueModel fieldToValidate, FieldModel fieldModel) {
-        final Boolean useOnlyAdditionalEmailAddresses = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
+        Boolean useOnlyAdditionalEmailAddresses = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
         if (useOnlyAdditionalEmailAddresses) {
             boolean hasAdditionalAddresses = fieldModel
                                                  .getFieldValueModel(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES)
