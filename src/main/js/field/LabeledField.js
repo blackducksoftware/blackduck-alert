@@ -16,10 +16,11 @@ class LabeledField extends Component {
     render() {
         const { showDescription } = this.state;
         const {
-            field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue
+            field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
         } = this.props;
 
         const labelClasses = `${labelClass} text-right`;
+        const requiredClasses = (required) ? `${labelClasses} required` : labelClasses;
 
         let descriptionField = null;
         if (description) {
@@ -52,7 +53,7 @@ class LabeledField extends Component {
 
         return (
             <div key={label} className="form-group">
-                <label className={labelClasses}>{label}</label>
+                <label className={requiredClasses}>{label}</label>
                 {descriptionField}
                 {field}
                 {errorName && errorValue &&
@@ -72,7 +73,8 @@ LabeledField.propTypes = {
     description: PropTypes.string,
     showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
-    errorValue: PropTypes.string
+    errorValue: PropTypes.string,
+    required: PropTypes.bool
 };
 
 LabeledField.defaultProps = {
@@ -81,7 +83,8 @@ LabeledField.defaultProps = {
     errorName: null,
     errorValue: null,
     description: null,
-    showDescriptionPlaceHolder: true
+    showDescriptionPlaceHolder: true,
+    required: false
 };
 
 export default LabeledField;
