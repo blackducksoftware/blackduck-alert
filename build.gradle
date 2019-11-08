@@ -121,7 +121,10 @@ bootJar {
 distributions {
     boot {
         contents {
-            from("$project.buildDir/libs/liquibase-core-3.6.3.jar") { into 'lib' }
+            from("$project.buildDir/libs") {
+                include 'liquibase-core*.jar'
+                into 'lib'
+            }
             from('src/main/resources/email/images/') { into 'images/' }
             from('src/main/resources/email/templates/') { into 'templates/email' }
         }
