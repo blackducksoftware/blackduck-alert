@@ -19,8 +19,8 @@ class LabeledField extends Component {
             field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
         } = this.props;
 
-        const labelClasses = `${labelClass} text-right`;
-        const requiredClasses = (required) ? `${labelClasses} required` : labelClasses;
+        const baseClasses = `${labelClass} text-right`;
+        const labelClasses = (required) ? `${baseClasses} required` : baseClasses;
 
         let descriptionField = null;
         if (description) {
@@ -53,7 +53,7 @@ class LabeledField extends Component {
 
         return (
             <div key={label} className="form-group">
-                <label className={requiredClasses}>{label}</label>
+                <label className={labelClasses}>{label}</label>
                 {descriptionField}
                 {field}
                 {errorName && errorValue &&
