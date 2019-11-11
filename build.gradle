@@ -130,18 +130,14 @@ distributions {
 }
 
 task copyToLib(type: Copy, dependsOn: [compileJava]) {
-    from findJar('h2')
-    from findJar('liquibase')
-    from findJar('logback-classic')
-    from findJar('logback-core')
-    from findJar('slf4j-api')
-    from findJar('snakeyaml')
+    from findJar('h2', 'liquibase', 'logback-classic', 'logback-core', 'slf4j-api', 'snakeyaml')
     into "${project.buildDir}/libs/liquibase"
 }
 
-def findJar(prefix) {
-    configurations.runtimeClasspath.filter {
-        it.name.startsWith(prefix)
+def findJar(Object... prefixes) {
+    configurations.runtimeClasspath.filter { file ->
+        prefixes.any { prefix -> file.name.startsWith(prefix)
+        }
     }
 }
 
