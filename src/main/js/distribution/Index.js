@@ -186,11 +186,12 @@ class Index extends Component {
 
     enabledState(cell) {
         const icon = (cell == 'true') ? 'check' : 'times';
-        const color = (cell == 'true') ? '#99CC33' : '#E03C31';
+        const color = (cell == 'true') ? 'synopsysGreen' : 'synopsysRed';
+        const className = `alert-icon ${color}`;
 
         return (
             <div className="btn btn-link jobIconButton">
-                <FontAwesomeIcon color={color} icon={icon} className="alert-icon" size="lg" />
+                <FontAwesomeIcon icon={icon} className={className} size="lg" />
             </div>
         );
 
