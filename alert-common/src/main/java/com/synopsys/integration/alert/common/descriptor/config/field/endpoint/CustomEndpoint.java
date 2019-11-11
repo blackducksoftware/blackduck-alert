@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class CustomEndpoint<R> {
-
     public CustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         customEndpointManager.registerFunction(fieldKey, this::createResponse);
     }
@@ -60,4 +59,5 @@ public abstract class CustomEndpoint<R> {
             return createErrorResponse(e);
         }
     }
+
 }

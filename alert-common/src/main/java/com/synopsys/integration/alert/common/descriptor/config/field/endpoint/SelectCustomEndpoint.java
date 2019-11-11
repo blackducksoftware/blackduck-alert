@@ -52,4 +52,5 @@ public abstract class SelectCustomEndpoint extends CustomEndpoint<List<LabelValu
         String providerOptionsConverted = gson.toJson(response);
         return responseFactory.createOkContentResponse(providerOptionsConverted);
     }
+
 }

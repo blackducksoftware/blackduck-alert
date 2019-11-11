@@ -45,4 +45,5 @@ public abstract class ButtonCustomEndpoint extends CustomEndpoint<String> {
     protected ResponseEntity<String> createErrorResponse(Exception e) {
         return responseFactory.createInternalServerErrorResponse("", "An unexpected error occurred when performing the action: " + e.getMessage());
     }
+
 }

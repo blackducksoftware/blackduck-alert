@@ -45,7 +45,7 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        final ConfigField webhook = TextInputConfigField.createRequired(MsTeamsDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, MSTEAMS_WEBHOOK_DESCRIPTION);
+        ConfigField webhook = new TextInputConfigField(MsTeamsDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, MSTEAMS_WEBHOOK_DESCRIPTION).applyRequired(true);
         return List.of(webhook);
     }
 

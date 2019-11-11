@@ -27,48 +27,27 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class LabelValueSelectOption extends AlertSerializableModel implements Comparable<LabelValueSelectOption> {
     private String label;
     private String value;
-    private String icon;
 
-    public LabelValueSelectOption(final String labelAndValue) {
+    public LabelValueSelectOption(String labelAndValue) {
         this(labelAndValue, labelAndValue);
     }
 
-    public LabelValueSelectOption(final String label, final String value) {
-        this(label, value, null);
-    }
-
-    public LabelValueSelectOption(final String label, final String value, final String icon) {
+    public LabelValueSelectOption(String label, String value) {
         this.label = label;
         this.value = value;
-        this.icon = icon;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(final String label) {
-        this.label = label;
-    }
-
     public String getValue() {
         return value;
     }
 
-    public void setValue(final String value) {
-        this.value = value;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(final String icon) {
-        this.icon = icon;
-    }
-
     @Override
-    public int compareTo(final LabelValueSelectOption o) {
+    public int compareTo(LabelValueSelectOption o) {
         return getLabel().compareTo(o.getLabel());
     }
+
 }

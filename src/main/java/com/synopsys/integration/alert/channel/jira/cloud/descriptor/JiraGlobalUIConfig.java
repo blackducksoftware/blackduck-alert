@@ -58,14 +58,15 @@ public class JiraGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField jiraUrl = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL);
-        final ConfigField jiraUserName = TextInputConfigField.createRequired(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_ADMIN_EMAIL_ADDRESS, DESCRIPTION_ADMIN_USER_NAME);
-        final ConfigField jiraAccessToken = PasswordConfigField.createRequired(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_ADMIN_API_TOKEN, DESCRIPTION_ADMIN_API_TOKEN, encryptionValidator);
-        final ConfigField jiraConfigurePlugin = EndpointButtonField.create(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
-                                                    .addRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_URL)
-                                                    .addRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
-                                                    .addRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        ConfigField jiraUrl = new TextInputConfigField(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL).applyRequired(true);
+        ConfigField jiraUserName = new TextInputConfigField(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_ADMIN_EMAIL_ADDRESS, DESCRIPTION_ADMIN_USER_NAME).applyRequired(true);
+        ConfigField jiraAccessToken = new PasswordConfigField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_ADMIN_API_TOKEN, DESCRIPTION_ADMIN_API_TOKEN, encryptionValidator).applyRequired(true);
+        ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
+                                              .applyRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_URL)
+                                              .applyRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
+                                              .applyRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
         return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraConfigurePlugin);
     }
+
 }

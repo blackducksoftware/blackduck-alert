@@ -56,16 +56,14 @@ public class SchedulingUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final Long countdownMax = ScheduledTask.EVERY_MINUTE_SECONDS;
-        final ConfigField blackDuckNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, LABEL_BLACKDUCK_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, countdownMax);
+        Long countdownMax = ScheduledTask.EVERY_MINUTE_SECONDS;
+        ConfigField blackDuckNextRun = new CountdownConfigField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, LABEL_BLACKDUCK_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, countdownMax);
         // TODO add this back to the list when we want to show Polaris again
         //final ConfigField polarisNextRun = CountdownConfigField.create(SchedulingDescriptor.KEY_POLARIS_NEXT_RUN, LABEL_POLARIS_NEXT_RUN, POLARIS_NEXT_RUN_DESCRIPTION, countdownMax);
-        final ConfigField digestHour = SelectConfigField.createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION,
-            createDigestHours());
-        final ConfigField digestHourNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, LABEL_DAILY_PROCESSOR_NEXT_RUN, DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION);
-        final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, LABEL_PURGE_DATA_FREQUENCY_IN_DAYS, SCHEDULING_PURGE_FREQUENCY_DESCRIPTION,
-            createPurgeFrequency());
-        final ConfigField purgeNextRun = ReadOnlyConfigField.create(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, LABEL_PURGE_DATA_NEXT_RUN, PURGE_DATA_NEXT_RUN_DESCRIPTION);
+        ConfigField digestHour = new SelectConfigField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION, createDigestHours()).applyRequired(true);
+        ConfigField digestHourNextRun = new ReadOnlyConfigField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, LABEL_DAILY_PROCESSOR_NEXT_RUN, DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION);
+        ConfigField purgeFrequency = new SelectConfigField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, LABEL_PURGE_DATA_FREQUENCY_IN_DAYS, SCHEDULING_PURGE_FREQUENCY_DESCRIPTION, createPurgeFrequency()).applyRequired(true);
+        ConfigField purgeNextRun = new ReadOnlyConfigField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, LABEL_PURGE_DATA_NEXT_RUN, PURGE_DATA_NEXT_RUN_DESCRIPTION);
         return List.of(blackDuckNextRun, digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
     }
 

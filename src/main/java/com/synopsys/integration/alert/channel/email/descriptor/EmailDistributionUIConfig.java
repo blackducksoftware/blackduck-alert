@@ -65,20 +65,23 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, DESCRIPTION_EMAIL_SUBJECT_LINE);
-        ConfigField additionalEmailAddresses = EndpointTableSelectField.createSearchable(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
-                                                   .addColumn(new TableSelectColumn("emailAddress", "Email Address", true, true));
-        ConfigField additionalEmailAddressesOnly = CheckboxConfigField
-                                                       .create(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY, this::validateAdditionalEmailAddressesOnly);
-        ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY);
+        ConfigField subjectLine = new TextInputConfigField(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, DESCRIPTION_EMAIL_SUBJECT_LINE);
+        ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
+                                                   .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
+                                                   .applySearchable(true);
+        ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
+                                                       .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly);
+        ConfigField projectOwnerOnly = new CheckboxConfigField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY);
 
         List<LabelValueSelectOption> attachmentFormats = Stream
                                                              .of(EmailAttachmentFormat.values())
                                                              .map(EmailAttachmentFormat::name)
                                                              .map(LabelValueSelectOption::new)
                                                              .collect(Collectors.toList());
-        ConfigField attachmentFormat = SelectConfigField.create(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, LABEL_ATTACHMENT_FORMAT, DESCRIPTION_ATTACHMENT_FORMAT, true, false, attachmentFormats)
-                                           .addDefaultValue(EmailAttachmentFormat.NONE.name());
+        ConfigField attachmentFormat = new SelectConfigField(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, LABEL_ATTACHMENT_FORMAT, DESCRIPTION_ATTACHMENT_FORMAT, attachmentFormats)
+                                           .applyClearable(false)
+                                           .applyRemoveSelected(true)
+                                           .applyDefaultValue(EmailAttachmentFormat.NONE.name());
 
         return List.of(subjectLine, additionalEmailAddresses, additionalEmailAddressesOnly, projectOwnerOnly, attachmentFormat);
     }

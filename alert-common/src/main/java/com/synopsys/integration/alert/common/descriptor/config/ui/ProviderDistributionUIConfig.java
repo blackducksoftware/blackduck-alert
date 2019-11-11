@@ -67,70 +67,78 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     private final ProviderContent providerContent;
 
-    public ProviderDistributionUIConfig(final String label, final String urlName, final ProviderContent providerContent) {
+    public ProviderDistributionUIConfig(String label, String urlName, ProviderContent providerContent) {
         super(label, label + " provider distribution setup.", urlName);
         this.providerContent = providerContent;
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES, false, true,
-            providerContent.getContentTypes()
-                .stream()
-                .map(this::convertToLabelValueOption)
-                .sorted()
-                .collect(Collectors.toList()));
-        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT,
-            providerContent.getSupportedContentFormats()
-                .stream()
-                .map(FormatType::name)
-                .map(this::convertToLabelValueOption)
-                .sorted()
-                .collect(Collectors.toList()));
+        List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
+                                                                   .stream()
+                                                                   .map(this::convertToLabelValueOption)
+                                                                   .sorted()
+                                                                   .collect(Collectors.toList());
+        ConfigField notificationTypesField = new SelectConfigField(KEY_NOTIFICATION_TYPES, LABEL_NOTIFICATION_TYPES, DESCRIPTION_NOTIFICATION_TYPES, notificationTypeOptions)
+                                                 .applyMultiSelect(true)
+                                                 .applyRequired(true);
 
-        final ConfigField filterByProject = HideCheckboxConfigField.create(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
-                                                .addRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT);
-        final ConfigField projectNamePattern = TextInputConfigField.create(KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, DESCRIPTION_PROJECT_NAME_PATTERN, this::validateProjectNamePattern);
-        final ConfigField configuredProject = EndpointTableSelectField.createSearchable(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS, this::validateConfiguredProject)
-                                                  .addColumn(new TableSelectColumn("name", "Project Name", true, true))
-                                                  .addColumn(new TableSelectColumn("description", "Project Description", false, false))
-                                                  .addRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        List<LabelValueSelectOption> supportedFormatOptions = providerContent.getSupportedContentFormats()
+                                                                  .stream()
+                                                                  .map(FormatType::name)
+                                                                  .map(this::convertToLabelValueOption)
+                                                                  .sorted()
+                                                                  .collect(Collectors.toList());
+        ConfigField formatField = new SelectConfigField(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT, supportedFormatOptions)
+                                      .applyRequired(true);
 
-        final List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
-        final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
+        ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
+                                          .applyRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT);
+        ConfigField projectNamePattern = new TextInputConfigField(KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, DESCRIPTION_PROJECT_NAME_PATTERN)
+                                             .applyValidationFunctions(this::validateProjectNamePattern);
+        ConfigField configuredProject = new EndpointTableSelectField(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS)
+                                            .applyPaged(true)
+                                            .applySearchable(true)
+                                            .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
+                                            .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
+                                            .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                            .applyValidationFunctions(this::validateConfiguredProject);
+
+        List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
+        List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }
 
     public abstract List<ConfigField> createProviderDistributionFields();
 
     private LabelValueSelectOption convertToLabelValueOption(ProviderNotificationType providerContentType) {
-        final String notificationType = providerContentType.getNotificationType();
-        final String notificationTypeLabel = WordUtils.capitalizeFully(notificationType.replace("_", " "));
+        String notificationType = providerContentType.getNotificationType();
+        String notificationTypeLabel = WordUtils.capitalizeFully(notificationType.replace("_", " "));
         return new LabelValueSelectOption(notificationTypeLabel, notificationType);
     }
 
     private LabelValueSelectOption convertToLabelValueOption(String formatName) {
-        final String formatNameLabel = WordUtils.capitalizeFully(formatName.replace("_", " "));
+        String formatNameLabel = WordUtils.capitalizeFully(formatName.replace("_", " "));
         return new LabelValueSelectOption(formatNameLabel, formatName);
     }
 
-    private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String projectNamePattern = fieldToValidate.getValue().orElse(null);
+    private Collection<String> validateProjectNamePattern(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        String projectNamePattern = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(projectNamePattern)) {
             try {
                 Pattern.compile(projectNamePattern);
-            } catch (final PatternSyntaxException e) {
+            } catch (PatternSyntaxException e) {
                 return List.of("Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
         return List.of();
     }
 
-    private Collection<String> validateConfiguredProject(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
-        final boolean filterByProject = fieldModel.getFieldValueModel(KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
-        final String projectNamePattern = fieldModel.getFieldValueModel(KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
-        final boolean missingProject = configuredProjects.isEmpty() && StringUtils.isBlank(projectNamePattern);
+    private Collection<String> validateConfiguredProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
+        boolean filterByProject = fieldModel.getFieldValueModel(KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
+        String projectNamePattern = fieldModel.getFieldValueModel(KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
+        boolean missingProject = configuredProjects.isEmpty() && StringUtils.isBlank(projectNamePattern);
         if (filterByProject && missingProject) {
             return List.of("You must select at least one project.");
         }

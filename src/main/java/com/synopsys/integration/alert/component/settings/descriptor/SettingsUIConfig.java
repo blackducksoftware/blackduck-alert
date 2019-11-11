@@ -90,47 +90,47 @@ public class SettingsUIConfig extends UIConfig {
 
     private List<ConfigField> createDefaultSettingsPanel() {
 
-        final ConfigField sysAdminEmail = TextInputConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
-                                              .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        final ConfigField defaultUserPassword = PasswordConfigField
-                                                    .createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionConfigValidator)
-                                                    .setHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        final ConfigField encryptionPassword = PasswordConfigField
-                                                   .createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, encryptionFieldValidator,
-                                                       this::minimumEncryptionFieldLength)
-                                                   .setHeader(SETTINGS_HEADER_ENCRYPTION);
-        final ConfigField encryptionSalt = PasswordConfigField
-                                               .createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, LABEL_ENCRYPTION_GLOBAL_SALT, SETTINGS_ENCRYPTION_SALT_DESCRIPTION, encryptionFieldValidator,
-                                                   this::minimumEncryptionFieldLength)
-                                               .setHeader(SETTINGS_HEADER_ENCRYPTION);
-        final ConfigField environmentVariableOverride = CheckboxConfigField
-                                                            .create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
+        ConfigField sysAdminEmail = new TextInputConfigField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
+                                        .applyRequired(true)
+                                        .applyHeader(SETTINGS_HEADER_ADMINISTRATOR);
+        ConfigField defaultUserPassword = new PasswordConfigField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionConfigValidator)
+                                              .applyRequired(true)
+                                              .applyHeader(SETTINGS_HEADER_ADMINISTRATOR);
+        ConfigField encryptionPassword = new PasswordConfigField(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, encryptionFieldValidator)
+                                             .applyRequired(true)
+                                             .applyValidationFunctions(this::minimumEncryptionFieldLength)
+                                             .applyHeader(SETTINGS_HEADER_ENCRYPTION);
+        ConfigField encryptionSalt = new PasswordConfigField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, LABEL_ENCRYPTION_GLOBAL_SALT, SETTINGS_ENCRYPTION_SALT_DESCRIPTION, encryptionFieldValidator)
+                                         .applyRequired(true)
+                                         .applyValidationFunctions(this::minimumEncryptionFieldLength)
+                                         .applyHeader(SETTINGS_HEADER_ENCRYPTION);
+        ConfigField environmentVariableOverride = new CheckboxConfigField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
         return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride);
     }
 
     private List<ConfigField> createProxyPanel() {
-        final ConfigField proxyHost = TextInputConfigField.create(ProxyManager.KEY_PROXY_HOST, LABEL_PROXY_HOST, SETTINGS_PROXY_HOST_DESCRIPTION);
-        final ConfigField proxyPort = NumberConfigField.create(ProxyManager.KEY_PROXY_PORT, LABEL_PROXY_PORT, SETTINGS_PROXY_PORT_DESCRIPTION);
-        final ConfigField proxyUsername = TextInputConfigField.create(ProxyManager.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
-        final ConfigField proxyPassword = PasswordConfigField.create(ProxyManager.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION, encryptionConfigValidator);
+        ConfigField proxyHost = new TextInputConfigField(ProxyManager.KEY_PROXY_HOST, LABEL_PROXY_HOST, SETTINGS_PROXY_HOST_DESCRIPTION);
+        ConfigField proxyPort = new NumberConfigField(ProxyManager.KEY_PROXY_PORT, LABEL_PROXY_PORT, SETTINGS_PROXY_PORT_DESCRIPTION);
+        ConfigField proxyUsername = new TextInputConfigField(ProxyManager.KEY_PROXY_USERNAME, LABEL_PROXY_USERNAME, SETTINGS_PROXY_USERNAME_DESCRIPTION);
+        ConfigField proxyPassword = new PasswordConfigField(ProxyManager.KEY_PROXY_PWD, LABEL_PROXY_PASSWORD, SETTINGS_PROXY_PASSWORD_DESCRIPTION, encryptionConfigValidator);
         proxyHost
-            .setPanel(SETTINGS_PANEL_PROXY)
-            .requireField(proxyPort.getKey());
+            .applyPanel(SETTINGS_PANEL_PROXY)
+            .applyRequiredRelatedField(proxyPort.getKey());
         proxyPort
-            .setPanel(SETTINGS_PANEL_PROXY)
-            .requireField(proxyHost.getKey());
+            .applyPanel(SETTINGS_PANEL_PROXY)
+            .applyRequiredRelatedField(proxyHost.getKey());
         proxyUsername
-            .setPanel(SETTINGS_PANEL_PROXY)
-            .requireField(proxyHost.getKey())
-            .requireField(proxyPassword.getKey());
+            .applyPanel(SETTINGS_PANEL_PROXY)
+            .applyRequiredRelatedField(proxyHost.getKey())
+            .applyRequiredRelatedField(proxyPassword.getKey());
         proxyPassword
-            .setPanel(SETTINGS_PANEL_PROXY)
-            .requireField(proxyHost.getKey())
-            .requireField(proxyUsername.getKey());
+            .applyPanel(SETTINGS_PANEL_PROXY)
+            .applyRequiredRelatedField(proxyHost.getKey())
+            .applyRequiredRelatedField(proxyUsername.getKey());
         return List.of(proxyHost, proxyPort, proxyUsername, proxyPassword);
     }
 
-    private Collection<String> minimumEncryptionFieldLength(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+    private Collection<String> minimumEncryptionFieldLength(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues() && fieldToValidate.getValue().orElse("").length() < 8) {
             return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT);
         }
@@ -139,7 +139,7 @@ public class SettingsUIConfig extends UIConfig {
 
     private class EncryptionFieldsSetValidator extends EncryptionValidator {
         @Override
-        public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+        public Collection<String> apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
             Function<FieldValueModel, Boolean> fieldSetCheck = field -> field.hasValues() || field.isSet();
             boolean pwdFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).map(fieldSetCheck).orElse(false);
             boolean saltFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(fieldSetCheck).orElse(false);
@@ -152,11 +152,12 @@ public class SettingsUIConfig extends UIConfig {
 
     private class EncryptionFieldValidator extends EncryptionValidator {
         @Override
-        public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+        public Collection<String> apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
             if (fieldValueModel.containsNoData() && !fieldValueModel.isSet()) {
                 return List.of(ConfigField.REQUIRED_FIELD_MISSING);
             }
             return List.of();
         }
     }
+
 }

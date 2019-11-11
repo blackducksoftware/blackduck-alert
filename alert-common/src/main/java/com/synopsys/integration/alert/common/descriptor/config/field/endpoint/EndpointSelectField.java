@@ -23,10 +23,10 @@
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
@@ -34,22 +34,24 @@ public class EndpointSelectField extends SelectConfigField {
     private String url;
     private Set<String> requestedDataFieldKeys;
 
-    public static EndpointSelectField create(String key, String label, String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
-        return new EndpointSelectField(key, label, description, false, searchable, multiSelect, removeSelected, clearable);
-    }
-
-    public static EndpointSelectField createRequired(String key, String label, String description, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
-        return new EndpointSelectField(key, label, description, true, searchable, multiSelect, removeSelected, clearable);
-    }
-
-    public static EndpointSelectField createRequired(String key, String label, String description) {
-        return new EndpointSelectField(key, label, description, true, true, true, true, true);
-    }
-
-    public EndpointSelectField(String key, String label, String description, boolean required, boolean searchable, boolean multiSelect, boolean removeSelected, boolean clearable) {
-        super(key, label, description, FieldType.ENDPOINT_SELECT, required, searchable, multiSelect, removeSelected, clearable);
+    public EndpointSelectField(String key, String label, String description) {
+        super(key, label, description, FieldType.ENDPOINT_SELECT, new LinkedList<>());
         this.url = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
         this.requestedDataFieldKeys = new HashSet<>();
+    }
+
+    public EndpointSelectField applyUrl(String url) {
+        if (null != url) {
+            this.url = url;
+        }
+        return this;
+    }
+
+    public EndpointSelectField applyRequestedDataFieldKey(String key) {
+        if (null != key) {
+            requestedDataFieldKeys.add(key);
+        }
+        return this;
     }
 
     public String getUrl() {
@@ -60,8 +62,4 @@ public class EndpointSelectField extends SelectConfigField {
         return requestedDataFieldKeys;
     }
 
-    public ConfigField addRequestedDataKey(String key) {
-        requestedDataFieldKeys.add(key);
-        return this;
-    }
 }
