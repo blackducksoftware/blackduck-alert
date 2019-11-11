@@ -48,14 +48,14 @@ public class CustomEndpointController {
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public CustomEndpointController(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final AuthorizationManager authorizationManager) {
+    public CustomEndpointController(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, AuthorizationManager authorizationManager) {
         this.customEndpointManager = customEndpointManager;
         this.responseFactory = responseFactory;
         this.authorizationManager = authorizationManager;
     }
 
     @PostMapping("/{key}")
-    public ResponseEntity<String> postConfig(@PathVariable final String key, @RequestBody final FieldModel restModel) {
+    public ResponseEntity<String> postConfig(@PathVariable String key, @RequestBody FieldModel restModel) {
         if (!authorizationManager.hasExecutePermission(restModel.getContext(), restModel.getDescriptorName())) {
             return responseFactory.createForbiddenResponse();
         }
@@ -64,7 +64,7 @@ public class CustomEndpointController {
             return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
         }
 
-        final Map<String, FieldValueModel> keyToValues = restModel.getKeyToValues();
+        Map<String, FieldValueModel> keyToValues = restModel.getKeyToValues();
         return customEndpointManager.performFunction(key, keyToValues);
     }
 
