@@ -184,9 +184,9 @@ class Index extends Component {
         return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
     }
 
-    enabledState(cell, row) {
+    enabledState(cell) {
         const icon = (cell == 'true') ? 'check' : 'times';
-        const color = (cell == 'true') ? 'green' : 'red';
+        const color = (cell == 'true') ? '#99CC33' : '#E03C31';
 
         return (
             <div className="btn btn-link jobIconButton">
