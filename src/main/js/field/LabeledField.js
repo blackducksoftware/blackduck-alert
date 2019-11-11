@@ -16,10 +16,11 @@ class LabeledField extends Component {
     render() {
         const { showDescription } = this.state;
         const {
-            field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue
+            field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
         } = this.props;
 
-        const labelClasses = `${labelClass} text-right`;
+        const baseClasses = `${labelClass} text-right`;
+        const labelClasses = (required) ? `${baseClasses} required` : baseClasses;
 
         let descriptionField = null;
         if (description) {
@@ -72,7 +73,8 @@ LabeledField.propTypes = {
     description: PropTypes.string,
     showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
-    errorValue: PropTypes.string
+    errorValue: PropTypes.string,
+    required: PropTypes.bool
 };
 
 LabeledField.defaultProps = {
@@ -81,7 +83,8 @@ LabeledField.defaultProps = {
     errorName: null,
     errorValue: null,
     description: null,
-    showDescriptionPlaceHolder: true
+    showDescriptionPlaceHolder: true,
+    required: false
 };
 
 export default LabeledField;

@@ -155,3 +155,9 @@ small {
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
+.required::after {
+  padding-left: 2px;
+  content: "*";
+  color: red;
+}
