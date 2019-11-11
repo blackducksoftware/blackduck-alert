@@ -20,35 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker;
+package com.synopsys.integration.alert.issuetracker.message;
 
 import java.util.Collection;
 
-public class IssueContentModel {
-    private final String title;
-    private final String description;
-    private final Collection<String> additionalComments;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 
-    private IssueContentModel(String title, String description, Collection<String> additionalComments) {
-        this.title = title;
-        this.description = description;
-        this.additionalComments = additionalComments;
+public class IssueTrackerMessageResult extends MessageResult {
+    private Collection<String> updatedIssueKeys;
+
+    public IssueTrackerMessageResult(String statusMessage, Collection<String> updatedIssueKeys) {
+        super(statusMessage);
+        this.updatedIssueKeys = updatedIssueKeys;
     }
 
-    public static final IssueContentModel of(String title, String description, Collection<String> additionalComments) {
-        return new IssueContentModel(title, description, additionalComments);
+    public Collection<String> getUpdatedIssueKeys() {
+        return updatedIssueKeys;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Collection<String> getAdditionalComments() {
-        return additionalComments;
+    public void setUpdatedIssueKeys(Collection<String> updatedIssueKeys) {
+        this.updatedIssueKeys = updatedIssueKeys;
     }
 
 }

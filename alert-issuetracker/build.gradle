@@ -1,0 +1,5 @@
+project.ext.moduleName = 'com.synopsys.integration.alert.issuetracker'
+
+dependencies {
+    implementation project(':alert-common')
+}

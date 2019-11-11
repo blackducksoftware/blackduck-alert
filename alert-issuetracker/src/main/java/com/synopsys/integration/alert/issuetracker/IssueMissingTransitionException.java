@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker;
+package com.synopsys.integration.alert.issuetracker;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
 
@@ -30,7 +30,7 @@ public class IssueMissingTransitionException extends AlertException {
     private final String issueKey;
     private final String transition;
 
-    public IssueMissingTransitionException(final String issueKey, final String transition) {
+    public IssueMissingTransitionException(String issueKey, String transition) {
         this.issueKey = issueKey;
         this.transition = transition;
     }

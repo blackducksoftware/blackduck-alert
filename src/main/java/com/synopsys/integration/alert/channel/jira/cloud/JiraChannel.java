@@ -33,14 +33,14 @@ import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueProp
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.issuetracker.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.IssueTrackerChannel;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;

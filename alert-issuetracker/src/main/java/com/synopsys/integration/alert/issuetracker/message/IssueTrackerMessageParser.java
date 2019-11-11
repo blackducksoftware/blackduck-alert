@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker.message;
+package com.synopsys.integration.alert.issuetracker.message;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,12 +30,12 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 
 public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
     public IssueContentModel createIssueContentModel(String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {

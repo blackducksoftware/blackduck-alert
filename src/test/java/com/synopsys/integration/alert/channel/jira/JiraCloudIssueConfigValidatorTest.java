@@ -14,10 +14,10 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudIssueConfigValidator;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.issuetracker.IssueConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker;
+package com.synopsys.integration.alert.issuetracker;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,14 +34,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.SetMap;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageParser;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 
 /**
