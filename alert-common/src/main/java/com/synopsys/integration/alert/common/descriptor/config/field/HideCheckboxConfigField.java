@@ -32,22 +32,22 @@ import com.synopsys.integration.alert.common.enumeration.FieldType;
 public class HideCheckboxConfigField extends CheckboxConfigField {
     private List<String> relatedHiddenFields;
 
-    public static HideCheckboxConfigField create(final String key, final String label, final String description) {
-        return new HideCheckboxConfigField(key, label, description, false);
-    }
-
-    public HideCheckboxConfigField(final String key, final String label, final String description, final boolean required) {
-        super(key, label, description, FieldType.HIDE_CHECKBOX_INPUT, required);
+    public HideCheckboxConfigField(String key, String label, String description) {
+        super(key, label, description, FieldType.HIDE_CHECKBOX_INPUT);
         relatedHiddenFields = new LinkedList<>();
     }
 
-    public HideCheckboxConfigField addRelatedHiddenFieldKey(String key) {
-        relatedHiddenFields.add(key);
+    public HideCheckboxConfigField applyRelatedHiddenFieldKey(String key) {
+        if (null != key) {
+            relatedHiddenFields.add(key);
+        }
         return this;
     }
 
-    public HideCheckboxConfigField addRelatedHiddenFieldKeys(String... key) {
-        relatedHiddenFields.addAll(Stream.of(key).collect(Collectors.toList()));
+    public HideCheckboxConfigField applyRelatedHiddenFieldKeys(String... keys) {
+        if (null != keys) {
+            relatedHiddenFields.addAll(Stream.of(keys).collect(Collectors.toList()));
+        }
         return this;
     }
 
@@ -55,7 +55,4 @@ public class HideCheckboxConfigField extends CheckboxConfigField {
         return relatedHiddenFields;
     }
 
-    public void setRelatedHiddenFields(final List<String> relatedHiddenFields) {
-        this.relatedHiddenFields = relatedHiddenFields;
-    }
 }

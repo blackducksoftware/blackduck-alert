@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
@@ -30,42 +30,29 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointButtonField extends EndpointField {
-    private final Boolean successBox;
-    private final List<ConfigField> subFields;
+    private boolean successBox;
+    private List<ConfigField> subFields;
 
-    public static EndpointButtonField create(final String key, final String label, final String description, final String buttonLabel) {
-        return new EndpointButtonField(key, label, description, false, buttonLabel);
+    public EndpointButtonField(String key, String label, String description, String buttonLabel) {
+        super(key, label, description, FieldType.ENDPOINT_BUTTON, buttonLabel, CustomEndpointManager.CUSTOM_ENDPOINT_URL);
+        this.successBox = Boolean.FALSE;
+        this.subFields = new LinkedList<>();
     }
 
-    public static EndpointButtonField createRequired(final String key, final String label, final String description, final String buttonLabel) {
-        return new EndpointButtonField(key, label, description, true, buttonLabel);
-    }
-
-    public static EndpointButtonField createWithSuccessBox(final String key, final String label, final String description, final String buttonLabel) {
-        return new EndpointButtonField(key, label, description, false, buttonLabel, true);
-    }
-
-    public static EndpointButtonField createRequiredWithSuccessBox(final String key, final String label, final String description, final String buttonLabel) {
-        return new EndpointButtonField(key, label, description, true, buttonLabel, true);
-    }
-
-    private EndpointButtonField(final String key, final String label, final String description, final boolean required, final String buttonLabel, final Boolean successBox,
-        final List<ConfigField> subFields) {
-        super(key, label, description, FieldType.ENDPOINT_BUTTON, required, false, buttonLabel, CustomEndpointManager.CUSTOM_ENDPOINT_URL);
+    public EndpointButtonField applySuccessBox(boolean successBox) {
         this.successBox = successBox;
-        this.subFields = subFields;
+        return this;
     }
 
-    public EndpointButtonField(final String key, final String label, final String description, final boolean required, final String buttonLabel, final Boolean successBox) {
-        this(key, label, description, required, buttonLabel, successBox, new ArrayList<>());
+    public EndpointButtonField applySubFields(List<ConfigField> subFields) {
+        if (null != subFields) {
+            this.subFields = subFields;
+        }
+        return this;
     }
 
-    public EndpointButtonField(final String key, final String label, final String description, final boolean required, final String buttonLabel) {
-        this(key, label, description, required, buttonLabel, false, new ArrayList<>());
-    }
-
-    public EndpointButtonField addSubField(final ConfigField field) {
-        if (!(field instanceof EndpointButtonField)) {
+    public EndpointButtonField applySubField(ConfigField field) {
+        if (null != field) {
             subFields.add(field);
         }
         return this;

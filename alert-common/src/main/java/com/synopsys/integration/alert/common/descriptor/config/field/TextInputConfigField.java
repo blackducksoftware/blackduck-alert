@@ -22,50 +22,11 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class TextInputConfigField extends ConfigField {
-    public TextInputConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel) {
-        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive, panel);
-    }
-
-    public TextInputConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel, ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive, panel);
-        this.setValidationFunctions(validationFunctions);
-    }
-
-    public TextInputConfigField(String key, String label, String description, boolean required, boolean sensitive) {
-        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive);
-    }
-
-    public TextInputConfigField(String key, String label, String description, boolean required, boolean sensitive, ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.TEXT_INPUT, required, sensitive);
-        this.setValidationFunctions(validationFunctions);
-    }
-
-    public static TextInputConfigField create(String key, String label, String description) {
-        return new TextInputConfigField(key, label, description, false, false);
-    }
-
-    public static TextInputConfigField create(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new TextInputConfigField(key, label, description, false, false, validationFunctions);
-    }
-
-    public static TextInputConfigField createPanel(String key, String label, String description, String panel) {
-        return new TextInputConfigField(key, label, description, false, false, panel);
-    }
-
-    public static TextInputConfigField createPanel(String key, String label, String description, String panel, ConfigValidationFunction... validationFunctions) {
-        return new TextInputConfigField(key, label, description, false, false, panel, validationFunctions);
-    }
-
-    public static TextInputConfigField createRequired(String key, String label, String description) {
-        return new TextInputConfigField(key, label, description, true, false);
-    }
-
-    public static TextInputConfigField createRequired(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new TextInputConfigField(key, label, description, true, false, validationFunctions);
+    public TextInputConfigField(String key, String label, String description) {
+        super(key, label, description, FieldType.TEXT_INPUT);
     }
 
 }

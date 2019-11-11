@@ -126,9 +126,8 @@ public class DescriptorController extends MetadataController {
         descriptorMetadata.setReadOnly(isReadOnly);
 
         if (isReadOnly) {
-            descriptorMetadata.getFields().forEach(field -> field.setReadOnly(true));
+            descriptorMetadata.getFields().forEach(field -> field.applyReadOnly(isReadOnly));
         }
-
         return Optional.of(descriptorMetadata);
     }
 

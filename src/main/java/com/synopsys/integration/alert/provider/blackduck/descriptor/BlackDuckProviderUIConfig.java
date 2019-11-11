@@ -58,10 +58,14 @@ public class BlackDuckProviderUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField blackDuckUrl = TextInputConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION);
-        ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, encryptionValidator, this::validateAPIToken);
+        ConfigField blackDuckUrl = new TextInputConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION).applyRequired(true);
+        ConfigField blackDuckApiKey = new PasswordConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, encryptionValidator)
+                                          .applyRequired(true)
+                                          .applyValidationFunctions(this::validateAPIToken);
         String defaultTimeout = String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT);
-        ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION).addDefaultValue(defaultTimeout);
+        ConfigField blackDuckTimeout = new NumberConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION)
+                                           .applyRequired(true)
+                                           .applyDefaultValue(defaultTimeout);
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
     }
@@ -73,4 +77,5 @@ public class BlackDuckProviderUIConfig extends UIConfig {
         }
         return List.of();
     }
+
 }

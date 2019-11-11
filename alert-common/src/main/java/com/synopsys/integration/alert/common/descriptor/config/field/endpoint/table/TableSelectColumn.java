@@ -30,7 +30,7 @@ public class TableSelectColumn extends AlertSerializableModelComponent {
     private boolean isKey;
     private boolean sortBy;
 
-    public TableSelectColumn(final String header, String headerLabel, final boolean isKey, final boolean sortBy) {
+    public TableSelectColumn(String header, String headerLabel, boolean isKey, boolean sortBy) {
         this.header = header;
         this.headerLabel = headerLabel;
         this.isKey = isKey;
@@ -52,4 +52,5 @@ public class TableSelectColumn extends AlertSerializableModelComponent {
     public boolean isSortBy() {
         return sortBy;
     }
+
 }

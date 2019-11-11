@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -33,56 +32,17 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class NumberConfigField extends ConfigField {
     public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
 
-    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel) {
-        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
+    public NumberConfigField(String key, String label, String description) {
+        super(key, label, description, FieldType.NUMBER_INPUT);
         createValidators(List.of(this::validateIsNumber), null);
-    }
-
-    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, String panel, ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive, panel);
-        createValidators(List.of(this::validateIsNumber), validationFunctions);
-    }
-
-    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive) {
-        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
-        createValidators(List.of(this::validateIsNumber), null);
-    }
-
-    public NumberConfigField(String key, String label, String description, boolean required, boolean sensitive, ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.NUMBER_INPUT, required, sensitive);
-        createValidators(List.of(this::validateIsNumber), validationFunctions);
-    }
-
-    public static NumberConfigField create(String key, String label, String description) {
-        return new NumberConfigField(key, label, description, false, false);
-    }
-
-    public static NumberConfigField create(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new NumberConfigField(key, label, description, false, false, validationFunctions);
-    }
-
-    public static NumberConfigField createRequired(String key, String label, String description) {
-        return new NumberConfigField(key, label, description, true, false);
-    }
-
-    public static NumberConfigField createRequired(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new NumberConfigField(key, label, description, true, false, validationFunctions);
-    }
-
-    public static NumberConfigField createPanel(String key, String label, String description, String panel) {
-        return new NumberConfigField(key, label, description, false, false, panel);
-    }
-
-    public static NumberConfigField createPanel(String key, String label, String description, String panel, ConfigValidationFunction... validationFunctions) {
-        return new NumberConfigField(key, label, description, false, false, panel, validationFunctions);
     }
 
     private Collection<String> validateIsNumber(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues()) {
-            final String value = fieldToValidate.getValue().orElse("");
+            String value = fieldToValidate.getValue().orElse("");
             try {
                 Integer.valueOf(value);
-            } catch (final NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 return List.of(NOT_AN_INTEGER_VALUE);
             }
         }

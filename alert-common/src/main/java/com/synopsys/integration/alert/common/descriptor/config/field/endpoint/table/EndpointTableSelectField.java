@@ -24,12 +24,9 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class EndpointTableSelectField extends EndpointField {
@@ -37,32 +34,35 @@ public class EndpointTableSelectField extends EndpointField {
     private boolean searchable;
     private List<TableSelectColumn> columns;
 
-    public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, "Select", CustomEndpointManager.CUSTOM_ENDPOINT_URL);
-        this.paged = paged;
-        this.searchable = searchable;
+    public EndpointTableSelectField(String key, String label, String description) {
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, "Select", CustomEndpointManager.CUSTOM_ENDPOINT_URL);
+        this.paged = false;
+        this.searchable = true;
         columns = new LinkedList<>();
     }
 
-    public EndpointTableSelectField(final String key, final String label, final String description, final boolean required, final boolean sensitive, final boolean paged, final boolean searchable,
-        ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, required, sensitive, "Select", CustomEndpointManager.CUSTOM_ENDPOINT_URL);
+    public EndpointTableSelectField applyPaged(boolean paged) {
         this.paged = paged;
+        return this;
+    }
+
+    public EndpointTableSelectField applySearchable(boolean searchable) {
         this.searchable = searchable;
-        columns = new LinkedList<>();
-        this.setValidationFunctions(validationFunctions);
+        return this;
     }
 
-    public static EndpointTableSelectField create(String key, String label, String description, boolean searchable) {
-        return new EndpointTableSelectField(key, label, description, false, false, true, searchable);
+    public EndpointTableSelectField applyColumns(List<TableSelectColumn> columns) {
+        if (columns != null) {
+            this.columns.addAll(columns);
+        }
+        return this;
     }
 
-    public static EndpointTableSelectField createSearchable(String key, String label, String description) {
-        return new EndpointTableSelectField(key, label, description, false, false, true, true);
-    }
-
-    public static EndpointTableSelectField createSearchable(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new EndpointTableSelectField(key, label, description, false, false, true, true, validationFunctions);
+    public EndpointTableSelectField applyColumn(TableSelectColumn tableSelectColumn) {
+        if (null != tableSelectColumn) {
+            columns.add(tableSelectColumn);
+        }
+        return this;
     }
 
     public boolean isPaged() {
@@ -73,17 +73,8 @@ public class EndpointTableSelectField extends EndpointField {
         return searchable;
     }
 
-    public EndpointTableSelectField addColumn(TableSelectColumn tableSelectColumn) {
-        columns.add(tableSelectColumn);
-        return this;
-    }
-
-    public EndpointTableSelectField addColumns(TableSelectColumn... tableSelectColumns) {
-        columns.addAll(Stream.of(tableSelectColumns).collect(Collectors.toList()));
-        return this;
-    }
-
     public List<TableSelectColumn> getColumns() {
         return columns;
     }
+
 }

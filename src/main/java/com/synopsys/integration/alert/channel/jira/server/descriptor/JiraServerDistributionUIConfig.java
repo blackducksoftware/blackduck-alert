@@ -58,15 +58,16 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField addComments = CheckboxConfigField.create(JiraServerDescriptor.KEY_ADD_COMMENTS, LABEL_ADD_COMMENTS, DESCRIPTION_ADD_COMMENTS);
-        ConfigField issueCreator = TextInputConfigField.create(JiraServerDescriptor.KEY_ISSUE_CREATOR, LABEL_ISSUE_CREATOR, DESCRIPTION_ISSUE_CREATOR);
-        ConfigField jiraProjectName = TextInputConfigField.createRequired(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT);
+        ConfigField addComments = new CheckboxConfigField(JiraServerDescriptor.KEY_ADD_COMMENTS, LABEL_ADD_COMMENTS, DESCRIPTION_ADD_COMMENTS);
+        ConfigField issueCreator = new TextInputConfigField(JiraServerDescriptor.KEY_ISSUE_CREATOR, LABEL_ISSUE_CREATOR, DESCRIPTION_ISSUE_CREATOR);
+        ConfigField jiraProjectName = new TextInputConfigField(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT).applyRequired(true);
 
-        ConfigField issueType = TextInputConfigField.createRequired(JiraServerDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).addDefaultValue(JiraConstants.DEFAULT_ISSUE_TYPE);
-        ConfigField resolveWorkflow = TextInputConfigField.create(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
-        ConfigField openWorkflow = TextInputConfigField.create(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
-                                       .requireField(resolveWorkflow.getKey());
+        ConfigField issueType = new TextInputConfigField(JiraServerDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE).applyRequired(true).applyDefaultValue(JiraConstants.DEFAULT_ISSUE_TYPE);
+        ConfigField resolveWorkflow = new TextInputConfigField(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigField openWorkflow = new TextInputConfigField(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
+                                       .applyRequiredRelatedField(resolveWorkflow.getKey());
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);
     }
+
 }

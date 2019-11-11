@@ -33,11 +33,18 @@ public abstract class EndpointField extends ConfigField {
     private String url;
     private Set<String> requestedDataFieldKeys;
 
-    public EndpointField(final String key, final String label, final String description, final FieldType type, final boolean required, final boolean sensitive, final String buttonLabel, final String url) {
-        super(key, label, description, type, required, sensitive);
+    public EndpointField(String key, String label, String description, FieldType type, String buttonLabel, String url) {
+        super(key, label, description, type);
         this.buttonLabel = buttonLabel;
         this.url = url;
         this.requestedDataFieldKeys = new HashSet<>();
+    }
+
+    public EndpointField applyRequestedDataFieldKey(String key) {
+        if (key != null) {
+            requestedDataFieldKeys.add(key);
+        }
+        return this;
     }
 
     public String getButtonLabel() {
@@ -50,11 +57,6 @@ public abstract class EndpointField extends ConfigField {
 
     public Set<String> getRequestedDataFieldKeys() {
         return requestedDataFieldKeys;
-    }
-
-    public EndpointField addRequestedDataFieldKey(String key) {
-        requestedDataFieldKeys.add(key);
-        return this;
     }
 
 }

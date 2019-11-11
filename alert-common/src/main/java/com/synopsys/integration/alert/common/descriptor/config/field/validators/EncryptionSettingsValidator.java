@@ -43,10 +43,11 @@ public final class EncryptionSettingsValidator extends EncryptionValidator {
     }
 
     @Override
-    public Collection<String> apply(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+    public Collection<String> apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         if (encryptionUtility.isInitialized()) {
             return List.of();
         }
         return List.of(ENCRYPTION_MISSING);
     }
+
 }

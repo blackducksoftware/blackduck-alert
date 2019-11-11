@@ -22,57 +22,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class ReadOnlyConfigField extends ConfigField {
-    public ReadOnlyConfigField(String key, String label, String description, boolean required, boolean sensitive, String subGroup) {
-        super(key, label, description, FieldType.READ_ONLY, required, sensitive, subGroup);
+    public ReadOnlyConfigField(String key, String label, String description) {
+        super(key, label, description, FieldType.READ_ONLY);
+        applyReadOnly(true);
     }
 
-    public ReadOnlyConfigField(String key, String label, String description, boolean required, boolean sensitive, String subGroup, ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.READ_ONLY, required, sensitive, subGroup);
-        this.setValidationFunctions(validationFunctions);
-    }
-
-    public ReadOnlyConfigField(String key, String label, String description, boolean required, boolean sensitive) {
-        super(key, label, description, FieldType.READ_ONLY, required, sensitive);
-    }
-
-    public ReadOnlyConfigField(String key, String label, String description, boolean required, boolean sensitive, ConfigValidationFunction... validationFunctions) {
-        super(key, label, description, FieldType.READ_ONLY, required, sensitive);
-        this.setValidationFunctions(validationFunctions);
-    }
-
-    public static ReadOnlyConfigField create(String key, String label, String description) {
-        return new ReadOnlyConfigField(key, label, description, false, false);
-    }
-
-    public static ReadOnlyConfigField create(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new ReadOnlyConfigField(key, label, description, false, false, validationFunctions);
-    }
-
-    public static ReadOnlyConfigField createRequired(String key, String label, String description) {
-        return new ReadOnlyConfigField(key, label, description, true, false);
-    }
-
-    public static ReadOnlyConfigField createRequired(String key, String label, String description, ConfigValidationFunction... validationFunctions) {
-        return new ReadOnlyConfigField(key, label, description, true, false, validationFunctions);
-    }
-
-    public static ReadOnlyConfigField createGrouped(String key, String label, String description, String group) {
-        return new ReadOnlyConfigField(key, label, description, false, false, group);
-    }
-
-    public static ReadOnlyConfigField createGrouped(String key, String label, String description, String group, ConfigValidationFunction... validationFunctions) {
-        return new ReadOnlyConfigField(key, label, description, false, false, group, validationFunctions);
-    }
-
-    public static ReadOnlyConfigField createSensitiveGrouped(String key, String label, String description, String group) {
-        return new ReadOnlyConfigField(key, label, description, false, true, group);
-    }
-
-    public static ReadOnlyConfigField createSensitiveGrouped(String key, String label, String description, String group, ConfigValidationFunction... validationFunctions) {
-        return new ReadOnlyConfigField(key, label, description, false, true, group, validationFunctions);
-    }
 }
