@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.web.controller;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.controller.metadata.DescriptorController;
 import com.synopsys.integration.alert.web.controller.metadata.MetadataController;
@@ -60,7 +59,7 @@ public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
         long timeInMillis = TimeUnit.NANOSECONDS.toMillis(totalRunTime);
 
         String responseContent = mvcResult.getResponse().getContentAsString();
-        Set<DescriptorMetadata> descriptorMetadata = gson.fromJson(responseContent, new TypeToken<Set<DescriptorMetadata>>() {}.getType());
+        JsonArray descriptorMetadata = gson.fromJson(responseContent, new TypeToken<JsonArray>() {}.getType());
 
         assertTrue(descriptorMetadata.size() >= descriptors.size());
         long expectedMaxTime = 500;

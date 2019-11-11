@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +32,7 @@ import org.springframework.security.saml.SAMLAuthenticationProvider;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
+    private static final Logger logger = LoggerFactory.getLogger(SAMLAuthProvider.class);
     private AuthenticationEventManager authenticationEventManager;
 
     public SAMLAuthProvider(AuthenticationEventManager authenticationEventManager) {
@@ -39,6 +42,7 @@ public class SAMLAuthProvider extends SAMLAuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication currentAuth = super.authenticate(authentication);
+        logger.debug("User authenticated: {}", currentAuth.isAuthenticated());
         if (currentAuth.isAuthenticated()) {
             authenticationEventManager.sendAuthenticationEvent(authentication);
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
