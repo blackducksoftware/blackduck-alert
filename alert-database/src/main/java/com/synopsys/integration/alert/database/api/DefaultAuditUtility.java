@@ -264,8 +264,7 @@ public class DefaultAuditUtility implements AuditUtility {
         return new AuditEntryModel(id, notificationConfig, jobAuditModels, overallStatusDisplayName, lastSent);
     }
 
-    @Override
-    public AuditEntryStatus getWorstStatus(AuditEntryStatus overallStatus, AuditEntryStatus currentStatus) {
+    private AuditEntryStatus getWorstStatus(AuditEntryStatus overallStatus, AuditEntryStatus currentStatus) {
         AuditEntryStatus newOverallStatus = overallStatus;
         if (null == overallStatus || currentStatus == AuditEntryStatus.FAILURE || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
             newOverallStatus = currentStatus;
@@ -275,10 +274,10 @@ public class DefaultAuditUtility implements AuditUtility {
 
     private List<AuditEntryModel> convertToAuditEntryModelFromNotificationsSorted(List<AlertNotificationWrapper> notificationContentEntries, Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter,
         String sortField, String sortOrder) {
-        final List<AuditEntryModel> auditEntryModels = notificationContentEntries
-                                                           .stream()
-                                                           .map(notificationToAuditEntryConverter)
-                                                           .collect(Collectors.toList());
+        List<AuditEntryModel> auditEntryModels = notificationContentEntries
+                                                     .stream()
+                                                     .map(notificationToAuditEntryConverter)
+                                                     .collect(Collectors.toList());
         if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent") || sortField.equalsIgnoreCase("overallStatus")) {
             // We do this sorting here because lastSent is not a field in the NotificationContent entity and overallStatus is not stored in the database
             boolean ascendingOrder = false;
