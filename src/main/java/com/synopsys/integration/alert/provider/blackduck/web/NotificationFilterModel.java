@@ -24,11 +24,9 @@ package com.synopsys.integration.alert.provider.blackduck.web;
 
 public class NotificationFilterModel {
     private String name;
-    private String notificationType;
 
-    public NotificationFilterModel(String name, String notificationType) {
+    public NotificationFilterModel(String name) {
         this.name = name;
-        this.notificationType = notificationType;
     }
 
     public String getName() {
@@ -39,11 +37,4 @@ public class NotificationFilterModel {
         this.name = name;
     }
 
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(String notificationType) {
-        this.notificationType = notificationType;
-    }
 }

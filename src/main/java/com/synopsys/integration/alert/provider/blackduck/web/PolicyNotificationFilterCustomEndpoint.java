@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.PolicyRuleService;
@@ -54,14 +52,14 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class NotificationFilterCustomEndpoint extends TableSelectCustomEndpoint {
-    private final Logger logger = LoggerFactory.getLogger(NotificationFilterCustomEndpoint.class);
+public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEndpoint {
+    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomEndpoint.class);
     private BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    protected NotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory,
+    protected PolicyNotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory,
         Gson gson, BlackDuckProperties blackDuckProperties) throws AlertException {
-        super(BlackDuckDescriptor.KEY_BLACKDUCK_NOTIFICATION_TYPE_FILTER, customEndpointManager, responseFactory, gson);
+        super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, customEndpointManager, responseFactory, gson);
         this.blackDuckProperties = blackDuckProperties;
     }
 
@@ -88,9 +86,6 @@ public class NotificationFilterCustomEndpoint extends TableSelectCustomEndpoint 
                 throw new AlertException("Was unable to communicate with Black Duck.", e);
             }
         }
-        if (isFilterableVulnerability(selectedNotificationTypes)) {
-            options.addAll(retrieveBlackDuckVulnerabilityOptions());
-        }
         return options;
     }
 
@@ -103,10 +98,6 @@ public class NotificationFilterCustomEndpoint extends TableSelectCustomEndpoint 
         return notificationTypes.stream().anyMatch(filterableNotificationType::contains);
     }
 
-    private boolean isFilterableVulnerability(Collection<String> notificationTypes) {
-        return notificationTypes.stream().anyMatch(type -> type.equals(NotificationType.VULNERABILITY.name()));
-    }
-
     private List<NotificationFilterModel> retrieveBlackDuckPolicyOptions() throws IntegrationException {
         Optional<BlackDuckHttpClient> blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
         if (blackDuckHttpClient.isPresent()) {
@@ -114,17 +105,11 @@ public class NotificationFilterCustomEndpoint extends TableSelectCustomEndpoint 
             PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
             return policyRuleService.getAllPolicyRules()
                        .stream()
-                       .map(policyRuleView -> new NotificationFilterModel(policyRuleView.getName(), "Policy Rule"))
+                       .map(policyRuleView -> new NotificationFilterModel(policyRuleView.getName()))
                        .collect(Collectors.toList());
         }
 
         return List.of();
     }
 
-    private List<NotificationFilterModel> retrieveBlackDuckVulnerabilityOptions() throws AlertException {
-        return Stream.of(VulnerabilityWithRemediationSeverityType.values())
-                   .map(Enum::name)
-                   .map(severity -> new NotificationFilterModel(severity, "Vulnerability"))
-                   .collect(Collectors.toList());
-    }
 }
