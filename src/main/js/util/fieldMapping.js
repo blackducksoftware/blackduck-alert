@@ -241,7 +241,7 @@ export function retrieveKeys(descriptorFields) {
 
 export function createField(field, currentConfig, fieldError, onChange) {
     const {
-        key, label, description, type
+        key, label, description, type, required
     } = field;
 
     const value = FieldModelUtilities.getFieldModelValues(currentConfig, key);
@@ -256,6 +256,7 @@ export function createField(field, currentConfig, fieldError, onChange) {
         value,
         isSet,
         onChange,
+        required,
         errorName: FieldModelUtilities.createFieldModelErrorKey(key),
         errorValue: fieldError,
         currentConfig
